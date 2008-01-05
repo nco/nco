@@ -1,3 +1,7 @@
+2008-01-05  Charlie Zender  <zender@uci.edu>
+
+	* Mark TODO nco852 as done (Henry fixed some time ago)
+
 2007-12-29  Charlie Zender  <zender@neige>
 
 	* Put nco_sng_utl.h in headers that may reference strdup() compatibility function

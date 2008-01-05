@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.985 2007-12-16 21:35:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.986 2008-01-05 22:25:34 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -381,7 +381,7 @@ nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
-nco658. netcdf4 regression in ncks test #1: Regression re-verified 20060924, 20070831
+nco658. netcdf4 regression in ncrename test #1: Regression re-verified 20060924, 20070831 PBN4
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
         ncrename -O -d lat_T42,lat -v lat_T42,lat ~/foo.nc
@@ -546,7 +546,7 @@ nco828. ncks: returns file ID = 65536 on netCDF4 files: why?
         ncks -m ~/nco/data/in_4.nc
 	od -An -c -N4 ~/nco/data/in_4.nc
 nco834. Add atomic type string NC_STRING to nco_c++ get/put var
-nco835. ncks uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX) (problem in libnetcdf4?)
+nco835. ncks uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX) (problem with libnetcdf4?) PBN4
 	ccc
 	ncks -v '.?_var$' ~/c++/foo.nc
 nco839. What, if anything, should NC_FILL_STRING be?
@@ -555,9 +555,6 @@ nco846. netCDF4: switch to long long array offsets everywhere?
         e.g., can long tally hold > 2 GB array?
 nco847. switch sz, tally to type (unsigned long), perhaps size_t, and perhaps (unsigned long long)
 nco848. Add regression to demonstrate breakage on variables with 2--4 GB elements
-nco852. UBYTE does not work with ncap2:
-	ncap2 -D 4 -O -v -s "var_ubyte=1ub;" ~/nco/data/in_4.nc ~/foo.nc
-	Command-line script:1:10: unexpected token: =
 nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
 nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
 nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unused parameter' warnings (only when compiled with netCDF3)
@@ -588,10 +585,10 @@ nco875. Squelch compiler warnings like:
 	../src/nco/nco_pck.c:819:39: warning: integer constant is so large that it is unsigned
 	that are triggered by OK statements like
 	case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
-nco880. ncpdq: netCDF4 problem _only_ with fll_val variable!:
+nco880. ncpdq: netCDF4 problem _only_ with fll_val/mss_val variables: PBN4
 	ncpdq -O                     -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
 	ncpdq -O       -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
-	ncpdq -O -4 -x    -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
+	ncpdq -O -4 -x    -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # borken
 	ncpdq -O -4    -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # borken
 	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_copy_att()
 	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"

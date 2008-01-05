@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.19 2007-07-23 00:31:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.20 2008-01-05 22:25:34 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -23,7 +23,7 @@ scl_dbl_mk_var /* [fnc] Convert scalar double into netCDF variable */
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
 
   /* Overwrite defaults with values appropriate for artificial variable */
-  var->nm=(char *)strdup("Internally generated variable");
+  var->nm=(char *)strdup("Internally_generated_variable");
   var->nbr_dim=0;
   var->type=NC_DOUBLE;
   var->val.vp=(void *)nco_malloc(nco_typ_lng(var->type));
@@ -85,7 +85,7 @@ scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO vari
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
   
   /* Overwrite defaults with values appropriate for artificial variable */
-  var->nm=(char *)strdup("Internally generated variable");
+  var->nm=(char *)strdup("Internally_generated_variable");
   var->nbr_dim=0;
   var->type=val_typ;
   /* Allocate new space here so that variable can eventually be deleted 
