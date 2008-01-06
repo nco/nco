@@ -28264,7 +28264,7 @@ case ${host} in
 	esac
 	case ${CXX} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
-	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; CXXFLAGS="${CXXFLAGS} -I/usr/vacpp/include" ; ;;
+	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
 	esac
 esac
 # End Default OS-specific Compiler Arguments
@@ -28767,6 +28767,12 @@ case ${CXX} in
     g\+\+* | icpc* | pathCC* ) CXX=`echo "${CXX}" | sed -e 's/ -std=c99//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -std=c99//'` ; ;;
     pgCC* ) CXX=`echo "${CXX}" | sed -e 's/ -c9x//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -c9x//'` ; ;;
 esac
+
+# xlC must use math.h from /usr/vacpp/include or else atan2() will be missing
+case ${CXX} in
+    xlC* ) CPPFLAGS="-I/usr/vacpp/include ${CPPFLAGS}" ; ;;
+esac
+
 
 echo "###############################"
 echo "#    Require Shared Libs?     #"

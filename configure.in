@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.243 2008-01-06 19:41:04 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.244 2008-01-06 20:11:42 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -759,7 +759,7 @@ case ${host} in
 	esac
 	case ${CXX} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
-	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; CXXFLAGS="${CXXFLAGS} -I/usr/vacpp/include" ; ;;
+	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
 	esac
 esac
 # End Default OS-specific Compiler Arguments
@@ -1058,6 +1058,12 @@ case ${CXX} in
     g\+\+* | icpc* | pathCC* ) CXX=`echo "${CXX}" | sed -e 's/ -std=c99//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -std=c99//'` ; ;;
     pgCC* ) CXX=`echo "${CXX}" | sed -e 's/ -c9x//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -c9x//'` ; ;;
 esac
+
+# xlC must use math.h from /usr/vacpp/include or else atan2() will be missing
+case ${CXX} in
+    xlC* ) CPPFLAGS="-I/usr/vacpp/include ${CPPFLAGS}" ; ;;
+esac
+
 
 echo "###############################"
 echo "#    Require Shared Libs?     #"
