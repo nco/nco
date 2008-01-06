@@ -1,16 +1,16 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.7 2007-12-14 12:53:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.8 2008-01-06 19:01:56 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Usage:
    #include "ncap.h" *//* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 
-#ifndef INC_NCAP2_UTL_hh_ /* Header file has not yet been defined in current source file */
-#define INC_NCAP2_UTL_hh_
+#ifndef NCAP2_UTL_HH /* Header file has not yet been defined in current source file */
+#define NCAP2_UTL_HH
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -53,16 +53,12 @@
 /* Temporary fix for now !!*/
 #define nco_bool int
 
-
 /* Name list structure ncap.c
 (for subscript lists) */
 typedef struct{ /* nm_lst_sct */
   nm_id_sct *lst; /* [sct] List element */
   int nbr; /* [nbr] Number of structures in list */
 } nm_lst_sct;
-
-
-
 
 /* Used to do an pre-mpi sort */
  typedef struct exp_sct_tag { 
@@ -73,16 +69,11 @@ typedef struct{ /* nm_lst_sct */
 } exp_sct ;	
 
 /* Begin funtions in ncap2_utl.cc */
-
-
 int 
 ncap_var_write_tmp(
 var_sct *var,
 bool bram, 
 prs_cls *prs_arg);
-
-
-
 
 var_sct *                /* O [sct] variable containing attribute */
 ncap_att_init(           /*   [fnc] Grab an attribute from input file */
@@ -121,8 +112,6 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
 (var_sct *var_1,  /* I [sct] Variable structure containing base */
  var_sct *var_2); /* I [sct] Variable structure containing exponent */
 
-
-
 var_sct *           /* O [sct] Calculate atan2(Y,X) for each element */
 ncap_var_var_atan2  
 (var_sct *var1,     /* I [sct] Variable structure containing Y  */
@@ -133,13 +122,11 @@ int nc_id,
 lmt_sct* lmt_ptr,
 prs_cls *prs_arg);
 
-
 var_sct*
 ncap_var_fnc(
 var_sct* var_in,
 double(*fnc_dbl)(double),
 float(*fnc_flt)(float));
-
 
 var_sct *         /* O [sct] Resultant variable (actually is var) */
 ncap_var_abs(     /* Purpose: Find absolute value of each element of var */
@@ -232,26 +219,19 @@ nco_shp_chk(
 var_sct* var1, 
 var_sct* var2); 
 
-
-
-
 nco_bool        /* Reurns True if var has attribute style name */
 ncap_var_is_att( 
 var_sct *var);
-
 
 bool           /* Returns true if expression contains a utility fuction */ 
 ncap_fnc_srh(
 RefAST ntr
 );
 
-
-
 void ncap_mpi_get_id  /* Extract all VAR_ID & ATT_ID from an Expression */
 (
 RefAST ntr,
 std::vector<std::string> &str_vtr);
-
 
 int            /* Sort expressions for MPI Optimization */  
 ncap_mpi_srt(
@@ -342,10 +322,7 @@ var_sct *var_in,
 var_sct *var_nw,
 NcapVector<lmt_sct*> &lmt_vtr);
 
-
-
-
-#endif  /* INC_NCAP2_UTL_hh_ */
+#endif  /* NCAP2_UTL_HH */
 
 
 

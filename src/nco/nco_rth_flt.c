@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.19 2008-01-06 13:09:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.20 2008-01-06 19:01:55 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -36,6 +36,9 @@ float asinhf(float x){return (float)(asinh((double)x));}
 #ifdef NEED_ATANF
 float atanf(float x){return (float)(atan((double)x));}
 #endif /* !NEED_ATANF */ 
+#ifdef NEED_ATAN2F
+float atan2f(float x){return (float)(atan2((double)x,(double)y);}
+#endif /* !NEED_ATAN2F */ 
 #ifdef NEED_ATANHF
 float atanhf(float x){return (float)(atanh((double)x));}
 #endif /* !NEED_ATANHF */ 

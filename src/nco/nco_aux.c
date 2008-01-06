@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.6 2008-01-06 13:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.7 2008-01-06 19:01:54 zender Exp $ */
 
 /* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -61,7 +61,7 @@ nco_find_lat_lon
             *latid = idx;
 
             /* Get units; assume same for both lat and lon */
-            nc_inq_attlen  (ncid, idx, "units", &lenp);
+            nco_inq_attlen(ncid, idx, "units",&lenp);
             nc_get_att_text(ncid, idx,"units",units);
             units[lenp] = '\0';
 

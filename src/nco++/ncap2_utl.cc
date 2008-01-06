@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.96 2007-12-14 12:45:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.97 2008-01-06 19:01:56 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -14,6 +14,7 @@
 
 // Standard C headers
 #include <assert.h>
+#include <cmath> // sin cos cos sin 3.14159
 #include <ctype.h>
 
 // Personal headers
@@ -21,8 +22,6 @@
 #include "NcapVar.hh"
 #include "sdo_utl.hh"
 #include "VarOp.hh" 
-
-
 
 int 
 ncap_var_write_tmp(
@@ -622,8 +621,6 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   return var1;
 } /* end ncap_var_var_mod() */
 
-
-
 var_sct *           /* O [sct] Calculate atan2 for each element */
 ncap_var_var_atan2  
 (var_sct *var1,     /* I [sc,t] Variable structure containing field  */
@@ -667,14 +664,12 @@ ncap_var_var_atan2
       } /* end for */
   
  } /* end else */
- 
 
  // cast misssing value back to void
  if(var1->has_mss_val)
    (void)cast_nctype_void(NC_DOUBLE,&var1->mss_val);  
  else if(var2->has_mss_val)
    (void)cast_nctype_void(NC_DOUBLE,&var2->mss_val);  
-
 
  var2=nco_var_free(var2); 
 

@@ -54,6 +54,12 @@
 /* Define to 1 if compiler finds external `asinhf' function */
 #undef HAVE_ASINHF
 
+/* Define to 1 if compiler finds external `atan2' function */
+#undef HAVE_ATAN2
+
+/* Define to 1 if compiler finds external `atan2f' function */
+#undef HAVE_ATAN2F
+
 /* Define to 1 if compiler finds external `atanf' function */
 #undef HAVE_ATANF
 
@@ -376,6 +382,12 @@
 
 /* Define to 1 if compiler needs external `asinhf' function */
 #undef NEED_ASINHF
+
+/* Define to 1 if compiler needs external `atan2' function */
+#undef NEED_ATAN2
+
+/* Define to 1 if compiler needs external `atan2f' function */
+#undef NEED_ATAN2F
 
 /* Define to 1 if compiler needs external `atanf' function */
 #undef NEED_ATANF

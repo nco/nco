@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.241 2008-01-06 13:09:46 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.242 2008-01-06 19:01:50 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -429,7 +429,8 @@ AC_CHECK_FUNC(getopt_long,,[nco_need_getopt_long='yes'])
 AM_CONDITIONAL(NCO_NEED_GETOPT_LONG,test "${nco_need_getopt_long}" = 'yes')
 # NCO_CHECK_FUNC defines HAVE_xxxx = 0 and NEED_xxxx = 1 when xxxx is not found
 # Using if(NEED_xxxx) in CPP conditionals is easier than if (!HAVE_xxxx)
-NCO_CHECK_FUNCS([acosf asinf atanf cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
+NCO_CHECK_FUNCS([atan2])
+NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
 NCO_CHECK_FUNCS([erff erfcf gammaf])
 NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
 NCO_CHECK_FUNCS([ceilf floorf])
