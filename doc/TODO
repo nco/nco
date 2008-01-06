@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.987 2008-01-06 21:08:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.988 2008-01-06 22:28:33 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -595,7 +595,6 @@ nco880. ncpdq: netCDF4 problem _only_ with fll_val/mss_val variables: PBN4
 	ncpdq -O -4    -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # borken
 	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_copy_att()
 	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
-nco884. Ask Ed to get to the bottom of nco880, nco885.
 nco885. ncpdq: netCDF4 problem with CAM datasets variable AERASM_v. AERASM_v does have a _FillValue attribute---is this a clue?
 	ncpdq -D 6 -4 -v AERASM_v -O sncpd05_ts_ANN.nc -p $DATA/anl_sncpd05 ~/foo_5.nc
 	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_copy_att()
