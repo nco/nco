@@ -1,5 +1,7 @@
 2008-01-06  Charlie Zender  <zender@uci.edu>
 
+	* Autoconf builds with AIX fail because unable to find atan2() 
+
 	* Use nco_inq_attlen() to avoid pointer warning in nco_aux.c
 
 	* Update copyright year to 2008
