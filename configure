@@ -28259,12 +28259,12 @@ case ${host} in
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qlanglvl=extc99: Include orthogonal extensions to C99 standard
-		xlc* ) CFLAGS="${CFLAGS} -O3 -g -qstrict -Q -qsmp=omp -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; LDFLAGS="${LDFLAGS} -lC" ; ;;
+ 		xlc* ) CFLAGS="${CFLAGS} -O3 -g -qstrict -Q -qsmp=omp -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; LDFLAGS="${LDFLAGS} -lC" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended"
 	esac
 	case ${CXX} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
-	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ;
+	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; CXXFLAGS="${CXXFLAGS} -I/usr/vacpp/include" ; ;;
 	esac
 esac
 # End Default OS-specific Compiler Arguments

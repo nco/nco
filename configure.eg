@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.151 2007-11-10 19:49:10 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.152 2008-01-06 19:41:03 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -95,6 +95,7 @@ For ABI=64:
 # Specifying both C_INC and ANTLR_INC would cause the pre-processor to grab 
 # C-headers from C_INC and antlr headers from ANTLR_INC
 # C_INC disambiguates native C-headers (/usr/include) from antlr headers (/usr/local/include) on UCI's ESMF
+# 
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
