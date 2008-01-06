@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.5 2008-01-04 17:33:12 karkn Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.6 2008-01-06 13:09:50 zender Exp $ */
 
-/* Copyright (C) 1995--2007 Charlie Zender and Karen Schuchardt
+/* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

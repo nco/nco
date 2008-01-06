@@ -1,9 +1,9 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.66 2007-05-20 19:56:20 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.67 2008-01-06 13:09:49 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
 
-  /* Copyright (C) 1995--2007 Charlie Zender
+  /* Copyright (C) 1995--2008 Charlie Zender
      
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.org/copyleft/gpl.html 

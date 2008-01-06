@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.79 2007-08-31 14:33:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.80 2008-01-06 13:09:50 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
-/* Copyright (C) 1995--2007 Charlie Zender
+/* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

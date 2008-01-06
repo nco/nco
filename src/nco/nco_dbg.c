@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dbg.c,v 1.12 2007-07-23 00:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dbg.c,v 1.13 2008-01-06 13:09:52 zender Exp $ */
 
 /* Purpose: Debugging */
 
-/* Copyright (C) 1995--2007 Charlie Zender
+/* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

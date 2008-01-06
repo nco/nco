@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.146 2007-12-12 16:33:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.147 2008-01-06 13:09:50 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
 /* Purpose: Linearly interpolate a third netCDF file from two input files */
 
-/* Copyright (C) 1995--2007 Charlie Zender
+/* Copyright (C) 1995--2008 Charlie Zender
 
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -101,8 +101,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.146 2007-12-12 16:33:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.146 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.147 2008-01-06 13:09:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.147 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:L:l:Oo:p:rRt:v:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.40 2007-12-19 13:05:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.41 2008-01-06 13:09:49 zender Exp $ */
 
-/* Purpose: netCDxF Operator (NCO) library */
+/* Purpose: netCDF Operator (NCO) library */
 
-/* Copyright (C) 1995--2007 Charlie Zender
+/* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -12,7 +12,7 @@
    #include "libnco.h" *//* netCDF Operator (NCO) library */
 
 #ifndef LIBNCO_H /* Contents have not yet been inserted in current source file */
-////////////////////////////////////////////////////////////////';/puiiiiiiiiiiiiif        #define LIBNCO_H
+#define LIBNCO_H
 
 /* Core headers */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */

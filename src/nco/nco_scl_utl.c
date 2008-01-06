@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.20 2008-01-05 22:25:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.21 2008-01-06 13:09:55 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
-/* Copyright (C) 1995--2007 Charlie Zender
+/* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

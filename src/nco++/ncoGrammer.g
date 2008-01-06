@@ -1,9 +1,9 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.126 2007-12-14 12:55:31 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.127 2008-01-06 13:09:57 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
-/* Copyright (C) 2005--2007 Charlie Zender
+/* Copyright (C) 2005--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

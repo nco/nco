@@ -1,9 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.447 2008-01-05 22:25:34 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.448 2008-01-06 13:09:48 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
 
-# Copyright (C) 1994--2007 Charlie Zender
+# Copyright (C) 1994--2008 Charlie Zender
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 

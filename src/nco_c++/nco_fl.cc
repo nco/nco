@@ -1,8 +1,8 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_fl.cc,v 1.9 2007-07-23 00:31:48 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_fl.cc,v 1.10 2008-01-06 13:09:57 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF file-level routines
 
-/* Copyright (C) 2001--2007 Charlie Zender
+/* Copyright (C) 2001--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
