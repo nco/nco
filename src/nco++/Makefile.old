@@ -1,7 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.51 2008-01-06 13:09:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.52 2008-01-07 12:25:50 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
+# scp ~/nco/src/nco++/Makefile.old dust.ess.uci.edu:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old esmf.ess.uci.edu:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old soot.ess.uci.edu:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco++
@@ -887,8 +888,8 @@ ifeq (${CXX},pgCC)
  CFLAGS := -Mlfs
  LDFLAGS += -Mlfs
 # 20061127: pgCC does not support exception handling with codes compiled with OpenMP (-mp) switch so ncap2/antlr files must be built serially
-# OMP_FLG_C := -mp
- OMP_FLG_C := 
+ OMP_FLG_C := -mp
+# OMP_FLG_C := 
 ifeq (${OPTS},D)
  CFLAGS += -g
 endif
