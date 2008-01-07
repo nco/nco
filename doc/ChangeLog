@@ -1,6 +1,6 @@
 2008-01-07  Charlie Zender  <zender@uci.edu>
 
-	* Fix OpenMP builds with pgCC
+	* Fix OpenMP builds of ncap2 with pgCC
 
 2008-01-06  Charlie Zender  <zender@uci.edu>
 
