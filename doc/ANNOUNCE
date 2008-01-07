@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.275 2007-12-29 23:37:38 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.276 2008-01-07 12:30:32 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -23,9 +23,13 @@ Try SWAMP give us your feedback.
 
    Cleanup cygwin builds for WIN32
 
-A. Fix mpncrcat to work with netCDF4 (thanks to Takeshi Enomoto)
+   OpenMP builds of ncap2 with pgCC
 
-B. Fix file "consanguinity": output file format defaults to input format
+   AIX configure finds atan2() for ncap2
+
+A. mpncrcat works with netCDF4 (thanks to Takeshi Enomoto)
+
+B. File "consanguinity": output file format defaults to input format
 
 C. ncks prints netCDF4 LZ compression information to stdout
    http://nco.sf.net/nco.html#ncks
