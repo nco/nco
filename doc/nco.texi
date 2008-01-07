@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.461 2008-01-06 13:09:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.462 2008-01-07 12:01:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -960,7 +960,7 @@ You must build @acronym{NCO} with netCDF4 to obtain this support.
 @cindex @code{NC_UINT64}
 The main netCDF4 features that NCO currently supports are the new 
 atomic data types and Lempel-Ziv compression.
-The new atomic data types are @code{NC_UBYTE}, @code{NC_SHORT}, 
+The new atomic data types are @code{NC_UBYTE}, @code{NC_USHORT}, 
 @code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}.
 Eight-byte integer support is especially useful improvement from
 netCDF3. 
