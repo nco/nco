@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.462 2008-01-07 12:01:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.463 2008-01-08 16:55:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2930,8 +2930,9 @@ any other netCDF format (subject to limits of the format):
 @example
 ncks --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
 ncks --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
-ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
 ncks --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
+ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
+ncks -4 in.nc foo_4.nc # netCDF4 
 @end example
 
 To discover whether a netCDF file is a classic (32-bit offset) or newer
@@ -4043,7 +4044,8 @@ ncpdq         in.nc out.nc # Standard packing  (~50% compression)
 ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @end example
 @findex ncks
-@command{ncks} prints compression information, if any, to screen.
+@command{ncks} prints deflation parameters, if any, to screen
+(@pxref{ncks netCDF Kitchen Sink}).
 
 @html
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->
