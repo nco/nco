@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.97 2008-01-06 19:01:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.98 2008-01-10 13:27:56 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1443,7 +1443,7 @@ ncap_def_dim(
   // Ckeck for a valid name 
   for(idx=0 ; idx < len ; idx++){ 
     ch=dmn_nm[idx];
-    if( !( isalpha(ch) || ch=='.' || ch=='_' ||ch=='-') ){ 
+    if( !( isalpha(ch) || isdigit(ch) || ch=='.' || ch=='_' ||ch=='-') ){ 
       wrn_prn(fnc_nm,"dim \""+ dmn_nm + "\" - Invalid dimension name.");
       return False;;
     }
@@ -2713,7 +2713,7 @@ RefAST tr
   
   if(tr->getType()==FUNC){
     fnm=tr->getText();
-    if(fnm=="set_miss" || fnm=="change_miss" || fnm=="ram_write" || fnm=="ram_delete") 
+    if(fnm=="set_miss" || fnm=="change_miss" || fnm=="delete_miss" || fnm=="ram_write" || fnm=="ram_delete") 
       return true;
   }
  
