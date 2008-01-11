@@ -1,3 +1,7 @@
+2008-01-11  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_create_mode_prs() functionality to libnco_c++
+
 2008-01-07  Charlie Zender  <zender@uci.edu>
 
 	* Fix OpenMP builds of ncap2 with pgCC
