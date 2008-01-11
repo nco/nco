@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.18 2008-01-06 13:09:58 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.19 2008-01-11 22:27:42 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -27,6 +27,42 @@
 // Private member functions end
 // Global functions with C++ linkages begin
 
+int // [rcd] Return code
+nco_create_mode_prs // [fnc] Parse user-specified file format
+(const std::string fl_fmt_sng, // I [sng] User-specified file format string
+ int &fl_fmt_enm) // O [enm] Output file format
+{
+  std::string sbr_nm("nco_create_mode_prs"); // [sng] Subroutine name
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  /* Careful! Some valid format strings are subsets of other valid format strings */
+  if(static_cast<std::string>("classic").find(fl_fmt_sng) != std::string::npos && fl_fmt_sng.find("netcdf4") == std::string::npos){
+  // If "classic" contains string and string does not contain "netcdf4"
+    fl_fmt_enm=NC_FORMAT_CLASSIC;
+  }else if(static_cast<std::string>("classic").find(fl_fmt_sng) != std::string::npos){
+    /* If "64bit" contains string */
+    fl_fmt_enm=NC_FORMAT_64BIT;
+  }else if(fl_fmt_sng.find("netcdf4") != std::string::npos){
+#ifdef ENABLE_NETCDF4
+    if(static_cast<std::string>("classic").find(fl_fmt_sng) != std::string::npos){
+      /* If "netcdf4" contains string */
+      fl_fmt_enm=NC_FORMAT_NETCDF4;
+    }else if(static_cast<std::string>("netcdf4_classic").find(fl_fmt_sng) != std::string::npos){
+      /* If "netcdf4_classic" contains string */
+      fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
+    } /* endif NETCDF4 */
+#else /* !ENABLE_NETCDF4 */
+    std::string err_msg("Program was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".");
+    nco_err_exit(sbr_nm,err_msg);
+#endif /* !ENABLE_NETCDF4 */
+  }else{
+    std::string err_msg("Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".");
+    nco_err_exit(sbr_nm,err_msg);
+  } /* endif fl_fmt_enm */
+
+  return rcd; /* [rcd] Return code */
+} /* end nco_create_mode_prs() */
+
 void 
 nco_err_exit // [fnc] Lookup, print netCDF error message, exit
 (const int &rcd, // I [enm] netCDF error code
@@ -53,6 +89,26 @@ nco_err_exit // [fnc] Lookup, print netCDF error message, exit
 #endif // SGIMP64
 #endif // !ABORT_ON_ERROR
   } // endif error
+} // end nco_err_exit()
+
+void 
+nco_err_exit // [fnc] Print error message, exit
+(const std::string &sbr_nm, // I [sng] Subroutine name
+ const std::string &msg) // I [sng] Error message
+{
+  /* Purpose: Print error message routine name, and exit 
+     Use msg to print, e.g., hint */
+  std::cout << sbr_nm << ": ERROR " << msg << std::endl;
+  std::cout << "Exiting through routine nco_err_exit()..." << std::endl;
+#ifdef ABORT_ON_ERROR
+  std::abort(); // [fnc] Produce core dump
+#else // !ABORT_ON_ERROR
+#ifndef SGIMP64 // fxm: SGI IRIX CC does not support std::exit nor have cstdlib
+  std::exit(EXIT_FAILURE); // [fnc] Exit nicely
+#else // SGIMP64
+  exit(EXIT_FAILURE); // [fnc] Exit nicely
+#endif // SGIMP64
+#endif // !ABORT_ON_ERROR
 } // end nco_err_exit()
 
 void 

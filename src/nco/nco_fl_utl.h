@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.38 2008-01-06 13:09:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.39 2008-01-11 22:27:42 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -53,8 +53,8 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
 
 int /* [rcd] Return code */
 nco_create_mode_prs /* [fnc] Parse user-specified file format */
-(const char * const fl_fmt_sng, /* [sng] User-specified file format string */
- int * const fl_fmt_enm); /* I [enm] Output file format */
+(const char * const fl_fmt_sng, /* I [sng] User-specified file format string */
+ int * const fl_fmt_enm); /* O [enm] Output file format */
 
 void
 nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.16 2008-01-06 13:09:58 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.17 2008-01-11 22:27:43 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -36,6 +36,15 @@
    fxm: Make this extern and instantiate in .cc file? */
 const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in function parameter initialization
 
+#ifndef NCO_FORMAT_UNDEFINED
+  /* netcdf.h defines four NC_FORMAT tokens: NC_FORMAT_CLASSIC, ...
+     The values are (currently) enumerated from one to four
+     Operators need to check if fl_out_fmt has been user-specified
+     Saftest way is to compare current value of fl_out_fmt to initial value 
+     Initial value should be a number that will never be a true netCDF format */
+# define NCO_FORMAT_UNDEFINED 0
+#endif // NCO_FORMAT_UNDEFINED
+
 // Same debugging types as in nco.h
 enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
   /* List in increasing levels of verbosity */
@@ -64,11 +73,23 @@ enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
 
 // Prototype global functions with C++ linkages
 
+int // [rcd] Return code
+nco_create_mode_prs // [fnc] Parse user-specified file format
+(const std::string fl_fmt_sng, // I [sng] User-specified file format string
+ int &fl_fmt_enm); // O [enm] Output file format
+// end nco_create_mode_prs() prototype
+
 void 
 nco_err_exit // [fnc] Lookup, print netCDF error message, exit
 (const int &rcd, // I [enm] netCDF error code
  const std::string &msg, // I [sng] supplemental error message
  const std::string &msg_opt=""); // I [sng] Optional supplemental error message
+// end nco_err_exit() prototype
+
+void 
+nco_err_exit // [fnc] Print error message, exit
+(const std::string &sbr_nm, // I [sng] Subroutine name
+ const std::string &msg); // I [sng] Error message
 // end nco_err_exit() prototype
 
 void 
