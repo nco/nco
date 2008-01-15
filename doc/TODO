@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.988 2008-01-06 22:28:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.989 2008-01-15 22:20:49 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -561,7 +561,6 @@ nco848. Add regression to demonstrate breakage on variables with 2--4 GB element
 nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
 nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
 nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unused parameter' warnings (only when compiled with netCDF3)
-nco859. Implement -3 switch for symmetry with -4
 nco865. Re-cast output variable to original type in ncbo.c (like in ncflint.c)?
         ncbo -O -v '.?pck.?' -p ~/nco/data in.nc in.nc ~/foo.nc
         ncbo -O -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc

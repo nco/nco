@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.193 2008-01-06 13:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.194 2008-01-15 22:20:50 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -116,9 +116,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.193 2008-01-06 13:09:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
-  const char * const opt_sht_lst="4aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.194 2008-01-15 22:20:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
+  const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -275,7 +275,10 @@ main(int argc,char **argv)
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;
-    case '4': /* [flg] Catch-all to prescribe output storage format */
+    case '3': /* Request netCDF3 output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */

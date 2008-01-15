@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.62 2008-01-06 13:09:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.63 2008-01-15 22:20:50 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.62 2008-01-06 13:09:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.62 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.63 2008-01-15 22:20:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.63 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -290,7 +290,10 @@ main(int argc,char **argv)
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;
-    case '4': /* [flg] Catch-all to prescribe output storage format */
+    case '3': /* Request netCDF3 output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'A': /* Toggle FORCE_APPEND */

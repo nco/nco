@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.80 2008-01-06 13:09:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.81 2008-01-15 22:20:49 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.80 2008-01-06 13:09:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.80 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.81 2008-01-15 22:20:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.81 $";
   const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -329,7 +329,10 @@ main(int argc,char **argv)
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;
-    case '4': /* [flg] Catch-all to prescribe output storage format */
+    case '3': /* Request netCDF3 output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'A': /* Toggle FORCE_APPEND */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.276 2008-01-07 12:30:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.277 2008-01-15 22:20:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -17,6 +17,9 @@ SWAMP can work with with any command-line operator analysis scripts--
 not just NCO. If you must transfer lots of data from a server to your
 client before you analyze it, then SWAMP may speed things up.
 Try SWAMP give us your feedback.
+
+   Operators given -3 switch will (attempt to) produce netCDF3 output,
+   even if input is netCDF4 format. Symmetric with -4 switch behavior.
 
    ncks supports hyperslab specification with CF auxiliary coordinates
    http://nco.sf.net/nco.html#aux
