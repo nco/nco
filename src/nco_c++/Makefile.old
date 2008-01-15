@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.64 2008-01-06 13:09:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.65 2008-01-15 21:25:46 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -11,8 +11,8 @@
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
 # Usage:
-# cd ~/nco/src/nco_c++;make -f Makefile.old dpn_cln cln all
-# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y dpn_cln cln all
+# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y dpn_cln cln all # ashes, neige, virga
+# cd ~/nco/src/nco_c++;make -f Makefile.old dpn_cln cln all # esmf, sand
 
 # In rule 
 # foobar.o : foo.c bar.c

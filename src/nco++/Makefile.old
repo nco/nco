@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.52 2008-01-07 12:25:50 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.53 2008-01-15 21:25:46 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -13,10 +13,10 @@
 
 # Usage:
 # cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D all # virga
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=N OPTS=D all # elnino
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D all # esmf
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=N OPTS=D all # sand
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D UDUNITS2=Y all # neige, virga
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=N OPTS=D UDUNITS2=Y all # ashes, elnino
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=Y all # esmf
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=N OPTS=D UDUNITS2=Y all # sand
 
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/src/nco++;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
