@@ -1,6 +1,11 @@
+2008-01-16  Charlie Zender  <zender@uci.edu>
+
+	* Finish -3 option implementation
+
 2008-01-15  Charlie Zender  <zender@uci.edu>
 
-	* Add -3 option for symmetry with -4
+	* Add -3 option to produce CLASSIC files for symmetry with -4
+	option that produces NETCDF4 files
 
 2008-01-11  Charlie Zender  <zender@uci.edu>
 

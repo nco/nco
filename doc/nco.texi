@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.464 2008-01-15 22:20:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.465 2008-01-16 12:41:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2863,6 +2863,7 @@ when your other preferred methods are not available locally.
 @cindex @code{NETCDF4} files
 @cindex @code{CLASSIC} files
 @cindex @code{64BIT} files
+@cindex @code{--3}
 @cindex @code{-3}
 @cindex @code{-4}
 @cindex @code{--4}
@@ -2875,17 +2876,20 @@ Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-3}, @samp{-4}@*
-Long options: @samp{--4}, @samp{--64bit}, @samp{--fl_fmt},
+Long options: @samp{--3}, @samp{--4}, @samp{--64bit}, @samp{--fl_fmt},
 @samp{--netcdf4}@*  
 @end cartouche
 All @acronym{NCO} operators support (read and write) all three (or four, 
 depending on how one counts) file formats supported by netCDF4.
+The default output file format for all operators is the input file
+format. 
 The operators listed under ``Availability'' above allow the user to
 specify the output file format independent of the input file format. 
 These operators allow the user to convert between the various file
 formats. 
-The operators @command{ncatted} and @command{ncrename} always write the
-output netCDF file in the same format as the input netCDF file.
+(The operators @command{ncatted} and @command{ncrename} do not support
+these switches so they always write the output netCDF file in the same
+format as the input netCDF file.) 
 
 netCDF supports four types of files: @code{CLASSIC}, @code{64BIT},
 @code{NETCDF4}, and @code{NETCDF4_CLASSIC}, 
@@ -2908,13 +2912,13 @@ applications which use only the netCDF3 @acronym{API} and library.
 the new @code{NETCDF4} format. 
 Users are advised to use the default @code{CLASSIC} format or the
 @code{NETCDF4_CLASSIC} format until netCDF4 is more widespread.
-Widespread support for @code{NETCDF4} format files is not expected for a
-few years, 2007--2008, say.
+Widespread support for @code{NETCDF4} format files is not expected for 
+many years, 2009--2010, say.
 If performance or coolness are issues, then use @code{NETCDF4_CLASSIC}  
 instead of @code{CLASSIC} format files.
 
-All operators write classic @code{CLASSIC} (32-bit offset) format files
-unless told otherwise.
+As mentioned above, all operators write use the input file format for
+output files unless told otherwise.
 Toggling the long option @samp{--64bit} switch (or its
 @var{key}-@var{value} equivalent @samp{--fl_fmt=64bit}) produces the
 netCDF3 64-bit offset format named @code{64BIT}. 
@@ -2926,19 +2930,31 @@ equivalent @samp{--fl_fmt=netcdf4} produces a @code{NETCDF4} file
 (i.e., @acronym{HDF}).
 Casual users are advised to use the default (netCDF3) @code{CLASSIC}
 format until @w{netCDF 3.6} and @w{netCDF 4.0} are more widespread.
-Conversely, operators given the @samp{-3} switch will (attempt to)
-produce netCDF3 output, even from netCDF4 input files.
+Conversely, operators given the @samp{-3} (or @samp{--3}) switch
+without arguments will (attempt to) produce netCDF3 @code{CLASSIC}
+output, even from netCDF4 input files. 
 
-These examples show how to convert a file from any netCDF format into
-any other netCDF format (subject to limits of the format): 
+These examples demonstrate converting a file from any netCDF format
+into any other netCDF format (subject to limits of the format): 
 @example
 ncks --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
 ncks --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
 ncks --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
 ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
-ncks -3 in.nc foo_4.nc # netCDF3 64bit 
+ncks -3 in.nc foo_3c.nc # netCDF3 classic
+ncks --3 in.nc foo_3c.nc # netCDF3 classic
 ncks -4 in.nc foo_4.nc # netCDF4 
+ncks --4 in.nc foo_4.nc # netCDF4 
+ncks --64 in.nc foo364.nc # netCDF3 64bit
 @end example
+Of course since most operators support these switches, the
+``conversions'' can be done at the output stage of arithmetic
+or metadata processing rather than requiring a separate step.
+Producing (netCDF3) @code{CLASSIC} or @code{64BIT} files from
+@code{NETCDF4_CLASSIC} files will work. 
+However, producing netCDF3 files from @code{NETCDF4} files will only
+work if the output files are not required to contain netCDF4-specific
+features.
 
 To discover whether a netCDF file is a classic (32-bit offset) or newer
 64-bit offset netCDF3 format, or is netCDF4 format, examine it with the

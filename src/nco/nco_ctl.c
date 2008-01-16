@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.203 2008-01-15 22:20:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.204 2008-01-16 12:41:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -836,7 +836,7 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"%s command line options cheat-sheet:\n",prg_nm_get());
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
-  if(strstr(opt_sng,"-3")) (void)fprintf(stdout,"-3\tOutput file in netCDF3 64-bit offset storage format\n");
+  if(strstr(opt_sng,"-3")) (void)fprintf(stdout,"-3\tOutput file in netCDF3 CLASSIC storage format\n");
   if(strstr(opt_sng,"-4")) (void)fprintf(stdout,"-4, --4, --netcdf4\tOutput file in netCDF4 storage format (HDF5)\n");
   if(strstr(opt_sng,"--64bit")) (void)fprintf(stdout,"\tOutput file in netCDF3 64-bit offset storage format\n");
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");

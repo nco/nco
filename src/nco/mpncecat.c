@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.59 2008-01-15 22:20:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.60 2008-01-16 12:41:06 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -92,9 +92,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.59 2008-01-15 22:20:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.59 $";
-  const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.60 2008-01-16 12:41:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.60 $";
+  const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;
   dmn_sct **dim;
@@ -188,6 +188,7 @@ main(int argc,char **argv)
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
+      {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
@@ -267,7 +268,7 @@ main(int argc,char **argv)
     case 0: /* Long options have already been processed, return */
       break;
     case '3': /* Request netCDF3 output storage format */
-      fl_out_fmt=NC_FORMAT_64BIT;
+      fl_out_fmt=NC_FORMAT_CLASSIC;
       break;
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 

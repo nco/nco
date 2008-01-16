@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.82 2008-01-15 22:20:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.83 2008-01-16 12:41:07 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,9 +121,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.82 2008-01-15 22:20:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.82 $";
-  const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.83 2008-01-16 12:41:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.83 $";
+  const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -228,6 +228,7 @@ main(int argc,char **argv)
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
+      {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
@@ -336,7 +337,7 @@ main(int argc,char **argv)
     case 0: /* Long options have already been processed, return */
       break;
     case '3': /* Request netCDF3 output storage format */
-      fl_out_fmt=NC_FORMAT_64BIT;
+      fl_out_fmt=NC_FORMAT_CLASSIC;
       break;
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 

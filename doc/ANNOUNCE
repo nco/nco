@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.277 2008-01-15 22:20:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.278 2008-01-16 12:41:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -19,7 +19,8 @@ client before you analyze it, then SWAMP may speed things up.
 Try SWAMP give us your feedback.
 
    Operators given -3 switch will (attempt to) produce netCDF3 output,
-   even if input is netCDF4 format. Symmetric with -4 switch behavior.
+   even if input files are netCDF4. Converse of -4 switch behavior.
+   Same as --fl_fmt=classic
 
    ncks supports hyperslab specification with CF auxiliary coordinates
    http://nco.sf.net/nco.html#aux
