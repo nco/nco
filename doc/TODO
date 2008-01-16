@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.989 2008-01-15 22:20:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.990 2008-01-16 22:27:22 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -608,7 +608,7 @@ nco895. udunits2 implement new API http://www.unidata.ucar.edu/software/udunits/
 nco900. Get UDUnits2 working with time coordinates:
         ncks -O -D 0 -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' -p ~/nco/data in.nc ~/foo.nc
 nco901. mss_val in code and comments now (usually) refers to _FillValue (except in nco_mss_val.c). Change mss_val to fll_val?
-nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.c!
+nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.c! The work-around is an extra function of global scope (nco_mss_val_sng_get()) that is worth getting rid of.
 nco906. Add regression test for DAP via THREDDS server:
 	ncks -m http://eclipse.ncdc.noaa.gov:8080/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC
 nco907. doc: document new wget capabilities
