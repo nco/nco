@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.124 2008-01-16 15:26:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.125 2008-01-16 15:30:46 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -158,6 +158,7 @@ extern "C" {
 #  define NCO_NETCDF4_AND_FILLVALUE
 # endif /* NCO_MSS_VAL_SNG */
 #endif /* !ENABLE_NETCDF4 */
+#endif /* NCO_NETCDF4_AND_FILLVALUE */
 
   /* 20070831: TKN2SNG technique inserts quotes into string though same test code in c.c does not produce extra quotes. TODO nco905. */
   /*char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG);*/ /* [sng] Missing value attribute name */

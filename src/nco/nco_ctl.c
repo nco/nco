@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.204 2008-01-16 12:41:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.205 2008-01-16 15:26:09 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -13,11 +13,11 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
 { 
   /* Purpose: Return string containing compiler and version */
   const char fnc_nm[]="nco_cmp_get()";
-#if defined (_AIX) && !defined(__GNUC__) && !defined(__xlC__)
+#if defined(_AIX) && !defined(__GNUC__) && !defined(__xlC__)
   static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token _AIX defined in nco_cmp_get(), probably compiled with AIX xlc_r or xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
-#if defined (__xlC__)
+#if defined(__xlC__)
   static const char cmp_nm[]="xlC"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __xlC__ defined in nco_cmp_get(), probably compiled with AIX xlC_r or xlC"; /* [sng] Compiler string */
 #endif /* !__xlC__ */
