@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.123 2008-01-06 13:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.124 2008-01-16 15:26:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -144,15 +144,22 @@ extern "C" {
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
   
-  /* NCO_MSS_VAL_SNG contains the name of the attribute whose value is treated as
-     "missing" during arithmetic. Choose either missing_value or _FillValue. */
+  /* NCO_MSS_VAL_SNG names the attribute whose value is treated as "missing" during arithmetic. Define as either "missing_value" or "_FillValue". */
 #ifndef NCO_MSS_VAL_SNG
   /*# define NCO_MSS_VAL_SNG missing_value */
 # define NCO_MSS_VAL_SNG _FillValue
 #endif /* NCO_MSS_VAL_SNG */
 
-  /* 20070831: For some bizarre reason the TKN2SNG technique inserts quotes into string 
-     even though the same test code in c.c does not produce extra quotes. TODO nco905. */
+  /* NCO_NETCDF4_AND_FILLVALUE tells us whether netCDF4 restrictions 
+     on _FillValue can affect output files */ 
+#ifndef NCO_NETCDF4_AND_FILLVALUE
+#ifdef ENABLE_NETCDF4
+# if NCO_MSS_VAL_SNG == _FillValue
+#  define NCO_NETCDF4_AND_FILLVALUE
+# endif /* NCO_MSS_VAL_SNG */
+#endif /* !ENABLE_NETCDF4 */
+
+  /* 20070831: TKN2SNG technique inserts quotes into string though same test code in c.c does not produce extra quotes. TODO nco905. */
   /*char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG);*/ /* [sng] Missing value attribute name */
   char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
   char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */

@@ -1,5 +1,8 @@
 2008-01-16  Charlie Zender  <zender@uci.edu>
 
+	* nco.h now #defines NCO_NETCDF4_AND_FILLVALUE when NCO is
+	netCDF4-enabled and NCO_MSS_VAL_SNG == _FillValue 
+
 	* Finish -3 option implementation, add --3 too
 
 2008-01-15  Charlie Zender  <zender@uci.edu>
