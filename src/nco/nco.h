@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.125 2008-01-16 15:30:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.126 2008-01-17 16:43:57 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -150,14 +150,15 @@ extern "C" {
 # define NCO_MSS_VAL_SNG _FillValue
 #endif /* NCO_MSS_VAL_SNG */
 
-  /* NCO_NETCDF4_AND_FILLVALUE tells us whether netCDF4 restrictions 
-     on _FillValue can affect output files */ 
+  /* NCO_NETCDF4_AND_FILLVALUE tells whether netCDF4 restrictions on 
+     _FillValue operations (must be defined before variable written,
+     cannot be changed after variable written) can affect output file */ 
 #ifndef NCO_NETCDF4_AND_FILLVALUE
-#ifdef ENABLE_NETCDF4
-# if NCO_MSS_VAL_SNG == _FillValue
-#  define NCO_NETCDF4_AND_FILLVALUE
-# endif /* NCO_MSS_VAL_SNG */
-#endif /* !ENABLE_NETCDF4 */
+# ifdef ENABLE_NETCDF4
+#  if NCO_MSS_VAL_SNG == _FillValue
+#   define NCO_NETCDF4_AND_FILLVALUE
+#  endif /* NCO_MSS_VAL_SNG */
+# endif /* !ENABLE_NETCDF4 */
 #endif /* NCO_NETCDF4_AND_FILLVALUE */
 
   /* 20070831: TKN2SNG technique inserts quotes into string though same test code in c.c does not produce extra quotes. TODO nco905. */
