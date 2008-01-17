@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.126 2008-01-17 16:43:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.127 2008-01-17 20:56:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -144,26 +144,30 @@ extern "C" {
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
   
-  /* NCO_MSS_VAL_SNG names the attribute whose value is treated as "missing" during arithmetic. Define as either "missing_value" or "_FillValue". */
+  /* NCO_MSS_VAL_SNG names attribute whose value is treated as "missing" 
+     for arithmetic. Normally either "missing_value" or "_FillValue". */
 #ifndef NCO_MSS_VAL_SNG
+  /* 20070831: TKN2SNG technique inserts quotes into string though same test code in c.c does not produce extra quotes. TODO nco905. */
   /*# define NCO_MSS_VAL_SNG missing_value */
-# define NCO_MSS_VAL_SNG _FillValue
-#endif /* NCO_MSS_VAL_SNG */
+  /*# define NCO_MSS_VAL_SNG _FillValue*/
+  /*char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG);*/ /* [sng] Missing value attribute name */
+# define NCO_USE_FILL_VALUE
+# ifdef NCO_USE_FILL_VALUE
+  char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
 
   /* NCO_NETCDF4_AND_FILLVALUE tells whether netCDF4 restrictions on 
      _FillValue operations (must be defined before variable written,
      cannot be changed after variable written) can affect output file */ 
-#ifndef NCO_NETCDF4_AND_FILLVALUE
-# ifdef ENABLE_NETCDF4
-#  if NCO_MSS_VAL_SNG == _FillValue
+#  ifdef ENABLE_NETCDF4
 #   define NCO_NETCDF4_AND_FILLVALUE
-#  endif /* NCO_MSS_VAL_SNG */
-# endif /* !ENABLE_NETCDF4 */
-#endif /* NCO_NETCDF4_AND_FILLVALUE */
+#  endif /* !ENABLE_NETCDF4 */
 
-  /* 20070831: TKN2SNG technique inserts quotes into string though same test code in c.c does not produce extra quotes. TODO nco905. */
-  /*char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG);*/ /* [sng] Missing value attribute name */
-  char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
+# else /* !NCO_USE_FILL_VALUE */
+  char nco_mss_val_sng[]="missing_value"; /* [sng] Missing value attribute name */
+# endif /* !NCO_USE_FILL_VALUE */
+# define NCO_MSS_VAL_SNG
+#endif /* NCO_MSS_VAL_SNG */
+
   char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
