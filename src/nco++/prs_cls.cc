@@ -65,6 +65,11 @@ bool bfll){
   var_nm=snm.c_str();
 
   std::vector<dmn_sct*> dmn_tp_out;
+  {
+  std::ostringstream os;
+  os<<fnc_nm<<" thread_num="<<omp_get_thread_num()<<std::endl;
+  // wrn_prn(fnc_nm,os.str());
+  }
   
   
   // INITIAL SCAN
@@ -81,7 +86,7 @@ bool bfll){
     }
     bfll=false;
   }
-  
+     
   
   // FINAL SCAN
   // We have a  dilema -- its possible for a variable to exist in input & output 
@@ -295,15 +300,17 @@ bool bram){
 
     //Possibly overwrite bram !!
     bram=Nvar->flg_mem;
-      
-    if(var->has_mss_val)
-      (void)nco_mss_val_cp(var,Nvar->var);
-    // delete missing value
-    else if(Nvar->var->has_mss_val){
-      Nvar->var->has_mss_val=False;
-      Nvar->var->mss_val.vp=(void*)nco_free(Nvar->var->mss_val.vp);
-    }      
 
+
+    if(!NCAP4_FILL){      
+      if(var->has_mss_val)
+        (void)nco_mss_val_cp(var,Nvar->var);
+        // delete missing value
+      else if(Nvar->var->has_mss_val){
+        Nvar->var->has_mss_val=False;
+        Nvar->var->mss_val.vp=(void*)nco_free(Nvar->var->mss_val.vp);
+      }      
+    }
   } 
 
   
@@ -359,7 +366,9 @@ bool bram){
   
   // var is already defined but not populated 
   if(bdef && !bram && Nvar->flg_stt==1){
-    ;
+    /* Put missing value only for netcdf4 files &" _FillValue" */
+    if(var->has_mss_val && NCAP4_FILL) 
+      (void)nco_put_att(out_id,Nvar->var->id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
   }
   
   // var is already defined & populated in output 
@@ -410,6 +419,7 @@ bool bram){
 #endif
 
 
+
      (void)nco_redef(out_id);
 
   /* Define variable */   
@@ -418,9 +428,9 @@ bool bram){
     /* Set HDF Lempel-Ziv compression level, if requested */
     if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
   } // bdef
-  /* Put missing value 
-  if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
-  */
+    /* Put missing value only for netcdf4 files &" _FillValue" */
+    if(var->has_mss_val && NCAP4_FILL) 
+      (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
   
   /* Write/overwrite scale_factor and add_offset attributes */
   if(var->pck_ram){ /* Variable is packed in memory */
