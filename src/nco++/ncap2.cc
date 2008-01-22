@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.64 2008-01-16 12:41:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.65 2008-01-22 11:06:27 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.64 2008-01-16 12:41:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.65 2008-01-22 11:06:27 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.65 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -414,7 +414,7 @@ main(int argc,char **argv)
   }
   
   */
-    
+
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
 
@@ -505,8 +505,16 @@ main(int argc,char **argv)
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
   prs_arg.ATT_INHERIT=ATT_INHERIT;
   prs_arg.NCAP_MPI_SORT= (thr_nbr>1 ? true :false );
+
   prs_arg.dfl_lvl=dfl_lvl; /* [enm] Deflate level */
 
+#ifdef NCO_NETCDF4_AND_FILLVALUE
+  prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 ? true : false);
+#else
+  prs_arg.NCAP4_FILL=false;
+#endif
+
+  
   prs_vtr.push_back(prs_arg); 
 
   for(idx=1 ; idx < thr_nbr ;idx++) {
@@ -514,7 +522,8 @@ main(int argc,char **argv)
 
     // open files for each thread
     rcd=nco_open(fl_in,NC_NOWRITE,&prs_tmp.in_id);
-    // rcd=nco_open(fl_out_tmp, NC_WRITE|NC_SHARE,&prs_tmp.out_id);
+    //prs_tmp.in_id=in_id;
+    //rcd=nco_open(fl_out_tmp, NC_WRITE|NC_SHARE,&prs_tmp.out_id);
     prs_tmp.out_id=out_id;
 
     prs_vtr.push_back(prs_tmp);
@@ -666,20 +675,21 @@ main(int argc,char **argv)
 
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
-
     // write misssing value contained inside var
-    if( var_vtr[idx]->xpr_typ == ncap_var && !var_vtr[idx]->flg_mem) {
+    if(var_vtr[idx]->xpr_typ == ncap_var && !var_vtr[idx]->flg_mem) {
+      if(prs_arg.NCAP4_FILL) 
+	continue;
       // dereference
       var_sct *var_ref;
       var_ref=var_vtr[idx]->var;
       rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
 
-      if(var_ref->has_mss_val && rcd==NC_NOERR) 
-        (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);           
+      if(var_ref->has_mss_val && rcd==NC_NOERR)
+          (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);           
       continue;
     }
-    
-
+   
+  
     // Skip misssing values for now !!!
     if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) 
       continue;     
