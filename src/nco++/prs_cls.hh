@@ -42,6 +42,7 @@ class fmc_cls;
   bool ATT_INHERIT;                      //Var on LHS inherits attributtes from var of the same name
                                          // in the input file 
   bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
+  bool NCAP4_FILL;                        //if true Ouptut file is netcdf4 & missing value="_FillValue"
   int dfl_lvl;                           // Set Lempel-Ziv compression level                                              
   // Constructor
   prs_cls( NcapVector<dmn_sct*> &p_dmn_in_vtr, 
@@ -74,6 +75,7 @@ class fmc_cls;
      ATT_PROPAGATE=prs_cpy.ATT_PROPAGATE; 
      ATT_INHERIT=prs_cpy.ATT_INHERIT; 
      NCAP_MPI_SORT=prs_cpy.NCAP_MPI_SORT;
+     NCAP4_FILL=prs_cpy.NCAP4_FILL;
      dfl_lvl=prs_cpy.dfl_lvl;      
 
    }
@@ -111,6 +113,7 @@ class fmc_cls;
      ATT_PROPAGATE=prs_cpy.ATT_PROPAGATE; 
      ATT_INHERIT=prs_cpy.ATT_INHERIT; 
      NCAP_MPI_SORT=prs_cpy.NCAP_MPI_SORT;
+     NCAP4_FILL=prs_cpy.NCAP4_FILL;
      dfl_lvl=prs_cpy.dfl_lvl;      
 
      return *this;
