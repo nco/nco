@@ -162,8 +162,7 @@
     int nbr_fargs;
     int fdx=fmc_obj.fdx();
     var_sct *var1;
-    var_sct *var;   
-  
+   
     std::string sfnm =fmc_obj.fnm(); //method name
     //n.b fargs is an imaginary node -and is ALWAYS present
     nbr_fargs=fargs->getNumberOfChildren();
@@ -181,9 +180,9 @@
       var1=walker.out(fargs->getFirstChild());   
     
     //do conversion 
-    var=nco_var_cnf_typ( (nc_type)fdx, var1);  
+    var1=nco_var_cnf_typ( (nc_type)fdx, var1);  
       
-    return var;
+    return var1;
 
   }
 
@@ -394,6 +393,7 @@
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("set_miss",this,(int)SET_MISS));
       fmc_vtr.push_back( fmc_cls("change_miss",this,(int)CH_MISS));
+      fmc_vtr.push_back( fmc_cls("delete_miss",this,(int)DEL_MISS));
       fmc_vtr.push_back( fmc_cls("ram_write",this,(int)RAM_WRITE));
       fmc_vtr.push_back( fmc_cls("ram_delete",this,(int)RAM_DELETE));
      
@@ -417,6 +417,16 @@
     nbr_fargs=fargs->getNumberOfChildren(); 
 
     sfnm= (expr ? " method ": " function ") + fmc_obj.fnm(); 
+
+
+    if(walker.prs_arg->NCAP4_FILL && (fdx==SET_MISS||fdx==CH_MISS||fdx==DEL_MISS)){
+       ostringstream os; 
+       os<<"It is not possible to execute the"<<sfnm<< " with this build. A quirk with netcdf4 files is that if the missing value attribute is set to \"_FillValue\", then once this attribute has been defined for a variable later editing of the attribute  is impossible. Consider recompiling with a different missing value attribute  or use netcdf3 files";            
+
+      err_prn(fnc_nm,os.str());
+                    
+   
+    }
 
     // no arguments - bomb out
     if(!expr && nbr_fargs==0){    
@@ -525,7 +535,17 @@
            break;
           }
 
-
+    case DEL_MISS: {
+          // Dereference
+           rval=0;
+           var_in=Nvar->var;                
+           if(var_in->has_mss_val){
+             var_in->has_mss_val=False;
+	     var_in->mss_val.vp=(void*)nco_free(var_in->mss_val.vp);
+             rval=1;
+           }
+          break;
+        }
 
     case RAM_WRITE: {
 
