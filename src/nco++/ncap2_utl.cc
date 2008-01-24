@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.98 2008-01-10 13:27:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.99 2008-01-24 11:38:56 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -443,6 +443,9 @@ ncap_att_gnrl
     // loop though attributes
     for(idx=0; idx <nbr_att ; idx++){
       (void)nco_inq_attname(prs_arg->in_id,var_id,idx,att_nm);
+      //skip missing value
+      if(!strcmp(att_nm,nco_mss_val_sng_get())) 
+        continue;
       var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
       // now add to list( change the name!!)
       if(var_att){ 
