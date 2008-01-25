@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.7 2008-01-06 19:01:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.8 2008-01-25 20:33:41 karkn Exp $ */
 
 /* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -224,7 +224,7 @@ int *lmt_nbr
                printf("Number of slabs exceeds allocated mamory %d\n",MAXDMN);
                exit(-1);
             }
-            lmts[(*lmt_nbr)-1] = (lmt_sct *)nco_malloc(sizeof(lmt_sct *));
+            lmts[(*lmt_nbr)-1] = (lmt_sct *)nco_malloc(sizeof(lmt_sct));
             *lmts[(*lmt_nbr)-1] = base;
             mincell = -1;
          }
