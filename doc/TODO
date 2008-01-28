@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.990 2008-01-16 22:27:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.991 2008-01-28 12:02:24 hmb Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -853,7 +853,7 @@ ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
 ncap79. make abs() synonym for fabs() and pow() and ** synonyms for ^
-ncap80. 
+ncap80. ncap2+ openmp + netcdf4 - script only works with threads>1 if there are no atts in input file
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************
