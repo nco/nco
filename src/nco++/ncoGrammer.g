@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.127 2008-01-06 13:09:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.128 2008-02-04 13:37:05 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -496,18 +496,19 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier
 
 
 
-// Return a quoted dim, var or att (var_nm@att_nm)
+// Return a quoted var or att (var_nm@att_nm)
 VAR_ATT_QT :( '\''!)
-            (
-             (
                ((LPHDGT|'-'|'.')+      {$setType(VAR_ID);})
                ( '@' (LPHDGT|'-'|'.')+ {$setType(ATT_ID);})?
-               ('\''!)
-              )|
-              ( ('$'! (LPHDGT|'-'|'.')+ {$setType(DIM_ID);})
-               ('\''!) ( ".size"! { $setType(DIM_ID_SIZE);})?
-              )? 
-             ) 
+            ('\''!)
+   ;
+
+
+//Return a quoted dim
+DIM_QT: ( '\''!)
+           ('$'! (LPHDGT|'-'|'.')+ {$setType(DIM_ID);})
+        ('\''!) 
+           ( ".size"! { $setType(DIM_ID_SIZE);})?
    ;
 
 DIM_VAL options { paraphrase="dimension identifier"; } 
