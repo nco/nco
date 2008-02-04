@@ -99,7 +99,7 @@ public:
 //Utility Functions /****************************************/
 class utl_cls: public vtl_cls {
 private:
-   enum {SET_MISS,CH_MISS,RAM_WRITE,RAM_DELETE};
+   enum {SET_MISS,CH_MISS,DEL_MISS,RAM_WRITE,RAM_DELETE};
    bool _flg_dbg;
 public:
   utl_cls(bool flg_dbg);
@@ -178,6 +178,20 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
+
+
+
+//Mask Function /****************************************/
+class msk_cls: public vtl_cls {
+private:
+   enum {PMASK };
+   bool _flg_dbg;
+public:
+  msk_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+
+};
+
 
 
 
