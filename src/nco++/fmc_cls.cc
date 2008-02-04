@@ -1026,3 +1026,110 @@
              
             
 	     
+
+
+
+
+//Mask Function /******************************************/
+
+  msk_cls::msk_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("mask_clip",this,(int)PMASK));
+
+
+    }
+  }
+
+  var_sct *msk_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("msk_cls::fnd");
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_fargs;
+    prs_cls* prs_arg=walker.prs_arg;
+    var_sct *var=NULL_CEWI;
+    var_sct *var_msk=NULL_CEWI;
+    var_sct *var_tmp=NULL_CEWI;
+    std::string styp;
+    RefAST tr;
+    vtl_typ lcl_typ;
+
+    std::string sfnm =fmc_obj.fnm(); //method name
+
+    styp=(expr ? "method":"function");
+
+    //n.b fargs is an imaginary node -and is ALWAYS present
+    nbr_fargs=fargs->getNumberOfChildren();
+   
+    if(expr)
+      nbr_fargs++;
+
+   
+    if(nbr_fargs >2) 
+      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
+  
+    if(nbr_fargs<2)
+      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
+    
+     
+
+    if(expr){ 
+      var=walker.out(expr);
+      var_msk=walker.out(fargs->getFirstChild());
+    }else{
+      var=walker.out(fargs->getFirstChild());   
+      var_msk=walker.out(fargs->getFirstChild()->getNextSibling());
+
+    }
+
+
+    // Deal with initial scan
+    if(prs_arg->ntl_scn) {
+      var_msk=nco_var_free(var_msk);
+      return var;
+    }
+
+    if( var->sz%var_msk->sz !=0 ) {
+      std::ostringstream os;
+      os<<"Cannot do mask cliping as size of var "<< var->nm <<" size(" <<var->sz<<") is not divisible by mask var "<<var_msk->nm <<" size("<< var_msk->sz <<")"; 
+      err_prn(fnc_nm,os.str()); 
+    }
+
+
+    char *cp_in;
+    char *cp_out;  
+    short *sp;
+    long idx;
+    long jdx;
+    long cnt;
+    long msk_sz=var_msk->sz;
+    size_t slb_sz;
+
+    var_msk=nco_var_cnf_typ(NC_SHORT,var_msk);    
+    slb_sz=nco_typ_lng(var->type);    
+    cnt=var->sz/var_msk->sz;
+
+
+    (void)cast_void_nctype(NC_SHORT,&var_msk->val);
+    //Dereference 
+    sp=var_msk->val.sp; 
+
+    for(idx=0; idx <cnt ; idx++){
+      cp_out=(char*)(var->val.vp)+(size_t)(idx*msk_sz*slb_sz);
+      cp_in=cp_out;
+
+      for(jdx=0 ;jdx<msk_sz; jdx++){
+        if(sp[jdx]){ 
+	 (void)memcpy(cp_out,cp_in,slb_sz);
+         cp_out+=slb_sz; 
+        }
+        cp_in+=slb_sz;
+      }   
+    } 
+
+
+    (void)cast_nctype_void(NC_SHORT,&var_msk->val);
+    var_msk=nco_var_free(var_msk);
+    
+
+    return var;
+  } 
