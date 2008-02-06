@@ -1,3 +1,6 @@
+2008-02-06  Henry Butowsky  <henryb@ntlworld.com>
+	* added functions "mask" & "mask_clip"
+	
 2007-12-22  Henry Butowsky  <henryb@ntlworld.com>
 	* Work arounds related NCO_NETCDF4_AND_FILL_VALUE
 	  changes to ncap_var_write_omp(). Added NCAP4_FILL 
