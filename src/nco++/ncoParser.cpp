@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoParser.cpp"$ */
+/* $ANTLR 2.7.6 (20070910): "ncoGrammer.g" -> "ncoParser.cpp"$ */
 #include "ncoParser.hpp"
 #include <antlr/NoViableAltException.hpp>
 #include <antlr/SemanticException.hpp>
@@ -1948,7 +1948,7 @@ void ncoParser::imaginary_token() {
 
 void ncoParser::initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory )
 {
-	factory.setMaxNodeType(99);
+	factory.setMaxNodeType(100);
 }
 const char* ncoParser::tokenNames[] = {
 	"<0>",
@@ -2049,6 +2049,7 @@ const char* ncoParser::tokenNames[] = {
 	"NUMBER",
 	"variable or attribute identifier",
 	"VAR_ATT_QT",
+	"DIM_QT",
 	"dimension identifier",
 	"LMT_DMN",
 	0
