@@ -1035,7 +1035,8 @@
   msk_cls::msk_cls(bool flg_dbg){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
-      fmc_vtr.push_back( fmc_cls("mask_clip",this,(int)PMASK));
+      fmc_vtr.push_back( fmc_cls("mask",this,(int)PMASK));
+      fmc_vtr.push_back( fmc_cls("mask_clip",this,(int)PMASK_CLIP));
 
 
     }
@@ -1084,52 +1085,133 @@
 
     // Deal with initial scan
     if(prs_arg->ntl_scn) {
-      var_msk=nco_var_free(var_msk);
-      return var;
-    }
 
-    if( var->sz%var_msk->sz !=0 ) {
+      switch(fdx) {
+        case PMASK:
+	     var_msk=nco_var_cnf_typ(var->type,var_msk);     
+             var=nco_var_free(var);
+             return var_msk; 
+             break;
+
+        case PMASK_CLIP:
+             var_msk=nco_var_free(var_msk);
+             return var;
+             break;
+      }// end switch
+    } // end if
+
+    if( fdx==PMASK_CLIP && var->sz%var_msk->sz !=0 ) {
       std::ostringstream os;
-      os<<"Cannot do mask cliping as size of var "<< var->nm <<" size(" <<var->sz<<") is not divisible by mask var "<<var_msk->nm <<" size("<< var_msk->sz <<")"; 
+      os<< styp+" \""+sfnm+"\" cannot clip var  ";
+      os<< var->nm <<" as size(" <<var->sz<<") is not divisible by mask var "<<var_msk->nm <<" size("<< var_msk->sz <<")"; 
       err_prn(fnc_nm,os.str()); 
     }
 
+    switch(fdx) {
+    
+      case PMASK_CLIP: {
+       char *cp_in;
+       char *cp_out;  
+       short *sp;
+       long idx;
+       long jdx;
+       long cnt;
+       long msk_sz=var_msk->sz;
+       size_t slb_sz;
 
-    char *cp_in;
-    char *cp_out;  
-    short *sp;
-    long idx;
-    long jdx;
-    long cnt;
-    long msk_sz=var_msk->sz;
-    size_t slb_sz;
-
-    var_msk=nco_var_cnf_typ(NC_SHORT,var_msk);    
-    slb_sz=nco_typ_lng(var->type);    
-    cnt=var->sz/var_msk->sz;
-
-
-    (void)cast_void_nctype(NC_SHORT,&var_msk->val);
-    //Dereference 
-    sp=var_msk->val.sp; 
-
-    for(idx=0; idx <cnt ; idx++){
-      cp_out=(char*)(var->val.vp)+(size_t)(idx*msk_sz*slb_sz);
-      cp_in=cp_out;
-
-      for(jdx=0 ;jdx<msk_sz; jdx++){
-        if(sp[jdx]){ 
-	 (void)memcpy(cp_out,cp_in,slb_sz);
-         cp_out+=slb_sz; 
-        }
-        cp_in+=slb_sz;
-      }   
-    } 
+       var_msk=nco_var_cnf_typ(NC_SHORT,var_msk);    
+       slb_sz=nco_typ_lng(var->type);    
+       cnt=var->sz/var_msk->sz;
 
 
-    (void)cast_nctype_void(NC_SHORT,&var_msk->val);
-    var_msk=nco_var_free(var_msk);
+       (void)cast_void_nctype(NC_SHORT,&var_msk->val);
+       //Dereference 
+       sp=var_msk->val.sp; 
+
+       for(idx=0; idx <cnt ; idx++){
+	 cp_out=(char*)(var->val.vp)+(size_t)(idx*msk_sz*slb_sz);
+	 cp_in=cp_out;
+
+	 for(jdx=0 ;jdx<msk_sz; jdx++){
+	   if(sp[jdx]){ 
+	     (void)memcpy(cp_out,cp_in,slb_sz);
+	     cp_out+=slb_sz; 
+	   }
+	   cp_in+=slb_sz;
+	 }   
+       } 
+
+
+       (void)cast_nctype_void(NC_SHORT,&var_msk->val);
+       var_msk=nco_var_free(var_msk);
     
 
-    return var;
-  } 
+       return var;
+      } 
+      break; 
+
+    case PMASK: {
+      //convert to ints
+      char *cp_in;
+      char *cp_out;
+      long idx;
+      long *lp;
+      long var_sz;
+      long msk_sz;
+      size_t slb_sz;
+      var_sct *var_out;
+
+      var_msk=nco_var_cnf_typ(NC_INT,var_msk);     
+      
+      var_out=nco_var_dpl(var_msk);
+      var_out=nco_var_cnf_typ(var->type,var_out);
+
+      // De-Reference 
+      (void)cast_void_nctype(NC_INT,&var_msk->val);
+      lp=var_msk->val.lp;
+
+      msk_sz=var_msk->sz;
+      var_sz=var->sz;
+      slb_sz=nco_typ_lng(var->type);
+
+      cp_out=(char*)(var_out->val.vp);
+      
+      for(idx=0 ; idx<msk_sz ;idx++){
+        // index not out of bounds bomb out
+
+        if(prs_arg->FORTRAN_IDX_CNV) {
+
+          if( lp[idx]<1L || lp[idx] > var_sz){
+            std::ostringstream os;
+            os<< styp+" \""+sfnm+"\" reporting that fortran index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 1"<<"-"<<var_sz; 
+            err_prn(fnc_nm,os.str());         
+          }
+	  --lp[idx];
+        }else{
+         
+          if( lp[idx]<0L || lp[idx] >= var_sz){
+            std::ostringstream os;
+            os<< styp+" \""+sfnm+"\" reporting that index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 0"<<"-"<<var_sz-1; 
+            err_prn(fnc_nm,os.str());         
+
+          }
+        }
+
+        cp_in=(char*)(var->val.vp)+ (size_t)lp[idx]*slb_sz;
+	(void)memcpy(cp_out,cp_in ,slb_sz);            
+        cp_out+=slb_sz;
+      } // end for
+
+      (void)cast_nctype_void(NC_INT,&var_msk->val);
+      var_msk=nco_var_free(var_msk);
+      var=nco_var_free(var);
+
+      return var_out; 
+    } 
+    break;
+
+  } // end switch
+
+
+
+} // end function
