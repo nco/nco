@@ -184,7 +184,7 @@ public:
 //Mask Function /****************************************/
 class msk_cls: public vtl_cls {
 private:
-   enum {PMASK };
+   enum {PMASK, PMASK_CLIP };
    bool _flg_dbg;
 public:
   msk_cls(bool flg_dbg);
