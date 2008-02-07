@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.128 2008-02-04 13:37:05 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.129 2008-02-07 14:57:12 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -62,6 +62,7 @@ tokens {
     FOR2;    
     NORET;
     ATAN2;  //Used indirectly 
+    WHERE_ASSIGN;
 }
 
 program:
@@ -91,6 +92,11 @@ statement:
 
         // if statement
         | IF^ LPAREN! expr RPAREN! statement 
+         ( //standard if-else ambiguity
+         options {warnWhenFollowAmbig = false;} 
+        : ELSE! statement )?
+        // if statement
+        | WHERE^ LPAREN! expr RPAREN! statement 
          ( //standard if-else ambiguity
          options {warnWhenFollowAmbig = false;} 
         : ELSE! statement )?
@@ -277,6 +283,7 @@ tokens {
 // token keywords
     IF ="if";
     ELSE="else";
+    WHERE="where";
     DEFDIM="defdim";
     SHIFTL="<<";
     SHIFTR=">>";
@@ -857,7 +864,7 @@ public:
     for(idx=0 ; idx < nbr_stmt; idx++){
       ntyp=ntr->getType();
       // we have hit an IF or a basic block
-      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR) {
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR ||ntyp==WHERE) {
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
@@ -981,6 +988,43 @@ static std::vector<std::string> lpp_vtr;
       
     }// end action
 
+    | #(WHERE var=out stmt3:.) { 
+      // convert mask to short 
+      RefAST tr; 
+      var=nco_var_cnf_typ(NC_SHORT,var);
+
+      //deal with block
+      if(stmt3->getType()==BLOCK){
+        tr=stmt3->getFirstChild();
+        while(tr) {
+          (void)where_assign(tr,var);       
+          tr=tr->getNextSibling();
+        } 
+      } else 
+        where_assign(stmt3,var);
+    
+      // deal with else-where
+      if(tr=stmt3->getNextSibling()) {
+
+        //invert mask
+        var=ncap_var_var_stc(var,NULL_CEWI,LNOT); 
+
+        if(tr->getType()==BLOCK){
+          tr=tr->getFirstChild();
+          while(tr) {
+           (void)where_assign(tr,var);       
+           tr=tr->getNextSibling();
+          } 
+        } else 
+        where_assign(tr,var);
+
+      }
+
+      if(var != (var_sct*)NULL)
+         var=nco_var_free(var);
+      iret=WHERE;      
+    }
+  
     | #(WHILE lgcl:. stmt1:.){
 
       bool br;
@@ -1880,6 +1924,10 @@ out returns [var_sct *var]
                var=assign(tr,bram);
                
             }  
+     | #(WHERE_ASSIGN wasn:. ) {
+
+
+     }
 
     //ternary Operator
      |   #(QUESTION var1=out qus:.) {
@@ -2243,6 +2291,102 @@ var=NULL_CEWI;
 
      }
 
+;
+
+//where calculate 
+where_assign [var_sct *var_msk] returns [bool bret]
+{
+const std::string fnc_nm("where_assign");
+var_sct *var_rhs;
+
+}
+  :#(EXPR #(ASSIGN vid:VAR_ID var_rhs=out)) {
+    
+   bool bfr=false;
+   bool bsz_rhs=false;
+   nco_bool DO_CONFORM;
+   std::string var_nm=vid->getText();
+   var_sct *var_lhs;
+   var_sct *var_tmp=NULL_CEWI;
+
+   bret=false;
+
+   var_lhs=prs_arg->ncap_var_init(var_nm,true);
+   if(var_lhs==NULL_CEWI) 
+     nco_exit(EXIT_FAILURE);
+            
+   var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);         
+   if(var_rhs->sz >1L && var_rhs->sz != var_lhs->sz) {
+     std::ostringstream os;
+     os<<"assign in where: size of expression on rhs doesn't match size of var on lhs";  
+     err_prn(fnc_nm,os.str());         
+   }
+ 
+   bsz_rhs = (var_rhs->sz==1 ? true:false);
+             
+  
+   // Make mask conform
+    var_tmp=nco_var_cnf_dmn(var_lhs,var_msk,var_tmp,True,&DO_CONFORM);
+    if(var_msk != var_tmp){
+      //var_msk=nco_var_free(var_msk);
+      bfr=true;
+      var_msk=var_tmp;
+    }
+
+    if(DO_CONFORM==False) {
+      std::ostringstream os;
+      os<<"Cannot make variable:"<<var_lhs->nm <<" and where mask variable "<<var_msk->nm <<" conform. ";
+      err_prn(fnc_nm,os.str()); 
+    }
+
+
+    char *cp_in;
+    char *cp_out;
+    short *sp;
+    long idx;
+    long jdx;
+    long sz;
+    size_t slb_sz;
+
+
+    sz=var_lhs->sz;
+    slb_sz=nco_typ_lng(var_lhs->type);
+
+    (void)cast_void_nctype(NC_SHORT,&var_msk->val);
+    //Dereference 
+    sp=var_msk->val.sp; 
+
+    cp_out=(char*)(var_lhs->val.vp);
+    cp_in=(char*)(var_rhs->val.vp);
+
+     
+    if(var_rhs->sz==1L){ 
+
+     for(idx=0; idx<sz; idx++) {
+       if(sp[idx])
+        (void)memcpy(cp_out,cp_in,slb_sz);       
+       cp_out+=slb_sz;
+     } 
+    } else {  
+     for(idx=0; idx<sz; idx++) {
+       if(sp[idx])
+        (void)memcpy(cp_out,cp_in,slb_sz);      
+       cp_out+=slb_sz;
+       cp_in+=slb_sz;
+     }
+   }
+   (void)cast_nctype_void(NC_SHORT,&var_msk->val); 
+
+   // free "local" copy of var_msk if necessary
+   if(bfr)
+      var_msk=nco_var_free(var_msk);           
+
+   var_rhs=nco_var_free(var_rhs);
+
+   prs_arg->ncap_var_write(var_lhs,false);
+   bret=true;
+
+  }
 ;
 
 
