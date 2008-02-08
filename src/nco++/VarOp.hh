@@ -280,6 +280,14 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 	}
         break;
 
+    case MISS2ZERO:
+	if(bmss) 
+	  for(idx=0 ; idx<sz ; idx++) 
+            if( tp1[idx]==tmss) tp1[idx]=0;
+
+        break;
+
+
 
 
       default: break;	
