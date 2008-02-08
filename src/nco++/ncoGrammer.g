@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.129 2008-02-07 14:57:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.130 2008-02-08 15:16:43 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -63,6 +63,7 @@ tokens {
     NORET;
     ATAN2;  //Used indirectly 
     WHERE_ASSIGN;
+    MISS2ZERO; //used only in VarOp -sets all missing values to zero
 }
 
 program:
@@ -992,6 +993,13 @@ static std::vector<std::string> lpp_vtr;
       // convert mask to short 
       RefAST tr; 
       var=nco_var_cnf_typ(NC_SHORT,var);
+
+      //change missing values to zero
+      if(var->has_mss_val){
+       var=ncap_var_var_stc(var,NULL_CEWI,MISS2ZERO);
+       var->has_mss_val=False;
+       var->mss_val.vp=(void*)nco_free(var->mss_val.vp);
+      }         
 
       //deal with block
       if(stmt3->getType()==BLOCK){
@@ -2303,7 +2311,6 @@ var_sct *var_rhs;
   :#(EXPR #(ASSIGN vid:VAR_ID var_rhs=out)) {
     
    bool bfr=false;
-   bool bsz_rhs=false;
    nco_bool DO_CONFORM;
    std::string var_nm=vid->getText();
    var_sct *var_lhs;
@@ -2322,8 +2329,6 @@ var_sct *var_rhs;
      err_prn(fnc_nm,os.str());         
    }
  
-   bsz_rhs = (var_rhs->sz==1 ? true:false);
-             
   
    // Make mask conform
     var_tmp=nco_var_cnf_dmn(var_lhs,var_msk,var_tmp,True,&DO_CONFORM);
@@ -2347,6 +2352,8 @@ var_sct *var_rhs;
     long jdx;
     long sz;
     size_t slb_sz;
+    bool b_vp=false;
+    char *mss_cp;
 
 
     sz=var_lhs->sz;
@@ -2356,25 +2363,56 @@ var_sct *var_rhs;
     //Dereference 
     sp=var_msk->val.sp; 
 
-    cp_out=(char*)(var_lhs->val.vp);
-    cp_in=(char*)(var_rhs->val.vp);
+    cp_out=( char*)(var_lhs->val.vp);
+    cp_in=( char*)(var_rhs->val.vp);
 
-     
-    if(var_rhs->sz==1L){ 
+    if(var_lhs->has_mss_val) {
+       mss_cp=( char*)var_lhs->mss_val.vp;
+       b_vp=true;
+    } else if(var_rhs->has_mss_val){
+       mss_cp=( char*)var_rhs->mss_val.vp;
+       b_vp=true;                 
+    }        
+    // missing values    
+    if(b_vp) {
+      if(var_rhs->sz==1L){ 
 
-     for(idx=0; idx<sz; idx++) {
-       if(sp[idx])
-        (void)memcpy(cp_out,cp_in,slb_sz);       
-       cp_out+=slb_sz;
-     } 
-    } else {  
-     for(idx=0; idx<sz; idx++) {
-       if(sp[idx])
-        (void)memcpy(cp_out,cp_in,slb_sz);      
-       cp_out+=slb_sz;
-       cp_in+=slb_sz;
-     }
-   }
+        for(idx=0; idx<sz; idx++) {
+         if(sp[idx] && memcmp(cp_out,mss_cp,slb_sz))
+          (void)memcpy(cp_out,cp_in,slb_sz);       
+         cp_out+=slb_sz;
+        } 
+      } else {  
+        for(idx=0; idx<sz; idx++) {
+          if(sp[idx]&& memcmp(cp_out,mss_cp,slb_sz) 
+                    && memcmp(cp_in,mss_cp,slb_sz))
+            (void)memcpy(cp_out,cp_in,slb_sz);      
+          cp_out+=slb_sz;
+         cp_in+=slb_sz;
+        }
+      } 
+     // no missing values                
+     } else { 
+
+      if(var_rhs->sz==1L){ 
+
+        for(idx=0; idx<sz; idx++) {
+         if(sp[ idx])
+          (void)memcpy(cp_out,cp_in,slb_sz);       
+        cp_out+=slb_sz;
+        } 
+      } else {  
+        for(idx=0; idx<sz; idx++) {
+          if(sp[idx])
+            (void)memcpy(cp_out,cp_in,slb_sz);      
+          cp_out+=slb_sz;
+         cp_in+=slb_sz;
+        }
+      } 
+    }             
+
+
+
    (void)cast_nctype_void(NC_SHORT,&var_msk->val); 
 
    // free "local" copy of var_msk if necessary
