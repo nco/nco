@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.63 2008-02-06 17:42:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.64 2008-02-10 19:31:49 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -40,7 +40,7 @@
 #line 41 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 535 "ncoGrammer.g"
+#line 543 "ncoGrammer.g"
 
 
 private:
@@ -366,7 +366,7 @@ public:
     for(idx=0 ; idx < nbr_stmt; idx++){
       ntyp=ntr->getType();
       // we have hit an IF or a basic block
-      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR) {
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR ||ntyp==WHERE) {
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
@@ -420,6 +420,9 @@ public:
 	);
 	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: bool  where_assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
+		var_sct *var_msk
+	);
 	public: var_sct * var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 public:
 	ANTLR_USE_NAMESPACE(antlr)RefAST getAST()
@@ -433,10 +436,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 101;
+	static const int NUM_TOKENS = 104;
 #else
 	enum {
-		NUM_TOKENS = 101
+		NUM_TOKENS = 104
 	};
 #endif
 	
