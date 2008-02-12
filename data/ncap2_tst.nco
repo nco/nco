@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.6 2007-12-07 15:00:30 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.7 2008-02-12 12:35:37 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -440,6 +440,56 @@ nbr_err_ttl=0;
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
 }
+
+// Check "where" structure 
+{
+  // start simple 
+  j1=time;
+  where(time > 6)
+    j1=10;
+  else
+    j1=5;  
+
+  j1_ttl=j1.total();
+
+  if( fabs(j1_ttl-70.0)>0.01) {
+    print("ERROR: j1: simple where test\n");
+    nbr_err++;
+  }
+  
+  j2=three_dmn_var_int;
+  j3[$time,lat,lon]=1;
+  j4=three_dmn_var_dbl;
+
+  where(three_dmn_var_dbl >40) {
+    j2=j3;
+    j4=10.0;
+  } else {
+    j3=-1.0;
+    j4=j3;
+  } 
+ 
+  j2_ttl=j3.total();
+  j4_ttl=j4.total();
+  
+  // nb j2 type integer
+  if( j2_ttl+6L !=0) {
+    print("ERROR: j2: where test with blocks\n");
+    nbr_err++;
+  }
+  
+
+  if( fabs(j4_ttl-338d)>0.01) {
+    print("ERROR: j4: where test with blocks\n");
+    nbr_err++;
+  }
+
+  print("RESULTS block j: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+}
+
 
 // Results summany
 print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
