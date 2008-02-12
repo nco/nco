@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.130 2008-02-08 15:16:43 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.131 2008-02-12 11:45:44 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2315,6 +2315,7 @@ var_sct *var_rhs;
    std::string var_nm=vid->getText();
    var_sct *var_lhs;
    var_sct *var_tmp=NULL_CEWI;
+   NcapVar *Nvar;
 
    bret=false;
 
@@ -2418,7 +2419,13 @@ var_sct *var_rhs;
    // free "local" copy of var_msk if necessary
    if(bfr)
       var_msk=nco_var_free(var_msk);           
+   
 
+   // Do attribute propagation if LHS is new
+   Nvar=prs_arg->var_vtr.find(var_nm);
+   if(!Nvar)
+      (void)ncap_att_cpy(var_nm,std::string(var_rhs->nm),prs_arg);
+              
    var_rhs=nco_var_free(var_rhs);
 
    prs_arg->ncap_var_write(var_lhs,false);
