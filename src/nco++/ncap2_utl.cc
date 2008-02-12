@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.99 2008-01-24 11:38:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.100 2008-02-12 11:47:53 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -459,16 +459,18 @@ ncap_att_gnrl
   }// end rcd
   
   sz=var_vtr.size();
-  for(idx=0; idx < sz ; idx++){
-    if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
-    if( s_src == var_vtr[idx]->getVar() ){
-      // Create string for new attribute
-      s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
-      var_att=nco_var_dpl(var_vtr[idx]->var);
-      nco_free(var_att->nm);
-      var_att->nm=strdup(s_fll.c_str());
-      att_vtr.push_back(var_att);  
-    } 
+  if(s_dst != s_src){
+    for(idx=0; idx < sz ; idx++){
+      if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
+      if( s_src == var_vtr[idx]->getVar() ){
+        // Create string for new attribute
+        s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
+        var_att=nco_var_dpl(var_vtr[idx]->var);
+        nco_free(var_att->nm);
+        var_att->nm=strdup(s_fll.c_str());
+        att_vtr.push_back(var_att);  
+      } 
+    }
   }
   // add new att to list;
   for(idx=0 ; idx < att_vtr.size() ; idx++){
