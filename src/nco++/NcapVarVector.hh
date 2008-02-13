@@ -15,6 +15,7 @@ public:
   NcapVar* find(const char*nm);
   NcapVar* find(std::string s_fnm);
   long     findi(std::string s_fnm);
+  long     find_lwr(std::string s_fnm);
   void    push_ow(NcapVar *Nvar);
   void    push(NcapVar *Nvar);
   void    erase(std::string s_fnm);
