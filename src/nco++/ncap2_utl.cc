@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.100 2008-02-12 11:47:53 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.101 2008-02-13 11:29:40 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -418,11 +418,13 @@ ncap_att_gnrl
  prs_cls  *prs_arg
  ){
   int idx;
+  int srt_idx;
   int sz;
   int rcd;
   int var_id; 
   int nbr_att;
-  char att_nm[NC_MAX_NAME];
+  char att_nm[NC_MAX_NAME]; 
+  const char *tmp_att_nm;
   
   var_sct *var_att;
   
@@ -432,7 +434,7 @@ ncap_att_gnrl
 
   // De-reference 
   NcapVarVector &var_vtr=prs_arg->var_vtr;
-  NcapVector <var_sct*> att_vtr; //hold new attributtes.
+  NcapVarVector att_vtr; //hold new attributtes.
   
 
   // get var_id
@@ -449,53 +451,49 @@ ncap_att_gnrl
       var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
       // now add to list( change the name!!)
       if(var_att){ 
-	std::string s_att(att_nm);
-	s_fll=s_dst+"@"+ s_att;
-	nco_free(var_att->nm);
-	var_att->nm=strdup(s_fll.c_str());
-	att_vtr.push_back(var_att); 
+	s_fll=s_dst+"@"+std::string(att_nm);
+        Nvar=new NcapVar(var_att,s_fll ); 
+	att_vtr.push_back(Nvar); 
       } 
     } // end for
   }// end rcd
   
   sz=var_vtr.size();
-  if(s_dst != s_src){
-    for(idx=0; idx < sz ; idx++){
+  if(s_dst != s_src && (srt_idx=var_vtr.find_lwr(s_src+"@"))!=-1) {  
+    
+    for(idx=srt_idx ;idx<sz; idx++) { 
+      if (s_src!=var_vtr[idx]->getVar()) break;
       if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
-      if( s_src == var_vtr[idx]->getVar() ){
+        tmp_att_nm=var_vtr[idx]->getAtt().c_str();
+        //skip missing values
+        if(!strcmp(tmp_att_nm,nco_mss_val_sng_get())) continue; 
         // Create string for new attribute
         s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
         var_att=nco_var_dpl(var_vtr[idx]->var);
-        nco_free(var_att->nm);
-        var_att->nm=strdup(s_fll.c_str());
-        att_vtr.push_back(var_att);  
-      } 
-    }
-  }
-  // add new att to list;
-  for(idx=0 ; idx < att_vtr.size() ; idx++){
-    std::string s_out(att_vtr[idx]->nm);
-    // skip missing values
-    if( s_out.find(nco_mss_val_sng_get()) != std::string::npos){
-      (void)nco_var_free(att_vtr[idx]);
-      continue;
+        Nvar=new NcapVar(var_att,s_fll ); 
+        att_vtr.push_back(Nvar);  
+        
     } 
-    
-      Nvar=new NcapVar(att_vtr[idx],s_out ); 
-      
+  }
+
+
+  sz=att_vtr.size();
+  // add new att to list;
+  for(idx=0 ; idx < sz ; idx++){
 
 #ifdef _OPENMP
     if( omp_in_parallel())
-      prs_arg->thr_vtr.push_back(Nvar);
+      prs_arg->thr_vtr.push_back(att_vtr[idx]);
     else
-      var_vtr.push_ow(Nvar);         
+      var_vtr.push_ow(att_vtr[idx]);         
 #else
-      var_vtr.push_ow(Nvar);         
+      var_vtr.push_ow(att_vtr[idx]);         
 #endif
 
   }
-  
-  return att_vtr.size();
+  att_vtr.empty();
+
+  return sz;
   
 } /* end ncap_att_gnrl() */
 
@@ -507,8 +505,8 @@ ncap_att_cpy
 {
   
   int nbr_att=0;
-  
-  if(prs_arg->ATT_PROPAGATE && s_dst != s_src )
+  //Don't propagate if s_src is a tree-parser generated var
+  if(prs_arg->ATT_PROPAGATE && s_dst != s_src && s_src[0]!='~' )
     nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
   
   if(prs_arg->ATT_INHERIT)
