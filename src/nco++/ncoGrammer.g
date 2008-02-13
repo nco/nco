@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.131 2008-02-12 11:45:44 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.132 2008-02-13 15:01:57 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -211,8 +211,13 @@ add_expr:
 		 mexpr ( (PLUS^ | MINUS^ ) mexpr)* 
 	;
 
+frel_expr:
+        add_expr (( FLTHAN^ | FGTHAN^ | FGEQ^ | FLEQ^ ) add_expr)*
+    ;
+
+
 rel_expr:
-        add_expr (( LTHAN^ | GTHAN^ | GEQ^ | LEQ^ ) add_expr)*
+        frel_expr (( LTHAN^ | GTHAN^ | GEQ^ | LEQ^ ) frel_expr)*
     ;
 
 eq_expr:
@@ -387,6 +392,14 @@ GTHAN options { paraphrase=">"; } :  '>' ;
 LEQ options { paraphrase="<="; }:  "<=" ;
 
 GEQ options { paraphrase=">=";} :  ">=" ;
+
+FLTHAN options { paraphrase="<<";} :  "<<" ;
+
+FGTHAN options { paraphrase=">>"; } :  ">>" ;
+
+FLEQ options { paraphrase="<<="; }:  "<<=" ;
+
+FGEQ options { paraphrase=">>=";} :  ">>=" ;
 
 LAND options { paraphrase="&&";}: "&&" ;
 
@@ -1876,6 +1889,16 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,var2, EQ );}
     | #(NEQ  var1=out var2=out)   
             { var=ncap_var_var_op(var1,var2, NEQ );}
+
+    // Fortran style Comparison Operators
+    | #(FLTHAN  var1=out var2=out) 
+            { var=ncap_var_var_op(var1,var2, FLTHAN );}
+    | #(FGTHAN  var1=out var2=out) 
+            { var=ncap_var_var_op(var1,var2, FGTHAN );}
+    | #(FGEQ  var1=out var2=out)   
+            { var=ncap_var_var_op(var1,var2, FGEQ );}
+    | #(FLEQ  var1=out var2=out)   
+            { var=ncap_var_var_op(var1,var2, FLEQ );}
 
     // Assign Operators 
     | #(PLUS_ASSIGN pls_asn:. var2=out) {
