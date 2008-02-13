@@ -198,6 +198,64 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
+
+      case FLTHAN:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++) 
+           if(tp1[idx] >= tp2[idx])
+             tp1[idx]=tp2[idx];
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if(tp1[idx] >= tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
+	      tp1[idx]=tp2[idx];
+	  }
+	}  
+        break;
+
+      case FGTHAN:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++) 
+           if(tp1[idx] <= tp2[idx])
+             tp1[idx]=tp2[idx];
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if(tp1[idx] <= tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss)
+	      tp1[idx]=tp2[idx];
+	  }
+	}  
+        break;
+
+      case FGEQ:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++)  
+           if(tp1[idx] < tp2[idx])
+	     tp1[idx]=tp2[idx];
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if( tp1[idx] < tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
+	      tp1[idx]=tp2[idx];
+	  }
+	}  
+        break;
+
+      case FLEQ:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++) 
+            if(tp1[idx]> tp2[idx])
+	      tp1[idx]=tp2[idx];
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if(tp1[idx]> tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
+	      tp1[idx]=tp2[idx];
+	  }
+	}  
+        break;
+
+
+
+
+
+
     } // end switch
     
     return var1;
