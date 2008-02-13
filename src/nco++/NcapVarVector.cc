@@ -55,6 +55,39 @@ long NcapVarVector::findi(std::string s_fnm){
 
 }
 
+// used in attribute propagation
+long NcapVarVector::find_lwr(std::string s_fnm){
+    bool bmth;
+    long lret;
+    std::string s_fl;
+    NcapVar* Ntmp;
+    std::vector<NcapVar*>::iterator we;
+
+    if(size()==0)
+      return -1;
+
+    Ntmp=new NcapVar( (var_sct*)NULL ,s_fnm);
+    
+    we=std::lower_bound(begin(),end(),Ntmp,less_mag());
+   
+     
+    // Return a partial match
+    lret=-1; 
+    if( we!=end()){
+      s_fl=(*we)->getFll();
+      if(s_fl.find(s_fnm,0) !=std::string::npos){ 
+       lret=0;
+       while( we-- != begin())  ++lret;  
+      }
+    }
+    
+    // nb var_in also freed here  
+    delete Ntmp;     
+    
+    return lret;
+
+}
+
 
 
 void NcapVarVector::push_ow(NcapVar *Nvar){
