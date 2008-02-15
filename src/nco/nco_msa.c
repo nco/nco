@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.45 2008-01-06 13:09:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.46 2008-02-15 12:36:07 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -39,9 +39,8 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
   
   /* Here we deal with multiple hyperslabs */
   if(nbr_slb > 1){
-    
     int slb_idx;
-
+    int dbg_cnt=0;
     long var_sz=1L;
     long lcnt;
     long *cp_sz;
@@ -87,9 +86,10 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     cp_fst=0L;
 
     /* Deal first with wrapped dimensions
-       True wrapped dimensions have nbr_slb = 2, are "continuous", and do not overlap */
+       True if wrapped dims or slabs DONT Overlap */
     if(lmt_lst[dpt_crr]->WRP){
-      for(slb_idx=0;slb_idx<2;slb_idx++){
+
+      for(slb_idx=0;slb_idx<nbr_slb;slb_idx++){
 	cp_stp=(char *)vp+cp_fst;
 	slb=cp_wrp[slb_idx];
 	slb_sz=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
@@ -165,7 +165,6 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     
     /* Put size into vara */
     vara->sz=var_sz;
-
     return vp;
   }/* end read_lbl */
   
@@ -365,9 +364,14 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
 {
   int idx;
   long cnt=0;
+  long ovr_lp_cnt;
   int size=lmt_lst->lmt_dmn_nbr;
   long *indices;
   nco_bool *mnm;
+  nco_bool bovr_lp;   /* true if hyperslabs overlap */
+
+  bovr_lp=False;
+  ovr_lp_cnt=0L;
   
   /* Degenerate case */
   if(size == 1){
@@ -383,11 +387,14 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
     indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
   
   while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
+    ovr_lp_cnt=0L;
     for(idx=0;idx<size;idx++){
       if(mnm[idx]){
+        ovr_lp_cnt++;
 	indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
 	if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
       } /* end if */
+      if(ovr_lp_cnt >1L) bovr_lp=True;
     } /* end loop over idx */
     cnt++;
   } /* end while */
@@ -395,6 +402,12 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
 
   indices=(long *)nco_free(indices);
   mnm=(nco_bool *)nco_free(mnm);
+
+  // set flag if hyperslabs DONT overlap
+  if(bovr_lp ==False) 
+    lmt_lst->WRP=True;
+  else
+    lmt_lst->WRP=False;
 
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
