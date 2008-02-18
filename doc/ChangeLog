@@ -1,3 +1,7 @@
+2008-02-18  Charlie Zender  <zender@uci.edu>
+
+	* ncks --msa_usr_rdr causes MSA to leave hyperslabs in user order
+
 2008-02-13  Henry Butowsky  <henryb@ntlworld.com>
 	* First cut of  NCL style operators
 	"<<","<<=", ">>", ">>="
