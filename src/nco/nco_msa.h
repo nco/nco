@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.23 2008-01-06 13:09:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.24 2008-02-18 13:12:26 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -18,6 +18,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, qsort */
 #include <limits.h> /* need LONG_MAX */
 
 /* 3rd party vendors */
@@ -70,6 +71,19 @@ extern "C" {
   nco_msa_wrp_splt /* Split wrapped dimensions */
   (lmt_all_sct *lmt_lst);
   
+
+nco_bool           /* return true if limits overlap */
+nco_msa_ovl
+(lmt_all_sct *lmt_lst);
+
+int             /* Sort comparison operator */ 
+ncap_cmp_lmt_srt( const void *vp1,const void* vp2);
+
+void             /* sort limits by srt values nb only called if lmits NDONT overlap */
+nco_msa_qsort_srt(lmt_all_sct *lmt_lst);
+
+
+
   void *
   nco_msa_rec_clc /* Multi slab algorithm (recursive routine, returns a single slab pointer */
   (int i,             /* current depth, we start at 0 */
