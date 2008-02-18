@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.47 2008-02-18 13:11:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.48 2008-02-18 13:20:06 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -448,7 +448,7 @@ end:  indices=(long*)nco_free(indices);
 }
 
 
-int ncap_cmp_lmt_srt( const void *vp1,const void* vp2){
+int nco_cmp_lmt_srt( const void *vp1,const void* vp2){
   const lmt_sct * const lmt1= *((const lmt_sct**)vp1);
   const lmt_sct * const lmt2= *((const lmt_sct**)vp2);
 
@@ -466,19 +466,10 @@ lmt_sct **lmt;
   sz=lmt_lst->lmt_dmn_nbr;
   lmt=lmt_lst->lmt_dmn;
 
-
-
   if(sz <=1 ) return;
 
+  (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct*),nco_cmp_lmt_srt);
 
-  (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct*),ncap_cmp_lmt_srt);
-
-  /* check qsort */
-  for(idx=0; idx<sz ;idx++)
-    printf("qsort ouptut %ld\n",lmt[idx]->srt);
-  
-
-    printf("/****************/");
 }
 
 
