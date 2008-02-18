@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.196 2008-02-18 13:14:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.197 2008-02-18 14:49:25 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -84,6 +84,7 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
   nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
@@ -116,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.196 2008-02-18 13:14:11 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.196 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.197 2008-02-18 14:49:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.197 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -172,6 +173,7 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
@@ -271,6 +273,7 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s\n",nco_mpi_get());
 	nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
+      if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
