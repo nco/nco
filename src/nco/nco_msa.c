@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.48 2008-02-18 13:20:06 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.49 2008-02-18 15:55:17 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -85,8 +85,8 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     cp_fst=0L;
 
     /* Deal first with wrapped dimensions
-       True if wrapped dims or slabs DONT Overlap */
-    if(lmt_lst[dpt_crr]->WRP){
+       True if wrapped dims or slabs DONT Overlap or user specified order */
+    if(lmt_lst[dpt_crr]->WRP || lmt_lst[dpt_crr]->MSA_USR_RDR){
 
       for(slb_idx=0;slb_idx<nbr_slb;slb_idx++){
 	cp_stp=(char *)vp+cp_fst;
@@ -374,26 +374,36 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
     return;
   } /* end if */
 
-  indices=(long *)nco_malloc(size*sizeof(long));
-  mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
-  
-  /* Initialize indices with srt */
-  for(idx=0;idx<size;idx++) 
-    indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
-  
-  while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
-    for(idx=0;idx<size;idx++){
-      if(mnm[idx]){
-	indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
-	if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
-      } /* end if */
-    } /* end loop over idx */
-    cnt++;
-  } /* end while */
-  lmt_lst->dmn_cnt=cnt;
 
-  indices=(long *)nco_free(indices);
-  mnm=(nco_bool  *)nco_free(mnm);
+
+  /* if slabs remain in usr specified order */
+  if(lmt_lst->MSA_USR_RDR){
+    for(idx=0; idx<size; idx++)
+      cnt+=lmt_lst->lmt_dmn[idx]->cnt;
+    lmt_lst->dmn_cnt=cnt;
+  }else{
+
+    indices=(long *)nco_malloc(size*sizeof(long));
+    mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
+  
+    /* Initialize indices with srt */
+    for(idx=0;idx<size;idx++) 
+      indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
+  
+    while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
+      for(idx=0;idx<size;idx++){
+        if(mnm[idx]){
+	  indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
+	  if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
+        } /* end if */
+      } /* end loop over idx */
+      cnt++;
+    } /* end while */
+    lmt_lst->dmn_cnt=cnt;
+
+    indices=(long *)nco_free(indices);
+    mnm=(nco_bool  *)nco_free(mnm);
+  }/* end else */
 
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
