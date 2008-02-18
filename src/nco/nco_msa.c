@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.46 2008-02-15 12:36:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.47 2008-02-18 13:11:11 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -8,7 +8,7 @@
 
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 
-/* fxm: strings statically allocated with NCO_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
+/* fxm: strings statically allocated with NCR_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
 /* Length should be computed at run time but is a pain */
 #define NCO_MAX_LEN_FMT_SNG 100
 
@@ -40,7 +40,6 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
   /* Here we deal with multiple hyperslabs */
   if(nbr_slb > 1){
     int slb_idx;
-    int dbg_cnt=0;
     long var_sz=1L;
     long lcnt;
     long *cp_sz;
@@ -100,7 +99,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
         } /* end while */
         cp_fst+=slb_sz;      
       } /* end loop over two slabs */
-    }else{
+    } else { 
       /* Multiple hyper-slabs */
       while(nco_msa_clc_idx(True,lmt_lst[dpt_crr],&indices[0],&lmt_ret,&slb_idx)){
 	cp_stp=(char *)vp+cp_fst;
@@ -359,20 +358,16 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
   }
 }
 
+
 void 
 nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
 {
   int idx;
   long cnt=0;
-  long ovr_lp_cnt;
   int size=lmt_lst->lmt_dmn_nbr;
   long *indices;
   nco_bool *mnm;
-  nco_bool bovr_lp;   /* true if hyperslabs overlap */
 
-  bovr_lp=False;
-  ovr_lp_cnt=0L;
-  
   /* Degenerate case */
   if(size == 1){
     lmt_lst->dmn_cnt=lmt_lst->lmt_dmn[0]->cnt;
@@ -387,30 +382,105 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
     indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
   
   while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
-    ovr_lp_cnt=0L;
     for(idx=0;idx<size;idx++){
       if(mnm[idx]){
-        ovr_lp_cnt++;
 	indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
 	if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
       } /* end if */
-      if(ovr_lp_cnt >1L) bovr_lp=True;
     } /* end loop over idx */
     cnt++;
   } /* end while */
   lmt_lst->dmn_cnt=cnt;
 
   indices=(long *)nco_free(indices);
-  mnm=(nco_bool *)nco_free(mnm);
-
-  // set flag if hyperslabs DONT overlap
-  if(bovr_lp ==False) 
-    lmt_lst->WRP=True;
-  else
-    lmt_lst->WRP=False;
+  mnm=(nco_bool  *)nco_free(mnm);
 
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
+
+
+nco_bool  /* return true if limits overlap */
+nco_msa_ovl(lmt_all_sct *lmt_lst)
+{
+  nco_bool bret;
+  
+  long idx;
+  long jdx;
+  long cnt;
+  long sz=lmt_lst->lmt_dmn_nbr;
+  long dmn_sz_org=lmt_lst->dmn_sz_org;
+  long *indices;
+
+  
+  if(sz==1) return False;
+
+  indices=(long *)nco_malloc(sz*sizeof(long));
+  
+  /* Initialize */
+  for(jdx=0; jdx<sz; jdx++)
+    indices[jdx]=-1;
+
+  for(idx=0 ; idx<dmn_sz_org; idx++){
+    cnt=0;
+    for(jdx=0; jdx<sz; jdx++){
+      if(indices[jdx]==-2) continue;
+      if(lmt_lst->lmt_dmn[jdx]->srt == idx)
+         indices[jdx]=1;
+      
+      if(indices[jdx]=1) cnt++;
+      if(cnt >1){
+        bret=True;
+        goto end;
+      } 
+
+      if(lmt_lst->lmt_dmn[jdx]->end == idx)
+        indices[jdx]=-2;
+    } /* end jdx */
+      
+   
+  }/* end idx */
+    
+  bret=False;
+
+end:  indices=(long*)nco_free(indices);
+
+  return bret;
+}
+
+
+int ncap_cmp_lmt_srt( const void *vp1,const void* vp2){
+  const lmt_sct * const lmt1= *((const lmt_sct**)vp1);
+  const lmt_sct * const lmt2= *((const lmt_sct**)vp2);
+
+  return   lmt1->srt <lmt2->srt ? -1 : (lmt1->srt> lmt2->srt);
+
+}
+
+
+void nco_msa_qsort_srt(lmt_all_sct *lmt_lst)
+{
+long idx;
+long sz;
+lmt_sct **lmt;
+
+  sz=lmt_lst->lmt_dmn_nbr;
+  lmt=lmt_lst->lmt_dmn;
+
+
+
+  if(sz <=1 ) return;
+
+
+  (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct*),ncap_cmp_lmt_srt);
+
+  /* check qsort */
+  for(idx=0; idx<sz ;idx++)
+    printf("qsort ouptut %ld\n",lmt[idx]->srt);
+  
+
+    printf("/****************/");
+}
+
 
 void
 nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
