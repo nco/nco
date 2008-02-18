@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.197 2008-02-18 14:49:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.198 2008-02-18 15:52:46 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.197 2008-02-18 14:49:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.197 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.198 2008-02-18 15:52:46 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.198 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -465,7 +465,7 @@ main(int argc,char **argv)
     lmt_all_crr->dmn_sz_org=dmn_sz;
     lmt_all_crr->WRP=False;
     lmt_all_crr->BASIC_DMN=True;
-
+    lmt_all_crr->MSA_USR_RDR=MSA_USR_RDR;    
 
     /* Initialize lmt_rgl structure */
     lmt_rgl[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
@@ -522,14 +522,14 @@ main(int argc,char **argv)
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);
 
     /* Sort limits if hyerslabs don't overlap and are NOT WRAPPED */
-    /*
-    if(lmt_all_lst[idx]->WRP==False && lmt_all_lst[idx]->lmt_dmn_nbr >1 
+   
+    if(!lmt_all_lst[idx]->MSA_USR_RDR && lmt_all_lst[idx]->WRP==False && lmt_all_lst[idx]->lmt_dmn_nbr >1 
        && nco_msa_ovl(lmt_all_lst[idx])==False){
       (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
       lmt_all_lst[idx]->WRP=True;
     }			      
-    */
-    if(dbg_lvl >= 2 && lmt_all_lst[idx]->lmt_dmn_nbr >1){
+    
+    if(dbg_lvl >= 2 && lmt_all_lst[idx]->lmt_dmn_nbr >1 &&!lmt_all_lst[idx]->MSA_USR_RDR){
       if(lmt_all_lst[idx]->WRP==True )
         fprintf(stdout, "%s: dim \"%s\" has distinct hyperslabs\n",prg_nm_get(), lmt_all_lst[idx]->dmn_nm);
       else
