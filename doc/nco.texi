@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.465 2008-01-16 12:41:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.466 2008-02-19 10:58:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8962,8 +8962,8 @@ Averaged dimensions are, by default, eliminated as dimensions.
 Their corresponding coordinates, if any, are output as scalars.
 The @samp{-b} switch 
 (and its long option equivalents @samp{--rdd} and
-@samp{--degenerate-dimensions}) causes @command{ncwa} to retain averaged  
-dimensions as degenerate (@w{size 1}) dimensions.
+@samp{--retain-degenerate-dimensions}) causes @command{ncwa} to retain
+averaged dimensions as degenerate (@w{size 1}) dimensions.
 This maintains the association between a dimension (or coordinate) and
 variables after averaging and simplifies, for instance, later
 concatenation along the degenerate dimension. 

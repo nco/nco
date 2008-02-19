@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.991 2008-01-28 12:02:24 hmb Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.992 2008-02-19 10:58:41 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -632,7 +632,8 @@ nco922. ncbo with OpenMP on netCDF4 files fails (not with netCDF3 in.nc):
 	ncbo -O -t 1 -D 4 -p ${HOME}/aca swnb.nc swnb.nc ~/foo.nc # marche
 	ncbo -O -t 2 -D 4 -p ${HOME}/aca swnb.nc swnb.nc ~/foo.nc # fails
 nco923. OPTS=D and OPTS=R should not do -O4 optimization on nco++
-nco924. 
+nco924. Document ncks --msa_usr_rdr
+nco925. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

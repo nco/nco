@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.255 2008-01-16 12:41:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.256 2008-02-19 10:58:42 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.255 2008-01-16 12:41:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.255 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.256 2008-02-19 10:58:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.256 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -216,7 +216,7 @@ main(int argc,char **argv)
       {"avg",required_argument,0,'a'},
       {"mask_condition",required_argument,0,'B'},
       {"msk_cnd_sng",required_argument,0,'B'},
-      {"degenerate-dimensions",no_argument,0,'b'}, /* [flg] Retain degenerate dimensions */
+      {"retain-degenerate-dimensions",no_argument,0,'b'}, /* [flg] Retain degenerate dimensions */
       {"rdd",no_argument,0,'b'}, /* [flg] Retain degenerate dimensions */
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},

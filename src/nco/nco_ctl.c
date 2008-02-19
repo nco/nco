@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.206 2008-01-30 20:13:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.207 2008-02-19 10:58:42 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -856,7 +856,7 @@ nco_usg_prn(void)
   } /* end if -B */
   if(strstr(opt_sng,"-b")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-b, --fl_bnr, --binary-file fl_bnr\tUnformatted binary file to write\n");
-    if(prg_lcl == ncwa) (void)fprintf(stdout,"-b, --rdd, --degenerate-dimensions\tRetain degenerate dimensions\n");
+    if(prg_lcl == ncwa) (void)fprintf(stdout,"-b, --rdd, --retain-degenerate-dimensions\tRetain degenerate dimensions\n");
   } /* end if -b */
   if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c, --crd, --coords\tCoordinate variables will all be processed\n");
   if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C, --nocoords\t\tAssociated coordinate variables should not be processed\n");

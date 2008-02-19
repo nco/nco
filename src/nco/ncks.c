@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.198 2008-02-18 15:52:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.199 2008-02-19 10:58:42 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -99,6 +99,7 @@ main(int argc,char **argv)
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_ddd=False; /* [flg] Delete degenerate dimensions */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -117,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.198 2008-02-18 15:52:46 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.198 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.199 2008-02-19 10:58:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.199 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -174,6 +175,7 @@ main(int argc,char **argv)
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+      {"delete-degenerate-dimensions",no_argument,0,0}, /* [flg] Delete degenerate dimensions */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
@@ -274,6 +276,7 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+      if(!strcmp(opt_crr,"delete-degenerate-dimensions")) flg_ddd=True; /* [flg] Delete degenerate dimensions */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -412,7 +415,6 @@ main(int argc,char **argv)
   /* Process auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
-
      lmt_sct **aux;
      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
      if(aux_idx_nbr > 0){
@@ -511,30 +513,23 @@ main(int argc,char **argv)
     } /* end if err */
   } /* end loop over idx */       
   
-
-
   for(idx=0;idx<nbr_dmn_fl;idx++){
-    /* Split up wrapped limits */   
+    /* Split-up wrapped limits */   
     if(lmt_all_lst[idx]->BASIC_DMN == False) 
       (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
-
+    
     /* Find and store final size of each dimension */  
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);
-
-    /* Sort limits if hyerslabs don't overlap and are NOT WRAPPED */
-   
-    if(!lmt_all_lst[idx]->MSA_USR_RDR && lmt_all_lst[idx]->WRP==False && lmt_all_lst[idx]->lmt_dmn_nbr >1 
-       && nco_msa_ovl(lmt_all_lst[idx])==False){
+    
+    /* Sort limits if hyerslabs do not overlap and are NOT wrapped */
+    if(!lmt_all_lst[idx]->MSA_USR_RDR && lmt_all_lst[idx]->WRP==False && lmt_all_lst[idx]->lmt_dmn_nbr > 1 && nco_msa_ovl(lmt_all_lst[idx])==False){
       (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
       lmt_all_lst[idx]->WRP=True;
-    }			      
+    } /* endif sort */
     
-    if(dbg_lvl >= 2 && lmt_all_lst[idx]->lmt_dmn_nbr >1 &&!lmt_all_lst[idx]->MSA_USR_RDR){
-      if(lmt_all_lst[idx]->WRP==True )
-        fprintf(stdout, "%s: dim \"%s\" has distinct hyperslabs\n",prg_nm_get(), lmt_all_lst[idx]->dmn_nm);
-      else
-        fprintf(stdout, "%s: dim \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm);   
-    }
+    if(dbg_lvl >= nco_dbg_fl && lmt_all_lst[idx]->lmt_dmn_nbr > 1 && !lmt_all_lst[idx]->MSA_USR_RDR){
+      if(lmt_all_lst[idx]->WRP==True) (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(), lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm);
+    } /* end if */
   } /* end idx */    
   
   if(fl_out){

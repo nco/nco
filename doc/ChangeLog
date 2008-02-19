@@ -1,10 +1,16 @@
+2008-02-19  Charlie Zender  <zender@uci.edu>
+
+	* Add flg_ddd stub to ncks to delete degenerate dimensions
+
+	* MSA miscellania
+
 2008-02-18  Charlie Zender  <zender@uci.edu>
 
 	* ncks --msa_usr_rdr causes MSA to leave hyperslabs in user order
 
 2008-02-13  Henry Butowsky  <henryb@ntlworld.com>
 
-	* First cut of  NCL style operators "<<","<<=", ">>", ">>="
+	* First cut of NCL-style operators "<<","<<=", ">>", ">>="
 	
 2008-02-06  Henry Butowsky  <henryb@ntlworld.com>
 
@@ -64,10 +70,9 @@
 	* Cleanup some WIN32 warnings
 
 2007-12-22  Henry Butowsky  <henryb@ntlworld.com>
-	* Work arounds related NCO_NETCDF4_AND_FILL_VALUE
-	  changes to ncap_var_write_omp(). Added NCAP4_FILL 
-	property to prs_cls. 
-	
+
+	* Work-arounds for NCO_NETCDF4_AND_FILL_VALUE changes to 
+	  ncap_var_write_omp(). Added NCAP4_FILL property to prs_cls. 
 
 2007-12-20  Charlie Zender  <zender@uci.edu>
 

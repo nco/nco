@@ -1,22 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.278 2008-01-16 12:41:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.279 2008-02-19 10:58:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release supplies numerous minor fixes and improvements to netCDF4
-capability, and adds more polish to ncap2.
-
-Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
-SWAMP efficiently schedules and executes NCO scripts on remote servers: 
-
-http://swamp.googlecode.com
-
-SWAMP can work with with any command-line operator analysis scripts-- 
-not just NCO. If you must transfer lots of data from a server to your
-client before you analyze it, then SWAMP may speed things up.
-Try SWAMP give us your feedback.
+This release includes numerous minor fixes and improvements to netCDF4
+capability, adds more polish to ncap2, and improves the ncks
+multi-slabbing algorithm (MSA).
 
    Operators given -3 switch will (attempt to) produce netCDF3 output,
    even if input files are netCDF4. Converse of -4 switch behavior.
@@ -24,6 +15,15 @@ Try SWAMP give us your feedback.
 
    ncks supports hyperslab specification with CF auxiliary coordinates
    http://nco.sf.net/nco.html#aux
+   Thanks to Karen Schuchardt.
+
+   New ncks Multi-slabbing algorithm (MSA) switch:
+   When --msa_usr_rdr (MSA user order) is specified, the hyperslabbed
+   coordinate(s) will appear in the output file in the order of the
+   input multi-slabs. The output coordinate will only be monotonic
+   if the user specifies the multi-slabs in a monotonic order.
+   This option significantly improves performance on complex
+   multi-slab operations.
 
    Cleanup cygwin builds for WIN32
 
@@ -49,6 +49,16 @@ F. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
 
 G. Pre-built, up-to-date, RPM packages are available.
    http://nco.sf.net#rpm
+
+H. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
+   SWAMP efficiently schedules and executes NCO scripts on remote servers: 
+
+   http://swamp.googlecode.com
+
+   SWAMP can work with with any command-line operator analysis scripts-- 
+   not just NCO. If you must transfer lots of data from a server to your
+   client before you analyze it, then SWAMP may speed things up.
+   Try SWAMP give us your feedback.
 
 I. Reminder: NCO support for netCDF4 features is tracked at
 
