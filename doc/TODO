@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.992 2008-02-19 10:58:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.993 2008-02-19 15:24:39 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -623,7 +623,7 @@ nco913. nco_cmp_get() fails on _AIX with different compiler
 nco915. GCC OpenMP support in configure.in
 nco917. GCC OpenMP with autoconf
 nco919. 'make check' (i.e., nco_bm.pl) breaks when ncap2 disabled (i.e., --disable-nco++) reported by Tim Hoar
-nco920. Add ncks capability to remove all degenerate dimensions (ncl-talk 12/5/07)
+nco920. Add ncwa (ncks?) capability to remove all degenerate dimensions --delete-degenerate-dimensions (ncl-talk 12/5/07)
 nco922. ncbo with OpenMP on netCDF4 files fails (not with netCDF3 in.nc):
 	ncbo -O -t 1 -D 4 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc # marche
 	ncbo -O -t 2 -D 4 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc # march

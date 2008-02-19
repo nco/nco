@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.256 2008-02-19 10:58:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.257 2008-02-19 15:24:40 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -95,8 +95,9 @@ main(int argc,char **argv)
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_ddd=False; /* [flg] Delete degenerate dimensions */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
-  nco_bool flg_opt_a=False; /* Option a */
+  nco_bool flg_opt_a=False; /* [flg] Option a was invoked */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
 
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
@@ -117,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.256 2008-02-19 10:58:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.256 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.257 2008-02-19 15:24:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.257 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -203,6 +204,7 @@ main(int argc,char **argv)
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"delete-degenerate-dimensions",no_argument,0,0}, /* [flg] Delete degenerate dimensions */
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -301,6 +303,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
+      if(!strcmp(opt_crr,"delete-degenerate-dimensions")) flg_ddd=True; /* [flg] Delete degenerate dimensions */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
