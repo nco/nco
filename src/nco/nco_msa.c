@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.49 2008-02-18 15:55:17 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.50 2008-02-20 14:17:48 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -409,52 +409,27 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
 } /* end nco_msa_clc_cnt() */
 
 
-nco_bool  /* return true if limits overlap */
+
+nco_bool  /* return true if limits overlap nb assumes  that lmts have been sorted by srt */
 nco_msa_ovl(lmt_all_sct *lmt_lst)
 {
   nco_bool bret;
   
   long idx;
   long jdx;
-  long cnt;
   long sz=lmt_lst->lmt_dmn_nbr;
-  long dmn_sz_org=lmt_lst->dmn_sz_org;
-  long *indices;
-
   
-  if(sz==1) return False;
+  lmt_sct **lmt;
+  /* defererence */
+  lmt=lmt_lst->lmt_dmn;
 
-  indices=(long *)nco_malloc(sz*sizeof(long));
-  
-  /* Initialize */
-  for(jdx=0; jdx<sz; jdx++)
-    indices[jdx]=-1;
 
-  for(idx=0 ; idx<dmn_sz_org; idx++){
-    cnt=0;
-    for(jdx=0; jdx<sz; jdx++){
-      if(indices[jdx]==-2) continue;
-      if(lmt_lst->lmt_dmn[jdx]->srt == idx)
-         indices[jdx]=1;
-      
-      if(indices[jdx]=1) cnt++;
-      if(cnt >1){
-        bret=True;
-        goto end;
-      } 
 
-      if(lmt_lst->lmt_dmn[jdx]->end == idx)
-        indices[jdx]=-2;
-    } /* end jdx */
-      
-   
-  }/* end idx */
-    
-  bret=False;
+  for(idx=0; idx<sz; idx++)
+    for(jdx=idx+1; jdx<sz ;jdx++)
+      if( lmt[jdx]->srt <= lmt[idx]->end) return True;  
 
-end:  indices=(long*)nco_free(indices);
-
-  return bret;
+  return False;
 }
 
 
