@@ -1,6 +1,6 @@
 2008-02-20  Charlie Zender  <zender@uci.edu>
 
-	* Add hooks for -X in documentation
+	* Preliminary -X documentation
 
 2008-02-19  Charlie Zender  <zender@uci.edu>
 
@@ -14,7 +14,7 @@
 
 2008-02-13  Henry Butowsky  <henryb@ntlworld.com>
 
-	* First cut of NCL-style operators "<<","<<=", ">>", ">>="
+	* First cut of NCL-style operators "<<", "<<=", ">>", ">>="
 	
 2008-02-06  Henry Butowsky  <henryb@ntlworld.com>
 
