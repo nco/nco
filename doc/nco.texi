@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.466 2008-02-19 10:58:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.467 2008-02-20 13:48:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.4
 @set copyright-years 1995--2008
 @set update-year 2008
-@set update-date 6 January 2008
-@set update-month January 2008
+@set update-date 20 February 2008
+@set update-month February 2008
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -1048,7 +1048,7 @@ questions.
 We usually reply to the forum message, not to the original poster.
 
 If you want us to include a new feature in @acronym{NCO}, check first to 
-see if that feature is already on the @uref{file:./TODO, TODO} list.
+see if that feature is already on the @uref{file:./TODO,TODO} list.
 If it is, why not implement that feature yourself and send us the patch?
 If the feature is not yet on the list, then send a note to the
 @uref{http://sf.net/forum/forum.php?forum_id=9829, NCO Discussion forum}.
@@ -4294,7 +4294,7 @@ and complete documentation of this subject.</b>
 The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
 cannot be easily represented in Info.
-@emph{See the @uref{./nco.pdf,printed manual} for much more detailed and
+@emph{See the @uref{./nco.pdf, printed manual} for much more detailed and
 complete documentation of this subject.}
 @end ifinfo
 @end ifnothtml
@@ -5028,6 +5028,7 @@ or alter the @code{Conventions} attribute.
 @cindex @code{coordinates}
 @cindex coordinates convention
 @cindex coordinate variable 
+@cindex auxiliary coordinates
 @cindex subsetting
 @cindex @code{-C}
 @cindex @code{-c}
@@ -5035,8 +5036,8 @@ or alter the @code{Conventions} attribute.
 @cindex @code{--no-crd}
 @cindex @code{--coords}
 @cindex @code{--crd}
-NCO supports the @acronym{CF} @code{coordinates} convention described at
-@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#grid_ex2}. 
+NCO supports the @acronym{CF} @code{coordinates} convention described
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
 (including multidimensional coordinates) in a space-separated string
 attribute named @code{coordinates}. 
@@ -5448,9 +5449,10 @@ rectangular arrays so space must be allocated for the maximum number
 of east_west points at all latitudes. Then the application writes
 missing values into the unused points near the poles.
 
-Let's demonstrate the recommended ncap2 analysis technique by
-constructing a region mask for an @var{R}=2 grid. We wish to find, say,
-the mean temperature within [lat_min,lat_max] and [lon_min,lon_max]:
+Let's demonstrate the recommended @command{ncap2} analysis technique by
+constructing a region mask for an @var{R}=2 grid. 
+We wish to find, say, the mean temperature within 
+[@var{lat_min},@var{lat_max}] and [@var{lon_min},@var{lon_max}]: 
 @example
 ncap2 -s 'mask= (lat >= lat_min && lat <= lat_max) && \
                 (lon >= lon_min && lon <= lon_max);' in.nc out.nc
@@ -5479,7 +5481,6 @@ ncap2 -S ncap2.in in.nc out.nc
 @end example
 
 For the WRF file creating the mask looks like
-
 @example
 mask = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && > XLONG <= lon_max);
 @end example
@@ -7852,6 +7853,33 @@ Toggle the printing of a variable's @code{units} attribute, if any,
 with its values.
 Also @samp{--units}.
 
+@html
+<a name="aux"></a> <!-- http://nco.sf.net/nco.html#aux -->
+<a name="auxiliary"></a> <!-- http://nco.sf.net/nco.html#auxiliary -->
+<a name="-X"></a> <!-- http://nco.sf.net/nco.html#-X -->
+<a name="std_nm"></a> <!-- http://nco.sf.net/nco.html#std_nm -->
+<a name="standard_name"></a> <!-- http://nco.sf.net/nco.html#standard_name -->
+@end html
+@cindex @code{-X}
+@cindex @code{--auxiliary}
+@cindex @code{standard_name}
+@cindex @acronym{CF} conventions
+@item -X @var{lon_min},@var{lat_min},@var{lon_max},@var{lat_max}
+Utilize auxiliary coordinates specified in values of coordinate
+variable's @code{standard_name} attributes, if any, when interpreting 
+hyperslab and multi-slab options. 
+Also @samp{--auxiliary}.
+This switch supports hyperslabbing cell-based grids over coordinate
+ranges. 
+This works on datasets that associate coordinate variables to
+grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
+@code{standard_name} attribute described 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
+Currently, @acronym{NCO} understands auxiliary coordinate variables that 
+with @code{standard_name}'s of @var{latitude} or @var{longitude}.  
+Cells that contain a value within the user-specified range 
+[@var{lon_min},@var{lat_min},@var{lon_max},@var{lat_max}] are considered
+a match and will be included in the hyperslab.  
 @end table
 
 @noindent

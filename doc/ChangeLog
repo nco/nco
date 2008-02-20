@@ -1,3 +1,7 @@
+2008-02-20  Charlie Zender  <zender@uci.edu>
+
+	* Add hooks for -X in documentation
+
 2008-02-19  Charlie Zender  <zender@uci.edu>
 
 	* Add flg_ddd stub to ncwa to delete degenerate dimensions

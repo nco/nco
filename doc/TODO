@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.993 2008-02-19 15:24:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.994 2008-02-20 13:48:21 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -633,7 +633,8 @@ nco922. ncbo with OpenMP on netCDF4 files fails (not with netCDF3 in.nc):
 	ncbo -O -t 2 -D 4 -p ${HOME}/aca swnb.nc swnb.nc ~/foo.nc # fails
 nco923. OPTS=D and OPTS=R should not do -O4 optimization on nco++
 nco924. Document ncks --msa_usr_rdr
-nco925. 
+nco925. "units" value needs dynamically allocated size in nco_aux.c
+nco926. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

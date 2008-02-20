@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.18 2008-01-06 13:09:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.19 2008-02-20 13:48:22 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -82,8 +82,8 @@ C code." */
 #define NC_FILL_STRING NULL
 #endif /* NC_FILL_STRING */
 
-/* C pre-processor can compare integers not strings
-   Enumerate integer values corresponding to each type and compare those instead */
+/* C pre-processor compares integers not strings
+   Perform comparisons on enumerated integer values corresponding to each type */
 #define NCO_TYP_CHAR 0
 #define NCO_TYP_SCHAR 1
 #define NCO_TYP_UCHAR 2
