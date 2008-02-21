@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.17 2008-01-11 22:27:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.18 2008-02-21 10:25:42 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -44,6 +44,189 @@ const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in functio
      Initial value should be a number that will never be a true netCDF format */
 # define NCO_FORMAT_UNDEFINED 0
 #endif // NCO_FORMAT_UNDEFINED
+
+  /* Define compatibility tokens when user does not have netCDF4 */
+#ifndef ENABLE_NETCDF4
+/* Datatypes referenced in nco_typ.h, nco_netcdf.c: */
+#define	NC_UBYTE 	7	/* unsigned 1 byte int */
+#define	NC_USHORT 	8	/* unsigned 2-byte int */
+#define	NC_UINT 	9	/* unsigned 4-byte int */
+#define	NC_INT64 	10	/* signed 8-byte int */
+#define	NC_UINT64 	11	/* unsigned 8-byte int */
+#define	NC_STRING 	12	/* string */
+/* Fill values for netCDF4 datatypes. Referenced in nco_mss_val.c: */
+#define NC_FILL_UBYTE   (255)
+#define NC_FILL_USHORT  (65535)
+#define NC_FILL_UINT    (4294967295U)
+#define NC_FILL_INT64   ((long long)-9223372036854775808)
+#define NC_FILL_UINT64  ((unsigned long long)18446744073709551615)
+#define NC_FILL_STRING  ""
+#endif /* !ENABLE_NETCDF4 */
+
+/* C pre-processor compares integers not strings
+   Perform comparisons on enumerated integer values corresponding to each type */
+#define NCO_TYP_CHAR 0
+#define NCO_TYP_SCHAR 1
+#define NCO_TYP_UCHAR 2
+#define NCO_TYP_INT 3
+#define NCO_TYP_LONG 4
+#define NCO_TYP_UBYTE 5
+#define NCO_TYP_USHORT 6
+#define NCO_TYP_UINT 7
+#define NCO_TYP_INT64 8
+#define NCO_TYP_UINT64 9
+#define NCO_TYP_STRING 10
+
+/* Tokens to give semantic compatibility between easy- and hard-to-handle types
+   i.e., nco_short is always short and easy-to-handle */
+typedef short nco_short; /* [typ] NC_SHORT */
+
+/* NC_BYTE handling */
+#ifndef NCO_BYTE
+/* Valid options are NCO_TYP_CHAR, NCO_TYP_SCHAR, NCO_TYP_UCHAR 
+   Default is NCO_TYP_SCHAR, which treats NC_BYTE as C-type signed char */
+# define NCO_BYTE NCO_TYP_SCHAR
+#endif /* NCO_BYTE */
+#if NCO_BYTE == NCO_TYP_CHAR
+/* Treat NC_BYTE as C-type char */
+typedef char nco_byte; /* [typ] NC_BYTE */
+# define NCO_BYTE_SNG "char"
+#elif NCO_BYTE == NCO_TYP_SCHAR
+/* Treat NC_BYTE as C-type signed char */
+typedef signed char nco_byte; /* [typ] NC_BYTE */
+# define NCO_BYTE_SNG "signed char"
+#elif NCO_BYTE == NCO_TYP_UCHAR
+/* Treat NC_BYTE as C-type unsigned char */
+typedef unsigned char nco_byte; /* [typ] NC_BYTE */
+# define NCO_BYTE_SNG "unsigned char"
+#else
+# error "ERROR: Unrecognized NCO_BYTE token"
+#endif /* NCO_BYTE */
+
+/* NC_UBYTE handling */
+#ifndef NCO_UBYTE
+/* Only valid option is NCO_TYP_UCHAR 
+   Default is NCO_TYP_UCHAR, which treats NC_UBYTE as C-type unsigned char */
+# define NCO_UBYTE NCO_TYP_UCHAR
+#endif /* NCO_UBYTE */
+#if NCO_UBYTE == NCO_TYP_UCHAR
+/* Treat NC_UBYTE as C-type unsigned char */
+typedef unsigned char nco_ubyte; /* [typ] NC_UBYTE */
+# define NCO_UBYTE_SNG "unsigned char"
+#else
+# error "ERROR: Unrecognized NCO_UBYTE token"
+#endif /* NCO_UBYTE */
+
+/* NC_CHAR handling */
+#ifndef NCO_CHAR
+/* Valid options are NCO_TYP_CHAR, NCO_TYP_SCHAR, NCO_TYP_UCHAR 
+   Default is NCO_TYP_CHAR, which treats NC_CHAR as C-type char */
+# define NCO_CHAR NCO_TYP_CHAR
+#endif /* NCO_CHAR */
+#if NCO_CHAR == NCO_TYP_CHAR
+/* Treat NC_CHAR as C-type char */
+typedef char nco_char; /* [typ] NC_CHAR */
+# define NCO_CHAR_SNG "char"
+#elif NCO_CHAR == NCO_TYP_SCHAR
+/* Treat NC_CHAR as C-type signed char */
+typedef signed char nco_char; /* [typ] NC_CHAR */
+# define NCO_CHAR_SNG "signed char"
+#elif NCO_CHAR == NCO_TYP_UCHAR
+/* Treat NC_CHAR as C-type unsigned char */
+typedef unsigned char nco_char; /* [typ] NC_CHAR */
+# define NCO_CHAR_SNG "unsigned char"
+#else
+# error "ERROR: Unrecognized NCO_CHAR token"
+#endif /* NCO_CHAR */
+
+/* NC_USHORT handling */
+#ifndef NCO_USHORT
+/* Only valid option is NCO_TYP_USHORT 
+   Default is NCO_TYP_USHORT, which treats NC_USHORT as C-type unsigned short */
+# define NCO_USHORT NCO_TYP_USHORT
+#endif /* NCO_USHORT */
+#if NCO_USHORT == NCO_TYP_USHORT
+/* Treat NC_USHORT as C-type unsigned short */
+typedef unsigned short nco_ushort; /* [typ] NC_USHORT */
+# define NCO_USHORT_SNG "unsigned short"
+#else
+# error "ERROR: Unrecognized NCO_USHORT token"
+#endif /* NCO_USHORT */
+
+/* NC_INT handling */
+#ifndef NCO_INT
+/* Valid options are NCO_TYP_INT, NCO_TYP_LONG
+   Default is NCO_TYP_LONG, which treats NC_INT as C-type long */
+# define NCO_INT NCO_TYP_LONG
+#endif /* NCO_INT */
+#if NCO_INT == NCO_TYP_INT
+/* Treat NC_INT as C-type int */
+typedef int nco_int; /* [typ] NC_INT */
+# define NCO_INT_SNG "int"
+#elif NCO_INT == NCO_TYP_LONG
+/* Treat NC_INT as C-type long */
+typedef long nco_int; /* [typ] NC_INT */
+# define NCO_INT_SNG "long"
+#else
+# error "ERROR: Unrecognized NCO_INT token"
+#endif /* NCO_INT */
+
+/* NC_UINT handling */
+#ifndef NCO_UINT
+/* Only valid option is NCO_TYP_UINT
+   Default is NCO_TYP_UINT, which treats NC_UINT as C-type unsigned int */
+# define NCO_UINT NCO_TYP_UINT
+#endif /* NCO_UINT */
+#if NCO_UINT == NCO_TYP_UINT
+/* Treat NC_UINT as C-type unsigned int */
+typedef unsigned int nco_uint; /* [typ] NC_UINT */
+# define NCO_UINT_SNG "unsigned int"
+#else
+# error "ERROR: Unrecognized NCO_UINT token"
+#endif /* NCO_UINT */
+
+/* NC_INT64 handling */
+#ifndef NCO_INT64
+/* Only valid option is NCO_TYP_INT64
+   Default is NCO_TYP_INT64, which treats NC_INT64 as C-type long long */
+# define NCO_INT64 NCO_TYP_INT64
+#endif /* NCO_INT64 */
+#if NCO_INT64 == NCO_TYP_INT64
+/* Treat NC_INT64 as C-type long long */
+typedef long long nco_int64; /* [typ] NC_INT64 */
+# define NCO_INT64_SNG "long long"
+#else
+# error "ERROR: Unrecognized NCO_INT64 token"
+#endif /* NCO_INT64 */
+
+/* NC_UINT64 handling */
+#ifndef NCO_UINT64
+/* Only valid option is NCO_TYP_UINT64
+   Default is NCO_TYP_UINT64, which treats NC_UINT64 as C-type unsigned long long */
+# define NCO_UINT64 NCO_TYP_UINT64
+#endif /* NCO_UINT64 */
+#if NCO_UINT64 == NCO_TYP_UINT64
+/* Treat NC_UINT64 as C-type unsigned long long */
+typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
+# define NCO_UINT64_SNG "unsigned long long"
+#else
+# error "ERROR: Unrecognized NCO_UINT64 token"
+#endif /* NCO_UINT64 */
+
+/* NC_STRING handling */
+#ifndef NCO_STRING
+/* 20070514: netcdf4-beta1 only supports nc_put_var_string() and nc_get_var_string() */
+/* Only valid option is NCO_TYP_STRING
+   Default is NCO_TYP_STRING, which treats NC_STRING as C-type char */
+# define NCO_STRING NCO_TYP_STRING
+#endif /* NCO_STRING */
+#if NCO_STRING == NCO_TYP_STRING
+/* Treat NC_STRING as C-type char * */
+typedef char * nco_string; /* [typ] NC_STRING */
+# define NCO_STRING_SNG "char *"
+#else
+# error "ERROR: Unrecognized NCO_STRING token"
+#endif /* NCO_STRING */
 
 // Same debugging types as in nco.h
 enum nco_dbg_typ_enm{ /* [enm] Debugging levels */

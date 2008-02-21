@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.19 2008-01-11 22:27:42 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.20 2008-02-21 10:25:42 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -199,6 +199,18 @@ nco_typ_lng // [fnc] Internal (native) size (Bytes) of netCDF external type
     return sizeof(unsigned char); 
   case NC_BYTE: 
     return sizeof(signed char); 
+  case NC_UBYTE:
+    return sizeof(nco_ubyte);
+  case NC_USHORT:
+    return sizeof(nco_ushort);
+  case NC_UINT:
+    return sizeof(nco_uint);
+  case NC_INT64:
+    return sizeof(nco_int64);
+  case NC_UINT64:
+    return sizeof(nco_uint64);
+  case NC_STRING:
+    return sizeof(nco_string);
   default: nco_dfl_case_nctype_err(); break;
   } // end switch
   // Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions
@@ -222,6 +234,18 @@ nco_typ_sng // [fnc] String version of netCDF external type enum
     return "NC_CHAR";
   case NC_BYTE:
     return "NC_BYTE";
+  case NC_UBYTE:
+    return "NC_UBYTE";
+  case NC_USHORT:
+    return "NC_USHORT";
+  case NC_UINT:
+    return "NC_UINT";
+  case NC_INT64:
+    return "NC_INT64";
+  case NC_UINT64:
+    return "NC_UINT64";
+  case NC_STRING:
+    return "NC_STRING";
   default: nco_dfl_case_nctype_err(); break;
   } // end switch
   // Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions
@@ -247,6 +271,18 @@ nco_c_typ_sng // [fnc] String version of C++ internal type for storing netCDF ex
     return "unsigned char";
   case NC_BYTE:
     return "signed char";
+  case NC_UBYTE:
+    return "NCO_UBYTE_SNG";
+  case NC_USHORT:
+    return "NCO_USHORT_SNG";
+  case NC_UINT:
+    return "NCO_UINT_SNG";
+  case NC_INT64:
+    return "NCO_INT64_SNG";
+  case NC_UINT64:
+    return "NCO_UINT64_SNG";
+  case NC_STRING:
+    return "NCO_STRING_SNG";
   default: nco_dfl_case_nctype_err(); break;
   } // end switch
   // Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions
@@ -272,6 +308,18 @@ nco_ftn_typ_sng // [fnc] String version of C++ internal type for storing netCDF 
     return "character";
   case NC_BYTE:
     return "char";
+  case NC_UBYTE:
+    return "character";
+  case NC_USHORT:
+    return "integer*2";
+  case NC_UINT:
+    return "integer*4";
+  case NC_INT64:
+    return "integer*8";
+  case NC_UINT64:
+    return "integer*8";
+  case NC_STRING:
+    return "character fxm";
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   // Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions

@@ -1,3 +1,12 @@
+2008-02-21  Charlie Zender  <zender@uci.edu>
+
+	* Transplant chunks of nco_typ.h into nco_utl.hh to make
+	libnco_c++ forward-backward compatible with netCDF3/netCDF4.
+	Mainly this was done because of need for opaque types---
+	links to C-version of netCDF functions were not necessary.
+	Now libnco_c++ can use nco_byte, nco_ubyte, NC_UINT, NCO_UBYTE_SNG 
+	fearlessly in same manner as NCO.
+
 2006-05-16  Charlie Zender  <zender@uci.edu>
 
 	* Add rcd_opt test to tst.cc. rcd_opt test seems to work in tst.

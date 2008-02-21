@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.19 2008-02-20 13:48:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.20 2008-02-21 10:25:41 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -73,14 +73,10 @@ C code." */
 #define NC_FILL_UBYTE   (255)
 #define NC_FILL_USHORT  (65535)
 #define NC_FILL_UINT    (4294967295U)
-#define NC_FILL_INT64   ((long long)-92233720)
-#define NC_FILL_UINT64  ((unsigned long long)18446744)
+#define NC_FILL_INT64   ((long long)-9223372036854775808)
+#define NC_FILL_UINT64  ((unsigned long long)18446744073709551615)
+#define NC_FILL_STRING  ""
 #endif /* !ENABLE_NETCDF4 */
-
-/* fxm: Move inside ENABLE_NETCDF4 once netCDF4 netcdf.h finally defines this */
-#ifndef NC_FILL_STRING
-#define NC_FILL_STRING NULL
-#endif /* NC_FILL_STRING */
 
 /* C pre-processor compares integers not strings
    Perform comparisons on enumerated integer values corresponding to each type */
@@ -152,7 +148,7 @@ typedef unsigned char nco_byte; /* [typ] NC_BYTE */
 # define NCO_PUT_VARS_BYTE nc_put_vars_uchar
 # define NCO_PUT_VARM_BYTE nc_put_varm_uchar
 #else
-#error "ERROR: Unrecognized NCO_BYTE token"
+# error "ERROR: Unrecognized NCO_BYTE token"
 #endif /* NCO_BYTE */
 
 /* NC_UBYTE handling */
@@ -177,7 +173,7 @@ typedef unsigned char nco_ubyte; /* [typ] NC_UBYTE */
 # define NCO_PUT_VARS_UBYTE nc_put_vars_ubyte
 # define NCO_PUT_VARM_UBYTE nc_put_varm_ubyte
 #else
-#error "ERROR: Unrecognized NCO_UBYTE token"
+# error "ERROR: Unrecognized NCO_UBYTE token"
 #endif /* NCO_UBYTE */
 
 /* NC_CHAR handling */
@@ -232,7 +228,7 @@ typedef unsigned char nco_char; /* [typ] NC_CHAR */
 # define NCO_PUT_VARS_CHAR nc_put_vars_uchar
 # define NCO_PUT_VARM_CHAR nc_put_varm_uchar
 #else
-#error "ERROR: Unrecognized NCO_CHAR token"
+# error "ERROR: Unrecognized NCO_CHAR token"
 #endif /* NCO_CHAR */
 
 /* NC_USHORT handling */
@@ -257,7 +253,7 @@ typedef unsigned short nco_ushort; /* [typ] NC_USHORT */
 # define NCO_PUT_VARS_USHORT nc_put_vars_ushort
 # define NCO_PUT_VARM_USHORT nc_put_varm_ushort
 #else
-#error "ERROR: Unrecognized NCO_USHORT token"
+# error "ERROR: Unrecognized NCO_USHORT token"
 #endif /* NCO_USHORT */
 
 /* NC_INT handling */
@@ -297,7 +293,7 @@ typedef long nco_int; /* [typ] NC_INT */
 # define NCO_PUT_VARS_INT nc_put_vars_long
 # define NCO_PUT_VARM_INT nc_put_varm_long
 #else
-#error "ERROR: Unrecognized NCO_INT token"
+# error "ERROR: Unrecognized NCO_INT token"
 #endif /* NCO_INT */
 
 /* NC_UINT handling */
@@ -322,7 +318,7 @@ typedef unsigned int nco_uint; /* [typ] NC_UINT */
 # define NCO_PUT_VARS_UINT nc_put_vars_uint
 # define NCO_PUT_VARM_UINT nc_put_varm_uint
 #else
-#error "ERROR: Unrecognized NCO_UINT token"
+# error "ERROR: Unrecognized NCO_UINT token"
 #endif /* NCO_UINT */
 
 /* NC_INT64 handling */
@@ -347,7 +343,7 @@ typedef long long nco_int64; /* [typ] NC_INT64 */
 # define NCO_PUT_VARS_INT64 nc_put_vars_longlong
 # define NCO_PUT_VARM_INT64 nc_put_varm_longlong
 #else
-#error "ERROR: Unrecognized NCO_INT64 token"
+# error "ERROR: Unrecognized NCO_INT64 token"
 #endif /* NCO_INT64 */
 
 /* NC_UINT64 handling */
@@ -372,7 +368,7 @@ typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
 # define NCO_PUT_VARS_UINT64 nc_put_vars_ulonglong
 # define NCO_PUT_VARM_UINT64 nc_put_varm_ulonglong
 #else
-#error "ERROR: Unrecognized NCO_UINT64 token"
+# error "ERROR: Unrecognized NCO_UINT64 token"
 #endif /* NCO_UINT64 */
 
 /* NC_STRING handling */
@@ -399,7 +395,7 @@ typedef char * nco_string; /* [typ] NC_STRING */
 # define NCO_PUT_VARS_STRING nc_put_vars_string
 # define NCO_PUT_VARM_STRING nc_put_varm_string
 #else
-#error "ERROR: Unrecognized NCO_STRING token"
+# error "ERROR: Unrecognized NCO_STRING token"
 #endif /* NCO_STRING */
 
 #ifdef __cplusplus

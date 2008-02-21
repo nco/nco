@@ -1,3 +1,10 @@
+2008-02-21  Charlie Zender  <zender@uci.edu>
+
+	* Transplant chunks of nco_typ.h into nco_utl.hh to make
+	libnco_c++ forward-backward compatible with netCDF3/netCDF4
+
+	* Rely on netcdf4 netcdf.h for NCO_FILL_STRING
+
 2008-02-20  Charlie Zender  <zender@uci.edu>
 
 	* Preliminary -X documentation
