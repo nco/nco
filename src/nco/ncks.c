@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.201 2008-02-20 14:16:45 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.202 2008-02-21 13:26:50 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.201 2008-02-20 14:16:45 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.201 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.202 2008-02-21 13:26:50 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.202 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -523,8 +523,10 @@ main(int argc,char **argv)
         continue;
      }
      /* Single slab --no analysis needed */  
-     if(lmt_all_lst[idx]->lmt_dmn_nbr ==1)
+     if(lmt_all_lst[idx]->lmt_dmn_nbr ==1){
+       (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
        continue;    
+     }
 
     if(MSA_USR_RDR){
       lmt_all_lst[idx]->MSA_USR_RDR=True;
