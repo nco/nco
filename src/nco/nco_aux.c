@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.9 2008-02-20 13:48:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.10 2008-02-21 23:40:11 karkn Exp $ */
 
 /* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -242,8 +242,8 @@ float *urlon,
 float *urlat)
 {
   /* Purpose: Parse command-line arguments of the form:
-   <min_lon,min_lat,max_lon,max_lat> */
-   sscanf(args,"%f,%f,%f,%f",lllon,lllat,urlon,urlat);
+   <min_lon,max_lat,min_lon,max_lat> */
+   sscanf(args,"%f,%f,%f,%f",lllon,urlon,lllat,urlat);
    if(strcmp(units,"radians") == 0){
      /* WIN32 math.h does not define M_PI */
 #ifndef M_PI
