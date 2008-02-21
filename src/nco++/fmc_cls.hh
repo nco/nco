@@ -1,17 +1,12 @@
-
-/* Purpose: netCDF arithmetic processor -  */
-/* class methods - */
+/* Purpose: netCDF arithmetic processor class methods */
 
 /* Copyright (C) 1995--2007 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-
-
 // Standard C++ headers
 #ifndef INC_FMC_CLS_hh_
 #define INC_FMC_CLS_hh_
-
 
 #include <algorithm>
 #include <iostream>
@@ -27,8 +22,6 @@ class ncoTree;
 
 //local enum used to classify expressions 
 enum vtl_typ { VVAR,VLVAR,VDVAR, VATT,VLATT,VDATT,VDIM, VDIM_SIZE,VEXPR };
-
-
 
 // function/method class  ****************************************/
 
@@ -191,8 +184,5 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
-
-
-
 
 #endif
