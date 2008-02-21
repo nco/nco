@@ -1,5 +1,7 @@
 2008-02-21  Charlie Zender  <zender@uci.edu>
 
+	* Use 64-bit fill values for uint and long long types
+
 	* Make compatible with hdf-1.8.0 final and netcdf-4.0-snapshot2008022009
 
 	* Transplant chunks of nco_typ.h into nco_utl.hh to make

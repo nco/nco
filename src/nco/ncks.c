@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.202 2008-02-21 13:26:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.203 2008-02-21 15:26:50 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.202 2008-02-21 13:26:50 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.202 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.203 2008-02-21 15:26:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.203 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -512,44 +512,42 @@ main(int argc,char **argv)
   
   for(idx=0;idx<nbr_dmn_fl;idx++){
     nco_bool bovl;
-     /* Split-up wrapped limits */   
-     (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
-     /* nb  A wrapped dim is broken into  two slabs the "wrong" order */
-     /* e.g from -d time,8,2 we get -d time,8,9 -d time,0,2 */
-     /* WRP flag set only if list contains the two split dims as above */
-     if(lmt_all_lst[idx]->WRP==True){
-      /* Find and store size of output dim */  
-        (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-        continue;
-     }
-     /* Single slab --no analysis needed */  
-     if(lmt_all_lst[idx]->lmt_dmn_nbr ==1){
-       (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-       continue;    
-     }
 
-    if(MSA_USR_RDR){
-      lmt_all_lst[idx]->MSA_USR_RDR=True;
+    /* Split-up wrapped limits */   
+    (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
+
+    /* NB: Wrapped hyperslabs are dimensions broken into the "wrong" order,
+       e.g., from -d time,8,2 broken into -d time,8,9 -d time,0,2
+       WRP flag set only when list contains dimensions split as above */
+    if(lmt_all_lst[idx]->WRP == True){
       /* Find and store size of output dim */  
       (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
       continue;
-    }          
+    } /* endif */
 
+    /* Single slab---no analysis needed */  
+    if(lmt_all_lst[idx]->lmt_dmn_nbr == 1){
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;    
+    } /* endif */
+
+    if(MSA_USR_RDR){
+      lmt_all_lst[idx]->MSA_USR_RDR=True;
+      /* Find and store size of output dimension */  
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;
+    } /* endif */
+    
     /* Sort limits */
     (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
     /* Check for overlap */
     bovl=nco_msa_ovl(lmt_all_lst[idx]);  
-    if(bovl==False)
-      lmt_all_lst[idx]->MSA_USR_RDR=True;
-
+    if(bovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
+    
     /* Find and store size of output dim */  
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-
-    if(bovl)
-      (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm);        
-      else 
-      (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(), lmt_all_lst[idx]->dmn_nm); 
-
+    
+    if(bovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
   } /* end idx */    
   
   if(fl_out){
