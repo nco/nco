@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.257 2008-02-19 15:24:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.258 2008-02-22 14:26:35 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.257 2008-02-19 15:24:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.257 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.258 2008-02-22 14:26:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.258 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -344,7 +344,7 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd': /* Copy argument for later processing */
+    case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;

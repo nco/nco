@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.204 2008-02-21 23:45:28 karkn Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.205 2008-02-22 14:26:34 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -103,6 +103,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL;
+  char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *dlm_sng=NULL;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
@@ -112,13 +113,12 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *aux_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.204 2008-02-21 23:45:28 karkn Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.204 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.205 2008-02-22 14:26:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.205 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -133,6 +133,7 @@ main(int argc,char **argv)
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
   int abb_arg_nbr=0;
+  int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
@@ -143,7 +144,6 @@ main(int argc,char **argv)
   int in_id;  
   int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int aux_nbr=0; /* Option X */
   int nbr_dmn_fl;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
@@ -152,6 +152,7 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
     
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
   lmt_sct **lmt_rgl; /* Regular limits */
 
@@ -307,7 +308,7 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd': /* Copy argument for later processing */
+    case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;
@@ -373,10 +374,10 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
        break;
-    case 'X': /* Copy argument for later processing */
+    case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);
       aux_nbr++;
-      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */      
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -413,14 +414,12 @@ main(int argc,char **argv)
   /* Process auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
-     lmt_sct **aux;
      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
      if(aux_idx_nbr > 0){
-        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct*));
+        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
         int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
-        int lmt_idx;
         int aux_idx=0;
-        for(lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx] = aux[aux_idx++];
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
         lmt_nbr=lmt_nbr_new;
      } /* endif aux */
   } /* endif aux_nbr */
@@ -720,6 +719,8 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
   } /* !flg_cln */
   
   /* End timer */ 

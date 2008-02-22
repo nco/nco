@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.215 2008-01-16 12:41:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.216 2008-02-22 14:26:35 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.215 2008-01-16 12:41:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.215 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.216 2008-02-22 14:26:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.216 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -305,7 +305,7 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd': /* Copy argument for later processing */
+    case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;

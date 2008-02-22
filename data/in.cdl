@@ -37,12 +37,12 @@
 
 netcdf in {
 dimensions:
-	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,time=unlimited;
+	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gsd_crd=8,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.94 2007-10-06 21:43:16 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.95 2008-02-22 14:26:33 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -160,6 +160,28 @@ variables:
 	char fl_dmn(fl_dmn);
 	fl_dmn:long_name = "Character coordinate";
 	fl_dmn:units = "[chr]";
+
+	double lat_gsd(gsd_crd);
+	lat_gsd:long_name = "Latitude";
+	lat_gsd:standard_name = "latitude";
+	lat_gsd:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+
+	double lon_gsd(gsd_crd);
+	lon_gsd:long_name = "Longitude";
+	lon_gsd:standard_name = "longitude";
+	lon_gsd:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
+
+	float gsd_crd(gsd_crd);
+	gsd_crd:long_name = "Geodesic coordinate";
+	gsd_crd:units = "degree";
+	gsd_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
+	gsd_crd:coordinates = "lat_gsd lon_gsd";
+
+	float gsd_var(gsd_crd);
+	gsd_var:long_name = "Geodesic variable";
+	gsd_var:units = "meter";
+	gsd_var:purpose = "For testing auxiliary coordinates like those that define geodesic grids";
+	gsd_var:coordinates = "lat_gsd lon_gsd";
 
 	int nbdate;
 	nbdate:long_name = "base date as 6 or 8 digit integer (YYMMDD or YYYYMMDD)";
@@ -739,6 +761,10 @@ data:
 	hyam=0.0802583,0.0438226,0.0;
 	hybm=0.0187849,0.457453,0.992528;
 	P0=100000;
+	gsd_crd=0,1,2,3,4,5,6,7;
+	gsd_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
+	lat_gsd=-90, -30,  -30,    0,   0, 30,  30,  90;
+	lon_gsd=  0,   0,  180,    0, 180,  0, 180,   0;
 	lat=-90,90;
 	lat_times_lon=0,1,2,3,4,5,6,7;
 	lat_times_lon_nbr=8;

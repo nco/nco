@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.10 2008-02-21 23:40:11 karkn Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.11 2008-02-22 14:26:35 zender Exp $ */
 
 /* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -24,13 +24,12 @@ nco_find_lat_lon
  int *lonid,
  nc_type *coordtype
  ){
-  /* Purpose: Find the auxillary coordinate variables that map to lat/lon 
-   by looking through the data set. 
-   Returns true if both latitude and longitude standard names are found.
-   Also returns needed information about the variables.
-   ASSUME that units and types for lat/lon are identical.
-   Caller responsible for allocating enough memory for variable names and unit
-   strings. */
+  /* Purpose: Find auxillary coordinate variables that map to latitude/longitude 
+   Find variables with standard_name = "latitude" and "longitude"
+   Return true if both latitude and longitude standard names are found
+   Also return needed information about these auxiliary coordinates
+   Assumes that units and types for latitude and longitude are identical
+   Caller responsible for memory management for variable names and unit strings */
 
   int rcd=NC_NOERR;
   int ret = 0;
@@ -39,7 +38,7 @@ nco_find_lat_lon
    int nvars = 0;
    rcd=nco_inq_nvars(nc_id,&nvars);
 
-   /* For each variable, see if its standard name is latitude or longitude */
+   /* For each variable, see if standard name is latitude or longitude */
    nc_type var_type;                   /* variable type */
    int var_ndims;                      /* number of dims */
    int var_dimids[NC_MAX_VAR_DIMS];    /* dimension ids */
@@ -47,7 +46,7 @@ nco_find_lat_lon
    char name[NC_MAX_NAME+1];
    long lenp;
    char value[NC_MAX_NAME+1];
-   for (int idx=0; idx<nvars && ret<2; idx++){
+   for (int idx=0;idx<nvars && ret<2;idx++){
       nco_inq_var(nc_id,idx,name,&var_type,&var_ndims,var_dimids,&var_natts);
       lenp=0;
       if(!nco_inq_attlen_flg(nc_id,idx,"standard_name",&lenp)){
@@ -64,7 +63,6 @@ nco_find_lat_lon
 
             /* Assign type; assumed same for both lat and lon */
             *coordtype = var_type;
-
             ret++;
          }
          if(strcmp(value,"longitude") == 0){
@@ -83,8 +81,8 @@ nco_getdmninfo
  int varid,
  char dimname[],
  int *dimid,
- long *dmnsz
-){
+ long *dmnsz)
+{
    /* Purpose: Get dimension information associated with specified variable
       In our case, this is lat or lon---they are presumed to be identical. */
 
@@ -167,13 +165,9 @@ int *lmt_nbr
    base.cnt = 0;
    base.srd = 1;
 
-   /*
-      malloc the return lmt structure
-      No way to know the right size but...
-      Absolute max is something like dimsz/2 - not sure what the formula is
-      but this should work most/all of the time
-   */
-   int MAXDMN = dmnsz/4;
+   /* malloc() the return lmt structure
+      No way to know exact size in advance but maximum is about dimsz/2 */
+   int MAXDMN=dmnsz/4;
 
    if(aux_nbr > 0) lmts=(lmt_sct **)nco_malloc(MAXDMN*sizeof(lmt_sct *));
 
@@ -181,17 +175,17 @@ int *lmt_nbr
    float lllon, lllat, urlon, urlat;
    float clat, clon;
    int cell;
-   for (cur=0; cur<aux_nbr; cur++){
-      /* Parse into lllong,lllat,urlon,urlon, accounting for units */
-      nco_aux_prs(aux_arg[cur],units, &lllon, &lllat, &urlon, &urlat);
-      /* printf("Box is %f %f %f %f\n",lllon, lllat, urlon, urlat); */
+   for(cur=0;cur<aux_nbr;cur++){
+     /* Parse into lllong,lllat,urlon,urlon, accounting for units */
+     nco_aux_prs(aux_arg[cur],units, &lllon, &lllat, &urlon, &urlat);
+     /* printf("Box is %f %f %f %f\n",lllon, lllat, urlon, urlat); */
 
       int mincell = -1;
       int consec = 0;
       for (cell=0; cell<dmnsz; cell++){
          clat = latvp[cell];
          clon = lonvp[cell];
-         /* printf("looking at coord %f %f\n",clat,clon); */
+         /* printf("looking at coordinate %f %f\n",clat,clon); */
          if(clon >= lllon && clon <= urlon &&
                clat >= lllat && clat <= urlat ){
             /* printf("**matched a cell %d \n",cell); */

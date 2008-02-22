@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.103 2008-01-06 13:09:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.104 2008-02-22 14:26:35 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.103 2008-01-06 13:09:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.104 2008-02-22 14:26:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.104 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -188,7 +188,7 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd': /* Copy argument for later processing */
+    case 'd': /* Copy limit argument for later processing */
       dmn_rnm_arg[nbr_dmn_rnm]=(char *)strdup(optarg);
       nbr_dmn_rnm++;
       break;

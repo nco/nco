@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.467 2008-02-20 13:48:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.468 2008-02-22 14:26:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7864,7 +7864,7 @@ Also @samp{--units}.
 @cindex @code{--auxiliary}
 @cindex @code{standard_name}
 @cindex @acronym{CF} conventions
-@item -X @var{lon_min},@var{lat_min},@var{lon_max},@var{lat_max}
+@item -X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}
 Utilize auxiliary coordinates specified in values of coordinate
 variable's @code{standard_name} attributes, if any, when interpreting 
 hyperslab and multi-slab options. 
@@ -7875,11 +7875,12 @@ This works on datasets that associate coordinate variables to
 grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
 @code{standard_name} attribute described 
 @uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
-Currently, @acronym{NCO} understands auxiliary coordinate variables that 
-with @code{standard_name}'s of @var{latitude} or @var{longitude}.  
+Currently, @acronym{NCO} understands auxiliary coordinate variables 
+pointed to by the @code{standard_name} attributes for @var{latitude} and 
+@var{longitude}.   
 Cells that contain a value within the user-specified range 
-[@var{lon_min},@var{lat_min},@var{lon_max},@var{lat_max}] are considered
-a match and will be included in the hyperslab.  
+[@var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}] are
+included in the output hyperslab.  
 @end table
 
 @noindent
@@ -9549,6 +9550,9 @@ AIX architecture support.
 @cindex Juliana Rew
 @item Juliana Rew
 Compatibility with large PIDs.
+@cindex Karen Schuchardt
+@item Karen Schuchardt
+Auxiliary coordinate support.
 @cindex Gayathri Venkitachalam
 @item Gayathri Venkitachalam
 @acronym{MPI} implementation.

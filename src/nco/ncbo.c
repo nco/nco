@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.118 2008-01-16 12:41:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.119 2008-02-22 14:26:34 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.118 2008-01-16 12:41:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.119 2008-02-22 14:26:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.119 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -287,7 +287,7 @@ main(int argc,char **argv)
     case 'D': /* The debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd': /* Copy argument for later processing */
+    case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;
