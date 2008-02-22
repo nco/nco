@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.11 2008-02-22 14:26:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.12 2008-02-22 17:03:40 zender Exp $ */
 
 /* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -86,10 +86,10 @@ nco_getdmninfo
    /* Purpose: Get dimension information associated with specified variable
       In our case, this is lat or lon---they are presumed to be identical. */
 
-   /* Note: currently no error handling on calls. */
+   /* fxm: add error handling to calls */
    int ret = 1; 
 
-   /* Get information about the dimension */
+   /* Get dimension information */
    nc_type var_type;                   /* variable type */
    int var_ndims;                      /* number of dims */
    int var_dimids[NC_MAX_VAR_DIMS];    /* dimension ids */
