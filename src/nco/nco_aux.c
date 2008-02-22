@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.12 2008-02-22 17:03:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.13 2008-02-22 20:31:20 zender Exp $ */
 
 /* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -10,7 +10,10 @@
    Cells that contain a value within the user-requested range are considered a match.
    Could be useful to look at the CF bounds variable instead.
 
-   Author: Karen Schuchardt */
+   Author: Karen Schuchardt
+
+   Example usage:
+   ncks -X 0,45,0,90 -X 180,225,-90,0 ~/nco/data/in.nc ~/foo.nc */
 
 #include "nco_aux.h" /* Auxiliary coordinates */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.205 2008-02-22 14:26:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.206 2008-02-22 20:31:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.205 2008-02-22 14:26:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.205 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.206 2008-02-22 20:31:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.206 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -448,7 +448,7 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* fxm: subroutine-ize this code block */
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
 
@@ -484,7 +484,7 @@ main(int argc,char **argv)
     lmt_all_crr->lmt_dmn[0]=lmt_rgl[idx];
   } /* end loop over dimensions */
 
-  /* fxm: subroutine-ize this code block */
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
     /* Find coordinate/dimension values associated with user-specified limits
@@ -510,6 +510,7 @@ main(int argc,char **argv)
     } /* end if err */
   } /* end loop over idx */       
   
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   for(idx=0;idx<nbr_dmn_fl;idx++){
     nco_bool bovl;
 
