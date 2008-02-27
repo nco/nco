@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.25 2008-02-18 13:19:51 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.26 2008-02-27 17:20:14 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -82,6 +82,14 @@ nco_cmp_lmt_srt( const void *vp1,const void* vp2);
 void             /* sort limits by srt values nb only called if lmits NDONT overlap */
 nco_msa_qsort_srt(lmt_all_sct *lmt_lst);
 
+void         /* Initilaize lmt_all_sct's */ 
+nco_msa_lmt_all_int(
+int in_id,
+nco_bool MSA_USR_RDR,
+lmt_all_sct **lmt_all_lst,
+int nbr_dmn_fl,
+lmt_sct** lmt,
+int lmt_nbr);
 
 
   void *
