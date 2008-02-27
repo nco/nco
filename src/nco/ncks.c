@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.206 2008-02-22 20:31:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.207 2008-02-27 17:18:55 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.206 2008-02-22 20:31:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.206 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.207 2008-02-27 17:18:55 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.207 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -448,108 +448,20 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
-  /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
 
-  /* Unlimited dimensions are stored in */
-  lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
-
-  for(idx=0;idx<nbr_dmn_fl;idx++){
-    (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
-    lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-    lmt_all_crr->dmn_nm=strdup(dmn_nm);
-    lmt_all_crr->lmt_dmn_nbr=1;
-    lmt_all_crr->dmn_sz_org=dmn_sz;
-    lmt_all_crr->WRP=False;
-    lmt_all_crr->BASIC_DMN=True;
-    lmt_all_crr->MSA_USR_RDR=False;    
-
-    /* Initialize lmt_rgl structure */
-    lmt_rgl[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-    lmt_rgl[idx]->nm=strdup(lmt_all_crr->dmn_nm);
-    lmt_rgl[idx]->id=idx;
-    lmt_rgl[idx]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
-    lmt_rgl[idx]->srt=0L;
-    lmt_rgl[idx]->end=dmn_sz-1L;
-    lmt_rgl[idx]->cnt=dmn_sz;
-    lmt_rgl[idx]->srd=1L;
-    lmt_rgl[idx]->min_sng=NULL;
-    lmt_rgl[idx]->max_sng=NULL;
-    lmt_rgl[idx]->srd_sng=NULL;
-    /* A hack so we know structure has been initialized */
-    lmt_rgl[idx]->lmt_typ=-1;
-  
-    lmt_all_crr->lmt_dmn[0]=lmt_rgl[idx];
-  } /* end loop over dimensions */
-
-  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
-  /* Add user specified limits lmt_all_lst */
-  for(idx=0;idx<lmt_nbr;idx++){
+   for(idx=0;idx<lmt_nbr;idx++)
     /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
     (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
-    for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
-      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
-	lmt_all_crr=lmt_all_lst[jdx];
-	lmt_all_crr->BASIC_DMN=False;
-	if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
-	  lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
-	}else{ 
-	  lmt_all_crr->lmt_dmn=(lmt_sct **)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
-	  lmt_all_crr->lmt_dmn[(lmt_all_crr->lmt_dmn_nbr)++]=lmt[idx];
-	} /* endif */
-	break;
-      } /* end if */
-    } /* end loop over dimensions */
-    /* Dimension in limit not found */
-    if(jdx == nbr_dmn_fl){
-      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx]->nm);
-      nco_exit(EXIT_FAILURE);
-    } /* end if err */
-  } /* end loop over idx */       
+    
+
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
   
-  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
-  for(idx=0;idx<nbr_dmn_fl;idx++){
-    nco_bool bovl;
+  /* Initilaize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
-    /* Split-up wrapped limits */   
-    (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
 
-    /* NB: Wrapped hyperslabs are dimensions broken into the "wrong" order,
-       e.g., from -d time,8,2 broken into -d time,8,9 -d time,0,2
-       WRP flag set only when list contains dimensions split as above */
-    if(lmt_all_lst[idx]->WRP == True){
-      /* Find and store size of output dim */  
-      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-      continue;
-    } /* endif */
-
-    /* Single slab---no analysis needed */  
-    if(lmt_all_lst[idx]->lmt_dmn_nbr == 1){
-      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-      continue;    
-    } /* endif */
-
-    if(MSA_USR_RDR){
-      lmt_all_lst[idx]->MSA_USR_RDR=True;
-      /* Find and store size of output dimension */  
-      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-      continue;
-    } /* endif */
-    
-    /* Sort limits */
-    (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
-    /* Check for overlap */
-    bovl=nco_msa_ovl(lmt_all_lst[idx]);  
-    if(bovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
-    
-    /* Find and store size of output dim */  
-    (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-    
-    if(bovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
-  } /* end idx */    
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
