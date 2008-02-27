@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.50 2008-02-20 14:17:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.51 2008-02-27 17:19:34 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1059,3 +1059,126 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   } /* end if */
 
 } /* end nco_msa_prn_var_val() */
+
+void         /* Initilaize lmt_all_sct's */ 
+nco_msa_lmt_all_int(
+int in_id,
+nco_bool MSA_USR_RDR,
+lmt_all_sct **lmt_all_lst,
+int nbr_dmn_fl,
+lmt_sct** lmt,
+int lmt_nbr){
+
+int idx;
+int jdx;
+
+long dmn_sz;
+char dmn_nm[NC_MAX_NAME];
+
+lmt_sct **lmt_rgl;
+lmt_all_sct * lmt_all_crr;
+
+ /* Unlimited dimensions are stored in */
+  lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
+
+  for(idx=0;idx<nbr_dmn_fl;idx++){
+    (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
+    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+    lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+    lmt_all_crr->dmn_nm=strdup(dmn_nm);
+    lmt_all_crr->lmt_dmn_nbr=1;
+    lmt_all_crr->dmn_sz_org=dmn_sz;
+    lmt_all_crr->WRP=False;
+    lmt_all_crr->BASIC_DMN=True;
+    lmt_all_crr->MSA_USR_RDR=False;    
+
+    /* Initialize lmt_rgl structure */
+    lmt_rgl[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+    lmt_rgl[idx]->nm=strdup(lmt_all_crr->dmn_nm);
+    lmt_rgl[idx]->id=idx;
+    /* nb this maybe altered in nco_lmt_evl */
+    lmt_rgl[idx]->is_rec_dmn=False;
+    lmt_rgl[idx]->srt=0L;
+    lmt_rgl[idx]->end=dmn_sz-1L;
+    lmt_rgl[idx]->cnt=dmn_sz;
+    lmt_rgl[idx]->srd=1L;
+    lmt_rgl[idx]->min_sng=NULL;
+    lmt_rgl[idx]->max_sng=NULL;
+    lmt_rgl[idx]->srd_sng=NULL;
+    /* A hack so we know structure has been initialized */
+    lmt_rgl[idx]->lmt_typ=-1;
+  
+    lmt_all_crr->lmt_dmn[0]=lmt_rgl[idx];
+  } /* end loop over dimensions */
+
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
+  /* Add user specified limits lmt_all_lst */
+  for(idx=0;idx<lmt_nbr;idx++){
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
+      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
+	lmt_all_crr=lmt_all_lst[jdx];
+	lmt_all_crr->BASIC_DMN=False;
+	if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
+	  lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
+	}else{ 
+	  lmt_all_crr->lmt_dmn=(lmt_sct **)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+	  lmt_all_crr->lmt_dmn[(lmt_all_crr->lmt_dmn_nbr)++]=lmt[idx];
+	} /* endif */
+	break;
+      } /* end if */
+    } /* end loop over dimensions */
+    /* Dimension in limit not found */
+    if(jdx == nbr_dmn_fl){
+      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx]->nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if err */
+  } /* end loop over idx */       
+  
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
+  for(idx=0;idx<nbr_dmn_fl;idx++){
+    nco_bool bovl;
+
+    /* Split-up wrapped limits */   
+    (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
+
+    /* NB: Wrapped hyperslabs are dimensions broken into the "wrong" order,
+       e.g., from -d time,8,2 broken into -d time,8,9 -d time,0,2
+       WRP flag set only when list contains dimensions split as above */
+    if(lmt_all_lst[idx]->WRP == True){
+      /* Find and store size of output dim */  
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;
+    } /* endif */
+
+    /* Single slab---no analysis needed */  
+    if(lmt_all_lst[idx]->lmt_dmn_nbr == 1){
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;    
+    } /* endif */
+
+    if(MSA_USR_RDR){
+      lmt_all_lst[idx]->MSA_USR_RDR=True;
+      /* Find and store size of output dimension */  
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;
+    } /* endif */
+    
+    /* Sort limits */
+    (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
+    /* Check for overlap */
+    bovl=nco_msa_ovl(lmt_all_lst[idx]);  
+    if(bovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
+    
+    /* Find and store size of output dim */  
+    (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+    
+    if(bovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
+  } /* end idx */    
+ 
+
+} /* end nco_msa_lmt_all_int */
+
+
+
+
+
