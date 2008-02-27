@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.7 2008-02-12 12:35:37 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.8 2008-02-27 16:09:42 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -278,17 +278,17 @@ nbr_err_ttl=0;
 //check var/att/dim quoting
 {
 
-  '---u'=10L;
-  '...v'=20L;
-  '...w'='---u'*'...v';
-  '---u@kill'=10L;
-  '...v@.one'=30L;
-  f1='...v@.one' *100;
-  f2='---u'+40;
+  'u---u'=10L;
+  'v...v'=20L;
+  'w...w'='u---u'*'v...v';
+  'u---u@kill'=10L;
+  'v...v@o.one'=30L;
+  f1='v...v@o.one' *100;
+  f2='u---u'+40;
 
-  defdim("..t",5);
-  f3['$lon','$lat','$..t']=1.1d;
-  f4='$..t'.size;
+  defdim("t..t",5);
+  f3['$lon','$lat','$t..t']=1.1d;
+  f4='$t..t'.size;
 
 
   if( f1 !=3000L) {
