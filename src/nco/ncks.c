@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.207 2008-02-27 17:18:55 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.208 2008-02-28 10:52:34 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.207 2008-02-27 17:18:55 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.207 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.208 2008-02-28 10:52:34 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.208 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -153,11 +153,8 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
     
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
-  lmt_sct **lmt;
-  lmt_sct **lmt_rgl; /* Regular limits */
-
+  lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
-  lmt_all_sct *lmt_all_crr; /* Current lmt_all structure */
 
   long dmn_sz;
 
@@ -458,7 +455,7 @@ main(int argc,char **argv)
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
   
-  /* Initilaize lmt_all_sct's */ 
+  /* Initilize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
 
@@ -613,8 +610,15 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncks-specific memory */
     if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
+
+    /* free lmt[] nb is now referenced within lmt_all_lst[idx]  */
+    for(idx=0; idx<nbr_dmn_fl;idx++)
+      for(jdx=0 ; jdx< lmt_all_lst[idx]->lmt_dmn_nbr ;jdx++)
+         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+     
+    lmt=(lmt_sct**)nco_free(lmt); 
+
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
-    if(nbr_dmn_fl > 0) lmt_rgl=nco_lmt_lst_free(lmt_rgl,nbr_dmn_fl);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
@@ -631,7 +635,9 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    
+    /* nb lmt[idx] has been freed up earlier
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
   } /* !flg_cln */
