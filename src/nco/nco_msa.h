@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.26 2008-02-27 17:20:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.27 2008-02-28 10:54:26 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -32,6 +32,7 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_prn.h" /* print format functions */
 #include "nco_sng_utl.h" /* sng_ascii_trn */
+#include "nco_lmt.h"     /* free lmt_sct */
 
 #ifdef __cplusplus
 extern "C" {
