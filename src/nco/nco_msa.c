@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.51 2008-02-27 17:19:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.52 2008-02-28 10:53:41 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1075,11 +1075,11 @@ int jdx;
 long dmn_sz;
 char dmn_nm[NC_MAX_NAME];
 
-lmt_sct **lmt_rgl;
+lmt_sct *lmt_rgl;
 lmt_all_sct * lmt_all_crr;
 
  /* Unlimited dimensions are stored in */
-  lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
+  // lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
@@ -1091,24 +1091,24 @@ lmt_all_sct * lmt_all_crr;
     lmt_all_crr->WRP=False;
     lmt_all_crr->BASIC_DMN=True;
     lmt_all_crr->MSA_USR_RDR=False;    
-
-    /* Initialize lmt_rgl structure */
-    lmt_rgl[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-    lmt_rgl[idx]->nm=strdup(lmt_all_crr->dmn_nm);
-    lmt_rgl[idx]->id=idx;
+    
+     
+    lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
+    /* Dereference */
+    lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
+    lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
+    lmt_rgl->id=idx;
     /* nb this maybe altered in nco_lmt_evl */
-    lmt_rgl[idx]->is_rec_dmn=False;
-    lmt_rgl[idx]->srt=0L;
-    lmt_rgl[idx]->end=dmn_sz-1L;
-    lmt_rgl[idx]->cnt=dmn_sz;
-    lmt_rgl[idx]->srd=1L;
-    lmt_rgl[idx]->min_sng=NULL;
-    lmt_rgl[idx]->max_sng=NULL;
-    lmt_rgl[idx]->srd_sng=NULL;
+    lmt_rgl->is_rec_dmn=False;
+    lmt_rgl->srt=0L;
+    lmt_rgl->end=dmn_sz-1L;
+    lmt_rgl->cnt=dmn_sz;
+    lmt_rgl->srd=1L;
+    lmt_rgl->min_sng=NULL;
+    lmt_rgl->max_sng=NULL;
+    lmt_rgl->srd_sng=NULL;
     /* A hack so we know structure has been initialized */
-    lmt_rgl[idx]->lmt_typ=-1;
-  
-    lmt_all_crr->lmt_dmn[0]=lmt_rgl[idx];
+    lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
 
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
@@ -1119,9 +1119,11 @@ lmt_all_sct * lmt_all_crr;
 	lmt_all_crr=lmt_all_lst[jdx];
 	lmt_all_crr->BASIC_DMN=False;
 	if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
+          /* free defualt limit set above structure first */
+          lmt_all_crr->lmt_dmn[0]=(lmt_sct*)nco_lmt_free(lmt_all_crr->lmt_dmn[0]);
 	  lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
 	}else{ 
-	  lmt_all_crr->lmt_dmn=(lmt_sct **)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+	  lmt_all_crr->lmt_dmn=(lmt_sct**)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
 	  lmt_all_crr->lmt_dmn[(lmt_all_crr->lmt_dmn_nbr)++]=lmt[idx];
 	} /* endif */
 	break;
