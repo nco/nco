@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.996 2008-02-22 20:31:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.997 2008-03-02 16:03:59 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -634,7 +634,6 @@ nco922. ncbo with OpenMP on netCDF4 files fails (not with netCDF3 in.nc):
 nco923. OPTS=D and OPTS=R should not do -O4 optimization on nco++
 nco924. Document ncks --msa_usr_rdr
 nco925. "units" value needs dynamically allocated size in nco_aux.c
-nco926. sub-routinize MSA code in ncks for portability to other main.c's
 nco927. regression test for -X auxiliary coordinates:
 	ncks -X 0,45,0,90 -X 180,225,-90,0 ~/nco/data/in.nc ~/foo.nc
 nco928. 
