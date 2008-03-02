@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.102 2008-03-02 14:25:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.103 2008-03-02 15:26:45 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -932,31 +932,22 @@ dmn_vtr=(nc_id==prs_arg->in_id ? prs_arg->dmn_in_vtr: prs_arg->dmn_out_vtr);
       os<<"Sride " <<srd<<" for dim "<<lmt_ptr->nm<<" is less than 1"<<end;  
       err_prn(fnc_nm,os.str());  
     }	 	
-      
   }
 
-
-  cnt=1+ (end-srt)/srd;
+  cnt=1+(end-srt)/srd;
 
   lmt_ptr->srt=srt;
   lmt_ptr->end=end;
   lmt_ptr->cnt=cnt;
   lmt_ptr->srd=srd;
 
-
-  
   return;
-
 } /* end ncap_lmt_evl() */
 
-
-
-
-
 nm_id_sct *            /* O [sct] new copy of xtr_lst */
-nco_var_lst_copy(      /*   [fnc] Purpose: Copy xtr_lst and return new list */
-		 nm_id_sct *xtr_lst,    /* I  [sct] input list */ 
-		 int lst_nbr)           /* I  [nbr] number of elements in list */
+nco_var_lst_copy      /* [fnc] Purpose: Copy xtr_lst and return new list */
+(nm_id_sct *xtr_lst,    /* I  [sct] input list */ 
+ int lst_nbr)           /* I  [nbr] Number of elements in list */
 {
   int idx;
   nm_id_sct *xtr_new_lst;
@@ -1007,11 +998,11 @@ nco_var_lst_sub(
 }/* end nco_var_lst_sub */
 
 nm_id_sct *            /* O [sct] -- new list */
-nco_var_lst_add(
-		nm_id_sct *xtr_lst,    /* I [sct] input list */ 
-		int *nbr_xtr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
-		nm_id_sct *xtr_lst_a,  /* I [sct] list of elemenst to be added to new list */
-		int nbr_lst_a)         /* I [nbr] size of xtr_lst_a */
+nco_var_lst_add
+(nm_id_sct *xtr_lst,    /* I [sct] input list */ 
+ int *nbr_xtr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
+ nm_id_sct *xtr_lst_a,  /* I [sct] list of elemenst to be added to new list */
+ int nbr_lst_a)         /* I [nbr] size of xtr_lst_a */
 {
   /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;

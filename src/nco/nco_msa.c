@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.52 2008-02-28 10:53:41 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.53 2008-03-02 15:26:45 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -29,7 +29,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
   if(dpt_crr == dpt_crr_max) goto read_lbl;
   
   nbr_slb=lmt_lst[dpt_crr]->lmt_dmn_nbr;
-
+  
   if(nbr_slb == 1){
     lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[0];
     /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
@@ -83,11 +83,11 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     for(idx=0;idx<nbr_slb;idx++) indices[idx]=lmt_lst[dpt_crr]->lmt_dmn[idx]->srt;
     
     cp_fst=0L;
-
+    
     /* Deal first with wrapped dimensions
        True if wrapped dims or slabs DONT Overlap or user specified order */
     if(lmt_lst[dpt_crr]->WRP || lmt_lst[dpt_crr]->MSA_USR_RDR){
-
+      
       for(slb_idx=0;slb_idx<nbr_slb;slb_idx++){
 	cp_stp=(char *)vp+cp_fst;
 	slb=cp_wrp[slb_idx];
@@ -106,7 +106,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 	slb=cp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
 	slb_stp=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
 	slb_sz=(ptrdiff_t)(lmt_ret.cnt*lcnt);
-      
+	
 	while(cp_stp-(char *)vp < cp_max){
 	  (void)memcpy(cp_stp,slb,(size_t)slb_sz);
 	  slb+=slb_stp;
@@ -115,7 +115,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 	cp_fst+=slb_sz;
       } /* end while */
     } /* end else */  
- 
+    
     indices=(long *)nco_free(indices);
     cp_sz=(long *)nco_free(cp_sz);
     for(idx=0;idx<nbr_slb;idx++) cp_wrp[idx]=(char *)nco_free(cp_wrp[idx]);
@@ -124,9 +124,9 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     vara->sz=var_sz;
     return vp;
   } /* endif multiple hyperslabs */
-
+  
  read_lbl:
- { 
+  { 
     long var_sz=1L;
     long mult_srd=1L;
     long *dmn_srt;
@@ -271,13 +271,13 @@ nco_msa_clc_idx
     lmt->end=(lmt->end-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->srd=1L;
   } /* end if */
-
+  
   rcd=True;
-
+  
   /* Jump here if only one string */
  cln_and_xit:
   mnm=(nco_bool *)nco_free(mnm);
-
+  
   return rcd;
 } /* end nco_msa_clc_idx() */
 
@@ -298,7 +298,7 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
   static long **dmn_indices;
   static long *dmn_sbs_prv;
   static nco_bool mnm[100];
-
+  
   if(!initialize){
     dmn_sbs_prv=(long *)nco_malloc(nbr_dim*sizeof(long));
     dmn_indices=(long **)nco_malloc(nbr_dim*sizeof(long *));
@@ -313,31 +313,31 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
   for(idx=0;idx <nbr_dim;idx ++){
     size=lmt_mult[idx]->lmt_dmn_nbr;
     if(dmn_sbs_ram[idx] == dmn_sbs_prv[idx]) continue;
-
+    
     if(lmt_mult[idx]->BASIC_DMN){
       dmn_sbs_dsk[idx]=dmn_sbs_ram[idx];
       continue;
     }
-     
+    
     /* re-initialize indices if 0*/
     if(dmn_sbs_ram[idx] == 0) 
       for(jdx=0;jdx<size;jdx++)
        	dmn_indices[idx][jdx]=lmt_mult[idx]->lmt_dmn[jdx]->srt;
-   
+    
     /* Deal with wrapping - we have 2 hyperlsbas to deal with */
-     if(lmt_mult[idx]->WRP){
-       if(dmn_indices[idx][0]<lmt_mult[idx]->dmn_sz_org){
-	 dmn_sbs_dsk[idx]=dmn_indices[idx][0];
-         dmn_indices[idx][0]+=lmt_mult[idx]->lmt_dmn[0]->srd;
-        }else{
-	 dmn_sbs_dsk[idx]=dmn_indices[idx][1];
-         dmn_indices[idx][1]+=lmt_mult[idx]->lmt_dmn[1]->srd;
-       }
-     continue;
-     }
-         
+    if(lmt_mult[idx]->WRP){
+      if(dmn_indices[idx][0]<lmt_mult[idx]->dmn_sz_org){
+	dmn_sbs_dsk[idx]=dmn_indices[idx][0];
+	dmn_indices[idx][0]+=lmt_mult[idx]->lmt_dmn[0]->srd;
+      }else{
+	dmn_sbs_dsk[idx]=dmn_indices[idx][1];
+	dmn_indices[idx][1]+=lmt_mult[idx]->lmt_dmn[1]->srd;
+      }
+      continue;
+    }
+    
     dmn_sbs_dsk[idx]=nco_msa_min_idx(dmn_indices[idx],mnm,size);
-
+    
     for(jdx=0;jdx<size;jdx++){
       if(mnm[jdx]){
 	dmn_indices[idx][jdx]+=lmt_mult[idx]->lmt_dmn[jdx]->srd;
@@ -345,9 +345,9 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
       }
     } /* end for  jdx */
   } /* end for idx */ 
-
+  
   for(idx=0;idx<nbr_dim;idx++) dmn_sbs_prv[idx]=dmn_sbs_ram[idx];
-
+  
   /* Free static space on last call */
   if(FREE){
     (void)nco_free(dmn_sbs_prv);
@@ -367,29 +367,29 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
   int size=lmt_lst->lmt_dmn_nbr;
   long *indices;
   nco_bool *mnm;
-
+  
   /* Degenerate case */
   if(size == 1){
     lmt_lst->dmn_cnt=lmt_lst->lmt_dmn[0]->cnt;
     return;
   } /* end if */
-
-
-
+  
+  
+  
   /* if slabs remain in usr specified order */
   if(lmt_lst->MSA_USR_RDR){
     for(idx=0; idx<size; idx++)
       cnt+=lmt_lst->lmt_dmn[idx]->cnt;
     lmt_lst->dmn_cnt=cnt;
   }else{
-
+    
     indices=(long *)nco_malloc(size*sizeof(long));
     mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
-  
+    
     /* Initialize indices with srt */
     for(idx=0;idx<size;idx++) 
       indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
-  
+    
     while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
       for(idx=0;idx<size;idx++){
         if(mnm[idx]){
@@ -400,21 +400,20 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
       cnt++;
     } /* end while */
     lmt_lst->dmn_cnt=cnt;
-
+    
     indices=(long *)nco_free(indices);
     mnm=(nco_bool  *)nco_free(mnm);
   }/* end else */
-
+  
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
 
-
-
-nco_bool  /* return true if limits overlap nb assumes  that lmts have been sorted by srt */
+nco_bool
 nco_msa_ovl(lmt_all_sct *lmt_lst)
 {
-  nco_bool bret;
-  
+  /* Purpose: Return true if limits overlap
+     NB: Assumes that limits have been sorted */
+
   long idx;
   long jdx;
   long sz=lmt_lst->lmt_dmn_nbr;
@@ -422,41 +421,40 @@ nco_msa_ovl(lmt_all_sct *lmt_lst)
   lmt_sct **lmt;
   /* defererence */
   lmt=lmt_lst->lmt_dmn;
-
-
-
+  
   for(idx=0; idx<sz; idx++)
     for(jdx=idx+1; jdx<sz ;jdx++)
       if( lmt[jdx]->srt <= lmt[idx]->end) return True;  
-
+  
   return False;
 }
 
-
-int nco_cmp_lmt_srt( const void *vp1,const void* vp2){
-  const lmt_sct * const lmt1= *((const lmt_sct**)vp1);
-  const lmt_sct * const lmt2= *((const lmt_sct**)vp2);
-
-  return   lmt1->srt <lmt2->srt ? -1 : (lmt1->srt> lmt2->srt);
-
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
+(const void * vp1, /* I [sct] lmt_sct to compare */
+ const void * vp2) /* I [sct] lmt_sct to compare */
+{
+  const lmt_sct * const lmt1=*((const lmt_sct **)vp1);
+  const lmt_sct * const lmt2=*((const lmt_sct **)vp2); 
+  /* fxm: need to compiler warnings. will following work?
+      const lmt_sct * const lmt1=(const lmt_sct *)vp1;
+      const lmt_sct * const lmt2=(const lmt_sct *)vp2; */
+  
+  return lmt1->srt < lmt2->srt ? -1 : (lmt1->srt > lmt2->srt);
 }
-
 
 void nco_msa_qsort_srt(lmt_all_sct *lmt_lst)
 {
-long idx;
-long sz;
-lmt_sct **lmt;
-
+  long sz;
+  lmt_sct **lmt;
+  
   sz=lmt_lst->lmt_dmn_nbr;
   lmt=lmt_lst->lmt_dmn;
-
+  
   if(sz <=1 ) return;
-
-  (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct*),nco_cmp_lmt_srt);
-
+  
+  (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
 }
-
 
 void
 nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
@@ -471,7 +469,7 @@ nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
   long srd;
   long kdx=0; /*  */
   lmt_sct *lmt_wrp;
-
+  
   for(idx=0;idx<size;idx++){
     
     if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
@@ -516,7 +514,7 @@ nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
       lmt_lst->lmt_dmn[(lmt_lst->lmt_dmn_nbr)++]=++lmt_wrp;
     } /* endif srt > end */
   } /* end loop over size */
-
+  
   /* Check if genuine wrapped co-ordinate */
   if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
 } /* end nco_msa_wrp_splt() */
@@ -711,15 +709,15 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   long lmn;
   
   dmn_sct *dim=NULL_CEWI;
-     
+  
   lmt_all_sct **lmt_mult=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
   
   var_sct var;
-
+  
   /* Initialize units string, overwrite later if necessary */
   unit_sng=&nul_chr;
-
+  
   /* Get var_id for requested variable */
   var.nm=(char *)strdup(var_nm);
   var.nc_id=in_id;
@@ -737,7 +735,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       (void)nco_get_var1(in_id,var.id,0L,var.val.vp,var.type);
     } /* end potential OpenMP critical */
   } /* end if */
-
+  
   dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));
   lmt_mult=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
@@ -754,24 +752,24 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         break;
       } /* end if */
     } /* end loop over jdx */
-
+  
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
   /* Call also initializes var.sz with final size */
-
+  
   /* User supplied dlm_sng, print var (includes nbr_dmim == 0) */  
   if(dlm_sng != NULL){
     /* Print each element with user-supplied formatting code */
     /* Replace C language '\X' escape codes with ASCII bytes */
     (void)sng_ascii_trn(dlm_sng);
-
+    
     /* Assume -s argument (dlm_sng) formats entire string
        Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
        and that user is only allowed to affect text between fields. 
        This would be accomplished with:
        (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
-
+    
     for(lmn=0;lmn<var.sz;lmn++){
       switch(var.type){
       case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var.val.fp[lmn]); break;
@@ -790,16 +788,16 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       } /* end switch */
     } /* end loop over element */
     (void)fprintf(stdout,"\n");
-
+    
   } /* end if dlm_sng */
-
+  
   if(PRN_DMN_UNITS){
     const char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
     long att_sz;
     nc_type att_typ;
-
+    
     /* Does variable have character attribute named units_nm? */
     rcd_lcl=nco_inq_attid_flg(in_id,var.id,units_nm,&att_id);
     if(rcd_lcl == NC_NOERR){
@@ -812,7 +810,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       } /* end if */
     } /* end if */
   } /* end if PRN_DMN_UNITS */
-
+  
   if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is scalar, byte, or character */
     lmn=0;
@@ -840,35 +838,35 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* end if variable is scalar, byte, or character */
-
+  
   if(var.nbr_dim > 0 && dlm_sng == NULL){
     long *mod_map_in;
     long *mod_map_out;
     long *dmn_sbs_ram; /* Indices in hyperslab */
     long *dmn_sbs_dsk; /* Indices of hyperslab relative to original on disk */  
     long var_dsk;
-
+    
     mod_map_in=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     mod_map_out=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-
+    
     /* Create mod_map_in */
     for(idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
     for(idx=0;idx<var.nbr_dim;idx++)
       for(jdx=idx+1;jdx<var.nbr_dim;jdx++)
 	mod_map_in[idx]*=lmt_mult[jdx]->dmn_sz_org;
-       
+    
     /* Create mod_map_out */
     for(idx=0;idx< var.nbr_dim;idx++) mod_map_out[idx]=1L;
     for(idx=0;idx< var.nbr_dim;idx++) 
       for(jdx=idx;jdx<var.nbr_dim;jdx++)
 	mod_map_out[idx]*=lmt_mult[jdx]->dmn_cnt;
-      
+    
     /* Read in co-ord dims if required */
     if(PRN_DMN_IDX_CRD_VAL){
       var_sct var_crd;
-
+      
       dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
       for(idx=0;idx <var.nbr_dim;idx++){
 	dim[idx].val.vp=NULL;
@@ -880,7 +878,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
           dim[idx].cid=-1;
           continue;
         } /* end if */
-	  
+	
         dim[idx].is_crd_dmn=True;
         (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
         var_crd.nc_id=in_id;
@@ -890,34 +888,34 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         /* Read in coordinate var with limits applied */
 	/* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
 	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx,&var_crd);
-
+	
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
       }/* end for */
     } /* end if */
-   
+    
     for(lmn=0;lmn<var.sz;lmn++){
-
+      
       /* Caculate RAM indices from current limit */
       for(idx=0;idx <var.nbr_dim;idx++) 
 	dmn_sbs_ram[idx]=(lmn%mod_map_out[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_out[idx+1]);
       /* Calculate disk indices from RAM indices */
       (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_mult,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
-     
+      
       /* Find variable index relative to disk */
       var_dsk=0;
       for(idx=0;idx <var.nbr_dim;idx++)	var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
-
+      
       /* Skip rest of loop unless element is first in string */
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] > 0) goto lbl_chr_prn;
-             
+      
       /* Print dimensions with indices along with values if they are coordinate variables */
       if(PRN_DMN_IDX_CRD_VAL){
         int dmn_idx;
         long dmn_sbs_prn;
 	long crd_idx_crr;
 	char dmn_sng[NCO_MAX_LEN_FMT_SNG];
-      
+	
 	/* Loop over dimensions whose coordinates are to be printed */
 	for(idx=0;idx<var.nbr_dim;idx++){
 	  
@@ -930,15 +928,15 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	    if(FORTRAN_IDX_CNV) (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
 	    continue;
 	  } /* end if */
-               
+	  
 	  (void)sprintf(dmn_sng,"%%s[%%ld]=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
-
+	  
 	  if(FORTRAN_IDX_CNV){
             (void)nco_msa_c_2_f(dmn_sng);
 	    dmn_sbs_prn++;
 	  } /* end if */
-         
+	  
 	  /* Account for hyperslab offset in coordinate values*/
 	  crd_idx_crr=dmn_sbs_ram[dmn_idx];
 	  switch(dim[dmn_idx].type){
@@ -961,7 +959,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       
       /* Print all characters in last dimension each time penultimate dimension subscript changes to its start value */
     lbl_chr_prn:
-
+      
       if(var.type == NC_CHAR){
         static nco_bool NULL_IN_SLAB;
 	static char *prn_sng;
@@ -969,7 +967,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         static long dmn_sz;
         static long var_dsk_srt;
         static long var_dsk_end;
-
+	
         /* At beginning of character array */
 	if(dmn_sbs_ram[var.nbr_dim-1] == 0L) {
           dmn_sz=lmt_mult[var.nbr_dim-1]->dmn_cnt;
@@ -979,14 +977,14 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
           chr_cnt=0;
           NULL_IN_SLAB=False;
 	} /* end if */
-
+	
 	/* In middle of array---save characters to prn_sng */
 	prn_sng[chr_cnt++]=var.val.cp[lmn];
         if(var.val.cp[lmn] == '\0' && !NULL_IN_SLAB){
 	  var_dsk_end=var_dsk;
 	  NULL_IN_SLAB=True;
 	} /* end if */
-
+	
         /* At end of character array */
         if(dmn_sbs_ram[var.nbr_dim-1] == dmn_sz-1 ){
 	  if(NULL_IN_SLAB){
@@ -1008,14 +1006,14 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         } /* endif */
 	continue;
       } /* end if NC_CHAR */
-
+      
       /* Print variable name, index, and value */
       (void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type));
       if(FORTRAN_IDX_CNV){
 	(void)nco_msa_c_2_f(var_sng);
 	var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
-
+      
       switch(var.type){
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
       case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
@@ -1032,19 +1030,19 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over elements */
-
+    
     (void)nco_free(mod_map_in);
     (void)nco_free(mod_map_out);
     (void)nco_free(dmn_sbs_ram);
     (void)nco_free(dmn_sbs_dsk);
-
+    
     /* Additional newline between consecutive variables or final variable and prompt */
     (void)fprintf(stdout,"\n");
     (void)fflush(stdout);
   } /* end if variable has more than one dimension */
   var.val.vp=nco_free(var.val.vp);
   var.nm=(char *)nco_free(var.nm);
- 
+  
   if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);
   if(var.nbr_dim > 0){
     (void)nco_free(dmn_id);
@@ -1054,33 +1052,33 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   if(PRN_DMN_IDX_CRD_VAL && dlm_sng==NULL){
     for(idx=0;idx<var.nbr_dim;idx++)
       dim[idx].val.vp=nco_free(dim[idx].val.vp);
-
+    
     dim=(dmn_sct *)nco_free(dim);
   } /* end if */
-
+  
 } /* end nco_msa_prn_var_val() */
 
 void         /* Initilaize lmt_all_sct's */ 
 nco_msa_lmt_all_int(
-int in_id,
-nco_bool MSA_USR_RDR,
-lmt_all_sct **lmt_all_lst,
-int nbr_dmn_fl,
-lmt_sct** lmt,
-int lmt_nbr){
-
-int idx;
-int jdx;
-
-long dmn_sz;
-char dmn_nm[NC_MAX_NAME];
-
-lmt_sct *lmt_rgl;
-lmt_all_sct * lmt_all_crr;
-
- /* Unlimited dimensions are stored in */
+		    int in_id,
+		    nco_bool MSA_USR_RDR,
+		    lmt_all_sct **lmt_all_lst,
+		    int nbr_dmn_fl,
+		    lmt_sct** lmt,
+		    int lmt_nbr){
+  
+  int idx;
+  int jdx;
+  
+  long dmn_sz;
+  char dmn_nm[NC_MAX_NAME];
+  
+  lmt_sct *lmt_rgl;
+  lmt_all_sct * lmt_all_crr;
+  
+  /* Unlimited dimensions are stored in */
   // lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
-
+  
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
     lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
@@ -1092,7 +1090,7 @@ lmt_all_sct * lmt_all_crr;
     lmt_all_crr->BASIC_DMN=True;
     lmt_all_crr->MSA_USR_RDR=False;    
     
-     
+    
     lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
     /* Dereference */
     lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
@@ -1110,7 +1108,7 @@ lmt_all_sct * lmt_all_crr;
     /* A hack so we know structure has been initialized */
     lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
-
+  
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
@@ -1139,10 +1137,10 @@ lmt_all_sct * lmt_all_crr;
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   for(idx=0;idx<nbr_dmn_fl;idx++){
     nco_bool bovl;
-
+    
     /* Split-up wrapped limits */   
     (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
-
+    
     /* NB: Wrapped hyperslabs are dimensions broken into the "wrong" order,
        e.g., from -d time,8,2 broken into -d time,8,9 -d time,0,2
        WRP flag set only when list contains dimensions split as above */
@@ -1151,13 +1149,13 @@ lmt_all_sct * lmt_all_crr;
       (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
       continue;
     } /* endif */
-
+    
     /* Single slab---no analysis needed */  
     if(lmt_all_lst[idx]->lmt_dmn_nbr == 1){
       (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
       continue;    
     } /* endif */
-
+    
     if(MSA_USR_RDR){
       lmt_all_lst[idx]->MSA_USR_RDR=True;
       /* Find and store size of output dimension */  
@@ -1176,11 +1174,5 @@ lmt_all_sct * lmt_all_crr;
     
     if(bovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
   } /* end idx */    
- 
-
+  
 } /* end nco_msa_lmt_all_int */
-
-
-
-
-

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.48 2008-01-06 13:09:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.49 2008-03-02 15:26:45 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -42,7 +42,7 @@ nco_srt_lph /* [fnc] Sort array of strings */
 nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 (nm_id_sct *lst, /* I/O [sct] Current list (destroyed) */
- const int nbr_lst, /* I [nbr] number of members in list */
+ const int nbr_lst, /* I [nbr] Number of members in list */
  const nco_bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
 {
   /* Purpose: Sort extraction lists numerically or alphabetically
@@ -105,7 +105,7 @@ char ** /* O [sng] Array of list elements */
 nco_lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter */
 (char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
  const char * const dlm_sng, /* I [sng] Delimiter string */
- int * const nbr_lst) /* O [nbr] number of elements in list */
+ int * const nbr_lst) /* O [nbr] Number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
      Routine is often called with system memory, e.g., with strings from
@@ -191,7 +191,7 @@ char ** /* O [sng] List of strings */
 nco_lst_prs_2D /* [fnc] Create list of strings from given string and delimiter */
 (const char * const sng_in, /* I [sng] Delimited argument list */
  const char * const dlm_sng, /* I [sng] Delimiter string */
- int * const nbr_lst) /* O [nbr] number of elements in list */
+ int * const nbr_lst) /* O [nbr] Number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
      Algorithm recursively copies all text up to delimiter into new string and
