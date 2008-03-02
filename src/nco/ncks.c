@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.208 2008-02-28 10:52:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.209 2008-03-02 14:25:33 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.208 2008-02-28 10:52:34 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.208 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.209 2008-03-02 14:25:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.209 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -444,13 +444,10 @@ main(int argc,char **argv)
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
     
   /* We now have final list of variables to extract. Phew. */
-  
 
-   for(idx=0;idx<lmt_nbr;idx++)
-    /* Find coordinate/dimension values associated with user-specified limits
+  /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
-    
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));

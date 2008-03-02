@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.101 2008-02-13 11:29:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.102 2008-03-02 14:25:33 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
 /* Copyright (C) 1995--2008 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 // Standard C++ headers

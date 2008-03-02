@@ -1,3 +1,7 @@
+2008-03-02  Charlie Zender  <zender@uci.edu>
+
+	* Change malingering GPL2 files to GPL3
+
 2008-02-22  Charlie Zender  <zender@uci.edu>
 
 	* Add auxiliary coordinate test variables to in.cdl
