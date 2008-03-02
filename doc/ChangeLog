@@ -1,5 +1,7 @@
 2008-03-02  Charlie Zender  <zender@uci.edu>
 
+	* Compiler warning message cleanup for ncks.c, nco_msa.c, nco_aux.c
+
 	* Change malingering GPL2 files to GPL3
 
 2008-02-22  Charlie Zender  <zender@uci.edu>

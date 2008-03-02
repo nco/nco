@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.209 2008-03-02 14:25:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.210 2008-03-02 14:36:21 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -115,10 +115,9 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.209 2008-03-02 14:25:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.209 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.210 2008-03-02 14:36:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.210 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -155,8 +154,6 @@ main(int argc,char **argv)
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
-
-  long dmn_sz;
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
@@ -454,8 +451,6 @@ main(int argc,char **argv)
   
   /* Initilize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-
-
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
@@ -500,7 +495,6 @@ main(int argc,char **argv)
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
     int out_id;  
     
-    /* Allow user to override format consanguinity with, e.g., -3 switch */
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
