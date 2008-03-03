@@ -163,7 +163,7 @@ public:
 
 //PDQ Functions /****************************************/
 class pdq_cls: public vtl_cls {
-private:
+private: 
    enum {PREVERSE,PPERMUTE };
    bool _flg_dbg;
 public:
@@ -177,7 +177,7 @@ public:
 //Mask Function /****************************************/
 class msk_cls: public vtl_cls {
 private:
-   enum {PMASK, PMASK_CLIP };
+   enum {PMASK1, PMASK_CLIP };
    bool _flg_dbg;
 public:
   msk_cls(bool flg_dbg);
