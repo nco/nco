@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.468 2008-03-03 13:09:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.469 2008-03-03 15:50:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -100,9 +100,11 @@ Send it in!<br>
 <dt><a name="News"></a><a name="news"></a></dt>
 <h2>NCO News &amp; Announcements</h2>
 
+
+<ul>
 <li>March&nbsp;4, 2008: NCO 3.9.4 released</li>
 
-<ul>December&nbsp;10, 2007: SWAMP <a href="http://dust.ess.uci.edu/ppr/pst_WZJ074.pdf">Poster</a> IN11B-0469 at Fall AGU</li>
+<li>December&nbsp;10, 2007: SWAMP <a href="http://dust.ess.uci.edu/ppr/pst_WZJ074.pdf">Poster</a> IN11B-0469 at Fall AGU</li>
 
 <li>December&nbsp;7, 2007: NCO 3.9.3 released (and SWAMP!)</li>
 
