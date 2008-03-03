@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.53 2008-03-02 15:26:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.54 2008-03-03 11:49:30 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -434,8 +434,8 @@ nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
 (const void * vp1, /* I [sct] lmt_sct to compare */
  const void * vp2) /* I [sct] lmt_sct to compare */
 {
-  const lmt_sct * const lmt1=*((const lmt_sct **)vp1);
-  const lmt_sct * const lmt2=*((const lmt_sct **)vp2); 
+  const lmt_sct * const lmt1=*((const lmt_sct * const *)vp1);
+  const lmt_sct * const lmt2=*((const lmt_sct * const *)vp2); 
   /* fxm: need to compiler warnings. will following work?
       const lmt_sct * const lmt1=(const lmt_sct *)vp1;
       const lmt_sct * const lmt2=(const lmt_sct *)vp2; */
