@@ -1035,7 +1035,7 @@
   msk_cls::msk_cls(bool flg_dbg){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
-      fmc_vtr.push_back( fmc_cls("mask",this,(int)PMASK));
+      fmc_vtr.push_back( fmc_cls("mask",this,(int)PMASK1));
       fmc_vtr.push_back( fmc_cls("mask_clip",this,(int)PMASK_CLIP));
 
 
@@ -1087,7 +1087,7 @@
     if(prs_arg->ntl_scn) {
 
       switch(fdx) {
-        case PMASK:
+        case PMASK1:
 	     var_msk=nco_var_cnf_typ(var->type,var_msk);     
              var=nco_var_free(var);
              return var_msk; 
@@ -1150,7 +1150,7 @@
       } 
       break; 
 
-    case PMASK: {
+    case PMASK1: {
       //convert to ints
       char *cp_in;
       char *cp_out;
