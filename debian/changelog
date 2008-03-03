@@ -1,3 +1,9 @@
+nco (3.9.4-1) sid; urgency=low
+
+  * new upstream version (-3, -X, --msa_usr_rdr, ncap2 mask, WIN32)
+
+ -- Charlie Zender <zender@uci.edu>  Mon, 03 Mar 2008 14:03:30 +0100
+
 nco (3.9.3-1) gutsy; urgency=low
 
   * new upstream version (SWAMP, ncecat -u, wget, ncap OpenMP, GCC 4.2)

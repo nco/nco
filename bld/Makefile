@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.451 2008-01-07 13:30:00 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.452 2008-03-03 13:09:13 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1502,7 +1502,7 @@ libnco_c++_tst:   ${MY_BLD_DIR}/libnco_c++_tst
 ${MY_BLD_DIR}/libnco_c++_tst:	${MY_BLD_DIR}/libnco_c++_tst.o lib
 	${CXX} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=3.9.3 rpm
+rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=3.9.4 rpm
 # 	Building NCO RPM requires following packages
 #       rpm -q bison flex netcdf-devel libtool automake autoconf udunits udunits-devel curl-devel libxml2 libxml2-devel librx-devel 
 #       sudo yum install bison flex netcdf-devel libtool automake autoconf udunits udunits-devel curl-devel libxml2 libxml2-devel librx-devel

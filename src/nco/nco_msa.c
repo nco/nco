@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.54 2008-03-03 11:49:30 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.55 2008-03-03 13:09:17 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -445,13 +445,13 @@ nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
 
 void nco_msa_qsort_srt(lmt_all_sct *lmt_lst)
 {
-  long sz;
   lmt_sct **lmt;
+  long sz;
   
   sz=lmt_lst->lmt_dmn_nbr;
   lmt=lmt_lst->lmt_dmn;
   
-  if(sz <=1 ) return;
+  if(sz <= 1) return;
   
   (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
 }

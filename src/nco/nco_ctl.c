@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.207 2008-02-19 10:58:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.208 2008-03-03 13:09:17 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -929,7 +929,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncflint) (void)fprintf(stdout,"-w, --wgt_var, --weight wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
   if(strstr(opt_sng,"-X")){
-    if(prg_lcl == ncks) (void)fprintf(stdout,"-X, --auxiliary lon_min,lat_min,lon_max,lat_max\tAuxiliary coordinate hyperslab specification (CF format)\n");
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-X, --auxiliary lon_min,lon_max,lat_min,lat_max\tAuxiliary coordinate hyperslab specification (CF format)\n");
   } /* end if -X */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x, --xcl, --exclude\tExtract all variables EXCEPT those specified with -v\n");
   if(strstr(opt_sng,"-y")){

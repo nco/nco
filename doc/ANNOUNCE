@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.279 2008-02-19 10:58:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.280 2008-03-03 13:09:14 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.3 are ready. 
+The netCDF operators NCO version 3.9.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -9,48 +9,48 @@ This release includes numerous minor fixes and improvements to netCDF4
 capability, adds more polish to ncap2, and improves the ncks
 multi-slabbing algorithm (MSA).
 
-   Operators given -3 switch will (attempt to) produce netCDF3 output,
+A. Operators given -3 switch will (attempt to) produce netCDF3 output,
    even if input files are netCDF4. Converse of -4 switch behavior.
    Same as --fl_fmt=classic
 
-   ncks supports hyperslab specification with CF auxiliary coordinates
+B. ncks supports hyperslab specification with CF auxiliary coordinates
+   for standard_name=latitude, longitude. (Karen Schuchardt)
    http://nco.sf.net/nco.html#aux
-   Thanks to Karen Schuchardt.
 
-   New ncks Multi-slabbing algorithm (MSA) switch:
-   When --msa_usr_rdr (MSA user order) is specified, the hyperslabbed
-   coordinate(s) will appear in the output file in the order of the
+C. New ncks Multi-slabbing algorithm (MSA) switch:
+   When --msa_usr_rdr (MSA user order) is specified, hyperslabbed
+   coordinate(s) will appear in the output file in the order of the 
    input multi-slabs. The output coordinate will only be monotonic
    if the user specifies the multi-slabs in a monotonic order.
    This option significantly improves performance on complex
-   multi-slab operations.
+   multi-slab operations. (Henry Butowsky)
 
-   Cleanup cygwin builds for WIN32
+D. Cleanup cygwin builds for WIN32
 
-   OpenMP builds of ncap2 with pgCC
+E. OpenMP builds of ncap2 with pgCC
 
-   AIX configure finds atan2() for ncap2
+F. AIX configure finds atan2() for ncap2
 
-A. mpncrcat works with netCDF4 (thanks to Takeshi Enomoto)
+G. mpncrcat works with netCDF4 (Takeshi Enomoto)
 
-B. File "consanguinity": output file format defaults to input format
+H. File "consanguinity": output file format defaults to input format
 
-C. ncks prints netCDF4 LZ compression information to stdout
+I. ncks prints netCDF4 LZ compression information to stdout
    http://nco.sf.net/nco.html#ncks
 
-D. ncap2 uses OpenMP more, writes nco_openmp_thread_number (Henry Butowsky)
+J. ncap2 uses OpenMP more, writes nco_openmp_thread_number (Henry Butowsky)
    http://nco.sf.net/nco.html#openmp
 
-E. ncap2 prints attributes, supports atan2() and pow() (Henry Butowsky)
+K. ncap2 prints attributes, supports atan2() and pow() (Henry Butowsky)
    Demonstration scripts ~/nco/data/ncap2_tst.nco
 
-F. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
+L. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian
 
-G. Pre-built, up-to-date, RPM packages are available.
+M. Pre-built, up-to-date, RPM packages are available.
    http://nco.sf.net#rpm
 
-H. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
+N. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    SWAMP efficiently schedules and executes NCO scripts on remote servers: 
 
    http://swamp.googlecode.com
@@ -60,12 +60,12 @@ H. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    client before you analyze it, then SWAMP may speed things up.
    Try SWAMP give us your feedback.
 
-I. Reminder: NCO support for netCDF4 features is tracked at
+O. Reminder: NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
    NCO currently supports netCDF4 atomic data types and compression.
-   NCO 3.9.3 with netCDF4 support should work with HDF5 1.8 beta2 
+   NCO 3.9.4 with netCDF4 support should work with HDF5 1.8 beta2 
    and netCDF4 snapshot20070822 and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
