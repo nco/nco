@@ -1,4 +1,4 @@
-2008-03-03  Charlie Zender  <zender@uci.edu>
+2008-03-04  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_4;cvs tag -d nco-3_9_4-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.4 release"

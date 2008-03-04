@@ -1,23 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.280 2008-03-03 13:09:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.281 2008-03-04 13:43:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release includes numerous minor fixes and improvements to netCDF4
-capability, adds more polish to ncap2, and improves the ncks
-multi-slabbing algorithm (MSA).
+This release improves the NCO multi-slabbing algorithm (MSA),
+supports CF-convention auxiliary lat+lon coordinates,
+synchronizes with the latest netCDF4 beta releases, 
+and adds powerful new masking capabilities to ncap2.
 
-A. Operators given -3 switch will (attempt to) produce netCDF3 output,
-   even if input files are netCDF4. Converse of -4 switch behavior.
-   Same as --fl_fmt=classic
-
-B. ncks supports hyperslab specification with CF auxiliary coordinates
+A. ncks supports hyperslab specification with CF auxiliary coordinates
    for standard_name=latitude, longitude. (Karen Schuchardt)
    http://nco.sf.net/nco.html#aux
 
-C. New ncks Multi-slabbing algorithm (MSA) switch:
+B. New ncks Multi-slabbing algorithm (MSA) switch:
    When --msa_usr_rdr (MSA user order) is specified, hyperslabbed
    coordinate(s) will appear in the output file in the order of the 
    input multi-slabs. The output coordinate will only be monotonic
@@ -25,15 +22,19 @@ C. New ncks Multi-slabbing algorithm (MSA) switch:
    This option significantly improves performance on complex
    multi-slab operations. (Henry Butowsky)
 
-D. Cleanup cygwin builds for WIN32
+C. Operators given -3 switch will (attempt to) produce netCDF3 output,
+   even if input files are netCDF4. Converse of -4 switch behavior.
+   Same as --fl_fmt=classic
 
-E. OpenMP builds of ncap2 with pgCC
+D. File "consanguinity": output file format defaults to input format
 
-F. AIX configure finds atan2() for ncap2
+E. Cleanup cygwin builds for WIN32
 
-G. mpncrcat works with netCDF4 (Takeshi Enomoto)
+F. OpenMP builds of ncap2 with pgCC
 
-H. File "consanguinity": output file format defaults to input format
+G. AIX configure finds atan2() for ncap2
+
+H. mpncrcat works with netCDF4 (Takeshi Enomoto)
 
 I. ncks prints netCDF4 LZ compression information to stdout
    http://nco.sf.net/nco.html#ncks
