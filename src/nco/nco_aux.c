@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.15 2008-03-02 15:26:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.16 2008-03-04 22:52:05 zender Exp $ */
 
 /* Copyright (C) 1995--2008 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -56,7 +56,7 @@ nco_find_lat_lon
   rcd=nco_inq_nvars(nc_id,&nvars);
   
   /* For each variable, see if standard name is latitude or longitude */
-  for (idx=0;idx<nvars && ret<2;idx++){
+  for(idx=0;idx<nvars && ret<2;idx++){
     nco_inq_var(nc_id,idx,name,&var_type,&var_ndims,var_dimids,&var_natts);
     lenp=0;
     if(!nco_inq_attlen_flg(nc_id,idx,"standard_name",&lenp)){
@@ -69,7 +69,7 @@ nco_find_lat_lon
 	/* Get units; assume same for both lat and lon */
 	rcd=nco_inq_attlen(nc_id,idx,"units",&lenp);
 	if (rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl: CF convention requires \"latitude\" to have units attribute\n");
-	*units = nco_malloc((lenp+1L) * sizeof(char*));
+	*units=nco_malloc((lenp+1L)*sizeof(char*));
 	NCO_GET_ATT_CHAR(nc_id,idx,"units",*units);
 	units[lenp] = '\0';
 	

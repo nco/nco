@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.999 2008-03-04 15:28:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1000 2008-03-04 22:51:58 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -633,12 +633,12 @@ nco922. ncbo with OpenMP on netCDF4 files fails (not with netCDF3 in.nc):
 	ncbo -O -t 2 -D 4 -p ${HOME}/aca swnb.nc swnb.nc ~/foo.nc # fails
 nco923. OPTS=D and OPTS=R should not do -O4 optimization on nco++
 nco924. Document ncks --msa_usr_rdr
-nco925. "units" value needs dynamically allocated size in nco_aux.c
 nco927. regression test for -X auxiliary coordinates:
 	ncks -X 0,45,0,90 -X 180,225,-90,0 ~/nco/data/in.nc ~/foo.nc
 nco928. Add -X to docs
 nco929. drop ncap, or, rather, link it to ncap2, next release
-nco930. 
+nco930. ERROR: ld.so: object 'libfakeroot-sysv.so' from LD_PRELOAD cannot be preloaded: ignored.
+nco931. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

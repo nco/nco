@@ -1,5 +1,7 @@
 2008-03-04  Charlie Zender  <zender@uci.edu>
 
+	* Add man pages to tags
+
 	* cd ~/nco;cvs tag -d nco-3_9_4;cvs tag -d nco-3_9_4-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.4 release"
 	  cvs tag -c nco-3_9_4;cvs tag -c nco-3_9_4-1
