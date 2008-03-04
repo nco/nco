@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.18 2008-02-21 10:25:42 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.19 2008-03-04 15:28:38 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -47,6 +47,30 @@ const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in functio
 
   /* Define compatibility tokens when user does not have netCDF4 */
 #ifndef ENABLE_NETCDF4
+
+/* Single compatibility token new to netCDF4 netcdf.h */
+# define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
+/* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
+   NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */
+# ifndef NC_64BIT_OFFSET
+#  define NC_64BIT_OFFSET (0x0200) /* Use large (64-bit) file offsets */
+# endif
+# ifndef NC_CLASSIC_MODEL
+#  define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
+# endif
+# ifndef NC_FORMAT_CLASSIC
+#  define NC_FORMAT_CLASSIC (1)
+# endif
+# ifndef NC_FORMAT_64BIT
+#  define NC_FORMAT_64BIT   (2)
+# endif
+# ifndef NC_FORMAT_NETCDF4
+#  define NC_FORMAT_NETCDF4 (3)
+# endif
+# ifndef NC_FORMAT_NETCDF4_CLASSIC
+#  define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+# endif
+
 /* Datatypes referenced in nco_typ.h, nco_netcdf.c: */
 #define	NC_UBYTE 	7	/* unsigned 1 byte int */
 #define	NC_USHORT 	8	/* unsigned 2-byte int */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.998 2008-03-04 13:50:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.999 2008-03-04 15:28:36 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -637,6 +637,8 @@ nco925. "units" value needs dynamically allocated size in nco_aux.c
 nco927. regression test for -X auxiliary coordinates:
 	ncks -X 0,45,0,90 -X 180,225,-90,0 ~/nco/data/in.nc ~/foo.nc
 nco928. Add -X to docs
+nco929. drop ncap, or, rather, link it to ncap2, next release
+nco930. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.103 2008-03-02 15:26:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.104 2008-03-04 15:28:37 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -620,7 +620,6 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   
   var2=nco_var_free(var2);
 
-
   return var1;
 } /* end ncap_var_var_mod() */
 
@@ -633,11 +632,10 @@ ncap_var_var_atan2
   long sz;
   bool has_mss_val=false;
   double mss_val_dbl;
-  ptr_unn op1,op2,mss_val;
+  ptr_unn op1,op2;
 
   const char fnc_nm[]="ncap_var_var_atan2"; 
-  if(dbg_lvl_get() >= 4) 
-      dbg_prn(fnc_nm,"Entered function");
+  if(dbg_lvl_get() >= 4) dbg_prn(fnc_nm,"Entered function");
 
   sz=var1->sz;
 
@@ -679,12 +677,9 @@ ncap_var_var_atan2
   return var1;
 } /* end ncap_var_var_atan2 */
 
-
-
-
 var_sct *        /* O [sct] Resultant variable (actually is var) */
-ncap_var_abs(    /* Purpose: Find absolute value of each element of var */
-	     var_sct *var)    /* I/O [sct] input variable */
+ncap_var_abs /* Purpose: Find absolute value of each element of var */
+(var_sct *var)    /* I/O [sct] input variable */
 {
   
   if(var->undefined) return var;
@@ -779,10 +774,10 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
 } /* end ncap_var_var_pwr() */
 
 var_sct *           /* O [sct] Resultant variable (actually is var_in) */
-ncap_var_fnc(   
-var_sct *var_in,    
-double(*fnc_dbl)(double),
-float(*fnc_flt)(float))
+ncap_var_fnc
+(var_sct *var_in,    
+ double(*fnc_dbl)(double),
+ float(*fnc_flt)(float))
 {
   /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
      Float and double functions are in app */
@@ -841,12 +836,11 @@ float(*fnc_flt)(float))
   return var_in;
 } /* end ncap_var_fnc() */
 
-
-
-void ncap_lmt_evl( 
-int nc_id,
-lmt_sct* lmt_ptr,
-prs_cls *prs_arg){
+void 
+ncap_lmt_evl
+(int nc_id,
+ lmt_sct* lmt_ptr,
+ prs_cls *prs_arg){
 
 long cnt_dmn;
 long srt;
@@ -875,8 +869,6 @@ dmn_vtr=(nc_id==prs_arg->in_id ? prs_arg->dmn_in_vtr: prs_arg->dmn_out_vtr);
   srt=( lmt_ptr->is_usr_spc_min ? lmt_ptr->srt:0L);
   end=( lmt_ptr->is_usr_spc_max ? lmt_ptr->end:cnt_dmn-1);
   srd=( lmt_ptr->srd_sng!=NULL_CEWI  ? lmt_ptr->srd:1L);  
-
-  
  
   // do error checking 
   if(prs_arg->FORTRAN_IDX_CNV){ 

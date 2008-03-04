@@ -1,5 +1,8 @@
 2008-03-04  Charlie Zender  <zender@uci.edu>
 
+	* Make netCDF4 changes to libnco_c++ back-compatible with 
+	  netcdf 3.6.1 still widely used including by FC DAP RPMs.
+
 	* cd ~/nco;cvs tag -d nco-3_9_4;cvs tag -d nco-3_9_4-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.4 release"
 	  cvs tag -c nco-3_9_4;cvs tag -c nco-3_9_4-1

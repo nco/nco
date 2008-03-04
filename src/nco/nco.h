@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.128 2008-02-18 15:51:45 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.129 2008-03-04 15:28:37 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -182,7 +182,7 @@ extern "C" {
 /* Single compatibility token new to netCDF4 netcdf.h */
 # define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
 /* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
-   NC_64BIT_OFFSET must be defined only in nco_fl_utl.c */
+   NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */
 # ifndef NC_64BIT_OFFSET
 #  define NC_64BIT_OFFSET (0x0200) /* Use large (64-bit) file offsets */
 # endif
