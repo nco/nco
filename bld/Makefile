@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.452 2008-03-03 13:09:13 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.453 2008-03-04 22:26:09 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -80,7 +80,7 @@ ifndef MY_LIB_DIR
  MY_LIB_DIR := ../lib
 endif
 ifndef MY_MAN_DIR
- MY_MAN_DIR := /usr/local/man
+ MY_MAN_DIR := ../man
 endif
 ifndef MY_OBJ_DIR
  MY_OBJ_DIR := ../obj
@@ -432,7 +432,7 @@ MDL_DOC_SRC := $(addprefix ../,acinclude.m4 configure.in configure.eg Makefile.a
 MDL_DOC_TRG := nco.dvi nco.html nco.info nco.pdf nco.ps nco.txt nco.xml # `make doc' creates these files
 MDL_DOC := $(addprefix ${MY_DOC_DIR}/,${MDL_DOC_TRG}) # `make distclean' removes these files
 
-MDL_MAN = $(wildcard ${MDL_MAN_DIR}/*.1)
+MDL_MAN := $(wildcard ${MY_MAN_DIR}/*.1)
 MDL_MAN := $(notdir ${MDL_MAN})
 MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these files
 
@@ -1714,6 +1714,7 @@ dbg:
 	@printf "LINUX_CXX = $(LINUX_CXX)\n"
 	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
+	@printf "MDL_MAN = ${MDL_MAN}\n"
 	@printf "MDL_MPI_TRG = ${MDL_MPI_TRG}\n"
 	@printf "MDL_OBJ = ${MDL_OBJ}\n"
 	@printf "MDL_PTH = ${MDL_PTH}\n"
@@ -1733,6 +1734,7 @@ dbg:
 	@printf "MY_DPN_DIR = ${MY_DPN_DIR}\n"
 	@printf "MY_INC_DIR = ${MY_INC_DIR}\n"
 	@printf "MY_LIB_DIR = ${MY_LIB_DIR}\n"
+	@printf "MY_MAN_DIR = ${MY_MAN_DIR}\n"
 	@printf "MY_OBJ_DIR = ${MY_OBJ_DIR}\n"
 	@printf "NCO_LDFLAGS = $(NCO_LDFLAGS)\n"
 	@printf "NCO_LIBS = $(NCO_LIBS)\n"
@@ -1769,7 +1771,7 @@ dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f in.nc in_rec_zero.nc *~
 tags: 
-	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC}
+	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC}
 
 # Reset internal YACC and LEX patterns
 %.c : %.y
