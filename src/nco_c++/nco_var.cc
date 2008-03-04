@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.27 2008-01-06 13:09:58 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.28 2008-03-04 15:43:26 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -504,7 +504,6 @@ nco_put_vara // [fnc] Write variable to netCDF file
   return rcd;
 } // end nco_put_vara<size_t *,size_t *,unsigned long long *>()
 
-#if 0
 int // O [enm] Return success code
 nco_put_vara // [fnc] Write variable to netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
@@ -518,7 +517,6 @@ nco_put_vara // [fnc] Write variable to netCDF file
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,char * *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_vara<size_t *,size_t *,char * *>()
-#endif // !0 20070514 Function not in netCDF4-beta1
 #endif // !ENABLE_NETCDF4
 
 // End nco_put_vara() overloads
@@ -887,7 +885,6 @@ nco_put_var // [fnc] Write variable to netCDF file
   return rcd;
 } // end nco_put_var<unsigned long long>()
 
-#if 0
 int // O [enm] Return success code
 nco_put_var // [fnc] Write variable to netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
@@ -900,7 +897,6 @@ nco_put_var // [fnc] Write variable to netCDF file
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<char *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<char *>()
-#endif // !0 20070514 Function not in netCDF4-beta1
 #endif // !ENABLE_NETCDF4
 
 // End nco_put_var() overloads

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.24 2008-01-06 13:09:59 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.25 2008-03-04 15:43:27 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -323,7 +323,6 @@ nco_put_vara // [fnc] Write variable to netCDF file
  const unsigned long long * const &var_val); // I [frc] Variable value
 // end nco_put_vara<size_t *,size_t *,unsigned long long *>() prototype
 
-#if 0
 int // O [enm] Return success code
 nco_put_vara // [fnc] Write variable to netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
@@ -332,7 +331,6 @@ nco_put_vara // [fnc] Write variable to netCDF file
  const size_t * const &var_cnt, // I [nbr] Count vector
  const char * * const &var_val); // I [frc] Variable value
 // end nco_put_vara<size_t *,size_t *,char * *>() prototype
-#endif // !0 20070514 Function not in netCDF4-beta1
 #endif // !ENABLE_NETCDF4
 
 // Overload 2: Write array given name, start, count vectors

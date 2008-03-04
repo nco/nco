@@ -1,13 +1,15 @@
 2008-03-04  Charlie Zender  <zender@uci.edu>
 
-	* Make netCDF4 changes to libnco_c++ back-compatible with 
-	  netcdf 3.6.1 still widely used including by FC DAP RPMs.
-
 	* cd ~/nco;cvs tag -d nco-3_9_4;cvs tag -d nco-3_9_4-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.4 release"
 	  cvs tag -c nco-3_9_4;cvs tag -c nco-3_9_4-1
 	  Changes since nco-3_9_3: -3, -X, --msa_usr_rdr, ncap2 mask, WIN32
 	
+	* Make netCDF4 changes to libnco_c++ back-compatible with 
+	  netcdf 3.6.1 still widely used including by FC DAP RPMs.
+
+	* Add netCDF4 put_varx_string() functions to nco_c++
+
 2008-03-02  Charlie Zender  <zender@uci.edu>
 
 	* Compiler warning message cleanup for ncks.c, nco_msa.c, nco_aux.c
