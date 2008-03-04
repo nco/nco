@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.469 2008-03-03 15:50:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.470 2008-03-04 21:55:41 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -476,10 +476,11 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.9.4</b>: (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.5</b>: (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.4</b>: 
 File consanguinity;
-<tt>ncap2</tt>: arbitrary hyperslabs, print attributes, more OpenMP, <tt>atan2()</tt>, <tt>pow()</tt>;
-<tt>ncks</tt>: CF auxiliary coordinates, print LZ compression, 
+<tt>ncks</tt>: CF auxiliary coords, LZ stats
+<tt>ncap2</tt>: masks, index arrays, print attributes, OpenMP, <tt>atan2()</tt>, <tt>pow()</tt>;
 <li><b>NCO/SDO 3.9.3</b>: 
 SWAMP release;
 <tt>ncecat -u</tt>;
