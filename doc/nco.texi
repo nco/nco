@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.469 2008-03-03 13:09:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.470 2008-03-06 12:12:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -405,12 +405,12 @@ Boulder, Colorado@*
 
 @sp 2
 Major feature improvements entitle me to write another Foreword.
-In the last five years a lot of work has been done refining
+In the last five years a lot of work has been done to refine
 @acronym{NCO}. 
 @cindex open source
 @acronym{NCO} is now an open source project and appears to be much
 healthier for it. 
-The list of illustrious institutions which do not endorse @acronym{NCO}     
+The list of illustrious institutions that do not endorse @acronym{NCO}     
 continues to grow, and now includes @acronym{UCI}.@* 
 @sp 1
 @noindent
@@ -429,23 +429,25 @@ Charlie Zender@*
 January 2003@*
 Irvine, California@*
 
-@ignore
 @sp 2
-@acronym{NCO} owes much of its progress since 2004 to resources made
-available by the US National Science Foundation (NSF).
-These supported me to maintain core @acronym{NCO} code, and others
-to advance @acronym{NCO} in new directions. 
-Gayathri Venkitachalam helped implement @acronym{MPI}.
-Harry Mangalam improved regression testing and benchmarking.
-Daniel Wang developed the server-side capability, @acronym{SWAMP}.
-Henry Butowsky, a long-time contributor, developed @command{ncap2}. 
-.@* 
+@acronym{NCO} has been generously supported from 2004--2008 by US 
+National Science Foundation (@acronym{NSF})grant 
+@uref{http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203,IIS-0431203}. 
+This support allowed me to maintain and extend core @acronym{NCO} code,
+and others to advance @acronym{NCO} in new directions: 
+Gayathri Venkitachalam helped implement @acronym{MPI};
+Harry Mangalam improved regression testing and benchmarking;
+Daniel Wang developed the server-side capability, @acronym{SWAMP};
+and Henry Butowsky, a long-time contributor, developed @command{ncap2}.
+This support also led @acronym{NCO} to debut in professional journals
+and meetings.  
+The personal and professional contacts made during this evolution have
+been immensely rewarding.@*
 @sp 1
 @noindent
 Charlie Zender@*
-July 2007@*
-Irvine, California@*
-@end ignore
+March 2008@*
+Grenoble, France@*
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
