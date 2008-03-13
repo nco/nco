@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.96 2008-03-13 14:32:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.97 2008-03-13 15:06:29 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -74,7 +74,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 #endif /* !NCO_ABORT_ON_ERROR */
 
   switch(rcd){
-  case NC_ERANGE: (void)fprintf(stdout,"ERROR NC_ERANGE Result not representable in output file\nHINT: NC_ERANGE errors typically occur when an arithmetic operation results in a value not representible by the output variable type and NCO attempts to write that variable to an output file. For more details, see\nhttp://nco.sf.net/nco.html#typ_cnv\n\nPossible workaround: Promote the variable to higher precision before attempting arithmetic. For example,\nncap2 -O -s \'foo=double(foo);\' in.nc in.nc\n"); break;
+  case NC_ERANGE: (void)fprintf(stdout,"ERROR NC_ERANGE Result not representable in output file\nHINT: NC_ERANGE errors typically occur after an arithmetic operation results in a value not representible by the output variable type when NCO attempts to write those values to an output file.\nPossible workaround: Promote the variable to higher precision before attempting arithmetic. For example,\nncap2 -O -s \'foo=double(foo);\' in.nc in.nc\nFor more details, see http://nco.sf.net/nco.html#typ_cnv\n"); break;
   case NC_ENOTNC: (void)fprintf(stdout,"ERROR NC_ENOTNC Not a netCDF file\nHINT: NC_ENOTNC errors often occur when NCO operators linked to the netCDF3 library attempt to read netCDF4 files. Are your input files netCDF4 format? If so then installing or re-building a netCDF4-compatible version of NCO may solve this problem.\n"); break;
   } /* end switch */
 
