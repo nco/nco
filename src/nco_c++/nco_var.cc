@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.28 2008-03-04 15:43:26 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.29 2008-03-13 16:23:33 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -892,8 +892,10 @@ nco_put_var // [fnc] Write variable to netCDF file
  const char * &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nc_put_var1_string()
+  // fxm: currently kludged and untested
   std::valarray<size_t> srt(static_cast<size_t>(0U),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
-  int rcd=nc_put_var1_string(nc_id,var_id,&srt[0],&(const_cast<char * &>(var_val)));
+  //  int rcd=nc_put_var1_string(nc_id,var_id,&srt[0],&(const_cast<char * &>(var_val)));
+  int rcd=nc_put_var1_string(nc_id,var_id,&srt[0],const_cast<const char **>(&(const_cast<char * &>(var_val))));
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<char *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<char *>()

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1000 2008-03-04 22:51:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1001 2008-03-13 16:23:32 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -638,7 +638,8 @@ nco927. regression test for -X auxiliary coordinates:
 nco928. Add -X to docs
 nco929. drop ncap, or, rather, link it to ncap2, next release
 nco930. ERROR: ld.so: object 'libfakeroot-sysv.so' from LD_PRELOAD cannot be preloaded: ignored.
-nco931. 
+nco931. nco_c++ nc_put_var1_string wrapper currently kludged and untested
+nco932. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
