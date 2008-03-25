@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.471 2008-03-25 10:31:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.472 2008-03-25 13:18:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9835,8 +9835,8 @@ ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
 pres.sfc.1969.nc ~/foo.nc
 
-PCMDI IPCC Data Portal: 
-ncks -M -p http://username:password@@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
+LLNL PCMDI IPCC OPeNDAP Data Portal: 
+ncks -M -p http://username:password@@esgcet.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
 
 Earth System Grid (ESG): http://www.earthsystemgrid.org
 

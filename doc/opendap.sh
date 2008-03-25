@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.11 2007-09-12 12:27:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.12 2008-03-25 13:18:20 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -32,6 +32,7 @@
 # ncra -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 # ncwa -O -C -D 3 -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
 # ncks -D 3 http://eclipse.ncdc.noaa.gov:9090/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC -d lat,1,2 -d lon,1,2 ~/test.nc 
+# ncks -M -p http://username:password@esgcet.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
 
 # Usage: 
 # Set installation directory below ${DAP_ROOT}
