@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.470 2008-03-06 12:12:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.471 2008-03-25 10:31:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9854,6 +9854,8 @@ ncks -O -D 3 \
   -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc 
 
 # Average surface air temperature tas for SRESA1B scenario
+# This loop is illustrative and will not work until NCO correctly
+# translates '*' to FTP 'mget' all remote files
 for var in 'tas'; do
 for scn in 'sresa1b'; do
 for mdl in 'cccma_cgcm3_1 cccma_cgcm3_1_t63 cnrm_cm3 csiro_mk3_0 \
