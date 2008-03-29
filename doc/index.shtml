@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.473 2008-03-27 14:58:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.474 2008-03-29 13:31:26 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -110,7 +110,7 @@ Send it in!<br>
 
 <li>December&nbsp;7, 2007: NCO 3.9.3 released (and SWAMP!)</li>
 
-<li>December&nbsp;4, 2007: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf">scaling paper</a></li> published in IJHPCA
+<li>December&nbsp;4, 2007: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf">scaling paper</a> published in IJHPCA</li>
 
 <li>August&nbsp;29, 2007: NCO 3.9.2 released (_FillValue support)</li>
 
@@ -222,7 +222,7 @@ Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a>
 are misnamed because they perform many non-linear operations as well,
 e.g., total, minimum, maximum, RMS: 
 <ul>
-<li><a href="./nco.html#ncap"><tt>ncap</tt></a> and <a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processors (<a href="./nco.html#xmp_ncap">examples</a>)</li>
+<a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
 <li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF Attribute Editor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
 <li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
 <li><a href="./nco.html#ncea"><tt>ncea</tt></a> netCDF Ensemble Averager (<a href="./nco.html#xmp_ncea">examples</a>)</li>
@@ -247,7 +247,7 @@ NCO is designed to be used both interactively and with large batch jobs.
 The default operator behavior is often sufficient for everyday needs, 
 and there are numerous command line (i.e., run-time) options, for
 special cases.
-NCO works well on all modern operating systems, including:
+NCO works well on most modern operating systems, including:
 Apple OS&nbsp;X, *BSD, Cray UNICOS, DEC Tru64, IBM AIX, HPUX,
 Linux, Microsoft Windows, NEC Super&nbsp;UX, SGI IRIX, and Sun
 Solaris.</p>
@@ -265,10 +265,11 @@ No matter what your programming background there is a task you can help with.
 From re-organizing the TODO list itself, to improving this cheesy
 webpage, to documentation, to designing and implementing new features
 and interfaces, we need your help!   
-The <a href="http://sf.net/projects/nco">NCO project homepage</a> contains mailing lists, discussion forums, and
-instructions to make contributing to NCO easy.
+The <a href="http://sf.net/projects/nco">NCO project homepage</a>
+contains mailing lists, discussion forums, and instructions to make
+contributing to NCO easy. 
 
-<p>As of June, 2003, you may use PayPal to donate money to support NCO development.
+<p>As of June, 2003, you may donate money to NCO via Paypal.
 Your donation will be distributed to NCO developers as an incentive
 for them to tackle <a href="./TODO"><tt>TODO</tt></a> items on a
 pay-per-feature basis.
@@ -317,7 +318,7 @@ This URL,
 <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a>,
 points to the most up-to-date information on the NCO/SDO proposal.</p> 
 
-<p>The NSF project provides the human and technical resources to analyze, 
+<p>The NSF project provides the human and technical resources to analyze,  
 design, and implement novel advanced methods for distributed 
 data analysis and reduction (DDRA) of geophysical data.
 These powerful methods will be &ldquo;grid-enabled&rdquo;, and we will
