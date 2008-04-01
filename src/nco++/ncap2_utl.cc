@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.104 2008-03-04 15:28:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.105 2008-04-01 11:33:36 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1528,16 +1528,8 @@ nco_shp_chk(
 
 
 
-// This defines an anonymous enum containing parser tokens
-// nb It is a completly unsafe hack to include the tokens.
-// Doing this because "ncoTokenTypes.hpp" is included in 
-// VarOp.hh
-#undef INC_ncoParserTokenTypes_hpp_
-#undef __cplusplus
-#include "ncoParserTokenTypes.hpp"
-#define __cplusplus
-#define INC_ncoParserTokenTypes_hpp_
-
+/* This file is generated in makefile from ncoParserTokenTypes.hpp */ 
+#include "ncoEnumTokenTypes.hpp"
 
 var_sct *
 ncap_var_var_stc
