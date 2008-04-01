@@ -1,49 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.282 2008-03-04 22:51:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.283 2008-04-01 12:34:21 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.4 are ready. 
+The netCDF operators NCO version 3.9.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release improves the NCO multi-slabbing algorithm (MSA),
-supports CF-convention auxiliary lat+lon coordinates,
-synchronizes with the latest netCDF4 beta releases, 
-and adds powerful new masking capabilities to ncap2.
+This release ...
 
-A. ncks supports hyperslab specification with CF auxiliary coordinates
-   for standard_name=latitude, longitude. (Karen Schuchardt)
-   http://nco.sf.net/nco.html#aux
+A. ncbo, ncea, and ncflint support multi-slabbing (Henry Butowsky fxm)
 
-B. New ncks Multi-slabbing algorithm (MSA) switch:
-   When --msa_usr_rdr (MSA user order) is specified, hyperslabbed
-   coordinate(s) will appear in the output file in the order of the 
-   input multi-slabs. The output coordinate will only be monotonic
-   if the user specifies the multi-slabs in a monotonic order.
-   This option significantly improves performance on complex
-   multi-slab operations. (Henry Butowsky)
-
-C. Operators given -3 switch will (attempt to) produce netCDF3 output,
-   even if input files are netCDF4. Converse of -4 switch behavior.
-   Same as --fl_fmt=classic
-
-D. File "consanguinity": output file format defaults to input format
-
-E. Cleanup cygwin builds for WIN32
-
-F. OpenMP builds of ncap2 with pgCC
-
-G. AIX configure finds atan2() for ncap2
-
-H. mpncrcat works with netCDF4 (Takeshi Enomoto)
-
-I. ncks prints netCDF4 LZ compression information to stdout
-   http://nco.sf.net/nco.html#ncks
-
-J. ncap2 uses OpenMP more, writes nco_openmp_thread_number (Henry Butowsky)
-   http://nco.sf.net/nco.html#openmp
-
-K. ncap2 prints attributes, supports atan2() and pow() (Henry Butowsky)
-   Demonstration scripts ~/nco/data/ncap2_tst.nco
+B. ncap2 builds on Solaris (Henry Butowsky)
 
 L. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian
@@ -66,7 +32,7 @@ O. Reminder: NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO currently supports netCDF4 atomic data types and compression.
-   NCO 3.9.4 with netCDF4 support should work with HDF5 1.8 final
+   NCO 3.9.5 with netCDF4 support should work with HDF5 1.8 final
    and netCDF4 snapshot2008022009 and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location

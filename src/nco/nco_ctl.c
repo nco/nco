@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.209 2008-03-04 22:52:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.210 2008-04-01 12:37:23 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -706,7 +706,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Saw some of fashion week in Paris...now self-conscious about my footwear\n";
+  return "French custom on April 1st is to stick a fish picture on your back\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

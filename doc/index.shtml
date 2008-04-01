@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.474 2008-03-29 13:31:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.475 2008-04-01 12:34:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -481,6 +481,7 @@ Instead, retrieve all recently tagged versions
 <ul>
 <li><b>NCO/SDO 3.9.5</b>: (<i>In progress</i>) 
 <tt>ncbo</tt>, <tt>ncea</tt>, <tt>ncflint</tt> support multi-slabbing;
+<tt>ncap2</tt> builds on Solaris;
 <li><b>NCO/SDO 3.9.4</b>: 
 File consanguinity;
 <tt>ncks</tt>: CF auxiliary coords, LZ stats;

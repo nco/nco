@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.55 2008-04-01 11:35:45 hmb Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.56 2008-04-01 12:34:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -1412,7 +1412,7 @@ distclean : dst_cln
 dst_cln : cln bld_cln lib_cln src_cln
 install : inc 
 tags : 
-	etags *.cpp *.cc *.c *.com *.F *.F90 *.h *.hh *.hpp Makefile
+	etags *.cpp *.cc *.c *.com *.F *.F90 *.h *.hh *.hpp *.pl Makefile
 uninstall : dst_cln bin_cln inc_cln lib_cln
 
 # Create dependency files only if they will not be immediately deleted
