@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.210 2008-04-01 12:37:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.211 2008-04-02 20:42:58 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -500,8 +500,10 @@ nco_bool /* [flg] Program is multi-file operator */
 nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
 (const int prg_id) /* [enm] Program ID */
 {
-  /* Purpose: Is this a multi-file operator?
-     Such operators attempt to read input filenames from stdin when input filenames are not positional arguments */
+  /* Purpose: Is this a multi-file operator (MFO)?
+     MFOs take arbitrarily large numbers of input files
+     ncbo and ncflint are not MFOs because they take a fixed number (two) of input files
+     MFOs attempt to read input filenames from stdin when input filenames are not positional arguments */
   switch(prg_id){
   case ncea:
   case ncecat: 
@@ -936,7 +938,12 @@ nco_usg_prn(void)
     if(prg_lcl == ncbo)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
     if(prg_lcl == ncra || prg_lcl == ncea || prg_lcl == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
   }
-  if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\t\tInput file name(s)\n");
+  /* All operators have input files, no need to strstr(in.nc) */
+  if(prg_lcl == ncbo || prg_lcl == ncflint){
+    (void)fprintf(stdout,"in_1.nc in_2.nc\t\tInput file names\n");
+  }else{
+    if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"in.nc [...]\t\tInput file names\n"); else (void)fprintf(stdout,"in.nc\t\t\tInput file name\n");
+  } /* endif in.nc */
   if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"[out.nc]\t\tOutput file name (or use -o switch)\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
