@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.473 2008-04-01 12:34:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.474 2008-04-02 16:55:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6956,7 +6956,8 @@ twelve months:
 @cindex Bourne Shell
 @cindex C Shell
 @example
-for idx in @{01..12@}; do # Bash Shell (version 3.0+, beware ordering!)
+for idx in @{1..12@}; do # Bash Shell (version 3.0+) 
+  idx=`printf "%02d" $@{idx@}` # Zero-pad to preserve order
   ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
   ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
 done
