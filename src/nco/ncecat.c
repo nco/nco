@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.148 2008-02-22 14:26:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.149 2008-04-02 21:40:44 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -61,6 +61,7 @@ int
 main(int argc,char **argv)
 {
   nco_bool CNV_CCM_CCSM_CF;
+  nco_bool CPY_GLB_METADATA=True; /* Option M */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -88,9 +89,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.148 2008-02-22 14:26:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
-  const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:rRt:u:v:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.149 2008-04-02 21:40:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
+  const char * const opt_sht_lst="34ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -184,6 +185,8 @@ main(int argc,char **argv)
       {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
+      {"glb_mtd_spr",no_argument,0,'M'},
+      {"global_metadata_suppress",no_argument,0,'M'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
@@ -271,6 +274,9 @@ main(int argc,char **argv)
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
+      break;
+    case 'M': /* Toggle copying global metadata */
+      CPY_GLB_METADATA=!CPY_GLB_METADATA;
       break;
     case 'n': /* NINTAP-style abbreviation of files to process */
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
@@ -416,7 +422,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
 
   /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+  if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);

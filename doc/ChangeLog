@@ -1,3 +1,9 @@
+2008-04-02  Charlie Zender  <zender@uci.edu>
+
+	* Prevent copying global metadata with ncecat -M 
+
+	* Print netCDF4-dependent switches only if netCDF4 is enabled
+
 2008-04-01  Charlie Zender  <zender@uci.edu>
 
 	* Add rule to post-process ANTLR-files with broken tokens:

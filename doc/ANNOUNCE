@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.283 2008-04-01 12:34:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.284 2008-04-02 21:40:42 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.5 are ready. 
 
@@ -8,8 +8,13 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release ...
 
 A. ncbo, ncea, and ncflint support multi-slabbing (Henry Butowsky fxm)
+   http://nco.sf.net#msa
 
 B. ncap2 builds on Solaris (Henry Butowsky)
+
+C. Prevent copying global metadata with -M, --metadata switch on
+   ncecat 
+   http://nco.sf.net#ncecat
 
 L. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian

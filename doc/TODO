@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1002 2008-03-21 13:51:12 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1003 2008-04-02 21:40:42 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -640,7 +640,9 @@ nco929. drop ncap, or, rather, link it to ncap2, next release
 nco930. ERROR: ld.so: object 'libfakeroot-sysv.so' from LD_PRELOAD cannot be preloaded: ignored.
 nco931. nco_c++ nc_put_var1_string wrapper currently kludged and untested
 nco932. ncwa and packed data: help forum 20080214: When using ncwa to calculate a weighted average from a packed file (NC_SHORT, scale_factor=0.1, _FillValue=32766), the data in the resulting file is in double precision. However, the _FillValue attribute is not changed to the double precision value (3276.6)....it is left at 32766. Shouldn't ncwa writeout the new _FillValue attribute?
-nco933. 
+nco933. finish -M documentation in nco.texi
+nco934. Add -M option to other operators
+nco935. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
