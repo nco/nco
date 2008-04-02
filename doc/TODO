@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1003 2008-04-02 21:40:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1004 2008-04-02 22:26:54 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -623,7 +623,7 @@ nco913. nco_cmp_get() fails on _AIX with different compiler
 nco915. GCC OpenMP support in configure.in
 nco917. GCC OpenMP with autoconf
 nco919. 'make check' (i.e., nco_bm.pl) breaks when ncap2 disabled (i.e., --disable-nco++) reported by Tim Hoar
-nco920. Add ncwa (ncks?) capability to remove all degenerate dimensions --delete-degenerate-dimensions (ncl-talk 12/5/07)
+nco920. Add ncwa (ncks?) capability to remove all degenerate dimensions --delete-degenerate-dimensions (ncl-talk 12/5/07) (assign to hmb?)
 nco922. ncbo with OpenMP on netCDF4 files fails (not with netCDF3 in.nc):
 	ncbo -O -t 1 -D 4 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc # marche
 	ncbo -O -t 2 -D 4 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc # march
@@ -635,14 +635,14 @@ nco923. OPTS=D and OPTS=R should not do -O4 optimization on nco++
 nco924. Document ncks --msa_usr_rdr
 nco927. regression test for -X auxiliary coordinates:
 	ncks -X 0,45,0,90 -X 180,225,-90,0 ~/nco/data/in.nc ~/foo.nc
-nco928. Add -X to docs
+nco928. Add -X to all docs (man pages...)
 nco929. drop ncap, or, rather, link it to ncap2, next release
 nco930. ERROR: ld.so: object 'libfakeroot-sysv.so' from LD_PRELOAD cannot be preloaded: ignored.
 nco931. nco_c++ nc_put_var1_string wrapper currently kludged and untested
 nco932. ncwa and packed data: help forum 20080214: When using ncwa to calculate a weighted average from a packed file (NC_SHORT, scale_factor=0.1, _FillValue=32766), the data in the resulting file is in double precision. However, the _FillValue attribute is not changed to the double precision value (3276.6)....it is left at 32766. Shouldn't ncwa writeout the new _FillValue attribute?
-nco933. finish -M documentation in nco.texi
-nco934. Add -M option to other operators
-nco935. 
+nco934. Add ncecat -M option to other operators?
+nco935. Make single-file operators (SFOs) default out.nc to in.nc
+nco936. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
