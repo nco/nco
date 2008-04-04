@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.475 2008-04-02 21:40:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.476 2008-04-04 09:38:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9703,14 +9703,14 @@ mkdir -p $@{drc_out@}
 cd $@{drc_out@}
 
 Method 1: Assume all data in directory applies
-for mth in @{01..12@}; do
+for mth in @{1..12@}; do
   mm=`printf "%02d" $mth`
   ncra -O -D 1 -o $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc \
     $@{drc_in@}/$@{caseid@}.cam2.h0.*-$@{mm@}.nc 
 done # end loop over mth
 
 Method 2: Use shell 'globbing' to construct input filenames
-for mth in @{01..12@}; do
+for mth in @{1..12@}; do
   mm=`printf "%02d" $mth`
   ncra -O -D 1 -o $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc \
     $@{drc_in@}/$@{caseid@}.cam2.h0.00??-$@{mm@}.nc \
@@ -9718,10 +9718,10 @@ for mth in @{01..12@}; do
 done # end loop over mth
 
 Method 3: Construct input filename list explicitly
-for mth in @{01..12@}; do
+for mth in @{1..12@}; do
   mm=`printf "%02d" $mth`
   fl_lst_in=''
-  for yr in @{0001..0100@}; do
+  for yr in @{1..100@}; do
     yyyy=`printf "%04d" $yr`
     fl_in=$@{caseid@}.cam2.h0.$@{yyyy@}-$@{mm@}.nc
     fl_lst_in="$@{fl_lst_in@} $@{caseid@}.cam2.h0.$@{yyyy@}-$@{mm@}.nc"
@@ -9783,14 +9783,14 @@ declare -a dpm
 dpm=(0 31 28.25 31 30 31 30 31 31 30 31 30 31) # Allows 1-based indexing
 
 Method 1: Create dpm directly in climatological monthly means
-for mth in @{01..12@}; do
+for mth in @{1..12@}; do
   mm=`printf "%02d" $@{mth@}`
   ncap2 -O -s "dpm=0.0*date+$@{dpm[$@{mth@}]@}" \
     $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc
 done # end loop over mth
 
 Method 2: Create dpm by aggregating small files
-for mth in @{01..12@}; do
+for mth in @{1..12@}; do
   mm=`printf "%02d" $@{mth@}`
   ncap2 -O -v -s "dpm=$@{dpm[$@{mth@}]@}" ~/nco/data/in.nc \
     $@{drc_out@}/foo_$@{mm@}.nc
