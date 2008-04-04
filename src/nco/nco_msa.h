@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.27 2008-02-28 10:54:26 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.28 2008-04-04 08:57:03 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -125,7 +125,26 @@ int lmt_nbr);
    const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
    const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
    const nco_bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */
-  
+
+
+void
+nco_msa_var_get(    /* [fnc] Get var data from disk taking accound of multihyperslabs */
+ const int in_id,  /* I [id] netCDF input file ID */
+ var_sct *var_in, 
+ lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
+ int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
+
+void
+nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
+(const int in_id, /* I [enm] netCDF file ID */
+ const int out_id, /* I [enm] netCDF output file ID */
+ var_sct ** const var, /* I/O [sct] Variables to copy to output file */
+ const int nbr_var,  /* I [nbr] Number of variables */
+ lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
+ int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
+
+
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

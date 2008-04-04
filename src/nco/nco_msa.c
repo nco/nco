@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.55 2008-03-03 13:09:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.56 2008-04-04 08:57:57 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -536,6 +536,56 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
   
   return min_val;
 } /* end nco_msa_min_idx() */
+
+ void
+nco_msa_var_get    /* [fnc] Get var data from disk taking accound of multihyperslabs */
+(const int in_id,  /* I [id] netCDF input file ID */
+ var_sct *var_in,
+ lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
+ int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
+{
+int idx;
+int jdx;
+int nbr_dim;
+void *void_ptr;
+lmt_all_sct **lmt_mult;
+lmt_sct **lmt;
+
+  nbr_dim=var_in->nbr_dim;	
+
+  /* Deal with scalar var */
+  if(nbr_dim==0){
+   var_in->val.vp=nco_malloc(nco_typ_lng(var_in->type));
+   (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->type);
+   return;
+  }
+
+  lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+  lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
+
+/* Initialize lmt_mult with multi-limits from lmt_lst limits */
+  for(idx=0;idx<nbr_dim;idx++){
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
+      if(!strcmp(var_in->dim[idx]->nm,lmt_lst[jdx]->dmn_nm ) ){
+	lmt_mult[idx]=lmt_lst[jdx];
+        break;
+      } /* end if */
+    } /* end loop over jdx */
+  } /* end idx */
+  
+  
+  /* Call super-dooper recursive routine */
+  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
+  void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var_in);
+
+  var_in->val.vp=void_ptr;
+
+
+  (void)nco_free(lmt_mult);
+  (void)nco_free(lmt);
+
+  return;
+} /* end nco_msa_var_get */
 
 void
 nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
@@ -1176,3 +1226,52 @@ nco_msa_lmt_all_int(
   } /* end idx */    
   
 } /* end nco_msa_lmt_all_int */
+
+
+void
+nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
+(const int in_id, /* I [enm] netCDF file ID */
+ const int out_id, /* I [enm] netCDF output file ID */
+ var_sct ** const var, /* I/O [sct] Variables to copy to output file */
+ const int nbr_var,  /* I [nbr] Number of variables */
+ lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
+ int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
+{
+  /* NB: nco_msa_var_val_cpy() contains OpenMP critical region */
+  /* Purpose: Copy every variable in input variable structure list 
+     from input file to output file. Only data (not metadata) are copied. */
+  
+  int idx;
+  int dmn_idx;
+  long srd_prd=1L; /* [nbr] Product of strides */
+  
+  for(idx=0;idx<nbr_var;idx++){
+      
+    (void)nco_msa_var_get(in_id,var[idx],lmt_lst,nbr_dmn_fl);   
+    
+    if(var[idx]->nbr_dim == 0)
+      nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->val.vp,var[idx]->type);
+    else{ /* end if variable is scalar */
+      if(var[idx]->sz > 0){ /* Do nothing for zero-size record variables */
+	/* Is stride > 1? */
+        /*
+	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
+
+	if(srd_prd == 1L)
+	  nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->val.vp,var[idx]->type);
+	else
+        */
+	  (void)nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
+	
+      } /* end if var_sz */
+    } /* end if variable is an array */
+    var[idx]->val.vp=var[idx]->xrf->val.vp=nco_free(var[idx]->val.vp);
+  } /* end loop over idx */
+    
+} /* end nco_msa_var_val_cpy() */
+
+
+
+
+
+
