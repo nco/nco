@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.56 2008-04-04 08:57:57 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.57 2008-04-07 14:36:40 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -360,7 +360,8 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
 
 
 void 
-nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
+nco_msa_clc_cnt
+(lmt_all_sct *lmt_lst)
 {
   int idx;
   long cnt=0;
@@ -409,7 +410,8 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
 } /* end nco_msa_clc_cnt() */
 
 nco_bool
-nco_msa_ovl(lmt_all_sct *lmt_lst)
+nco_msa_ovl
+(lmt_all_sct *lmt_lst)
 {
   /* Purpose: Return true if limits overlap
      NB: Assumes that limits have been sorted */
@@ -443,7 +445,8 @@ nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
   return lmt1->srt < lmt2->srt ? -1 : (lmt1->srt > lmt2->srt);
 }
 
-void nco_msa_qsort_srt(lmt_all_sct *lmt_lst)
+void nco_msa_qsort_srt
+(lmt_all_sct *lmt_lst)
 {
   lmt_sct **lmt;
   long sz;
@@ -1109,14 +1112,14 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 } /* end nco_msa_prn_var_val() */
 
 void         /* Initilaize lmt_all_sct's */ 
-nco_msa_lmt_all_int(
-		    int in_id,
-		    nco_bool MSA_USR_RDR,
-		    lmt_all_sct **lmt_all_lst,
-		    int nbr_dmn_fl,
-		    lmt_sct** lmt,
-		    int lmt_nbr){
-  
+nco_msa_lmt_all_int
+(int in_id,
+ nco_bool MSA_USR_RDR,
+ lmt_all_sct **lmt_all_lst,
+ int nbr_dmn_fl,
+ lmt_sct** lmt,
+ int lmt_nbr)
+{
   int idx;
   int jdx;
   
