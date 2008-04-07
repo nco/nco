@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.150 2008-02-22 14:26:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.151 2008-04-07 14:37:54 hmb Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -83,6 +83,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MUST_CONFORM=False; /* Must nco_var_cnf_dmn() find truly conforming variables? */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option a */
@@ -101,8 +102,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.150 2008-02-22 14:26:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.150 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.151 2008-04-07 14:37:54 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.151 $";
   const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRt:v:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -138,6 +139,7 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int has_mss_val=False;
   int idx;
+  int jdx;
   int in_id_1;  
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -159,7 +161,7 @@ main(int argc,char **argv)
   
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-  
+  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
   
   val_unn val_gnr_unn; /* Generic container for arrival point or weight */
 
@@ -185,6 +187,8 @@ main(int argc,char **argv)
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       /* Long options with argument, no short option counterpart */
+      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
@@ -252,6 +256,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -438,24 +444,41 @@ main(int argc,char **argv)
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id_1,lmt[idx],0L,FORTRAN_IDX_CNV);
   
+
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  /* Initilize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+ 
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id_1,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id_1,dmn_lst[idx].id,dmn_lst[idx].nm);
+
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
+  /* if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr); */
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++){
+  for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
-  } /* end loop over idx */
+    /* add limts info to dmn_out from lmt_all_lst */ 
+    for(jdx=0; jdx<nbr_dmn_fl; jdx++)
+       if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
+         dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
+         dmn_out[idx]->srt=0;
+         dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1;
+         dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
+         dmn_out[idx]->srd=1L;
+         break;
+       }
+  }
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -469,7 +492,24 @@ main(int argc,char **argv)
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
 
-  /* Divide variable lists into lists of fixed variables and variables to be processed */
+  /* Refresh var_out with dim_out data */
+  for(idx=0;idx<nbr_xtr;idx++){
+    var_sct *var_tmp;
+    long sz;
+    sz=1;
+    var_tmp=var_out[idx];
+    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
+      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
+      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
+      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
+      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
+      sz*=var_tmp->dim[jdx]->cnt;
+     } /* end loop over jdx */
+     var_tmp->sz=sz;  
+  } /* end loop over idx */
+
+
+    /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
   /* Make output and input files consanguinous */
@@ -502,7 +542,10 @@ main(int argc,char **argv)
   (void)nco_var_srd_srt_set(var_out,nbr_xtr);
 
   /* Copy variable data for non-processed variables */
-  (void)nco_var_val_cpy(in_id_1,out_id,var_fix,nbr_var_fix);
+  /* (void)nco_msa_var_val_cpy(in_id_1,out_id,var_fix,nbr_var_fix); */
+  /* Copy variable data for non-processed variables */
+  (void)nco_msa_var_val_cpy(in_id_1,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
+
 
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
@@ -587,7 +630,7 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out, lmt_all_lst, nbr_dmn_fl)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
     if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
@@ -600,11 +643,15 @@ main(int argc,char **argv)
     (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
 
     /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-    (void)nco_var_get(in_id_1,var_prc_1[idx]);
-    (void)nco_var_get(in_id_2,var_prc_2[idx]);
-    
-    wgt_out_1=nco_var_cnf_dmn(var_prc_1[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
-    wgt_out_2=nco_var_cnf_dmn(var_prc_2[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
+    (void)nco_msa_var_get(in_id_1,var_prc_1[idx],lmt_all_lst,nbr_dmn_fl);
+    (void)nco_msa_var_get(in_id_2,var_prc_2[idx],lmt_all_lst,nbr_dmn_fl);
+     
+    /* nb var_prc_1 & var_prc_2 have incorrect size So set them here */
+    var_prc_1[idx]->sz=var_prc_out[idx]->sz;       
+    var_prc_2[idx]->sz=var_prc_out[idx]->sz;  
+
+    wgt_out_1=nco_var_cnf_dmn(var_prc_out[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
+    wgt_out_2=nco_var_cnf_dmn(var_prc_out[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
 
     var_prc_1[idx]=nco_var_cnf_typ((nc_type)NC_DOUBLE,var_prc_1[idx]);
     var_prc_2[idx]=nco_var_cnf_typ((nc_type)NC_DOUBLE,var_prc_2[idx]);
@@ -669,7 +716,16 @@ main(int argc,char **argv)
     if(wgt_2 != NULL) wgt_2=(var_sct *)nco_var_free(wgt_2);
     if(wgt_out_1 != NULL) wgt_out_1=(var_sct *)nco_var_free(wgt_out_1);
     if(wgt_out_2 != NULL) wgt_out_2=(var_sct *)nco_var_free(wgt_out_2);
+
+    /* free lmt[] nb is now referenced within lmt_all_lst[idx]  */
+    for(idx=0; idx<nbr_dmn_fl;idx++)
+      for(jdx=0 ; jdx< lmt_all_lst[idx]->lmt_dmn_nbr ;jdx++)
+         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
     
+    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl); 
+    
+    lmt=(lmt_sct**)nco_free(lmt); 
+
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
@@ -686,7 +742,10 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    
+    /* has been freed upearlier */   
+    /* if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
+
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
     if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
