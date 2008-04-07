@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.75 2008-01-06 13:09:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.76 2008-04-07 20:19:25 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -67,7 +67,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
       /* ...and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       rx_mch_nbr=nco_var_meta_search(nbr_var,fl_in_var_lst,var_sng,var_xtr_rqs);
-      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regexp syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
       continue;
 #else
       (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
