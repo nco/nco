@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.57 2008-04-07 14:36:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.58 2008-04-09 14:13:56 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_msa.h" /* Multi-slabbing algorithm */
+#include "nco_var_utl.h" /* Variable utilities */
 
 /* fxm: strings statically allocated with NCR_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
 /* Length should be computed at run time but is a pain */
@@ -550,6 +551,7 @@ nco_msa_var_get    /* [fnc] Get var data from disk taking accound of multihypers
 int idx;
 int jdx;
 int nbr_dim;
+int typ_tmp;
 void *void_ptr;
 lmt_all_sct **lmt_mult;
 lmt_sct **lmt;
@@ -559,7 +561,7 @@ lmt_sct **lmt;
   /* Deal with scalar var */
   if(nbr_dim==0){
    var_in->val.vp=nco_malloc(nco_typ_lng(var_in->type));
-   (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->type);
+   (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
    return;
   }
 
@@ -579,9 +581,38 @@ lmt_sct **lmt;
   
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
+  typ_tmp=var_in->type;
+  var_in->type=var_in->typ_dsk; 
   void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var_in);
+  
+  var_in->type=typ_tmp;
 
   var_in->val.vp=void_ptr;
+
+/*******************************************************************************/
+ /* following code copied from nco_var_get() */
+
+  if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
+  /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
+
+  /* Type of variable and missing value in memory are now same as type on disk */
+  var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
+
+  /* Packing in RAM is now same as packing on disk pck_dbg 
+     fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
+  (void)nco_pck_dsk_inq(in_id,var_in);
+  
+  /* Packing/Unpacking */
+  if(nco_is_rth_opr(prg_get())){
+    /* Arithmetic operators must unpack variables before performing arithmetic
+       Otherwise arithmetic will produce garbage results */
+    /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
+       20050629: Making this region multi-threaded causes no problems */
+    if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
+  } /* endif arithmetic operator */
+
+/*******************************************************************************/
+
 
 
   (void)nco_free(lmt_mult);
