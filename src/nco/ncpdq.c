@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.131 2008-02-22 14:26:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.132 2008-04-15 13:50:20 hmb Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -84,6 +84,8 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
+  
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
@@ -108,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.131 2008-02-22 14:26:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.131 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.132 2008-04-15 13:50:20 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.132 $";
   const char * const opt_sht_lst="34Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -147,6 +149,7 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
+  int jdx=int_CEWI;
   int idx_rdr=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -167,7 +170,8 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   
-  lmt_sct **lmt;
+  lmt_sct **lmt=NULL_CEWI;
+  lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
   nm_id_sct *dmn_lst;
   nm_id_sct *dmn_rdr_lst;
@@ -191,6 +195,7 @@ main(int argc,char **argv)
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       /* Long options with argument, no short option counterpart */
+      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
@@ -410,10 +415,17 @@ main(int argc,char **argv)
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
+ 
+    /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  /* Initilize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+   
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
-
+  
+  nbr_dmn_out=nbr_dmn_xtr;
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
@@ -421,16 +433,27 @@ main(int argc,char **argv)
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
+  /* if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr); */
+  
 
   /* Duplicate input dimension structures for output dimension structures */
-  nbr_dmn_out=nbr_dmn_xtr;
-  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_out*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_out;idx++){
+  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-  } /* end loop over idx */
+    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
+    /* add limts info to dmn_out from lmt_all_lst */ 
+    for(jdx=0; jdx<nbr_dmn_fl; jdx++)
+       if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
+         dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
+         dmn_out[idx]->srt=0;
+         dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1;
+         dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
+         dmn_out[idx]->srd=1L;
+         break;
+       }
+  }
 
+  
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
@@ -443,7 +466,7 @@ main(int argc,char **argv)
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
-  if(dmn_rdr_nbr > 0){
+  if(dmn_rdr_nbr > 0 ){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
 
@@ -509,6 +532,29 @@ main(int argc,char **argv)
   } /* end loop over idx */
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+  
+    /* Refresh var_out with dim_out data */
+  for(idx=0;idx<nbr_xtr;idx++){
+    long sz;
+    long sz_rec;
+    sz=1;
+    sz_rec=1;
+    var_sct *var_tmp;
+    var_tmp=var_out[idx];
+    
+    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
+      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
+      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
+      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
+      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
+      sz*=var_tmp->dim[jdx]->cnt;
+      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
+     }/* end loop over jdx */
+     var_tmp->sz=sz; 
+     var_tmp->sz_rec=sz_rec;
+  } /* end loop over idx */
+
+  
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
@@ -598,7 +644,7 @@ main(int argc,char **argv)
        Ancillary information (dmn_idx_out_in) is available only for var_prc!
        Hence must update is_rec_var flag for var_fix and var_prc separately */
     
-    /* Update is_rec_var flag for var_fix */
+    /*  Update is_rec_var flag for var_fix */
     for(idx=0;idx<nbr_var_fix;idx++){
       /* Search all dimensions in variable for new record dimension */
       for(dmn_out_idx=0;dmn_out_idx<var_fix[idx]->nbr_dim;dmn_out_idx++)
@@ -691,6 +737,7 @@ main(int argc,char **argv)
   
   /* Once new record dimension, if any, is known, define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
+
   
   /* Alter metadata for variables that will be packed */
   if(nco_pck_plc != nco_pck_plc_nil){
@@ -717,15 +764,17 @@ main(int argc,char **argv)
   
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
+ 
   
   /* Assign zero-start and unity-stride vectors to output variables */
   (void)nco_var_srd_srt_set(var_out,nbr_xtr);
 
   /* Copy variable data for non-processed variables */
-  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+  (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
 
   /* Close first input netCDF file */
   nco_close(in_id);
+
   
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
@@ -745,7 +794,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       in_id=in_id_arr[omp_get_thread_num()];
@@ -756,8 +805,8 @@ main(int argc,char **argv)
       
       /* Retrieve variable from disk into memory */
       /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-      (void)nco_var_get(in_id,var_prc[idx]);
-      
+	  (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+
       if(dmn_rdr_nbr > 0){
 	if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
 	  (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
@@ -874,6 +923,16 @@ main(int argc,char **argv)
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
+	
+    /* free lmt[] nb is now referenced within lmt_all_lst[idx]  */
+    for(idx=0; idx<nbr_dmn_fl;idx++)
+      for(jdx=0 ; jdx< lmt_all_lst[idx]->lmt_dmn_nbr ;jdx++)
+         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
+    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);   
+	lmt=(lmt_sct**)nco_free(lmt); 
+
+	
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
     if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
     if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
@@ -888,7 +947,9 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+	
+	/* has been freed up earlier */   
+    /* if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
     if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
