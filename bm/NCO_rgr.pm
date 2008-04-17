@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.66 2007-08-29 20:45:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.67 2008-04-17 14:20:39 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -314,6 +314,19 @@ sub tst_rgr {
     $tst_cmd[4] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+    
+    $tst_cmd[0]="ncks -C -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -C -O $fl_fmt $nco_D_flg -v -s 'three_dmn_var_dbl[lon]={0.0,1,2,3};' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg  %tempf_00% %tempf_01% %tempf_02%";
+    $tst_cmd[3]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tempf_02% %tempf_03%";
+    $tst_cmd[4]="ncks -C -H  -s '%f' -v three_dmn_var_dbl %tempf_03%";
+    $dsc_sng="Difference which tests 3D broadcasting";
+    $tst_cmd[5] = "2697";
+    $tst_cmd[6] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
     
 #} # endif $mpi_prc == 0...
     
@@ -384,6 +397,18 @@ sub tst_rgr {
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -C -v -O  $fl_fmt $nco_D_flg -s 'three_dmn_var_int+=100;' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncecat -C -h -O $omp_flg  $fl_fmt $nco_D_flg -d time,0,3 -d time,8,9 -d lon,0,1 -d lon,3,3 -v three_dmn_var_int %tempf_00% %tempf_01% %tempf_02%";
+    $tst_cmd[3]="ncwa -C -h -O  $omp_flg $fl_fmt $nco_D_flg -y avg -v three_dmn_var_int %tempf_02% %tempf_03%";
+    $tst_cmd[4]="ncks -C -O -H -s '%d' -v three_dmn_var_int  %tempf_03%";
+    $dsc_sng="concatenate two 3D vars with multihyperslabbing";
+    $tst_cmd[5] = "84"; 
+    $tst_cmd[6] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
     
 #print "paused - hit return to continue"; my $wait = <STDIN>;
     
@@ -601,7 +626,18 @@ sub tst_rgr {
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
-    
+
+    $tst_cmd[0]="ncpdq $omp_flg -h -O -C  $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var_dbl -d lat,0 -d lon,3 -d time,2 %tempf_00%";
+    $dsc_sng="re-order 3D var with multihyperslabbing";
+    $tst_cmd[2] = "11";
+    $tst_cmd[3] = "SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0;  # Reset array
+        
+
+
+
 #print "paused - hit return to continue"; my $wait = <STDIN>;
     
 ####################
@@ -617,6 +653,36 @@ sub tst_rgr {
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tempf_00% 2> %tempf_02%";
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max  %tempf_00% %tempf_01%"; 
+    $tst_cmd[2]="ncks -C -H  -s '%f' -v three_dmn_var_dbl %tempf_01%";
+    $dsc_sng="Concatenate float var with multi-hyperlsbs across two files";
+    $tst_cmd[3] = "20";
+    $tst_cmd[4] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg -d time,,6 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tempf_00% 2> %tempf_02%";
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tempf_00% %tempf_01%"; 
+    $tst_cmd[2]="ncks -C -H  -s '%li' -v three_dmn_var_int %tempf_01%";
+    $dsc_sng="Concatenate int var with multi-hyperlsbs across two files";
+    $tst_cmd[3] = "27";
+    $tst_cmd[4] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v four_dmn_rec_var $in_pth_arg -d time,0,,4 -d lat,0,0 -d lon,0,1 -d lon,3,3  in.nc in.nc %tempf_00% 2> %tempf_02%";
+    $tst_cmd[1]="ncwa $omp_flg -h -y max -O $fl_fmt $nco_D_flg %tempf_00% %tempf_01%"; 
+    $tst_cmd[2]="ncks -C -H  -s '%f' -v four_dmn_rec_var  %tempf_01%";
+    $dsc_sng="Concatenate float 4D var with multi-hyperlsbs across two files";
+    $tst_cmd[3] = "204";
+    $tst_cmd[4] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
 #    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
     
 ####################
@@ -782,6 +848,16 @@ sub tst_rgr {
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -X 0,180,-30,30 -v gds_3dvar $in_pth_arg in.nc %tempklsf_00%";
+    $tst_cmd[1]="ncks -C -H -s '%8.1f' -v gds_3dvar %tempklsf_00%";
+    $dsc_sng="Return record averge of subsetted geodesic data";
+    $tst_cmd[2] = "   277.7   277.8   277.9   278.0   278.1   278.2";
+    $tst_cmd[3] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
     
 #print "paused - hit return to continue"; my $wait = <STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait = <STDIN>;
@@ -994,7 +1070,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tempf_00%";
-    $dsc_sng="Dimension reduction with min flag on type float variable";
+     $dsc_sng="Dimension reduction with min flag on type float variable";
     $tst_cmd[2] = "1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
