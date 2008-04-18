@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.97 2008-04-17 14:17:27 hmb Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.98 2008-04-18 11:36:14 hmb Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -162,13 +162,15 @@ variables:
 	fl_dmn:units = "[chr]";
 
 	double lat_gds(gds_crd);
-	lat_gds:long_name = "Latitude";
+	lat_gds:long_name = "Latitude";  
 	lat_gds:standard_name = "latitude";
+	lat_gds:units="degree";
 	lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
 
 	double lon_gds(gds_crd);
 	lon_gds:long_name = "Longitude";
 	lon_gds:standard_name = "longitude";
+	lon_gds:units="degree";
 	lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
 
 	float gds_crd(gds_crd);
