@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Charlie Zender <zender@uci.edu>
 Build-Depends: debhelper (>= 4), antlr, bison, flex, libantlr-dev, netcdf-bin, netcdfg-dev, texinfo
 Standards-Version: 3.7.2
+Homepage: http://nco.sourceforge.net/
 
 Package: nco
 Architecture: any
