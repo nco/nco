@@ -4,23 +4,37 @@ nco (3.9.4-1) sid; urgency=low
 
  -- Charlie Zender <zender@uci.edu>  Mon, 03 Mar 2008 14:03:30 +0100
 
-nco (3.9.3-1) gutsy; urgency=low
+nco (3.9.3-1) UNRELEASED; urgency=low
 
   * new upstream version (SWAMP, ncecat -u, wget, ncap OpenMP, GCC 4.2)
 
  -- Charlie Zender <zender@uci.edu>  Sat, 08 Dec 2007 15:26:47 +0100
 
-nco (3.9.2-1) sid; urgency=low
+nco (3.9.2-1) UNRELEASED; urgency=low
 
   * new upstream version (GPL3, _FillValue, UDUnits2, ncap2 printing)
 
  -- Charlie Zender <zender@uci.edu>  Wed, 29 Aug 2007 09:01:52 -0700
 
-nco (3.9.1-1) feisty; urgency=low
+nco (3.9.1-1) UNRELEASED; urgency=low
 
   * new upstream version (supports netCDF4/HDF deflation)
 
  -- Charlie Zender <zender@uci.edu>  Fri, 29 Jun 2007 11:46:16 -0700
+
+nco (3.9.0-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/rules
+    - fixed FTBFS if build twice in a row (Closes: #442685)
+  * debian/doc-base
+    - changed section
+  * debian/watch
+    - added
+  * debian/control
+    - added Homepage field
+
+ -- Sandro Tosi <matrixhasu@gmail.com>  Sat, 19 Apr 2008 16:28:04 +0200
 
 nco (3.9.0-1) unstable; urgency=low
 
