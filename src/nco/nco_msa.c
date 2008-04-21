@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.59 2008-04-10 14:51:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.60 2008-04-21 13:44:33 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1278,8 +1278,8 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
      from input file to output file. Only data (not metadata) are copied. */
   
   int idx;
-  int dmn_idx;
-  long srd_prd=1L; /* [nbr] Product of strides */
+  /* int dmn_idx; */
+  /* long srd_prd=1L; */ /* [nbr] Product of strides */
   
   for(idx=0;idx<nbr_var;idx++){
       

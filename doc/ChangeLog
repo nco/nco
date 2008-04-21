@@ -1,9 +1,12 @@
+2008-04-21  Charlie Zender  <zender@uci.edu>
 
+	* Merge recent 3.9.0-1.1 Debian NMU patches into upstream
+
+	* Un-DOS-ify files
 
 2008-04-10  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Added multi-hyperslabbing code to ncra
-
 
 2008-04-04  Henry Butowsky  <henryb@ntlworld.com>
 
