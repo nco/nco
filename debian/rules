@@ -76,6 +76,9 @@ clean:
 	dh_testroot
 	rm -f build-arch-stamp build-indep-stamp config-stamp
 	-$(MAKE) distclean
+
+	rm -f data/big.nc
+
 	dh_clean
 
 install: install-arch
