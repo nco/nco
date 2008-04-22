@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.8 2008-02-27 16:09:42 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.9 2008-04-22 12:06:28 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -386,21 +386,16 @@ nbr_err_ttl=0;
     nbr_err++;
   }
 
-
   if( fabs(h3-420.5f)>0.01) {
     print("ERROR: h3: masking test\n");
     nbr_err++;
   }
- 
   
   ram_delete(hmask);
 
   print("RESULTS block h: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-
-
 }
 
 // Check hyperslab normalization
