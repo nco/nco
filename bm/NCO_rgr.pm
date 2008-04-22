@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.67 2008-04-17 14:20:39 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.68 2008-04-22 13:30:46 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -326,6 +326,19 @@ sub tst_rgr {
     $tst_cmd[6] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+	
+	
+    $tst_cmd[0]="ncks -C -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -C -O $fl_fmt $nco_D_flg -v -s 'three_dmn_var_dbl[lon]={0.0,1,2,3};' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg -d time,0,4 -d time,9 -d lon,0 -d lon,3 %tempf_00% %tempf_01% %tempf_02%";
+    $tst_cmd[3]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tempf_02% %tempf_03%";
+    $tst_cmd[4]="ncks -C -H  -s '%f' -v three_dmn_var_dbl %tempf_03%";
+    $dsc_sng="Addition + 3D broadcasting+ MSA";
+    $tst_cmd[5] = "422";
+    $tst_cmd[6] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
 
     
 #} # endif $mpi_prc == 0...
