@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.121 2008-04-22 15:02:43 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.122 2008-04-23 14:27:34 hmb Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.121 2008-04-22 15:02:43 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.121 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.122 2008-04-23 14:27:34 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.122 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -149,6 +149,8 @@ main(int argc,char **argv)
   int idx;
   int jdx;
   int kdx;
+  int dmn_idx;
+  int dmn_jdx;
   int in_id_1;  
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -458,6 +460,30 @@ main(int argc,char **argv)
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim_2,nbr_dmn_xtr_2,lmt,lmt_nbr);
   */
   
+  /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
+  for(idx=0 ; idx<nbr_dmn_xtr_2 ; idx++ ){
+    for(jdx=0 ; jdx<nbr_dmn_xtr_1 ; jdx++) 
+       if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm))
+	     break;
+		 		
+	if(jdx==nbr_dmn_xtr_1) {	 	   
+     (void)fprintf(fp_stdout,"%s: ERROR dim \"%s\" in second file %s - not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
+       nco_exit(EXIT_FAILURE);
+    }  
+	
+	if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
+	   if(dim_1[jdx]->is_rec_dmn)    
+	     (void)fprintf(fp_stdout,"%s: ERROR record dimension mismatch : record dim file in %s is %li : record dim file in %s is %li\n",prg_nm,fl_in_1,dim_1[jdx]->cnt, fl_in_2,dim_2[idx]->cnt);     
+	   else	      
+		 (void)fprintf(fp_stdout,"%s: ERROR dimension mismatch :  dim \"%s\" in file %s is %li : in file  %s it is %li\n",prg_nm,dim_1[jdx]->nm, fl_in_1,dim_1[jdx]->cnt, fl_in_2,dim_2[idx]->cnt);
+		nco_exit(EXIT_FAILURE); 
+	}	
+				
+
+  } /* end for idx */	
+	  
+                                         		 		 
+				         
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
   for(idx=0  ; idx<nbr_dmn_xtr_1 ; idx++){ 
@@ -542,6 +568,7 @@ main(int argc,char **argv)
 	  /* dim not found die gracefully */
 	  if(kdx==nbr_dmn_fl_1){
 	   (void)fprintf(fp_stdout,"%s: ERROR dim \"%s\" in second file %s - not present in first file %s\n",prg_nm,var_tmp->dim[jdx]->nm,fl_in_2,fl_in_1);
+	   nco_exit(EXIT_FAILURE);
 	  }  
 			
       var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
@@ -655,33 +682,28 @@ main(int argc,char **argv)
     /* Read hyperslab from second file */
     (void)nco_msa_var_get(in_id_2,var_prc_2[idx],lmt_all_lst,nbr_dmn_fl_1);
 
-    /* Determine whether var1 and var2 conform */
-    if(var_prc_1[idx]->nbr_dim == var_prc_2[idx]->nbr_dim){
-      int dmn_idx;
-      /* Do all dimensions match in sequence? */
-      for(dmn_idx=0;dmn_idx<var_prc_1[idx]->nbr_dim;dmn_idx++){
-	if(
-	   strcmp(var_prc_1[idx]->dim[dmn_idx]->nm,var_prc_2[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
-	   (var_prc_1[idx]->dim[dmn_idx]->cnt != var_prc_2[idx]->dim[dmn_idx]->cnt) || /* Dimension sizes do not match */
-	   False){
-	  (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,dmn_idx,var_prc_1[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_idx]->sz,var_prc_1[idx]->dim[dmn_idx]->cnt,fl_in_2,var_prc_2[idx]->nm,dmn_idx,var_prc_2[idx]->dim[dmn_idx]->nm,var_prc_2[idx]->dim[dmn_idx]->sz,var_prc_2[idx]->dim[dmn_idx]->cnt);
-	  if(var_prc_1[idx]->dim[dmn_idx]->cnt == 1 || var_prc_2[idx]->dim[dmn_idx]->cnt == 1) (void)fprintf(fp_stdout,"%s: HINT If a dimension is present in both files, it must be the same size. %s will not attempt to broadcast a degenerate (i.e., size 1) dimension (e.g., a single timestep) to a non-degenerate size. If one of the dimensions is degenerate, try removing it completely (e.g., by averaging over it with ncwa) before invoking %s\n",prg_nm,prg_nm,prg_nm);
-	  nco_exit(EXIT_FAILURE);
-	} /* endif */
-      } /* end loop over dmn_idx */
-    }else{ /* var_prc_out[idx]->nbr_dim != var_prc_1[idx]->nbr_dim) */
-      /* Number of dimensions do not match, attempt to broadcast variables 
-	 fxm: broadcasting here leads to memory leak later since var_[1,2] does not know */
-
-      /* Die gracefully on unsupported features... */
-      if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
+       
+	/* Check that all dims in var_prc_2 are in var_prc_1 */
+	for( dmn_idx=0 ; dmn_idx<var_prc_2[idx]->nbr_dim; dmn_idx++){
+	  for(dmn_jdx=0 ; dmn_jdx<var_prc_1[idx]->nbr_dim ; dmn_jdx++)  
+	    if(!strcmp(var_prc_2[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_jdx]->nm))
+	      break;
+	    if(dmn_jdx==var_prc_1[idx]->nbr_dim){
+	      (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s has dimension %s not present in  file %s variable %s\n",prg_nm,fl_in_2, var_prc_2[idx]->nm, var_prc_2[idx]->dim[dmn_idx]->nm,fl_in_1, var_prc_1[idx]->nm);
+		  nco_exit(EXIT_FAILURE);
+		}    	
+	}
+	    		
+	/* Die gracefully on unsupported features... */
+	if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
 	(void)fprintf(fp_stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
 	nco_exit(EXIT_FAILURE);
       } /* endif */
 
-      (void)ncap_var_cnf_dmn(&var_prc_out[idx],&var_prc_2[idx]);
-    } /* end else */
-    
+    if(var_prc_1[idx]->nbr_dim > var_prc_2[idx]->nbr_dim)
+	  (void)ncap_var_cnf_dmn(&var_prc_out[idx],&var_prc_2[idx]);
+
+	
     /* var2 now conforms in size to var1, and is in memory */
     
     /* fxm: TODO 268 allow var1 or var2 to typecast */
