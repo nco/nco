@@ -1,3 +1,8 @@
+2008-04-23  Charlie Zender  <zender@uci.edu>
+
+	* Replace H5LT_open_id with H5LT_find_attribute in configure.in
+	Fixes cygwin build problem with netCDF4. Thanks to Mark Hadfield. 
+
 2008-04-21  Charlie Zender  <zender@uci.edu>
 
 	* Merge recent 3.9.0-1.1 Debian NMU patches into upstream

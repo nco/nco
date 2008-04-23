@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.245 2008-04-01 12:34:16 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.246 2008-04-23 17:57:33 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -312,7 +312,7 @@ if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
 # If using netCDF4, require HDF5 libraries before nc_open() test
     AC_CHECK_LIB([hdf5],[H5Fcreate],[nco_have_hdf5='yes'],enable_netcdf4='no')
     if test "${nco_have_hdf5}" = 'yes'; then
-	AC_CHECK_LIB([hdf5_hl],[H5LT_open_id],nco_have_hdf5_hl=yes,enable_netcdf4=no)
+	AC_CHECK_LIB([hdf5_hl],[H5LT_find_attribute],nco_have_hdf5_hl=yes,enable_netcdf4=no)
 	if test "${nco_have_hdf5_hl}" = 'yes'; then
 	    AC_CHECK_LIB([z],[gzopen],nco_have_libz=yes,enable_netcdf4=no)
 	    if test "${nco_have_libz}" = 'yes'; then

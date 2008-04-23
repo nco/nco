@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.284 2008-04-02 21:40:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.285 2008-04-23 17:57:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.5 are ready. 
 
@@ -15,6 +15,8 @@ B. ncap2 builds on Solaris (Henry Butowsky)
 C. Prevent copying global metadata with -M, --metadata switch on
    ncecat 
    http://nco.sf.net#ncecat
+
+D. Fix netCDF4-enabled NCO builds on cygwin. Thanks to Mark Hadfield. 
 
 L. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian
