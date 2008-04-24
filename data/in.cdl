@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.98 2008-04-18 11:36:14 hmb Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.99 2008-04-24 13:34:55 hmb Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -618,7 +618,13 @@ variables:
 	rec_var_dbl_pck:long_name = "record variable, double, packed";
         rec_var_dbl_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly";
         rec_var_dbl_pck:scale_factor = 0.1;
-        rec_var_dbl_pck:add_offset = 100.0;
+		rec_var_dbl_pck:add_offset = 100.0;
+	
+	short non_rec_var_flt_pck(lon);
+		non_rec_var_flt_pck:long_name = "regular variable, float, packed";
+        non_rec_var_flt_pck:purpose = "Demonstrate that non-rec dim packed vars are handled correctly";
+        non_rec_var_flt_pck:scale_factor = 0.1f;
+        non_rec_var_flt_pck:add_offset = 100.0f;
 
 	float rec_var_flt_mss_val_dbl(time);
 	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
@@ -952,6 +958,7 @@ data:
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt_pck=1,2,3,4,5,6,7,8,9,10;
 	rec_var_dbl_pck=1,2,3,4,5,6,7,8,9,10;
+	non_rec_var_flt_pck=1,2,3,4;
 	rec_var_dbl_mss_val_dbl_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_dbl_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
