@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.60 2008-04-21 13:44:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.61 2008-04-24 13:41:49 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -560,9 +560,10 @@ lmt_sct **lmt;
 
   /* Deal with scalar var */
   if(nbr_dim==0){
-   var_in->val.vp=nco_malloc(nco_typ_lng(var_in->type));
+   var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
    (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
-   return;
+   goto do_unpck;
+   /*return; */
   }
 
   lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
@@ -589,6 +590,10 @@ lmt_sct **lmt;
 
   var_in->val.vp=void_ptr;
 
+  (void)nco_free(lmt_mult);
+  (void)nco_free(lmt);
+
+do_unpck:
 /*******************************************************************************/
  /* following code copied from nco_var_get() */
 
@@ -615,8 +620,6 @@ lmt_sct **lmt;
 
 
 
-  (void)nco_free(lmt_mult);
-  (void)nco_free(lmt);
 
   return;
 } /* end nco_msa_var_get */
@@ -1278,13 +1281,52 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
      from input file to output file. Only data (not metadata) are copied. */
   
   int idx;
+  int jdx;
+  int kdx;
+  int nbr_dim;
   /* int dmn_idx; */
   /* long srd_prd=1L; */ /* [nbr] Product of strides */
   
   for(idx=0;idx<nbr_var;idx++){
+
+    nbr_dim=var[idx]->nbr_dim;
+
+  /* GET VARIABLE DATA */
+  
+  /* Deal with scalar var */
+  if(nbr_dim==0){
+   var[idx]->val.vp=nco_malloc(nco_typ_lng(var[idx]->type));
+   (void)nco_get_var1(in_id,var[idx]->id,0L,var[idx]->val.vp,var[idx]->type);
+  }else{
+    lmt_all_sct **lmt_mult;
+	lmt_sct **lmt;
+
+    lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+    lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
+
+    /* Initialize lmt_mult with multi-limits from lmt_lst limits */
+    for(jdx=0;jdx<nbr_dim;jdx++){
+      for(kdx=0;kdx<nbr_dmn_fl;kdx++){
+      if(!strcmp(var[idx]->dim[jdx]->nm,lmt_lst[kdx]->dmn_nm ) ){
+	   lmt_mult[jdx]=lmt_lst[kdx];
+        break;
+       } /* end if */
+      } /* end loop over jdx */
+    } /* end idx */
+  
+    /* Call super-dooper recursive routine */
+    /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
+    var[idx]->val.vp=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var[idx]);
+  
+    (void)nco_free(lmt_mult);
+    (void)nco_free(lmt);
+   } /* end else nbr_dim */
+
       
-    (void)nco_msa_var_get(in_id,var[idx],lmt_lst,nbr_dmn_fl);   
-    
+    /*(void)nco_msa_var_get(in_id,var[idx],lmt_lst,nbr_dmn_fl); */  
+  
+	/* PUT VARIABLE DATA */
+	  		  
     if(var[idx]->nbr_dim == 0)
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->val.vp,var[idx]->type);
     else{ /* end if variable is scalar */
