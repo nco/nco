@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.132 2008-04-15 13:50:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.133 2008-04-28 13:29:21 hmb Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.132 2008-04-15 13:50:20 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.132 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.133 2008-04-28 13:29:21 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.133 $";
   const char * const opt_sht_lst="34Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -554,6 +554,8 @@ main(int argc,char **argv)
      var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
 
+
+
   
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
@@ -775,7 +777,30 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   nco_close(in_id);
 
-  
+
+ /* refresh var_prc with dim_out data */
+  for(idx=0;idx<nbr_var_prc;idx++){
+    long sz;
+    long sz_rec;
+    sz=1;
+    sz_rec=1;
+    var_sct *var_tmp;
+    (void)nco_xrf_dmn(var_prc[idx]);
+    var_tmp=var_prc[idx];
+
+    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
+      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
+      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
+      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
+      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
+      sz*=var_tmp->dim[jdx]->cnt;
+      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
+     }/* end loop over jdx */
+     var_tmp->sz=sz; 
+     var_tmp->sz_rec=sz_rec;
+  } /* end loop over idx */
+
+ 
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
@@ -805,14 +830,12 @@ main(int argc,char **argv)
       
       /* Retrieve variable from disk into memory */
       /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-	  (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
-
+      (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
       if(dmn_rdr_nbr > 0){
 	if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
 	  (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	  nco_exit(EXIT_FAILURE); 
 	} /* endif err */
-
 	/* Change dimensionionality of values */
 	rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
 	/* Re-ordering required two value buffers, time to free input buffer */
