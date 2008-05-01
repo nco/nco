@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.123 2008-04-23 14:45:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.124 2008-05-01 11:08:48 hmb Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.123 2008-04-23 14:45:59 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.123 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.124 2008-05-01 11:08:48 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.124 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -271,6 +271,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+	  if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in 
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
