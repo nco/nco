@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.134 2008-05-01 10:53:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.135 2008-05-01 11:01:49 hmb Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.134 2008-05-01 10:53:59 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.134 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.135 2008-05-01 11:01:49 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.135 $";
   const char * const opt_sht_lst="34Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -273,8 +273,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-    } /* opt != 0 */
-	if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+      if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+	} /* opt != 0 */
+	
     /* Process short options */
     switch(opt){
     case 0: /* Long options have already been processed, return */
