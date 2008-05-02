@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.71 2008-05-01 10:52:41 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.72 2008-05-02 14:38:32 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -899,8 +899,8 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
 
 
-    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -X 0,180,-30,30 -v gds_3dvar $in_pth_arg in.nc %tempklsf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%8.1f' -v gds_3dvar %tempklsf_00%";
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -X 0,180,-30,30 -v gds_3dvar $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncks -C -H -s '%8.1f' -v gds_3dvar %tempf_00%";
     $dsc_sng="Return record averge of subsetted geodesic data";
     $tst_cmd[2] = "   277.7   277.8   277.9   278.0   278.1   278.2";
     $tst_cmd[3] = "SS_OK";
