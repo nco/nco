@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.476 2008-04-04 09:38:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.477 2008-05-02 09:08:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3512,24 +3512,29 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @node Multislabs, Wrapped Coordinates, Stride, Common features
 @section Multislabs 
 @cindex multislab
+@cindex multi-hyperslab
+@cindex @acronym{MSA}
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cartouche
-Availability: @command{ncks}@*
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}@* 
 Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
 Long options: 
 @samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]},@* 
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
 @end cartouche
-In late 2002, @command{ncks} added support for specifying a
-@dfn{multislab} for any variable.
-@w{A multislab} is a union of one or more hyperslabs 
-which is specified by chaining together hyperslab commands, i.e.,
+A @w{multislab} is a union of one or more hyperslabs.
+One defines multislabs by chaining together hyperslab commands, i.e., 
 @kbd{-d} options (@pxref{Hyperslabs}).
-This allows multislabs to overcome some restraints which limit
-hyperslabs.
+Support for specifying a @dfn{multi-hyperslab} or @dfn{multislab} for
+any variable was first added to @command{ncks} in late 2002.
+Sometimes multi-slabbing is referred to by the acronym @acronym{MSA},
+which stands for ``Multi-Slabbing Algorithm''.
 
+Multislabs overcome some restraints that limit hyperslabs.
 @w{A single} @kbd{-d} option can only specify a contiguous and/or
 a regularly spaced multi-dimensional data array.
 Multislabs are constructed from multiple @kbd{-d} options and may
@@ -3596,8 +3601,6 @@ Multislabs are powerful because they may be specified for every
 dimension at the same time.
 Thus multislabs obsolete the need to execute multiple @command{ncks}
 commands to gather the desired range of data.
-We envision adding multislab support to all arithmetic operators in the
-future. 
 
 @html
 <a name="wrp"></a> <!-- http://nco.sf.net/nco.html#wrp -->
@@ -7176,6 +7179,7 @@ as positional arguments on the command line
 @cindex @code{-M}
 @cindex @code{--glb_mtd_spr}
 @cindex metadata, global 
+Turn off global metadata copying.
 By default all @acronym{NCO} operators copy the global metadata of the 
 first input file into @var{output-file}.  
 This helps preserve the provenance of the output data.

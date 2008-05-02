@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.478 2008-04-23 17:57:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.479 2008-05-02 09:08:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -479,8 +479,9 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.9.5</b>: (<i>In progress</i>) 
-Multi-slabbing with <tt>ncbo</tt>, <tt>ncea</tt>, <tt>ncecat</tt>, <tt>ncflint</tt>, <tt>ncra</tt>, <tt>ncrcat</tt>;
+<li><b>NCO/SDO 3.9.6</b>: (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.5</b>: 
+Multi-slabbing everywhere;
 <tt>ncecat -M</tt>;
 netCDF4-enabled builds on Cygwin;
 <tt>ncap2</tt> builds on Solaris;

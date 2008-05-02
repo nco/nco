@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.125 2008-05-01 11:14:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.126 2008-05-02 09:08:12 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -93,8 +93,8 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-    nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.125 2008-05-01 11:14:10 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.125 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.126 2008-05-02 09:08:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.126 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -201,9 +201,9 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */	  
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */	  
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -439,8 +439,6 @@ main(int argc,char **argv)
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_all_sct *));
   /* Initilize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr);
-
-
 
   /* Find dimensions associated with variables to be extracted */
   dmn_lst_1=nco_dmn_lst_ass_var(in_id_1,xtr_lst_1,nbr_xtr_1,&nbr_dmn_xtr_1);
@@ -682,29 +680,27 @@ main(int argc,char **argv)
     
     /* Read hyperslab from second file */
     (void)nco_msa_var_get(in_id_2,var_prc_2[idx],lmt_all_lst,nbr_dmn_fl_1);
-
        
-	/* Check that all dims in var_prc_2 are in var_prc_1 */
-	for( dmn_idx=0 ; dmn_idx<var_prc_2[idx]->nbr_dim; dmn_idx++){
-	  for(dmn_jdx=0 ; dmn_jdx<var_prc_1[idx]->nbr_dim ; dmn_jdx++)  
-	    if(!strcmp(var_prc_2[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_jdx]->nm))
-	      break;
-	    if(dmn_jdx==var_prc_1[idx]->nbr_dim){
-	      (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s has dimension %s not present in  file %s variable %s\n",prg_nm,fl_in_2, var_prc_2[idx]->nm, var_prc_2[idx]->dim[dmn_idx]->nm,fl_in_1, var_prc_1[idx]->nm);
-		  nco_exit(EXIT_FAILURE);
-		}    	
-	}
-	    		
-	/* Die gracefully on unsupported features... */
-	if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
-	(void)fprintf(fp_stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
+    /* Check that all dims in var_prc_2 are in var_prc_1 */
+    for(dmn_idx=0;dmn_idx<var_prc_2[idx]->nbr_dim;dmn_idx++){
+      for(dmn_jdx=0;dmn_jdx<var_prc_1[idx]->nbr_dim;dmn_jdx++)  
+	if(!strcmp(var_prc_2[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_jdx]->nm))
+	  break;
+      if(dmn_jdx==var_prc_1[idx]->nbr_dim){
+	(void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s has dimension %s not present in file %s variable %s\n",prg_nm,fl_in_2,var_prc_2[idx]->nm, var_prc_2[idx]->dim[dmn_idx]->nm,fl_in_1,var_prc_1[idx]->nm);
 	nco_exit(EXIT_FAILURE);
-      } /* endif */
-
+      } /* endif error */
+    } /* end loop over idx */
+	    		
+    /* Die gracefully on unsupported features... */
+    if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
+      (void)fprintf(fp_stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */
+    
     if(var_prc_1[idx]->nbr_dim > var_prc_2[idx]->nbr_dim)
-	  (void)ncap_var_cnf_dmn(&var_prc_out[idx],&var_prc_2[idx]);
-
-	
+      (void)ncap_var_cnf_dmn(&var_prc_out[idx],&var_prc_2[idx]);
+    
     /* var2 now conforms in size to var1, and is in memory */
     
     /* fxm: TODO 268 allow var1 or var2 to typecast */

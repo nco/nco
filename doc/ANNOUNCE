@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.285 2008-04-23 17:57:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.286 2008-05-02 09:08:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.5 are ready. 
 
@@ -7,7 +7,8 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release ...
 
-A. ncbo, ncea, and ncflint support multi-slabbing (Henry Butowsky fxm)
+A. Multi-slabbing (MSA) available on most operators (Henry Butowsky)
+   ncbo, ncea, ncecat, ncflint, ncpdq, ncra, and ncrcat support MSA
    http://nco.sf.net#msa
 
 B. ncap2 builds on Solaris (Henry Butowsky)
