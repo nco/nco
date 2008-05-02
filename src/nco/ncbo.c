@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.126 2008-05-02 09:08:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.127 2008-05-02 09:09:31 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.126 2008-05-02 09:08:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.126 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.127 2008-05-02 09:09:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.127 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -271,7 +271,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-	  if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+      if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -698,8 +698,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
     } /* endif */
     
-    if(var_prc_1[idx]->nbr_dim > var_prc_2[idx]->nbr_dim)
-      (void)ncap_var_cnf_dmn(&var_prc_out[idx],&var_prc_2[idx]);
+    if(var_prc_1[idx]->nbr_dim > var_prc_2[idx]->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_out[idx],&var_prc_2[idx]);
     
     /* var2 now conforms in size to var1, and is in memory */
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.219 2008-04-21 13:44:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.220 2008-05-02 09:08:12 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool LAST_RECORD=False;
-  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option n */
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.219 2008-04-21 13:44:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.219 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.220 2008-05-02 09:08:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.220 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -206,9 +206,8 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      /* Long options with argument, no short option counterpart */
       {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
-
+      /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
@@ -293,7 +292,6 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
-
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -618,7 +616,6 @@ main(int argc,char **argv)
   /* (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix); */
   (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
 
-
   /* Close first input netCDF file */
   (void)nco_close(in_id);
   
@@ -696,14 +693,6 @@ main(int argc,char **argv)
 	    if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	    if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
-	    /* Update hyperslab start indices to current record for each variable */
-            /*
-	    var_prc[idx]->srt[0]=idx_rec;
-	    var_prc[idx]->end[0]=idx_rec;
-	    var_prc[idx]->cnt[0]=1L;
-            */
-
-
 	    /* Retrieve variable from disk into memory */
 	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
             (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
@@ -771,15 +760,6 @@ main(int argc,char **argv)
 	  in_id=in_id_arr[omp_get_thread_num()];
 	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
-
-	  /* Update hyperslab start indices to current record for each variable */
-          /*
-	  if(var_prc[idx]->is_rec_var){
-	    var_prc[idx]->srt[0]=lmt_rec->srt;
-	    var_prc[idx]->end[0]=lmt_rec->end;
-	    var_prc[idx]->cnt[0]=lmt_rec->cnt;
-	  }  */
-          /* endif record variable */
 
 	  /* Retrieve variable from disk into memory */
 	  (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
