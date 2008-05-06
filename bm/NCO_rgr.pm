@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.72 2008-05-02 14:38:32 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.73 2008-05-06 14:27:25 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -728,6 +728,25 @@ sub tst_rgr {
     $dsc_sng="Concatenate float 4D var with multi-hyperlsbs across two files";
     $tst_cmd[3] = "204";
     $tst_cmd[4] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tempf_00%";    
+    $tst_cmd[1]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,0,,4  $in_pth/in.nc %tempf_00%  %tempf_01% 2> %tempf_02%";
+    $tst_cmd[2]="ncks -C -H  -s '%2.f,' -v time  %tempf_01%";
+    $dsc_sng="Concatenate 1D var with stride across two files";
+    $tst_cmd[3] = " 1, 5, 9,13,17";
+    $tst_cmd[4] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tempf_00%"; 
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=20;' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,0,,8 $in_pth/in.nc %tempf_00%  %tempf_01% %tempf_02% 2> %tempf_03%";
+    $tst_cmd[3]="ncks -C -H  -s '%2.f,' -v time  %tempf_02%";
+    $dsc_sng="Concatenate 1D var with stride across three files";
+    $tst_cmd[4] = " 1, 9,17,25";
+    $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
