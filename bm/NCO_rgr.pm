@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.73 2008-05-06 14:27:25 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.74 2008-05-07 11:54:33 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -393,6 +393,17 @@ sub tst_rgr {
     $tst_cmd[4] = "NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+	
+	$tst_cmd[0]="/bin/rm -f %tempf_00%";
+    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl  $in_pth_arg in.nc in.nc %tempf_00%";
+	$tst_cmd[2]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tempf_00% %tempf_01%";
+    $tst_cmd[3]="ncks -C -H -s '%3.f' -v three_dmn_var_dbl %tempf_01%";
+	$dsc_sng="ensemble mean of 3D var across two files with MSA";
+    $tst_cmd[4] = "150";
+    $tst_cmd[5] = "NO_SS";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
     
 # print "paused - hit return to continue"; my $wait = <STDIN>;
     
@@ -732,7 +743,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tempf_00%";    
-    $tst_cmd[1]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,0,,4  $in_pth/in.nc %tempf_00%  %tempf_01% 2> %tempf_02%";
+    $tst_cmd[1]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,4  $in_pth/in.nc %tempf_00%  %tempf_01% 2> %tempf_02%";
     $tst_cmd[2]="ncks -C -H  -s '%2.f,' -v time  %tempf_01%";
     $dsc_sng="Concatenate 1D var with stride across two files";
     $tst_cmd[3] = " 1, 5, 9,13,17";
@@ -742,13 +753,28 @@ sub tst_rgr {
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tempf_00%"; 
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=20;' $in_pth_arg in.nc %tempf_01%";
-    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,0,,8 $in_pth/in.nc %tempf_00%  %tempf_01% %tempf_02% 2> %tempf_03%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,8 $in_pth/in.nc %tempf_00%  %tempf_01% %tempf_02% 2> %tempf_03%";
     $tst_cmd[3]="ncks -C -H  -s '%2.f,' -v time  %tempf_02%";
     $dsc_sng="Concatenate 1D var with stride across three files";
     $tst_cmd[4] = " 1, 9,17,25";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[1]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,0,4 %tempf_00% %tempf_01%";  
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=20;' $in_pth_arg in.nc %tempf_02%";
+    $tst_cmd[3]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,5,7 %tempf_02% %tempf_03%";
+    $tst_cmd[4]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,10,,2 $in_pth/in.nc %tempf_01%  %tempf_03% %tempf_04% 2> %tempf_05%";
+    $tst_cmd[5]="ncks -C -H  -s '%2.f,' -v time  %tempf_04%";
+    $dsc_sng="Concat 1D var with stride - files with different record dims";
+    $tst_cmd[6] = "11,13,15,27";
+    $tst_cmd[7] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+
 
 
 #    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
