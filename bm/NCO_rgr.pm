@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.74 2008-05-07 11:54:33 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.75 2008-05-07 14:47:33 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -394,11 +394,11 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 	
-	$tst_cmd[0]="/bin/rm -f %tempf_00%";
+    $tst_cmd[0]="/bin/rm -f %tempf_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl  $in_pth_arg in.nc in.nc %tempf_00%";
-	$tst_cmd[2]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tempf_00% %tempf_01%";
+    $tst_cmd[2]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tempf_00% %tempf_01%";
     $tst_cmd[3]="ncks -C -H -s '%3.f' -v three_dmn_var_dbl %tempf_01%";
-	$dsc_sng="ensemble mean of 3D var across two files with MSA";
+    $dsc_sng="ensemble mean of 3D var across two files with MSA";
     $tst_cmd[4] = "150";
     $tst_cmd[5] = "NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
@@ -762,7 +762,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tempf_00%";
-	$tst_cmd[1]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,0,4 %tempf_00% %tempf_01%";  
+    $tst_cmd[1]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,0,4 %tempf_00% %tempf_01%";  
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=20;' $in_pth_arg in.nc %tempf_02%";
     $tst_cmd[3]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,5,7 %tempf_02% %tempf_03%";
     $tst_cmd[4]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,10,,2 $in_pth/in.nc %tempf_01%  %tempf_03% %tempf_04% 2> %tempf_05%";
