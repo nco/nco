@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.61 2008-04-24 13:41:49 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.62 2008-05-07 12:00:12 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1156,12 +1156,14 @@ nco_msa_lmt_all_int
 {
   int idx;
   int jdx;
-  
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   long dmn_sz;
   char dmn_nm[NC_MAX_NAME];
-  
+
   lmt_sct *lmt_rgl;
   lmt_all_sct * lmt_all_crr;
+  
+  (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
   
   /* Unlimited dimensions are stored in */
   // lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
@@ -1183,8 +1185,13 @@ nco_msa_lmt_all_int
     lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
     lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
     lmt_rgl->id=idx;
+
     /* nb this maybe altered in nco_lmt_evl */
-    lmt_rgl->is_rec_dmn=False;
+	if(idx==rec_dmn_id)
+      lmt_rgl->is_rec_dmn=True;
+	else
+	  lmt_rgl->is_rec_dmn=False;
+	  
     lmt_rgl->srt=0L;
     lmt_rgl->end=dmn_sz-1L;
     lmt_rgl->cnt=dmn_sz;
@@ -1225,6 +1232,11 @@ nco_msa_lmt_all_int
   for(idx=0;idx<nbr_dmn_fl;idx++){
     nco_bool bovl;
     
+	/* nb progs ncra/ncrcat only one limit for the record dimension so skip evaluation*/
+	/* otherwise this messes up multi-file operation */
+	if( lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get()==ncra || prg_get()==ncrcat))
+	  continue;
+	
     /* Split-up wrapped limits */   
     (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
     
