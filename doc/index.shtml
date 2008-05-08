@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.479 2008-05-02 09:08:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.480 2008-05-08 22:52:09 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -222,7 +222,7 @@ Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a>
 are misnamed because they perform many non-linear operations as well,
 e.g., total, minimum, maximum, RMS: 
 <ul>
-<a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
+<li><a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
 <li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF Attribute Editor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
 <li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
 <li><a href="./nco.html#ncea"><tt>ncea</tt></a> netCDF Ensemble Averager (<a href="./nco.html#xmp_ncea">examples</a>)</li>
