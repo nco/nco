@@ -200,6 +200,7 @@
       fmc_vtr.push_back( fmc_cls("rmssdn",this,(int)PRMSSDN));
       fmc_vtr.push_back( fmc_cls("sqravg",this,(int)PSQRAVG));
       fmc_vtr.push_back( fmc_cls("total",this,(int)PTTL));
+	  fmc_vtr.push_back( fmc_cls("ttl",this,(int)PTTL));
     }
   }		      
 		      
