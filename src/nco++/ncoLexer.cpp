@@ -32,13 +32,13 @@ void ncoLexer::initLiterals()
 {
 	literals["<<"] = 89;
 	literals["for"] = 42;
-	literals["break"] = 32;
-	literals["while"] = 31;
-	literals["continue"] = 33;
-	literals[">>"] = 90;
-	literals["where"] = 36;
-	literals["if"] = 34;
 	literals["print"] = 37;
+	literals["where"] = 36;
+	literals["continue"] = 33;
+	literals["while"] = 31;
+	literals[">>"] = 90;
+	literals["break"] = 32;
+	literals["if"] = 34;
 	literals["else"] = 35;
 	literals["defdim"] = 26;
 }

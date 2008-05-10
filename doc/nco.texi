@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.477 2008-05-02 09:08:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.478 2008-05-10 20:43:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3531,6 +3531,7 @@ One defines multislabs by chaining together hyperslab commands, i.e.,
 @kbd{-d} options (@pxref{Hyperslabs}).
 Support for specifying a @dfn{multi-hyperslab} or @dfn{multislab} for
 any variable was first added to @command{ncks} in late 2002.
+The other operators received @acronym{MSA} capabilities in April 2008.
 Sometimes multi-slabbing is referred to by the acronym @acronym{MSA},
 which stands for ``Multi-Slabbing Algorithm''.
 
@@ -5176,6 +5177,18 @@ described in any detail in the sections below.
 @findex ncap
 @findex ncap2
 
+@cartouche
+@command{ncap2} understands a relatively full-featured set of 
+language features (e.g., loops, if-then, indexed arrays).
+Unfortunately, the @command{ncap2} documentation is woefully
+out-of-date. 
+Please see the distribution file @file{data/ncap2_tst.nco}
+for an up-to-date of its syntax and capabilities.
+The @file{data/*.nco} distribution files (especially
+@file{bin_cnt.nco}, @file{psd_wrf.nco}, and @file{rgr.nco}) contain
+in-depth examples of @command{ncap2} solutions to complex problems.
+@end cartouche
+
 @c fxm: TODO nco549 hyper-link all switches to explanatory sections?
 @c Problem is that only works well in HTML mode
 @c TeXInfo has no native mode for concise hyperlinks in text mode
@@ -5193,7 +5206,7 @@ ncap2 [-3] [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{db
 @noindent
 DESCRIPTION
 
-@command{ncap} and @command{ncap2} arithmetically process netCDF files
+@command{ncap2} arithmetically processes netCDF files.
 @footnote{@command{ncap2} is the successor to @command{ncap} which was
 put into maintenance mode in November, 2006. 
 This documentation refers to @command{ncap2}, which has a superset of
