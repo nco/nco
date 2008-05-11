@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.478 2008-05-10 20:43:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.479 2008-05-11 14:57:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5179,11 +5179,11 @@ described in any detail in the sections below.
 
 @cartouche
 @command{ncap2} understands a relatively full-featured set of 
-language features (e.g., loops, if-then, indexed arrays).
+language features (e.g., loops, if-then, array indices).
 Unfortunately, the @command{ncap2} documentation is woefully
 out-of-date. 
 Please see the distribution file @file{data/ncap2_tst.nco}
-for an up-to-date of its syntax and capabilities.
+for an up-to-date overview of its syntax and capabilities.
 The @file{data/*.nco} distribution files (especially
 @file{bin_cnt.nco}, @file{psd_wrf.nco}, and @file{rgr.nco}) contain
 in-depth examples of @command{ncap2} solutions to complex problems.

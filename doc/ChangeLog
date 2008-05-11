@@ -1,3 +1,14 @@
+2008-05-11  Charlie Zender  <zender@uci.edu>
+
+	* cd ~/nco;cvs tag -d nco-3_9_5;cvs tag -d nco-3_9_5-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.5 release"
+	  cvs tag -c nco-3_9_5;cvs tag -c nco-3_9_5-1
+	  Changes since nco-3_9_4: MSA everywhere
+	
+	* Add -X to more man pages
+
+	* Improve -X and ncap2 documentation
+
 2008-05-02  Charlie Zender  <zender@uci.edu>
 
 	* Cleanup ncbo, ncecat, ncflint, ncks, ncpdq, ncra *.c files

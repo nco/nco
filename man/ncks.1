@@ -5,7 +5,7 @@ ncks \- netCDF Kitchen Sink
 ncks [-3] [-4] [-A] [-a] [-C] [-c] [-D] 
 [-d 
 .IR dim ,[
-.IR "min" ][,[
+.IR min ][,[
 .IR max ]][,[
 .IR stride ]]]
 [-F] [-H] [-h] [-L 
@@ -19,7 +19,7 @@ ncks [-3] [-4] [-A] [-a] [-C] [-c] [-D]
 [-u] [-v 
 .IR var [,...]] 
 [-X 
-.IR var [,...]] 
+.IR lon_min [,...]] 
 [-x]
 .I input-file
 [
@@ -561,7 +561,7 @@ ncks -d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.9 2008-03-04 22:52:03 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.10 2008-05-11 14:57:37 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
