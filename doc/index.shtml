@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.481 2008-05-11 15:38:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.482 2008-05-11 16:03:27 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -102,6 +102,8 @@ Send it in!<br>
 
 
 <ul>
+<li>May&nbsp;11, 2008: NCO 3.9.5 released</li>
+
 <li>March&nbsp;14, 2007: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview paper</a> in Press in EMS</li>
 
 <li>March&nbsp;4, 2008: NCO 3.9.4 released</li>
@@ -480,6 +482,7 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.9.6</b>: (<i>In progress</i>) 
+Memory management to improve threading;
 <li><b>NCO/SDO 3.9.5</b>: 
 Multi-slabbing everywhere;
 <tt>ncecat -M</tt>;

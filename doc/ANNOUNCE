@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.287 2008-05-11 15:38:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.288 2008-05-11 16:03:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.5 are ready. 
 
@@ -24,8 +24,13 @@ can specify the (irregular) latitude and longitude coordinates
 
 ncra -O -X 0,180,-30,30 -v gds_3dvar in.nc out.nc
 
-The MSA work was encouraged and aided by Karen Schuchardt of PNL,
-who will use it to analyze results from a global cloud resolving model:
+For more details, see
+
+http://nco.sf.net#msa
+http://nco.sf.net#aux
+
+The MSA/-X work was encouraged and aided by Karen Schuchardt of PNL, 
+who will use it to analyze global cloud resolving model results:
 
 http://www.pnl.gov/science/highlights/highlight.asp?id=416
 

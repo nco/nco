@@ -8,7 +8,7 @@ URL:            http://nco.sourceforge.net/
 
 # Obtain NCO version 3.9.5-1 tar.gz from Sourceforge using CVS:
 # cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
-# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_2-1 -d nco-%{version} nco
+# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_5-1 -d nco-%{version} nco
 # tar czf nco-%{version}.tar.gz --exclude='nco-3.9.5/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
 #Patch0:		nco_install_C_headers.patch
@@ -112,6 +112,9 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
+* Sun May 11 2008 Charlie Zender <zender@uci.edu> - 3.9.5-1
+- new upstream 3.9.5
+
 * Mon Mar 03 2008 Charlie Zender <zender@uci.edu> - 3.9.4-1
 - new upstream 3.9.4
 
