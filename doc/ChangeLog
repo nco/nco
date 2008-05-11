@@ -5,6 +5,8 @@
 	  cvs tag -c nco-3_9_5;cvs tag -c nco-3_9_5-1
 	  Changes since nco-3_9_4: MSA everywhere
 	
+	* Add -X to ncbo
+
 	* Add -X to more man pages
 
 	* Improve -X and ncap2 documentation

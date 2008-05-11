@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.127 2008-05-02 09:09:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.128 2008-05-11 21:51:46 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -101,6 +101,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
+  char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *fl_in_1=NULL; /* fl_in_1 is nco_realloc'd when not NULL */
   char *fl_in_2=NULL; /* fl_in_2 is nco_realloc'd when not NULL */
@@ -113,9 +114,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.127 2008-05-02 09:09:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
-  const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.128 2008-05-11 21:51:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
+  const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -139,6 +140,7 @@ main(int argc,char **argv)
   int *in_id_2_arr;
 
   int abb_arg_nbr=0;
+  int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
@@ -174,6 +176,7 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
@@ -239,6 +242,7 @@ main(int argc,char **argv)
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
       {"thr_nbr",required_argument,0,'t'},
+      {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"operation",required_argument,0,'y'},
@@ -339,6 +343,11 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr_1=nbr_xtr_2=var_lst_in_nbr;
       break;
+    case 'X': /* Copy auxiliary coordinate argument for later processing */
+      aux_arg[aux_nbr]=(char *)strdup(optarg);
+      aux_nbr++;
+      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */      
+      break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
@@ -395,6 +404,19 @@ main(int argc,char **argv)
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_2,NC_NOWRITE,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
+  
+  /* Process auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+     aux=nco_aux_evl(in_id_1,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
   
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl_1,&nbr_var_fl_1,(int *)NULL,(int *)NULL);
@@ -805,6 +827,8 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free dimension lists */
     if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
     if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
