@@ -19,7 +19,7 @@ ncks [-3] [-4] [-A] [-a] [-C] [-c] [-D]
 [-u] [-v 
 .IR var [,...]] 
 [-X 
-.IR lon_min [,...]] 
+.IR lon_min,lon_max,lat_min,lat_max]
 [-x]
 .I input-file
 [
@@ -269,7 +269,8 @@ lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1
 .br
 lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
 .br
-...
+\...
+.br
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 .br
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
@@ -561,7 +562,7 @@ ncks -d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.10 2008-05-11 14:57:37 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.11 2008-05-11 20:30:38 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

@@ -1,5 +1,5 @@
-.\" $Header: /data/zender/nco_20150216/nco/doc/man_srt.txt,v 1.1 2004-10-16 21:16:05 zender Exp $ -*-nroff-*-
-.\" Purpose: Header file for common start to NCO man pages
-.\" Pre-pend this file to start of NCO man pages
+.\" $Header: /data/zender/nco_20150216/nco/doc/man_srt.txt,v 1.2 2008-05-11 20:30:37 zender Exp $ -*-nroff-*-
+.\" Purpose: Header file for NCO man pages
+.\" Pre-pend this file to top of each NCO man page
 .\" Usage: 
-.\" nroff -man ~/nco/man/man1/ncra.1
+.\" nroff -man ~/nco/man/ncra.1 | less

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.115 2008-04-01 12:34:27 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.116 2008-05-11 20:30:37 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -161,13 +161,12 @@ cd ${DATA}/nco-3.9.5;dpkg-buildpackage -rfakeroot > ~/foo.nco 2>&1
 sudo dpkg --remove nco
 sudo dpkg --install ${DATA}/nco_3.9.5-1_*.deb
 lintian ${DATA}/nco_3.9.5-1_*.deb
-linda ${DATA}/nco_3.9.5-1_*.deb
 ls -l ${DATA}/nco_3.9.5*
 m ~/foo.nco
 scp ${DATA}/nco_3.9.5* dust.ess.uci.edu:/var/www/html/nco/src
 scp ${DATA}/nco_3.9.5* nco.sf.net:/home/groups/n/nc/nco/htdocs/src
 # NB: Make sure RPMs build before uploading to debian, since changing
-# Debian versions is such a PITA
+# Debian versions are such a PITA
 cd ${DATA};dupload -t mentors nco_3.9.5-1_*.changes
 bsrc # Reset shell environment for regular development
 
@@ -182,7 +181,6 @@ cd ${DATA}
 # apt-get source nco # Get package source
 DIST=sid sudo pbuilder build nco_3.9.5-1.dsc
 lintian /var/cache/pbuilder/sid/result/nco_3.9.5-1_*.deb
-linda /var/cache/pbuilder/sid/result/nco_3.9.5-1_*.deb
 # NB: Make sure RPMs build before uploading to debian, since changing
 # Debian versions is such a PITA
 cd /var/cache/pbuilder/sid/result;dupload -t mentors nco_3.9.5-1_*.changes

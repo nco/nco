@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.479 2008-05-11 14:57:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.480 2008-05-11 20:30:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.5
 @set copyright-years 1995--2008
 @set update-year 2008
-@set update-date 1 April 2008
-@set update-month April 2008
+@set update-date 11 May 2008
+@set update-month May 2008
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -1974,6 +1974,7 @@ feature is automatic and cannot be controlled by the user.
 * Stride::                      
 * Multislabs::                  
 * Wrapped Coordinates::         
+* Auxiliary Coordinates::       
 * UDUnits Support::             
 * Missing Values::              
 * Deflation::                   
@@ -3606,7 +3607,7 @@ commands to gather the desired range of data.
 @html
 <a name="wrp"></a> <!-- http://nco.sf.net/nco.html#wrp -->
 @end html
-@node Wrapped Coordinates, UDUnits Support, Multislabs, Common features
+@node Wrapped Coordinates, Auxiliary Coordinates, Multislabs, Common features
 @section Wrapped Coordinates
 @cindex wrapped coordinates
 @cindex longitude
@@ -3676,10 +3677,107 @@ dimensional indices as the hyperslab arguments, rather than coordinate
 values (@pxref{Hyperslabs}).
 
 @html
+<a name="aux"></a> <!-- http://nco.sf.net/nco.html#aux -->
+<a name="auxiliary"></a> <!-- http://nco.sf.net/nco.html#auxiliary -->
+<a name="-X"></a> <!-- http://nco.sf.net/nco.html#-X -->
+<a name="std_nm"></a> <!-- http://nco.sf.net/nco.html#std_nm -->
+<a name="standard_name"></a> <!-- http://nco.sf.net/nco.html#standard_name -->
+@end html
+@node Auxiliary Coordinates, UDUnits Support, Wrapped Coordinates, Common features
+@section Auxiliary Coordinates
+@cindex @code{-X}
+@cindex @code{--auxiliary}
+@cindex @code{standard_name}
+@cindex @code{coordinates}
+@cindex @acronym{CF} conventions
+@cindex @code{-X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}
+@cindex @code{--auxiliary @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}
+@cartouche
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}@* 
+Short options: @samp{-X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}@*
+Long options: 
+@samp{--auxiliary @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}@*
+@end cartouche
+Utilize auxiliary coordinates specified in values of coordinate
+variable's @code{standard_name} attributes, if any, when interpreting 
+hyperslab and multi-slab options. 
+Also @samp{--auxiliary}.
+This switch supports hyperslabbing cell-based grids over coordinate
+ranges. 
+This works on datasets that associate coordinate variables to
+grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
+@code{coordinates} and @code{standard_name} attributes described 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
+Currently, @acronym{NCO} understands auxiliary coordinate variables 
+pointed to by the @code{standard_name} attributes for @var{latitude} and 
+@var{longitude}.   
+Cells that contain a value within the user-specified range 
+[@var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}] are
+included in the output hyperslab.  
+
+A cell-based grid collapses the horizontal spatial information 
+(latitude and longitude) and stores it along a one-dimensional
+coordinate that has a one-to-one mapping to both latitude and longitude
+coordinates. 
+Rectangular (in longitude and latitude) horizontal hyperslabs cannot
+be selected using the typical procedure (@pxref{Hyperslabs}) of
+separately specifying @samp{-d} arguments for longitude and latitude.
+Instead, when the @samp{-X} is used, @acronym{NCO} learns the names of
+the latitude and longitude coordinates from the @code{coordinates}
+attribute of each variable.
+The @code{standard_name} attribute of the latitude and longitude
+coordinates specifies, using the @acronym{CF}-convention 
+(@pxref{CF Conventions}), whether the spatial dimension represents
+latitude or longitude.
+
+Putting it all together, consider a variable @var{gds_3dvar} output from 
+simulations on a cell-based geodesic grid. 
+Although variable contains three dimensions of data (time, latitude, and 
+longitue), it is stored in the netCDF file with only two coordinate
+dimensions, @code{time} and @code{gds_crd}. 
+@example
+% ncks -m -C -v gds_3dvar ~/nco/data/in.nc
+gds_3dvar: # dim. = 2, NC_FLOAT, # att. = 4, ID = 38
+gds_3dvar dimension 0: time, size = 10 NC_DOUBLE, dim. ID = 18 (CRD)(REC)
+gds_3dvar dimension 1: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
+gds_3dvar memory size is 10*8*nco_typ_lng(NC_FLOAT) = 80*4 = 320 bytes
+gds_3dvar attribute 0: long_name, size = 17 NC_CHAR, value = Geodesic variable
+gds_3dvar attribute 1: units, size = 5 NC_CHAR, value = meter
+gds_3dvar attribute 2: coordinates, size = 15 NC_CHAR, value = lat_gds lon_gds
+@end example
+The @code{coordinates} attribute lists the names of the latitude and
+longitude coordinates, @code{lat_gds} and @code{lon_gds}, respectively. 
+The @code{standard_name} attribute of @code{lat_gds} and @code{lon_gds}
+define whether the spatial dimension represents latitude or longitude:
+@example
+% ncks -m -C -v lat_gds,lon_gds ~/nco/data/in.nc
+lat_gds: # dim. = 1, NC_DOUBLE, # att. = 4, ID = 34
+lat_gds dimension 0: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
+lat_gds memory size is 8*nco_typ_lng(NC_DOUBLE) = 8*8 = 64 bytes
+lat_gds attribute 0: long_name, size = 8 NC_CHAR, value = Latitude
+lat_gds attribute 1: standard_name, size = 8 NC_CHAR, value = latitude
+lat_gds attribute 2: units, size = 6 NC_CHAR, value = degree
+
+lon_gds: # dim. = 1, NC_DOUBLE, # att. = 4, ID = 35
+lon_gds dimension 0: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
+lon_gds memory size is 8*nco_typ_lng(NC_DOUBLE) = 8*8 = 64 bytes
+lon_gds attribute 0: long_name, size = 9 NC_CHAR, value = Longitude
+lon_gds attribute 1: standard_name, size = 9 NC_CHAR, value = longitude
+lon_gds attribute 2: units, size = 6 NC_CHAR, value = degree
+@end example
+To time-average all the values between zero and @w{180 degrees}
+longitude and between plus and minus @w{30 degress} latitude, we use
+@example
+ncra -O -X 0.,180.,-30.,30. -v gds_3dvar in.nc out.nc
+@end example
+
+@html
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 <a name="UDUnits2"></a> <!-- http://nco.sf.net/nco.html#UDUnits2 -->
 @end html
-@node UDUnits Support, Missing Values, Wrapped Coordinates, Common features
+@node UDUnits Support, Missing Values, Auxiliary Coordinates, Common features
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
@@ -6678,7 +6776,7 @@ SYNTAX
 ncbo [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h]
 [-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -7017,7 +7115,7 @@ SYNTAX
 ncea [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -7139,7 +7237,7 @@ SYNTAX
 ncecat [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M] [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-x] 
+[-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -7319,7 +7417,7 @@ SYNTAX
 ncflint [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -7554,8 +7652,9 @@ SYNTAX
 ncks [-3] [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] 
 [-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] 
-[-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
-[-v @var{var}[,@dots{}]] [-x] @var{input-file} [[@var{output-file}]]
+[-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] 
+[-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+@var{input-file} [[@var{output-file}]]
 @end example
 
 @noindent
@@ -7887,35 +7986,6 @@ Also @samp{--string}  and @samp{--sng_fmt}.
 Toggle the printing of a variable's @code{units} attribute, if any, 
 with its values.
 Also @samp{--units}.
-
-@html
-<a name="aux"></a> <!-- http://nco.sf.net/nco.html#aux -->
-<a name="auxiliary"></a> <!-- http://nco.sf.net/nco.html#auxiliary -->
-<a name="-X"></a> <!-- http://nco.sf.net/nco.html#-X -->
-<a name="std_nm"></a> <!-- http://nco.sf.net/nco.html#std_nm -->
-<a name="standard_name"></a> <!-- http://nco.sf.net/nco.html#standard_name -->
-@end html
-@cindex @code{-X}
-@cindex @code{--auxiliary}
-@cindex @code{standard_name}
-@cindex @acronym{CF} conventions
-@item -X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}
-Utilize auxiliary coordinates specified in values of coordinate
-variable's @code{standard_name} attributes, if any, when interpreting 
-hyperslab and multi-slab options. 
-Also @samp{--auxiliary}.
-This switch supports hyperslabbing cell-based grids over coordinate
-ranges. 
-This works on datasets that associate coordinate variables to
-grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
-@code{standard_name} attribute described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
-Currently, @acronym{NCO} understands auxiliary coordinate variables 
-pointed to by the @code{standard_name} attributes for @var{latitude} and 
-@var{longitude}.   
-Cells that contain a value within the user-specified range 
-[@var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}] are
-included in the output hyperslab.  
 @end table
 
 @noindent
@@ -8110,7 +8180,7 @@ SYNTAX
 ncpdq [-3] [-4] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
-[-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
+[-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -8595,7 +8665,7 @@ SYNTAX
 ncra [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -8706,7 +8776,7 @@ SYNTAX
 ncrcat [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -9006,7 +9076,7 @@ ncwa [-3] [-4] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-I] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{mask_comp}]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
 

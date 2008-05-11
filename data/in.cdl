@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.100 2008-05-11 15:38:56 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.101 2008-05-11 20:30:36 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -189,8 +189,8 @@ variables:
 	float gds_3dvar(time,gds_crd);
 	gds_3dvar:long_name = "Geodesic variable";
 	gds_3dvar:units = "meter";
-	gds_3dvar:purpose = "Test auxiliary coordinates like those that define geodesic grids";
 	gds_3dvar:coordinates = "lat_gds lon_gds";
+	gds_3dvar:purpose = "Test auxiliary coordinates like those that define geodesic grids";
 
 	int nbdate;
 	nbdate:long_name = "base date as 6 or 8 digit integer (YYMMDD or YYYYMMDD)";
