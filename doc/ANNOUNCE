@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.289 2008-05-11 20:30:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.290 2008-05-12 13:25:58 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.5 are ready. 
 
@@ -8,42 +8,48 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release primarily extends the Multi-slabbing Algorithm (MSA)
 to operators beyond ncks to ncbo, ncea, ncecat, ncflint, ncpdq, ncra,
 and ncrcat. Why might you care? MSA allows one to obtain and operate
-on irregular hyperslabs. The fastest/simplest NCO way to process data
-from cell-based (e.g., geodesic) grids or multiple station timeseries,
-for example, is to use MSA to specify the data.  
-This can be done two ways. First with the traditional -d argument
+on irregular hyperslabs. The fastest/simplest NCO-way to process data
+from cell-based (e.g., geodesic) grids or flight-track trajectories,
+for example, is to use MSA and/or -X to specify the hyperslabs.
+This can be done two ways. First, multiple -d switches for the same
+coordinate:
 
 ncra -d lon,10.,15. -d lon,15.,20. -d lon,80.,90. in.nc out.nc
 
 Note the multiple hyperslabs (multi-slabs) in the lon dimension.
+ncks has always handled multi-slabs, now other operators do too.
 
-Second, NCO now supports the -X argument to specify CF auxiliary
-coordinate variables. The "coordinates" attribute of variables 
-can specify the (irregular, cell-based) latitude and longitude
-coordinates (so-labeled by their standard_name attributes).
+Second, NCO now supports the -X argument to utilize CF-compliant
+auxiliary coordinate variables. NCO searches the file for
+variables with the "standard_name" attribute of "latitude" and
+"longitude" and uses these coordinates. The argument to -X is a
+box in the order lon_min,lon_max,lat_min,lat_max:
 
 ncra -O -X 0.,180.,-30.,30. -v gds_3dvar in.nc out.nc
 
 For more details, see
 
-http://nco.sf.net#msa
-http://nco.sf.net#aux
+http://nco.sf.net/nco.html#msa
+http://nco.sf.net/nco.html#aux
 
-The MSA/-X work was encouraged and aided by Karen Schuchardt of PNL, 
-who will use it to analyze global cloud resolving model results:
+Karen Schuchardt of PNNL supplied the -X code and encouragement. 
+PNL will use -X to help analyze global cloud-resolving model data: 
 
 http://www.pnl.gov/science/highlights/highlight.asp?id=416
 
+Henry Butowsky optimized the MSA implementation to support -X.
+
 A. Multi-slabbing (MSA) available on most operators (Henry Butowsky)
-   ncbo, ncea, ncecat, ncflint, ncpdq, ncra, and ncrcat support MSA
-   http://nco.sf.net#msa
-   http://nco.sf.net#aux
+   ncbo, ncea, ncecat, ncflint, ncpdq, ncra, and ncrcat support MSA.
+   Auxiliary coordinates (Karen Schuchardt) available with -X.
+   http://nco.sf.net/nco.html#msa
+   http://nco.sf.net/nco.html#aux
 
 B. ncap2 builds on Solaris (Henry Butowsky)
 
 C. Prevent copying global metadata with -M, --metadata switch on
    ncecat 
-   http://nco.sf.net#ncecat
+   http://nco.sf.net/nco.html#ncecat
 
 D. Fix netCDF4-enabled NCO builds on cygwin. Thanks to Mark Hadfield. 
 
