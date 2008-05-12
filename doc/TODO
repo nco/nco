@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1006 2008-05-12 15:05:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1007 2008-05-12 21:14:29 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -384,7 +384,7 @@ nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
-nco658. netcdf4 regression in ncrename test #1: Regression re-verified 20060924, 20070831, 20080220 PBN4
+nco658. netcdf4 regression in ncrename test #1: Regression re-verified 20060924, 20070831, 20080220, 20080512 PBN4
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
         ncrename -O -d lat_T42,lat -v lat_T42,lat ~/foo.nc
