@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.152 2008-05-12 11:01:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.153 2008-05-12 11:16:06 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.152 2008-05-12 11:01:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.152 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.153 2008-05-12 11:16:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.153 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -203,14 +203,14 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"thr_nbr",required_argument,0,'t'},
       {"threads",required_argument,0,'t'},
       {"omp_num_threads",required_argument,0,'t'},
       {"ulm_nm",required_argument,0,'u'},
       {"rcd_nm",required_argument,0,'u'},
       {"variable",required_argument,0,'v'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
@@ -657,7 +657,6 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_dmn_fl;idx++)
       for(jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
 	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-     
     lmt=(lmt_sct**)nco_free(lmt); 
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
 

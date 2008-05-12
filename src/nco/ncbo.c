@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.128 2008-05-11 21:51:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.129 2008-05-12 11:16:04 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.128 2008-05-11 21:51:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.128 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.129 2008-05-12 11:16:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.129 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -238,10 +238,12 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
-      {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
       {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
+      {"variable",required_argument,0,'v'},
       {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},

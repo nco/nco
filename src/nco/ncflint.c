@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.152 2008-05-02 09:08:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.153 2008-05-12 11:16:07 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -90,6 +90,7 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char **ntp_lst_in;
   char **var_lst_in=NULL_CEWI;
+  char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *fl_in_1=NULL; /* fl_in_1 is nco_realloc'd when not NULL */
   char *fl_in_2=NULL; /* fl_in_2 is nco_realloc'd when not NULL */
@@ -102,9 +103,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.152 2008-05-02 09:08:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.152 $";
-  const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRt:v:xw:-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.153 2008-05-12 11:16:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.153 $";
+  const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -130,6 +131,7 @@ main(int argc,char **argv)
   int *in_id_2_arr;
 
   int abb_arg_nbr=0;
+  int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
@@ -157,11 +159,12 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
     
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
+  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
   
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
   
   val_unn val_gnr_unn; /* Generic container for arrival point or weight */
 
@@ -222,12 +225,17 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
-      {"thr_nbr",required_argument,0,'t'},
-      {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
+      {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
+      {"variable",required_argument,0,'v'},
       {"weight",required_argument,0,'w'},
       {"wgt_var",no_argument,0,'w'},
+      {"auxiliary",required_argument,0,'X'},
+      {"exclude",no_argument,0,'x'},
+      {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -352,6 +360,11 @@ main(int argc,char **argv)
       } /* end else */
       CMD_LN_NTP_WGT=True;
       break;
+    case 'X': /* Copy auxiliary coordinate argument for later processing */
+      aux_arg[aux_nbr]=(char *)strdup(optarg);
+      aux_nbr++;
+      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */      
+      break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
@@ -412,6 +425,19 @@ main(int argc,char **argv)
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_2,NC_NOWRITE,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
+  
+  /* Process auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+     aux=nco_aux_evl(in_id_1,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
   
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
@@ -736,10 +762,8 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    
-    /* has been freed upearlier */   
-    /* if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
-
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
     if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
