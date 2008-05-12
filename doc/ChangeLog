@@ -1,10 +1,14 @@
-2008-05-11  Charlie Zender  <zender@uci.edu>
+2008-05-12  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_5;cvs tag -d nco-3_9_5-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.5 release"
 	  cvs tag -c nco-3_9_5;cvs tag -c nco-3_9_5-1
 	  Changes since nco-3_9_4: MSA everywhere
 	
+	* Add -X to ncecat, 
+
+2008-05-11  Charlie Zender  <zender@uci.edu>
+
 	* Add -X to ncbo
 
 	* Add -X to more man pages

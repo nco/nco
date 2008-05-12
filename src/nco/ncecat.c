@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.151 2008-05-02 09:08:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.152 2008-05-12 11:01:53 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -79,6 +79,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
+  char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
@@ -90,9 +91,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.151 2008-05-02 09:08:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.151 $";
-  const char * const opt_sht_lst="34ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.152 2008-05-12 11:01:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.152 $";
+  const char * const opt_sht_lst="34ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -114,6 +115,7 @@ main(int argc,char **argv)
   int *in_id_arr;
 
   int abb_arg_nbr=0;
+  int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
@@ -138,6 +140,7 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
 
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
 
@@ -208,6 +211,7 @@ main(int argc,char **argv)
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
+      {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
@@ -322,6 +326,11 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
       break;
+    case 'X': /* Copy auxiliary coordinate argument for later processing */
+      aux_arg[aux_nbr]=(char *)strdup(optarg);
+      aux_nbr++;
+      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */      
+      break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
@@ -357,6 +366,19 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+  
+  /* Process auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -631,13 +653,12 @@ main(int argc,char **argv)
     /* ncecat-specific memory cleanup */
     if(rec_dmn_nm != NULL) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
 
-    /* free lmt[] nb is now referenced within lmt_all_lst[idx]  */
-    for(idx=0; idx<nbr_dmn_fl;idx++)
-      for(jdx=0 ; jdx< lmt_all_lst[idx]->lmt_dmn_nbr ;jdx++)
-         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+    /* NB: lmt now referenced within lmt_all_lst[idx]  */
+    for(idx=0;idx<nbr_dmn_fl;idx++)
+      for(jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
      
     lmt=(lmt_sct**)nco_free(lmt); 
-
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
 
     /* NCO-generic clean-up */
@@ -656,10 +677,8 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-
-    /* Has been freed up earlier */  
-    /* if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
-
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
     if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
