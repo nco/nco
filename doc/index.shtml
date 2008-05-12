@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.483 2008-05-12 13:25:58 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.484 2008-05-12 15:05:22 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -693,7 +693,7 @@ and porting of NCO to other platforms.
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian</a> and 
 <a href="http://packages.ubuntulinux.org/gutsy/source/nco">Ubuntu</a>
 GNU/Linux homepages for NCO. 
-&lsquo;<tt>apt-get install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
+&lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.5-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_3.9.5-1_amd64.deb">nco_3.9.5-1_amd64.deb</a> (<!--#fsize file="src/nco_3.9.5-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.9.5-1_amd64.deb"-->)</li>
 <li><a href="src/nco_3.9.5-1_i386.deb">nco_3.9.5-1_i386.deb</a> (<!--#fsize file="src/nco_3.9.5-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.9.5-1_i386.deb"-->)</li>

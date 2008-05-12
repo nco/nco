@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1005 2008-05-11 21:43:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1006 2008-05-12 15:05:21 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -640,7 +640,8 @@ nco932. ncwa and packed data: help forum 20080214: When using ncwa to calculate 
 nco934. Add ncecat -M option to other operators?
 nco935. Make single-file operators (SFOs) default out.nc to in.nc
 nco936. Add -X to all MSA operators
-nco937. 
+nco937. dupload fails with "GPG signature is missing"
+nco938. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
