@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.480 2008-05-11 20:30:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.481 2008-05-12 13:25:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1153,7 +1153,7 @@ differences between these files and your own.
 * Large Numbers of Files::      
 * Large Datasets::              
 * Memory Requirements::         
-* Performance Limitations::     
+* Performance::                 
 @end menu
 
 @html
@@ -1752,7 +1752,7 @@ multi-file @acronym{NCO} operators consume is given in
 @html
 <a name="mmr"></a> <!-- http://nco.sf.net/nco.html#mmr -->
 @end html
-@node Memory Requirements, Performance Limitations, Large Datasets, Strategies
+@node Memory Requirements, Performance, Large Datasets, Strategies
 @section Memory Requirements
 @cindex memory requirements
 @cindex memory available
@@ -1896,9 +1896,31 @@ is ultimately due to an @acronym{NCO} memory leak (rather than
 inadequate @acronym{RAM} on your system), then we would be very
 interested in receiving a detailed bug report. 
 
-@node Performance Limitations,  , Memory Requirements, Strategies
-@section Performance Limitations
+@node Performance,  , Memory Requirements, Strategies
+@section Performance
 
+@cindex papers
+@cindex overview
+An overview of @acronym{NCO} capabilities as of about 2006 is in
+Zender, C. S. (2008), 
+``Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO)'',
+Environ. Modell. Softw., doi:10.1016/j.envsoft.2008.03.004.
+This paper is also available at
+@url{http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf}.
+
+@cindex scaling
+@cindex performance
+@acronym{NCO} performance and scaling for arithmetic operations is
+described in 
+Zender, C. S., and H. J. Mangalam (2007), 
+``Scaling Properties of Common Statistical Operators for Gridded Datasets'', 
+Int. @w{J. High} Perform. Comput. Appl., 21(4), 485-498,
+doi:10.1177/1094342007083802. 
+This paper is also available at
+@url{http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf}.
+
+It is helpful to be aware of the aspects of @acronym{NCO} design 
+that can limit its performance:
 @enumerate
 @item 
 @cindex buffering
@@ -1934,10 +1956,11 @@ In the late 1990s it was discovered that some random access operations
 on large files on certain architectures (e.g., @acronym{UNICOS}) were
 much slower with @acronym{NCO} than with similar operations performed
 using languages that bypass the netCDF interface (e.g., Yorick).    
-This may be a penalty of unnecessary byte-swapping in the netCDF
+This may have been a penalty of unnecessary byte-swapping in the netCDF 
 interface.  
 It is unclear whether such problems exist in present day (2007)
-netCDF/@acronym{NCO} environments.
+netCDF/@acronym{NCO} environments, where unnecessary byte-swapping has
+been reduced or eliminated.
 @end enumerate
 
 @html
@@ -3717,6 +3740,7 @@ Cells that contain a value within the user-specified range
 [@var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}] are
 included in the output hyperslab.  
 
+@cindex cell-based grids
 A cell-based grid collapses the horizontal spatial information 
 (latitude and longitude) and stores it along a one-dimensional
 coordinate that has a one-to-one mapping to both latitude and longitude
@@ -3725,18 +3749,19 @@ Rectangular (in longitude and latitude) horizontal hyperslabs cannot
 be selected using the typical procedure (@pxref{Hyperslabs}) of
 separately specifying @samp{-d} arguments for longitude and latitude.
 Instead, when the @samp{-X} is used, @acronym{NCO} learns the names of
-the latitude and longitude coordinates from the @code{coordinates}
-attribute of each variable.
-The @code{standard_name} attribute of the latitude and longitude
-coordinates specifies, using the @acronym{CF}-convention 
-(@pxref{CF Conventions}), whether the spatial dimension represents
-latitude or longitude.
+the latitude and longitude coordinates by searching the
+@code{standard_name} attribute of all variables until it finds
+the two variables whose @code{standard_name}'s are ``latitude'' and 
+``longitude'', respectively. 
+This @code{standard_name} attribute for latitude and longitude
+coordinates follows the @acronym{CF}-convention  
+(@pxref{CF Conventions}). 
 
 Putting it all together, consider a variable @var{gds_3dvar} output from 
 simulations on a cell-based geodesic grid. 
-Although variable contains three dimensions of data (time, latitude, and 
-longitue), it is stored in the netCDF file with only two coordinate
-dimensions, @code{time} and @code{gds_crd}. 
+Although the variable contains three dimensions of data (time, latitude,
+and longitude), it is stored in the netCDF file with only two dimensions,
+@code{time} and @code{gds_crd}.  
 @example
 % ncks -m -C -v gds_3dvar ~/nco/data/in.nc
 gds_3dvar: # dim. = 2, NC_FLOAT, # att. = 4, ID = 38
@@ -3749,8 +3774,16 @@ gds_3dvar attribute 2: coordinates, size = 15 NC_CHAR, value = lat_gds lon_gds
 @end example
 The @code{coordinates} attribute lists the names of the latitude and
 longitude coordinates, @code{lat_gds} and @code{lon_gds}, respectively. 
-The @code{standard_name} attribute of @code{lat_gds} and @code{lon_gds}
-define whether the spatial dimension represents latitude or longitude:
+The @code{coordinates} attribute is recommended though optional.
+With it, the user can immediately identify which variables contain
+the latitude and longitude coordinates.
+Without a @code{coordinates} attribute it would be unclear at first
+glance whether a variable is on a cell-based grid.
+In this example, @code{time} is a normal record dimension and
+@code{gds_crd} is the cell-based dimension.
+
+The cell-based grid file must contain two variables whose
+@code{standard_name} attributes are ``latitude'', and ``longitude'':
 @example
 % ncks -m -C -v lat_gds,lon_gds ~/nco/data/in.nc
 lat_gds: # dim. = 1, NC_DOUBLE, # att. = 4, ID = 34
@@ -3767,11 +3800,36 @@ lon_gds attribute 0: long_name, size = 9 NC_CHAR, value = Longitude
 lon_gds attribute 1: standard_name, size = 9 NC_CHAR, value = longitude
 lon_gds attribute 2: units, size = 6 NC_CHAR, value = degree
 @end example
+In this example @code{lat_gds} and @code{lon_gds} represent the 
+latitude or longitude, respectively, of cell-based variables.
+These coordinates (must) have the same dimension (@code{gds_crd}, in
+this case) as the cell-based variables.
+
+This infrastructure allows @acronym{NCO} to identify, interpret, and
+process (e.g., hyperslab) the variables on cell-based grids as easily
+as it works with regular grids.
 To time-average all the values between zero and @w{180 degrees}
 longitude and between plus and minus @w{30 degress} latitude, we use
 @example
 ncra -O -X 0.,180.,-30.,30. -v gds_3dvar in.nc out.nc
 @end example
+@acronym{NCO} accepts multiple @samp{-X} arguments for cell-based grids
+multi-slabs, just as it accepts multiple @samp{-d} arguments for 
+multi-slabs of regular coordinates.
+@example
+ncra -O -X 0.,180.,-30.,30. -X 270.,315.,45.,90. in.nc out.nc
+@end example
+The arguments to @samp{-X} are always interpreted as floating point
+numbers, i.e., as coordinate values rather than dimension indices
+so that these two commands produce identical results
+@example
+ncra -X 0.,180.,-30.,30. in.nc out.nc
+ncra -X 0,180,-30,30 in.nc out.nc
+@end example
+In contrast, arguments to @samp{-d} require decimal places to be
+recognized as coordinates not indices (@pxref{Hyperslabs}).  
+We recommend always using decimal points with @samp{-X} arguments
+to avoid confusion.
 
 @html
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->

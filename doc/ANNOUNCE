@@ -1,12 +1,12 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.290 2008-05-12 13:25:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.291 2008-05-12 13:29:37 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release primarily extends the Multi-slabbing Algorithm (MSA)
-to operators beyond ncks to ncbo, ncea, ncecat, ncflint, ncpdq, ncra,
+This release extends the Multi-slabbing Algorithm (MSA) and -X switch 
+to operators beyond ncks: ncbo, ncea, ncecat, ncflint, ncpdq, ncra,
 and ncrcat. Why might you care? MSA allows one to obtain and operate
 on irregular hyperslabs. The fastest/simplest NCO-way to process data
 from cell-based (e.g., geodesic) grids or flight-track trajectories,
@@ -53,10 +53,10 @@ C. Prevent copying global metadata with -M, --metadata switch on
 
 D. Fix netCDF4-enabled NCO builds on cygwin. Thanks to Mark Hadfield. 
 
-E. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
+E. Pre-built Debian Sid & Ubuntu Hardy packages are available.
    http://nco.sf.net#debian
 
-F. Pre-built, up-to-date, RPM packages are available.
+F. Pre-built RPM packages are available.
    http://nco.sf.net#rpm
 
 G. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
@@ -64,9 +64,9 @@ G. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
 
    http://swamp.googlecode.com
 
-   SWAMP can work with with any command-line operator analysis scripts-- 
-   not just NCO. If you must transfer lots of data from a server to your
-   client before you analyze it, then SWAMP may speed things up.
+   SWAMP can work command-line operator analysis scripts besides NCO. 
+   If you must transfer lots of data from a server to your client
+   before you analyze it, then SWAMP may speed things up. 
    Try SWAMP give us your feedback.
 
 H. Reminder: NCO support for netCDF4 features is tracked at
