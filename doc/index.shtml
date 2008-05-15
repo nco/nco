@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.484 2008-05-12 15:05:22 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.485 2008-05-15 16:08:15 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -746,7 +746,7 @@ Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.2. Maintained by Alexander Hansen.</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>:
  <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>
-  for NCO 3.9.3. Maintained by Takeshi Enomoto.</li>
+  for NCO 3.9.5. Maintained by Takeshi Enomoto.</li>
 </ul>
 <hr></p>
 
