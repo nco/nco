@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.129 2008-05-12 11:16:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.130 2008-05-19 14:06:19 hmb Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.129 2008-05-12 11:16:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.129 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.130 2008-05-19 14:06:19 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.130 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -814,6 +814,14 @@ main(int argc,char **argv)
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
+    /* free lmt[] nb is now referenced within lmt_all_lst[idx]  */
+    for(idx=0; idx<nbr_dmn_fl_1;idx++)
+      for(jdx=0 ; jdx< lmt_all_lst[idx]->lmt_dmn_nbr ;jdx++)
+         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
+    if(nbr_dmn_fl_1 > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl_1);   
+    lmt=(lmt_sct**)nco_free(lmt); 
+
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
     if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
@@ -828,7 +836,7 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free dimension lists */
