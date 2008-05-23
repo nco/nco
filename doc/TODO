@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1008 2008-05-19 15:36:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1009 2008-05-23 14:42:46 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -544,7 +544,7 @@ nco822. ncap2 netCDF4 regressions with nco_bm.pl:
 	HDF error
 	Aborted (core dumped)
 nco826. ncwa optimization: do not allocate tally when var_sz=var_avg since this this always indicates a no-op, e.g., removing a degenerate dimension.
-nco828. ncks: returns file ID = 65536 on netCDF4 files: why?
+nco828. ncks: returns file ID = 65536 = 2**16 on netCDF4 files: why?
 	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/nco/data/in_4.nc
         ncks -m ~/nco/data/in_4.nc
 	od -An -c -N4 ~/nco/data/in_4.nc
