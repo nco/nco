@@ -1,10 +1,13 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.80 2008-01-06 13:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.81 2008-05-26 13:38:56 hmb Exp $ */
 
 /* Purpose: Attribute utilities */
 
 /* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
+
+//#define NCO_NETCDF4_AND_FILLVALUE
+
 
 #include "nco_att_utl.h" /* Attribute utilities */
 
@@ -17,9 +20,10 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   /* Purpose: Process single attribute edit for single variable */
   
   /* If var_id == NC_GLOBAL ( = -1) then global attribute will be edited */
-  
+
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
+  char *att_nm_tmp; /* for name hack with NETCDF4 */
   
   /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */
   int nbr_att; /* [nbr] Number of attributes */
@@ -30,6 +34,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   
   void *att_val_new=NULL;
   
+  att_nm_tmp=strdup("__tmp_nm"); 
+
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in file */
     (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
@@ -178,6 +184,19 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   } /* end if replacing missing value data */
 
   /* Change metadata (as written, this must be done after _FillValue data is replaced) */
+
+
+/* This is a bold hack which gets around the problem of modifying a missing value 
+   attribute named "_FillValue" in netCDF4 -- The problem is they can't be modified. 
+   So we rename them to att_nm_tmp -- modify them then restore the original name */
+#ifdef NCO_NETCDF4_AND_FILLVALUE    
+    if(!strcmp(aed.att_nm,nco_mss_val_sng_get() ) ){
+      (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
+      strcpy(aed.att_nm,att_nm_tmp); 
+     }
+
+#endif
+
   switch(aed.mode){
   case aed_append:	
     if(rcd == NC_NOERR){
@@ -225,7 +244,18 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   default: 
     break;
   } /* end switch */
+
+#ifdef NCO_NETCDF4_AND_FILLVALUE
+    if(!strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete){
+      (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
+      /* Restore orginal name (space already allocated )*/
+     strcpy(aed.att_nm,nco_mss_val_sng_get()); 
+    }
+#endif
   
+
+
+
 } /* end nco_aed_prc() */
 
 void 
