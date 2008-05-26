@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.113 2008-05-25 08:40:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.114 2008-05-26 13:37:44 hmb Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.113 2008-05-25 08:40:34 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.114 2008-05-26 13:37:44 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -296,17 +296,6 @@ main(int argc,char **argv)
   if(nbr_aed > 0) aed_lst=nco_prs_aed_lst(nbr_aed,aed_arg);
 
   /* We now have final list of attributes to edit */
-
-  /* Check if attributes are _FillValue and netcdf4 
-     Only operation permitted with these are delete */
-#ifdef NCO_NETCDF4_AND_FILLVALUE        
-  for(idx=0 ; idx <nbr_aed ;idx++){
-    if( !strcmp(aed_lst[idx].att_nm,nco_mss_val_sng_get()) && aed_lst[idx].mode !=aed_delete ){ 
-      (void)fprintf(stdout,"%s: ERROR editing attribute: \"%s\"\nA quirk with netcdf4 files is that if the missing value attribute is \"_FillValue\", then once this attribute has been defined for a variable later editing of the attribute  is impossible. Consider recompiling with a different missing value attribute  or use netcdf3 files. However it is possible to use the \"d\" option with %s to delete this attribute. HINT try renaming it with \"ncrename\", editing it then naming it back.\n",prg_nm_get(),nco_mss_val_sng_get(),prg_nm_get());
-      nco_exit(EXIT_FAILURE);
-     }
-}
-#endif
   
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
