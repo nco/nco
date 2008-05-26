@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.77 2008-05-11 20:30:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.78 2008-05-26 08:31:22 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -171,8 +171,18 @@ sub tst_rgr {
     $tst_cmd[2] = "-1.000000000000";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0;  # Reset array\
     
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",3);defdim(\"b\",4); a[\$a,\$b]=10;c=a(1,1);' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncks -C -H -v c -s '%i' %tempf_00%";
+    $dsc_sng="Casting a var with same name a dim (failure expected on netcdf4)";
+    ##TODO ncap81
+    $tst_cmd[2] = "10";
+    $tst_cmd[3] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
     
     if ($dodap eq "FALSE") {
@@ -194,7 +204,8 @@ sub tst_rgr {
 	
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tempf_00%";
-	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0";
+	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 (failure expected on NETCDF4)";
+        ###TODO 665
 	$tst_cmd[2] = "0";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -691,7 +702,8 @@ sub tst_rgr {
 
 	$tst_cmd[0]="ncpdq $omp_flg -h -O -C  $fl_fmt $nco_D_flg -P all_xst -v three_dmn_var_dbl  -d time,0,2 -d time,8,9 -d lon,0 -d lon,1  -d lat,1  $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%i' -v three_dmn_var_dbl -d time,2 -d lon,1 -d lat,0 %tempf_00%";
-    $dsc_sng="Pack 3D double var with MSA";
+    $dsc_sng="Pack 3D double var with MSA (failure expected with NETCDF4)";
+    ##### TODO 880
     $tst_cmd[2] = "17505";
     $tst_cmd[3] = "SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
