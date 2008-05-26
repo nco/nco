@@ -1,3 +1,7 @@
+2008-05-26  Henry Butowsky  <henryb@ntlworld.com>
+
+	* mods to ncatted so it works with _FillValue in NETCDF4
+
 2008-05-26  Charlie Zender  <zender@uci.edu>
 
 	* Change test version to 3.9.6
