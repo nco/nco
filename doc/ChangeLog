@@ -1,5 +1,7 @@
 2008-05-26  Charlie Zender  <zender@uci.edu>
 
+	* Change test version to 3.9.6
+
 	* Make NCO_NETCDF4_AND_FILLVALUE available in all source files
 
 2008-05-12  Charlie Zender  <zender@uci.edu>

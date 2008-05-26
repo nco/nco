@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.291 2008-05-12 13:29:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.292 2008-05-26 13:10:10 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.5 are ready. 
+The netCDF operators NCO version 3.9.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -74,7 +74,7 @@ H. Reminder: NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO currently supports netCDF4 atomic data types and compression.
-   NCO 3.9.5 with netCDF4 support should work with HDF5 1.8 final
+   NCO 3.9.6 with netCDF4 support should work with HDF5 1.8 final
    and netCDF4 snapshot2008022009 and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location

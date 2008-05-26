@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.485 2008-05-15 16:08:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.486 2008-05-26 13:10:10 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -483,6 +483,8 @@ Instead, retrieve all recently tagged versions
 <ul>
 <li><b>NCO/SDO 3.9.6</b>: (<i>In progress</i>) 
 Memory management to improve threading;
+<tt>ncatted</tt> workaround for netCDF4 <tt>_FillValue</tt>;
+disable OpenMP unless netCDF4/HDF is <tt>--threadsafe</tt>;
 <li><b>NCO/SDO 3.9.5</b>: 
 Multi-slabbing and <b>-X</b> everywhere;
 <tt>ncecat -M</tt>;
