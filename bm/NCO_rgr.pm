@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.79 2008-05-26 13:10:09 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.80 2008-05-26 13:35:45 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -204,7 +204,7 @@ sub tst_rgr {
 	
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tempf_00%";
-	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0 (failure expected on NETCDF4)";
+	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0";
         ###TODO 665
 	$tst_cmd[2] = "0";
 	$tst_cmd[3] = "SS_OK";
