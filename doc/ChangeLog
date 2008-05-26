@@ -1,3 +1,7 @@
+2008-05-26  Charlie Zender  <zender@uci.edu>
+
+	* Make NCO_NETCDF4_AND_FILLVALUE available in all source files
+
 2008-05-12  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_5;cvs tag -d nco-3_9_5-1
