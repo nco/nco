@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1009 2008-05-23 14:42:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1010 2008-05-26 08:32:09 hmb Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -394,6 +394,7 @@ nco664. ncatted & ncrename will not work with DAP because there is not any
 	way currently to retrieve the DAP files to local files for them to
 	operate on.  see nco_fl_utl.c:~813 in nco_fl_mk_lcl().  
 	Currently just fails semi-gracefully.
+nco665  Change _FillValue attribute from 1.0e36 to 0.0 - not working on NETCDF4";
 nco666. Grid regridding/interpolation operator ncrebin?
 nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to avoid underflow?
@@ -863,6 +864,7 @@ ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
 ncap79. make abs() synonym for fabs() and pow() and ** synonyms for ^
 ncap80. ncap2+ openmp + netcdf4 - script only works with threads>1 if there are no atts in input file
+ncap81  the script 'defdim("a",3);defdim("b",4);a[$a,$b]=10;' works on netcdf3 not netcdf4. this is a known bug with NETCDF4
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************
