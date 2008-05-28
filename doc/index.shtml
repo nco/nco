@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.486 2008-05-26 13:10:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.487 2008-05-28 22:46:43 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -102,9 +102,11 @@ Send it in!<br>
 
 
 <ul>
+<li>May&nbsp;22, 2008: SWAMP <a href="http://dust.ess.uci.edu/ppr/smn_WZJ08_ccgrid_200805.pdf">Talk</a> at CCGRID08 in Lyon, France</li>
+
 <li>May&nbsp;11, 2008: NCO 3.9.5 released</li>
 
-<li>March&nbsp;14, 2007: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview paper</a> in Press in EMS</li>
+<li>March&nbsp;14, 2008: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview paper</a> in Press in EMS</li>
 
 <li>March&nbsp;4, 2008: NCO 3.9.4 released</li>
 
@@ -114,7 +116,7 @@ Send it in!<br>
 
 <li>December&nbsp;4, 2007: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf">scaling paper</a> published in IJHPCA</li>
 
-<li>August&nbsp;29, 2007: NCO 3.9.2 released (_FillValue support)</li>
+<li>August&nbsp;29, 2007: NCO 3.9.2 released (<tt>_FillValue</tt> support)</li>
 
 <li>August&nbsp;27, 2007: <a href="http://swamp.googlecode.com">SWAMP site</a> spins-off from NCO</li>
 
@@ -122,9 +124,7 @@ Send it in!<br>
 
 <li>May&nbsp;26, 2007: NCO 3.9.0 released (netCDF4 atomic type support)</li>
 
-<li>May&nbsp;2, 2007: 
-<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">Talk</a>
-on SWAMP at GPC, Paris, France</li> 
+<li>May&nbsp;2, 2007: SWAMP <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">Talk</a> at GPC, Paris, France</li> 
 
 <li>April&nbsp;20, 2007: NCO 3.2.0 released (with i386/x86_64 debs and RPMs)</li>
 
@@ -692,8 +692,8 @@ and porting of NCO to other platforms.
 <!--
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.9.5</a></li>
 -->
-<a href="http://packages.debian.org/unstable/math/nco.html">Debian</a> and 
-<a href="http://packages.ubuntulinux.org/gutsy/source/nco">Ubuntu</a>
+<a href="http://packages.debian.org/unstable/science/nco.html">Debian</a> and 
+<a href="http://packages.ubuntu.com/hardy/nco">Ubuntu</a>
 GNU/Linux homepages for NCO. 
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.5-1_i386.deb</tt>&rsquo;):</dt>
