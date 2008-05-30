@@ -1,57 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.292 2008-05-26 13:10:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.293 2008-05-30 08:23:55 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release extends the Multi-slabbing Algorithm (MSA) and -X switch 
-to operators beyond ncks: ncbo, ncea, ncecat, ncflint, ncpdq, ncra,
-and ncrcat. Why might you care? MSA allows one to obtain and operate
-on irregular hyperslabs. The fastest/simplest NCO-way to process data
-from cell-based (e.g., geodesic) grids or flight-track trajectories,
-for example, is to use MSA and/or -X to specify the hyperslabs.
-This can be done two ways. First, multiple -d switches for the same
-coordinate:
+A. Memory management to improve threading (Henry Butowsky)
 
-ncra -d lon,10.,15. -d lon,15.,20. -d lon,80.,90. in.nc out.nc
+B. Fix Solaris configure problem with _POSIX_SOURCE
 
-Note the multiple hyperslabs (multi-slabs) in the lon dimension.
-ncks has always handled multi-slabs, now other operators do too.
+C. ncatted workaround for netCDF4 _FillValue (Henry Butowsky)
+   ncatted can now change _FillValue on netCDF4 files
 
-Second, NCO now supports the -X argument to utilize CF-compliant
-auxiliary coordinate variables. NCO searches the file for
-variables with the "standard_name" attribute of "latitude" and
-"longitude" and uses these coordinates. The argument to -X is a
-box in the order lon_min,lon_max,lat_min,lat_max:
-
-ncra -O -X 0.,180.,-30.,30. -v gds_3dvar in.nc out.nc
-
-For more details, see
-
-http://nco.sf.net/nco.html#msa
-http://nco.sf.net/nco.html#aux
-
-Karen Schuchardt of PNNL supplied the -X code and encouragement. 
-PNL will use -X to help analyze global cloud-resolving model data: 
-
-http://www.pnl.gov/science/highlights/highlight.asp?id=416
-
-Henry Butowsky optimized the MSA implementation to support -X.
-
-A. Multi-slabbing (MSA) available on most operators (Henry Butowsky)
-   ncbo, ncea, ncecat, ncflint, ncpdq, ncra, and ncrcat support MSA.
-   Auxiliary coordinates (Karen Schuchardt) available with -X.
-   http://nco.sf.net/nco.html#msa
-   http://nco.sf.net/nco.html#aux
-
-B. ncap2 builds on Solaris (Henry Butowsky)
-
-C. Prevent copying global metadata with -M, --metadata switch on
-   ncecat 
-   http://nco.sf.net/nco.html#ncecat
-
-D. Fix netCDF4-enabled NCO builds on cygwin. Thanks to Mark Hadfield. 
+D. Disable OpenMP on netCDF4/HDF unless HDF built with --threadsafe fxm
 
 E. Pre-built Debian Sid & Ubuntu Hardy packages are available.
    http://nco.sf.net#debian
