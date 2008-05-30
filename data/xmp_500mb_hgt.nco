@@ -1,0 +1,45 @@
+// $Header: /data/zender/nco_20150216/nco/data/xmp_500mb_hgt.nco,v 1.1 2008-05-30 12:49:58 zender Exp $ -*-C++-*-
+
+/* Purpose: Compute 500mb height using CCSM output fields: 
+   Z3 [m] (Geopotential Height), 
+   PS [Pa] (surface pressure, not sea level pressure), 
+   hyam and hybm (CCSM hybrid coefficients) */
+
+/* Usage: 
+   ncap2 -O -v -S ~/nco/data/xmp_500mb_hgt.nco ~/cam_h0.nc ~/foo.nc */
+
+/* Compute pressures from hybrid coordinates for k=1,26 
+   p(k)=hyam(k)*p_0 + hybm(k)*PS
+   PS(time,lat,lon) */
+p_0=100000.0f; // Pascals
+*prs_mdp[time,lev,lat,lon]=hyam*p_0+hybm*PS;
+*height[time,lat,lon]=0.0f;
+
+/* We now know atmospheric pressure at model mid-layers. 
+   Next, we use this data along with the geopotential height to determine 
+   the height of 850mb, 700mb, 500mb, 300mb and 250mb pressure levels. */
+// FOR TESTING PURPOSES: START WITH JUST 850mb=85000.Pa
+for(tm_idx=0;tm_idx<$time.size;tm_idx++){
+  for(lat_idx=0;lat_idx<$lat.size;lat_idx++){
+    for(lon_idx=0;lon_idx<$lon.size;lon_idx++){
+      for(lev_idx=0;lev_idx<$lev.size-2;lev_idx++){ // 
+	// Pressure decreases monotonically with height
+	// We are coming down from the top of the model (lev_idx=0->25)
+	// Linearly interpolate between levels
+	if(prs_mdp(tm_idx,lev_idx+1,lat_idx,lon_idx)>85000.0f && prs_mdp(tm_idx,lev_idx,lat_idx,lon_idx)<85000.0f){
+	  // Our pressure exists between two levels -> caculate slope
+	  slope=(Z3(tm_idx,lev_idx,lat_idx,lon_idx)-Z3(tm_idx,lev_idx+1,lat_idx,lon_idx))/((prs_mdp(tm_idx,lev_idx,lat_idx,lon_idx)-prs_mdp(tm_idx,lev_idx+1,lat_idx,lon_idx)));
+	  // Calculate y-int
+	  yint=Z3(tm_idx,lev_idx,lat_idx,lon_idx)-slope*prs_mdp(tm_idx,lev_idx,lat_idx,lon_idx);
+	  // Calcuate height of specified pressure
+	  height(tm_idx,lat_idx,lon_idx)=slope*(85000.0)+yint;
+	}else if(prs_mdp(tm_idx,lev_idx,lat_idx,lon_idx)==85000.0){
+	  // Pressure is at hybrid level -> height equal to Z3
+	  height(tm_idx,lat_idx,lon_idx)=Z3(tm_idx,lev_idx,lat_idx,lon_idx);
+	}
+      }
+    }
+  }
+}
+ram_write(height);
+ram_write(prs_mdp);
