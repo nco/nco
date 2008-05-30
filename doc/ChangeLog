@@ -1,5 +1,7 @@
 2008-05-30  Charlie Zender  <zender@uci.edu>
 
+	* Add Scott's example ncap2 script for 500mb heights
+
 	* Remove _POSIX_SOURCE from ./configure on Solaris
 
 2008-05-26  Henry Butowsky  <henryb@ntlworld.com>

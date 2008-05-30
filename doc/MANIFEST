@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.32 2008-04-01 12:34:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.33 2008-05-30 12:47:55 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -81,6 +81,7 @@ nco/data/psd_wrf.nco	Sample ncap2 script that computes WRF particle size distrib
 nco/data/swamp.sh	Demonstrate SWAMP usage
 nco/data/tst.nco	Sample ncap script that computes geophysical quantities
 nco/data/udunits.dat	UDUnits database for Debian compatibility
+nco/data/xmp_500mb_hgt.nco ncap2 script to compute 500 mb height field
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications
