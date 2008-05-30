@@ -2497,7 +2497,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 	;;
-    sparc-sun-solaris2 )
+    sparc-sun-solaris2* )
 cat >>confdefs.h <<\_ACEOF
 #define SUNMP 1
 _ACEOF
@@ -28645,6 +28645,11 @@ case ${host} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
 	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
 	esac
+	;;
+    sparc-sun-solaris2* )
+	case ${CC} in
+	    cc* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; ;;
+	esac
 esac
 # End Default OS-specific Compiler Arguments
 
@@ -28769,7 +28774,7 @@ _ACEOF
 	    ;;
 	rs6000-ibm-aix* )
 	    ;;
-	sparc-sun-solaris2 )
+	sparc-sun-solaris2* )
 	    ;;
 	sx*-nec-superux* )
 	    case ${CC} in
@@ -29021,7 +29026,7 @@ _ACEOF
 		cc* ) CFLAGS="${CFLAGS} -O" ; ;;
 	    esac
 	    ;;
-	sparc-sun-solaris2 )
+	sparc-sun-solaris2* )
 	    case ${CC} in
 		cc* ) CFLAGS="${CFLAGS} -O2" ; ;;
 	    esac

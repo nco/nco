@@ -1,3 +1,7 @@
+2008-05-30  Charlie Zender  <zender@uci.edu>
+
+	* Remove _POSIX_SOURCE from ./configure on Solaris
+
 2008-05-26  Henry Butowsky  <henryb@ntlworld.com>
 
 	* mods to ncatted so it works with _FillValue in NETCDF4

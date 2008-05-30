@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.247 2008-05-26 13:10:09 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.248 2008-05-30 08:20:44 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -109,7 +109,7 @@ case ${host} in
 	;;
     sparc64-*-linux* ) AC_DEFINE(LINUXSPARC64,1,Compatibility pvmgetarch token for Linux on Sun Sparc)
 	;;
-    sparc-sun-solaris2 ) AC_DEFINE(SUNMP,1,Compatibility pvmgetarch token for Solaris 2.x on Sun Sparc)
+    sparc-sun-solaris2* ) AC_DEFINE(SUNMP,1,Compatibility pvmgetarch token for Solaris 2.x on Sun Sparc)
 	;;
     sx*-nec-superux* ) AC_DEFINE(NECSX,1,Compatibility pvmgetarch token for SuperUX on NEC SX)
 	;;
@@ -761,6 +761,11 @@ case ${host} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
 	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
 	esac
+	;;
+    sparc-sun-solaris2* )
+	case ${CC} in
+	    cc* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; ;;
+	esac
 esac
 # End Default OS-specific Compiler Arguments
 
@@ -875,7 +880,7 @@ if test "${enable_debug_custom}" = 'yes'; then
 	    ;;
 	rs6000-ibm-aix* )
 	    ;;
-	sparc-sun-solaris2 )
+	sparc-sun-solaris2* )
 	    ;;
 	sx*-nec-superux* )
 	    case ${CC} in
@@ -973,7 +978,7 @@ if test "${enable_optimize_custom}" = 'yes'; then
 		cc* ) CFLAGS="${CFLAGS} -O" ; ;;
 	    esac
 	    ;;
-	sparc-sun-solaris2 )
+	sparc-sun-solaris2* )
 	    case ${CC} in
 		cc* ) CFLAGS="${CFLAGS} -O2" ; ;;
 	    esac
