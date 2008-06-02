@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.248 2008-05-30 08:20:44 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.249 2008-06-02 09:23:34 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -761,11 +761,6 @@ case ${host} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
 	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
 	esac
-	;;
-    sparc-sun-solaris2* )
-	case ${CC} in
-	    cc* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; ;;
-	esac
 esac
 # End Default OS-specific Compiler Arguments
 
@@ -1043,12 +1038,12 @@ fi
 # fxm: only do this for gcc, not g++
 if test $ac_compiler_gnu = 'yes'; then
     CFLAGS="${CFLAGS} -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
-    if test "${MACOSX}" = '1'; then
-	CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
-	CFLAGS="-fno-common ${CFLAGS}"
+    case ${host} in
 # MacOSX does not understand shared libraries
-	enable_shared='no'
-    fi
+	*-apple-darwin* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; CFLAGS="-fno-common ${CFLAGS}" ; enable_shared='no' ;;
+# Solaris has problems with time.h
+	sparc-sun-solaris2* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; ;;
+    esac
 fi
 
 # Drop C99 switches when compiling NCO with C++ compiler, e.g., CC=g++
