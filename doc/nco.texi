@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.482 2008-05-26 13:10:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.483 2008-06-09 14:20:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.6
 @set copyright-years 1995--2008
 @set update-year 2008
-@set update-date 25 May 2008
-@set update-month May 2008
+@set update-date 9 June 2008
+@set update-month June 2008
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -8692,13 +8692,14 @@ ncpdq -O -a time,record out.nc out.nc # Switch "record" and "time"
 ncwa -O -a record out.nc out.nc # Remove (degenerate) "record"
 @end example
 @noindent
-The first step creates a degenerate (size equals one) record dimension.
+The first step creates a degenerate (size equals one) record dimension
+named (by default) @code{record}. 
 The second step swaps the ordering of the dimensions named @code{time}
 and @code{record}.
 Since @code{time} now occupies the position of the first (least rapidly
 varying) dimension, it becomes the record dimension.
 The dimension named @code{record} is no longer a record dimension.
-The third step averages over the degenerate @code{record} dimension.
+The third step averages over this degenerate @code{record} dimension.
 Averaging over a degenerate dimension does not alter the data.
 The ordering of other dimensions in the file (@code{lat}, @code{lon},
 etc.) is immaterial to this procedure. 
