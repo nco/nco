@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.487 2008-05-28 22:46:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.488 2008-06-12 19:27:05 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -102,11 +102,11 @@ Send it in!<br>
 
 
 <ul>
+<li>June&nbsp;11, 2008: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf">overview paper</a> published in EMS</li>
+
 <li>May&nbsp;22, 2008: SWAMP <a href="http://dust.ess.uci.edu/ppr/smn_WZJ08_ccgrid_200805.pdf">Talk</a> at CCGRID08 in Lyon, France</li>
 
 <li>May&nbsp;11, 2008: NCO 3.9.5 released</li>
-
-<li>March&nbsp;14, 2008: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview paper</a> in Press in EMS</li>
 
 <li>March&nbsp;4, 2008: NCO 3.9.4 released</li>
 
@@ -384,9 +384,10 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <ul>
 
 <li><!-- Zen08 --> <a name="Zen08"></a> <!--http://www.ess.uci.edu/~zender#Zen08 -->
-Zender, C.&nbsp;S. (2008), netCDF Operators (NCO) for Analysis of Self-describing Gridded Geoscience Data, <i>In Press in Environ. Modell. Softw.</i>.
+Zender, C.&nbsp;S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), <i>Environ. Modell. Softw.</i>, <b>23</b>(10), 1338&ndash;1342, doi:10.1016/j.envsoft.2008.03.004.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">PDF (CSZ)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">PDF (CSZ)</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf">PDF (EMS)</a></li>
 
 <li> <!-- WZJ074 --> <a name="WZJ074"></a> <!--http://www.ess.uci.edu/~zender#WZJ074 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender and S.&nbsp;F. Jenks (2007): <i>A System for Scripted Data Analysis at Remote Data Centers</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 10&ndash;14, 2007. <i>Eos Trans. AGU</i>, <b>88</b>(52), Fall Meet. Suppl., Abstract IN11B-0469.
