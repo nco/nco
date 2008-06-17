@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1011 2008-06-16 12:05:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1012 2008-06-17 15:11:44 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -647,7 +647,13 @@ nco938. ncks -m problem:
 	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_inq_varid_flg()
 	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
 	nco_err_exit(): ERROR NCO will now exit with system call abort()
-nco939. 
+nco939. Enable netCDF4-NCO OpenMP iff HDF5 configured with --enable-threadsafe
+nco940. make tst shows multiple regressions with netCDF4/hardy as of 20080615
+	Not sure what causes them---NCO changes, netCDF4 changes, or OS changes
+	Thankfully netCDF3 regression tests still work fine, so I assume most
+	regressions are due to changes in netCDF4-final.
+	If so, need to fix or mark those regressions as "expected with netCDF4".
+nco941.
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

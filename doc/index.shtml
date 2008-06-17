@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.488 2008-06-12 19:27:05 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.489 2008-06-17 15:11:44 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -61,7 +61,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is <!--#include virtual="VERSION"--> last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is 3.9.5 last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 

@@ -1,3 +1,7 @@
+2008-06-17  Charlie Zender  <zender@uci.edu>
+
+	* Limit OpenMP thr_nbr_rqs=1 for netCDF4-enabled operators. TODO nco939.
+
 2008-06-02  Charlie Zender  <zender@uci.edu>
 
 	* Patch ./configure for Solaris gcc
