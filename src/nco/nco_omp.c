@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.41 2008-06-17 15:11:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.42 2008-06-22 21:10:09 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -150,7 +150,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 
 #ifdef ENABLE_NETCDF4
   if(thr_nbr_rqs > 1){
-    (void)fprintf(stdout,"%s: WARNING This is TODO nco939. Requested threading with netCDF4 (HDF5) support. The NCO thread request algorithm considers user-input, environment variables, and software and hardware limitations in determining the number of threads to request, thr_nbr_rqs. At this point NCO would request result %d threads from a netCDF3-based library. However, this NCO was built with netCDF4, which relies on HDF5. netCDF4 is not thread-safe unless HDF5 is configured with the (non-default) --enable-threadsafe option. NCO currently has no way to know whether HDF5 was built thread-safe. Hence, all netCDF4-based operators are currently restricted to a single thread. The program will now automatically set thr_nbr_rqs = 1.\nThis is TODO nco939. This unfortunate limitation is necessary to keep the NCO developers sane. If you want/need threading in netCDF4-based NCO, please firmly but politely request of the Unidata netCDF developers that better thread support be built into netCDF4, and request of the HDF5 developers that they make the --enable-threadsafe option compatible with all HDF5 libraries and APIs, including Fortran (currently incompatible with --enable-threadsafe).\n",prg_nm_get(),thr_nbr_rqs);
+    (void)fprintf(stdout,"%s: WARNING This is TODO nco939. Requested threading with netCDF4 (HDF5) support. The NCO thread request algorithm considers user-input, environment variables, and software and hardware limitations in determining the number of threads to request, thr_nbr_rqs. At this point NCO would request result %d threads from a netCDF3-based library. However, this NCO was built with netCDF4, which relies on HDF5. netCDF4 is not thread-safe unless HDF5 is configured with the (non-default) --enable-threadsafe option. NCO currently has no way to know whether HDF5 was built thread-safe. Hence, all netCDF4-based operators are currently restricted to a single thread. The program will now automatically set thr_nbr_rqs = 1.\nThis unfortunate limitation is necessary to keep the NCO developers sane. If you want/need threading in netCDF4-based NCO, please firmly but politely request of the Unidata netCDF developers that better thread support be built into netCDF4, and request of the HDF5 developers that they make the --enable-threadsafe option compatible with all HDF5 libraries and APIs, including Fortran (currently incompatible with --enable-threadsafe).\n",prg_nm_get(),thr_nbr_rqs);
     thr_nbr_rqs=1;
   } /* endif */
 #endif /* !ENABLE_NETCDF4 */
