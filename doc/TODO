@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1012 2008-06-17 15:11:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1013 2008-07-07 10:14:25 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -653,7 +653,10 @@ nco940. make tst shows multiple regressions with netCDF4/hardy as of 20080615
 	Thankfully netCDF3 regression tests still work fine, so I assume most
 	regressions are due to changes in netCDF4-final.
 	If so, need to fix or mark those regressions as "expected with netCDF4".
-nco941.
+	e.g., netCDF4-final disallows variable names that start with numbers.
+nco941. ncra (now? when was regression?) tries to average NC_CHAR record variables:
+	ncra -O -v two_dmn_rec_var_sng ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+nco942. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.221 2008-05-11 14:57:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.222 2008-07-07 10:14:28 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.221 2008-05-11 14:57:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.221 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.222 2008-07-07 10:14:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.222 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -486,15 +486,15 @@ main(int argc,char **argv)
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
+  for(idx=0;idx<nbr_dmn_xtr;idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
     /* add limts info to dmn_out from lmt_all_lst */ 
-    for(jdx=0; jdx<nbr_dmn_fl; jdx++)
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++)
        if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
          dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
-         dmn_out[idx]->srt=0;
-         dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1;
+         dmn_out[idx]->srt=0L;
+         dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1L;
          dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
          dmn_out[idx]->srd=1L;
          break;
@@ -512,30 +512,27 @@ main(int argc,char **argv)
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
   } /* endif */
 
-  if(rec_dmn_id != NCO_REC_DMN_UNDEFINED ){
-    for(idx=0; idx<nbr_dmn_fl ; idx++)
+  if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+    for(idx=0;idx<nbr_dmn_fl;idx++)
       if(!strcmp(lmt_rec->nm,lmt_all_lst[idx]->dmn_nm)){
         lmt_all_rec=lmt_all_lst[idx];
-	/* can only have one record limit */
+	/* Can only have one record limit */
         if(lmt_all_rec->lmt_dmn_nbr >1 ){
-	(void)fprintf(stdout,"%s: Although this program allows multiple hyperlab limits  for a single dimension -there can be only one unwrapped limit for the record dimension \"%s\". You have specified %i.\n",prg_nm_get(),lmt_all_rec->dmn_nm,lmt_all_rec->lmt_dmn_nbr);
-
+	(void)fprintf(stdout,"%s: Although this program allows multiple hyperslab limits for a single dimension, it allows only one unwrapped limit for the record dimension \"%s\". You have specified %i.\n",prg_nm_get(),lmt_all_rec->dmn_nm,lmt_all_rec->lmt_dmn_nbr);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
 
         if(prg==ncra || prg==ncrcat) {
            /* Change record dim in lmt_ls_all so that cnt=1 */   
-           lmt_all_lst[idx]->dmn_cnt=1;
-           lmt_all_lst[idx]->lmt_dmn[0]->srt=0;
-           lmt_all_lst[idx]->lmt_dmn[0]->end=0;           
-           lmt_all_lst[idx]->lmt_dmn[0]->cnt=1;                   
-           lmt_all_lst[idx]->lmt_dmn[0]->srd=1;
+           lmt_all_lst[idx]->dmn_cnt=1L;
+           lmt_all_lst[idx]->lmt_dmn[0]->srt=0L;
+           lmt_all_lst[idx]->lmt_dmn[0]->end=0L;           
+           lmt_all_lst[idx]->lmt_dmn[0]->cnt=1L;                   
+           lmt_all_lst[idx]->lmt_dmn[0]->srd=1L;
          }
          break;
        }
   }
-
-
 
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);
@@ -564,18 +561,17 @@ main(int argc,char **argv)
     var_sct *var_tmp;
     var_tmp=var_out[idx];
     
-    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
+    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
       var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
       var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
       var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
       var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
       sz*=var_tmp->dim[jdx]->cnt;
-      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
+      if(jdx>0) sz_rec*=var_tmp->dim[jdx]->cnt;
      }/* end loop over jdx */
      var_tmp->sz=sz; 
      var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
-
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
