@@ -1,7 +1,8 @@
 2008-07-07  Charlie Zender  <zender@uci.edu>
 
 	* Verify bug TODO nco941 where ncra tries to average nc_char variables
-
+	Reported by Alberto Corbi Bello 
+	
 2008-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Limit OpenMP thr_nbr_rqs=1 for netCDF4-enabled operators. TODO nco939.
