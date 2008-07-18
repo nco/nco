@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1015 2008-07-12 09:37:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1016 2008-07-18 16:07:47 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -647,7 +647,7 @@ nco938. ncks -m problem:
 	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_inq_varid_flg()
 	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
 	nco_err_exit(): ERROR NCO will now exit with system call abort()
-nco939. Enable netCDF4-NCO OpenMP iff HDF5 configured with --enable-threadsafe
+nco939. Enable netCDF4-NCO OpenMP iff HDF5 configured with --enable-threadsafe?
 nco940. make tst shows multiple regressions with netCDF4/hardy as of 20080615
 	Not sure what causes them---NCO changes, netCDF4 changes, or OS changes
 	Thankfully netCDF3 regression tests still work fine, so I assume most
@@ -657,7 +657,10 @@ nco940. make tst shows multiple regressions with netCDF4/hardy as of 20080615
 nco941. ncra (now? when was regression?) tries to average NC_CHAR record variables:
 	Reported by Alberto Corbi Bello 
   	ncra -O -v two_dmn_rec_var_sng ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-nco942. 
+nco942. Allow spaces at the end of coordinate strings in nco_var_lst_crd_ass_add() call to nco_lst_prs_2d()
+	ncks -m ~/nco/data/in.nc # borken
+nco943. Add regression test for nco942.
+nco944. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

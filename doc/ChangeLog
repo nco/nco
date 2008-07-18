@@ -1,3 +1,8 @@
+2008-07-18  Charlie Zender  <zender@uci.edu>
+
+	* Allow spaces at the end of CF-convention coordinate attribute
+	strings in nco_var_lst_crd_ass_add() call to nco_lst_prs_2d() 
+
 2008-07-07  Charlie Zender  <zender@uci.edu>
 
 	* Verify bug TODO nco941 where ncra tries to average nc_char variables

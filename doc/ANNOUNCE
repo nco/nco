@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.295 2008-07-07 10:14:24 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.296 2008-07-18 16:07:45 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -16,7 +16,7 @@ D. Disable OpenMP on netCDF4/HDF5-enabled operators.
 
 E. Fix problem processing NC_CHAR variables nco941 fxm
 
-E. Fix problem with 2D coordinate variables fxm
+E. Fix problem with CF-convention coordinates attribute string that end with a space
 
 E. Pre-built Debian Sid & Ubuntu Hardy packages are available.
    http://nco.sf.net#debian

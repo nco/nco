@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.101 2008-05-11 20:30:36 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.102 2008-07-18 16:07:45 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -149,9 +149,10 @@ variables:
 	P0:long_name = "reference pressure";
 	P0:units = "pascal";
 
-	float cnv_CF_crd;
-	cnv_CF_crd:long_name = "Variable to test CF coordinates conventions";
-	cnv_CF_crd:coordinates = "lat lon";
+	float cnv_CF_crd(gds_crd);
+	cnv_CF_crd:long_name = "test CF coordinates conventions";
+	cnv_CF_crd:coordinates = "lat_gds lon_gds ";
+	cnv_CF_crd:reason = "Test whether coordinates attribute strings that end with a space break after nco_var_lst_crd_ass_add() call to nco_lst_prs_2d()";
 
 	float PS(time,lat,lon);
 	PS:long_name = "surface pressure";
@@ -761,7 +762,7 @@ data:
 	char_var_multinul="\b\n\0";
 	char_var_nul='\0';
 	char_var_space=" ";
-	cnv_CF_crd=1.0;
+	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 	double_var=10.;
 	double_var2=10.;
 	e_dbl=2.71828182846;
