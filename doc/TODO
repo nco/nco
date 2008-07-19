@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1016 2008-07-18 16:07:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1017 2008-07-19 13:38:38 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -657,9 +657,9 @@ nco940. make tst shows multiple regressions with netCDF4/hardy as of 20080615
 nco941. ncra (now? when was regression?) tries to average NC_CHAR record variables:
 	Reported by Alberto Corbi Bello 
   	ncra -O -v two_dmn_rec_var_sng ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-nco942. Allow spaces at the end of coordinate strings in nco_var_lst_crd_ass_add() call to nco_lst_prs_2d()
-	ncks -m ~/nco/data/in.nc # borken
-nco943. Add regression test for nco942.
+nco943. Add regression test for 
+	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
+nco942.
 nco944. 
 ************************************************************************
 End ncoXXX TODOs
