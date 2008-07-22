@@ -1,3 +1,7 @@
+2008-07-22  Charlie Zender  <zender@uci.edu>
+
+	* "ill-defined" warning in nco_var_lst_dvd() uses correct var_typ_fnk 
+
 2008-07-18  Charlie Zender  <zender@uci.edu>
 
 	* Allow spaces at the end of CF-convention coordinate attribute

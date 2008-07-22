@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.483 2008-06-09 14:20:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.484 2008-07-22 14:15:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9557,7 +9557,7 @@ $ORO < 0.5$
 @footnote{@code{ORO} stands for @dfn{Orography} in some climate models.  
 @math{@var{ORO} < 0.5} selects ocean-covered gridpoints.}: 
 @example
-ncwa -B "ORO < 0.5"      -w gw -a lat,lon in.nc out.nc
+ncwa -B 'ORO < 0.5'      -w gw -a lat,lon in.nc out.nc
 ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon in.nc out.nc
 @end example
 @noindent
@@ -9580,7 +9580,7 @@ $0.70 \times 8192 \approx 5734$.
 
 Compute the global annual mean over the maritime tropical Pacific:
 @example
-ncwa -B "ORO < 0.5"      -w gw -a lat,lon,time \
+ncwa -B 'ORO < 0.5'      -w gw -a lat,lon,time \
   -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon,time \
   -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
@@ -9591,7 +9591,7 @@ Further examples will use the one-switch specification of
 Determine the total area of the maritime tropical Pacific, assuming
 the variable @var{area} contains the area of each gridcell
 @example
-ncwa -N -v area -B "ORO < 0.5" -a lat,lon \
+ncwa -N -v area -B 'ORO < 0.5' -a lat,lon \
   -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
 Weighting @var{area} (e.g., by @var{gw}) is not appropriate because
