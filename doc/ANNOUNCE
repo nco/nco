@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.297 2008-07-23 14:11:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.298 2008-07-23 15:25:44 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -12,11 +12,14 @@ B. Fix Solaris configure problem with _POSIX_SOURCE
 C. ncatted workaround for netCDF4 _FillValue (Henry Butowsky)
    ncatted can now change _FillValue on netCDF4 files
 
-D. Disable OpenMP on netCDF4/HDF5-enabled operators.
+D. Disable OpenMP on netCDF4/HDF5-enabled operators
+   It is too difficult for the NCO "configure" apparatus to determine
+   whether the underlying libraries (HDF5, netCDF4) support OpenMP.
+   So, for now, we assume they do not.
 
 E. ncra does not attempt to average record variables of type NC_CHAR
 
-E. Fix for CF-convention coordinates attribute strings that end with whitespace
+E. CF-convention "coordinates" attribute strings that end with whitespace work
 
 E. Pre-built Debian Sid & Ubuntu Hardy packages are available.
    http://nco.sf.net#debian
