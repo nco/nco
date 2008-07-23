@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.223 2008-07-23 12:21:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.224 2008-07-23 14:11:40 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.223 2008-07-23 12:21:38 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.223 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.224 2008-07-23 14:11:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.224 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -694,15 +694,16 @@ main(int argc,char **argv)
             (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 	    
 	    if(prg == ncra){
-              /* if record var is type CHAR then copy only first record to
-                 output regardless of nco_op_typ --ignore idx_rec_out >1 */   
-              if(var_prc[idx]->type==NC_CHAR) {
-                if(!idx_rec_out) 
-                  nco_opr_drv(idx_rec_out,nco_op_min,var_prc[idx],var_prc_out[idx]);
+              /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
+		 Stuff first record into output buffer regardless of nco_op_typ,
+		 and ignore later records (idx_rec_out > 1). 
+		 Temporarily fixes TODO nco941 */
+              if(var_prc[idx]->type == NC_CHAR){
+                if(!idx_rec_out) nco_opr_drv(idx_rec_out,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
 	        /* Convert char, short, long, int types to doubles before arithmetic
-		  Output variable type is "sticky" so only convert on first record */
-	        if(idx_rec_out == 0 )    var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+		   Output variable type is "sticky" so only convert on first record */
+	        if(idx_rec_out == 0L) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	        var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	      /* Perform arithmetic operations: avg, min, max, ttl, ... */
 	        nco_opr_drv(idx_rec_out,nco_op_typ,var_prc[idx],var_prc_out[idx]);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1017 2008-07-19 13:38:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1018 2008-07-23 14:11:40 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -657,6 +657,12 @@ nco940. make tst shows multiple regressions with netCDF4/hardy as of 20080615
 nco941. ncra (now? when was regression?) tries to average NC_CHAR record variables:
 	Reported by Alberto Corbi Bello 
   	ncra -O -v two_dmn_rec_var_sng ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+	20080723: HMB kludged ncra to work for NC_CHAR
+	What about NC_STRING? that seems to be "handled" by ignoring it in nco_var_cnf_typ()...
+	What about other operators, e.g., ncea?
+	Is better fix to never promote/demote to/from NC_CHAR? (like NC_STRING?)
+	That would move fix from ncra.c to nco_var_cnf_typ()
+	Would that break ncpdq packing to NC_CHAR?
 nco943. Add regression test for 
 	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
 nco942.

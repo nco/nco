@@ -1,3 +1,7 @@
+2008-07-23  Charlie Zender  <zender@uci.edu>
+
+	* Notes and cleanup on TODO nco941 kludge
+
 2008-07-22  Charlie Zender  <zender@uci.edu>
 
 	* "ill-defined" warning in nco_var_lst_dvd() uses correct var_typ_fnk 
