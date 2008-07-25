@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.38 2008-01-06 13:09:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.39 2008-07-25 11:51:20 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -182,6 +182,14 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 	if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
 	/* NUL-terminate attribute */
 	att_val[att_sz]='\0';
+	/* Kludge to allow list to end with delimiter (i.e., space) 
+	   Non-compliant CF "coordinates" attribute strings may have this, e.g.,
+	   http://sourceforge.net/forum/forum.php?thread_id=2079302&forum_id=9830
+	   To keep nco_lst_prs_2D() from barfing, replace such spaces with NULs
+	   fxm: TODO nco944 handle redundant whitespace in "coordinates" attributes */
+	if(att_sz > 1)
+	  if(att_val[att_sz-1] == ' ')
+	    att_val[att_sz-1]='\0';
 	/* Split list into separate coordinate names */
 	crd_lst=nco_lst_prs_2D(att_val,dlm_sng,&nbr_crd);
 	/* ...for each coordinate in "coordinates" attribute... */

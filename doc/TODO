@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1018 2008-07-23 14:11:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1019 2008-07-25 11:51:19 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -665,8 +665,8 @@ nco941. ncra (now? when was regression?) tries to average NC_CHAR record variabl
 	Would that break ncpdq packing to NC_CHAR?
 nco943. Add regression test for 
 	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
-nco942.
-nco944. 
+nco944. Strip all whitespace except for possibly one inter-name space from "coordinates" attribute strings before passing to nco_lst_prs_2D (because trailing spaces cause code to expect more coordinates and thus to choke)
+nco945. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

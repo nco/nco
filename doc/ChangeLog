@@ -1,3 +1,9 @@
+2008-07-25  Charlie Zender  <zender@uci.edu>
+
+	* Applied 20080718 patch to nco_cnv_csm.c and deferred permanent
+	fix to TODO nco944: handle redundant whitespace 
+	"coordinates" attributes before calling nco_lst_prs_2D()
+
 2008-07-23  Charlie Zender  <zender@uci.edu>
 
 	* Notes and cleanup on TODO nco941 kludge

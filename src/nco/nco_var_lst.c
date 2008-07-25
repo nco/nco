@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.78 2008-07-22 14:16:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.79 2008-07-25 11:51:21 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -462,7 +462,8 @@ nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables 
 	  /* Kludge to allow list to end with delimiter (i.e., space) 
 	     Non-compliant CF "coordinates" attribute strings may have this, e.g.,
 	     http://sourceforge.net/forum/forum.php?thread_id=2079302&forum_id=9830
-	     To keep nco_lst_prs_2D() from barfing, replace such spaces with NULs */
+	     To keep nco_lst_prs_2D() from barfing, replace such spaces with NULs
+	     fxm: TODO nco944 handle redundant whitespace in "coordinates" attributes */
 	  if(att_sz > 1)
 	    if(att_val[att_sz-1] == ' ')
 	      att_val[att_sz-1]='\0';
