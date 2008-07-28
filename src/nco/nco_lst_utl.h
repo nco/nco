@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.33 2008-01-06 13:09:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.34 2008-07-28 12:53:28 hmb Exp $ */
 
 /* Purpose: List utilities */
 
@@ -54,6 +54,14 @@ nco_lst_prs_2D /* [fnc] Create 2D list of strings from given string and delimite
 (const char * const sng_in, /* I [sng] Delimited argument list */
  const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst); /* O [nbr] Number of elements in list */
+
+char ** /* O [sng] List of strings */
+nco_lst_prs_sgl_2D /* [fnc] Create list of strings from given string and delimiter */
+(const char * const sng_in, /* I [sng] Delimited argument list */
+ const char * const dlm_sng, /* I [sng] Delimiter string */
+ int * const nbr_lst); /* O [nbr] Number of elements in list */
+
+
 
 nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
