@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.132 2008-02-13 15:01:57 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.133 2008-07-28 09:20:54 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1161,25 +1161,31 @@ static std::vector<std::string> lpp_vtr;
           if(prs_arg->ntl_scn) goto end2;
           Nvar=prs_arg->var_vtr.find(va_nm);
 
-          if(Nvar->flg_mem){ 
+          // check output first 
+          if(Nvar){
+            if(Nvar->flg_mem) {
             wrn_prn(fnc_nm,"Cannot print out RAM variables at the moment!");
+            goto end2;
+            }
+            fl_id=prs_arg->out_id;
+          }else{
+           // Check input file for var   
+           if(NC_NOERR==nco_inq_varid_flg(prs_arg->in_id,va_nm.c_str(),&var_id))
+            fl_id=prs_arg->in_id;
+          }
+
+          if(fl_id==-1) {
+            wrn_prn(fnc_nm,"Print function cannot find var \""+va_nm+"\" in input or output");
             goto end2;
           }
 
+          // Grab format string 
           if(pvid->getNextSibling() && pvid->getNextSibling()->getType()==NSTRING)
             fmt_sng=strdup(pvid->getNextSibling()->getText().c_str());
           else 
             fmt_sng=(char*)NULL; 
 
 
- 
-          if(Nvar)
-           fl_id=prs_arg->out_id;
-          else{
-           /* Check input file for var */  
-           if(NC_NOERR==nco_inq_varid_flg(prs_arg->in_id,va_nm.c_str(),&var_id))
-            fl_id=prs_arg->in_id;
-          }
            
    
           if( fl_id >=0)
