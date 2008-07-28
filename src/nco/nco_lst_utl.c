@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.49 2008-03-02 15:26:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.50 2008-07-28 12:54:20 hmb Exp $ */
 
 /* Purpose: List utilities */
 
@@ -279,6 +279,78 @@ nco_lst_prs_2D /* [fnc] Create list of strings from given string and delimiter *
 
   return sng_lst_out;
 } /* end nco_lst_prs_2D() */
+
+
+char ** /* O [sng] List of strings */
+nco_lst_prs_sgl_2D /* [fnc] Create list of strings from given string and delimiter */
+(const char * const sng_in, /* I [sng] Delimited argument list */
+ const char * const dlm_sng, /* I [sng] Delimiter string */
+ int * const nbr_lst) /* O [nbr] Number of elements in list */
+{
+  /* Similar to nco_lst_prs_2D() except for following            */
+  /* Only first char of dlm_sng is used and                      */
+  /* empty substrings are ignored and NOT returned as nulls      */
+  /* eg with dlm_sng=' ' and sng_in=" one two  three    five   " */
+  /* the following is returned "one"/"two"/"three"/"five"        */
+              
+                                    
+  int sng_len;
+  int nbr_sng;
+  char ch_dlm;
+  char *cp_sng;
+  char *cp_end;
+  char *cp_ptr;
+  char **lst=NULL;;
+
+  sng_len=strlen(sng_in);
+  
+  if(sng_len==0){
+    *nbr_lst=0;
+    return lst;
+  }
+    
+  /* use copy of string */
+  cp_sng=strdup(sng_in);
+
+  /* use only first char of delimiter string */
+  ch_dlm=dlm_sng[0];
+
+  cp_end=cp_sng+sng_len;
+  cp_ptr=cp_sng;
+
+  /* replace delimiters with nulls */
+  while( cp_ptr<cp_end){
+    if(*cp_ptr==ch_dlm)
+      *cp_ptr='\0';
+    cp_ptr++; 
+  }
+
+  nbr_sng=0;
+  cp_ptr=cp_sng;  
+  
+  /* loop thru string finding null delimited substrings */
+  while(cp_ptr < cp_end){
+    sng_len=strlen(cp_ptr);
+    if(sng_len >0 ){ 
+      lst=(char**)nco_realloc(lst, ++nbr_sng*sizeof(char*));
+      lst[nbr_sng-1]=strdup(cp_ptr); 
+      cp_ptr+=sng_len;
+    }else
+      cp_ptr++;
+  }
+   
+  (void)nco_free(cp_sng);
+
+  *nbr_lst=nbr_sng;
+
+  return lst;
+
+} /* end nco_lst_prs_sgl_2D() */
+
+
+
+
+
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */
