@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.298 2008-07-23 15:25:44 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.299 2008-07-28 14:27:24 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -19,7 +19,7 @@ D. Disable OpenMP on netCDF4/HDF5-enabled operators
 
 E. ncra does not attempt to average record variables of type NC_CHAR
 
-E. CF-convention "coordinates" attribute strings that end with whitespace work
+E. CF-convention "coordinates" attribute strings with excessive whitespace work
 
 E. Pre-built Debian Sid & Ubuntu Hardy packages are available.
    http://nco.sf.net#debian
