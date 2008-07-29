@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.80 2008-05-26 13:35:45 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.81 2008-07-29 14:40:35 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -615,9 +615,9 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
 
     $tst_cmd[0]="ncks -O -v cnv_CF_crd $in_pth_arg in.nc %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v lon -d lon,3 %tempf_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' -v lon_gds -d gds_crd,2 %tempf_00%";
     $dsc_sng="CF convention coordinates attribute";
-    $tst_cmd[2] = "270";
+    $tst_cmd[2] = "180";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
