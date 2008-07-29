@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.50 2008-07-28 12:54:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.51 2008-07-29 14:42:25 hmb Exp $ */
 
 /* Purpose: List utilities */
 
@@ -318,6 +318,7 @@ nco_lst_prs_sgl_2D /* [fnc] Create list of strings from given string and delimit
   cp_end=cp_sng+sng_len;
   cp_ptr=cp_sng;
 
+
   /* replace delimiters with nulls */
   while( cp_ptr<cp_end){
     if(*cp_ptr==ch_dlm)
@@ -334,7 +335,7 @@ nco_lst_prs_sgl_2D /* [fnc] Create list of strings from given string and delimit
     if(sng_len >0 ){ 
       lst=(char**)nco_realloc(lst, ++nbr_sng*sizeof(char*));
       lst[nbr_sng-1]=strdup(cp_ptr); 
-      cp_ptr+=sng_len;
+      cp_ptr+=(sng_len+1);
     }else
       cp_ptr++;
   }
