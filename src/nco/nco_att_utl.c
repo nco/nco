@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.81 2008-05-26 13:38:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.82 2008-07-31 10:01:19 hmb Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -190,8 +190,9 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
    attribute named "_FillValue" in netCDF4 -- The problem is they can't be modified. 
    So we rename them to att_nm_tmp -- modify them then restore the original name */
 #ifdef NCO_NETCDF4_AND_FILLVALUE    
-    if(!strcmp(aed.att_nm,nco_mss_val_sng_get() ) ){
-      (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
+    if(!strcmp(aed.att_nm,nco_mss_val_sng_get() ) && aed.mode !=aed_delete ){
+      if( aed.mode !=aed_create ) 
+        (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
       strcpy(aed.att_nm,att_nm_tmp); 
      }
 
@@ -246,7 +247,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   } /* end switch */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-    if(!strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete){
+    if(!strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete ){
       (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
       /* Restore orginal name (space already allocated )*/
      strcpy(aed.att_nm,nco_mss_val_sng_get()); 
@@ -350,7 +351,10 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       mss_tmp.vp=(void *)nco_malloc(att_lng_in);
       (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
       (void)nco_val_cnf_typ(att_typ_in,mss_tmp,att_typ_out,aed.val);
-      aed.mode=aed_overwrite; /* Action to perform with attribute */
+      /* aed.mode=aed_overwrite;  /* Action to perform with attribute */
+      /* Changed mode to create as overwrite causes  problems with netcdf4 
+         and __FillValue */ 
+      aed.mode=aed_create;
       (void)nco_aed_prc(out_id,var_out_id,aed); 
       /* Release temporary memory */
       aed.val.vp=nco_free(aed.val.vp);
