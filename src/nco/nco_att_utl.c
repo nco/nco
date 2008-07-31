@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.82 2008-07-31 10:01:19 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.83 2008-07-31 10:47:48 hmb Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -310,7 +310,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       } /* end if */
     } /* end if dbg */
 
-    if(PCK_ATT_CPY || strcmp(att_nm,nco_mss_val_sng_get())){
+    // if(PCK_ATT_CPY || strcmp(att_nm,nco_mss_val_sng_get())){
+    if(strcmp(att_nm,nco_mss_val_sng_get())){
       /* Copy all attributes except _FillValue with fast library routine */
       (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
     }else{
