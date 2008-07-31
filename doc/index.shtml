@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.489 2008-06-17 15:11:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.490 2008-07-31 11:46:47 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -935,7 +935,7 @@ ANTLR&nbsp;3.x C++ interface is incomplete.
 <ul><b>Generic Build Hints:</b>
 
 <a name="bld_cnf"></a> <!-- http://nco.sf.net#bld_cnf -->
-<li><i>The two build NCO build mechanisms:</i>
+<li><i>The two NCO build mechanisms:</i>
 NCO has two build mechanisms: (1)&nbsp;GNU configure and 
 (2)&nbsp; a custom Makefile (<tt>nco/bld/Makefile</tt>)
 designed for hand-editing.

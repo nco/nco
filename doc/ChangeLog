@@ -1,8 +1,12 @@
+2008-07-31  Charlie Zender  <zender@uci.edu>
+
+	* nco_aed_prc() cleanup
+
 2008-07-28  Henry Butowsky  <henryb@ntlworld.com>
-	*Permanent fix to TODO nco944 
-	added new parsing function nco_lst_prs_sgl_2D()
-        This function ONLY returns non-zero length strings unlike 
-	nco_lst_prs_2D() 
+
+	* Permanent fix for TODO nco944: 
+	new parsing function nco_lst_prs_sgl_2D()
+        Returns only non-zero length strings unlike nco_lst_prs_2D() 
 
 2008-07-25  Charlie Zender  <zender@uci.edu>
 

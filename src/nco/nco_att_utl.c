@@ -1,13 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.84 2008-07-31 10:54:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.85 2008-07-31 11:46:48 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
 /* Copyright (C) 1995--2008 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
-
-//#define NCO_NETCDF4_AND_FILLVALUE
-
 
 #include "nco_att_utl.h" /* Attribute utilities */
 
@@ -185,18 +182,15 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   /* Change metadata (as written, this must be done after _FillValue data is replaced) */
 
-
-/* This is a bold hack which gets around the problem of modifying a missing value 
-   attribute named "_FillValue" in netCDF4 -- The problem is they can't be modified. 
-   So we rename them to att_nm_tmp -- modify them then restore the original name */
-#ifdef NCO_NETCDF4_AND_FILLVALUE    
-    if(!strcmp(aed.att_nm,nco_mss_val_sng_get() ) && aed.mode !=aed_delete ){
-      if( aed.mode !=aed_create ) 
-        (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
-      strcpy(aed.att_nm,att_nm_tmp); 
-     }
-
-#endif
+#ifdef NCO_NETCDF4_AND_FILLVALUE
+  /* Bold hack which gets around problem of modifying netCDF4 "_FillValue" attributes
+     netCDF4 does not allow this by default, though netCDF3 does
+     Change attribute name to att_nm_tmp, modify value, then restore name */
+  if(!strcmp(aed.att_nm,nco_mss_val_sng_get()) && aed.mode != aed_delete){
+    if(aed.mode != aed_create) (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
+    strcpy(aed.att_nm,att_nm_tmp); 
+  } /* endif libnetCDF may have netCDF4 restrictions */
+#endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
   switch(aed.mode){
   case aed_append:	
@@ -316,7 +310,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
     }else{
       /* Convert "_FillValue" attribute to unpacked type then copy 
-	 This imposes NCO convention that _FillValue is same type as variable,
+	 Impose NCO convention that _FillValue is same type as variable,
 	 whether variable is packed or not */
       aed_sct aed;
       
