@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.490 2008-07-31 11:46:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.491 2008-08-02 16:00:39 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -716,12 +716,13 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):</dt>
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
-<li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;4-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
+<li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
 <li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/~wangd/s9y">here</a></li>
 
-NCO is part of the Fedora Extras distribution (thanks to Ed Hill).
-As such, the NCO <a href="http://www.rpm.org">RPMs</a> in the current
-Fedora Core release lag our upstream RPMs by no more than 6&ndash;8 months.
+From about 2004&ndash;2006, NCO was part of the Fedora Extras distribution (thanks to Ed Hill).
+Then NCO <a href="http://www.rpm.org">RPMs</a> in Fedora Core release
+lagged our upstream RPMs by no more than 6&ndash;8 months. 
+A new volunteer is needed to update NCO to 3.9.x and maintain it in the Fedora distribution.
 Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these 
 <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">NCO RPMs</a>:
 <li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-0-3.1.5-3.fc6.html">nco-0-3.1.5-3.fc6.html</a>: Official Fedora Core&nbsp;6 NCO binary package (contains all executables) homepage</li>
