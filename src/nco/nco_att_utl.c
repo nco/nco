@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.85 2008-07-31 11:46:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.86 2008-08-04 08:46:59 hmb Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -20,18 +20,17 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
-  char *att_nm_tmp; /* for name hack with NETCDF4 */
+  char att_nm_tmp[]="eulaVlliF_"; /* for name hack with NETCDF4 nb same length as "_FillValue" */
   
   /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */
   int nbr_att; /* [nbr] Number of attributes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   long att_sz;
-  
+  nco_bool is4=False; /* true if file format is netcdf4 */
+     
   nc_type att_typ;
   
   void *att_val_new=NULL;
-  
-  att_nm_tmp=strdup("__tmp_nm"); 
 
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in file */
@@ -182,15 +181,26 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   /* Change metadata (as written, this must be done after _FillValue data is replaced) */
 
+
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   /* Bold hack which gets around problem of modifying netCDF4 "_FillValue" attributes
      netCDF4 does not allow this by default, though netCDF3 does
      Change attribute name to att_nm_tmp, modify value, then restore name */
-  if(!strcmp(aed.att_nm,nco_mss_val_sng_get()) && aed.mode != aed_delete){
+
+  /* Need to check if they are using netcdf3 classic file  with the netcdf4 lib
+     - if so then don't do the hack nb have a global var for file out format ???*/
+   {  
+      int fl_fmt; 
+      (void)nco_inq_format(nc_id,&fl_fmt);
+      is4=(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC);
+    } 
+
+  if(is4 && !strcmp(aed.att_nm,nco_mss_val_sng_get()) && aed.mode != aed_delete){
     if(aed.mode != aed_create) (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
     strcpy(aed.att_nm,att_nm_tmp); 
   } /* endif libnetCDF may have netCDF4 restrictions */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
+
 
   switch(aed.mode){
   case aed_append:	
@@ -241,7 +251,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   } /* end switch */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-    if(!strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete ){
+    if(is4 && !strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete ){
       (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
       /* Restore orginal name (space already allocated )*/
      strcpy(aed.att_nm,nco_mss_val_sng_get()); 
@@ -348,7 +358,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       (void)nco_val_cnf_typ(att_typ_in,mss_tmp,att_typ_out,aed.val);
       /* aed.mode=aed_overwrite;  /* Action to perform with attribute */
       /* Changed mode to create as overwrite causes  problems with netcdf4 
-         and __FillValue */ 
+         and "__FillValue" */ 
       aed.mode=aed_create;
       (void)nco_aed_prc(out_id,var_out_id,aed); 
       /* Release temporary memory */
