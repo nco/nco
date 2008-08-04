@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.67 2008-03-02 14:25:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.68 2008-08-04 10:06:26 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,8 +134,9 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.67 2008-03-02 14:25:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.67 $";
+  const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.68 2008-08-04 10:06:26 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.68 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -513,8 +514,8 @@ main(int argc,char **argv)
   prs_arg.dfl_lvl=dfl_lvl; /* [enm] Deflate level */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-  prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 ? true : false);
-#else
+  prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 || fl_out_fmt==NC_FORMAT_NETCDF4_CLASSIC);
+# else
   prs_arg.NCAP4_FILL=false;
 #endif
 
@@ -681,15 +682,21 @@ main(int argc,char **argv)
   for(idx=0;idx<var_vtr.size();idx++){
     // write misssing value contained inside var
     if(var_vtr[idx]->xpr_typ == ncap_var && !var_vtr[idx]->flg_mem) {
-      if(prs_arg.NCAP4_FILL) 
-	continue;
-      // dereference
       var_sct *var_ref;
+
       var_ref=var_vtr[idx]->var;
       rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
 
-      if(var_ref->has_mss_val && rcd==NC_NOERR)
-          (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);           
+      if(rcd!=NC_NOERR|| !var_ref->has_mss_val)
+        continue;  
+ 
+      /* Do netdf4 name hack */
+      if(prs_arg.NCAP4_FILL){
+        (void)nco_put_att(out_id,var_id,att_nm_tmp,var_ref->type,1,var_ref->mss_val.vp);
+        (void)nco_rename_att(out_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
+      }else{
+        (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);
+     }  
       continue;
     }
    
