@@ -419,16 +419,6 @@
 
     sfnm= (expr ? " method ": " function ") + fmc_obj.fnm(); 
 
-
-    if(walker.prs_arg->NCAP4_FILL && (fdx==SET_MISS||fdx==CH_MISS||fdx==DEL_MISS)){
-       ostringstream os; 
-       os<<"It is not possible to execute the"<<sfnm<< " with this build. A quirk with netcdf4 files is that if the missing value attribute is set to \"_FillValue\", then once this attribute has been defined for a variable later editing of the attribute  is impossible. Consider recompiling with a different missing value attribute  or use netcdf3 files";            
-
-      err_prn(fnc_nm,os.str());
-                    
-   
-    }
-
     // no arguments - bomb out
     if(!expr && nbr_fargs==0){    
 	serr=sfnm + " has been called without an argument";               
