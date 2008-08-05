@@ -1,9 +1,21 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.299 2008-07-28 14:27:24 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.300 2008-08-05 20:44:33 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
+
+This version has been "extensively" tested with netCDF4.0.
+We tried to make sure that NCO produces the same output regardless of
+whether it is compiled with netCDF3 or netCDF4.
+This was not trivial, and we'll spare you the details. 
+
+Thank you NSF for funding NCO from 20040901 through 20080831.
+We will finish the projects already in the pipeline.
+This includes an NCO 4.0 once a few details are cleared up, and, 
+hopefully, tinstalling SWAMP on the NCAR Community Data Portal.
+
+For now
 
 A. Memory management to improve threading (Henry Butowsky)
 

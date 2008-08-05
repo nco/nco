@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.484 2008-07-22 14:15:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.485 2008-08-05 20:44:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6264,6 +6264,9 @@ and then execute the script with
 @example
 ncap2 -v -S grow.nco in.nc out.nc
 @end example
+
+@c Begin HMB documentation
+@c End HMB documentation
 
 @html
 <a name="flg"></a> <!-- http://nco.sf.net/nco.html#flg -->
