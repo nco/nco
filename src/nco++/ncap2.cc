@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.68 2008-08-04 10:06:26 hmb Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.69 2008-08-05 10:30:18 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.68 2008-08-04 10:06:26 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.68 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.69 2008-08-05 10:30:18 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.69 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -680,13 +680,14 @@ main(int argc,char **argv)
 
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
-    // write misssing value contained inside var
-    if(var_vtr[idx]->xpr_typ == ncap_var && !var_vtr[idx]->flg_mem) {
+    /* write misssing value contained inside var */
+    if(var_vtr[idx]->xpr_typ == ncap_var) {
       var_sct *var_ref;
 
       var_ref=var_vtr[idx]->var;
       rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
-
+        
+      /* skip RAM vars and orphaned vars */
       if(rcd!=NC_NOERR|| !var_ref->has_mss_val)
         continue;  
  
@@ -696,12 +697,12 @@ main(int argc,char **argv)
         (void)nco_rename_att(out_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
       }else{
         (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);
-     }  
+      }
       continue;
     }
    
   
-    // Skip misssing values for now !!!
+    /* Skip misssing values for now !!! */
     if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) 
       continue;     
   
