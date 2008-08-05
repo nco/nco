@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.491 2008-08-02 16:00:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.492 2008-08-05 10:21:39 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -73,7 +73,7 @@ Try to disable Spammers' machines:
 <li><a href="#prp_sei">NCO&rarr;SDO Project</a></li>
 <li><a href="#Publications">Publications</a></li>
 <li><a href="#Version">Version Summary</a></li>
-<li><a href="#Download">Download/CVS NCO Software</a></li>
+<li><a href="#Download">Download NCO Source and Binaries</a></li>
 <li><a href="#RTFM">Documentation and User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#FAQ">FAQ</a></li>
@@ -603,7 +603,7 @@ Improve IRIX&nbsp;6.5 support;
 
 <!-- http://nco.sf.net#dwn -->
 <dt><a name="Download"></a><a name="dwn"></a></dt>
-<h2>Download/CVS NCO Software</h2>
+<h2>Download NCO Source and Binaries</h2>
 
 <a name="src"></a>
 <h3>NCO Source Code</h3>

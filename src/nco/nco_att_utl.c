@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.86 2008-08-04 08:46:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.87 2008-08-05 10:26:08 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -356,9 +356,9 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       mss_tmp.vp=(void *)nco_malloc(att_lng_in);
       (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
       (void)nco_val_cnf_typ(att_typ_in,mss_tmp,att_typ_out,aed.val);
-      /* aed.mode=aed_overwrite;  /* Action to perform with attribute */
-      /* Changed mode to create as overwrite causes  problems with netcdf4 
-         and "__FillValue" */ 
+      /* Overwrite mode causes problems with netCDF4 and "_FillValue" 
+	 Use create mode instead */
+      /* aed.mode=aed_overwrite; */
       aed.mode=aed_create;
       (void)nco_aed_prc(out_id,var_out_id,aed); 
       /* Release temporary memory */
