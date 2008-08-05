@@ -1,3 +1,7 @@
+2008-08-05  Charlie Zender  <zender@uci.edu>
+
+	* more nco_aed_prc() cleanup
+
 2008-07-31  Charlie Zender  <zender@uci.edu>
 
 	* nco_aed_prc() cleanup

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.87 2008-08-05 10:26:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.88 2008-08-05 10:42:30 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -20,13 +20,13 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
-  char att_nm_tmp[]="eulaVlliF_"; /* for name hack with NETCDF4 nb same length as "_FillValue" */
+  char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for name hack with NETCDF4 */
   
-  /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */
+  /* fxm: netCDF2 specifies att_sz should be type int, netCDF3 uses size_t */
   int nbr_att; /* [nbr] Number of attributes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   long att_sz;
-  nco_bool is4=False; /* true if file format is netcdf4 */
+  nco_bool flg_netCDF4=False; /* [flg] File format is netCDF4 */
      
   nc_type att_typ;
   
@@ -187,20 +187,19 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
      netCDF4 does not allow this by default, though netCDF3 does
      Change attribute name to att_nm_tmp, modify value, then restore name */
 
-  /* Need to check if they are using netcdf3 classic file  with the netcdf4 lib
-     - if so then don't do the hack nb have a global var for file out format ???*/
-   {  
-      int fl_fmt; 
-      (void)nco_inq_format(nc_id,&fl_fmt);
-      is4=(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC);
-    } 
+  /* Check if file is netCDF3 classic with netCDF4 library
+     If so, do not kludge. NB: create global variable for output file format? */
+  { /* scope for fl_fmt temporary */
+    int fl_fmt; 
+    (void)nco_inq_format(nc_id,&fl_fmt);
+    flg_netCDF4=(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC);
+  } /* end scope */
 
-  if(is4 && !strcmp(aed.att_nm,nco_mss_val_sng_get()) && aed.mode != aed_delete){
+  if(flg_netCDF4 && !strcmp(aed.att_nm,nco_mss_val_sng_get()) && aed.mode != aed_delete){
     if(aed.mode != aed_create) (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
     strcpy(aed.att_nm,att_nm_tmp); 
   } /* endif libnetCDF may have netCDF4 restrictions */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
-
 
   switch(aed.mode){
   case aed_append:	
@@ -251,15 +250,12 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   } /* end switch */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-    if(is4 && !strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete ){
+    if(flg_netCDF4 && !strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete ){
       (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
-      /* Restore orginal name (space already allocated )*/
+      /* Restore orginal name (space already allocated)*/
      strcpy(aed.att_nm,nco_mss_val_sng_get()); 
-    }
-#endif
-  
-
-
+    } /* !flg_netCDF4 */
+#endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
 } /* end nco_aed_prc() */
 
