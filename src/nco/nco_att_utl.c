@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.88 2008-08-05 10:42:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.89 2008-08-05 10:47:33 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -18,15 +18,18 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   
   /* If var_id == NC_GLOBAL ( = -1) then global attribute will be edited */
 
+#ifdef NCO_NETCDF4_AND_FILLVALUE
+  char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for name hack with netCDF4 */
+  nco_bool flg_netCDF4=False; /* [flg] File format is netCDF4 */
+#endif /* !NCO_NETCDF4_AND_FILLVALUE */
+
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
-  char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for name hack with NETCDF4 */
   
   /* fxm: netCDF2 specifies att_sz should be type int, netCDF3 uses size_t */
   int nbr_att; /* [nbr] Number of attributes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   long att_sz;
-  nco_bool flg_netCDF4=False; /* [flg] File format is netCDF4 */
      
   nc_type att_typ;
   
@@ -180,7 +183,6 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   } /* end if replacing missing value data */
 
   /* Change metadata (as written, this must be done after _FillValue data is replaced) */
-
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   /* Bold hack which gets around problem of modifying netCDF4 "_FillValue" attributes
