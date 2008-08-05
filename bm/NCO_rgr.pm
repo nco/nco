@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.83 2008-07-31 10:03:12 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.84 2008-08-05 13:47:34 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -506,7 +506,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tempf_03%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%";
     $tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 %tempf_04% ";
-    $dsc_sng="Create T42 variable named one, uniformly 1.0 over globe in %tempf_03%. (FAILURE with NETCDF4 ncrename nco658)";
+    $dsc_sng="Create T42 variable named one, uniformly 1.0 over globe in %tempf_03%. (FAILURE with NETCDF4 ncrename nco821)";
     $tst_cmd[4] = 1;
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -981,7 +981,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tempf_03%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%";
     $tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 %tempf_04%";
-    $dsc_sng="Creating %tempf_03% again (FAILURE netcdf4 ncrename nco658) ";
+    $dsc_sng="Creating %tempf_03% again (FAILURE netcdf4 ncrename nco821) ";
     $tst_cmd[4] = "1";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -992,7 +992,7 @@ sub tst_rgr {
     push(@tst_cmd, "ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%");
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 %tempf_04% %tempf_00%");
     push(@tst_cmd, "ncks -C -H -s '%g' -v one %tempf_00%");
-    $dsc_sng="normalize by denominator upper hemisphere (FAILURE netcdf4 ncrename nco658)";
+    $dsc_sng="normalize by denominator upper hemisphere (FAILURE netcdf4 ncrename nco821)";
     $prsrv_fl = 1; # save previously generated files.
 #	$nsr_xpc= 1;
 # tst_run();
