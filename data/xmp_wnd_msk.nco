@@ -1,0 +1,128 @@
+// $Header: /data/zender/nco_20150216/nco/data/xmp_wnd_msk.nco,v 1.3 2008-08-07 17:25:20 scapps Exp $ -*-C++-*-
+/* USAGE: ncap2 -O -S xmp_wnd_msk.nco in.nc out.nc */
+
+// PARAMETERS------------------------------------------------------
+*rho80m=1.215f; //  Air Density at 80m;  Assumed to be a function 
+                //of height only (using the U.S. standard atmosphere).
+                // rho=1.225-(1.194e10-4)80.
+//------------------------------------------------------
+// Instantiate arrays and fill with missing values
+*wnd_dns[time,lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_dns_tot[lat,lon]=wnd_spd_80m@_FillValue;
+*cnt_3_45[lat,lon]=wnd_spd_80m@_FillValue;
+*cnt_0_60[lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_msk_3_45[time,lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_msk_0_60[time,lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_msk_3_45_pct[lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_msk_0_60_pct[lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_spd_avg[lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_spd_sdn[lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_spd_shp[lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_pwr_dns[lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_spd_80m_0_60[time,lat,lon]=wnd_spd_80m@_FillValue;
+*wnd_spd_80m_3_45[time,lat,lon]=wnd_spd_80m@_FillValue;
+*time_cnt[lat,lon]=wnd_spd_80m@_FillValue;
+//------------------------------------------------------
+// Set missing value attributes
+set_miss(wnd_dns,wnd_spd_80m@_FillValue);
+set_miss(wnd_dns_tot,wnd_spd_80m@_FillValue);
+set_miss(cnt_3_45,wnd_spd_80m@_FillValue);
+set_miss(cnt_0_60,wnd_spd_80m@_FillValue);
+set_miss(wnd_msk_3_45,wnd_spd_80m@_FillValue);
+set_miss(wnd_msk_0_60,wnd_spd_80m@_FillValue);
+set_miss(wnd_msk_3_45_pct,wnd_spd_80m@_FillValue);
+set_miss(wnd_msk_0_60_pct,wnd_spd_80m@_FillValue);
+set_miss(wnd_spd_avg,wnd_spd_80m@_FillValue);
+set_miss(wnd_spd_sdn,wnd_spd_80m@_FillValue);
+set_miss(wnd_spd_shp,wnd_spd_80m@_FillValue);
+set_miss(wnd_pwr_dns,wnd_spd_80m@_FillValue);
+set_miss(wnd_spd_80m_0_60,wnd_spd_80m@_FillValue);
+set_miss(wnd_spd_80m_3_45,wnd_spd_80m@_FillValue);
+set_miss(time_cnt,wnd_spd_80m@_FillValue);
+//------------------------------------------------------------
+//------------------------------------------------------------
+
+wnd_spd_80m_0_60=wnd_spd_80m;
+wnd_spd_80m_3_45=wnd_spd_80m;
+//------------------------------------------------------------
+// Only want non-missing value winds between 3 and 45m/s
+//   where more than 10% of timeseries is available
+//------------------------------------------------------------
+// Wind Power for speeds between 3 and 45 m/s
+wnd_msk_3_45=(wnd_spd_80m > 3.0f && wnd_spd_80m < 45.0f);
+// Speeds between 0 and 60 m/s
+wnd_msk_0_60=(wnd_spd_80m >= 0.0f && wnd_spd_80m <= 60.0f);
+
+// Count number of speeds between 3 and 45m/s
+cnt_3_45=(wnd_msk_3_45.total($time));
+// Count number of speeds between 0 and 60m/s
+cnt_0_60=(wnd_msk_0_60.total($time));
+
+time_cnt(:,:)=$time.size;
+wnd_msk_3_45_pct(:,:)=(cnt_3_45(:,:)/time_cnt(:,:) > 0.10f);
+wnd_msk_0_60_pct(:,:)=(cnt_0_60(:,:)/time_cnt(:,:) > 0.10f);
+//------------------------------------------------------------
+
+//------------------------------------------------------------
+// set zeros to missing value
+where(cnt_3_45==0)
+  cnt_3_45=wnd_spd_80m@_FillValue;
+where(wnd_msk_3_45_pct==0 || wnd_msk_3_45==0)
+  wnd_spd_80m_3_45=wnd_spd_80m@_FillValue;
+// set zeros to missing value
+where(cnt_0_60==0)
+  cnt_0_60=wnd_spd_80m@_FillValue;
+where(wnd_msk_0_60_pct==0 || wnd_msk_0_60==0)
+  wnd_spd_80m_0_60=wnd_spd_80m@_FillValue;
+//------------------------------------------------------------
+
+//PERFORM CALCULATIONS:
+//------------------------------------------------------------
+//Wind Speed Average for winds between 0 and 60m/s
+wnd_spd_avg=wnd_spd_80m_0_60.avg($time);
+//Wind Speed Standard Deviation for winds between 0 and 60m/s
+wnd_spd_sdn=(wnd_spd_80m_0_60-wnd_spd_avg).rmssdn($time);
+//Wind Speed Weibull Shape for winds between 0 and 60m/s
+where(wnd_spd_sdn==0.0f)
+  wnd_spd_sdn=0.1f;
+wnd_spd_shp=((wnd_spd_avg/wnd_spd_sdn)^1.086f);
+
+//Wind Power Density for winds between 3 and 45m/s
+wnd_dns=((wnd_spd_80m_3_45^3.0f)*rho80m);
+wnd_dns_tot=(wnd_dns.total($time));
+wnd_pwr_dns=(wnd_dns_tot/(2.0f*cnt_3_45));		
+//------------------------------------------------------------
+
+//------------------------------------------------------------
+//Assign attributes
+wnd_spd_avg@long_name="80m mean wind speed";
+wnd_spd_sdn@long_name="80m wind speed standard deviation";
+wnd_spd_shp@long_name="80m wind speed Weibull Shape Param";
+wnd_pwr_dns@long_name="80m wind power density (3 and 45m/s)";
+cnt_3_45@long_name="Number of 80m winds between 3 and 45 m/s";
+cnt_0_60@long_name="Number of 80m winds between 0 and 60 m/s";
+
+wnd_spd_avg@units="m/s";
+wnd_spd_sdn@units="m/s";
+wnd_spd_shp@units="dimensionless";
+wnd_pwr_dns@units="W/m2";
+//------------------------------------------------------------
+
+// Write these to netCDF file
+ram_write(wnd_pwr_dns);
+ram_write(cnt_3_45);
+ram_write(cnt_0_60);
+ram_write(wnd_spd_avg);
+ram_write(wnd_spd_sdn);
+ram_write(wnd_spd_shp);
+//Cleanup your mess
+ram_delete(rho80m);
+ram_delete(wnd_dns);
+ram_delete(wnd_dns_tot);
+ram_delete(wnd_msk_3_45);
+ram_delete(wnd_msk_0_60);
+ram_delete(wnd_msk_3_45_pct);
+ram_delete(wnd_msk_0_60_pct);
+ram_delete(wnd_spd_80m_0_60);
+ram_delete(wnd_spd_80m_3_45);
+ram_delete(time_cnt);
