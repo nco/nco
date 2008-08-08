@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.300 2008-08-05 20:44:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.301 2008-08-08 19:54:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -15,7 +15,15 @@ We will finish the projects already in the pipeline.
 This includes an NCO 4.0 once a few details are cleared up, and, 
 hopefully, tinstalling SWAMP on the NCAR Community Data Portal.
 
-For now
+Thanks to Tom Roche, NCO now has a Wiki
+
+http://nco.wiki.sourceforge.net
+
+Including a site for new "NCO Hacks", i.e., usage examples:
+
+http://nco.wiki.sourceforge.net/Cookbook
+
+Please give it a try!
 
 A. Memory management to improve threading (Henry Butowsky)
 
