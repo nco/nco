@@ -443,7 +443,8 @@
             
     lcl_typ=expr_typ(tr);          
 
-    if(lcl_typ !=VVAR) {
+    /* allow att identifier for RAM_DELETE */
+    if(lcl_typ !=VVAR && !(fdx == RAM_DELETE && lcl_typ==VATT)) {
       serr="The first operand of the " + sfnm+ " must be a variable identifier only.";
       err_prn(fnc_nm,serr);
     }
