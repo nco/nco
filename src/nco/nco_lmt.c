@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.65 2008-01-06 13:09:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.66 2008-08-11 08:39:23 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -878,7 +878,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
        (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */
        (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */
        False){
-      (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net#hyp\n",prg_nm_get(),lmt_arg[idx],prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net/nco.html#hyp\n",prg_nm_get(),lmt_arg[idx],prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
