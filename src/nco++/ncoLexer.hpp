@@ -10,7 +10,7 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.58 2008-05-04 21:38:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.59 2008-08-14 18:42:56 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -105,8 +105,6 @@ public:
 	public: void mGEQ(bool _createToken);
 	public: void mFLTHAN(bool _createToken);
 	public: void mFGTHAN(bool _createToken);
-	public: void mFLEQ(bool _createToken);
-	public: void mFGEQ(bool _createToken);
 	public: void mLAND(bool _createToken);
 	public: void mLNOT(bool _createToken);
 	public: void mLOR(bool _createToken);
