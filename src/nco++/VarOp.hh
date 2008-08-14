@@ -218,9 +218,10 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
              tp1[idx]=tp2[idx];
 	}else{
 	  for(idx=0 ; idx<sz ; idx++){
-	    if(tp1[idx] >= tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
+            if(tp1[idx]==tmss || tp2[idx]==tmss)
+               tp1[idx]=tmss; 
+	    else if(tp1[idx] >= tp2[idx]  )
 	      tp1[idx]=tp2[idx];
-	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -232,44 +233,13 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
              tp1[idx]=tp2[idx];
 	}else{
 	  for(idx=0 ; idx<sz ; idx++){
-	    if(tp1[idx] <= tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss)
+            if(tp1[idx]==tmss || tp2[idx]==tmss)
+               tp1[idx]=tmss; 
+            else if(tp1[idx] <= tp2[idx] )
 	      tp1[idx]=tp2[idx];
-	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
-
-      case FGEQ:
-	if(!bmss) {
-	  for(idx=0 ; idx<sz ; idx++)  
-           if(tp1[idx] < tp2[idx])
-	     tp1[idx]=tp2[idx];
-	}else{
-	  for(idx=0 ; idx<sz ; idx++){
-	    if( tp1[idx] < tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
-	      tp1[idx]=tp2[idx];
-	    else tp1[idx]=tmss;
-	  }
-	}  
-        break;
-
-      case FLEQ:
-	if(!bmss) {
-	  for(idx=0 ; idx<sz ; idx++) 
-            if(tp1[idx]> tp2[idx])
-	      tp1[idx]=tp2[idx];
-	}else{
-	  for(idx=0 ; idx<sz ; idx++){
-	    if(tp1[idx]> tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
-	      tp1[idx]=tp2[idx];
-	    else tp1[idx]=tmss;
-	  }
-	}  
-        break;
-
-
-
-
 
 
     } // end switch
