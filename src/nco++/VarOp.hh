@@ -55,6 +55,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]+=tp2[idx];
+            else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -67,6 +68,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss &&  tp2[idx] != tmss)
 	      tp1[idx]-=tp2[idx];
+            else tp1[idx]=tmss;
 	  }
 	}  
 
@@ -80,6 +82,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]*=tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
 
@@ -93,6 +96,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx] /= tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
 
@@ -117,6 +121,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] &&  tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -128,6 +133,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] ||  tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -139,6 +145,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] < tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -150,6 +157,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] >  tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -161,6 +169,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] >= tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -172,6 +181,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] <= tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -183,6 +193,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] == tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -194,6 +205,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp1[idx] != tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -208,6 +220,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if(tp1[idx] >= tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
 	      tp1[idx]=tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -221,6 +234,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if(tp1[idx] <= tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss)
 	      tp1[idx]=tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -234,6 +248,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] < tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
 	      tp1[idx]=tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
@@ -247,6 +262,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if(tp1[idx]> tp2[idx] && tp1[idx] != tmss && tp2[idx] != tmss )
 	      tp1[idx]=tp2[idx];
+	    else tp1[idx]=tmss;
 	  }
 	}  
         break;
