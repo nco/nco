@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.133 2008-07-28 09:20:54 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.134 2008-08-14 15:09:41 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -212,7 +212,7 @@ add_expr:
 	;
 
 frel_expr:
-        add_expr (( FLTHAN^ | FGTHAN^ | FGEQ^ | FLEQ^ ) add_expr)*
+        add_expr (( FLTHAN^ | FGTHAN^ ) add_expr)*
     ;
 
 
@@ -396,10 +396,6 @@ GEQ options { paraphrase=">=";} :  ">=" ;
 FLTHAN options { paraphrase="<<";} :  "<<" ;
 
 FGTHAN options { paraphrase=">>"; } :  ">>" ;
-
-FLEQ options { paraphrase="<<="; }:  "<<=" ;
-
-FGEQ options { paraphrase=">>=";} :  ">>=" ;
 
 LAND options { paraphrase="&&";}: "&&" ;
 
@@ -1901,10 +1897,6 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,var2, FLTHAN );}
     | #(FGTHAN  var1=out var2=out) 
             { var=ncap_var_var_op(var1,var2, FGTHAN );}
-    | #(FGEQ  var1=out var2=out)   
-            { var=ncap_var_var_op(var1,var2, FGEQ );}
-    | #(FLEQ  var1=out var2=out)   
-            { var=ncap_var_var_op(var1,var2, FLEQ );}
 
     // Assign Operators 
     | #(PLUS_ASSIGN pls_asn:. var2=out) {
