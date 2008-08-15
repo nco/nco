@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.458 2008-05-27 12:11:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.459 2008-08-15 13:29:15 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -32,10 +32,10 @@
 
 # Usage (Compilation):
 # cd ~/nco/bld;make;cd -             # Default build
-# cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make cln bin_cln;cd - # Clean all dependencies for fresh build
-# cd ~/nco/bld;make DAP=Y;cd -       # DAP support
+# cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
+# cd ~/nco/bld;make DAP=Y;cd -       # DAP support
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
 # cd ~/nco/bld;make OMP=Y;cd -       # OpenMP support
 # cd ~/nco/bld;make OPTS=D;cd -      # "Debugging": Enable symbols for debugging
@@ -44,6 +44,7 @@
 # cd ~/nco/bld;make OPTS=X;cd -      # "eXtreme": All debugging switches available
 # cd ~/nco/bld;make MPI=Y;cd -       # MPI support
 # cd ~/nco/bld;make MPI_FAKE=Y;cd -  # MPI spoof
+# cd ~/nco/bld;make sys;cd -         # Install in /usr/local (must sudo)
 # cd ~/nco/bld;make UDUNITS=Y;cd -   # UDUnits support
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
@@ -52,7 +53,7 @@
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # esmf
-# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # sand, tephra
+# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # sand, silt, clay, tephra
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # soot
 # cd ${HOME}/nco/bld;make DAP=Y OMP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd - # soot w/DAP
 # cd ${HOME}/nco/bld;make OPTS=D DAP=Y USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
