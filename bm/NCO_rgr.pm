@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.85 2008-08-18 11:15:32 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.86 2008-08-18 13:02:25 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -632,12 +632,11 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
-
     $tst_cmd[0]="ncatted -O -a _FillValue,global,c,l,222 $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -O %tempf_00% %tempf_01%";
     $tst_cmd[2]="ncap2 -v -O -s 'n2=global\@_FillValue;' %tempf_01% %tempf_02%";
     $tst_cmd[3]="ncks -C -H -s '%d' -v n2 %tempf_02%";
-    $dsc_sng="Check that global missing value copied over";
+    $dsc_sng="Check creation/copying of global _FillValue";
     $tst_cmd[4] = "222";
     $tst_cmd[5] = "SS_OK";
 
