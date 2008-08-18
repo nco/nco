@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.301 2008-08-08 19:54:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.302 2008-08-18 13:12:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -6,9 +6,11 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This version has been "extensively" tested with netCDF4.0.
-We tried to make sure that NCO produces the same output regardless of
-whether it is compiled with netCDF3 or netCDF4.
-This was not trivial, and we'll spare you the details. 
+We tried to make sure that NCO produces the same output 
+regardless of the back-end library (netCDF3 or netCDF4) and
+filetype (netCDF3 or netCDF4).
+This was not trivial because of differences in the ways the
+two libraries handling of, e.g., threading, and _FillValue's. 
 
 Thank you NSF for funding NCO from 20040901 through 20080831.
 We will finish the projects already in the pipeline.
@@ -44,6 +46,9 @@ E. CF-convention "coordinates" attribute strings with excessive whitespace work
 E. Pre-built Debian Sid & Ubuntu Hardy packages are available.
    http://nco.sf.net#debian
 
+E. ncap2 correctly propogates missing values through expressions with
+   constant operands
+
 F. Pre-built RPM packages are available.
    http://nco.sf.net#rpm
 
@@ -63,7 +68,7 @@ H. Reminder: NCO support for netCDF4 features is tracked at
 
    NCO currently supports netCDF4 atomic data types and compression.
    NCO 3.9.6 with netCDF4 support should work with HDF5 1.8 final
-   and netCDF4 snapshot2008022009 and newer.
+   and netCDF4 final and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
