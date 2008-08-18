@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.89 2008-08-05 10:47:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.90 2008-08-18 11:17:14 hmb Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -347,13 +347,31 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       } /* end if */
       aed.id=out_id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
       aed.sz=att_sz; /* Number of elements in attribute */
-      (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
-      aed.type=att_typ_out; /* Type of attribute */
-      aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
-      att_lng_in=att_sz*nco_typ_lng(att_typ_in);
-      mss_tmp.vp=(void *)nco_malloc(att_lng_in);
-      (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
-      (void)nco_val_cnf_typ(att_typ_in,mss_tmp,att_typ_out,aed.val);
+
+
+      /* do not convert global atts or PCK_ATT_CPY   */  
+      if(PCK_ATT_CPY || var_out_id==NC_GLOBAL)
+        att_typ_out=att_typ_in;
+      else
+        (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
+
+
+      if(att_typ_out==att_typ_in) {
+        aed.type=att_typ_out; /* Type of attribute */
+        aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
+        (void)nco_get_att(in_id,var_in_id,att_nm,aed.val.vp,att_typ_out);
+      }else {
+       /* Convert type */          
+        aed.type=att_typ_out; /* Type of attribute */
+        aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
+        att_lng_in=att_sz*nco_typ_lng(att_typ_in);
+        mss_tmp.vp=(void *)nco_malloc(att_lng_in);
+        (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
+        (void)nco_val_cnf_typ(att_typ_in,mss_tmp,att_typ_out,aed.val);
+        mss_tmp.vp=nco_free(mss_tmp.vp);
+      }
+
+
       /* Overwrite mode causes problems with netCDF4 and "_FillValue" 
 	 Use create mode instead */
       /* aed.mode=aed_overwrite; */
@@ -361,7 +379,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       (void)nco_aed_prc(out_id,var_out_id,aed); 
       /* Release temporary memory */
       aed.val.vp=nco_free(aed.val.vp);
-      mss_tmp.vp=nco_free(mss_tmp.vp);
+
     } /* PCK_ATT_CPY */
 
   } /* end loop over attributes */
