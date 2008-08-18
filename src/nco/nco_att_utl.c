@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.90 2008-08-18 11:17:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.91 2008-08-18 12:53:13 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -272,7 +272,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
   /* Purpose: Copy attributes from input netCDF file to output netCDF file
      If var_in_id == NC_GLOBAL, then copy global attributes
      Otherwise copy only indicated variable's attributes
-     If PCK_ATT_CPY is false, then copy all attributes except "scale_factor", "add_offset" */
+     When PCK_ATT_CPY is false, copy all attributes except "scale_factor", "add_offset" */
 
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
@@ -312,7 +312,6 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       } /* end if */
     } /* end if dbg */
 
-    /* if(PCK_ATT_CPY || strcmp(att_nm,nco_mss_val_sng_get())){ */
     if(strcmp(att_nm,nco_mss_val_sng_get())){
       /* Copy all attributes except _FillValue with fast library routine */
       (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
@@ -348,20 +347,15 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       aed.id=out_id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
       aed.sz=att_sz; /* Number of elements in attribute */
 
+      /* Do not convert global attributes or PCK_ATT_CPY */  
+      if(PCK_ATT_CPY || var_out_id==NC_GLOBAL) att_typ_out=att_typ_in; else (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
 
-      /* do not convert global atts or PCK_ATT_CPY   */  
-      if(PCK_ATT_CPY || var_out_id==NC_GLOBAL)
-        att_typ_out=att_typ_in;
-      else
-        (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
-
-
-      if(att_typ_out==att_typ_in) {
+      if(att_typ_out==att_typ_in){
         aed.type=att_typ_out; /* Type of attribute */
         aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
         (void)nco_get_att(in_id,var_in_id,att_nm,aed.val.vp,att_typ_out);
-      }else {
-       /* Convert type */          
+      }else{ /* att_typ_out!=att_typ_in */
+	/* Convert type */          
         aed.type=att_typ_out; /* Type of attribute */
         aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
         att_lng_in=att_sz*nco_typ_lng(att_typ_in);
@@ -369,18 +363,15 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
         (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
         (void)nco_val_cnf_typ(att_typ_in,mss_tmp,att_typ_out,aed.val);
         mss_tmp.vp=nco_free(mss_tmp.vp);
-      }
-
+      } /* att_typ_out!=att_typ_in */
 
       /* Overwrite mode causes problems with netCDF4 and "_FillValue" 
 	 Use create mode instead */
-      /* aed.mode=aed_overwrite; */
       aed.mode=aed_create;
       (void)nco_aed_prc(out_id,var_out_id,aed); 
       /* Release temporary memory */
       aed.val.vp=nco_free(aed.val.vp);
-
-    } /* PCK_ATT_CPY */
+    } /* endif copying _FillValue */
 
   } /* end loop over attributes */
 } /* end nco_att_cpy() */
