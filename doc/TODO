@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1021 2008-07-30 12:14:43 hmb Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1022 2008-08-22 21:21:56 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -665,9 +665,9 @@ nco941. ncra (now? when was regression?) tries to average NC_CHAR record variabl
 	Would that break ncpdq packing to NC_CHAR?
 nco943. Add regression test for 
 	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
-nco945. ncra problem with  netcdf4 record mean of packed double with double missing values
-nco946  ncwa problem with netcdf4  
-        ncwa -a lat,lon -w gw in.nc out.nc
+nco945. ncra problem with netcdf4 record mean of packed double with double missing values
+nco947. Try DAP from netCDF4 daily snapshots
+nco948. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
