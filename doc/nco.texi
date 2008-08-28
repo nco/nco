@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.486 2008-08-28 09:24:02 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.487 2008-08-28 17:27:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.6
 @set copyright-years 1995--2008
 @set update-year 2008
-@set update-date 9 June 2008
-@set update-month June 2008
+@set update-date 28 August 2008
+@set update-month August 2008
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -5428,8 +5428,6 @@ This metadata inheritance is called @dfn{attribute propagation}.
 Attribute propagation is intended to facilitate well-documented 
 data analysis, and we welcome suggestions to improve this feature.
 
-
-
 @html
 <a name="syn"></a> <!-- http://nco.sf.net/nco.html#syn -->
 @end html
@@ -5482,8 +5480,6 @@ The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
 @end table 
 
-
-
 @html
 <a name="ncap_exp"></a> <!-- http://nco.sf.net/nco.html#ncap_exp -->
 @end html
@@ -5499,7 +5495,6 @@ Unary Operators      ( +,-,++,--,! )
 Ternary Operator     ( exp1 ? exp2 : exp4 ) 
 Assign Operators     ( =,+=,-=,/=, *= ) 
 @end example
-  
 
         In the following section when I say a variable , I also refer to a number literal which is read in as a scalar variable
 
@@ -5661,12 +5656,6 @@ z1=four+=one*=10 // z1=14 four=14 one=10;
 time-=2          // time= -1,0,1,2,3,4,5,6,7,8
 @end example
 
-
-
-
-
-
-
 @html
 <a name="ncap_dims"></a> <!-- http://nco.sf.net/nco.html#ncap_dims -->
 @end html
@@ -5707,10 +5696,6 @@ A1['$a--list.A']=30.0;
 GOTCHA @*
 @noindent
 It is not possible to manually define in Ouptut any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
-
-
-
-
 
 @html
 <a name="lhc"></a> <!-- http://nco.sf.net/nco.html#lhc -->
@@ -5776,7 +5761,6 @@ ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' in.nc out.nc
 Manipulating the four fields which define the pressure in a hybrid
 coordinate system is easy with left hand casting.
 
-
 @html
 <a name="ncap_arr"></a> <!-- http://nco.sf.net/nco.html#ncap_arr -->
 @end html
@@ -5792,7 +5776,6 @@ A hyperslab argument is specified using the following notation
 @example
 start:end:stride 
 @end example
-
 
 @noindent 
 if "start" is omitted - then default = 0 @*
@@ -5848,7 +5831,6 @@ three_nw  has dimensions $lon,$lat
 nb the time dim has become degenerate
 @end example
 
-
 The following is not valid:
 @example
 three_nw=three(0,:,0:1) +three(9,:,0:1);
@@ -5867,7 +5849,6 @@ Sets all elements of the last record to zero.
 three(9,:,:)=0.0;
 @end example
 
-
 Set first element of each lon element to 1.0.
 @example
 three(:,:,0)=1.0;
@@ -5879,7 +5860,6 @@ Sets the last record to the same as the first record @*
 three(9,:,:)=three(0,:,:);
 @end example
 
-
 three0 represents pressure at height=0 @*
 three1 represents pressure at height=1 @*
 Then its possible to hyperslab in the records @*
@@ -5888,7 +5868,6 @@ P[$time,$height,$lat,$lon]=0.0;
 P(:,0,:,:)=three0;
 P(:,1,:,:)=three1
 @end example
-
 
 When hyperslabing on the LHS , the expression on the RHS must evaluate to a scalar or a variable/attribute with the same number of elements as the LHS hyperslab
 
@@ -5918,8 +5897,6 @@ three_3rv =@{
 
 @end example
 
-
-
 @html
 <a name="ncap_att"></a> <!-- http://nco.sf.net/nco.html#ncap_att -->
 @end html
@@ -5928,7 +5905,6 @@ three_3rv =@{
 
 Attributes are refered to by var_nm@@att_nm. 
 All the following are valid statements
-
 
 @example
 global@@text="Test Attributes";  /* Assign a global variable attribute */
@@ -5978,7 +5954,6 @@ To stop the attribute being  written use the ram_delete() method or use a bogus 
 
 @end itemize
 
-
 @example
 prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS;      //prs_mdp get attributes from PO
 three_min=1.0 + 2*three_dmn_var_dbl.min($time); //three_min get attributes from three_dmn_var_dbl
@@ -5988,8 +5963,6 @@ If the attribute name contains non-regular characters use ID quoting...
 @example
 'b..m1@@c--lost'=23;
 @end example
-
-
 
 @html
 <a name="ncap_ram"></a> <!-- http://nco.sf.net/nco.html#ncap_ram -->
@@ -6023,10 +5996,6 @@ Other Assigns
 *four+=*three*=10;   // three=30, four=34 
 
 @end example
-
-
-
-
 
 @html
 <a name="ncap_whr"></a> <!-- http://nco.sf.net/nco.html#ncap_whr -->
@@ -6104,9 +6073,6 @@ temp_max=temperature.max();
 
 @end example
 
-
-
-
 @html
 <a name="ncap_lop"></a> <!-- http://nco.sf.net/nco.html#ncap_lop -->
 @end html
@@ -6151,8 +6117,6 @@ ram_write(sum);
 print("Total of odd elements ");print(sum);print("\n"); 
 
 @end example
-
-
 
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
@@ -7039,7 +7003,6 @@ any scalar @var{time} variable from being written to the output file.
 Knowing when to use @command{ncwa -a time} rather than the default
 @command{ncra} for time-averaging takes, well, time.
 
-
 @c Begin HMB documentation
 
 @html
@@ -7048,8 +7011,6 @@ Knowing when to use @command{ncwa -a time} rather than the default
 @node Operators precedence and associativity , , Intrinsic mathematical functions, ncap2 netCDF Arithmetic Processor
 @subsection Operators precedence and associativity
 This page lists the ncap operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
-
-
 
 @multitable @columnfractions .18 .62 .20
 @headitem Operator @tab Description @tab Associativity
@@ -7084,12 +7045,7 @@ This page lists the ncap operators in order of precedence (highest to lowest). T
 @item @code{*= /=} @tab	Multiplication/division assignment
 @end multitable
 
-
-
 @c End HMB documentation
-
-
-
 
 @page
 @html
