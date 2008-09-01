@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.487 2008-08-28 17:27:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.488 2008-09-01 02:43:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5664,7 +5664,7 @@ time-=2          // time= -1,0,1,2,3,4,5,6,7,8
 
 Dimensions can be defined in Output using the defdim() function.
 @example
-e.g defdim("cnt",30);
+defdim("cnt",30);
 @end example
 
 This dimension can then be susequently referred to in method  arguments and a left hand cast by prefixing it with a dollar e.g
