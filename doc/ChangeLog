@@ -6,7 +6,7 @@
 
 2008-09-02  Henry Butowsky  <henryb@ntlworld.com>
 
-	* re-enabled -f switch in ncap2. Prints methods available to user
+	* Re-enabled -f switch in ncap2. Prints methods available to user.
 
 2008-08-18  Charlie Zender  <zender@uci.edu>
 
@@ -27,14 +27,14 @@
 2008-07-28  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Permanent fix for TODO nco944: 
-	new parsing function nco_lst_prs_sgl_2D()
+	New parsing function nco_lst_prs_sgl_2D()
         Returns only non-zero length strings unlike nco_lst_prs_2D() 
 
 2008-07-25  Charlie Zender  <zender@uci.edu>
 
 	* Applied 20080718 patch to nco_cnv_csm.c and deferred permanent
-	fix to TODO nco944: handle redundant whitespace 
-	"coordinates" attributes before calling nco_lst_prs_2D()
+	fix to TODO nco944: handle redundant whitespace "coordinates"
+	attributes before calling nco_lst_prs_2D() 
 
 2008-07-23  Charlie Zender  <zender@uci.edu>
 
@@ -47,7 +47,7 @@
 2008-07-18  Charlie Zender  <zender@uci.edu>
 
 	* Allow spaces at the end of CF-convention coordinate attribute
-	strings in nco_var_lst_crd_ass_add() call to nco_lst_prs_2d() 
+	strings in nco_var_lst_crd_ass_add() call to nco_lst_prs_2d().
 
 2008-07-07  Charlie Zender  <zender@uci.edu>
 
