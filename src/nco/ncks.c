@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.212 2008-05-11 14:57:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.213 2008-09-02 17:01:20 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.212 2008-05-11 14:57:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.212 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.213 2008-09-02 17:01:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.213 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -171,6 +171,8 @@ main(int argc,char **argv)
       {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
+      {"lbr",no_argument,0,0},
+      {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
@@ -205,8 +207,8 @@ main(int argc,char **argv)
       {"hieronymus",no_argument,0,'H'}, /* fxm: need better mnemonic for -H */
       {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
       {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
-      {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
+      {"local",required_argument,0,'l'},
       {"metadata",no_argument,0,'m'},
       {"mtd",no_argument,0,'m'},
       {"Metadata",no_argument,0,'M'},
@@ -264,6 +266,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
+      if(!strcmp(opt_crr,"lbr") || !strcmp(opt_crr,"library")){
+	(void)nco_lbr_vrs_prn();
+	nco_exit(EXIT_SUCCESS);
+      } /* endif "lbr" */
       if(!strcmp(opt_crr,"mpi_implementation")){
 	(void)fprintf(stdout,"%s\n",nco_mpi_get());
 	nco_exit(EXIT_SUCCESS);

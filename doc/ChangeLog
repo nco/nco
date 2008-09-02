@@ -1,7 +1,10 @@
+2008-09-02  Charlie Zender  <zender@uci.edu>
+
+	* Add ncks --library to print library version and exit
+
 2008-09-02  Henry Butowsky  <henryb@ntlworld.com>
 
-	* re-enabled -f switch in ncap2. Prints out
-	methods available to user
+	* re-enabled -f switch in ncap2. Prints methods available to user
 
 2008-08-18  Charlie Zender  <zender@uci.edu>
 
