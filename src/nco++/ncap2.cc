@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.69 2008-08-05 10:30:18 hmb Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.70 2008-09-02 15:24:01 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.69 2008-08-05 10:30:18 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.69 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.70 2008-09-02 15:24:01 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.70 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -405,16 +405,47 @@ main(int argc,char **argv)
     } /* end else */
   } /* end if */    
   
-  /* 
+
+  /* create function/method vector */
+
+  // Conversion functions
+  cnv_cls cnv_obj(true);
+  // Aggregate functions
+  agg_cls agg_obj(true);
+  // Utility Functions 
+  utl_cls utl_obj(true);
+  // Maths Functions
+  mth_cls mth_obj(true);
+  // Maths2 Functions
+  mth2_cls mth2_obj(true);
+  // Basic Functions
+  bsc_cls bsc_obj(true);
+
+  //PDQ functions
+  pdq_cls pdq_obj(true);
+
+  //Mask functions
+  msk_cls msk_obj(true);
+   
+  //populate vector
+  (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&mth2_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
+  
+  //Sort Vector 
+  std::sort(fmc_vtr.begin(),fmc_vtr.end());
+
   if(PRN_FNC_TBL){
-    (void)fprintf(stdout,"Maths functions available in %s:\n",prg_nm_get());
-    (void)fprintf(stdout,"Name\tFloat\tDouble\n"); 
-    for(idx=0;idx<sym_vtr.size();idx++)
-      (void)fprintf(stdout,"%s\t%c\t%c\n",sym_vtr[idx]->nm, (sym_vtr[idx]->fnc_flt ? 'y' : 'n'),(sym_vtr[idx]->fnc_dbl ? 'y' : 'n'));
+    (void)fprintf(stdout,"Methods available in %s:\n",prg_nm_get());
+    for(idx=0;idx<fmc_vtr.size();idx++)
+      std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
   }
-  
-  */
 
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
@@ -462,39 +493,6 @@ main(int argc,char **argv)
 
   (void)nco_enddef(out_id);
   
-  /* create function/method vector */
-
-  // Conversion functions
-  cnv_cls cnv_obj(true);
-  // Aggregate functions
-  agg_cls agg_obj(true);
-  // Utility Functions 
-  utl_cls utl_obj(true);
-  // Maths Functions
-  mth_cls mth_obj(true);
-  // Maths2 Functions
-  mth2_cls mth2_obj(true);
-  // Basic Functions
-  bsc_cls bsc_obj(true);
-
-  //PDQ functions
-  pdq_cls pdq_obj(true);
-
-  //Mask functions
-  msk_cls msk_obj(true);
-   
-  //populate vector
-  (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&mth2_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
-  
-  //Sort Vector 
-  std::sort(fmc_vtr.begin(),fmc_vtr.end());
   
   
   
@@ -826,7 +824,7 @@ main(int argc,char **argv)
 
 
 //Copy vector elements
-void 
+  void 
 pop_fmc_vtr(             
 std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc)
 {
