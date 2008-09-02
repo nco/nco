@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.488 2008-09-01 02:43:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.489 2008-09-02 13:03:02 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5403,6 +5403,9 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Left hand casting::
 * Arrays and hyperslabs::
 * Attributes::
+* if statement::
+* print statement::
+* Missing values ncap2::
 * RAM variables::
 * Where statement::
 * Loops::
@@ -5900,7 +5903,7 @@ three_3rv =@{
 @html
 <a name="ncap_att"></a> <!-- http://nco.sf.net/nco.html#ncap_att -->
 @end html
-@node Attributes, RAM variables, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
+@node Attributes, if statement, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
 
 Attributes are refered to by var_nm@@att_nm. 
@@ -5964,10 +5967,180 @@ If the attribute name contains non-regular characters use ID quoting...
 'b..m1@@c--lost'=23;
 @end example
 
+
+@html
+<a name="ncap_if"></a> <!-- http://nco.sf.net/nco.html#ncap_if -->
+@end html
+@node if statement, print statement, Attributes, ncap2 netCDF Arithmetic Processor
+@subsection if statement
+The synatx of  the if statement is similar to its C counterpart.
+
+@example
+
+if(exp1)
+   stmt1;
+else if(exp2)     
+   stmt2
+else
+   stmt3     
+
+Can use code blocks as well
+
+if(exp1)@{
+   stmt1;
+   stmt1a;
+   stmt1b;
+@} else if(exp2)     
+   stmt2
+else @{
+   stmt3;
+   stmt3a;
+   stmt3b;
+@}     
+@end example
+
+@noindent For a variable or attribute expression to be logically true all its non-missing value elements must be logically true. (i.e non-zero). The expression can be of any type. Unlike C there is no short-circuiting of an expression with the OR (||) AND (&&) operators. The whole expression is evaluated regardless if one of the AND/OR operands are true/false. 
+
+@example
+A simple example
+
+if(time>0)
+  print("All values of time are greater than zero\n");
+else if( time<0)
+  print("All values of time are less than zero\n");   
+else @{
+  time_max=time.max();
+  time_min=time.min();
+  print("min value of time=");print(time_min,"%f");
+  print("max value of time=");print(time_max,"%f");
+@}
+
+A real example from ddra.nco
+
+if(fl_typ==fl_typ_gcm)@{
+  var_nbr_apx=32;
+  lmn_nbr=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
+  if(nco_op_typ==nco_op_typ_avg)@{
+    lmn_nbr_avg=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Averaging block size */
+    lmn_nbr_wgt=dmnsz_gcm_lat; /* [nbr] Weight size */
+  @} // !nco_op_typ_avg
+@}else if(fl_typ==fl_typ_stl)@{
+  var_nbr_apx=8;
+  lmn_nbr=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Variable size */
+  if(nco_op_typ==nco_op_typ_avg)@{
+    lmn_nbr_avg=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Averaging block size */
+    lmn_nbr_wgt=dmnsz_stl_lat; /* [nbr] Weight size */
+  @} // !nco_op_typ_avg
+@} // !fl_typ
+@end example
+
+
+
+@html
+<a name="ncap_prn"></a> <!-- http://nco.sf.net/nco.html#ncap_prn -->
+@end html
+@node print statement, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
+@subsection print statement
+@example
+print( variable_name/attribute name/string, format string);
+@end example  
+
+@noindent The print function takes a variable name or attribute name or a quoted string and prints the contents in a in a similar fashion to ncks -H. There is also an optional C style format string argument. Currently the print funtion can't print RAM variables or expressions e.g 'print(var_msk*3+4)' is invalid. So if you want to print an expression first assign a variable with the expression; then print the variable.
+
+@noindent examples
+@example
+print(lon);
+lon[0]=0 
+lon[1]=90 
+lon[2]=180 
+lon[3]=270 
+
+print(lon_2D_rrg,"%3.2f,");
+0.00,0.00,180.00,0.00,180.00,0.00,180.00,0.00,
+
+print(mss_val_fst@@_FillValue);
+mss_val_fst@@_FillValue, size = 1 NC_FLOAT, value = -999
+
+print("This function \t is monotonic\n");
+This function is 	  monotonic
+
+@end example
+
+@html
+<a name="ncap_miss"></a> <!-- http://nco.sf.net/nco.html#ncap_miss -->
+@end html
+@node Missing values ncap2, RAM variables, print statement, ncap2 netCDF Arithmetic Processor
+@subsection Missing values ncap2
+Missing values operate slightly differently in ncap2 
+Consider the expression where op is any of the following operators (excluding '=')
+ 
+@example
+Arithmetic operators ( * / % + - ^ )
+Binary Operators     ( >, >= <, <= ==, !=,==,||,&&, >>,<< ) 
+Assign Operators     ( +=,-=,/=, *= ) 
+
+var1 'op' var2
+
+@end example
+
+
+@noindent if var1 has a missing value then this is the value used in the operation else the missing value for var2 is used. if during the element by element operation an element from either operand is equal to the missing value then the missing value is carried through. In this way missing values 'percolate' through an expression. @*
+Missing values associated with Output varables are stored in memory and are written to disk after the script finishes. During script execution its possible (and legal) for the missing value of a variable to take on  several different values.
+ 
+@example 
+Consider the variable:
+int rec_var_int_mss_val_int(time); =-999,2,3,4,5,6,7,8,-999,-999;
+rec_var_int_mss_val_int:_FillValue = -999;
+
+n2=rec_var_int_mss_val_int + rec_var_int_mss_val_int.reverse($time); 
+
+n2=-999,-999,11,11,11,11,11,11,999,-999;
+@end example
+
+The following methods are used to edit the missing value associated with a variable. They only work on variables in Output
+
+
+@table @asis
+@item @strong{set_miss(expr)}
+@item Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
+
+@item @strong{change_miss(expr)}
+@item Changes the missing value elements of the variable to the new value (nb an expensive function).
+
+@item @strong{delete_miss()}
+@item Deletes the missing value associated with a variable.
+
+@end table
+
+@example
+
+th=three_dmn_var_dbl;
+th.change_miss(-1e10d);
+/* set values less than 0 or greter than 50 to missing value */
+where( th <0.0 || th > 50.0)
+  th=-1e10d;
+
+
+Another example
+
+new[$time,$lat,$lon]=1.0;
+new.set_miss(-997.0);
+
+/* extract only elements divisible by 3 */
+where ( three_dmn_var_dbl%3 == 0 )
+     new=three_dmn_var_dbl; 
+else
+     new=-997.0;   
+
+
+@end example
+
+
+
 @html
 <a name="ncap_ram"></a> <!-- http://nco.sf.net/nco.html#ncap_ram -->
 @end html
-@node RAM variables, Where statement, Attributes, ncap2 netCDF Arithmetic Processor
+@node RAM variables, Where statement, Missing values ncap2, ncap2 netCDF Arithmetic Processor
 @subsection RAM variables
 RAM variables are used in place of regular variables to speed things up. For example in a loop or where a variable is very frequently referenced. To declare and define a RAM variable simply prefix the variable name with * when the variable is declared/initialized.@*
 
