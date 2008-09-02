@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.85 2008-02-22 14:26:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.86 2008-09-02 17:25:41 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.85 2008-02-22 14:26:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.85 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.86 2008-09-02 17:25:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.86 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -420,6 +420,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
+      (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;
 #ifdef ENABLE_MPI

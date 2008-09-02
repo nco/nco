@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.153 2008-05-12 11:16:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.154 2008-09-02 17:25:46 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.153 2008-05-12 11:16:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.153 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.154 2008-09-02 17:25:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.154 $";
   const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -331,6 +331,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
+      (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;
     case 't': /* Thread number */

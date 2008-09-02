@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.83 2008-02-22 14:26:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.84 2008-09-02 17:25:40 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.83 2008-02-22 14:26:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.83 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.84 2008-09-02 17:25:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.84 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -394,6 +394,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
+      (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;
 #ifdef ENABLE_MPI

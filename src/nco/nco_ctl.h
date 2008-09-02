@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.29 2008-01-06 13:09:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.30 2008-09-02 17:25:49 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -67,18 +67,21 @@ void
 nco_dfl_case_tmr_typ_err(void); /* [fnc] Print error and exit for illegal switch(tmr_typ) case */
 
 void
+nco_cnf_prn(void); /* [fnc] Print NCO configuration and help text */
+
+void
 nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */
 
 const char * /* O [sng] MPI implementation */
 nco_mpi_get(void); /* [fnc] Return MPI implementation */
 
+const char * /* O [sng] Mnemonic that describes current NCO version */
+nco_nmn_get(void); /* [fnc] Return mnemonic that describes current NCO version */
+
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
 prg_prs /* [fnc] Strip program name to stub and return program ID */
 (const char * const nm_in, /* I [sng] Name of program, i.e., argv[0] (may include path prefix) */
  int * const prg_lcl); /* O [enm] Enumerated number corresponding to nm_in */
-
-const char * /* O [sng] Mnemonic that describes current NCO version */
-nco_nmn_get(void); /* [fnc] Return mnemonic that describes current NCO version */
 
 void 
 nco_usg_prn(void); /* [fnc] Print correct program usage */

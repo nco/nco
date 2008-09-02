@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.219 2008-05-26 13:11:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.220 2008-09-02 17:25:48 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -606,6 +606,17 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   } /* endif */
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
+
+  cmp_dat_sng=(char *)nco_free(cmp_dat_sng);
+  lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);
+  lbr_sng=(char *)nco_free(lbr_sng);
+} /* end nco_lbr_vrs_prn() */
+
+void
+nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
+{
+  /* Purpose: Print NCO configuration and help text */
+
   (void)fprintf(stdout,"Homepage URL: http://nco.sf.net\n");
   (void)fprintf(stdout,"User's Guide: http://nco.sf.net/nco.html\n");
   /* fxm: TKN2YESNO breaks when TKN is undefined
@@ -698,17 +709,13 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 		""); /* End of print statement marker */
   (void)fprintf(stderr,"\n%s",nco_nmn_get());
-
-  lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);
-  lbr_sng=(char *)nco_free(lbr_sng);
-  cmp_dat_sng=(char *)nco_free(cmp_dat_sng);
-} /* end nco_lbr_vrs_prn() */
+} /* end nco_cnf_prn() */
 
 const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Beaucoup boudot, poco dinero\n";
+  return "Avant Annecy\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
