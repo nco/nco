@@ -1,3 +1,8 @@
+2008-09-02  Henry Butowsky  <henryb@ntlworld.com>
+
+	* re-enabled -f switch in ncap2. Prints out
+	methods available to user
+
 2008-08-18  Charlie Zender  <zender@uci.edu>
 
 	* Fix/cleanup nco_att_cpy() when _FillValue is global attribute
