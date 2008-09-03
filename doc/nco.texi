@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.490 2008-09-03 15:28:28 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.491 2008-09-03 15:51:56 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6159,7 +6159,7 @@ The below statement converts three_dmn_var_sht to type double, finds the average
 three_avg=three_dmn_var_sht.double().avg().short();
 @end example
 
-
+@sp 1
 @noindent @strong{ Aggregate Methods @* } 
 @noindent These methods mirror the averging types available in ncwa. The arguments to the methods are the dimensions to average over. Specifiying no dims is equivalent to specifying all dims i.e  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
 
@@ -6190,13 +6190,13 @@ four_time_avg=four_dmn_rec_var($time);
 @end example
 
 
-
-@noindent @strong{ Packing Methods @* } 
+@sp 1
+@noindent @strong{ Packing Methods } 
 @table @code
 @item pack()
-@item The standard packing algorithm is applied. 
+The standard packing algorithm is applied. 
 @item unpack()
-@item The standard unpacking algorithm is applied. 
+The standard unpacking algorithm is applied. 
 @end table
 
 
@@ -6212,7 +6212,7 @@ Number of dimensions in variable
 Returns the the netcdf type (see previous section)
 @end table
 
-
+@sp 1
 @noindent @strong{Utility Methods @*}
 These functions are used to manipulate missing values and RAM variables.
 @pxref{Missing values ncap2} 
@@ -6220,34 +6220,26 @@ These functions are used to manipulate missing values and RAM variables.
 @table @code
 @item set_miss(expr)
  Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
-
 @item change_miss(expr)
  Changes the missing value elements of the variable to the new value (nb an expensive function).
-
 @item delete_miss()
  Deletes the missing value associated with a variable.
-
 @item ram_write()
  Writes a RAM variable to disk i.e converts it to a regular disk type variable
 @item ram_delete()
  Deletes a RAM variable or an attribute 
-
-
 @end table
 
-
-
+@sp 1
 @noindent @strong{PDQ Methods @*}
-
 @table @code
 @item reverse(dim args)
  Reverses the dimension ordering of elements in a variable. See ncpdq section
 @item permute(dim args)
  Re-shapes variables by re-ordering the dimensions. All the dims of the variable must be specified in the arguments. A limitation of this permute (unlike ncpdq) is that the record dimension cannot be re-assigned. 
-
 @end table 
 
-
+@sp 1
 @noindent @strong{Type Conversion Methods @*}
 @noindent These methods allow ncap2 to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}).
 
