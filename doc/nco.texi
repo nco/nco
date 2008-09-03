@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.489 2008-09-02 13:03:02 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.490 2008-09-03 15:28:28 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2780,7 +2780,7 @@ http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surfac
 @cindex unpacking
 All with one command!
 The data in this particular input file also happen to be packed
-(@pxref{Intrinsic functions}), although this is completely transparent
+(@pxref{Methods and functions}), although this is completely transparent
 to the user since @acronym{NCO} automatically unpacks data before
 attempting arithmetic. 
 
@@ -4358,7 +4358,7 @@ Completely packing and unpacking files is easily accomplished with
 Packing and unpacking individual variables may be done with 
 @command{ncpdq} and the @command{ncap2} 
 @command{pack()} and @command{unpack()} functions
-(@pxref{Intrinsic functions}).
+(@pxref{Methods and functions}).
 
 @html
 <a name="op_typ"></a> <!-- http://nco.sf.net/nco.html#op_typ -->
@@ -4397,7 +4397,7 @@ types of operations
 Set @var{op_typ} to the abbreviated key for the corresponding operation:
 @table @code
 @item avg
-Mean value (default)
+Mean value
 @item sqravg
 Square of the mean
 @item avgsqr
@@ -5406,12 +5406,13 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * if statement::
 * print statement::
 * Missing values ncap2::
+* Methods and functions::
 * RAM variables::
 * Where statement::
 * Loops::
-* Irregular grids::             
-* Intrinsic functions::         
-* Intrinsic mathematical functions::  
+* Irregular grids::
+* Examples ncap2::             
+* Intrinsic mathematical methods::  
 * Operators precedence and associativity::
 @end menu
 
@@ -6069,7 +6070,7 @@ This function is 	  monotonic
 @html
 <a name="ncap_miss"></a> <!-- http://nco.sf.net/nco.html#ncap_miss -->
 @end html
-@node Missing values ncap2, RAM variables, print statement, ncap2 netCDF Arithmetic Processor
+@node Missing values ncap2, Methods and functions, print statement, ncap2 netCDF Arithmetic Processor
 @subsection Missing values ncap2
 Missing values operate slightly differently in ncap2 
 Consider the expression where op is any of the following operators (excluding '=')
@@ -6136,11 +6137,156 @@ else
 @end example
 
 
+@html
+<a name="ncap_mtd"></a> <!-- http://nco.sf.net/nco.html#ncap_mtd -->
+@end html
+@node Methods and functions, RAM variables, Missing values ncap2, ncap2 netCDF Arithmetic Processor
+@subsection Methods and functions
+
+
+Methods And Functions
+Within this document when I refer to a method I mean a method that can also be  a function. If I refer to something as function then this function cannot be a method. The nice thing with methods is that they can be daisy changed together and their synatx is cleaner than functions. The method names are reserved words and CANNOT be used as variable names.
+To see the complete list of methods available on you build use the command @code{ncap2 -f}. 
+
+@example
+n2=sin(theta) or n2=theta.sin() 
+
+n2=sin(theta)^2 +cos(theta)^2 or  n2=theta.sin().pow(2) + theta.cos().pow(2)
+@end example
+
+The below statement converts three_dmn_var_sht to type double, finds the average, then converts this average back to type short.
+@example
+three_avg=three_dmn_var_sht.double().avg().short();
+@end example
+
+
+@noindent @strong{ Aggregate Methods @* } 
+@noindent These methods mirror the averging types available in ncwa. The arguments to the methods are the dimensions to average over. Specifiying no dims is equivalent to specifying all dims i.e  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
+
+@table @code
+@item avg()
+Mean value (default)
+@item sqravg()
+Square of the mean
+@item avgsqr()
+Mean of sum of squares
+@item max()
+Maximium value
+@item min()
+Minimium value
+@item rms()
+Root-mean-square (normalized by @var{N})
+@item rmssdn()
+Root-mean square (normalized by @var{N-1})
+@item sqrt()
+Square root of the mean
+@item ttl() or total()
+Sum of values
+@end table
+
+@example
+Average a variable over time
+four_time_avg=four_dmn_rec_var($time);
+@end example
+
+
+
+@noindent @strong{ Packing Methods @* } 
+@table @code
+@item pack()
+@item The standard packing algorithm is applied. 
+@item unpack()
+@item The standard unpacking algorithm is applied. 
+@end table
+
+
+@noindent @strong{Basic Methods @*}
+These methods work with variables and attributes. They have no arguments
+
+@table @code
+@item size()	
+Total number of elements 
+@item ndims()
+Number of dimensions in variable
+@item type() 
+Returns the the netcdf type (see previous section)
+@end table
+
+
+@noindent @strong{Utility Methods @*}
+These functions are used to manipulate missing values and RAM variables.
+@pxref{Missing values ncap2} 
+
+@table @code
+@item set_miss(expr)
+ Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
+
+@item change_miss(expr)
+ Changes the missing value elements of the variable to the new value (nb an expensive function).
+
+@item delete_miss()
+ Deletes the missing value associated with a variable.
+
+@item ram_write()
+ Writes a RAM variable to disk i.e converts it to a regular disk type variable
+@item ram_delete()
+ Deletes a RAM variable or an attribute 
+
+
+@end table
+
+
+
+@noindent @strong{PDQ Methods @*}
+
+@table @code
+@item reverse(dim args)
+ Reverses the dimension ordering of elements in a variable. See ncpdq section
+@item permute(dim args)
+ Re-shapes variables by re-ordering the dimensions. All the dims of the variable must be specified in the arguments. A limitation of this permute (unlike ncpdq) is that the record dimension cannot be re-assigned. 
+
+@end table 
+
+
+@noindent @strong{Type Conversion Methods @*}
+@noindent These methods allow ncap2 to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}).
+
+@table @code
+@item byte()	 
+ convert to NC_BYTE  a signed 1 byte integer 
+@item char()	 
+ convert to NC_CHAR  a ISO/ASCII character 
+@item short()	 
+ convert to NC_SHORT a signed 2 byte integer 
+@item int()	 
+ convert to NC_INT   a signed 4 byte integer 
+@item float()	 
+ convert to NC_FLOAT a single precision floating point number 
+@item double() 
+ convert to NC_DOUBLE a double precision floating point number 
+@item ubyte()	 
+ convert to NC_UBYTE a unsigned 1 byte int 
+@item ushort() 
+ convert to NC_USHORT a unsigned 2-byte int 
+@item uint()	 
+ convert to NC_UINT a unsigned 4-byte int 
+@item int64()	 
+ convert to NC_INT64 a signed 8-byte int 
+@item uint64() 
+ convert to NC_UINT64 a unsigned 8-byte int *
+@end table
+
+
+@noindent @strong{Intrinsic Mathematical Methods @*}
+The list of mathematical methods is system dependant.
+For the full list see @pxref{Intrinsic mathematical methods} 
+
+
 
 @html
 <a name="ncap_ram"></a> <!-- http://nco.sf.net/nco.html#ncap_ram -->
 @end html
-@node RAM variables, Where statement, Missing values ncap2, ncap2 netCDF Arithmetic Processor
+@node RAM variables, Where statement, Methods and functions, ncap2 netCDF Arithmetic Processor
 @subsection RAM variables
 RAM variables are used in place of regular variables to speed things up. For example in a loop or where a variable is very frequently referenced. To declare and define a RAM variable simply prefix the variable name with * when the variable is declared/initialized.@*
 
@@ -6296,7 +6442,7 @@ print("Total of odd elements ");print(sum);print("\n");
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
-@node Irregular grids, Intrinsic functions, Loops, ncap2 netCDF Arithmetic Processor
+@node Irregular grids, Examples ncap2, Loops, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
@@ -6424,69 +6570,238 @@ Irregular regions are the union of arrays lat/lon_min/max's.
 The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
-@html
-<a name="fnc"></a> <!-- http://nco.sf.net/nco.html#fnc -->
-@end html
-@node Intrinsic functions, Intrinsic mathematical functions, Irregular grids, ncap2 netCDF Arithmetic Processor
-@subsection Intrinsic functions
-@command{ncap2} contains a small (and growing) library of intrinsic
-functions. 
-In addition to the standard mathematical functions 
-(@pxref{Intrinsic mathematical functions}), @command{ncap2} currently
-supports packing and unpacking.
-@cindex packing
-@cindex unpacking
-@table @code
-@item pack(x)
-The standard packing algorithm is applied to variable @var{x}.
-@item unpack(x)
-The standard unpacking algorithm is applied to variable @var{x}.
-@end table
 
-@unnumberedsubsec Type Conversion Functions
 @html
-<a name="typ_cnv"></a> <!-- http://nco.sf.net/nco.html#typ_cnv -->
-<a name="typ_cst"></a> <!-- http://nco.sf.net/nco.html#typ_cst -->
-<a name="cst"></a> <!-- http://nco.sf.net/nco.html#cst -->
+<a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
 @end html
-These intrinsic functions allow @command{ncap2} to convert variables on
-disk among the available types supported by netCDF.
-@cindex type conversion
-@cindex promotion
-@cindex demotion
-@cindex @code{byte(x)}
-@cindex @code{char(x)}
-@cindex @code{double(x)}
-@cindex @code{float(x)}
-@cindex @code{int(x)}
-@cindex @code{short(x)}
-@table @code
-@item byte(x)
-@dfn{Convert to @code{NC_BYTE}}
-Converts @var{x} to external type @code{NC_BYTE}, a C-type @code{signed char}.
-@item char(x)
-@dfn{Convert to @code{NC_CHAR}}
-Converts @var{x} to external type @code{NC_CHAR}, a C-type @code{unsigned char}.
-@item double(x)
-@dfn{Convert to @code{NC_DOUBLE}}
-Converts @var{x} to external type @code{NC_DOUBLE}, a C-type @code{double}.
-@item float(x)
-@dfn{Convert to @code{NC_FLOAT}}
-Converts @var{x} to external type @code{NC_FLOAT}, a C-type @code{float}.
-@item int(x)
-@dfn{Convert to @code{NC_INT}}
-Converts @var{x} to external type @code{NC_INT}, a C-type @code{int}.
-@item short(x)
-@dfn{Convert to @code{NC_SHORT}}
-Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
-@end table
-@xref{Type Conversion}, for more details on automatic and manual type conversion.
+@node Examples ncap2, Intrinsic mathematical methods, Irregular grids, ncap2 netCDF Arithmetic Processor
+@subsection Examples ncap2
+
+See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
+for more complete demonstrations of @command{ncap} and @command{ncap2}
+functionality, respectively (these scripts are available on-line at
+@url{http://nco.sf.net/ncap.in} and
+@url{http://nco.sf.net/ncap2.in}).
+
+Define new attribute @var{new} for existing variable @var{one}
+as twice the existing attribute @var{double_att} of variable
+@var{att_var}: 
+@example
+ncap2 -s 'one@@new=2*att_var@@double_att' in.nc out.nc
+@end example
+
+Average variables of mixed types (result is of type @code{double}):
+@example
+ncap2 -s 'average=(var_float+var_double+var_int)/3' in.nc out.nc 
+@end example
+
+Multiple commands may be given to @command{ncap2} in three ways.
+First, the commands may be placed in a script which is executed, e.g.,
+@file{tst.nco}. 
+Second, the commands may be individually specified with multiple
+@samp{-s} arguments to the same @command{ncap2} invocation.
+Third, the commands may be chained together into a single @samp{-s}
+argument to @command{ncap2}.
+Assuming the file @file{tst.nco} contains the commands
+@code{a=3;b=4;c=sqrt(a^2+b^2);}, then the following @command{ncap2}
+invocations produce identical results:
+@example
+ncap2 -v -S tst.nco in.nc out.nc
+ncap2 -v -s 'a=3' -s 'b=4' -s 'c=sqrt(a^2+b^2)' in.nc out.nc
+ncap2 -v -s 'a=3;b=4;c=sqrt(a^2+b^2)' in.nc out.nc
+@end example
+The second and third examples show that @command{ncap2} does not require
+that a trailing semi-colon @samp{;} be placed at the end of a @samp{-s}
+argument, although a trailing semi-colon @samp{;} is always allowed.
+However, semi-colons are required to separate individual assignment
+statements chained together as a single @samp{-s} argument. 
+
+@html
+<a name="xmp_grw"></a> <!-- http://nco.sf.net/nco.html#xmp_grw -->
+@end html
+@cindex growing dimensions
+@cindex dimensions, growing
+@command{ncap2} may be used to ``grow'' dimensions, i.e., to increase
+dimension sizes without altering existing data.
+Say @file{in.nc} has @code{ORO(lat,lon)} and the user wishes a new
+file with @code{new_ORO(new_lat,new_lon)} that contains zeros in the
+undefined portions of the new grid.
+@example
+defdim("new_lat",$lat.size+1); // Define new dimension sizes
+defdim("new_lon",$lon.size+1);
+new_ORO[$new_lat,$new_lon]=0.0f; // Initialize to zero
+new_ORO(0:$lat.size-1,0:$lon.size-1)=ORO; // Fill valid data
+@end example
+The commands to define new coordinate variables @code{new_lat}
+and @code{new_lon} in the output file follow a similar pattern.
+One would might store these commands in a script @file{grow.nco}
+and then execute the script with
+@example
+ncap2 -v -S grow.nco in.nc out.nc
+@end example
+
+@html
+<a name="flg"></a> <!-- http://nco.sf.net/nco.html#flg -->
+@end html
+@cindex flags
+Imagine you wish to create a binary flag based on the value of 
+an array.
+The flag should have @w{value 1.0} where the array @w{exceeds 1.0},
+and @w{value 0.0} elsewhere.
+This example creates the binary flag @code{ORO_flg} in @file{out.nc}
+from the continuous array named @code{ORO} in @file{in.nc}.
+@example
+ncap2 -s 'ORO_flg=(ORO > 1.0)' in.nc out.nc
+@end example
+Suppose your task is to change all values of @code{ORO} which 
+@w{equal 2.0} to the new @w{value 3.0}:
+@example
+ncap2 -s 'ORO_msk=(ORO==2.0);ORO=ORO_msk*3.0+!ORO_msk*ORO' in.nc out.nc
+@end example
+@cindex mask
+This creates and uses @code{ORO_msk} to mask the subsequent arithmetic
+operation.
+Values of @code{ORO} are only changed where @code{ORO_msk} is true,
+i.e., where @code{ORO} @w{equals 2.0}.
+@cindex Fortran90
+In the future, @command{ncap2} will support the Fortran90 @code{where} 
+construct to further simplify this syntax.
+
+@html
+<a name="cvr"></a> <!-- http://nco.sf.net/nco.html#cvr -->
+@end html
+This example uses @command{ncap2} to compute the covariance of two
+variables. 
+Let the variables @var{@wndznl{}} and @var{@wndmrd{}} be the horizontal 
+wind components. 
+@cindex covariance
+@c fxm 20030423: texi2html 1.64 has problems with this legal syntax but makeinfo --html does not
+The @dfn{covariance} of @var{@wndznl{}} and @var{@wndmrd{}} is defined
+as the time mean product of the deviations of @var{@wndznl{}} and
+@var{@wndmrd{}} from their respective time means.
+Symbolically, the covariance 
+@set flg
+@tex
+$[\wndznl^{\prime} \wndmrd^{\prime}] =
+[\wndznl\wndmrd]-[\wndznl][\wndmrd]$ where $[\xxx]$ denotes the
+time-average of~$\xxx$, 
+$[\xxx] \equiv {1 \over \tau} \int_{\tm=0}^{\tm=\tau} \xxx(\tm) \,\dfr\tm$
+and $\xxx^{\prime}$ 
+@clear flg 
+@end tex
+@ifinfo
+@math{[@var{@wndznl{}'@wndmrd{}'}] =
+[@var{@wndznl{}@wndmrd{}}]-[@var{@wndznl{}}][@var{@wndmrd{}}]} 
+where @math{[@var{@xxx{}}]} denotes the time-average of
+@math{@var{@xxx{}}} and @math{@var{@xxx{}'}} 
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html does not like @math{}
+[@var{@wndznl{}'@wndmrd{}'}] =
+[@var{@wndznl{}@wndmrd{}}]-[@var{@wndznl{}}][@var{@wndmrd{}}] where
+[@xxx{}] denotes the time-average of @var{@xxx{}} and @var{@xxx{}'}
+@clear flg
+@end ifset
+denotes the deviation from the time-mean. 
+The covariance tells us how much of the correlation of two signals
+arises from the signal fluctuations versus the mean signals.
+@cindex eddy covariance
+Sometimes this is called the @dfn{eddy covariance}.
+We will store the covariance in the variable @code{uprmvprm}.
+@example
+ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
+ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
+ncks -A -v uavg,vavg foo.nc in.nc # Place time means with originals
+ncap2 -O -s 'uprmvprm=u*v-uavg*vavg' in.nc in.nc # Covariance
+ncra -O -v uprmvprm in.nc foo.nc # Time-mean covariance
+@end example
+The mathmatically inclined will note that the same covariance would be
+obtained by replacing the step involving @command{ncap2} with
+@example
+ncap2 -O -s 'uprmvprm=(u-uavg)*(v-vavg)' foo.nc foo.nc # Covariance
+@end example
+
+As of @acronym{NCO} version 3.1.8 (December, 2006), @command{ncap2}
+can compute averages, and thus covariances, by itself:
+@example
+ncap2 -s 'uavg=u.avg($time);vavg=v.avg($time);uprmvprm=u*v-uavg*vavg' \
+      -s 'uprmvrpmavg=uprmvprm.avg($time)' in.nc foo.nc
+@end example
+We have not seen a simpler method to script and execute powerful
+arithmetic than @command{ncap2}.
+
+@cindex globbing
+@cindex shell
+@cindex quotes
+@cindex extended regular expressions
+@cindex regular expressions
+@command{ncap2} utilizes many meta-characters 
+(e.g., @samp{$}, @samp{?}, @samp{;}, @samp{()}, @samp{[]})
+that can confuse the command-line shell if not quoted properly.
+The issues are the same as those which arise in utilizing extended
+regular expressions to subset variables (@pxref{Subsetting Variables}).
+The example above will fail with no quotes and with double quotes.
+This is because shell globbing tries to @dfn{interpolate} the value of
+@code{$time} from the shell environment unless it is quoted:
+@example
+ncap2 -s 'uavg=u.avg($time)'  in.nc foo.nc # Correct (recommended)
+ncap2 -s  uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
+ncap2 -s  uavg=u.avg($time)   in.nc foo.nc # Fails ($time = '')
+ncap2 -s "uavg=u.avg($time)"  in.nc foo.nc # Fails ($time = '')
+@end example
+Without the single quotes, the shell replaces @code{$time} with an
+empty string.
+The command @command{ncap2} receives from the shell is
+@code{uavg=u.avg()}. 
+This causes @command{ncap2} to average over all dimensions rather than
+just the @var{time} dimension, and unintended consequence.
+
+We recommend using single quotes to protect @command{ncap2}
+command-line scripts from the shell, even when such protection is not
+strictly necessary. 
+Expert users may violate this rule to exploit the ability to use shell
+variables in @command{ncap2} command-line scripts 
+(@pxref{CCSM Example}). 
+In such cases it may be necessary to use the shell backslash character
+@samp{\} to protect the @command{ncap2} meta-character.
+
+@cindex appending data
+@cindex time-averaging
+@findex ncks
+@findex ncwa
+@findex ncra
+@cindex degenerate dimension
+@cindex @samp{-b}
+Whether a degenerate record dimension is desirable or undesirable
+depends on the application.
+Often a degenerate @var{time} dimension is useful, e.g., for
+concatentating, but it may cause problems with arithmetic.
+Such is the case in the above example, where the first step employs
+@command{ncwa} rather than @command{ncra} for the time-averaging.
+Of course the numerical results are the same with both operators.
+The difference is that, unless @samp{-b} is specified, @command{ncwa}
+writes no @var{time} dimension to the output file, while @command{ncra}
+defaults to keeping @var{time} as a degenerate (@w{size 1}) dimension. 
+Appending @code{u} and @code{v} to the output file would cause
+@command{ncks} to try to expand the degenerate time axis of @code{uavg}
+and @code{vavg} to the size of the non-degenerate @var{time} dimension
+in the input file.
+Thus the append (@command{ncks -A}) command would be undefined (and
+should fail) in this case. 
+@cindex @code{-C}
+Equally important is the @samp{-C} argument 
+(@pxref{Subsetting Coordinate Variables}) to @command{ncwa} to prevent
+any scalar @var{time} variable from being written to the output file.  
+Knowing when to use @command{ncwa -a time} rather than the default
+@command{ncra} for time-averaging takes, well, time.
+
 
 @html
 <a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
 @end html
-@node Intrinsic mathematical functions, Operators precedence and associativity, Intrinsic functions, ncap2 netCDF Arithmetic Processor
-@subsection Intrinsic mathematical functions
+@node Intrinsic mathematical methods, Operators precedence and associativity, Examples ncap2, ncap2 netCDF Arithmetic Processor
+@subsection Intrinsic mathematical methods
 @command{ncap2} supports the standard mathematical functions supplied with
 most operating systems.
 @cindex addition
@@ -6633,6 +6948,15 @@ atan$(1.0) = 0.78539816339744830961$
 @ifinfo
 @math{atan(1.0) = 0.78539816339744830961}
 @end ifinfo
+
+@item atan2(y,x)
+@dfn{Arc-tangent2}
+Arc-tangent of @var{y/x} 
+@ifinfo
+@math{:Example atan2(1,3) =  0.321689857}
+@end ifinfo
+
+
 @item atanh(x)
 @dfn{Hyperbolic arc-tangent}
 Hyperbolic arc-tangent of @var{x} where @var{x} is specified in radians between 
@@ -6944,8 +7268,6 @@ and are indicated with an asterisk.
 @cindex @code{--fnc_tbl}
 Use the @samp{-f} (or @samp{fnc_tbl} or @samp{prn_fnc_tbl}) switch
 to print a complete list of functions supported on your platform.
-This prints a list of functions and whether they are supported
-for netCDF variables of intrinsic type @code{NC_FLOAT} and @code{NC_DOUBLE}.
 @cindex Linux
 @footnote{Linux supports more of these intrinsic functions than
 other OSs.}
@@ -6955,233 +7277,13 @@ other OSs.}
 <a name="xmp_ncap"></a> <!-- http://nco.sf.net/nco.html#xmp_ncap -->
 <a name="xmp_ncap2"></a> <!-- http://nco.sf.net/nco.html#xmp_ncap2 -->
 @end html
-EXAMPLES
-
-See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
-for more complete demonstrations of @command{ncap} and @command{ncap2}
-functionality, respectively (these scripts are available on-line at
-@url{http://nco.sf.net/ncap.in} and
-@url{http://nco.sf.net/ncap2.in}).
-
-Define new attribute @var{new} for existing variable @var{one}
-as twice the existing attribute @var{double_att} of variable
-@var{att_var}: 
-@example
-ncap2 -s 'one@@new=2*att_var@@double_att' in.nc out.nc
-@end example
-
-Average variables of mixed types (result is of type @code{double}):
-@example
-ncap2 -s 'average=(var_float+var_double+var_int)/3' in.nc out.nc 
-@end example
-
-Multiple commands may be given to @command{ncap2} in three ways.
-First, the commands may be placed in a script which is executed, e.g.,
-@file{tst.nco}. 
-Second, the commands may be individually specified with multiple
-@samp{-s} arguments to the same @command{ncap2} invocation.
-Third, the commands may be chained together into a single @samp{-s}
-argument to @command{ncap2}.
-Assuming the file @file{tst.nco} contains the commands
-@code{a=3;b=4;c=sqrt(a^2+b^2);}, then the following @command{ncap2}
-invocations produce identical results:
-@example
-ncap2 -v -S tst.nco in.nc out.nc
-ncap2 -v -s 'a=3' -s 'b=4' -s 'c=sqrt(a^2+b^2)' in.nc out.nc
-ncap2 -v -s 'a=3;b=4;c=sqrt(a^2+b^2)' in.nc out.nc
-@end example
-The second and third examples show that @command{ncap2} does not require
-that a trailing semi-colon @samp{;} be placed at the end of a @samp{-s}
-argument, although a trailing semi-colon @samp{;} is always allowed.
-However, semi-colons are required to separate individual assignment
-statements chained together as a single @samp{-s} argument. 
-
-@html
-<a name="xmp_grw"></a> <!-- http://nco.sf.net/nco.html#xmp_grw -->
-@end html
-@cindex growing dimensions
-@cindex dimensions, growing
-@command{ncap2} may be used to ``grow'' dimensions, i.e., to increase
-dimension sizes without altering existing data.
-Say @file{in.nc} has @code{ORO(lat,lon)} and the user wishes a new
-file with @code{new_ORO(new_lat,new_lon)} that contains zeros in the
-undefined portions of the new grid.
-@example
-defdim("new_lat",$lat.size+1); // Define new dimension sizes
-defdim("new_lon",$lon.size+1);
-new_ORO[$new_lat,$new_lon]=0.0f; // Initialize to zero
-new_ORO(0:$lat.size-1,0:$lon.size-1)=ORO; // Fill valid data
-@end example
-The commands to define new coordinate variables @code{new_lat}
-and @code{new_lon} in the output file follow a similar pattern.
-One would might store these commands in a script @file{grow.nco}
-and then execute the script with
-@example
-ncap2 -v -S grow.nco in.nc out.nc
-@end example
-
-@html
-<a name="flg"></a> <!-- http://nco.sf.net/nco.html#flg -->
-@end html
-@cindex flags
-Imagine you wish to create a binary flag based on the value of 
-an array.
-The flag should have @w{value 1.0} where the array @w{exceeds 1.0},
-and @w{value 0.0} elsewhere.
-This example creates the binary flag @code{ORO_flg} in @file{out.nc}
-from the continuous array named @code{ORO} in @file{in.nc}.
-@example
-ncap2 -s 'ORO_flg=(ORO > 1.0)' in.nc out.nc
-@end example
-Suppose your task is to change all values of @code{ORO} which 
-@w{equal 2.0} to the new @w{value 3.0}:
-@example
-ncap2 -s 'ORO_msk=(ORO==2.0);ORO=ORO_msk*3.0+!ORO_msk*ORO' in.nc out.nc
-@end example
-@cindex mask
-This creates and uses @code{ORO_msk} to mask the subsequent arithmetic
-operation.
-Values of @code{ORO} are only changed where @code{ORO_msk} is true,
-i.e., where @code{ORO} @w{equals 2.0}.
-@cindex Fortran90
-In the future, @command{ncap2} will support the Fortran90 @code{where} 
-construct to further simplify this syntax.
-
-@html
-<a name="cvr"></a> <!-- http://nco.sf.net/nco.html#cvr -->
-@end html
-This example uses @command{ncap2} to compute the covariance of two
-variables. 
-Let the variables @var{@wndznl{}} and @var{@wndmrd{}} be the horizontal 
-wind components. 
-@cindex covariance
-@c fxm 20030423: texi2html 1.64 has problems with this legal syntax but makeinfo --html does not
-The @dfn{covariance} of @var{@wndznl{}} and @var{@wndmrd{}} is defined
-as the time mean product of the deviations of @var{@wndznl{}} and
-@var{@wndmrd{}} from their respective time means.
-Symbolically, the covariance 
-@set flg
-@tex
-$[\wndznl^{\prime} \wndmrd^{\prime}] =
-[\wndznl\wndmrd]-[\wndznl][\wndmrd]$ where $[\xxx]$ denotes the
-time-average of~$\xxx$, 
-$[\xxx] \equiv {1 \over \tau} \int_{\tm=0}^{\tm=\tau} \xxx(\tm) \,\dfr\tm$
-and $\xxx^{\prime}$ 
-@clear flg 
-@end tex
-@ifinfo
-@math{[@var{@wndznl{}'@wndmrd{}'}] =
-[@var{@wndznl{}@wndmrd{}}]-[@var{@wndznl{}}][@var{@wndmrd{}}]} 
-where @math{[@var{@xxx{}}]} denotes the time-average of
-@math{@var{@xxx{}}} and @math{@var{@xxx{}'}} 
-@clear flg
-@end ifinfo
-@ifset flg
-@c texi2html does not like @math{}
-[@var{@wndznl{}'@wndmrd{}'}] =
-[@var{@wndznl{}@wndmrd{}}]-[@var{@wndznl{}}][@var{@wndmrd{}}] where
-[@xxx{}] denotes the time-average of @var{@xxx{}} and @var{@xxx{}'}
-@clear flg
-@end ifset
-denotes the deviation from the time-mean. 
-The covariance tells us how much of the correlation of two signals
-arises from the signal fluctuations versus the mean signals.
-@cindex eddy covariance
-Sometimes this is called the @dfn{eddy covariance}.
-We will store the covariance in the variable @code{uprmvprm}.
-@example
-ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
-ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
-ncks -A -v uavg,vavg foo.nc in.nc # Place time means with originals
-ncap2 -O -s 'uprmvprm=u*v-uavg*vavg' in.nc in.nc # Covariance
-ncra -O -v uprmvprm in.nc foo.nc # Time-mean covariance
-@end example
-The mathmatically inclined will note that the same covariance would be
-obtained by replacing the step involving @command{ncap2} with
-@example
-ncap2 -O -s 'uprmvprm=(u-uavg)*(v-vavg)' foo.nc foo.nc # Covariance
-@end example
-
-As of @acronym{NCO} version 3.1.8 (December, 2006), @command{ncap2}
-can compute averages, and thus covariances, by itself:
-@example
-ncap2 -s 'uavg=u.avg($time);vavg=v.avg($time);uprmvprm=u*v-uavg*vavg' \
-      -s 'uprmvrpmavg=uprmvprm.avg($time)' in.nc foo.nc
-@end example
-We have not seen a simpler method to script and execute powerful
-arithmetic than @command{ncap2}.
-
-@cindex globbing
-@cindex shell
-@cindex quotes
-@cindex extended regular expressions
-@cindex regular expressions
-@command{ncap2} utilizes many meta-characters 
-(e.g., @samp{$}, @samp{?}, @samp{;}, @samp{()}, @samp{[]})
-that can confuse the command-line shell if not quoted properly.
-The issues are the same as those which arise in utilizing extended
-regular expressions to subset variables (@pxref{Subsetting Variables}).
-The example above will fail with no quotes and with double quotes.
-This is because shell globbing tries to @dfn{interpolate} the value of
-@code{$time} from the shell environment unless it is quoted:
-@example
-ncap2 -s 'uavg=u.avg($time)'  in.nc foo.nc # Correct (recommended)
-ncap2 -s  uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
-ncap2 -s  uavg=u.avg($time)   in.nc foo.nc # Fails ($time = '')
-ncap2 -s "uavg=u.avg($time)"  in.nc foo.nc # Fails ($time = '')
-@end example
-Without the single quotes, the shell replaces @code{$time} with an
-empty string.
-The command @command{ncap2} receives from the shell is
-@code{uavg=u.avg()}. 
-This causes @command{ncap2} to average over all dimensions rather than
-just the @var{time} dimension, and unintended consequence.
-
-We recommend using single quotes to protect @command{ncap2}
-command-line scripts from the shell, even when such protection is not
-strictly necessary. 
-Expert users may violate this rule to exploit the ability to use shell
-variables in @command{ncap2} command-line scripts 
-(@pxref{CCSM Example}). 
-In such cases it may be necessary to use the shell backslash character
-@samp{\} to protect the @command{ncap2} meta-character.
-
-@cindex appending data
-@cindex time-averaging
-@findex ncks
-@findex ncwa
-@findex ncra
-@cindex degenerate dimension
-@cindex @samp{-b}
-Whether a degenerate record dimension is desirable or undesirable
-depends on the application.
-Often a degenerate @var{time} dimension is useful, e.g., for
-concatentating, but it may cause problems with arithmetic.
-Such is the case in the above example, where the first step employs
-@command{ncwa} rather than @command{ncra} for the time-averaging.
-Of course the numerical results are the same with both operators.
-The difference is that, unless @samp{-b} is specified, @command{ncwa}
-writes no @var{time} dimension to the output file, while @command{ncra}
-defaults to keeping @var{time} as a degenerate (@w{size 1}) dimension. 
-Appending @code{u} and @code{v} to the output file would cause
-@command{ncks} to try to expand the degenerate time axis of @code{uavg}
-and @code{vavg} to the size of the non-degenerate @var{time} dimension
-in the input file.
-Thus the append (@command{ncks -A}) command would be undefined (and
-should fail) in this case. 
-@cindex @code{-C}
-Equally important is the @samp{-C} argument 
-(@pxref{Subsetting Coordinate Variables}) to @command{ncwa} to prevent
-any scalar @var{time} variable from being written to the output file.  
-Knowing when to use @command{ncwa -a time} rather than the default
-@command{ncra} for time-averaging takes, well, time.
 
 @c Begin HMB documentation
 
 @html
 <a name="opts"></a> <!-- http://nco.sf.net/nco.html#grd -->
 @end html
-@node Operators precedence and associativity , , Intrinsic mathematical functions, ncap2 netCDF Arithmetic Processor
+@node Operators precedence and associativity , , Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
 @subsection Operators precedence and associativity
 This page lists the ncap operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
 
@@ -9057,7 +9159,7 @@ The @dfn{pdq} may stand for ``Permute Dimensions Quickly'',
 @cindex packing policy
 @unnumberedsubsec Packing and Unpacking Functions
 The @command{ncpdq} packing (and unpacking) algorithms are described 
-in @ref{Intrinsic functions}, and are also implemented in
+in @ref{Methods and functions}, and are also implemented in
 @command{ncap2}. 
 @command{ncpdq} extends the functionality of these algorithms by 
 providing high level control of the @dfn{packing policy} so that
@@ -9197,7 +9299,7 @@ file size by @w{about 50%.}
 @cindex @var{_FillValue}
 @cindex @code{_FillValue}
 @cindex @code{NUL}
-The netCDF packing algorithm (@pxref{Intrinsic functions}) is
+The netCDF packing algorithm (@pxref{Methods and functions}) is
 lossy---once packed, the exact original data cannot be recovered without
 a full backup. 
 Hence users should be aware of some packing caveats:
