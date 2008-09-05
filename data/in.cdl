@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.102 2008-07-18 16:07:45 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.103 2008-09-05 13:04:24 hmb Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -568,7 +568,9 @@ variables:
 	int one_dmn_rec_var(time);
 	one_dmn_rec_var:long_name = "one dimensional record variable";
 	one_dmn_rec_var:units = "second";
-
+        
+	int RDM(time);
+        
 	float tpt(time);
 	tpt:long_name = "Temperature";
 	tpt:units = "kelvin";
@@ -691,6 +693,13 @@ variables:
 	three_dmn_var_sht:long_name = "three dimensional record variable";
 	three_dmn_var_sht:units = "watt meter-2";
 	three_dmn_var_sht:_FillValue = -99s ;
+
+
+	int th(time,lat,lon);
+	th:long_name = "three dimensional record variable";
+	th:units = "watt meter-2";
+	th:_FillValue = -99;
+
 
 	float td(time,dgn);
 	td:long_name = "two dimensional record variable stored in td (time,dgn) order (dgn means degenerate, i.e., of size 1)";
@@ -840,6 +849,7 @@ data:
 	non_nul_trm_char_two_dmn="abcd","efgh","ijkm";
 	one=1.;
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
+	RDM=1,9,36,84,126,126,84,36,9,1;
 	one_dmn_rec_var_sng="Hello Wor";
 	one_dmn_var=1.,10.;
 	one_dmn_int_val_one=1,1;
@@ -1100,6 +1110,16 @@ data:
 				57,58,59,-99,61,62,63,64,
 				65,66,67,68,69,70,71,72,
 				-99,-99,-99,-99,-99,-99,-99,-99;
+	th=			1, 2, 3, 4, 5, 6, 7, 8,
+				9,10,11,12,13,14,15,16,
+			  	17,18,19,20,21,22,23,24,
+			  	-99,-99,-99,-99,-99,-99,-99,-99,
+			  	33,34,35,36,37,38,39,40,
+			  	41,42,43,44,45,46,47,48,
+			  	49,50,51,52,53,54,55,56,
+			  	-99,58,59,60,61,62,63,64,
+			  	65,66,67,68,69,70,71,72,
+			 	-99,74,75,76,77,78,79,-99;
 	four_dmn_rec_var= 	  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
 				 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
 				 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
