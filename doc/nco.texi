@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.493 2008-09-05 14:29:29 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.494 2008-09-08 14:05:23 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5403,6 +5403,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Left hand casting::
 * Arrays and hyperslabs::
 * Attributes::
+* Number literals::
 * if statement::
 * print statement::
 * Missing values ncap2::
@@ -5511,7 +5512,7 @@ Consider var1 'op' var2
         @item If both operands are variables  then the precision of the result is equal to the precision of the variable  that has the highest type. 
         @item If one of the operands is a variable and the other an attribute then the precision of the result is equal to the precision of the variable. 
         @item If both operands are attributes then the result is equal to the precision of the attribue that has the highest type.
-        @item An exception to the above  rules  occurs with power of operator "^". If both operands have type less than float then the result will be float. if any of the types are double then the result will be type double.
+        @item An exception to the above  rules  occurs with power of operator "^". If both operands have type less than @emph{float} then the result will be @emph{float}. If any of the types are @emph{double} then the result will be type @emph{double}.
 
         @end itemize
 
@@ -5635,7 +5636,7 @@ n4=--time;   n4=time=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.;
 	
 @noindent @strong{Regular Assign Operator} @*
 	@noindent var1 '=' exp1 @*
-If var1 doesnt already exist then var1 is written to output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
+If var1 doesnt already exist in Ouptut then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
 
 
 @noindent @strong{ Other Assign Operators +=,-=,*=./= } @*
@@ -5882,27 +5883,30 @@ od_rv=od.reverse($time);        // @{38, 36, 34, 32, 30, 28, 26, 24, 22, 20 @}
 @end example
 
 @noindent @strong{Permute method} @*
-If you want to swap about the dimensions of a variable use the the permute() method. The number of dimension arguments must match the number of dims in the variable. If the first dim in the variable is of record type then this must remain the first dim. 
+If you want to swap about the dimensions of a variable use the the permute() method. The number and names of  dimension arguments must match the dimensions in the variable. If the first dimemsion  in the variable is of record type then this must remain the first dimension. If you want to change the record dimension consider using @command{ncpdq} . 
 
+Consider the variable:
 @example
-th_rv=th.permute($time,$lon,$lat)
-th_3rv =
-       @{1,5,2,6,3,7,4,8,
-       9,13,10,14,11,15,12,16,
-       17,21,18,22,19,23,20,24,
-       -99,-99,-99,-99,-99,-99,-99,-99,
-       33,37,34,38,35,39,36,40,41,45,
-       42,46,43,47,44,48,49,53,50,54,
-       51,55,52,56,-99,61,58,62,59,63,
-       60,64,65,69,66,70,67,71,68,72,
-       -99,77,74,78,75,79,76,-99@}
+float three_dmn_var(lat,lev,lon);
+
+three_dmn_var_pm=three_dmn_var.permute($lon,$lat,$lev);
+
+three_dmn_var_pm= 
+  0,4,8,
+  12,16,20,
+  1,5,9,
+  13,17,21,
+  2,6,10,
+  14,18,22,
+  3,7,11,
+  15,19,23;
 
 @end example
 
 @html
 <a name="ncap_att"></a> <!-- http://nco.sf.net/nco.html#ncap_att -->
 @end html
-@node Attributes, if statement, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
+@node Attributes, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
 
 Attributes are refered to by var_nm@@att_nm. 
@@ -5968,9 +5972,74 @@ If the attribute name contains non-regular characters use ID quoting...
 
 
 @html
+<a name="ncap_num"></a> <!-- http://nco.sf.net/nco.html#ncap_num -->
+@end html
+@node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
+@subsection Number literals
+The table below lists the postfix character(s) to add to a number literal for type cohesion. To use the new netcdf4 types nco must be compiled/linked to the netcdf4 library and the Output file must be hdf5.
+
+
+@example
+n1[$time]=1UL;   // n1 will now by type NC_UINT
+n2[$lon]=4b;     // n2 will be of type NC_BYTE
+n3[$lat]=5ull;   // n3 will be of type NC_UINT64  
+n3@@a1=6.0d;      // attribute will be type NC_DOUBLE
+n3@@a2=-666L;     // attribute will be type NC_INT
+@end example
+
+A floating point number without a postfix will default to NC_DOUBLE. An integer without a postfix will default to type NC_INT. Thre is no postfix for characters. Use a quoted string.
+
+@example
+n4[$rlev]=.1      // n4 will be of type NC_DOUBLE
+n5[$lon_grd]=2.   // n5 will be of type NC_DOUBLE
+n6[$gds_crd]=2e3; // n6 will be of type NC_DOUBLE
+n6@@a1=41;         // attribute will be type NC_INT  
+n6@@a2=-21;        // attribute will be type NC_INT  
+n6@@units="kelvin" // attribute will be type NC_CHAR
+@end example 
+
+
+
+@table @asis
+@item
+@strong{netCDF3/4 Types}
+@item b|B	 
+  NC_BYTE  a signed 1 byte integer 
+@item none	 
+  NC_CHAR  a ISO/ASCII character 
+@item s|S	 
+  NC_SHORT a signed 2 byte integer 
+@item l|L	 
+  NC_INT   a signed 4 byte integer 
+@item f|F	 
+  NC_FLOAT a single precision floating point number 
+@item d|D
+  NC_DOUBLE a double precision floating point number 
+@item
+@item
+@strong{netCDF4 Types}
+@item ub|UB	 
+  NC_UBYTE a unsigned 1 byte int 
+@item us|US 
+  NC_USHORT a unsigned 2-byte int 
+@item u|U|ul|UL	 
+  NC_UINT a unsigned 4-byte int 
+@item ll|LL	 
+  NC_INT64 a signed 8-byte int 
+@item ull|ULL 
+  NC_UINT64 a unsigned 8-byte int 
+@end table
+
+
+
+
+
+
+
+@html
 <a name="ncap_if"></a> <!-- http://nco.sf.net/nco.html#ncap_if -->
 @end html
-@node if statement, print statement, Attributes, ncap2 netCDF Arithmetic Processor
+@node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
 The synatx of  the if statement is similar to its C counterpart.
 
@@ -6144,14 +6213,13 @@ else
 @subsection Methods and functions
 
 
-Methods And Functions
 Within this document when I refer to a method I mean a method that can also be  a function. If I refer to something as function then this function cannot be a method. The nice thing with methods is that they can be daisy changed together and their synatx is cleaner than functions. The method names are reserved words and CANNOT be used as variable names.
 To see the complete list of methods available on you build use the command @code{ncap2 -f}. 
 
 @example
 n2=sin(theta) or n2=theta.sin() 
 
-n2=sin(theta)^2 +cos(theta)^2 or  n2=theta.sin().pow(2) + theta.cos().pow(2)
+n2=sin(theta)^2 +cos(theta)^2 or  n2=theta.sin().pow(2) + theta.cos()^2
 @end example
 
 The below statement converts three_dmn_var_sht to type double, finds the average, then converts this average back to type short.
@@ -6161,7 +6229,7 @@ three_avg=three_dmn_var_sht.double().avg().short();
 
 @sp 1
 @noindent @strong{ Aggregate Methods @* } 
-@noindent These methods mirror the averging types available in ncwa. The arguments to the methods are the dimensions to average over. Specifiying no dims is equivalent to specifying all dims i.e  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
+@noindent These methods mirror the averging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifiying no dims is equivalent to specifying all dims i.e  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
 
 @table @code
 @item avg()
@@ -6250,7 +6318,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @table @code
 @item
-@strong{netCDF3/4 types}
+@strong{netCDF3/4 Types}
 @item byte()	 
  convert to NC_BYTE  a signed 1 byte integer 
 @item char()	 
@@ -6283,7 +6351,14 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 The list of mathematical methods is system dependant.
 For the full list see @pxref{Intrinsic mathematical methods} 
 
+All the mathematical methods take a single operand ,with the exception of @code{atan2} and @code{pow} which take two.
+If the operand type is less than @emph{float} the the result will be of type @emph{float}. If the operand is type @emph{double} then the result will be type @emph{double}. Like the other methods, you are free to use the mathematical methods as functions.
 
+@example
+n1=pow(2,3.0f)    // n1 type float
+n2=atan2(2,3.0)   // n2 type double
+n3=1/(three_dmn_var_dbl.cos().pow(2))-tan(three_dmn_var_dbl)^2; // n3 type double
+@end example
 
 @html
 <a name="ncap_ram"></a> <!-- http://nco.sf.net/nco.html#ncap_ram -->
@@ -6323,16 +6398,16 @@ Other Assigns
 @end html
 @node Where statement, Loops, RAM variables, ncap2 netCDF Arithmetic Processor
 @subsection Where statement
-A where combines the definition and application of a mask all in one go and can lead to succinct code. 
-The full syntax of a where stement is as follows:
+A @code{where()} combines the definition and application of a mask all in one go and can lead to succinct code. 
+The full syntax of a @code{where()} statement is as follows:
 
 @example
 
 // Single assign (nb the else block is optional)
 where (mask) 
-   var1=expr;
+   var1=expr1;
 else
-   var2=expr;	   	
+   var1=expr2;	   	
 
 
 // Multiple assigns
@@ -6361,23 +6436,34 @@ where( mask) @{
 
 example:
 
-
-@noindent Consider the variable double height($time,lat,lon)
-To set all the elements to missing value where height <0 or Height >200
-
+Consider the variables:@*
+@code{float lon_2D_rct(lat,lon);@*}
+@code{float var_msk(lat,lon);@*}
+Suppose we want to multiply by two the elements for which var_msk is equal to 1;
 
 @example
-
-height.set_miss(1e-36);
-  where(height< 0.0 || height >200.0)
-    height=1e36;		  
+where(var_msk==1)
+  lon_2D_rct=2*lon_2D_rct;
 @end example
 
-@noindent A more complex example. Consider the the situation where we have irregularly gridded data, decribed using rank 2 variables:@*
+Another example @*
+Suppose we have the variable@*
+@code{int RDM(time);} @*
+And we want to set the values less than 8 or greater than 80 to 0.
+@example
+where(RDM <8 || RDM >80)
+  RDM=0;          
+@end example
+
+
+@noindent A more complex example.@*
+Consider the the situation where we have irregularly gridded data, decribed using rank 2 variables:@*
+
+@noindent @code{
 double lat(south_north,east_west)@*
 double lon(south_north,east_west)@* 
 double temperature(south_north,east west)@*
-@sp 1
+}
 @noindent To find the average temperature in a region [lat_min,lat_max] and [lon_min,lon_max]:
 
 @example
@@ -6664,10 +6750,12 @@ ncap2 -s 'ORO_msk=(ORO==2.0);ORO=ORO_msk*3.0+!ORO_msk*ORO' in.nc out.nc
 This creates and uses @code{ORO_msk} to mask the subsequent arithmetic
 operation.
 Values of @code{ORO} are only changed where @code{ORO_msk} is true,
-i.e., where @code{ORO} @w{equals 2.0}.
-@cindex Fortran90
-In the future, @command{ncap2} will support the Fortran90 @code{where} 
-construct to further simplify this syntax.
+i.e., where @code{ORO} @w{equals 2.0} @*
+Using the @code{where} statement the above code simplifies to :
+@example
+ncap2 -s 'where(ORO==2.0) ORO=3.0;' in.nc foo.nc
+@end example
+
 
 @html
 <a name="cvr"></a> <!-- http://nco.sf.net/nco.html#cvr -->
