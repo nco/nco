@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.494 2008-09-08 14:05:23 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.495 2008-09-11 15:21:50 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5415,6 +5415,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Examples ncap2::             
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity::
+* Netcdf3/4 naming conventions::
 @end menu
 
 @html
@@ -5497,7 +5498,7 @@ Expressions are the fundamental building block of ncap2. Expressions can be comp
 Arithmetic operators ( * / % + - ^ )
 Binary Operators     ( >, >= <, <= ==, !=,==,||,&&, >>,<< ) 
 Unary Operators      ( +,-,++,--,! )   
-Ternary Operator     ( exp1 ? exp2 : exp4 ) 
+Conditional Operator ( exp1 ? exp2 : exp3 ) 
 Assign Operators     ( =,+=,-=,/=, *= ) 
 @end example
 
@@ -5650,6 +5651,18 @@ z1=four+=one*=10 // z1=14 four=14 one=10;
 time-=2          // time= -1,0,1,2,3,4,5,6,7,8
 @end example
 
+@noindent @strong{Conditional Operator ?: } @*
+   @noindent exp1 ? exp2 : exp3 @*
+The conditional operator ( or ternary Operator) is nice and succint way of writing an if/then/else. If exp1 evalutes to true then exp2 is returned else exp3 is returned.
+
+example
+@example
+weight_avg= weight.avg();
+weight_avg@@units= (weight_avg ==1 ? "kilo" : "kilos");  
+
+PS_nw= PS - (PS.min() >100000 ? 100000 : 0 );
+@end example
+
 @html
 <a name="ncap_dims"></a> <!-- http://nco.sf.net/nco.html#ncap_dims -->
 @end html
@@ -5680,16 +5693,38 @@ new_var_grw[$cnt_grw]=0.0;
 new_var_grw( 0:($cnt_grw.size-2))=new_var;
 @end example
 
+@noindent @strong{Dimension Abbreviations @*}
+@noindent Its possible to use dimension abbreviations as method arguments. @*
+$0 is the first dimension of the variable @*
+$1 is the second dimension of the variable @*
+$n is the n+1 dimension of the variable @*
+
+@noindent consider the variables:@*
+@example
+float four_dmn_rec_var(time,lat,lev,lon);
+double three_dmn_var_dbl(time,lat,lon);
+
+four_nw=four_dmn_rev_var.reverse($time,$lon)
+four_nw=four_dmn_rec_var.reverse($0,$3);
+
+four_avg=four_dmn_rec_var.avg($lat,$lev);  
+four_avg=four_dmn_rec_var.avg($1,$2);  
+
+three_mw=three_dmn_var_dbl.permute($time,$lon,$lat);
+three_mw=three_dmn_var_dbl.permute($0,$2,$1);
+@end example
+
+
+@noindent @strong{ID Quoting @*}
 If the dim name contains non-regular characters use ID quoting...
 @example
 defdim("a--list.A",10);
 A1['$a--list.A']=30.0;
 @end example
 
-@noindent
-GOTCHA @*
-@noindent
-It is not possible to manually define in Ouptut any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
+
+@noindent @strong{GOTCHA @*}
+@noindent It is not possible to manually define in Ouptut any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
 
 @html
 <a name="lhc"></a> <!-- http://nco.sf.net/nco.html#lhc -->
@@ -6041,7 +6076,7 @@ n6@@units="kelvin" // attribute will be type NC_CHAR
 @end html
 @node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
-The synatx of  the if statement is similar to its C counterpart.
+The synatx of  the if statement is similar to its C counterpart. The conditional operator (ternary operator) has also been implemented.
 
 @example
 
@@ -6102,6 +6137,12 @@ if(fl_typ==fl_typ_gcm)@{
 @} // !fl_typ
 @end example
 
+@noindent @strong{Conditional Operator @*}
+@example
+// nb you need netCDF4 to run this example
+th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint(): three_dmn_var_sht.int() ); 
+
+@end example
 
 
 @html
@@ -6165,15 +6206,14 @@ n2=rec_var_int_mss_val_int + rec_var_int_mss_val_int.reverse($time);
 n2=-999,-999,11,11,11,11,11,11,999,-999;
 @end example
 
-The following methods are used to edit the missing value associated with a variable. They only work on variables in Output
-
+The following methods are used to edit the missing value associated with a variable. They only work on variables in Output.
 
 
 @table @code
 @item set_miss(expr)
  Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
 @item change_miss(expr)
- Changes the missing value elements of the variable to the new value (nb an expensive function).
+ Changes the missing value elements of the variable to the new missing value (nb an expensive function).
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @end table
@@ -6229,7 +6269,7 @@ three_avg=three_dmn_var_sht.double().avg().short();
 
 @sp 1
 @noindent @strong{ Aggregate Methods @* } 
-@noindent These methods mirror the averging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifiying no dims is equivalent to specifying all dims i.e  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
+@noindent These methods mirror the averging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifiying no dimensions is equivalent to specifying all dimensions i.e  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
 
 @table @code
 @item avg()
@@ -6287,7 +6327,7 @@ These functions are used to manipulate missing values and RAM variables.
 @item set_miss(expr)
  Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
 @item change_miss(expr)
- Changes the missing value elements of the variable to the new value (nb an expensive function).
+ Changes the missing value elements of the variable to the new missing value (nb an expensive function).
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @item ram_write()
@@ -6314,7 +6354,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @sp 1
 @noindent @strong{Type Conversion Methods @*}
-@noindent These methods allow ncap2 to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}).
+@noindent These methods allow ncap2 to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You can only use the new netcdf4 types if you have compiled/links nco with the netcdf4 library and the Output file is hdf5.
 
 @table @code
 @item
@@ -7371,9 +7411,9 @@ other OSs.}
 @c Begin HMB documentation
 
 @html
-<a name="opts"></a> <!-- http://nco.sf.net/nco.html#grd -->
+<a name="ncap_opts"></a> <!-- http://nco.sf.net/nco.html#ncap_opts -->
 @end html
-@node Operators precedence and associativity , , Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
+@node Operators precedence and associativity , Netcdf3/4 naming conventions, Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
 @subsection Operators precedence and associativity
 This page lists the ncap operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
 
@@ -7411,6 +7451,60 @@ This page lists the ncap operators in order of precedence (highest to lowest). T
 @item @code{+= -=} @tab	Addition/subtraction assignment	
 @item @code{*= /=} @tab	Multiplication/division assignment
 @end multitable
+
+
+@html
+<a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
+@end html
+@node Netcdf3/4 naming conventions, ,Operators precedence and associativity, ncap2 netCDF Arithmetic Processor
+@subsection Netcdf3/4 naming conventions
+
+The following comments are lifted directly from the netcdf libraries and detail the dimension/variable/attribute naming conventions for each release.
+
+
+@noindent netcdf-3.5.1 @*
+netcdf-3.6.0-p1 @*
+netcdf-3.6.1 @*
+netcdf-3.6.2 @*
+
+@example
+/*
+ * ( [a-zA-Z]|[0-9]|'_'|'-'|'+'|'.'|'|':'|'@@'|'('|')' )+
+ * Verify that a name string is valid
+ * CDL syntax, eg, all the characters are
+ * alphanumeric, '-', '_', '+', or '.'.
+ * Also permit ':', '@@', '(', or ')' in names for chemists currently making 
+ * use of these characters, but don't document until ncgen and ncdump can 
+ * also handle these characters in names.
+ */
+@end example
+
+
+@noindent netcdf-3.6.3 @*
+netcdf-4.0 Final  2008/08/28 @*
+
+@example
+/*
+ * Verify that a name string is valid syntax.  The allowed name
+ * syntax (in RE form) is:
+ *
+ * ([a-zA-Z_]|@{UTF8@})([^\x00-\x1F\x7F/]|@{UTF8@})*
+ *
+ * where UTF8 represents a multibyte UTF-8 encoding.  Also, no
+ * trailing spaces are permitted in names.  This definition
+ * must be consistent with the one in ncgen.l.  We do not allow '/'
+ * because HDF5 does not permit slashes in names as slash is used as a
+ * group separator.  If UTF-8 is supported, then a multi-byte UTF-8
+ * character can occur anywhere within an identifier.  We later
+ * normalize UTF-8 strings to NFC to facilitate matching and queries.
+ */ 
+@end example
+
+
+
+
+
+
 
 @c End HMB documentation
 
