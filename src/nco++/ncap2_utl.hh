@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.9 2008-02-07 14:56:17 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.10 2008-09-12 13:37:30 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -99,6 +99,7 @@ ncap_att_cpy
 void 
 ncap_att_prn   
 (var_sct *var, 
+char *const att_in_sng,
 prs_cls *prs_arg);
 
 
