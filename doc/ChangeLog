@@ -1,3 +1,6 @@
+2008-09-12  Henry Butowsky  <henryb@ntlworld.com>
+	* added convert(nctype) method 
+
 2008-09-02  Charlie Zender  <zender@uci.edu>
 
 	* Add ncks --library to print library version and exit
