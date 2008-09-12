@@ -153,10 +153,8 @@
           fmc_vtr.push_back( fmc_cls("ubyte",  this,(int)NC_UBYTE)); 
           fmc_vtr.push_back( fmc_cls("byte" ,  this,(int)NC_BYTE)); 
           fmc_vtr.push_back( fmc_cls("char",   this,(int)NC_CHAR)); 
-    }
-  }		      
-
-
+    }		      
+  } 
   var_sct * cnv_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("cnv_cls::fnd");
     int nbr_fargs;
@@ -178,7 +176,7 @@
       var1=walker.out(expr);
     else
       var1=walker.out(fargs->getFirstChild());   
-    
+
     //do conversion 
     var1=nco_var_cnf_typ( (nc_type)fdx, var1);  
       
@@ -484,7 +482,7 @@
           var->has_mss_val=True;
           var->mss_val=nco_mss_val_mk(var->type);
           (void)memcpy(var->mss_val.vp, var->val.vp,nco_typ_lng(var->type));
-          nco_mss_val_cp(var,var_in);
+            (var,var_in);
           nco_var_free(var); 
           rval=1; 
           break;
@@ -785,6 +783,7 @@
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("pow",this,(int)PPOW));
       fmc_vtr.push_back( fmc_cls("atan2",this,(int)PATAN2));
+      fmc_vtr.push_back( fmc_cls("convert",this,(int)CONVERT));
 
     }
   }
@@ -838,7 +837,22 @@
 
       case PATAN2: 
       var=ncap_var_var_op(var1,var2,ATAN2);
-        break;
+        break;                
+        
+      case CONVERT:{
+        /* Change type to int */
+       int c_typ;
+       var2=nco_var_cnf_typ(NC_INT,var2);
+       (void)cast_void_nctype(NC_INT,&var2->val);
+       c_typ=var2->val.lp[0];      
+       (void)cast_nctype_void(NC_INT,&var2->val);
+       var2=nco_var_free(var2);
+
+       // the following code assumes types are in accending order
+
+       var=nco_var_cnf_typ( (nc_type)c_typ, var1);
+      }    
+
     }
       
     return var; 
