@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.105 2008-04-01 11:33:36 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.106 2008-09-12 13:38:28 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -520,6 +520,7 @@ ncap_att_cpy
 void 
 ncap_att_prn     /* [fnc] Print a single attribute*/
 (var_sct *var,   /* I Variable containing att */
+char *const att_in_sng, /* user defined format string */
 prs_cls *prs_arg) /*Maybe used at some point */
 {
   char dlm_sng[3];
@@ -531,14 +532,18 @@ prs_cls *prs_arg) /*Maybe used at some point */
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=var->sz;
 
-
-    (void)fprintf(stdout,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
-    
+    if(att_in_sng ==(char*)NULL) {        
+      (void)fprintf(stdout,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
     /* Typecast pointer to values before access */
-    (void)cast_void_nctype(var->type,&var->val);
-
-    (void)strcpy(dlm_sng,", ");
-    (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(var->type));
+      (void)cast_void_nctype(var->type,&var->val);
+      (void)strcpy(dlm_sng,", ");
+      (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(var->type));
+    /* user defined format string */ 
+     } else {
+      (void)strcpy(att_sng,att_in_sng);
+      (void)strcpy(dlm_sng,"");
+    }
+ 
     switch(var->type){
     case NC_FLOAT:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
