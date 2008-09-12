@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.134 2008-08-14 15:09:41 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.135 2008-09-12 13:36:16 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -405,6 +405,7 @@ LOR options { paraphrase="||";}: "||" ;
 
 DOT options {paraphrase="dot operator";} : '.';
 
+
 protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
@@ -512,13 +513,12 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier
    ;
 
 
-
 // Return a quoted var or att (var_nm@att_nm)
 VAR_ATT_QT :( '\''!)
-               ((LPHDGT|'-'|'.')+      {$setType(VAR_ID);})
-               ( '@' (LPHDGT|'-'|'.')+ {$setType(ATT_ID);})?
-            ('\''!)
-   ;
+                ((LPHDGT|'-'|'.')+      {$setType(VAR_ID);})
+                ( '@' (LPHDGT|'-'|'.')+ {$setType(ATT_ID);})?
+             ('\''!)
+   ;     
 
 
 //Return a quoted dim
@@ -1199,6 +1199,7 @@ static std::vector<std::string> lpp_vtr;
 
           int apsn;
           var_sct *var1;
+          char* fmt_sng;
           std::string fl_nm;
           std::string att_nm;
           std::string var_nm;
@@ -1237,7 +1238,15 @@ static std::vector<std::string> lpp_vtr;
             goto end3;    
            }
 
-          (void)ncap_att_prn(var,prs_arg);
+
+          // Grab format string 
+          if(patt->getNextSibling() && patt->getNextSibling()->getType()==NSTRING)
+            fmt_sng=strdup(patt->getNextSibling()->getText().c_str());
+          else 
+            fmt_sng=(char*)NULL; 
+
+
+          (void)ncap_att_prn(var,fmt_sng,prs_arg);
           var=nco_var_free(var); 
 
           end3:   ;
