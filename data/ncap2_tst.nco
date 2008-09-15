@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.10 2008-09-15 15:08:36 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.11 2008-09-15 15:43:34 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -287,8 +287,8 @@ nbr_err_ttl=0;
   f2='u---u'+40;
 
   defdim("t..t",5);
-  f3['$lon','$lat','$t..t']=1.1d;
-  f4='$t..t'.size;
+  f3[$'lon',$'lat',$'t..t']=1.1d;
+  f4=$'t..t'.size;
 
 
   if( f1 !=3000L) {
