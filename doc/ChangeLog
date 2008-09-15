@@ -3,7 +3,7 @@
 	* Can now do 'var_nm'@att_nm  or 'var_nm'@'att_nm'
 	  or var_nm@'att_nm'
 	* quoting supports the following characters
-        * 'a..z'|'A..Z'|0..9||'-'|'+'|'.'|'('|')'|':'|'@' 
+        * 'a..z'|'A..Z'|0..9|'_'|'-'|'+'|'.'|'('|')'|':'|'@' 
 2008-09-12  Henry Butowsky  <henryb@ntlworld.com>
 	* added convert(nctype) method 
 
