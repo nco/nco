@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.9 2008-04-22 12:06:28 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.10 2008-09-15 15:08:36 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -281,9 +281,9 @@ nbr_err_ttl=0;
   'u---u'=10L;
   'v...v'=20L;
   'w...w'='u---u'*'v...v';
-  'u---u@kill'=10L;
-  'v...v@o.one'=30L;
-  f1='v...v@o.one' *100;
+  'u---u'@kill=10L;
+  'v...v'@'o.one'=30L;
+  f1='v...v'@'o.one' *100;
   f2='u---u'+40;
 
   defdim("t..t",5);
