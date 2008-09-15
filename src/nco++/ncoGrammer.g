@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.136 2008-09-15 15:09:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.137 2008-09-15 15:44:41 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -412,8 +412,8 @@ protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
 
-
 protected VAR_ID_QT: ( '\''!) (LPHDGT|'-'|'+'|'.'|'('|')'|':'|'@' )+ ('\''!) ;      
+
 
 
 protected BLASTOUT: .
@@ -528,13 +528,13 @@ VAR_ATT_QT: VAR_ID_QT  {$setType(VAR_ID);}
    ;
 
 
-
 //Return a quoted dim
-DIM_QT: ( '\''!)
-           ('$'! (LPHDGT|'-'|'.')+ {$setType(DIM_ID);})
-        ('\''!) 
-           ( ".size"! { $setType(DIM_ID_SIZE);})?
+DIM_QT: ('$'! VAR_ID_QT  {$setType(DIM_ID);})
+        ( ".size"! { $setType(DIM_ID_SIZE);})?
    ;
+
+
+
 
 DIM_VAL options { paraphrase="dimension identifier"; } 
         : '$'! (LPH)(LPH|DGT)* 
