@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.135 2008-09-12 13:36:16 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.136 2008-09-15 15:09:46 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -406,10 +406,14 @@ LOR options { paraphrase="||";}: "||" ;
 DOT options {paraphrase="dot operator";} : '.';
 
 
+
 protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
+
+
+protected VAR_ID_QT: ( '\''!) (LPHDGT|'-'|'+'|'.'|'('|')'|':'|'@' )+ ('\''!) ;      
 
 
 protected BLASTOUT: .
@@ -428,6 +432,9 @@ protected BLASTOUT: .
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
          }  
     ;     
+
+
+
 
 	
 UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
@@ -509,16 +516,17 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier
                $setType(VAR_ID); 
 
            }   
-           ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
+           ('@' ( ((LPH)(LPH|DGT)*) | VAR_ID_QT )
+                       {$setType(ATT_ID);}
+           )?
+   ;     
+
+VAR_ATT_QT: VAR_ID_QT  {$setType(VAR_ID);}
+           ('@' ( ((LPH)(LPH|DGT)*) | VAR_ID_QT )
+                       {$setType(ATT_ID);}
+           )?
    ;
 
-
-// Return a quoted var or att (var_nm@att_nm)
-VAR_ATT_QT :( '\''!)
-                ((LPHDGT|'-'|'.')+      {$setType(VAR_ID);})
-                ( '@' (LPHDGT|'-'|'.')+ {$setType(ATT_ID);})?
-             ('\''!)
-   ;     
 
 
 //Return a quoted dim
