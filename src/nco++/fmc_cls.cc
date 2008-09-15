@@ -828,6 +828,15 @@
       var1=walker.out(fargs->getFirstChild());   
       var2=walker.out(fargs->getFirstChild()->getNextSibling());
     }
+    
+    if(prs_arg->ntl_scn)
+       if(var1->undefined || var2->undefined){
+	var1=nco_var_free(var1);
+        var2=nco_var_free(var1);
+        var=ncap_var_udf("~mth2_cls");
+        return var;
+       }                          
+      
 
     switch(fdx){
 
@@ -842,13 +851,12 @@
       case CONVERT:{
         /* Change type to int */
        int c_typ;
+
        var2=nco_var_cnf_typ(NC_INT,var2);
        (void)cast_void_nctype(NC_INT,&var2->val);
        c_typ=var2->val.lp[0];      
        (void)cast_nctype_void(NC_INT,&var2->val);
        var2=nco_var_free(var2);
-
-       // the following code assumes types are in accending order
 
        var=nco_var_cnf_typ( (nc_type)c_typ, var1);
       }    
