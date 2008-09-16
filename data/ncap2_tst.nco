@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.11 2008-09-15 15:43:34 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.12 2008-09-16 11:05:39 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -442,7 +442,7 @@ nbr_err_ttl=0;
   j1=time;
   where(time > 6)
     j1=10;
-  else
+  elsewhere
     j1=5;  
 
   j1_ttl=j1.total();
@@ -459,7 +459,7 @@ nbr_err_ttl=0;
   where(three_dmn_var_dbl >40) {
     j2=j3;
     j4=10.0;
-  } else {
+  } elsewhere {
     j3=-1.0;
     j4=j3;
   } 
