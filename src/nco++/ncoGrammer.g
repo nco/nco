@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.137 2008-09-15 15:44:41 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.138 2008-09-16 11:08:44 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -100,7 +100,7 @@ statement:
         | WHERE^ LPAREN! expr RPAREN! statement 
          ( //standard if-else ambiguity
          options {warnWhenFollowAmbig = false;} 
-        : ELSE! statement )?
+        : ELSEWHERE! statement )?
         // print statement
         | PRINT^ LPAREN! (VAR_ID|ATT_ID|NSTRING) (COMMA! NSTRING)?  RPAREN! SEMI! 
         // Code block
@@ -290,6 +290,7 @@ tokens {
     IF ="if";
     ELSE="else";
     WHERE="where";
+    ELSEWHERE="elsewhere";
     DEFDIM="defdim";
     SHIFTL="<<";
     SHIFTR=">>";
@@ -411,8 +412,8 @@ protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
-
-protected VAR_ID_QT: ( '\''!) (LPHDGT|'-'|'+'|'.'|'('|')'|':'|'@' )+ ('\''!) ;      
+protected VAR_NM:  (LPH)(LPH|DGT)* ; 
+protected VAR_NM_QT: ( '\''!) (LPHDGT|'-'|'+'|'.'|'('|')'|':'|'@' )+ ('\''!) ;      
 
 
 
@@ -507,42 +508,31 @@ NUMBER:
 
 // Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
-        :  (LPH)(LPH|DGT)*   
-            {
-            // check function/method vector
-            if( std::binary_search(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText)))
+        :  ( VAR_NM   
+             {
+              // check function/method vector
+              if( std::binary_search(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText)))
                $setType(FUNC);             
-            else 
+              else 
                $setType(VAR_ID); 
 
-           }   
-           ('@' ( ((LPH)(LPH|DGT)*) | VAR_ID_QT )
+             }
+           | VAR_NM_QT {$setType(VAR_ID);} 
+           )
+   
+           ('@' ( VAR_NM | VAR_NM_QT )
                        {$setType(ATT_ID);}
            )?
    ;     
 
-VAR_ATT_QT: VAR_ID_QT  {$setType(VAR_ID);}
-           ('@' ( ((LPH)(LPH|DGT)*) | VAR_ID_QT )
-                       {$setType(ATT_ID);}
-           )?
+
+//Return a dim unquoted and quoted 
+DIM_QT options { paraphrase="dimension identifier"; } 
+       : ('$'! (VAR_NM|VAR_NM_QT)  {$setType(DIM_ID);})
+         ( ".size"! { $setType(DIM_ID_SIZE);})?
    ;
 
-
-//Return a quoted dim
-DIM_QT: ('$'! VAR_ID_QT  {$setType(DIM_ID);})
-        ( ".size"! { $setType(DIM_ID_SIZE);})?
-   ;
-
-
-
-
-DIM_VAL options { paraphrase="dimension identifier"; } 
-        : '$'! (LPH)(LPH|DGT)* 
-            {$setType(DIM_ID);}
-         ( ".size"!  
-            { $setType(DIM_ID_SIZE);}
-         )? 
-   ;  
+ 
 
 // Shorthand for naming dims in method e.g $0,$1, $2 etc
 DIM_MTD_ID 
