@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.86 2008-09-02 17:25:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.87 2008-09-17 14:10:07 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.86 2008-09-02 17:25:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.86 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.87 2008-09-17 14:10:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.87 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -275,6 +275,8 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"suspend", no_argument,0,'S'},
       {"mask_comparator",required_argument,0,'T'},
       {"msk_cmp_typ",required_argument,0,'T'},
@@ -283,8 +285,6 @@ main(int argc,char **argv)
       {"threads",required_argument,0,'t'},
       {"omp_num_threads",required_argument,0,'t'},
       {"variable",required_argument,0,'v'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"normalize-by-tally",no_argument,0,'W',},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
@@ -418,7 +418,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

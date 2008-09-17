@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.105 2008-09-02 17:25:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.106 2008-09-17 14:10:14 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.105 2008-09-02 17:25:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.105 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.106 2008-09-17 14:10:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.106 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -143,9 +143,9 @@ main(int argc,char **argv)
       {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"revision",no_argument,0,'r'},
-      {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
+      {"variable",required_argument,0,'v'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     };
@@ -211,7 +211,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

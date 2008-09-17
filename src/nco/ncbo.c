@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.131 2008-09-02 17:25:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.132 2008-09-17 14:10:09 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.131 2008-09-02 17:25:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.131 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.132 2008-09-17 14:10:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.132 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -240,6 +240,8 @@ main(int argc,char **argv)
       {"revision",no_argument,0,'r'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
+      {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"thr_nbr",required_argument,0,'t'},
       {"threads",required_argument,0,'t'},
       {"omp_num_threads",required_argument,0,'t'},
@@ -330,7 +332,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

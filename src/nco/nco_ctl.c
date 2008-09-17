@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.220 2008-09-02 17:25:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.221 2008-09-17 14:10:11 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -591,15 +591,15 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   }else{
     lbr_vrs_sng_lng=(size_t)(of_ptr-lbr_sng);
   } /* endif */
-  lbr_vrs_sng=(char *)nco_malloc(lbr_vrs_sng_lng+1);
+  lbr_vrs_sng=(char *)nco_malloc(lbr_vrs_sng_lng+1ul);
   strncpy(lbr_vrs_sng,lbr_sng,lbr_vrs_sng_lng);
   lbr_vrs_sng[lbr_vrs_sng_lng]='\0'; /* NUL-terminate */
 
   dlr_ptr=strstr(lbr_sng," $");
   if(of_ptr != NULL && dlr_ptr != NULL){
-    cmp_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
+    cmp_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4ul); /* 4 is the length of " of " */
     cmp_dat_sng=(char *)nco_malloc(cmp_dat_sng_lng+1ul);
-    strncpy(cmp_dat_sng,of_ptr+4,cmp_dat_sng_lng); /* 4 is the length of " of " */
+    strncpy(cmp_dat_sng,of_ptr+4ul,cmp_dat_sng_lng); /* 4 is the length of " of " */
     cmp_dat_sng[cmp_dat_sng_lng]='\0'; /* NUL-terminate */
   }else{
     cmp_dat_sng=(char *)strdup("Unknown");

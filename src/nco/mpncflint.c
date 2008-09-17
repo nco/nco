@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.62 2008-09-02 17:25:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.63 2008-09-17 14:10:05 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.62 2008-09-02 17:25:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.62 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.63 2008-09-17 14:10:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.63 $";
   const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -239,11 +239,11 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"suspend", no_argument,0,'S'},
       {"thr_nbr",required_argument,0,'t'},
       {"variable",required_argument,0,'v'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"weight",required_argument,0,'w'},
       {"wgt_var",no_argument,0,'w'},
       {"help",no_argument,0,'?'},
@@ -342,7 +342,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

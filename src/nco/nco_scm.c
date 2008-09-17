@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.34 2008-01-06 13:09:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.35 2008-09-17 14:10:12 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -140,11 +140,19 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 } /* end cvs_vrs_prs() */
 
 void
-copyright_prn /* [fnc] Print copyright notice */
+nco_cpy_prn(void) /* [fnc] Print copyright notice */
+{
+  /* Purpose: Print copyright notice */
+  (void)fprintf(stderr,"Copyright (C) 1995--2008 Charlie Zender\n");
+  (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nYou may copy, distribute, and/or modify NCO under the terms of the GNU General Public License (GPL) Version 3\n");
+} /* end copyright_prn() */
+
+void
+nco_vrs_prn /* [fnc] Print NCO version */
 (const char * const CVS_Id, /* I [sng] CVS identification string */
  const char * const CVS_Revision) /* I [sng] CVS revision string */
 {
-  /* Purpose: Print copyright notice */
+  /* Purpose: Print NCO version */
   char *date_cvs; /* Date this file was last modified */
   char *vrs_rcs; /* Version of this file, e.g., 1.213 */
   char *vrs_cvs; /* Version according to CVS release tag */
@@ -187,16 +195,14 @@ copyright_prn /* [fnc] Print copyright notice */
   }else{
     (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_cpp,date_cpp,hst_cpp,usr_cpp);
   } /* endif */
-  (void)fprintf(stderr,"Copyright (C) 1995--2008 Charlie Zender\n");
   if(strlen(CVS_Id) > strlen("*Id*")){
     (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cvs);
   }else{
     (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cpp);
   } /* endif */
-  (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nYou may copy, distribute, and/or modify NCO under the terms of the GNU General Public License (GPL) Version 3\n");
 
   date_cvs=(char *)nco_free(date_cvs);
   vrs_rcs=(char *)nco_free(vrs_rcs);
   vrs_cvs=(char *)nco_free(vrs_cvs);
-} /* end copyright_prn() */
+} /* end nco_vrs_prn() */
 

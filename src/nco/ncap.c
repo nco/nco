@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.220 2008-09-02 17:25:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.221 2008-09-17 14:10:08 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.220 2008-09-02 17:25:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.220 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.221 2008-09-17 14:10:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.221 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -275,6 +275,8 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"file",required_argument,0,'S'},
       {"script-file",required_argument,0,'S'},
       {"fl_spt",required_argument,0,'S'},
@@ -282,8 +284,6 @@ main(int argc,char **argv)
       {"script",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
       {"variable",no_argument,0,'v'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
@@ -378,7 +378,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

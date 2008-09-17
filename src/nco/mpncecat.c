@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.62 2008-09-02 17:25:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.63 2008-09-17 14:10:02 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.62 2008-09-02 17:25:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.62 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.63 2008-09-17 14:10:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.63 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -220,6 +220,8 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"suspend", no_argument,0,'S'},
       {"thr_nbr",required_argument,0,'t'},
       {"threads",required_argument,0,'t'},
@@ -227,8 +229,6 @@ main(int argc,char **argv)
       {"ulm_nm",required_argument,0,'u'},
       {"rcd_nm",required_argument,0,'u'},
       {"variable",required_argument,0,'v'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
@@ -325,7 +325,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

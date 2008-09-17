@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.71 2008-09-02 17:25:55 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.72 2008-09-17 14:10:16 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -79,7 +79,6 @@
 #include "libnco.h"    /* netCDF Operator (NCO) library */
 #include "sdo_utl.hh"  /* error messages etc */
 
-
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
@@ -88,15 +87,12 @@ char **ncap_fl_spt_glb=NULL_CEWI; /* [fl] Script file */
 /* Forward Declaration */
 void pop_fmc_vtr(std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc);
 
-
-
 int 
 main(int argc,char **argv)
 {
   const char fnc_nm[]="main"; 
   FILE *yyin; /* file handle used to check file existance */
   int parse_antlr(std::vector<prs_cls> &prs_vtr ,char*,char*);
-
 
   /* fxm TODO nco652 */
   double rnd_nbr(double);
@@ -135,8 +131,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.71 2008-09-02 17:25:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.71 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.72 2008-09-17 14:10:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.72 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -250,6 +246,8 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"file",required_argument,0,'S'},
       {"script-file",required_argument,0,'S'},
       {"signal",no_argument,0,'z'},
@@ -259,8 +257,6 @@ main(int argc,char **argv)
       {"thr_nbr",required_argument,0,'t'},
       {"units",no_argument,0,'u'},
       {"variable",no_argument,0,'v'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
@@ -346,7 +342,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

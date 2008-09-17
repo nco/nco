@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1022 2008-08-22 21:21:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1023 2008-09-17 14:09:59 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -667,7 +667,8 @@ nco943. Add regression test for
 	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
 nco945. ncra problem with netcdf4 record mean of packed double with double missing values
 nco947. Try DAP from netCDF4 daily snapshots
-nco948. 
+nco948. Make --version only call nco_vrs_prn() in all operators (as in ncks.c)
+nco949. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

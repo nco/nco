@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.214 2008-09-02 17:25:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.215 2008-09-17 14:10:10 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.214 2008-09-02 17:25:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.214 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.215 2008-09-17 14:10:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.215 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -174,6 +174,8 @@ main(int argc,char **argv)
       {"lbr",no_argument,0,0},
       {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
+      {"version",no_argument,0,0},
+      {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -224,8 +226,6 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"sng_fmt",required_argument,0,'s'},
       {"string",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
@@ -275,6 +275,10 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+      if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
+	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
+	nco_exit(EXIT_SUCCESS);
+      } /* endif "vrs" */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -356,7 +360,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.59 2008-09-02 17:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.60 2008-09-17 14:10:06 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.59 2008-09-02 17:25:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.59 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.60 2008-09-17 14:10:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.60 $";
   const char * const opt_sht_lst="34Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -349,7 +349,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print CVS program information and copyright notice */
-      (void)copyright_prn(CVS_Id,CVS_Revision);
+      (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);

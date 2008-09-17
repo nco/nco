@@ -1,12 +1,21 @@
+2008-09-17  Charlie Zender  <zender@uci.edu>
+
+	* --version only calls nco_vrs_prn() in ncks, rest to follow
+
 2008-09-15  Henry Butowsky  <henryb@ntlworld.com>
-	* New rules for var/attdim quoting 
-	* Can now do 'var_nm'@att_nm  or 'var_nm'@'att_nm'
-	  or var_nm@'att_nm'
-        * dim quoting now $'dim_nm'
-	* quoting supports the following characters
-        * 'a..z'|'A..Z'|0..9|'_'|'-'|'+'|'.'|'('|')'|':'|'@' 
+
+	* New rules for variable/attribute/dimension quoting 
+
+	* Can now do 'var_nm'@att_nm  or 'var_nm'@'att_nm' or var_nm@'att_nm'
+
+        * Dimension quoting now $'dim_nm'
+
+	* Quoting supports the following characters:
+          'a..z'|'A..Z'|0..9|'_'|'-'|'+'|'.'|'('|')'|':'|'@' 
+
 2008-09-12  Henry Butowsky  <henryb@ntlworld.com>
-	* added convert(nctype) method 
+
+	* Added convert(nctype) method 
 
 2008-09-02  Charlie Zender  <zender@uci.edu>
 
