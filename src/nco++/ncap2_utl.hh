@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.10 2008-09-12 13:37:30 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.11 2008-09-17 14:48:34 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -74,6 +74,15 @@ ncap_var_write_tmp(
 var_sct *var,
 bool bram, 
 prs_cls *prs_arg);
+
+
+var_sct*               /* O [sct] variable containing attribute */
+ncap_att_get	       /*   [fnc] Grab an attribute from input file */	
+(int var_id,           /*   I  var id        */ 
+ const char *var_nm,   /*   I [sng] var name */
+ const char *att_nm,   /*   I [sng] att name */
+ prs_cls *prs_arg);    /* I/O vectors of atts & vars & file names  */
+
 
 var_sct *                /* O [sct] variable containing attribute */
 ncap_att_init(           /*   [fnc] Grab an attribute from input file */
