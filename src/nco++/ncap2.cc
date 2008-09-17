@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.72 2008-09-17 14:10:16 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.73 2008-09-17 15:03:05 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.72 2008-09-17 14:10:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.73 2008-09-17 15:03:05 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -418,13 +418,13 @@ main(int argc,char **argv)
   mth2_cls mth2_obj(true);
   // Basic Functions
   bsc_cls bsc_obj(true);
-
   //PDQ functions
   pdq_cls pdq_obj(true);
-
   //Mask functions
   msk_cls msk_obj(true);
-   
+  //Pack functions
+  pck_cls pck_obj(true); 
+
   //populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
   (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
@@ -434,6 +434,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
   (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&pck_obj);
   
   //Sort Vector 
   std::sort(fmc_vtr.begin(),fmc_vtr.end());
@@ -757,7 +758,6 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncap-specific memory */
-  
     if(fl_spt_usr != NULL_CEWI) fl_spt_usr=(char *)nco_free(fl_spt_usr);
     
     /* Free extraction lists */ 
@@ -803,9 +803,18 @@ main(int argc,char **argv)
 
     /* clear vectors */
     fmc_vtr.clear();
-    cnv_obj.fmc_vtr.clear();
-    mth_obj.fmc_vtr.clear();
- 
+
+   cnv_obj.fmc_vtr.clear();
+   agg_obj.fmc_vtr.clear();
+   utl_obj.fmc_vtr.clear();
+   mth_obj.fmc_vtr.clear();
+   mth2_obj.fmc_vtr.clear();
+   bsc_obj.fmc_vtr.clear();
+   pdq_obj.fmc_vtr.clear();
+   msk_obj.fmc_vtr.clear();
+   pck_obj.fmc_vtr.clear();     
+
+
     
     /* Free variable lists */
     if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
