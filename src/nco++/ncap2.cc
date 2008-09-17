@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.73 2008-09-17 15:03:05 hmb Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.74 2008-09-17 16:35:51 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -86,6 +86,7 @@ char **ncap_fl_spt_glb=NULL_CEWI; /* [fl] Script file */
 
 /* Forward Declaration */
 void pop_fmc_vtr(std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc);
+void ram_vars_add(prs_cls *prs_arg);
 
 int 
 main(int argc,char **argv)
@@ -131,8 +132,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.73 2008-09-17 15:03:05 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.73 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.74 2008-09-17 16:35:51 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.74 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -515,8 +516,9 @@ main(int argc,char **argv)
 # else
   prs_arg.NCAP4_FILL=false;
 #endif
+  prs_arg.ntl_scn=false;
+  (void)ram_vars_add(&prs_arg);
 
-  
   prs_vtr.push_back(prs_arg); 
 
   for(idx=1 ; idx < thr_nbr ;idx++) {
@@ -842,6 +844,50 @@ std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc)
   
  }
 
+// Add some useful constants as RAM variables 
+void
+ram_vars_add(
+prs_cls *prs_arg)
+{
+var_sct *var1;
+
+var1=ncap_sclr_var_mk(std::string("__BYTE"),nco_int(NC_BYTE));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__CHAR"),nco_int(NC_CHAR));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__SHORT"),nco_int(NC_SHORT));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__INT"),nco_int(NC_INT));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__FLOAT"),nco_int(NC_FLOAT));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__DOUBLE"),nco_int(NC_DOUBLE));
+prs_arg->ncap_var_write(var1,true);
+
+#ifdef ENABLE_NETCDF4
+var1=ncap_sclr_var_mk(std::string("__UBYTE"),nco_int(NC_UBYTE));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__USHORT"),nco_int(NC_USHORT));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__UINT"),nco_int(NC_UINT));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__INT64"),nco_int(NC_INT64));
+prs_arg->ncap_var_write(var1,true);
+
+var1=ncap_sclr_var_mk(std::string("__UINT64"),nco_int(NC_UINT64));
+prs_arg->ncap_var_write(var1,true);
+
+#endif
+
+}
 
 
 
