@@ -92,7 +92,7 @@ public:
 //Utility Functions /****************************************/
 class utl_cls: public vtl_cls {
 private:
-   enum {SET_MISS,CH_MISS,DEL_MISS,RAM_WRITE,RAM_DELETE};
+   enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,RAM_WRITE,RAM_DELETE};
    bool _flg_dbg;
 public:
   utl_cls(bool flg_dbg);
@@ -184,5 +184,17 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
+
+//Pack Function /****************************************/
+class pck_cls: public vtl_cls {
+private:
+   enum {PPACK, PPACK_BYTE, PPACK_CHAR, PPACK_SHORT, PPACK_INT, PUNPACK,};
+   bool _flg_dbg;
+public:
+  pck_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+
+};
+
 
 #endif

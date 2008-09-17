@@ -537,6 +537,11 @@
           break;
         }
 
+    case GET_MISS: {
+
+		
+
+	}
     case RAM_WRITE: {
 
       if(Nvar->flg_mem==false){
@@ -580,7 +585,7 @@
 
 //Basic Functions /******************************************/
 
-  bsc_cls::bsc_cls(bool flg_dbg){
+  bsc_cls::bsc_cls(bool  flg_dbg){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("size",this,(int)PSIZE));
@@ -832,7 +837,7 @@
     if(prs_arg->ntl_scn)
        if(var1->undefined || var2->undefined){
 	var1=nco_var_free(var1);
-        var2=nco_var_free(var1);
+        var2=nco_var_free(var2);
         var=ncap_var_udf("~mth2_cls");
         return var;
        }                          
@@ -1229,3 +1234,131 @@
 
 
 } // end function
+
+//Pack Function /******************************************/
+
+  pck_cls::pck_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("pack",this,(int)PPACK));
+      fmc_vtr.push_back( fmc_cls("pack_byte",this,(int)PPACK_BYTE));
+      fmc_vtr.push_back( fmc_cls("pack_char",this,(int)PPACK_CHAR));
+      fmc_vtr.push_back( fmc_cls("pack_short",this,(int)PPACK_SHORT));
+      fmc_vtr.push_back( fmc_cls("pack_int",this,(int)PPACK_INT));
+      fmc_vtr.push_back( fmc_cls("unpack",this,(int)PUNPACK));
+    }
+  }
+
+  var_sct *pck_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("pck_cls::fnd");
+    int nbr_fargs; 
+    int fdx=fmc_obj.fdx();   //index
+    prs_cls *prs_arg=walker.prs_arg;    
+    vtl_typ lcl_typ;
+    var_sct *var_in=NULL_CEWI;
+    var_sct *var_out=NULL_CEWI;
+    nc_type typ;
+    nco_bool PCK_VAR_WITH_NEW_PCK_ATT;
+    
+    std::string serr; 
+    std::string sfnm;
+    RefAST tr;
+  
+    //n.b fargs is an imaginary node -and is ALWAYS present
+    nbr_fargs=fargs->getNumberOfChildren(); 
+  
+    sfnm= (expr ? " method ": " function ") + fmc_obj.fnm(); 
+
+    // no arguments - bomb out
+    if(!expr && nbr_fargs==0){    
+	serr=sfnm + " has been called without an argument";               
+        err_prn(fnc_nm,serr);
+    }
+
+   
+
+    if(expr)
+      tr=expr;
+    else 
+      tr=fargs->getFirstChild();
+
+    var_in=walker.out(tr);
+
+     switch(fdx) {
+	case PPACK:
+        case PPACK_SHORT:
+          typ=NC_SHORT;
+          break;	
+        case PPACK_BYTE:
+          typ=NC_BYTE;
+	  break;			
+        case PPACK_CHAR:
+          typ=NC_CHAR;
+          break; 
+        case PPACK_INT:
+          typ=NC_INT;
+          break; 
+        case PUNPACK:
+          break;
+     }	
+
+    /* deal with initial scan */  
+    if(prs_arg->ntl_scn ){
+
+      switch(fdx) {
+
+        case PPACK:
+        case PPACK_SHORT:
+        case PPACK_BYTE:
+        case PPACK_CHAR:
+        case PPACK_INT:
+	  var_out=nco_var_cnf_typ(typ, var_in);  
+          break;
+
+        case PUNPACK: 
+          var_sct *var_att;
+	  var_att=ncap_att_get(var_in->id,var_in->nm,"scale_factor",prs_arg);
+          if(var_att == (var_sct*)NULL) 
+	    var_att=ncap_att_get(var_in->id,var_in->nm,"add_offset",prs_arg);	
+
+          if(var_att==(var_sct*)NULL){ 
+            var_in=nco_var_free(var_in);     
+            var_out=ncap_var_udf("~dot_methods");  
+          }else{
+	    var_out=nco_var_cnf_typ(var_att->type, var_in);  	
+            var_att=nco_var_free(var_att); 
+         }
+         break;
+      } /* end switch */
+      
+      return var_out;
+    } /* if initial scan */
+
+
+    /* Deal with final scan */
+    switch(fdx) {
+
+	case PPACK: 
+        case PPACK_SHORT:
+        case PPACK_BYTE:
+        case PPACK_CHAR:
+        case PPACK_INT:
+          var_out=nco_var_pck(var_in,typ,&PCK_VAR_WITH_NEW_PCK_ATT);	
+          //var_in=nco_var_free(var_in); 
+          break;
+        case PUNPACK:
+          // Unpacking variable does not create duplicate so DO NOT free var
+          var_out=nco_var_upk(var_in); 
+          break;
+    } 
+
+    return var_out; 
+
+
+}
+
+
+
+
+
+
