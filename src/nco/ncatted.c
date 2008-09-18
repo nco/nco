@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.117 2008-09-18 03:56:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.118 2008-09-18 04:11:24 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.117 2008-09-18 03:56:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.117 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.118 2008-09-18 04:11:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.118 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -266,8 +266,8 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
-      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
+      (void)nco_cpy_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;

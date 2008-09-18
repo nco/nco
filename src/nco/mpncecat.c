@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.64 2008-09-18 03:56:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.65 2008-09-18 04:11:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.64 2008-09-18 03:56:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.65 2008-09-18 04:11:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.65 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -330,8 +330,8 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
-      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
+      (void)nco_cpy_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;

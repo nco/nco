@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.495 2008-09-11 15:21:50 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.496 2008-09-18 04:11:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5275,20 +5275,23 @@ Availability: All operators@*
 Short options: @samp{-r}@*
 Long options: @samp{--revision}, @samp{--version}, or @samp{--vrs}@*
 @end cartouche
-All operators can be told to print their internal version number and
-copyright notice and then quit with the @samp{-r} switch.
+All operators can be told to print their version information,
+library version, copyright notice, and compile-time configuration 
+with the @samp{-r} switch, or its long-option equivalent
+@samp{revision}. 
+The @samp{--version} or @samp{--vrs} switches print the operator
+version information only.
 The internal version number varies between operators, and indicates the 
 most recent change to a particular operator's source code.
 This is useful in making sure you are working with the most recent
 operators.
-The version of @acronym{NCO} you are using might be, e.g., @code{1.2}.
-However using @samp{-r} on, say, @command{ncks}, will produce something
-like @samp{NCO netCDF Operators version 1.2
-Copyright (C) 1995--2000 Charlie Zender
-ncks version 1.30 (2000/07/31) "Bolivia"}.
-This tells you @command{ncks} contains all patches up to version
-@code{1.30}, which dates from @w{July 31}, 2000.
-
+The version of @acronym{NCO} you are using might be, e.g., @code{3.9.5}.
+Using @samp{-r} on, say, @command{ncks}, produces something like 
+@samp{NCO netCDF Operators version "3.9.5" last modified 2008/05/11 built May 12 2008 on neige by zender 
+Copyright (C) 1995--2008 Charlie Zender
+ncks version 20090918}.
+This tells you that @command{ncks} contains all patches up to version 
+@code{3.9.5}, which dates from @w{May 11}, 2008.
 @html
 <a name="rfr"></a> <!-- http://nco.sf.net/nco.html#rfr -->
 @end html

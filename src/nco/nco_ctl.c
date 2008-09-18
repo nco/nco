@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.222 2008-09-17 14:10:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.223 2008-09-18 04:11:25 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -923,7 +923,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-Q")) (void)fprintf(stdout,"-Q, \t\t\tToggle printing of dimension indices and coordinate values\n");
   if(strstr(opt_sng,"-q")) (void)fprintf(stdout,"-q, --quiet\t\tTurn off all printing to screen\n");
   if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R, --rtn, --retain\tRetain remotely-retrieved files after use\n");
-  if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r, --revision, --vrs, --version\tProgram version and copyright notice\n");
+  if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r, --revision, --vrs, --version\tCompile-time configuration and/or program version\n");
   if(strstr(opt_sng,"-s")){
     if(prg_lcl != ncap) (void)fprintf(stdout,"-s, --sng_fmt, --string format\tString format for text output\n");
     if(prg_lcl == ncap) (void)fprintf(stdout,"-s, --spt, --script algebra\tAlgebraic command defining single output variable\n");

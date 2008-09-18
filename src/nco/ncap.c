@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.222 2008-09-18 03:56:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.223 2008-09-18 04:11:24 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.222 2008-09-18 03:56:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.222 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.223 2008-09-18 04:11:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.223 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -383,8 +383,8 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
-      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
+      (void)nco_cpy_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;

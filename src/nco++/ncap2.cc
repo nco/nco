@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.75 2008-09-18 03:56:38 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.76 2008-09-18 04:11:25 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.75 2008-09-18 03:56:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.75 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.76 2008-09-18 04:11:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.76 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -348,8 +348,8 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
-      (void)nco_cpy_prn();
       (void)nco_lbr_vrs_prn();
+      (void)nco_cpy_prn();
       (void)nco_cnf_prn();
       nco_exit(EXIT_SUCCESS);
       break;
