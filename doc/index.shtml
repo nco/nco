@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.493 2008-08-08 19:54:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.494 2008-09-18 15:50:51 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -385,11 +385,26 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <h2>Publications and Presentations</h2>
 <ul>
 
+<li><!-- WZJ083 --> <a name="WZJ083"></a> <!--http://www.ess.uci.edu/~zender#WZJ083 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008), Compiling the uncompilable: A&nbsp;case for shell script compilation, <i>Submitted to ACM Trans. Softw. Engin. Method.</i>.
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.pdf">PDF</a> (&copy;&nbsp;2008 by Springer-Verlag)</a></li>
+
+<li><!-- WZJ082 --> <a name="WZJ082"></a> <!--http://www.ess.uci.edu/~zender#WZJ082 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008), Efficient Clustered Remote Data Analysis Workflows using SWAMP, <i>Submitted to Earth Sci. Inform.</i>.
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ082.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ082.pdf">PDF</a> (&copy;&nbsp;2008 by ACM)</a></li>
+
+<li><!-- WZJ081 --> <a name="WZJ081"></a> <!--http://www.ess.uci.edu/~zender#WZJ081 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks: Cluster Workflow Execution of Retargeted Data Analysis Scripts, in <i>Cluster Computing and the Grid, 2008. CCGRID&nbsp;'08. 8th&nbsp;IEEE International Symposium on</i>. Lyons, France, 19&nbsp;22 May, 2008. IEEE Computer Society, 449&ndash;458, doi:10.1109/CCGRID.2008.69.
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ081.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ081.pdf">PDF</a> (&copy;&nbsp;2008 by IEEE)</a></li>
+
 <li><!-- Zen08 --> <a name="Zen08"></a> <!--http://www.ess.uci.edu/~zender#Zen08 -->
 Zender, C.&nbsp;S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), <i>Environ. Modell. Softw.</i>, <b>23</b>(10), 1338&ndash;1342, doi:10.1016/j.envsoft.2008.03.004.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.bib">BibTeX</a>
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">PDF (CSZ)</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf">PDF (EMS)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf">PDF (EMS)</a> (&copy;&nbsp;2008 by Elsevier Ltd.)</a></li>
 
 <li> <!-- WZJ074 --> <a name="WZJ074"></a> <!--http://www.ess.uci.edu/~zender#WZJ074 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender and S.&nbsp;F. Jenks (2007): <i>A System for Scripted Data Analysis at Remote Data Centers</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 10&ndash;14, 2007. <i>Eos Trans. AGU</i>, <b>88</b>(52), Fall Meet. Suppl., Abstract IN11B-0469.
@@ -487,7 +502,10 @@ Instead, retrieve all recently tagged versions
 <li><b>NCO/SDO 3.9.6</b>: (<i>In progress</i>) 
 Memory management to improve threading;
 <tt>ncatted</tt> workaround for netCDF4 <tt>_FillValue</tt>;
-disable OpenMP unless netCDF4/HDF is <tt>--threadsafe</tt>;
+disable OpenMP with netCDF4/HDF;
+<tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a>;
+no math on type <tt>NC_CHAR</tt>;
+fix <tt>ncap2</tt> missing value propagation;
 <li><b>NCO/SDO 3.9.5</b>: 
 Multi-slabbing and <b>-X</b> everywhere;
 <tt>ncecat -M</tt>;
