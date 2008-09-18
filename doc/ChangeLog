@@ -1,3 +1,7 @@
+2008-09-18  Charlie Zender  <zender@uci.edu>
+
+	* make lib_cln now removes NCO C++ libraries libnco++.a and libnco_c++.a
+
 2008-09-17  Charlie Zender  <zender@uci.edu>
 
 	* --version ported to rest of operators
