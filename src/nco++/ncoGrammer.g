@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.138 2008-09-16 11:08:44 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.139 2008-09-18 16:22:27 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -822,9 +822,6 @@ public:
     goto end;
     } //end if
 
-   
-
-
 small: 
      idx=0;
      ntr=tr;
@@ -1236,13 +1233,11 @@ static std::vector<std::string> lpp_vtr;
             goto end3;    
            }
 
-
           // Grab format string 
           if(patt->getNextSibling() && patt->getNextSibling()->getType()==NSTRING)
             fmt_sng=strdup(patt->getNextSibling()->getText().c_str());
           else 
             fmt_sng=(char*)NULL; 
-
 
           (void)ncap_att_prn(var,fmt_sng,prs_arg);
           var=nco_var_free(var); 
@@ -1261,9 +1256,6 @@ static std::vector<std::string> lpp_vtr;
         prn_sng=(char*)nco_free(prn_sng);
       }    
     }
-
-
-
     ;
 
 // Parse assign statement - Initial Scan

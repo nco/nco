@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.69 2008-08-26 23:09:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.70 2008-09-18 16:22:28 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -40,7 +40,7 @@
 #line 41 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 552 "ncoGrammer.g"
+#line 550 "ncoGrammer.g"
 
 
 private:
@@ -316,9 +316,6 @@ public:
     goto end;
     } //end if
 
-   
-
-
 small: 
      idx=0;
      ntr=tr;
@@ -436,10 +433,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 106;
+	static const int NUM_TOKENS = 107;
 #else
 	enum {
-		NUM_TOKENS = 106
+		NUM_TOKENS = 107
 	};
 #endif
 	
