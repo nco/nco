@@ -1,5 +1,7 @@
 2008-09-17  Charlie Zender  <zender@uci.edu>
 
+	* --version ported to rest of operators
+
 	* --version only calls nco_vrs_prn() in ncks, rest to follow
 
 2008-09-15  Henry Butowsky  <henryb@ntlworld.com>

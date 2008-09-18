@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.87 2008-09-17 14:10:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.88 2008-09-18 03:56:36 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.87 2008-09-17 14:10:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.87 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.88 2008-09-18 03:56:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.88 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -224,6 +224,8 @@ main(int argc,char **argv)
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"version",no_argument,0,0},
+      {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -275,8 +277,6 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
-      {"version",no_argument,0,'r'},
-      {"vrs",no_argument,0,'r'},
       {"suspend", no_argument,0,'S'},
       {"mask_comparator",required_argument,0,'T'},
       {"msk_cmp_typ",required_argument,0,'T'},
@@ -331,6 +331,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
+	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
+	nco_exit(EXIT_SUCCESS);
+      } /* endif "vrs" */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
