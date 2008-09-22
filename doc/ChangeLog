@@ -1,3 +1,8 @@
+2008-09-22  Henry Butowsky  <henryb@ntlworld.com>
+
+	* Added get_miss() method to utility class returns the missing value 
+	of a variable in Input/Oytput
+
 2008-09-18  Charlie Zender  <zender@uci.edu>
 
 	* make lib_cln now removes NCO C++ libraries libnco++.a and libnco_c++.a
