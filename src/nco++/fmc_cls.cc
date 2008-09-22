@@ -391,6 +391,7 @@
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("set_miss",this,(int)SET_MISS));
+      fmc_vtr.push_back( fmc_cls("get_miss",this,(int)GET_MISS));
       fmc_vtr.push_back( fmc_cls("change_miss",this,(int)CH_MISS));
       fmc_vtr.push_back( fmc_cls("delete_miss",this,(int)DEL_MISS));
       fmc_vtr.push_back( fmc_cls("ram_write",this,(int)RAM_WRITE));
@@ -401,15 +402,18 @@
 
   var_sct *utl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fnd");
+    int rval;
     int nbr_fargs; 
     int fdx=fmc_obj.fdx();   //index
     prs_cls *prs_arg=walker.prs_arg;    
     vtl_typ lcl_typ;
     var_sct *var=NULL_CEWI;
-
+    var_sct *var_in=NULL_CEWI;
 
     std::string serr;
     std::string sfnm;
+    std::string va_nm;
+    NcapVar *Nvar;
     RefAST tr;
   
     //n.b fargs is an imaginary node -and is ALWAYS present
@@ -447,29 +451,51 @@
       err_prn(fnc_nm,serr);
     }
 
-
-    if(prs_arg->ntl_scn) {
-      if(var) 
-       var=nco_var_free(var);
-      return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);        
-    }
-  
-    int rval=0;
-    var_sct *var_in=NULL_CEWI;     
-    std::string va_nm;
-    NcapVar *Nvar;
-          
     va_nm=tr->getText();
-          
     Nvar=prs_arg->var_vtr.find(va_nm);
 
-          
-    if(!Nvar){
+
+    /* Deal with GET_MISS as its different from other methods */
+    if(fdx==GET_MISS){
+      var_sct *var_tmp=NULL_CEWI;
+      var_sct *var_ret=NULL_CEWI;
+   
+      var_tmp=prs_arg->ncap_var_init(va_nm,false);
+
+      // Initial scan
+      if(prs_arg->ntl_scn && var_tmp)  
+	var_ret= ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,false);
+      if(prs_arg->ntl_scn && !var_tmp)
+	var_ret=ncap_var_udf("~utility_function");
+ 
+      // Final scan
+      if(!prs_arg->ntl_scn && var_tmp && var_tmp->has_mss_val){
+           var_ret=ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,true);
+           (void)memcpy(var_ret->val.vp, var_tmp->mss_val.vp,nco_typ_lng(var_tmp->type)); 
+      } 
+      if(!prs_arg->ntl_scn && (!var_tmp || var_tmp && !var_tmp->has_mss_val)){
+        serr=sfnm+ " Unable to locate missing value for "+ va_nm;
+        err_prn(fnc_nm,serr);
+      } 
+
+      if(var_tmp) var_tmp=nco_var_free(var_tmp);
+
+      return var_ret; 	
+     } // end GET_MISS 
+
+
+
+    if(!Nvar ){
        wrn_prn(fnc_nm,sfnm+" unable to find variable: "+va_nm); 
-       // 
+       if(var) var=nco_var_free(var);
        return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)rval);        
     }
-   
+
+    if(prs_arg->ntl_scn) {
+      if(var) var=nco_var_free(var);
+      return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);  
+    }
+
     //De-reference
     var_in=Nvar->var;  
 
@@ -482,8 +508,9 @@
           var->has_mss_val=True;
           var->mss_val=nco_mss_val_mk(var->type);
           (void)memcpy(var->mss_val.vp, var->val.vp,nco_typ_lng(var->type));
-            (var,var_in);
-          nco_var_free(var); 
+          nco_mss_val_cp(var,var_in);
+          var=(var_sct*)nco_var_free(var);
+
           rval=1; 
           break;
           }
@@ -537,11 +564,6 @@
           break;
         }
 
-    case GET_MISS: {
-
-		
-
-	}
     case RAM_WRITE: {
 
       if(Nvar->flg_mem==false){
