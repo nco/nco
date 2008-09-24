@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.495 2008-09-24 15:42:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.496 2008-09-24 22:15:54 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -102,6 +102,8 @@ Send it in!<br>
 
 
 <ul>
+<li>September&nbsp;24, 2008: Extensive <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a> available</li>
+
 <li>August&nbsp;8, 2008: NCO <a href="http://nco.wiki.sourceforge.net">Wiki</a> is up!</li>
 
 <li>June&nbsp;11, 2008: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf">overview paper</a> published in EMS</li>
