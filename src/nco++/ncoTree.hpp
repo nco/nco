@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.70 2008-09-18 16:22:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.71 2008-09-24 15:38:22 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -19,6 +19,7 @@
     #include <algorithm>
     #include <iostream>
     #include <sstream>
+    #include <fstream>
     #include <string>
     #include <assert.h>
     #include <ctype.h>
@@ -32,15 +33,19 @@
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     #include "NcapVector.hh"
+    #include "antlr/TokenStreamSelector.hpp"
+    #include "ncoParser.hpp"
+    #include "Invoke.hh"
+
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
     
 
-#line 41 "ncoTree.hpp"
+#line 46 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 550 "ncoGrammer.g"
+#line 612 "ncoGrammer.g"
 
 
 private:
@@ -389,7 +394,7 @@ exit: return iret;
     } // end run_exe
 
 
-#line 45 "ncoTree.hpp"
+#line 50 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
@@ -433,10 +438,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 107;
+	static const int NUM_TOKENS = 108;
 #else
 	enum {
-		NUM_TOKENS = 107
+		NUM_TOKENS = 108
 	};
 #endif
 	

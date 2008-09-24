@@ -10,7 +10,7 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.62 2008-09-18 16:22:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.63 2008-09-24 15:38:18 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -21,6 +21,7 @@
     #include <algorithm>
     #include <iostream>
     #include <sstream>
+    #include <fstream>
     #include <string>
     #include <assert.h>
     #include <ctype.h>
@@ -34,20 +35,25 @@
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     #include "NcapVector.hh"
+    #include "antlr/TokenStreamSelector.hpp"
+    #include "ncoParser.hpp"
+    #include "Invoke.hh"
+
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
     
 
-#line 43 "ncoLexer.hpp"
+#line 48 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 315 "ncoGrammer.g"
+#line 328 "ncoGrammer.g"
 
 
 private:
     prs_cls *prs_arg;
 public:
+
     // Customized constructor !!
    ncoLexer(ANTLR_USE_NAMESPACE(std)istream& in, prs_cls *prs_in )
    : ANTLR_USE_NAMESPACE(antlr)CharScanner(new ANTLR_USE_NAMESPACE(antlr)CharBuffer(in),true)
@@ -58,9 +64,23 @@ public:
 	    initLiterals();
    }
 
+public:
+	void uponEOF() /*throws TokenStreamException, CharStreamException*/ {
+		if ( selector.getCurrentStream() != lexer ) {
+			// don't allow EOF until main lexer.  Force the
+			// selector to retry for another token.
+            parser->inc_vtr.pop_back();
+            std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
+            parser->setFilename(parser->inc_vtr.back());
+			selector.pop(); // return to old lexer/stream
+			selector.retry();
+		}
+		// else ANTLR_USE_NAMESPACE(std)cout << "Hit EOF of main file" << ANTLR_USE_NAMESPACE(std)endl;
+		
+	}
 
 
-#line 47 "ncoLexer.hpp"
+#line 52 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:
@@ -117,7 +137,7 @@ public:
 	protected: void mVAR_NM_QT(bool _createToken);
 	protected: void mBLASTOUT(bool _createToken);
 	public: void mUNUSED_OPS(bool _createToken);
-	public: void mWhitespace(bool _createToken);
+	public: void mWS(bool _createToken);
 	public: void mCXX_COMMENT(bool _createToken);
 	public: void mC_COMMENT(bool _createToken);
 	public: void mNUMBER_DOT(bool _createToken);
@@ -126,6 +146,7 @@ public:
 	public: void mDIM_QT(bool _createToken);
 	public: void mDIM_MTD_ID(bool _createToken);
 	public: void mNSTRING(bool _createToken);
+	public: void mINCLUDE(bool _createToken);
 private:
 	
 	static const unsigned long _tokenSet_0_data_[];

@@ -107,14 +107,15 @@ struct CUSTOM_API ncoParserTokenTypes {
 		VAR_NM_QT = 96,
 		BLASTOUT = 97,
 		UNUSED_OPS = 98,
-		Whitespace = 99,
+		WS = 99,
 		CXX_COMMENT = 100,
 		C_COMMENT = 101,
 		NUMBER_DOT = 102,
 		NUMBER = 103,
 		VAR_ATT = 104,
 		DIM_QT = 105,
-		LMT_DMN = 106,
+		INCLUDE = 106,
+		LMT_DMN = 107,
 		NULL_TREE_LOOKAHEAD = 3
 	};
 #ifdef __cplusplus
