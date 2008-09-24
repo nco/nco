@@ -20,7 +20,15 @@
 #include "ncoTree.hpp"
 #include <antlr/CharStreamException.hpp>
 #include <antlr/TokenStreamException.hpp>
+#include "antlr/TokenStreamSelector.hpp"
+#include "Invoke.hh"
+
 #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
+
+
+TokenStreamSelector selector;
+ncoLexer *lexer=NULL;
+ncoParser *parser=NULL;
 
 
 
@@ -115,10 +123,6 @@ static ncoTree** wlk_ptr;
  return 1;
 }
 
-
-
-
-
 int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
 {
   
@@ -128,7 +132,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
   const std::string fnc_nm("parse_antlr"); // [sng] Function name
 
   int idx;  
-  char *filename;
+  std::string filename(fl_spt_usr);
   
   prs_cls *prs_arg;
 
@@ -136,8 +140,8 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
   istringstream *sin=NULL;
   ifstream *in=NULL;
   
-  ncoLexer *lexer=NULL;
-  ncoParser *parser=NULL;
+  // ncoLexer *lexer=NULL;
+  // ncoParser *parser=NULL;
   
   RefAST t,a;
   ASTFactory ast_factory;
@@ -146,7 +150,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
   
   std::vector<ncoTree*> wlk_vtr;
  
-  filename=strdup(fl_spt_usr);   
+  // filename=strdup(fl_spt_usr);   
   
   std::vector< std::vector<RefAST> > all_ast_vtr(0);
 
@@ -156,16 +160,22 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
     if( cmd_ln_sng ){
       sin= new  istringstream(cmd_ln_sng);
       lexer= new ncoLexer( *sin, prs_arg);
+      selector.addInputStream(lexer,cmd_ln_sng);
+      selector.select(cmd_ln_sng);
     }else {
-      in=new ifstream(filename);          
+      in=new ifstream(filename.c_str());          
       lexer= new ncoLexer( *in, prs_arg);
+      selector.addInputStream(lexer,filename);
+      selector.select(filename);
+
     }     
     
     
     lexer->setFilename(filename);
     
-    parser= new ncoParser(*lexer);
+    parser= new ncoParser(selector);
     parser->setFilename(filename);
+    parser->inc_vtr.push_back(filename);
     
 
     parser->initializeASTFactory(ast_factory);
@@ -244,7 +254,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
   if(sin) delete sin;
   if(in) delete in;
 
-  (void)nco_free(filename);
+  //(void)nco_free(filename);
   
   return 1;
 }
