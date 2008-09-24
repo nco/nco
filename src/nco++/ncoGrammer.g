@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.139 2008-09-18 16:22:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.140 2008-09-24 13:40:32 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -10,6 +10,7 @@ header {
     #include <algorithm>
     #include <iostream>
     #include <sstream>
+    #include <fstream>
     #include <string>
     #include <assert.h>
     #include <ctype.h>
@@ -23,6 +24,10 @@ header {
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     #include "NcapVector.hh"
+    #include "antlr/TokenStreamSelector.hpp"
+    #include "ncoParser.hpp"
+    #include "Invoke.hh"
+
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
@@ -64,6 +69,12 @@ tokens {
     ATAN2;  //Used indirectly 
     WHERE_ASSIGN;
     MISS2ZERO; //used only in VarOp -sets all missing values to zero
+}
+{
+
+public:
+   std::vector<std::string> inc_vtr;
+
 }
 
 program:
@@ -277,6 +288,8 @@ imaginary_token
     ;
 
 class ncoLexer extends Lexer;
+
+
 options {
     k = 4;
     defaultErrorHandler=false;
@@ -317,6 +330,7 @@ tokens {
 private:
     prs_cls *prs_arg;
 public:
+
     // Customized constructor !!
    ncoLexer(ANTLR_USE_NAMESPACE(std)istream& in, prs_cls *prs_in )
    : ANTLR_USE_NAMESPACE(antlr)CharScanner(new ANTLR_USE_NAMESPACE(antlr)CharBuffer(in),true)
@@ -327,6 +341,20 @@ public:
 	    initLiterals();
    }
 
+public:
+	void uponEOF() /*throws TokenStreamException, CharStreamException*/ {
+		if ( selector.getCurrentStream() != lexer ) {
+			// don't allow EOF until main lexer.  Force the
+			// selector to retry for another token.
+            parser->inc_vtr.pop_back();
+            std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
+            parser->setFilename(parser->inc_vtr.back());
+			selector.pop(); // return to old lexer/stream
+			selector.retry();
+		}
+		// else ANTLR_USE_NAMESPACE(std)cout << "Hit EOF of main file" << ANTLR_USE_NAMESPACE(std)endl;
+		
+	}
 
 
 }
@@ -451,7 +479,7 @@ UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
 
 
 // Whitespace -- ignored
-Whitespace options {paraphrase="white space"; } 	
+WS  options {paraphrase="white space"; } 	
 	: ( ' ' |'\t' { tab(); } | '\f' |'\n' { newline(); })
 		{ $setType(antlr::Token::SKIP);}
 	;
@@ -545,6 +573,40 @@ NSTRING
   options{paraphrase="a string";} 
   : '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
    ;
+
+
+INCLUDE
+	:	"#include" (WS)? f:NSTRING
+		{
+		// ANTLR_USING_NAMESPACE(std)
+		// create lexer to handle include
+		std::string f_nm= f->getText();
+		std::ifstream* input = new std::ifstream(f_nm.c_str());
+		if (*input==NULL) {
+            err_prn("Lexer cannot find include file "+ f_nm);               
+		}
+		ncoLexer* sublexer = new ncoLexer(*input,prs_arg);
+		// make sure errors are reported in right file
+		sublexer->setFilename(f_nm);
+		parser->setFilename(f_nm);
+        // save the filename - so we can pop it back later if needed
+        // so parser gets the right filename
+        parser->inc_vtr.push_back(f_nm);
+		// you can't just call nextToken of sublexer
+		// because you need a stream of tokens to
+		// head to the parser.  The only way is
+		// to blast out of this lexer and reenter
+		// the nextToken of the sublexer instance
+		// of this class.
+
+		selector.push(sublexer);
+		// ignore this as whitespace; ask selector to try
+		// to get another token.  It will call nextToken()
+		// of the new instance of this lexer.
+		selector.retry(); // throws TokenStreamRetryException
+		}
+	;
+
 
 class ncoTree extends TreeParser;
 {
