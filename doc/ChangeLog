@@ -1,3 +1,7 @@
+2008-09-24  Henry Butowsky  <henryb@ntlworld.com>
+	* added support for include files 
+	syntax is #include "pi.nco" 
+
 2008-09-22  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Added get_miss() method to utility class returns the missing value 
