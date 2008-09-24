@@ -4,7 +4,7 @@
 
 2008-09-24  Henry Butowsky  <henryb@ntlworld.com>
 
-	* ncap2 supports include files, syntax is #include "pi.nco" 
+	* ncap2 supports #include files, syntax is #include "pi.nco" 
 
 2008-09-22  Henry Butowsky  <henryb@ntlworld.com>
 
