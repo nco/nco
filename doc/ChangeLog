@@ -1,3 +1,8 @@
+2008-09-25  Charlie Zender  <zender@uci.edu>
+
+	* Added nco_gmm.[ch] for incomplete gamma function. Source from
+	http://people.scs.fsu.edu/~burkardt/cpp_src/asa032/asa032.html
+	
 2008-09-24  Charlie Zender  <zender@uci.edu>
 
 	* Added Invoke.hh
