@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.107 2008-09-15 15:53:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.108 2008-09-26 13:22:43 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -22,6 +22,7 @@
 #include "NcapVar.hh"
 #include "sdo_utl.hh"
 #include "VarOp.hh" 
+#include "nco_gmm.h"
 
 int 
 ncap_var_write_tmp(
@@ -681,6 +682,96 @@ ncap_var_var_atan2
 
   return var1;
 } /* end ncap_var_var_atan2 */
+
+
+var_sct *           /* O [sct] Calculate atan2 for each element */
+ncap_var_var_gamma_inc  
+(var_sct *var1,     /* I [sc,t] Variable structure containing field  */
+ var_sct *var2)     /* I [sct] Variable structure containing divisor */
+{
+  int flg_err; 
+  long idx;
+  long sz;
+  bool has_mss_val=false;
+  ptr_unn op1,op2, op_mss;
+
+  const char fnc_nm[]="ncap_var_var_gamma_inc"; 
+  if(dbg_lvl_get() >= 4) dbg_prn(fnc_nm,"Entered function");
+
+  sz=var1->sz;
+
+  //Dereference
+  op1=var1->val;
+  op2=var2->val; 
+  
+
+  if(var1->has_mss_val){
+     has_mss_val=true; 
+     op_mss=var1->mss_val;
+
+  } else if(var2->has_mss_val){
+     has_mss_val=true; 
+     op_mss=var2->mss_val;
+ } 
+  
+   if(has_mss_val)  
+     (void)cast_void_nctype(var1->type,&op_mss);
+
+  (void)cast_void_nctype(var1->type,&op1);
+  (void)cast_void_nctype(var1->type,&op2);
+  
+
+switch(var1->type){
+
+case NC_DOUBLE:
+  if(!has_mss_val){
+    for(idx=0;idx<sz;idx++) { 
+      op1.dp[idx]=nco_gamain(op1.dp[idx],op2.dp[idx], &flg_err);
+      /* error and no missing value --use default fill value from netcdf lib */
+      if(flg_err != 0) op1.dp[idx]=NC_FILL_DOUBLE;
+      }
+    }else{
+      double mss_val_dbl= op_mss.dp[0];
+      for(idx=0;idx<sz;idx++){
+        if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] != mss_val_dbl)){              
+           op1.dp[idx]=nco_gamain(op1.dp[idx],op2.dp[idx],&flg_err);
+           if(flg_err !=0 ) op1.dp[idx]=mss_val_dbl; 
+        }
+        else op2.dp[idx]=mss_val_dbl;
+      } /* end for */
+ 
+  } /* end else */
+  break;
+
+case NC_FLOAT:
+  if(!has_mss_val){
+    for(idx=0;idx<sz;idx++) { 
+      op1.fp[idx]=nco_gamain_f(op1.fp[idx],op2.fp[idx], &flg_err);
+      /* error and no missing value --use default fill value from netcdf lib */
+      if(flg_err != 0) op1.fp[idx]=NC_FILL_FLOAT;
+      }
+    }else{
+      float mss_val_flt= op_mss.fp[0];
+      for(idx=0;idx<sz;idx++){
+        if((op1.fp[idx] != mss_val_flt) && (op2.fp[idx] != mss_val_flt)){              
+           op1.fp[idx]=nco_gamain_f(op1.fp[idx],op2.fp[idx],&flg_err);
+           if(flg_err !=0 ) op1.fp[idx]=mss_val_flt; 
+        }
+        else op2.fp[idx]=mss_val_flt;
+      } /* end for */
+ 
+  } /* end else */
+  break;
+
+
+} /* end switch */
+
+  var2=nco_var_free(var2); 
+
+  return var1;
+} /* end ncap_var_var_gmmi */
+
+
 
 var_sct *        /* O [sct] Resultant variable (actually is var) */
 ncap_var_abs /* Purpose: Find absolute value of each element of var */
@@ -1622,8 +1713,8 @@ ncap_var_var_op   /* [fnc] Add two variables */
     return var_ret;
   }
   
-  // Deal with pwr fuction
-  if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+  // Deal with pwr/gamma_in fuction
+  if( (op == CARET||op==GAMMA_INC) && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
  
   //Deal with atan2 function
   if(op==ATAN2 ){
@@ -1717,7 +1808,13 @@ ncap_var_var_op   /* [fnc] Add two variables */
     var_ret=ncap_var_var_pwr(var1,var2);
     return var_ret;     
   }
-  // deal with mod function
+ 
+  // Deal with incomplete gamma function  fuction ( nb function can't be templated )
+  if(op== GAMMA_INC){
+    var_ret=ncap_var_var_gamma_inc(var1,var2);
+    return var_ret;     
+  }
+ // deal with mod function
   if(op==MOD){
     var_ret=ncap_var_var_mod(var1,var2);
     return var_ret;     
