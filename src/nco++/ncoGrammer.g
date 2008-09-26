@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.140 2008-09-24 13:40:32 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.141 2008-09-26 13:07:36 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -66,7 +66,8 @@ tokens {
     PROP; // used to differenciate properties & methods
     FOR2;    
     NORET;
-    ATAN2;  //Used indirectly 
+    ATAN2;  //Used indirectly
+    GAMMA_INC;  //Used indirectly
     WHERE_ASSIGN;
     MISS2ZERO; //used only in VarOp -sets all missing values to zero
 }
