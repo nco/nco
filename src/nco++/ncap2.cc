@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.76 2008-09-18 04:11:25 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.77 2008-09-26 20:02:00 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.76 2008-09-18 04:11:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.76 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.77 2008-09-26 20:02:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.77 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
-  int idx;
   int in_id;  
+  int idx;
   int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_ass=int_CEWI;/* Number of dimensions in temporary list */
@@ -182,7 +182,6 @@ main(int argc,char **argv)
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id;
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
-
   
   lmt_sct **lmt=NULL_CEWI;
   
@@ -446,7 +445,7 @@ main(int argc,char **argv)
 
   if(PRN_FNC_TBL){
     (void)fprintf(stdout,"Methods available in %s:\n",prg_nm_get());
-    for(idx=0;idx<fmc_vtr.size();idx++)
+    for(idx=0;idx<(signed int)fmc_vtr.size();idx++)
       std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
   }
@@ -525,7 +524,7 @@ main(int argc,char **argv)
 
   prs_vtr.push_back(prs_arg); 
 
-  for(idx=1 ; idx < thr_nbr ;idx++) {
+  for(idx=1;idx < thr_nbr;idx++){
     prs_cls prs_tmp(prs_arg);
 
     // open files for each thread
@@ -623,8 +622,7 @@ main(int argc,char **argv)
      Add coordinate variables to extraction list
      If EXTRACT_ALL_COORDINATES then write associated dimension to output */
 
-
- if(EXTRACT_ASSOCIATED_COORDINATES){
+  if(EXTRACT_ASSOCIATED_COORDINATES){
     for(idx=0;idx<dmn_in_vtr.size();idx++){
       if(!dmn_in_vtr[idx]->is_crd_dmn) continue;
       
@@ -754,7 +752,6 @@ main(int argc,char **argv)
     //rcd=nco_close(prs_vtr[idx].out_id);
   }
 
-
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
   
@@ -789,38 +786,33 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-    
     /* Free dimension vectors */
     if(dmn_in_vtr.size() > 0) { 
-      for(idx=0; idx < dmn_in_vtr.size(); idx++)
+      for(idx=0;idx<dmn_in_vtr.size();idx++)
 	(void)nco_dmn_free(dmn_in_vtr[idx]);
     }
-    
     if(dmn_out_vtr.size() > 0) { 
-      for(idx=0; idx < dmn_out_vtr.size(); idx++)
+      for(idx=0;idx< dmn_out_vtr.size();idx++)
 	(void)nco_dmn_free(dmn_out_vtr[idx]);
     }
 
     /* Free var_vtr */
     if(var_vtr.size() > 0) { 
       for(idx=0; idx < var_vtr.size(); idx++)
-            delete var_vtr[idx];
+	delete var_vtr[idx];
     }  
 
-    /* clear vectors */
+    /* Clear vectors */
     fmc_vtr.clear();
-
-   cnv_obj.fmc_vtr.clear();
-   agg_obj.fmc_vtr.clear();
-   utl_obj.fmc_vtr.clear();
-   mth_obj.fmc_vtr.clear();
-   mth2_obj.fmc_vtr.clear();
-   bsc_obj.fmc_vtr.clear();
-   pdq_obj.fmc_vtr.clear();
-   msk_obj.fmc_vtr.clear();
-   pck_obj.fmc_vtr.clear();     
-
-
+    cnv_obj.fmc_vtr.clear();
+    agg_obj.fmc_vtr.clear();
+    utl_obj.fmc_vtr.clear();
+    mth_obj.fmc_vtr.clear();
+    mth2_obj.fmc_vtr.clear();
+    bsc_obj.fmc_vtr.clear();
+    pdq_obj.fmc_vtr.clear();
+    msk_obj.fmc_vtr.clear();
+    pck_obj.fmc_vtr.clear();     
     
     /* Free variable lists */
     if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
@@ -835,23 +827,21 @@ main(int argc,char **argv)
   return EXIT_SUCCESS;
 } /* end main() */
 
-
-//Copy vector elements
-  void 
-pop_fmc_vtr(             
-std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc)
+// Copy vector elements
+void 
+pop_fmc_vtr
+(std::vector<fmc_cls> &fmc_vtr, 
+ vtl_cls *vfnc)
 {
-   // de-reference
+  // De-reference
   std::vector<fmc_cls> &lcl_vtr=*vfnc->lst_vtr();
   std::copy(lcl_vtr.begin(),lcl_vtr.end(),inserter(fmc_vtr,fmc_vtr.end())  );
-
-  
- }
+}
 
 // Add some useful constants as RAM variables 
 void
-ram_vars_add(
-prs_cls *prs_arg)
+ram_vars_add
+(prs_cls *prs_arg)
 {
 var_sct *var1;
 
@@ -888,10 +878,9 @@ prs_arg->ncap_var_write(var1,true);
 
 var1=ncap_sclr_var_mk(std::string("__UINT64"),nco_int(NC_UINT64));
 prs_arg->ncap_var_write(var1,true);
+#endif // !ENABLE_NETCDF4
+} // end ram_vars_add()
 
-#endif
-
-}
 
 
 
