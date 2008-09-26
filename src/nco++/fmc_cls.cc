@@ -810,8 +810,8 @@
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("pow",this,(int)PPOW));
       fmc_vtr.push_back( fmc_cls("atan2",this,(int)PATAN2));
-      fmc_vtr.push_back( fmc_cls("convert",this,(int)CONVERT));
-
+      fmc_vtr.push_back( fmc_cls("convert",this,(int)PCONVERT));
+fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
     }
   }
 
@@ -839,6 +839,25 @@
     if(expr)
       nbr_fargs++;
 
+
+    /*
+    if(expr)	
+	expr->addChild(fargs->getFirstChild()->getNextSibling());
+
+     /* print out tree 
+     {
+      RefAST t(expr);  
+       
+     while( t ) {
+	cout << t->toStringTree() << endl;
+	t=t->getNextSibling();
+      }
+
+
+      }     
+
+*/
+
    
     if(nbr_fargs >2) 
       wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
@@ -846,7 +865,15 @@
     if(nbr_fargs<2)
       err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
     
-     
+    if(expr)	
+	expr->addChild(fargs->getFirstChild());
+     {
+
+
+
+}     
+
+
 
     if(expr){ 
       var1=walker.out(expr);
@@ -874,8 +901,13 @@
       case PATAN2: 
       var=ncap_var_var_op(var1,var2,ATAN2);
         break;                
+
+      case PGAMMA_INC: 
+      var=ncap_var_var_op(var1,var2,GAMMA_INC);
+        break;                
+
         
-      case CONVERT:{
+      case PCONVERT:{
         /* Change type to int */
        int c_typ;
 
