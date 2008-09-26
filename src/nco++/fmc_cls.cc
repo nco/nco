@@ -843,8 +843,6 @@ fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
     /*
     if(expr)	
 	expr->addChild(fargs->getFirstChild()->getNextSibling());
-
-     /* print out tree 
      {
       RefAST t(expr);  
        
@@ -856,7 +854,7 @@ fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
 
       }     
 
-*/
+    */
 
    
     if(nbr_fargs >2) 

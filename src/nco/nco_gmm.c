@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.c,v 1.1 2008-09-25 15:49:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.c,v 1.2 2008-09-26 13:24:40 hmb Exp $ */
 
 /* Purpose: Calculate incomplete gamma function */
 
@@ -219,7 +219,7 @@ double alngam ( double xvalue, int *ifault )
   return value;
 }
 
-double gamain ( double x, double p, int *ifault )
+double nco_gamain ( double x, double p, int *ifault )
 {
 /*
   Purpose: GAMAIN computes the incomplete gamma ratio.
@@ -520,7 +520,7 @@ float alngam_f ( float xvalue, int *ifault )
   {
     if ( x < 0.5 )
     {
-      value = - log ( x );
+      value = - logf ( x );
       y = x + 1.0;
 
 /*  Test whether X < machine epsilon. */
@@ -592,7 +592,7 @@ float alngam_f ( float xvalue, int *ifault )
 
   else
   {
-    y = log ( x );
+    y = logf ( x );
     value = x * ( y - 1.0 ) - 0.5 * y + alr2pi;
 
     if ( x <= xlge )
@@ -612,7 +612,7 @@ float alngam_f ( float xvalue, int *ifault )
   return value;
 }
 
-float gamain_f ( float x, float p, int *ifault )
+float nco_gamain_f ( float x, float p, int *ifault )
 /*
   Purpose:
 
@@ -703,9 +703,9 @@ float gamain_f ( float x, float p, int *ifault )
     return value;
   }
 
-  arg = p * log ( x ) - x - g;
+  arg = p * logf ( x ) - x - g;
 
-  if ( arg < log ( uflo ) )
+  if ( arg < logf ( uflo ) )
   {
     *ifault = 3;
     value = 0.0;

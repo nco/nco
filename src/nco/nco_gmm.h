@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.h,v 1.1 2008-09-25 15:49:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.h,v 1.2 2008-09-26 13:23:46 hmb Exp $ */
 
 /* Purpose: Calculate incomplete gamma function */
 
@@ -16,20 +16,36 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  double r8_abs ( double x );
-  double alngam ( double xvalue, int *ifault );
-  float r8_abs_f ( float x );
-  float alngam_f ( float xvalue, int *ifault );
 
-double gamain    /* O [dbl] result */
-(double x,       /* I  [x] */  
-double p,        /* I  [y] */  
-int *ifault );   /* O  [flg] error */
+double              /* O [dbl] absolute value */ 
+r8_abs                    
+(double x);         /* I [dbl] */ 
 
-float gamain_f    /* O [flt] result */
+double alngam       /* log of gamma function */ 
+(double xvalue,     /* I [dbl] */ 
+int *ifault );      /* O [flg]  error flag */  
+
+double             /* O [dbl] result */
+nco_gamain         /* incomplete gamma function */
+(double x,         /* I  [x] */  
+double p,          /* I  [y] */  
+int *ifault );     /* O  [flg] error flag*/
+
+
+float              /* O [flt] absolute value */ 
+r8_abs_f                    
+(float x);         /* I [flt] */ 
+
+float alngam_f     /* log of gamma function */ 
+(float xvalue,     /* I [flt] */ 
+int *ifault);      /* O [flg]  error flag */  
+
+
+
+float nco_gamain_f    /* O [flt] result */
 (float x,         /* I  [x] */  
 float p,          /* I  [y] */  
-int *ifault );    /* O  [flg] error */
+int *ifault );    /* O  [flg] error flag */
 
 #ifdef __cplusplus
 } /* end extern "C" */
