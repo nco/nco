@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.496 2008-09-24 22:15:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.497 2008-09-28 00:22:53 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -508,6 +508,7 @@ disable OpenMP with netCDF4/HDF;
 no math on type <tt>NC_CHAR</tt>;
 <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a>,
 <tt>#include</tt> files,
+incomplete gamma functions,
 missing value propagation;
 <li><b>NCO/SDO 3.9.5</b>: 
 Multi-slabbing and <b>-X</b> everywhere;

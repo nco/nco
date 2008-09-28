@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.303 2008-09-24 15:42:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.304 2008-09-28 00:22:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -42,6 +42,9 @@ D. Disable OpenMP on netCDF4/HDF5-enabled operators
 E. ncra does not attempt to average record variables of type NC_CHAR
 
 E. ncap2 supports #include files, syntax is #include "pi.nco" 
+
+E. ncap2 supports incomplete gamma functions: gamma_inc_regular(a,x),
+   gamma_inc_upper(a,x), gamma_inc_lower(a,x), gamma_inc_complement(a,x) 
 
 E. CF-convention "coordinates" attribute strings with excessive whitespace work
 
