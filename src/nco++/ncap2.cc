@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.77 2008-09-26 20:02:00 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.78 2008-09-29 14:52:01 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.77 2008-09-26 20:02:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.77 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.78 2008-09-29 14:52:01 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.78 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -420,6 +420,8 @@ main(int argc,char **argv)
   mth_cls mth_obj(true);
   // Maths2 Functions
   mth2_cls mth2_obj(true);
+  // Incomplete Gamma functions Functions
+  gmm_inc_cls gmm_inc_obj(true);
   // Basic Functions
   bsc_cls bsc_obj(true);
   //PDQ functions
@@ -435,6 +437,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth2_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&gmm_inc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
   (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
@@ -865,7 +868,7 @@ prs_arg->ncap_var_write(var1,true);
 
 #ifdef ENABLE_NETCDF4
 var1=ncap_sclr_var_mk(std::string("__UBYTE"),nco_int(NC_UBYTE));
-prs_arg->ncap_var_write(var1,true);
+prs_arg->ncap_var_write(var1,true); 
 
 var1=ncap_sclr_var_mk(std::string("__USHORT"),nco_int(NC_USHORT));
 prs_arg->ncap_var_write(var1,true);
