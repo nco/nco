@@ -802,8 +802,6 @@
 
   }
 
-
-
 //Maths2 - Maths functions that take 2 args /*********/
   mth2_cls::mth2_cls(bool flg_dbg){
     //Populate only on first constructor call
@@ -811,7 +809,6 @@
       fmc_vtr.push_back( fmc_cls("pow",this,(int)PPOW));
       fmc_vtr.push_back( fmc_cls("atan2",this,(int)PATAN2));
       fmc_vtr.push_back( fmc_cls("convert",this,(int)PCONVERT));
-fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
     }
   }
 
@@ -840,22 +837,6 @@ fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
       nbr_fargs++;
 
 
-    /*
-    if(expr)	
-	expr->addChild(fargs->getFirstChild()->getNextSibling());
-     {
-      RefAST t(expr);  
-       
-     while( t ) {
-	cout << t->toStringTree() << endl;
-	t=t->getNextSibling();
-      }
-
-
-      }     
-
-    */
-
    
     if(nbr_fargs >2) 
       wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
@@ -863,15 +844,6 @@ fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
     if(nbr_fargs<2)
       err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
     
-    if(expr)	
-	expr->addChild(fargs->getFirstChild());
-     {
-
-
-
-}     
-
-
 
     if(expr){ 
       var1=walker.out(expr);
@@ -900,11 +872,6 @@ fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
       var=ncap_var_var_op(var1,var2,ATAN2);
         break;                
 
-      case PGAMMA_INC: 
-      var=ncap_var_var_op(var1,var2,GAMMA_INC);
-        break;                
-
-        
       case PCONVERT:{
         /* Change type to int */
        int c_typ;
@@ -923,6 +890,122 @@ fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
     return var; 
 
   }
+
+
+
+
+//Incomplete Gamma Function /*********/
+  gmm_inc_cls::gmm_inc_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_regular",this,(int)PGAMMA_INC));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_P",this,(int)PGAMMA_INC));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_upper",this,(int)PGAMMA_UPPER));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_G",this,(int)PGAMMA_UPPER));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_lower",this,(int)PGAMMA_LOWER));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_g",this,(int)PGAMMA_LOWER));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_complement",this,(int)PGAMMA_COMP));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_Q",this,(int)PGAMMA_COMP));
+
+    }
+  }
+
+
+  var_sct *gmm_inc_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("mth2_cls::fnd");
+
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_fargs;
+    prs_cls* prs_arg=walker.prs_arg;
+    var_sct *var=NULL_CEWI;
+    var_sct *var1=NULL_CEWI;
+    var_sct *var2=NULL_CEWI;
+    var_sct *var_tmp;
+    std::string styp;
+    RefAST tr;
+    vtl_typ lcl_typ;
+
+    std::string sfnm =fmc_obj.fnm(); //method name
+
+    styp=(expr ? "method":"function");
+
+    //n.b fargs is an imaginary node -and is ALWAYS present
+    nbr_fargs=fargs->getNumberOfChildren();
+   
+    if(expr)
+      nbr_fargs++;
+
+
+ 
+   
+    if(nbr_fargs >2) 
+      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
+  
+    if(nbr_fargs<2)
+      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
+    
+ 
+
+    if(expr){ 
+      var1=walker.out(expr);
+      var2=walker.out(fargs->getFirstChild());
+    }else{
+      var1=walker.out(fargs->getFirstChild());   
+      var2=walker.out(fargs->getFirstChild()->getNextSibling());
+    }
+
+    /* deal with initial scan */
+    if(prs_arg->ntl_scn){
+       if(var1->undefined || var2->undefined){
+	var1=nco_var_free(var1);
+        var2=nco_var_free(var2);
+        var=ncap_var_udf("~mth2_cls");
+       }else{
+        var=ncap_var_var_op(var1,var2,GAMMA_INC);
+      } 
+     return var;
+    }
+
+
+    switch(fdx){
+
+
+      case PGAMMA_INC: 
+        var=ncap_var_var_op(var1,var2,GAMMA_INC);
+        break;                
+
+      case PGAMMA_UPPER:
+        var_tmp=nco_var_dpl(var1);
+	var_tmp=ncap_var_fnc(var_tmp,tgamma,tgammaf);
+        var1=ncap_var_var_op(var1,var2,GAMMA_INC);
+        var=ncap_var_var_op(var_tmp,var1,MINUS);
+ 
+        break;
+
+      case PGAMMA_LOWER:
+        var_tmp=nco_var_dpl(var1);
+	var_tmp=ncap_var_fnc(var_tmp,tgamma,tgammaf);
+        var1=ncap_var_var_op(var1,var2,GAMMA_INC);
+       
+        var=ncap_var_var_op(var_tmp,var1,TIMES);
+        break;
+      
+      case PGAMMA_COMP:
+        var_tmp=ncap_sclr_var_mk(std::string("~float"),float(1.0f));
+        var1=ncap_var_var_op(var1,var2,GAMMA_INC);
+        var=ncap_var_var_op(var_tmp,var1,MINUS);
+        break;
+
+    } /* end switch */
+      
+    return var; 
+
+  }
+
+
+
+
 
 
 //PDQ Functions /******************************************/
