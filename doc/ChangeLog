@@ -1,3 +1,7 @@
+2008-09-29  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up ncap_var_var_gmmi() */
+
 2008-09-27  Charlie Zender  <zender@uci.edu>
 
 	* Prototype ncap2 supports for incomplete gamma functions:
