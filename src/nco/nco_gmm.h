@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.h,v 1.2 2008-09-26 13:23:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.h,v 1.3 2008-09-29 15:06:02 hmb Exp $ */
 
 /* Purpose: Calculate incomplete gamma function */
 
@@ -27,8 +27,8 @@ int *ifault );      /* O [flg]  error flag */
 
 double             /* O [dbl] result */
 nco_gamain         /* incomplete gamma function */
-(double x,         /* I  [x] */  
-double p,          /* I  [y] */  
+(double p,         /* I  [p] */  
+double x,          /* I  [x] */  
 int *ifault );     /* O  [flg] error flag*/
 
 
@@ -43,8 +43,8 @@ int *ifault);      /* O [flg]  error flag */
 
 
 float nco_gamain_f    /* O [flt] result */
-(float x,         /* I  [x] */  
-float p,          /* I  [y] */  
+(float p,         /* I  [p] */  
+float x,          /* I  [x] */  
 int *ifault );    /* O  [flg] error flag */
 
 #ifdef __cplusplus

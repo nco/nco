@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.c,v 1.2 2008-09-26 13:24:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.c,v 1.3 2008-09-29 15:05:25 hmb Exp $ */
 
 /* Purpose: Calculate incomplete gamma function */
 
@@ -219,7 +219,7 @@ double alngam ( double xvalue, int *ifault )
   return value;
 }
 
-double nco_gamain ( double x, double p, int *ifault )
+double nco_gamain ( double p, double x, int *ifault )
 {
 /*
   Purpose: GAMAIN computes the incomplete gamma ratio.
@@ -612,7 +612,7 @@ float alngam_f ( float xvalue, int *ifault )
   return value;
 }
 
-float nco_gamain_f ( float x, float p, int *ifault )
+float nco_gamain_f ( float p, float x, int *ifault )
 /*
   Purpose:
 
