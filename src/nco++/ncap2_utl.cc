@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.109 2008-09-29 16:07:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.110 2008-10-01 13:25:20 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1843,7 +1843,7 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
     return var1;
   
   // deal with pwr fuction
-  if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+  if( (op == CARET || op==GAMMA_INC) && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
 
   //Deal with atan2 function
   if(op==ATAN2 ){
