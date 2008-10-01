@@ -205,7 +205,7 @@
   var_sct *agg_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("agg_cls::fnd");
             int fdx;
-            int nbr_arg;
+            int nbr_args;
             int idx;
             int nbr_dim;
             dmn_sct **dim;
@@ -213,78 +213,74 @@
             var_sct *var1=NULL_CEWI;
            
 	    std::string styp;
-	    std::string sfm=fmc_obj.fnm();
+	    std::string sfnm=fmc_obj.fnm();
+
             RefAST aRef;
+            RefAST tr;
             std::vector<std::string> str_vtr;
+            std::vector<RefAST> vtr_args; 
             NcapVector<dmn_sct*> dmn_vtr;
+            
             // de-reference 
             ddra_info_sct ddra_info;        
             prs_cls *prs_arg=walker.prs_arg;
 
             fdx=fmc_obj.fdx();
  
-            if(fargs)
-               nbr_arg=fargs->getNumberOfChildren();
-            else
-	      nbr_arg=0;
-             
-            if(expr){
-	      styp="method";
-              var1=walker.out(expr);
-            } else{
-              // Bomb out if no args
-              styp="function";
-              if(nbr_arg==0){
-                std::string serr;
-                serr="No arguments in aggregate "+styp+": "+sfm;      
-                err_prn(fnc_nm,serr);
-              } 
-	      
-              var1=walker.out(fargs->getFirstChild());    
-              nbr_arg--;
-            }
-             
-               
-            // Process arguments if any exist !! 
-            if(nbr_arg > 0 ){  
-                aRef=fargs->getFirstChild();
-                // Skip first arg if a function
-                if(!expr) 
-		  aRef=aRef->getNextSibling();
+    	    styp=(expr ? "method":"function");
+ 
+            // Put args into vector 
+            if(expr)
+               vtr_args.push_back(expr);
 
-                while(aRef){
-                    
-                    switch(aRef->getType()){
-                    case DIM_ID: 
-                    case DIM_MTD_ID:{  
-                            str_vtr.push_back(aRef->getText());
-                            break;    
-                        }
-                        
-                        // This is garanteed to contain at least one DIM_ID or DIM_MTD  
-                        // and NOTHING else --no need to type check!!
-                    case DMN_ARG_LIST: 
-                        { RefAST bRef=aRef->getFirstChild();
-                            while(bRef){
-                                str_vtr.push_back(bRef->getText());
-                                bRef=bRef->getNextSibling();
-                            }  
-                            break;
-                        } 
-                        
-                        // ignore expr type argument
-                    default:
-                        std::string serr;
-                        serr="Argument \""+aRef->getText()+"\" to " + styp+": "+sfm+" is not a dimension";      
-                        wrn_prn(fnc_nm,serr);
-                        break;
-                        
-                    } // end switch
-                    aRef=aRef->getNextSibling();
-                } // end while
-                
-                dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
-            }           
+            if(tr=fargs->getFirstChild()) {
+              do  
+	        vtr_args.push_back(tr);
+              while(tr=tr->getNextSibling());    
+            } 
+      
+            nbr_args=vtr_args.size();  
+
+            if(nbr_args==0)
+              err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+
+
+            var1=walker.out(vtr_args[0]);
+
+            // Process function arguments if any exist !! 
+            for(idx=1; idx<vtr_args.size(); idx++){  
+                aRef=vtr_args[idx];
+           
+                switch(aRef->getType()){
+                  case DIM_ID: 
+                  case DIM_MTD_ID:
+                       str_vtr.push_back(aRef->getText());
+                       break;    
+
+                  // This is garanteed to contain at least one DIM_ID or DIM_MTD  
+                  // and NOTHING else --no need to type check!!
+                  case DMN_ARG_LIST: 
+                       { RefAST bRef=aRef->getFirstChild();
+                         while(bRef){
+                           str_vtr.push_back(bRef->getText());
+                           bRef=bRef->getNextSibling();
+                         }  
+                         break;
+                        }   
+
+                  // ignore expr type argument
+                  default:
+                       std::string serr;
+                       serr="Argument \""+aRef->getText()+"\" to " + styp+": "+sfnm+" is not a dimension"; 
+                       wrn_prn(fnc_nm,serr);
+                       break;
+                } // end switch
+
+             } // end for 
+
+             if(vtr_args.size() >0) 
+               dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
+
             
             // Initial scan 
             if(prs_arg->ntl_scn){
@@ -312,7 +308,7 @@
                 
                 var1=nco_var_free(var1);
                 return var;
-            }
+            } // end Initial scan
             
             if(dmn_vtr.size() >0){
                 dim=&dmn_vtr[0];
@@ -817,7 +813,8 @@
   const std::string fnc_nm("mth2_cls::fnd");
 
     int fdx=fmc_obj.fdx();   //index
-    int nbr_fargs;
+    int nbr_args=0;
+
     prs_cls* prs_arg=walker.prs_arg;
     var_sct *var=NULL_CEWI;
     var_sct *var1=NULL_CEWI;
@@ -825,33 +822,38 @@
     std::string styp;
     RefAST tr;
     vtl_typ lcl_typ;
+ 
+    std::vector<RefAST> vtr_args; 
+
 
     std::string sfnm =fmc_obj.fnm(); //method name
 
     styp=(expr ? "method":"function");
 
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren();
-   
     if(expr)
-      nbr_fargs++;
+      vtr_args.push_back(expr);
 
-
-   
-    if(nbr_fargs >2) 
-      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+      
+     if(nbr_args >2) 
+       wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
   
-    if(nbr_fargs<2)
-      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
+     if(nbr_args<2)
+       err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
     
+      
+     var1=walker.out(vtr_args[0]);
+     //
+     var2=walker.out(vtr_args[1]);
+      
 
-    if(expr){ 
-      var1=walker.out(expr);
-      var2=walker.out(fargs->getFirstChild());
-    }else{
-      var1=walker.out(fargs->getFirstChild());   
-      var2=walker.out(fargs->getFirstChild()->getNextSibling());
-    }
+
     
     if(prs_arg->ntl_scn)
        if(var1->undefined || var2->undefined){
@@ -913,7 +915,7 @@
 
 
   var_sct *gmm_inc_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
-  const std::string fnc_nm("mth2_cls::fnd");
+  const std::string fnc_nm("gmm_inc_cls::fnd");
 
     int fdx=fmc_obj.fdx();   //index
     int nbr_fargs;
