@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.32 2008-09-15 15:42:45 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.33 2008-10-02 14:43:34 hmb Exp $ -*-C++-*-
 
 // Purpose: Sample input script for ncap2
 
@@ -200,9 +200,9 @@ k3=k2+=10;
 // quoting of vars/atts/dims ie names which contain '.' or '-'
 defdim("a--list.A",10);
 defdim("a..---",20);
-'b..m1'[$'a--list.A']=100.1;
+'b..m1'['$a--list.A']=100.1;
 'b..m1'(0)=90.1;
-'b..m1'@'c--lost'=23;
+'b..m1@c--lost'=23;
 var_double=1.0;
 var_float=1.0f;
 var_int=1;
