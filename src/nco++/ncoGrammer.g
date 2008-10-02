@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.141 2008-09-26 13:07:36 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.142 2008-10-02 14:41:34 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -441,8 +441,7 @@ protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
-protected VAR_NM:  (LPH)(LPH|DGT)* ; 
-protected VAR_NM_QT: ( '\''!) (LPHDGT|'-'|'+'|'.'|'('|')'|':'|'@' )+ ('\''!) ;      
+protected VAR_NM_QT: (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
 
 
 
@@ -537,29 +536,43 @@ NUMBER:
 
 // Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
-        :  ( VAR_NM   
-             {
-              // check function/method vector
-              if( std::binary_search(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText)))
+        :  (LPH)(LPH|DGT)*   
+            {
+            // check function/method vector
+            if( std::binary_search(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText)))
                $setType(FUNC);             
-              else 
+            else 
                $setType(VAR_ID); 
 
-             }
-           | VAR_NM_QT {$setType(VAR_ID);} 
-           )
-   
-           ('@' ( VAR_NM | VAR_NM_QT )
-                       {$setType(ATT_ID);}
-           )?
+           }   
+           ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
+   ;
+
+
+// Return a quoted var or att (var_nm@att_nm)
+VAR_ATT_QT :( '\''!)
+                VAR_NM_QT  {$setType(VAR_ID);}
+                ( '@' VAR_NM_QT {$setType(ATT_ID);})?
+             ('\''!)
    ;     
 
 
-//Return a dim unquoted and quoted 
-DIM_QT options { paraphrase="dimension identifier"; } 
-       : ('$'! (VAR_NM|VAR_NM_QT)  {$setType(DIM_ID);})
-         ( ".size"! { $setType(DIM_ID_SIZE);})?
+
+
+//Return a quoted dim
+DIM_QT: ( '\''!)
+           ('$'! VAR_NM_QT {$setType(DIM_ID);})
+        ('\''!) 
+           ( ".size"! { $setType(DIM_ID_SIZE);})?
    ;
+
+DIM_VAL options { paraphrase="dimension identifier"; } 
+        : '$'! (LPH)(LPH|DGT)* 
+            {$setType(DIM_ID);}
+         ( ".size"!  
+            { $setType(DIM_ID_SIZE);}
+         )? 
+   ;  
 
  
 
