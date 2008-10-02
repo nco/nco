@@ -265,8 +265,8 @@
                            str_vtr.push_back(bRef->getText());
                            bRef=bRef->getNextSibling();
                          }  
-                         break;
-                        }   
+                        break;
+                       }   
 
                   // ignore expr type argument
                   default:
@@ -399,7 +399,7 @@
   var_sct *utl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fnd");
     int rval;
-    int nbr_fargs; 
+    int nbr_args; 
     int fdx=fmc_obj.fdx();   //index
     prs_cls *prs_arg=walker.prs_arg;    
     vtl_typ lcl_typ;
@@ -408,38 +408,43 @@
 
     std::string serr;
     std::string sfnm;
+    std::string styp;
     std::string va_nm;
     NcapVar *Nvar;
     RefAST tr;
-  
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren(); 
+    std::vector<RefAST> vtr_args; 
 
-    sfnm= (expr ? " method ": " function ") + fmc_obj.fnm(); 
+    sfnm =fmc_obj.fnm(); //method name
+    styp=(expr ? "method":"function");
+    nbr_args=0;
 
-    // no arguments - bomb out
-    if(!expr && nbr_fargs==0){    
-	serr=sfnm + " has been called without an argument";               
-        err_prn(fnc_nm,serr);
-    }
-   
     if(expr)
-      tr=expr;
-    else 
-      tr=fargs->getFirstChild();
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+      
+     if(nbr_args ==0) 
+       err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+      
 
 
     if( fdx==SET_MISS || fdx==CH_MISS) {
 
-      if( expr && nbr_fargs==0 || !expr && nbr_fargs <=1) {
+      if( nbr_args==1) {
 	serr=sfnm+ " is missing an argument";
         err_prn(fnc_nm,serr);
       }      
-      var=walker.out( expr ? fargs->getFirstChild() : fargs->getFirstChild()->getNextSibling()  );
+      var=walker.out(vtr_args[1] );
     } 
      
             
-    lcl_typ=expr_typ(tr);          
+    lcl_typ=expr_typ(vtr_args[0]);          
 
     /* allow att identifier for RAM_DELETE */
     if(lcl_typ !=VVAR && !(fdx == RAM_DELETE && lcl_typ==VATT)) {
@@ -447,7 +452,7 @@
       err_prn(fnc_nm,serr);
     }
 
-    va_nm=tr->getText();
+    va_nm=vtr_args[0]->getText();
     Nvar=prs_arg->var_vtr.find(va_nm);
 
 
@@ -577,7 +582,7 @@
 
     case RAM_DELETE: {
              // deal with var
-             if(tr->getType()==VAR_ID){
+             if(vtr_args[0]->getType()==VAR_ID){
                if(Nvar->flg_mem==false)
                  wrn_prn(fnc_nm,sfnm+" cannot remove disk variable:\""+va_nm+ "\". Delete can only remove RAM variables.");           
 	         rval=0;
@@ -586,7 +591,7 @@
                  rval=1;
                
              }
-             if(tr->getType()==ATT_ID){ 
+             if(vtr_args[0]->getType()==ATT_ID){ 
                prs_arg->var_vtr.erase(va_nm);
                rval=1; 
 	     }
@@ -1026,64 +1031,62 @@
             int idx;       
             int jdx;
             int fdx;
-            int nbr_fargs;
+            int nbr_args;
             int nbr_dim;
             var_sct *var_in=NULL_CEWI;
             var_sct *var_out=NULL_CEWI;
            
 	    std::string sfnm;
+            std::string styp;
             std::string serr;
 
             RefAST tr;
-	
             std::vector<std::string> str_vtr;
+            std::vector<RefAST> vtr_args; 
             NcapVector<dmn_sct*> dmn_vtr;
             // de-reference 
             prs_cls *prs_arg=walker.prs_arg;
 
             fdx=fmc_obj.fdx();
 
-            nbr_fargs=fargs->getNumberOfChildren();
+	    sfnm =fmc_obj.fnm(); //method name
 
-            sfnm= (expr ? " method ": " function ") + fmc_obj.fnm();  
+    	    styp=(expr ? "method":"function");
 
-            // no arguments - bomb out
-            if(!expr && nbr_fargs==0){    
-	      serr=sfnm + " has been called without an argument";
-              err_prn(fnc_nm,serr);
-            }
+            if(expr)
+              vtr_args.push_back(expr);
 
+            if(tr=fargs->getFirstChild()) {
+              do  
+	       vtr_args.push_back(tr);
+              while(tr=tr->getNextSibling());    
+            } 
+      
+            nbr_args=vtr_args.size();  
 
-            if(expr) 
-	      tr=expr; 
-	    else 
-              tr=fargs->getFirstChild();
+            if(nbr_args==0)
+              err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
 
-            var_in=walker.out(tr);
-            nbr_dim=var_in->nbr_dim;  
-                        
-            //Process dim args
-            if(expr) 
-              tr=fargs->getFirstChild();
-            else
-              tr=tr->getNextSibling();
+            var_in=walker.out(vtr_args[0]);
 
-            while(tr) {
-              switch(tr->getType()){
+	    nbr_dim=var_in->nbr_dim;
+
+            for(idx=1; idx<nbr_args; idx++){
+              switch( vtr_args[idx]->getType() ){
                      
-                    case DIM_ID: 
-                    case DIM_MTD_ID:  
-                          str_vtr.push_back(tr->getText());
-                          break;    
-                        // ignore expr type arguments
-                    default:
-                          serr="Argument \""+tr->getText()+"\" to"+sfnm +" is not a dimension";      
-                          wrn_prn(fnc_nm,serr);
-                          break;
-                    } // end switch
-                    tr=tr->getNextSibling();
-             } // end while
+                case DIM_ID: 
+                case DIM_MTD_ID:  
+                     str_vtr.push_back(vtr_args[idx]->getText());
+                     break;    
+                    // ignore expr type arguments
+                default:
+                     serr="Argument \""+vtr_args[idx]->getText()+"\" to"+sfnm +" is not a dimension";      
+                     wrn_prn(fnc_nm,serr);
+                     break;
+              } // end switch
+            } // end for
         
+
             if(prs_arg->ntl_scn)
               dmn_vtr=ncap_dmn_mtd(var_in,str_vtr);
             else{
@@ -1126,13 +1129,11 @@
                 for(idx=0 ; idx<nbr_dim ; idx++)
                   cst_vtr.push_back( static_cast<std::string>((dmn_vtr[idx]->nm)));
 
-
                 var_out=ncap_cst_mk(cst_vtr,prs_arg);
                 var_out=nco_var_cnf_typ(var_in->type,var_out);
                 var_in=nco_var_free(var_in);
                 return var_out;
-		  }
-
+              }
             }
 
            
