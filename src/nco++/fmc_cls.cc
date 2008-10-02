@@ -1101,7 +1101,7 @@
 
 	      if(dmn_vtr.size() < nbr_dim ) {
                 ostringstream os; 
-	        os<<"You have only specified "<< dmn_vtr.size()<< " dimension  args " << "in"+sfnm+". You need to specify  "<< nbr_dim<<". All of the variables dimensions must be specfifed in the arguments."; 
+	        os<<"You have only specified "<< dmn_vtr.size()<< " dimension  args " << "in "+sfnm+". You need to specify  "<< nbr_dim<<". All of the variables dimensions must be specfifed in the arguments."; 
               err_prn(fnc_nm,os.str());
                 }
 
