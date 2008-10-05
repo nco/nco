@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.499 2008-10-05 13:32:00 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.500 2008-10-05 14:05:49 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6589,10 +6589,10 @@ print("Total of odd elements ");print(sum);print("\n");
 @subsection Include files
 The synatx of an include file is:
 @example
-#include "filename"       
+#include "script"       
 @end example
 
-@noindent If the filename is not absolute then the directory searched is the directory from which @command{ncap2} was executed in. Its possible to nest include files to an arbitary depth. A handy use of inlcude files is to store often used constants. Use RAM variables of you don't want these constants written to Output.  
+@noindent The script filename is searched relative to the run directory. Its possible to nest include files to an arbitary depth. A handy use of inlcude files is to store often used constants. Use RAM variables of you don't want these constants written to Output.  
 
 @example
 *pi=3.1415926535;
@@ -7506,7 +7506,7 @@ The allowed charaters in a valid netCDF name vary from release to release. (See 
 @example
 DGT:     ('0'..'9');
 LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
-name=    (LPH)(LPH|DGT)+
+name:    (LPH)(LPH|DGT)+
 @end example
 
 @noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumberic or underscore. ( e.g a1,_23, hell_is_666 )
@@ -7516,7 +7516,7 @@ name=    (LPH)(LPH|DGT)+
 
 @example
 LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
-name=    (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
+name:    (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
 @end example
 
 @noindent Quote a variable: @*
