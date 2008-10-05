@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.497 2008-09-18 15:50:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.498 2008-10-05 11:05:31 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5414,6 +5414,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * RAM variables::
 * Where statement::
 * Loops::
+* Include files::
 * Irregular grids::
 * Examples ncap2::             
 * Intrinsic mathematical methods::  
@@ -6217,6 +6218,8 @@ The following methods are used to edit the missing value associated with a varia
  Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
 @item change_miss(expr)
  Changes the missing value elements of the variable to the new missing value (nb an expensive function).
+@item get_miss() 
+ Returns the missing value of a variable. If the variable exists in Input and Output then the missing value of the variable in Output is returned. If the variable has no missing value then an error is returned.  
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @end table
@@ -6229,9 +6232,9 @@ The following methods are used to edit the missing value associated with a varia
 
 th=three_dmn_var_dbl;
 th.change_miss(-1e10d);
-/* set values less than 0 or greter than 50 to missing value */
+/* set values less than 0 or greater than 50 to missing value */
 where( th <0.0 || th > 50.0)
-  th=-1e10d;
+  th=th.get_miss();
 
 
 Another example
@@ -6242,8 +6245,8 @@ new.set_miss(-997.0);
 /* extract only elements divisible by 3 */
 where ( three_dmn_var_dbl%3 == 0 )
      new=three_dmn_var_dbl; 
-else
-     new=-997.0;   
+elsewhere
+     new=new.get_miss();   
 
 
 @end example
@@ -6300,10 +6303,17 @@ four_time_avg=four_dmn_rec_var($time);
 
 
 @sp 1
-@noindent @strong{ Packing Methods } 
+@noindent @strong{ Packing Methods @* } 
+For more information see @pxref{Packed data} and @pxref{ncpdq netCDF Permute Dimensions Quickly} @* 
 @table @code
-@item pack()
-The standard packing algorithm is applied. 
+@item pack() & pack_short()
+The default packing algorithm is applied and variable is packed to NC_SHORT
+@item pack_byte()
+Variable is packed to NC_BYTE
+@item pack_short()
+Variable is packed to NC_SHORT
+@item pack_int()
+Variable is packed to NC_INT
 @item unpack()
 The standard unpacking algorithm is applied. 
 @end table
@@ -6331,6 +6341,8 @@ These functions are used to manipulate missing values and RAM variables.
  Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
 @item change_miss(expr)
  Changes the missing value elements of the variable to the new missing value (nb an expensive function).
+@item get_miss() 
+ Returns the missing value of a variable in Input or Output  
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @item ram_write()
@@ -6449,7 +6461,7 @@ The full syntax of a @code{where()} statement is as follows:
 // Single assign (nb the else block is optional)
 where (mask) 
    var1=expr1;
-else
+elsewhere
    var1=expr2;	   	
 
 
@@ -6458,7 +6470,7 @@ where( mask) @{
     var1=expr1;
     var2=expr2;
     ...
-    @} else @{
+    @} elsewhere @{
     var1=expr3
     var2=expr4
     var3=expr5;
@@ -6469,10 +6481,10 @@ where( mask) @{
 
 @itemize @bullet
 @item The only expression allowed within a where is the assign 'var=expr'. This is different from a regular ncap2 assign. The LHS var must alread exist in Input or Output. The expression on the RHS must evaluate to a scalar or a variable/attribute of the same size as the LHS variable. 
-@item Taking the general case of a variable on the LHS side and RHS. For every element of the mask which is True , the coresponding LHS variable element  is re-assigned with its partner element on the RHS. In the else part the mask is logically inverted and the assign process continues
+@item Taking the general case of a variable on the LHS side and RHS. For every element of the mask which is True , the coresponding LHS variable element  is re-assigned with its partner element on the RHS. In the elsewhere part the mask is logically inverted and the assign process continues
 
 @item if the mask dimensions are a subset of the LHS variable's dimensions , then it is made to conform; if it  can't be made to conform then script execution halts.  
-@item Missing values values in the mask evalute to False in the  first code/block statement and True in the else block/statement. LHS variable elements set to missing value are not re-assigned  
+@item Missing values values in the mask evalute to False in the  first code/block statement and True in the elsewhere block/statement. LHS variable elements set to missing value are not re-assigned  
 
 @end itemize
 
@@ -6515,7 +6527,7 @@ temperature_msk[$south_north,$east_west]=0.0;
 
 where(lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max)
   temperature_msk=temperature;	
-else
+elsewhere
   temperature_msk=temperature@@_FillValue;
 
 temp_avg=temperature_msk.avg();
@@ -6526,7 +6538,7 @@ temp_max=temperature.max();
 @html
 <a name="ncap_lop"></a> <!-- http://nco.sf.net/nco.html#ncap_lop -->
 @end html
-@node Loops, Irregular grids, Where statement, ncap2 netCDF Arithmetic Processor
+@node Loops, Include files, Where statement, ncap2 netCDF Arithmetic Processor
 @subsection Loops
 In ncap there are for() loops and while() loops. They are currently completely unoptimized So use them with  RAM variables unless you want thrash your disk to death. To break out of a loop use "break" command. To iterate to the next cycle use the "continue" command.
 
@@ -6568,12 +6580,36 @@ print("Total of odd elements ");print(sum);print("\n");
 
 @end example
 
+
+
+@html
+<a name="ncap_inc"></a> <!-- http://nco.sf.net/nco.html#ncap_inc -->
+@end html
+@node Include files, Irregular grids, Loops, ncap2 netCDF Arithmetic Processor
+@subsection Include files
+The synatx of an include file is:
+@example
+#include "filename"       
+@end example
+
+@noindent If the filename is not absolute then the directory searched is the directory from which @command{ncap2} was executed in. Its possible to nest include files to an arbitary depth. A handy use of inlcude files is to store often used constants. Use RAM variables of you don't want these constants written to Output.  
+
+@example
+*pi=3.1415926535;
+*h=6.62607095e-34;
+e=2.71828;
+
+@end example
+ 
+
+
+
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
-@node Irregular grids, Examples ncap2, Loops, ncap2 netCDF Arithmetic Processor
+@node Irregular grids, Examples ncap2, Include files, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
