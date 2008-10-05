@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.498 2008-10-05 11:05:31 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.499 2008-10-05 13:32:00 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5419,7 +5419,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Examples ncap2::             
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity::
-* Netcdf3/4 naming conventions::
+* ID Quoting::
 @end menu
 
 @html
@@ -5720,7 +5720,7 @@ three_mw=three_dmn_var_dbl.permute($0,$2,$1);
 
 
 @noindent @strong{ID Quoting @*}
-If the dim name contains non-regular characters use ID quoting...
+If the dim name contains non-regular characters use ID quoting. See @pxref{ID Quoting}
 @example
 defdim("a--list.A",10);
 A1['$a--list.A']=30.0;
@@ -6004,7 +6004,7 @@ prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS;      //prs_mdp get attributes from PO
 th_min=1.0 + 2*three_dmn_var_dbl.min($time);    //th_min get attributes from three_dmn_var_dbl
 @end example
 
-If the attribute name contains non-regular characters use ID quoting...
+If the attribute name contains non-regular characters use ID quoting. See @pxref{ID Quoting}
 @example
 'b..m1@@c--lost'=23;
 @end example
@@ -7452,7 +7452,7 @@ other OSs.}
 @html
 <a name="ncap_opts"></a> <!-- http://nco.sf.net/nco.html#ncap_opts -->
 @end html
-@node Operators precedence and associativity , Netcdf3/4 naming conventions, Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
+@node Operators precedence and associativity , ID Quoting, Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
 @subsection Operators precedence and associativity
 This page lists the ncap operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
 
@@ -7495,10 +7495,39 @@ This page lists the ncap operators in order of precedence (highest to lowest). T
 @html
 <a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
 @end html
-@node Netcdf3/4 naming conventions, ,Operators precedence and associativity, ncap2 netCDF Arithmetic Processor
-@subsection Netcdf3/4 naming conventions
+@node ID Quoting, ,Operators precedence and associativity, ncap2 netCDF Arithmetic Processor
+@subsection ID Quoting
 
-The following comments are lifted directly from the netcdf libraries and detail the dimension/variable/attribute naming conventions for each release.
+In this section when I refer to a name I mean a variable name, attribute name or a dimension name
+The allowed charaters in a valid netCDF name vary from release to release. (See end section). If you want to use metacharacters in a name or use a method name as a variable name then the name has to be quoted wherever it occurs. 
+
+@noindent The default nco name is specified by the regular expressions:
+
+@example
+DGT:     ('0'..'9');
+LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
+name=    (LPH)(LPH|DGT)+
+@end example
+
+@noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumberic or underscore. ( e.g a1,_23, hell_is_666 )
+
+
+@noindent The valid characters in a quoted name are specified by the regular expressions:
+
+@example
+LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
+name=    (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
+@end example
+
+@noindent Quote a variable: @*
+'avg' , '10_+10','set_miss' '+-90field' , '--test'=10.0d@* @* 
+Quote a attribute: @*
+'three@@10', 'set_mss@@+10', '666@@hell', 't1@@+units'="kelvin" @* @*
+Quote a dimension: @*
+'$10', '$t1--', '$--odd', c1['$10','$t1--']=23.0d @* 
+
+@sp 1
+The following comments are lifted directly from the netcdf libraries and detail the naming conventions for each release.
 
 
 @noindent netcdf-3.5.1 @*
