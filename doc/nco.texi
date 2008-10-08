@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.500 2008-10-05 14:05:49 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.501 2008-10-08 14:17:20 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5510,14 +5510,14 @@ Assign Operators     ( =,+=,-=,/=, *= )
 
 @strong{Arithmetic and Binary Operators }
 
-Consider var1 'op' var2
+Consider @emph{var1 'op' var2}
 
  @strong{ Precision }
         @itemize @bullet
         @item If both operands are variables  then the precision of the result is equal to the precision of the variable  that has the highest type. 
         @item If one of the operands is a variable and the other an attribute then the precision of the result is equal to the precision of the variable. 
         @item If both operands are attributes then the result is equal to the precision of the attribue that has the highest type.
-        @item An exception to the above  rules  occurs with power of operator "^". If both operands have type less than @emph{float} then the result will be @emph{float}. If any of the types are @emph{double} then the result will be type @emph{double}.
+        @item An exception to the above  rules  occurs with power of operator "^". If both operands have type less than @code{NC_FLOAT} then the result will be @code{NC_FLOAT}. If any of the types are @code{NC_DOUBLE} then the result will be type @code{NC_DOUBLE}.
 
         @end itemize
 
@@ -5570,7 +5570,7 @@ Consider now
 
 
 @noindent @strong{Binary Operators} @* 
-Unlike C the binary return an array of values. There is no such thing as short circuiting  with the AND/OR operators. Missing values are carried into the result in the same way they are with the arithmetic operators. When an expression is evaluated in an if() the missing values are treated as true.@*
+Unlike C the binary operators return an array of values. There is no such thing as short circuiting  with the AND/OR operators. Missing values are carried into the result in the same way they are with the arithmetic operators. When an expression is evaluated in an if() the missing values are treated as true.@*
 The Binary operators are,in order of precedence: 
 
 @example
@@ -5609,6 +5609,48 @@ tm5= !tm4;               // tm5=  1, 1, 0, 1, 1, 0, 1, 1, 1, 1 ; type double;
 
 @end example
 
+	
+@noindent @strong{Regular Assign Operator} @*
+@noindent @emph{var1 '=' exp1} @*
+If var1 doesnt already exist in Ouptut then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
+
+
+@noindent @strong{ Other Assign Operators +=,-=,*=./= } @*
+        @noindent  @emph{var1 'ass_op' exp1 }@*
+if exp1 is a variable and it doens't conform to var1 then an attempt is made to make it conform to var1. If exp1 is an attribute it must have unity size or else have the same number of elements as var1. If expr1 has a different type to var1 the it is converted to the var1 type.
+
+example:
+
+@example
+z1=four+=one*=10 // z1=14 four=14 one=10;	
+time-=2          // time= -1,0,1,2,3,4,5,6,7,8
+@end example
+
+
+@noindent @strong{Increment/ Decrement Operators @* } 
+These work in a similiar fashion to their regular C counterparts. If say the variable "four" is input only then the statement "++four" effectively means -read four from input increment each element by one , then write the new values to Output;
+
+example:
+
+@example
+n2=++four;   n2=5, four=5 
+n3=one--+20; n3=21  one=0;	 
+n4=--time;   n4=time=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.;
+@end example
+
+@noindent @strong{Conditional Operator ?: } @*
+@noindent @emph{exp1 ? exp2 : exp3 } @*
+The conditional operator ( or ternary Operator) is nice and succint way of writing an if/then/else. If exp1 evalutes to true then exp2 is returned else exp3 is returned.
+
+example
+@example
+weight_avg= weight.avg();
+weight_avg@@units= (weight_avg ==1 ? "kilo" : "kilos");  
+
+PS_nw= PS - (PS.min() >100000 ? 100000 : 0 );
+@end example
+
+
 
 @noindent @strong{Clipping Operators}
 @table @asis
@@ -5628,44 +5670,6 @@ RDM2= RDM <<90s;     RDM3=1, 9, 36, 84, 90, 90, 84, 36, 9, 1 ;        // type in
 
 @end example
 
-@noindent @strong{Increment/ Decrement Operators @* } 
-These work in a similiar fashion to their regular C counterparts. If say the variable "four" is input only then the statement "++four" effectively means -read four from input increment each element by one , then write the new values to Output;
-
-example:
-
-@example
-n2=++four;   n2=5, four=5 
-n3=one--+20; n3=21  one=0;	 
-n4=--time;   n4=time=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.;
-@end example
-	
-@noindent @strong{Regular Assign Operator} @*
-	@noindent var1 '=' exp1 @*
-If var1 doesnt already exist in Ouptut then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
-
-
-@noindent @strong{ Other Assign Operators +=,-=,*=./= } @*
-        @noindent  var1 'ass_op' exp1 @*
-if exp1 is a variable and it doens't conform to var1 then an attempt is made to make it conform to var1. If exp1 is an attribute it must have unity size or else have the same number of elements as var1. If expr1 has a different type to var1 the it is converted to the var1 type.
-
-example:
-
-@example
-z1=four+=one*=10 // z1=14 four=14 one=10;	
-time-=2          // time= -1,0,1,2,3,4,5,6,7,8
-@end example
-
-@noindent @strong{Conditional Operator ?: } @*
-   @noindent exp1 ? exp2 : exp3 @*
-The conditional operator ( or ternary Operator) is nice and succint way of writing an if/then/else. If exp1 evalutes to true then exp2 is returned else exp3 is returned.
-
-example
-@example
-weight_avg= weight.avg();
-weight_avg@@units= (weight_avg ==1 ? "kilo" : "kilos");  
-
-PS_nw= PS - (PS.min() >100000 ? 100000 : 0 );
-@end example
 
 @html
 <a name="ncap_dims"></a> <!-- http://nco.sf.net/nco.html#ncap_dims -->
@@ -5673,7 +5677,7 @@ PS_nw= PS - (PS.min() >100000 ? 100000 : 0 );
 @node Dimensions, Left hand casting, Expressions, ncap2 netCDF Arithmetic Processor
 @subsection Dimensions
 
-Dimensions can be defined in Output using the defdim() function.
+Dimensions can be defined in Output using the @code{defdim()} function.
 @example
 defdim("cnt",10);
 @end example
@@ -5685,7 +5689,7 @@ temperature[$time,$lat,$lon]=35.5;
 temp_avg=temperature.avg($time);
 @end example
 
-To refer to the dimension size in an expression use the size method. 
+To refer to the dimension size in an expression use the @code{size} method. 
 @example
 time_avg=time.total() / $time.size;
 @end example
@@ -5699,9 +5703,9 @@ new_var_grw( 0:($cnt_grw.size-2))=new_var;
 
 @noindent @strong{Dimension Abbreviations @*}
 @noindent Its possible to use dimension abbreviations as method arguments. @*
-$0 is the first dimension of the variable @*
-$1 is the second dimension of the variable @*
-$n is the n+1 dimension of the variable @*
+@code{$0} is the first dimension of the variable @*
+@code{$1} is the second dimension of the variable @*
+@code{$n} is the n+1 dimension of the variable @*
 
 @noindent consider the variables:@*
 @example
@@ -5801,7 +5805,7 @@ coordinate system is easy with left hand casting.
 @subsection Arrays and hyperslabs
 
 Hyperslabs in ncap2 are a bit more limited than  hyperslabs with the other nco operators.
-There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntatic magic these are all are possible.
+There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntatic magic they are all are possible.
 @example
   var1( hyper_arg1, hyper_arg2 .. hyper_argN)
 @end example
@@ -5875,8 +5879,8 @@ The following is not valid:
 th_nw=th(0,:,0:1) +th(9,:,0:1);
 @end example
 
-As the $lon now only has two elements.
-The above can be calculated by using a LHS cast with $lon_nw as replacement dim for $lon.
+As the @emph{$lon} now only has two elements.
+The above can be calculated by using a LHS cast with @emph{$lon_nw} as replacement dim for @emph{$lon}.
 @example
 defdim("lon_nw",2);
 th_nw[$lat,$lon_nw]=th(0,:,0:1) +th(9,:,0:1);
@@ -5913,7 +5917,7 @@ P(:,1,:,:)=th1
 
 
 @noindent @strong{Reverse method} @*
-If you want to reverse a dimensions elements in an variable use the reverse() method
+If you want to reverse a dimensions elements in an variable use the @code{reverse()} method
 with at least one dimension argument (this is equivalent to applying a negative stride)
 e.g 
 @example 
@@ -5922,7 +5926,7 @@ od_rv=od.reverse($time);        // @{38, 36, 34, 32, 30, 28, 26, 24, 22, 20 @}
 @end example
 
 @noindent @strong{Permute method} @*
-If you want to swap about the dimensions of a variable use the the permute() method. The number and names of  dimension arguments must match the dimensions in the variable. If the first dimemsion  in the variable is of record type then this must remain the first dimension. If you want to change the record dimension consider using @command{ncpdq} . 
+If you want to swap about the dimensions of a variable use the the @code{permute()} method. The number and names of  dimension arguments must match the dimensions in the variable. If the first dimemsion  in the variable is of record type then this must remain the first dimension. If you want to change the record dimension consider using @command{ncpdq} . 
 
 Consider the variable:
 @example
@@ -5948,7 +5952,7 @@ three_dmn_var_pm=
 @node Attributes, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
 
-Attributes are refered to by var_nm@@att_nm. 
+@noindent Attributes are refered to by @emph{var_nm@@att_nm} @*
 All the following are valid statements
 
 @example
@@ -5964,14 +5968,14 @@ a1($time.size-1)=a1@@max;
 
 @end example
 
-A "value list" can be used on the RHS of an assign...
+A @emph{value list} can be used on the RHS of an assign...
 
 @example
 a1@@trip1=@{ 1,2,3 @} ;
 a1@@triplet=@{ a1@@min, (a1@@min+a1@@max)/2, a1@@max @}; 
 @end example
 
-The netcdf specification allows all attribute types to have a size greater than one. The maximium is defined by NC_MAX_ATTRS -The following is an ncdump of the meta-data for variable a1
+The netcdf specification allows all attribute types to have a size greater than one. The maximium is defined by @code{NC_MAX_ATTRS} -The following is an ncdump of the meta-data for variable a1
 
 @example 
 double a1(time) ;
@@ -5982,7 +5986,7 @@ double a1(time) ;
   a1:triplet = 21., 110., 199. ;
 @end example
 
-The size() method can be used with attributes -for example to save an attribute text string in a variable..
+The @code{size()} method can be used with attributes -for example to save an attribute text string in a variable..
 @example
 defdim("sng_len", a1@@long_name.size());
 sng_arr[$sng_len]=a1@@long_name;         // sng_arr now contains "Kelvin" 
@@ -5993,10 +5997,11 @@ To stop the attribute being  written use the ram_delete() method or use a bogus 
 
 @noindent @strong{Attribute Propagation & Inheritance}
 @itemize @bullet
-  @item Attribute propagation occurs in an  assign expression. The variable being defined on the LHS gets copies of the attributes from the leftermost variable on the RHS
+  @item Attribute propagation occurs in a regular  assign statement. The variable being defined on the LHS gets copies of the attributes from the leftermost variable on the RHS
 
-  @item Attribute inheritance occurs when the variable being defined on the LHS has a counterpart of the same name in the Input file. The LHS variable inherits the attributes from its namesake in the Input file. It is possible to have an assign expression for which both propagation and inheritance occur.
+  @item Attribute Inheritance: The LHS variable "inherits" attributes from an Input variable with the same name
 
+  @item It is possible to have a regular assign statement for which both propagation and inheritance occur.
 @end itemize
 
 @example
@@ -6019,22 +6024,22 @@ The table below lists the postfix character(s) to add to a number literal for ty
 
 
 @example
-n1[$time]=1UL;   // n1 will now by type NC_UINT
-n2[$lon]=4b;     // n2 will be of type NC_BYTE
-n3[$lat]=5ull;   // n3 will be of type NC_UINT64  
-n3@@a1=6.0d;      // attribute will be type NC_DOUBLE
-n3@@a2=-666L;     // attribute will be type NC_INT
+n1[$time]=1UL;   // n1 will now by type @code{NC_UINT}
+n2[$lon]=4b;     // n2 will be of type @code{NC_BYTE}
+n3[$lat]=5ull;   // n3 will be of type @code{NC_UINT64}  
+n3@@a1=6.0d;      // attribute will be type @code{NC_DOUBLE}
+n3@@a2=-666L;     // attribute will be type @code{NC_INT}
 @end example
 
-A floating point number without a postfix will default to NC_DOUBLE. An integer without a postfix will default to type NC_INT. Thre is no postfix for characters. Use a quoted string.
+A floating point number without a postfix will default to @code{NC_DOUBLE}. An integer without a postfix will default to type @code{NC_INT}. Thre is no postfix for characters. Use a quoted string.
 
 @example
-n4[$rlev]=.1      // n4 will be of type NC_DOUBLE
-n5[$lon_grd]=2.   // n5 will be of type NC_DOUBLE
-n6[$gds_crd]=2e3; // n6 will be of type NC_DOUBLE
-n6@@a1=41;         // attribute will be type NC_INT  
-n6@@a2=-21;        // attribute will be type NC_INT  
-n6@@units="kelvin" // attribute will be type NC_CHAR
+n4[$rlev]=.1      // n4 will be of type @code{NC_DOUBLE}
+n5[$lon_grd]=2.   // n5 will be of type @code{NC_DOUBLE}
+n6[$gds_crd]=2e3; // n6 will be of type @code{NC_DOUBLE}
+n6@@a1=41;         // attribute will be type @code{NC_INT}
+n6@@a2=-21;        // attribute will be type @code{NC_INT}  
+n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @end example 
 
 
@@ -6043,35 +6048,31 @@ n6@@units="kelvin" // attribute will be type NC_CHAR
 @item
 @strong{netCDF3/4 Types}
 @item b|B	 
-  NC_BYTE  a signed 1 byte integer 
+  @code{NC_BYTE}  a signed 1 byte integer 
 @item none	 
-  NC_CHAR  a ISO/ASCII character 
+  @code{NC_CHAR}  a ISO/ASCII character 
 @item s|S	 
-  NC_SHORT a signed 2 byte integer 
+  @code{NC_SHORT} a signed 2 byte integer 
 @item l|L	 
-  NC_INT   a signed 4 byte integer 
+  @code{NC_INT}   a signed 4 byte integer 
 @item f|F	 
-  NC_FLOAT a single precision floating point number 
+  @code{NC_FLOAT} a single precision floating point number 
 @item d|D
-  NC_DOUBLE a double precision floating point number 
+  @code{NC_DOUBLE} a double precision floating point number 
 @item
 @item
 @strong{netCDF4 Types}
 @item ub|UB	 
-  NC_UBYTE a unsigned 1 byte int 
+  @code{NC_UBYTE} a unsigned 1 byte int 
 @item us|US 
-  NC_USHORT a unsigned 2-byte int 
+  @code{NC_USHORT} a unsigned 2-byte int 
 @item u|U|ul|UL	 
-  NC_UINT a unsigned 4-byte int 
+  @code{NC_UINT} a unsigned 4-byte int 
 @item ll|LL	 
-  NC_INT64 a signed 8-byte int 
+  @code{NC_INT64} a signed 8-byte int 
 @item ull|ULL 
-  NC_UINT64 a unsigned 8-byte int 
+  @code{NC_UINT64} a unsigned 8-byte int 
 @end table
-
-
-
-
 
 
 
@@ -6080,7 +6081,7 @@ n6@@units="kelvin" // attribute will be type NC_CHAR
 @end html
 @node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
-The synatx of  the if statement is similar to its C counterpart. The conditional operator (ternary operator) has also been implemented.
+The synatx of  the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
 
 @example
 
@@ -6158,7 +6159,9 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint(): three_dmn_var_sht.int(
 print( variable_name/attribute name/string, format string);
 @end example  
 
-@noindent The print function takes a variable name or attribute name or a quoted string and prints the contents in a in a similar fashion to ncks -H. There is also an optional C style format string argument. Currently the print funtion can't print RAM variables or expressions e.g 'print(var_msk*3+4)' is invalid. So if you want to print an expression first assign a variable with the expression; then print the variable.
+@noindent The print function takes a variable name or attribute name or a quoted string and prints the contents in a in a similar fashion to @code{ncks -H }. 
+There is also an optional C style format string argument. 
+Currently the print funtion can't print RAM variables or expressions e.g @code{'print(var_msk*3+4)'} is invalid. So if you want to print an expression first assign a variable with the expression; then print the variable.
 
 @noindent examples
 @example
@@ -6307,13 +6310,13 @@ four_time_avg=four_dmn_rec_var($time);
 For more information see @pxref{Packed data} and @pxref{ncpdq netCDF Permute Dimensions Quickly} @* 
 @table @code
 @item pack() & pack_short()
-The default packing algorithm is applied and variable is packed to NC_SHORT
+The default packing algorithm is applied and variable is packed to @code{NC_SHORT}
 @item pack_byte()
-Variable is packed to NC_BYTE
+Variable is packed to @code{NC_BYTE}
 @item pack_short()
-Variable is packed to NC_SHORT
+Variable is packed to @code{NC_SHORT}
 @item pack_int()
-Variable is packed to NC_INT
+Variable is packed to @code{NC_INT}
 @item unpack()
 The standard unpacking algorithm is applied. 
 @end table
@@ -6375,30 +6378,30 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 @item
 @strong{netCDF3/4 Types}
 @item byte()	 
- convert to NC_BYTE  a signed 1 byte integer 
+ convert to @code{NC_BYTE}  a signed 1 byte integer 
 @item char()	 
- convert to NC_CHAR  a ISO/ASCII character 
+ convert to @code{NC_CHAR}  a ISO/ASCII character 
 @item short()	 
- convert to NC_SHORT a signed 2 byte integer 
+ convert to @code{NC_SHORT} a signed 2 byte integer 
 @item int()	 
- convert to NC_INT   a signed 4 byte integer 
+ convert to @code{NC_INT}   a signed 4 byte integer 
 @item float()	 
- convert to NC_FLOAT a single precision floating point number 
+ convert to @code{NC_FLOAT} a single precision floating point number 
 @item double() 
- convert to NC_DOUBLE a double precision floating point number 
+ convert to @code{NC_DOUBLE} a double precision floating point number 
 @item
 @item
 @strong{netCDF4 Types}
 @item ubyte()	 
- convert to NC_UBYTE a unsigned 1 byte int 
+ convert to @code{NC_UBYTE} a unsigned 1 byte int 
 @item ushort() 
- convert to NC_USHORT a unsigned 2-byte int 
+ convert to @code{NC_USHORT} a unsigned 2-byte int 
 @item uint()	 
- convert to NC_UINT a unsigned 4-byte int 
+ convert to @code{NC_UINT} a unsigned 4-byte int 
 @item int64()	 
- convert to NC_INT64 a signed 8-byte int 
+ convert to @code{NC_INT64} a signed 8-byte int 
 @item uint64() 
- convert to NC_UINT64 a unsigned 8-byte int *
+ convert to @code{NC_UINT64} a unsigned 8-byte int *
 @end table
 
 
