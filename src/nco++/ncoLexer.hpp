@@ -10,7 +10,7 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.64 2008-09-26 20:02:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.65 2008-10-08 22:22:23 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -133,7 +133,6 @@ public:
 	protected: void mLPH(bool _createToken);
 	protected: void mLPHDGT(bool _createToken);
 	protected: void mXPN(bool _createToken);
-	protected: void mVAR_NM(bool _createToken);
 	protected: void mVAR_NM_QT(bool _createToken);
 	protected: void mBLASTOUT(bool _createToken);
 	public: void mUNUSED_OPS(bool _createToken);
@@ -143,7 +142,9 @@ public:
 	public: void mNUMBER_DOT(bool _createToken);
 	public: void mNUMBER(bool _createToken);
 	public: void mVAR_ATT(bool _createToken);
+	public: void mVAR_ATT_QT(bool _createToken);
 	public: void mDIM_QT(bool _createToken);
+	public: void mDIM_VAL(bool _createToken);
 	public: void mDIM_MTD_ID(bool _createToken);
 	public: void mNSTRING(bool _createToken);
 	public: void mINCLUDE(bool _createToken);
@@ -159,6 +160,8 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_3;
 	static const unsigned long _tokenSet_4_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_4;
+	static const unsigned long _tokenSet_5_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
 };
 
 #endif /*INC_ncoLexer_hpp_*/

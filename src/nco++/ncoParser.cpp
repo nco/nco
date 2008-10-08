@@ -2030,7 +2030,7 @@ void ncoParser::imaginary_token() {
 
 void ncoParser::initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory )
 {
-	factory.setMaxNodeType(108);
+	factory.setMaxNodeType(109);
 }
 const char* ncoParser::tokenNames[] = {
 	"<0>",
@@ -2129,7 +2129,6 @@ const char* ncoParser::tokenNames[] = {
 	"LPH",
 	"LPHDGT",
 	"XPN",
-	"VAR_NM",
 	"VAR_NM_QT",
 	"BLASTOUT",
 	"UNUSED_OPS",
@@ -2139,6 +2138,8 @@ const char* ncoParser::tokenNames[] = {
 	"a floating point number",
 	"NUMBER",
 	"variable or attribute identifier",
+	"VAR_ATT_QT",
+	"DIM_QT",
 	"dimension identifier",
 	"INCLUDE",
 	"LMT_DMN",
