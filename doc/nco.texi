@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.501 2008-10-08 14:17:20 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.502 2008-10-09 18:25:28 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5425,7 +5425,6 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 @html
 <a name="att_prp"></a> <!-- http://nco.sf.net/nco.html#att_prp -->
 @end html
-@cindex attribute propagation
 Defining new variables in terms of existing variables is one of
 @command{ncap2}'s most powerful features.
 @cindex derived fields
@@ -5494,6 +5493,7 @@ variable name.
 <a name="ncap_exp"></a> <!-- http://nco.sf.net/nco.html#ncap_exp -->
 @end html
 @node Expressions, Dimensions, Syntax of ncap2 statements, ncap2 netCDF Arithmetic Processor
+@cindex expressions
 @subsection Expressions
 
 Expressions are the fundamental building block of ncap2. Expressions can be composed of variables number literals and attributes. The following C operators have been "overloaded"
@@ -5570,6 +5570,7 @@ Consider now
 
 
 @noindent @strong{Binary Operators} @* 
+@cindex binary Operators
 Unlike C the binary operators return an array of values. There is no such thing as short circuiting  with the AND/OR operators. Missing values are carried into the result in the same way they are with the arithmetic operators. When an expression is evaluated in an if() the missing values are treated as true.@*
 The Binary operators are,in order of precedence: 
 
@@ -5639,6 +5640,7 @@ n4=--time;   n4=time=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.;
 @end example
 
 @noindent @strong{Conditional Operator ?: } @*
+@cindex conditional Operator
 @noindent @emph{exp1 ? exp2 : exp3 } @*
 The conditional operator ( or ternary Operator) is nice and succint way of writing an if/then/else. If exp1 evalutes to true then exp2 is returned else exp3 is returned.
 
@@ -5653,6 +5655,7 @@ PS_nw= PS - (PS.min() >100000 ? 100000 : 0 );
 
 
 @noindent @strong{Clipping Operators}
+@cindex clipping operators
 @table @asis
 @item << Less Than Selection @*
 For arrays, the less-than selection operator selects all values in the left operand that are less than the corresponding value in the right operand. If the value of the left side is greater than or equal to the corresponding value of the right side, then the right side value is placed in the result	
@@ -5676,7 +5679,8 @@ RDM2= RDM <<90s;     RDM3=1, 9, 36, 84, 90, 90, 84, 36, 9, 1 ;        // type in
 @end html
 @node Dimensions, Left hand casting, Expressions, ncap2 netCDF Arithmetic Processor
 @subsection Dimensions
-
+@cindex dimensions ncap
+@cindex defdim()
 Dimensions can be defined in Output using the @code{defdim()} function.
 @example
 defdim("cnt",10);
@@ -5803,7 +5807,7 @@ coordinate system is easy with left hand casting.
 @end html
 @node Arrays and hyperslabs, Attributes, Left hand casting, ncap2 netCDF Arithmetic Processor
 @subsection Arrays and hyperslabs
-
+@cindex hyperslabs
 Hyperslabs in ncap2 are a bit more limited than  hyperslabs with the other nco operators.
 There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntatic magic they are all are possible.
 @example
@@ -5917,7 +5921,8 @@ P(:,1,:,:)=th1
 
 
 @noindent @strong{Reverse method} @*
-If you want to reverse a dimensions elements in an variable use the @code{reverse()} method
+@cindex reverse()
+If you want to reverse a dimension's elements in an variable use the @code{reverse()} method
 with at least one dimension argument (this is equivalent to applying a negative stride)
 e.g 
 @example 
@@ -5926,6 +5931,7 @@ od_rv=od.reverse($time);        // @{38, 36, 34, 32, 30, 28, 26, 24, 22, 20 @}
 @end example
 
 @noindent @strong{Permute method} @*
+@cindex permute()
 If you want to swap about the dimensions of a variable use the the @code{permute()} method. The number and names of  dimension arguments must match the dimensions in the variable. If the first dimemsion  in the variable is of record type then this must remain the first dimension. If you want to change the record dimension consider using @command{ncpdq} . 
 
 Consider the variable:
@@ -5951,7 +5957,7 @@ three_dmn_var_pm=
 @end html
 @node Attributes, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
-
+@cindex attributes ncap
 @noindent Attributes are refered to by @emph{var_nm@@att_nm} @*
 All the following are valid statements
 
@@ -5969,7 +5975,7 @@ a1($time.size-1)=a1@@max;
 @end example
 
 A @emph{value list} can be used on the RHS of an assign...
-
+@cindex value list
 @example
 a1@@trip1=@{ 1,2,3 @} ;
 a1@@triplet=@{ a1@@min, (a1@@min+a1@@max)/2, a1@@max @}; 
@@ -5996,6 +6002,8 @@ Attributes defined in a script are stored in memory and are written to Output af
 To stop the attribute being  written use the ram_delete() method or use a bogus variable name 
 
 @noindent @strong{Attribute Propagation & Inheritance}
+@cindex attribute propagation
+@cindex attribute inheritance
 @itemize @bullet
   @item Attribute propagation occurs in a regular  assign statement. The variable being defined on the LHS gets copies of the attributes from the leftermost variable on the RHS
 
@@ -6020,6 +6028,7 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 @end html
 @node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Number literals
+@cindex number lierals ncap
 The table below lists the postfix character(s) to add to a number literal for type cohesion. To use the new netcdf4 types nco must be compiled/linked to the netcdf4 library and the Output file must be hdf5.
 
 
@@ -6081,6 +6090,7 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @end html
 @node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
+@cindex if() 
 The synatx of  the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
 
 @example
@@ -6155,6 +6165,7 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint(): three_dmn_var_sht.int(
 @end html
 @node print statement, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
 @subsection print statement
+@cindex print() ncap
 @example
 print( variable_name/attribute name/string, format string);
 @end example  
@@ -6187,6 +6198,7 @@ This function is 	  monotonic
 @end html
 @node Missing values ncap2, Methods and functions, print statement, ncap2 netCDF Arithmetic Processor
 @subsection Missing values ncap2
+@cindex missing values ncap2
 Missing values operate slightly differently in ncap2 
 Consider the expression where op is any of the following operators (excluding '=')
  
@@ -6218,12 +6230,16 @@ The following methods are used to edit the missing value associated with a varia
 
 @table @code
 @item set_miss(expr)
+@cindex set_miss()
  Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
 @item change_miss(expr)
+@cindex change_miss()
  Changes the missing value elements of the variable to the new missing value (nb an expensive function).
 @item get_miss() 
+@cindex get_miss()
  Returns the missing value of a variable. If the variable exists in Input and Output then the missing value of the variable in Output is returned. If the variable has no missing value then an error is returned.  
 @item delete_miss()
+@cindex delete_miss()
  Deletes the missing value associated with a variable.
 @end table
 
@@ -6282,20 +6298,26 @@ three_avg=three_dmn_var_sht.double().avg().short();
 
 @table @code
 @item avg()
+@cindex avg()
 Mean value 
 @item sqravg()
+@cindex sqravg()
 Square of the mean
 @item avgsqr()
 Mean of sum of squares
 @item max()
+@cindex max()
 Maximium value
 @item min()
+@cindex min()
 Minimium value
 @item rms()
 Root-mean-square (normalized by @var{N})
 @item rmssdn()
+@cindex rmssdn()
 Root-mean square (normalized by @var{N-1})
 @item ttl() or total()
+@cindex ttl()
 Sum of values
 @end table
 
@@ -6310,14 +6332,19 @@ four_time_avg=four_dmn_rec_var($time);
 For more information see @pxref{Packed data} and @pxref{ncpdq netCDF Permute Dimensions Quickly} @* 
 @table @code
 @item pack() & pack_short()
+@cindex pack()
 The default packing algorithm is applied and variable is packed to @code{NC_SHORT}
 @item pack_byte()
+@cindex pack_byte()
 Variable is packed to @code{NC_BYTE}
 @item pack_short()
+@cindex pack_short()
 Variable is packed to @code{NC_SHORT}
 @item pack_int()
+@cindex pack_int()
 Variable is packed to @code{NC_INT}
 @item unpack()
+@cindex unpack()
 The standard unpacking algorithm is applied. 
 @end table
 
@@ -6327,10 +6354,13 @@ These methods work with variables and attributes. They have no arguments
 
 @table @code
 @item size()	
+@cindex size()
 Total number of elements 
 @item ndims()
+@cindex ndims()
 Number of dimensions in variable
 @item type() 
+@cindex type()
 Returns the the netcdf type (see previous section)
 @end table
 
@@ -6378,29 +6408,40 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 @item
 @strong{netCDF3/4 Types}
 @item byte()	 
+@cindex byte()
  convert to @code{NC_BYTE}  a signed 1 byte integer 
-@item char()	 
+@item char()
+@cindex char()	 
  convert to @code{NC_CHAR}  a ISO/ASCII character 
-@item short()	 
+@item short()	
+@cindex sshort() 
  convert to @code{NC_SHORT} a signed 2 byte integer 
 @item int()	 
+@cindex int()
  convert to @code{NC_INT}   a signed 4 byte integer 
-@item float()	 
+@item float()
+@cindex float()	 
  convert to @code{NC_FLOAT} a single precision floating point number 
 @item double() 
+@cindex double()
  convert to @code{NC_DOUBLE} a double precision floating point number 
 @item
 @item
 @strong{netCDF4 Types}
 @item ubyte()	 
+@cindex ubyte()
  convert to @code{NC_UBYTE} a unsigned 1 byte int 
 @item ushort() 
+@cindex ushort()
  convert to @code{NC_USHORT} a unsigned 2-byte int 
-@item uint()	 
+@item uint()
+@cindex uint()	 
  convert to @code{NC_UINT} a unsigned 4-byte int 
-@item int64()	 
+@item int64()	
+@cindex int64() 
  convert to @code{NC_INT64} a signed 8-byte int 
 @item uint64() 
+@cindex unit64()
  convert to @code{NC_UINT64} a unsigned 8-byte int *
 @end table
 
@@ -6424,7 +6465,8 @@ n3=1/(three_dmn_var_dbl.cos().pow(2))-tan(three_dmn_var_dbl)^2; // n3 type doubl
 @node RAM variables, Where statement, Methods and functions, ncap2 netCDF Arithmetic Processor
 @subsection RAM variables
 RAM variables are used in place of regular variables to speed things up. For example in a loop or where a variable is very frequently referenced. To declare and define a RAM variable simply prefix the variable name with * when the variable is declared/initialized.@*
-
+@cindex ram_write()
+@cindex ram_delete()
 To delete a RAM variable (recover some memory) use  the ram_delete() method. To convert a RAM variable to a regular disk variable in output use ram_write() method.@*
 
 The following is valid:
@@ -6456,6 +6498,7 @@ Other Assigns
 @end html
 @node Where statement, Loops, RAM variables, ncap2 netCDF Arithmetic Processor
 @subsection Where statement
+@cindex where()
 A @code{where()} combines the definition and application of a mask all in one go and can lead to succinct code. 
 The full syntax of a @code{where()} statement is as follows:
 
@@ -6543,6 +6586,8 @@ temp_max=temperature.max();
 @end html
 @node Loops, Include files, Where statement, ncap2 netCDF Arithmetic Processor
 @subsection Loops
+@cindex while()
+@cindex for()
 In ncap there are for() loops and while() loops. They are currently completely unoptimized So use them with  RAM variables unless you want thrash your disk to death. To break out of a loop use "break" command. To iterate to the next cycle use the "continue" command.
 
 @example
@@ -6590,6 +6635,7 @@ print("Total of odd elements ");print(sum);print("\n");
 @end html
 @node Include files, Irregular grids, Loops, ncap2 netCDF Arithmetic Processor
 @subsection Include files
+@cindex include ncap
 The synatx of an include file is:
 @example
 #include "script"       
@@ -7500,7 +7546,7 @@ This page lists the ncap operators in order of precedence (highest to lowest). T
 @end html
 @node ID Quoting, ,Operators precedence and associativity, ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
-
+@cindex ID Quoting
 In this section when I refer to a name I mean a variable name, attribute name or a dimension name
 The allowed charaters in a valid netCDF name vary from release to release. (See end section). If you want to use metacharacters in a name or use a method name as a variable name then the name has to be quoted wherever it occurs. 
 
