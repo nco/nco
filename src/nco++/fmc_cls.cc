@@ -383,7 +383,7 @@
 
 //Utility Functions /******************************************/
 
-  utl_cls::utl_cls(bool flg_dbg){
+   utl_cls::utl_cls(bool flg_dbg){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("set_miss",this,(int)SET_MISS));
@@ -474,7 +474,16 @@
            var_ret=ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,true);
            (void)memcpy(var_ret->val.vp, var_tmp->mss_val.vp,nco_typ_lng(var_tmp->type)); 
       } 
-      if(!prs_arg->ntl_scn && (!var_tmp || var_tmp && !var_tmp->has_mss_val)){
+
+      if(!prs_arg->ntl_scn && var_tmp && !var_tmp->has_mss_val){
+           ptr_unn mss_val;
+           var_ret=ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,true);
+           mss_val=nco_mss_val_mk(var_tmp->type);  
+           (void)memcpy(var_ret->val.vp, mss_val.vp,nco_typ_lng(var_tmp->type)); 
+           mss_val.vp=(void*)nco_free(mss_val.vp);
+      } 
+
+      if(!prs_arg->ntl_scn && !var_tmp ){
         serr=sfnm+ " Unable to locate missing value for "+ va_nm;
         err_prn(fnc_nm,serr);
       } 
@@ -1180,11 +1189,6 @@
              var_in=(var_sct*)nco_var_free(var_in);
              return var_out; 
     }     
-             
-            
-	     
-
-
 
 
 //Mask Function /******************************************/
