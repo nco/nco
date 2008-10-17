@@ -464,30 +464,28 @@
       var_tmp=prs_arg->ncap_var_init(va_nm,false);
 
       // Initial scan
-      if(prs_arg->ntl_scn && var_tmp)  
-	var_ret= ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,false);
-      if(prs_arg->ntl_scn && !var_tmp)
-	var_ret=ncap_var_udf("~utility_function");
- 
+      if(prs_arg->ntl_scn) 
+        if(var_tmp)  
+	  var_ret= ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,false);
+        else
+	  var_ret=ncap_var_udf("~utility_function");
+
       // Final scan
-      if(!prs_arg->ntl_scn && var_tmp && var_tmp->has_mss_val){
+      if(!prs_arg->ntl_scn){
+        if(var_tmp){
+           // nb ncap_sclr_var_mk() calls nco_mss_val_mk() and fills var_ret with the default fill value
+           // for that type.  So if the var has no missing value then this is the value returned 
+           // Default fill  values are defined in  netcdf.h . 
            var_ret=ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,true);
-           (void)memcpy(var_ret->val.vp, var_tmp->mss_val.vp,nco_typ_lng(var_tmp->type)); 
-      } 
-
-      if(!prs_arg->ntl_scn && var_tmp && !var_tmp->has_mss_val){
-           ptr_unn mss_val;
-           var_ret=ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,true);
-           mss_val=nco_mss_val_mk(var_tmp->type);  
-           (void)memcpy(var_ret->val.vp, mss_val.vp,nco_typ_lng(var_tmp->type)); 
-           mss_val.vp=(void*)nco_free(mss_val.vp);
-      } 
-
-      if(!prs_arg->ntl_scn && !var_tmp ){
-        serr=sfnm+ " Unable to locate missing value for "+ va_nm;
-        err_prn(fnc_nm,serr);
-      } 
-
+           if(var_tmp->has_mss_val)
+             (void)memcpy(var_ret->val.vp, var_tmp->mss_val.vp,nco_typ_lng(var_tmp->type)); 
+        }else{          
+        /* Cant find variable blow out */ 
+          serr=sfnm+ " Unable to locate missing value for "+ va_nm;
+          err_prn(fnc_nm,serr);
+        } 
+      } // end else
+ 
       if(var_tmp) var_tmp=nco_var_free(var_tmp);
 
       return var_ret; 	
