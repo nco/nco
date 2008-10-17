@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.497 2008-09-28 00:22:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.498 2008-10-17 00:06:34 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -511,7 +511,7 @@ no math on type <tt>NC_CHAR</tt>;
 incomplete gamma functions,
 missing value propagation;
 <li><b>NCO/SDO 3.9.5</b>: 
-Multi-slabbing and <b>-X</b> everywhere;
+Multi-slabbing and <tt>-X</tt> everywhere;
 <tt>ncecat -M</tt>;
 netCDF4-enabled builds on Cygwin;
 <tt>ncap2</tt> builds on Solaris;
