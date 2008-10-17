@@ -1,11 +1,11 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.498 2008-10-17 00:06:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.499 2008-10-17 20:15:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
 http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png nco.sf.net:/home/groups/n/nc/nco/htdocs
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
 scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:/var/www/html/nco
 -->
 
@@ -635,10 +635,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source and documentation as a compressed tarfile:
 <ul>
 <li>
-<a href="nco.tar.gz">nco.tar.gz</a> 
-(<!--#fsize file="nco.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 nco.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 nco.tar.gz"--> 
+<a href="src/nco-3.9.5.tar.gz">nco-3.9.5.tar.gz</a> 
+(<!--#fsize file="src/nco-3.9.5.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-3.9.5.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-3.9.5.tar.gz"--> 
 </li>
 </ul>
 

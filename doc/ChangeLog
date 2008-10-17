@@ -1,15 +1,20 @@
+2008-10-17  Charlie Zender  <zender@uci.edu>
+
+	* Implement new SF shell access through web.sf.net
+
 2008-10-08  Henry Butowsky  <henryb@ntlworld.com>
-	* added indexing to ncap2 section
+
+	* Added indexing to ncap2 section
 
 2008-10-05  Henry Butowsky  <henryb@ntlworld.com>
 
-	* added to manual chapter on ID Quoting, 
-	  include files & general tidy up 
+	* Added to manual chapter on ID Quoting, include files & general tidy up 
 
 2008-10-02  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Reversed out new var/att/dim quoting
-	* tidy up of fmc_cls.cc
+
+	* Tidy up of fmc_cls.cc
 
 2008-09-29  Charlie Zender  <zender@uci.edu>
 
