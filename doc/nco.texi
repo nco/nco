@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.502 2008-10-09 18:25:28 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.503 2008-10-17 12:36:35 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5383,7 +5383,7 @@ The options @samp{-s} (or long options @samp{--spt} or @samp{--script})
 are used for in-line scripts and @samp{-S} (or long options
 @samp{--fl_spt} or @samp{--script-file}) are used to provide the
 filename where (usually multiple) scripting commands are pre-stored.   
-@command{ncap2} was written to perform arbitrary albebraic
+@command{ncap2} was written to perform arbitrary algebraic
 transformations of data and archive the results as easily as possible.
 @cindex derived fields
 @xref{Missing Values}, for treatment of missing values.
@@ -5613,12 +5613,12 @@ tm5= !tm4;               // tm5=  1, 1, 0, 1, 1, 0, 1, 1, 1, 1 ; type double;
 	
 @noindent @strong{Regular Assign Operator} @*
 @noindent @emph{var1 '=' exp1} @*
-If var1 doesnt already exist in Ouptut then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
+If var1 doesn't already exist in Output then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
 
 
 @noindent @strong{ Other Assign Operators +=,-=,*=./= } @*
         @noindent  @emph{var1 'ass_op' exp1 }@*
-if exp1 is a variable and it doens't conform to var1 then an attempt is made to make it conform to var1. If exp1 is an attribute it must have unity size or else have the same number of elements as var1. If expr1 has a different type to var1 the it is converted to the var1 type.
+if exp1 is a variable and it doesn't conform to var1 then an attempt is made to make it conform to var1. If exp1 is an attribute it must have unity size or else have the same number of elements as var1. If expr1 has a different type to var1 the it is converted to the var1 type.
 
 example:
 
@@ -5629,7 +5629,7 @@ time-=2          // time= -1,0,1,2,3,4,5,6,7,8
 
 
 @noindent @strong{Increment/ Decrement Operators @* } 
-These work in a similiar fashion to their regular C counterparts. If say the variable "four" is input only then the statement "++four" effectively means -read four from input increment each element by one , then write the new values to Output;
+These work in a similar fashion to their regular C counterparts. If say the variable "four" is input only then the statement "++four" effectively means -read four from input increment each element by one , then write the new values to Output;
 
 example:
 
@@ -5642,7 +5642,7 @@ n4=--time;   n4=time=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.;
 @noindent @strong{Conditional Operator ?: } @*
 @cindex conditional Operator
 @noindent @emph{exp1 ? exp2 : exp3 } @*
-The conditional operator ( or ternary Operator) is nice and succint way of writing an if/then/else. If exp1 evalutes to true then exp2 is returned else exp3 is returned.
+The conditional operator ( or ternary Operator) is nice and succinct way of writing an if/then/else. If exp1 evaluates to true then exp2 is returned else exp3 is returned.
 
 example
 @example
@@ -5686,7 +5686,7 @@ Dimensions can be defined in Output using the @code{defdim()} function.
 defdim("cnt",10);
 @end example
 
-This dimension can then be susequently referred to in method  arguments and a left hand cast by prefixing it with a dollar e.g
+This dimension can then be subsequently referred to in method  arguments and a left hand cast by prefixing it with a dollar e.g
 @example
 new_var[$cnt]=time;
 temperature[$time,$lat,$lon]=35.5;
@@ -5736,7 +5736,7 @@ A1['$a--list.A']=30.0;
 
 
 @noindent @strong{GOTCHA @*}
-@noindent It is not possible to manually define in Ouptut any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
+@noindent It is not possible to manually define in Output any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
 
 @html
 <a name="lhc"></a> <!-- http://nco.sf.net/nco.html#lhc -->
@@ -5789,7 +5789,7 @@ In this coordinate system, four variables must be manipulated to
 obtain the pressure of the vertical coordinate:
 @var{PO} is the domain-mean surface pressure offset (a scalar),
 @var{PS} is the local (time-varying) surface pressure (usually two
-horizontal spatial dimensions, i.e, latitude by longitude), @var{hyam}
+horizontal spatial dimensions, i.e. latitude by longitude), @var{hyam}
 is the weight given to surfaces of constant density (one spatial
 dimension, pressure, which is orthogonal to the horizontal
 dimensions), and @var{hybm} is the weight given to surfaces of
@@ -5809,7 +5809,7 @@ coordinate system is easy with left hand casting.
 @subsection Arrays and hyperslabs
 @cindex hyperslabs
 Hyperslabs in ncap2 are a bit more limited than  hyperslabs with the other nco operators.
-There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntatic magic they are all are possible.
+There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntactic magic they are all are possible.
 @example
   var1( hyper_arg1, hyper_arg2 .. hyper_argN)
 @end example
@@ -5932,7 +5932,7 @@ od_rv=od.reverse($time);        // @{38, 36, 34, 32, 30, 28, 26, 24, 22, 20 @}
 
 @noindent @strong{Permute method} @*
 @cindex permute()
-If you want to swap about the dimensions of a variable use the the @code{permute()} method. The number and names of  dimension arguments must match the dimensions in the variable. If the first dimemsion  in the variable is of record type then this must remain the first dimension. If you want to change the record dimension consider using @command{ncpdq} . 
+If you want to swap about the dimensions of a variable use the the @code{permute()} method. The number and names of  dimension arguments must match the dimensions in the variable. If the first dimension  in the variable is of record type then this must remain the first dimension. If you want to change the record dimension consider using @command{ncpdq} . 
 
 Consider the variable:
 @example
@@ -5958,7 +5958,7 @@ three_dmn_var_pm=
 @node Attributes, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
 @cindex attributes ncap
-@noindent Attributes are refered to by @emph{var_nm@@att_nm} @*
+@noindent Attributes are referred to by @emph{var_nm@@att_nm} @*
 All the following are valid statements
 
 @example
@@ -5981,7 +5981,7 @@ a1@@trip1=@{ 1,2,3 @} ;
 a1@@triplet=@{ a1@@min, (a1@@min+a1@@max)/2, a1@@max @}; 
 @end example
 
-The netcdf specification allows all attribute types to have a size greater than one. The maximium is defined by @code{NC_MAX_ATTRS} -The following is an ncdump of the meta-data for variable a1
+The netcdf specification allows all attribute types to have a size greater than one. The maximum is defined by @code{NC_MAX_ATTRS} -The following is an ncdump of the meta-data for variable a1
 
 @example 
 double a1(time) ;
@@ -6091,7 +6091,7 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
 @cindex if() 
-The synatx of  the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
+The synatax of  the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
 
 @example
 
@@ -6172,7 +6172,7 @@ print( variable_name/attribute name/string, format string);
 
 @noindent The print function takes a variable name or attribute name or a quoted string and prints the contents in a in a similar fashion to @code{ncks -H }. 
 There is also an optional C style format string argument. 
-Currently the print funtion can't print RAM variables or expressions e.g @code{'print(var_msk*3+4)'} is invalid. So if you want to print an expression first assign a variable with the expression; then print the variable.
+Currently the print function can't print RAM variables or expressions e.g @code{'print(var_msk*3+4)'} is invalid. So if you want to print an expression first assign a variable with the expression; then print the variable.
 
 @noindent examples
 @example
@@ -6213,7 +6213,7 @@ var1 'op' var2
 
 
 @noindent if var1 has a missing value then this is the value used in the operation else the missing value for var2 is used. if during the element by element operation an element from either operand is equal to the missing value then the missing value is carried through. In this way missing values 'percolate' through an expression. @*
-Missing values associated with Output varables are stored in memory and are written to disk after the script finishes. During script execution its possible (and legal) for the missing value of a variable to take on  several different values.
+Missing values associated with Output variables are stored in memory and are written to disk after the script finishes. During script execution its possible (and legal) for the missing value of a variable to take on  several different values.
  
 @example 
 Consider the variable:
@@ -6278,7 +6278,7 @@ elsewhere
 @subsection Methods and functions
 
 
-Within this document when I refer to a method I mean a method that can also be  a function. If I refer to something as function then this function cannot be a method. The nice thing with methods is that they can be daisy changed together and their synatx is cleaner than functions. The method names are reserved words and CANNOT be used as variable names.
+Within this document when I refer to a method I mean a method that can also be  a function. If I refer to something as function then this function cannot be a method. The nice thing with methods is that they can be daisy changed together and their synatax is cleaner than functions. The method names are reserved words and CANNOT be used as variable names.
 To see the complete list of methods available on you build use the command @code{ncap2 -f}. 
 
 @example
@@ -6294,7 +6294,7 @@ three_avg=three_dmn_var_sht.double().avg().short();
 
 @sp 1
 @noindent @strong{ Aggregate Methods @* } 
-@noindent These methods mirror the averging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifiying no dimensions is equivalent to specifying all dimensions i.e  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
+@noindent These methods mirror the averaging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifying no dimensions is equivalent to specifying all dimensions i.e.  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
 
 @table @code
 @item avg()
@@ -6307,10 +6307,10 @@ Square of the mean
 Mean of sum of squares
 @item max()
 @cindex max()
-Maximium value
+Maximum value
 @item min()
 @cindex min()
-Minimium value
+Minimum value
 @item rms()
 Root-mean-square (normalized by @var{N})
 @item rmssdn()
@@ -6361,7 +6361,7 @@ Total number of elements
 Number of dimensions in variable
 @item type() 
 @cindex type()
-Returns the the netcdf type (see previous section)
+Returns the netcdf type (see previous section)
 @end table
 
 @sp 1
@@ -6373,13 +6373,13 @@ These functions are used to manipulate missing values and RAM variables.
 @item set_miss(expr)
  Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
 @item change_miss(expr)
- Changes the missing value elements of the variable to the new missing value (nb an expensive function).
+ Changes the missing value elements of the variable to the new missing value (n.b. an expensive function).
 @item get_miss() 
  Returns the missing value of a variable in Input or Output  
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @item ram_write()
- Writes a RAM variable to disk i.e converts it to a regular disk type variable
+ Writes a RAM variable to disk i.e. converts it to a regular disk type variable
 @item ram_delete()
  Deletes a RAM variable or an attribute 
 @end table
@@ -6448,10 +6448,10 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @noindent @strong{Intrinsic Mathematical Methods @*}
 The list of mathematical methods is system dependant.
-For the full list see @pxref{Intrinsic mathematical methods} 
+For the full list @pxref{Intrinsic mathematical methods} 
 
 All the mathematical methods take a single operand ,with the exception of @code{atan2} and @code{pow} which take two.
-If the operand type is less than @emph{float} the the result will be of type @emph{float}. If the operand is type @emph{double} then the result will be type @emph{double}. Like the other methods, you are free to use the mathematical methods as functions.
+If the operand type is less than @emph{float} then the result will be of type @emph{float}. If the operand is type @emph{double} then the result will be type @emph{double}. Like the other methods, you are free to use the mathematical methods as functions.
 
 @example
 n1=pow(2,3.0f)    // n1 type float
@@ -6526,11 +6526,11 @@ where( mask) @{
 @end example
 
 @itemize @bullet
-@item The only expression allowed within a where is the assign 'var=expr'. This is different from a regular ncap2 assign. The LHS var must alread exist in Input or Output. The expression on the RHS must evaluate to a scalar or a variable/attribute of the same size as the LHS variable. 
-@item Taking the general case of a variable on the LHS side and RHS. For every element of the mask which is True , the coresponding LHS variable element  is re-assigned with its partner element on the RHS. In the elsewhere part the mask is logically inverted and the assign process continues
+@item The only expression allowed within a where is the assign 'var=expr'. This is different from a regular ncap2 assign. The LHS var must already exist in Input or Output. The expression on the RHS must evaluate to a scalar or a variable/attribute of the same size as the LHS variable. 
+@item Taking the general case of a variable on the LHS side and RHS. For every element of the mask which is True , the corresponding LHS variable element  is re-assigned with its partner element on the RHS. In the elsewhere part the mask is logically inverted and the assign process continues
 
 @item if the mask dimensions are a subset of the LHS variable's dimensions , then it is made to conform; if it  can't be made to conform then script execution halts.  
-@item Missing values values in the mask evalute to False in the  first code/block statement and True in the elsewhere block/statement. LHS variable elements set to missing value are not re-assigned  
+@item Missing values in the mask evaluate to False in the  first code/block statement and True in the elsewhere block/statement. LHS variable elements set to missing value are not re-assigned  
 
 @end itemize
 
@@ -6558,7 +6558,7 @@ where(RDM <8 || RDM >80)
 
 
 @noindent A more complex example.@*
-Consider the the situation where we have irregularly gridded data, decribed using rank 2 variables:@*
+Consider the situation where we have irregularly gridded data, described using rank 2 variables:@*
 
 @noindent @code{
 double lat(south_north,east_west)@*
@@ -6636,12 +6636,12 @@ print("Total of odd elements ");print(sum);print("\n");
 @node Include files, Irregular grids, Loops, ncap2 netCDF Arithmetic Processor
 @subsection Include files
 @cindex include ncap
-The synatx of an include file is:
+The synatax of an include file is:
 @example
 #include "script"       
 @end example
 
-@noindent The script filename is searched relative to the run directory. Its possible to nest include files to an arbitary depth. A handy use of inlcude files is to store often used constants. Use RAM variables of you don't want these constants written to Output.  
+@noindent The script filename is searched relative to the run directory. Its possible to nest include files to an arbitrary depth. A handy use of inlcude files is to store often used constants. Use RAM variables of you don't want these constants written to Output.  
 
 @example
 *pi=3.1415926535;
@@ -6934,7 +6934,7 @@ ncks -A -v uavg,vavg foo.nc in.nc # Place time means with originals
 ncap2 -O -s 'uprmvprm=u*v-uavg*vavg' in.nc in.nc # Covariance
 ncra -O -v uprmvprm in.nc foo.nc # Time-mean covariance
 @end example
-The mathmatically inclined will note that the same covariance would be
+The mathematically inclined will note that the same covariance would be
 obtained by replacing the step involving @command{ncap2} with
 @example
 ncap2 -O -s 'uprmvprm=(u-uavg)*(v-vavg)' foo.nc foo.nc # Covariance
@@ -7548,7 +7548,7 @@ This page lists the ncap operators in order of precedence (highest to lowest). T
 @subsection ID Quoting
 @cindex ID Quoting
 In this section when I refer to a name I mean a variable name, attribute name or a dimension name
-The allowed charaters in a valid netCDF name vary from release to release. (See end section). If you want to use metacharacters in a name or use a method name as a variable name then the name has to be quoted wherever it occurs. 
+The allowed characters in a valid netCDF name vary from release to release. (See end section). If you want to use metacharacters in a name or use a method name as a variable name then the name has to be quoted wherever it occurs. 
 
 @noindent The default nco name is specified by the regular expressions:
 
@@ -7558,7 +7558,7 @@ LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 name:    (LPH)(LPH|DGT)+
 @end example
 
-@noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumberic or underscore. ( e.g a1,_23, hell_is_666 )
+@noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumeric or underscore. ( e.g a1,_23, hell_is_666 )
 
 
 @noindent The valid characters in a quoted name are specified by the regular expressions:
