@@ -1,5 +1,7 @@
 2008-10-17  Charlie Zender  <zender@uci.edu>
 
+	* Add ncdump -k method to learn file format. Revise NCO method.
+
 	* Implement new SF shell access through web.sf.net
 
 2008-10-08  Henry Butowsky  <henryb@ntlworld.com>

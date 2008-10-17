@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.216 2008-09-18 04:11:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.217 2008-10-17 22:23:04 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.216 2008-09-18 04:11:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.216 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.217 2008-10-17 22:23:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.217 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -566,7 +566,7 @@ main(int argc,char **argv)
   }else{ /* !fl_out */
     /* No output file was specified so PRN_ tokens refer to screen printing */
     if(PRN_GLB_METADATA){
-      (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
+      (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, ID = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
       if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
 	char rec_dmn_nm[NC_MAX_NAME];
 	long rec_dmn_sz;

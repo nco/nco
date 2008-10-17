@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.503 2008-10-17 12:36:35 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.504 2008-10-17 22:23:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -49,7 +49,7 @@ texi2dvi --output=nco.dvi nco.texi
 texi2dvi --pdf --output=nco.pdf nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in nco.sf.net:/home/groups/n/nc/nco/htdocs;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
 
 NB: @cindex references in footnotes propagate to PDF file, but not to
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.6
 @set copyright-years 1995--2008
 @set update-year 2008
-@set update-date 17 September 2008
-@set update-month September 2008
+@set update-date 17 October 2008
+@set update-month October 2008
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -2977,42 +2977,80 @@ Of course since most operators support these switches, the
 ``conversions'' can be done at the output stage of arithmetic
 or metadata processing rather than requiring a separate step.
 Producing (netCDF3) @code{CLASSIC} or @code{64BIT} files from
-@code{NETCDF4_CLASSIC} files will work. 
+@code{NETCDF4_CLASSIC} files will always work. 
 However, producing netCDF3 files from @code{NETCDF4} files will only
 work if the output files are not required to contain netCDF4-specific
 features.
 
-To discover whether a netCDF file is a classic (32-bit offset) or newer
-64-bit offset netCDF3 format, or is netCDF4 format, examine it with the
-@command{od} (octal dump) command:
-@cindex @command{od} 
-@cindex octal dump
+Note that @code{NETCDF4} and @code{NETCDF4_CLASSIC} are the same
+binary format. 
+The latter simply causes a writing application to fail if it attempts to 
+write a @code{NETCDF4} file that cannot be completely read by the
+netCDF3 library. 
+Conversely, @code{NETCDF4_CLASSIC} indicates to a reading application
+that all of the file contents are readable with the netCDF3 library. 
+As of October, 2005, @acronym{NCO} writes no netCDF4-specific data
+structures and so always succeeds at writing @code{NETCDF4_CLASSIC}  
+files.
+
+There are at least three ways to discover the format of a netCDF file,
+i.e., whether it is a classic (32-bit offset) or newer 64-bit offset
+netCDF3 format, or is netCDF4 format. 
+Each method returns the information using slightly different terminology 
+that becomes easier to understand with practice.
+First, examine the end of the first line of global metadata output by
+@samp{ncks -M}: 
 @cindex netCDF3 classic file format
 @cindex netCDF4 classic file format
 @cindex netCDF4 file format
 @cindex 32-bit offset file format
 @cindex 64-bit offset file format
+@cindex @command{ncks} 
+@cindex @code{-M}
+@example
+% ncks -M foo_3c.nc
+Opened file foo_3c.nc: dimensions = 19, variables = 261, global atts. = 4, 
+  id = 65536, type = NC_FORMAT_CLASSIC 
+% ncks -M foo_364.nc
+Opened file foo_364.nc: dimensions = 19, variables = 261, global atts. = 4, 
+  id = 65536, type = NC_FORMAT_64BIT
+% ncks -M foo_4c.nc
+Opened file foo_4c.nc: dimensions = 19, variables = 261, global atts. = 4,
+  id = 65536, type = NC_FORMAT_NETCDF4_CLASSIC
+% ncks -M foo_4.nc
+Opened file foo_4.nc: dimensions = 19, variables = 261, global atts. = 4,
+  id = 65536, type = NC_FORMAT_NETCDF4
+@end example
+Second, query the file with @samp{ncdump -k}:
+@cindex @command{ncdump} 
+@example
+% ncdump -k foo_3.nc
+classic
+% ncdump -k foo_364.nc
+64-bit-offset
+% ncdump -k foo_4c.nc
+netCDF-4 classic model
+% ncdump -k foo_4.nc
+netCDF-4
+@end example
+The third option works even if you do not have @acronym{NCO} or
+@command{ncdump} installed,  or they are not netCDF4-aware. 
+Use the standard @command{od} (octal dump) command:  
+@cindex @command{od} 
+@cindex octal dump
 @example
 % od -An -c -N4 foo_3c.nc
    C   D   F 001
 % od -An -c -N4 foo_364.nc
    C   D   F 002
-% od -An -c -N4 foo_4.nc
- 211   H   D   F
 % od -An -c -N4 foo_4c.nc
+ 211   H   D   F
+% od -An -c -N4 foo_4.nc
  211   H   D   F
 @end example
 Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
 (classic) and 64-bit netCDF3 formats, respectively, while values of
 @samp{211 H D F} indicate the newer netCDF4 file format.
-Note that @code{NETCDF4} and @code{NETCDF4_CLASSIC} are the same
-formats. 
-The latter simply causes an application to fail if it attempts to
-write a @code{NETCDF4} file that cannot be completely read by the
-netCDF3 library. 
-As of October, 2005, @acronym{NCO} writes no netCDF4-specific data
-structures and so always succeeds at writing @code{NETCDF4_CLASSIC}  
-files.
 
 @html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
