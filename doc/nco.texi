@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.504 2008-10-17 22:23:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.505 2008-10-20 04:20:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5375,12 +5375,13 @@ described in any detail in the sections below.
 @findex ncap2
 
 @cartouche
-@command{ncap2} understands a relatively full-featured set of 
-language features (e.g., loops, if-then, array indices).
-Unfortunately, the @command{ncap2} documentation is woefully
-out-of-date. 
-Please see the distribution file @file{data/ncap2_tst.nco}
-for an up-to-date overview of its syntax and capabilities.
+@command{ncap2} understands a relatively full-featured 
+language of operations, including loops, conditionals, arrays,
+and math functions.
+@command{ncap2} is the most rapidly changing operator and its
+documentation is incomplete.
+The distribution file @file{data/ncap2_tst.nco} contains an up-to-date
+overview of its syntax and capabilities. 
 The @file{data/*.nco} distribution files (especially
 @file{bin_cnt.nco}, @file{psd_wrf.nco}, and @file{rgr.nco}) contain
 in-depth examples of @command{ncap2} solutions to complex problems.
@@ -5403,13 +5404,13 @@ ncap2 [-3] [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{db
 @noindent
 DESCRIPTION
 
-@command{ncap2} arithmetically processes netCDF files.
+@command{ncap2} arithmetically processes netCDF files
 @footnote{@command{ncap2} is the successor to @command{ncap} which was
 put into maintenance mode in November, 2006. 
 This documentation refers to @command{ncap2}, which has a superset of
 the @command{ncap} functionality. 
 Eventually @command{ncap} will be deprecated in favor @command{ncap2}.
-@command{ncap2} will be renamed @command{ncap} in 2007.}.
+@command{ncap2} may be renamed @command{ncap} in 2008 or 2009.}.
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}
@@ -5433,7 +5434,7 @@ variables to be operated on as an argument to @samp{-v}
 (@pxref{Subsetting Variables}).
 Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap2} should output @emph{only} user-defined variables.
-@command{ncap2} does not accept or understand the @var{-x} switch.
+@command{ncap2} neither accepts nor understands the @var{-x} switch.
 
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 
@@ -5463,11 +5464,11 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 @html
 <a name="att_prp"></a> <!-- http://nco.sf.net/nco.html#att_prp -->
 @end html
-Defining new variables in terms of existing variables is one of
-@command{ncap2}'s most powerful features.
+Defining new variables in terms of existing variables is a powerful
+feature of @command{ncap2}. 
 @cindex derived fields
 Derived fields inherit the metadata (i.e., attributes) of their
-identically named ancestors, if any, in the script or input file. 
+ancestors, if any, in the script or input file. 
 When the derived field is completely new (no identically-named ancestors
 exist), then it inherits the metadata (if any) of the left-most variable
 on the right hand side of the defining expression.
@@ -5528,38 +5529,45 @@ variable name.
 @end table 
 
 @html
-<a name="ncap_exp"></a> <!-- http://nco.sf.net/nco.html#ncap_exp -->
+<a name="ncap_xpr"></a> <!-- http://nco.sf.net/nco.html#ncap_xpr -->
 @end html
 @node Expressions, Dimensions, Syntax of ncap2 statements, ncap2 netCDF Arithmetic Processor
 @cindex expressions
 @subsection Expressions
-
-Expressions are the fundamental building block of ncap2. Expressions can be composed of variables number literals and attributes. The following C operators have been "overloaded"
-
+Expressions are the fundamental building block of @command{ncap2}. 
+Expressions are composed of variables, numbers, literals, and
+attributes. 
+@cindex C language
+The following @w{C operators} are ``overloaded'' and work with scalars 
+and multi-dimensional arrays:
 @example
-Arithmetic operators ( * / % + - ^ )
-Binary Operators     ( >, >= <, <= ==, !=,==,||,&&, >>,<< ) 
-Unary Operators      ( +,-,++,--,! )   
-Conditional Operator ( exp1 ? exp2 : exp3 ) 
-Assign Operators     ( =,+=,-=,/=, *= ) 
+Arithmetic Operators: * / % + - ^
+Binary Operators:     > >= < <= == != == || && >> <<
+Unary Operators:      + - ++ -- !
+Conditional Operator: exp1 ? exp2 : exp3
+Assign Operators:     = += -= /= *=
 @end example
 
-        In the following section when I say a variable , I also refer to a number literal which is read in as a scalar variable
+In the following section a @dfn{variable} also refers to a 
+number literal which is read in as a scalar variable:
 
 @strong{Arithmetic and Binary Operators }
 
 Consider @emph{var1 'op' var2}
 
- @strong{ Precision }
-        @itemize @bullet
-        @item If both operands are variables  then the precision of the result is equal to the precision of the variable  that has the highest type. 
-        @item If one of the operands is a variable and the other an attribute then the precision of the result is equal to the precision of the variable. 
-        @item If both operands are attributes then the result is equal to the precision of the attribue that has the highest type.
-        @item An exception to the above  rules  occurs with power of operator "^". If both operands have type less than @code{NC_FLOAT} then the result will be @code{NC_FLOAT}. If any of the types are @code{NC_DOUBLE} then the result will be type @code{NC_DOUBLE}.
+@strong{Precision}
+@itemize @bullet
+@item When both operands are variables, the result has the precision of the higher precision operand
+@item When one operand is a variable and the other an attribute, the result has the precision of the variable. 
+@item When both operands are attributes, the result has the precision of the more precise attribute.
+@item The exponentiation operator ``^'' is an exception to the above
+rules. 
+When both operands have type less than @code{NC_FLOAT}, the result is @code{NC_FLOAT}. 
+When either type is @code{NC_DOUBLE}, the result is also @code{NC_DOUBLE}. 
+@end itemize
+@c csz got to here editing
 
-        @end itemize
-
-@strong{ Rank }
+@strong{Rank}
         @itemize @bullet 
 	@item The Rank of the result is generally equal to Rank of the operand that has the greatest number of dimensions.
         @item  If the dimensions in var2 are a subset of the dimensions in var1 then its possible to  make var2 conform to var1 through broadcasting and or dimension reordering. 
@@ -6129,7 +6137,7 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
 @cindex if() 
-The synatax of  the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
+The synatax of the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
 
 @example
 
