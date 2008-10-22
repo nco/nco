@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.217 2008-10-17 22:23:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.218 2008-10-22 05:13:47 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -81,6 +81,7 @@ main(int argc,char **argv)
   nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
@@ -116,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.217 2008-10-17 22:23:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.217 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.218 2008-10-22 05:13:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.218 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -174,6 +175,10 @@ main(int argc,char **argv)
       {"lbr",no_argument,0,0},
       {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
+      {"no_clb",no_argument,0,0},
+      {"noclobber",no_argument,0,0},
+      {"no-clobber",no_argument,0,0},
+      {"no_clobber",no_argument,0,0},
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
@@ -275,6 +280,9 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+      if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")){
+	FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
+      } /* endif "no_clb" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
