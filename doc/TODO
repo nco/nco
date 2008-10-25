@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1024 2008-10-21 16:02:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1025 2008-10-25 00:40:23 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -668,7 +668,8 @@ nco943. Add regression test for
 nco945. ncra problem with netcdf4 record mean of packed double with double missing values
 nco947. Try DAP from netCDF4 daily snapshots
 nco949. Make --no-clobber option for all operators
-nco950. 
+nco950. Add --secret option to print secret/unsupported options
+nco951. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
