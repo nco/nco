@@ -932,7 +932,7 @@
   const std::string fnc_nm("gmm_inc_cls::fnd");
 
     int fdx=fmc_obj.fdx();   //index
-    int nbr_fargs;
+    int nbr_args;
     prs_cls* prs_arg=walker.prs_arg;
     var_sct *var=NULL_CEWI;
     var_sct *var1=NULL_CEWI;
@@ -940,36 +940,36 @@
     var_sct *var_tmp;
     std::string styp;
     RefAST tr;
+    std::vector<RefAST> vtr_args; 
     vtl_typ lcl_typ;
 
     std::string sfnm =fmc_obj.fnm(); //method name
 
     styp=(expr ? "method":"function");
 
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren();
-   
+
     if(expr)
-      nbr_fargs++;
+      vtr_args.push_back(expr);
 
-
- 
-   
-    if(nbr_fargs >2) 
-      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+      
+     if(nbr_args >2) 
+       wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
   
-    if(nbr_fargs<2)
-      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
+     if(nbr_args<2)
+       err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
     
- 
+      
+     var1=walker.out(vtr_args[0]);
+     var2=walker.out(vtr_args[1]);
 
-    if(expr){ 
-      var1=walker.out(expr);
-      var2=walker.out(fargs->getFirstChild());
-    }else{
-      var1=walker.out(fargs->getFirstChild());   
-      var2=walker.out(fargs->getFirstChild()->getNextSibling());
-    }
+
 
     /* deal with initial scan */
     if(prs_arg->ntl_scn){
