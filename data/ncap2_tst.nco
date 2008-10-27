@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.14 2008-10-02 14:42:40 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.15 2008-10-27 12:04:04 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -379,6 +379,9 @@ nbr_err_ttl=0;
 
   h2=h1.total($time,$2).max();
   h3=h1.avgsqr($x,$3).min();
+  
+  // check get_miss method
+  h4=fll_val.get_miss();
 
   if( fabs(h2-315f)>0.01) {
     print("ERROR: h2: masking test\n");
@@ -389,6 +392,12 @@ nbr_err_ttl=0;
     print("ERROR: h3: masking test\n");
     nbr_err++;
   }
+
+  if( fabs(h4-(-999.0f))>0.01) {
+    print("ERROR: h4: get_miss() test\n");
+    nbr_err++;
+  }
+
   
   ram_delete(hmask);
 
