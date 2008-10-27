@@ -906,8 +906,6 @@
   }
 
 
-
-
 //Incomplete Gamma Function /*********/
   gmm_inc_cls::gmm_inc_cls(bool flg_dbg){
     //Populate only on first constructor call
@@ -915,17 +913,21 @@
       fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
       fmc_vtr.push_back( fmc_cls("gamma_inc_regular",this,(int)PGAMMA_INC));
       fmc_vtr.push_back( fmc_cls("gamma_inc_P",this,(int)PGAMMA_INC));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_complement",this,(int)PGAMMA_COMP));
+      fmc_vtr.push_back( fmc_cls("gamma_inc_Q",this,(int)PGAMMA_COMP));
+
+// Assume only the below archs have tgamma() and tgammaf() 
+#if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
       fmc_vtr.push_back( fmc_cls("gamma_inc_upper",this,(int)PGAMMA_UPPER));
       fmc_vtr.push_back( fmc_cls("gamma_inc_G",this,(int)PGAMMA_UPPER));
       fmc_vtr.push_back( fmc_cls("gamma_inc_lower",this,(int)PGAMMA_LOWER));
       fmc_vtr.push_back( fmc_cls("gamma_inc_g",this,(int)PGAMMA_LOWER));
-      fmc_vtr.push_back( fmc_cls("gamma_inc_complement",this,(int)PGAMMA_COMP));
-      fmc_vtr.push_back( fmc_cls("gamma_inc_Q",this,(int)PGAMMA_COMP));
+#endif
+
 
     }
   }
-
-
+ 
   var_sct *gmm_inc_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gmm_inc_cls::fnd");
 
@@ -984,11 +986,8 @@
 
     switch(fdx){
 
-
-      case PGAMMA_INC: 
-        var=ncap_var_var_op(var1,var2,GAMMA_INC);
-        break;                
-
+// Assume only the below archs have tgamma() and tgammaf() 
+#if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
       case PGAMMA_UPPER:
         var_tmp=nco_var_dpl(var1);
 	var_tmp=ncap_var_fnc(var_tmp,tgamma,tgammaf);
@@ -1004,6 +1003,13 @@
        
         var=ncap_var_var_op(var_tmp,var1,TIMES);
         break;
+#endif
+
+      case PGAMMA_INC: 
+        var=ncap_var_var_op(var1,var2,GAMMA_INC);
+        break;                
+
+
       
       case PGAMMA_COMP:
         var_tmp=ncap_sclr_var_mk(std::string("~float"),float(1.0f));
@@ -1016,9 +1022,6 @@
     return var; 
 
   }
-
-
-
 
 
 
