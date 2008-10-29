@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.57 2008-08-15 13:29:15 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.58 2008-10-29 21:03:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -22,7 +22,7 @@
 # cd ${HOME}/nco/src/nco++;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
 # cd ${HOME}/nco/src/nco++;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on NCAR AIX systems:
-# cd ${HOME}/nco/src/nco++;env ANTLR='/contrib/antlr/bin/antlr' ANTLR_ROOT='/contrib/antlr' UDUNITS=N UDUNITS_INC='~/udunits/include' UDUNITS_LIB='~/udunits/lib' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
+# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
 
 # NB: ncap2 requires ANTLR headers and library
 # http://www.antlr.org
@@ -506,8 +506,6 @@ endif # SGI
 
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
-# AIX calls executable antlr not runantlr
-ANTLR := antlr
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE

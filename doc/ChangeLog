@@ -1,3 +1,7 @@
+2008-10-29  Charlie Zender  <zender@uci.edu>
+
+	* Update to build on NCAR bluefire
+
 2008-10-17  Charlie Zender  <zender@uci.edu>
 
 	* Add ncdump -k method to learn file format. Revise NCO method.

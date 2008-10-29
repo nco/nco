@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.463 2008-09-25 15:49:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.464 2008-10-29 21:03:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -51,6 +51,7 @@
 # Normal (Linux) developer systems:
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # glace, neige, virga
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
+# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # esmf
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # sand, silt, clay, tephra
@@ -62,7 +63,7 @@
 # 64-bit ABI on UCI IPCC:
 # cd ${HOME}/nco/bld;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on NCAR AIX systems:
-# cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='~/udunits/include' UDUNITS_LIB='~/udunits/lib' make --jobs=1 allinone ABI=64;cd -
+# cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 allinone ABI=64;cd -
 # 64-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.4/include' UDUNITS_LIB='/contrib/udunits-1.12.4/lib' make --jobs=1 ABI=64 USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 32-bit ABI on NCAR IRIX systems:

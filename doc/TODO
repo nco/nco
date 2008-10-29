@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1025 2008-10-25 00:40:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1026 2008-10-29 21:03:30 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -669,7 +669,8 @@ nco945. ncra problem with netcdf4 record mean of packed double with double missi
 nco947. Try DAP from netCDF4 daily snapshots
 nco949. Make --no-clobber option for all operators
 nco950. Add --secret option to print secret/unsupported options
-nco951. 
+nco951. Better incomplete gamma function solver
+nco952. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
