@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.249 2008-06-02 09:23:34 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.250 2008-10-29 17:36:17 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -1131,6 +1131,8 @@ echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
 
 # Inform users of the very useful configure.eg
 echo "*******************************************************************"
+echo "Configuration complete. You are now ready to run 'make'."
+echo "Ensure 'make' points to GNU Make (AT&T Make chokes on GNU syntax)."
 echo "If the build fails, please examine the file 'configure.eg'"
 echo "in the top-level NCO directory.  It contains examples known to"
 echo "build NCO for various platforms and compilers."
