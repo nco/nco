@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.500 2008-10-17 20:52:33 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.501 2008-10-30 23:00:38 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -52,6 +52,7 @@ Try to disable Spammers' machines:
 
 <td align="right" valign="top">
 [<a href="http://www.antlr.org">ANTLR</a>] 
+[<a href="http://www.gnu.org/software/gsl">GSL</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://swamp.googlecode.com">SWAMP</a>] 
@@ -945,6 +946,7 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
 <li>Install
 <a href="http://www.antlr.org">ANTLR 2.7.x</a> (required for <tt>ncap2</tt>), 
+<a href="http://www.gnu.org/software/gsl">GSL</a> (required for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations) 
@@ -1465,6 +1467,7 @@ site.</li>
 
 <td align="right" valign="top">
 [<a href="http://www.antlr.org">ANTLR</a>] 
+[<a href="http://www.gnu.org/software/gsl">GSL</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://swamp.googlecode.com">SWAMP</a>]

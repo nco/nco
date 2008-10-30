@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1026 2008-10-29 21:03:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1027 2008-10-30 23:00:38 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -670,7 +670,10 @@ nco947. Try DAP from netCDF4 daily snapshots
 nco949. Make --no-clobber option for all operators
 nco950. Add --secret option to print secret/unsupported options
 nco951. Better incomplete gamma function solver
-nco952. 
+nco952. test incomplete gamma function:
+	ncap2 -s '' ~/nco/data/in.nc ~/foo.nc
+ncap2 -O -v -s "a=1.0;x=1.0;gamma_inc_P_dfn=gamma_inc_P(a,x);gamma_inc_g=gamma(a)*gamma_inc_P(a,x);gamma_inc_Q_dfn=1.0-gamma_inc_P(a,x);gamma_inc_G_dfn=gamma(a)-gamma_inc_P(a,x)" ~/nco/data/in.nc ~/foo.nc 
+nco953. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
