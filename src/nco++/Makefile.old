@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.59 2008-10-30 20:56:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.60 2008-10-30 22:09:42 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -108,6 +108,10 @@ endif # endif DBG
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
+ifndef GSL
+# Use GSL functionality
+ GSL := Y
+endif
 ifndef I18N
  I18N := Y
  MY_SHR_DIR := ${HOME}/share
@@ -308,6 +312,24 @@ ifeq (${PNETCDF},Y)
  NC_LIBS += -lpnetcdf
 endif # endif PNETCDF
 
+ifeq (${GSL},Y)
+# Build GSL-enabled NCO 
+# Place GSL block after DAP block for both to work together
+ifdef GSL_INC
+ GSL_INC := -I${GSL_INC}
+else
+ GSL_INC := $(shell gsl-config --cflags)
+endif # endif GSL_INC
+ifdef GSL_LIB
+ GSL_LIB := -L${GSL_LIB}
+else
+ GSL_LIB := $(shell gsl-config --libs)
+endif # endif GSL_LIB
+ NETCDF_INC += ${GSL_INC}
+ NC_LDFLAGS += ${GSL_LIB}
+ NC_LIBS += -lgsl
+endif # end if GSL
+
 ifeq (${UDUNITS2},Y)
  UDUNITS := Y
 endif # end if UDUNITS
@@ -489,6 +511,9 @@ endif # AIX
 ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP
+ifeq (${GSL},Y)
+ CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H
+endif # !GSL
 ifeq (${MPI},Y)
 ifneq (${MPI_FAKE},Y)
  CPP_TKN_OS += -DENABLE_MPI
@@ -1344,6 +1369,7 @@ dbg:
 	@printf "FFLAGS = ${FFLAGS}\n"
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
+	@printf "GSL = $(GSL)\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"

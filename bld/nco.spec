@@ -21,6 +21,7 @@ BuildRequires:  udunits, udunits-devel
 # Required for ncap:
 BuildRequires:  bison, flex
 # Required for ncap2:
+BuildRequires:  gsl, gsl-devel
 #BuildRequires:  antlr antlr-c++-devel
 # Following libraries required to DAP-enable NCO:
 BuildRequires:  curl, curl-devel 
@@ -112,6 +113,9 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
+* Thu Oct 30 2008 Charlie Zender <zender@uci.edu> - 3.9.5-2
+- buildrequire GSL
+
 * Sun May 11 2008 Charlie Zender <zender@uci.edu> - 3.9.5-1
 - new upstream 3.9.5
 
