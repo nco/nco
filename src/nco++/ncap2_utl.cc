@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.110 2008-10-01 13:25:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.111 2008-10-30 13:11:34 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -22,7 +22,10 @@
 #include "NcapVar.hh"
 #include "sdo_utl.hh"
 #include "VarOp.hh" 
+
 #include "nco_gmm.h"
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_sf_gamma.h>
 
 int 
 ncap_var_write_tmp(
@@ -693,8 +696,11 @@ ncap_var_var_gamma_inc
   long sz;
   bool has_mss_val=false;
   ptr_unn op1,op2, op_mss;
-  
   const char fnc_nm[]="ncap_var_var_gamma_inc"; 
+  gsl_sf_result rslt;  /* structure for result from gsl lib call */
+  gsl_set_error_handler_off(); /* dont abort when error */
+
+
   if(dbg_lvl_get() >= 4) dbg_prn(fnc_nm,"Entered function");
   
   sz=var1->sz;
@@ -723,16 +729,16 @@ ncap_var_var_gamma_inc
   case NC_DOUBLE:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) { 
-	op1.dp[idx]=nco_gamain(op1.dp[idx],op2.dp[idx], &flg_err);
 	/* error and no missing value --use default fill value from netcdf lib */
-	if(flg_err != 0) op1.dp[idx]=NC_FILL_DOUBLE;
+           flg_err=gsl_sf_gamma_inc_P_e(op1.dp[idx],op2.dp[idx], &rslt);
+	    op1.dp[idx]=(flg_err==0 ? rslt.val : NC_FILL_DOUBLE);
       }
     }else{
       double mss_val_dbl= op_mss.dp[0];
       for(idx=0;idx<sz;idx++){
         if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] != mss_val_dbl)){              
-	  op1.dp[idx]=nco_gamain(op1.dp[idx],op2.dp[idx],&flg_err);
-	  if(flg_err !=0 ) op1.dp[idx]=mss_val_dbl; 
+	    flg_err=gsl_sf_gamma_inc_P_e(op1.dp[idx],op2.dp[idx], &rslt);
+	    op1.dp[idx]=(flg_err==0 ? rslt.val : mss_val_dbl);
         }
         else op2.dp[idx]=mss_val_dbl;
       } /* end for */
