@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.66 2008-01-15 22:20:50 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.67 2008-10-30 20:56:11 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1185,9 +1185,9 @@ all: ${MDL_BIN_TRG} inc lib dat tst
 .PHONY: all cln dst_cln debug ${MDL_BIN_TRG}
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
-# Define suffixes which matter
+# Define suffixes that matter
 .SUFFIXES: .cc .c .o .F .d
-# Delete targets which were not successfully made
+# Delete targets that were not successfully made
 .DELETE_ON_ERROR:
 lib_dir :
 	- if ! test -d ${MY_LIB_DIR}; then mkdir ${MY_LIB_DIR}; fi

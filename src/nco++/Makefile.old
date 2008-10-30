@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.58 2008-10-29 21:03:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.59 2008-10-30 20:56:10 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -1235,9 +1235,9 @@ all: ant ${MDL_BIN_TRG} inc lib
 .PHONY: all cln dst_cln debug ${MDL_BIN_TRG}
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
-# Define suffixes which matter
+# Define suffixes that matter
 .SUFFIXES: .cpp .cc .c .o .F .d
-# Delete targets which were not successfully made
+# Delete targets that were not successfully made
 .DELETE_ON_ERROR:
 lib_dir :
 	- if ! test -d ${MY_LIB_DIR}; then mkdir ${MY_LIB_DIR}; fi
@@ -1310,7 +1310,7 @@ obj_cln :
 # fxm: change to common dependency rule
 ant: ncoGrammer.g
 	${ANTLR} ncoGrammer.g
-	nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp >ncoEnumTokenTypes.hpp	
+	- nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
 
 src_cln :
 	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
@@ -1415,8 +1415,8 @@ uninstall : dst_cln bin_cln inc_cln lib_cln
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
-GOALS_WHICH_DELETE_DEPENDENCY_FILES := cln clean dir distclean dst_cln dpn_cln tags uninstall
-ifeq (,$(findstring $(MAKECMDGOALS),${GOALS_WHICH_DELETE_DEPENDENCY_FILES}))
+GOALS_THAT_DELETE_DEPENDENCY_FILES := cln clean dir distclean dst_cln dpn_cln tags uninstall
+ifeq (,$(findstring $(MAKECMDGOALS),${GOALS_THAT_DELETE_DEPENDENCY_FILES}))
  INCLUDE_DPN := TRUE
 else
  INCLUDE_DPN := FALSE
