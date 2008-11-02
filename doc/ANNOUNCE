@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.304 2008-09-28 00:22:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.305 2008-11-02 05:04:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -9,15 +9,16 @@ This version has been "extensively" tested with netCDF4.0.
 We tried to make sure that NCO produces the same output 
 regardless of the back-end library (netCDF3 or netCDF4) and
 filetype (netCDF3 or netCDF4).
-This was not trivial because of differences in the ways the
-two libraries handling of, e.g., threading, and _FillValue's. 
+This was not trivial because of the differen ways that the
+two libraries handle, e.g., threading, _FillValue's, and corner-case
+variable names.
 
 Thank you NSF for funding NCO from 20040901 through 20080831.
 We will finish the projects already in the pipeline.
 This includes an NCO 4.0 once a few details are cleared up, and, 
-hopefully, tinstalling SWAMP on the NCAR Community Data Portal.
+perhaps, installing SWAMP on the NCAR Community Data Portal (CDP).
 
-Thanks to Tom Roche, NCO now has a Wiki
+Thanks to Tom Roche, NCO now has a Wiki:
 
 http://nco.wiki.sourceforge.net
 
@@ -43,8 +44,10 @@ E. ncra does not attempt to average record variables of type NC_CHAR
 
 E. ncap2 supports #include files, syntax is #include "pi.nco" 
 
-E. ncap2 supports incomplete gamma functions: gamma_inc_regular(a,x),
-   gamma_inc_upper(a,x), gamma_inc_lower(a,x), gamma_inc_complement(a,x) 
+E. ncap2 supports incomplete gamma functions: gamma_inc_upper(a,x),
+   gamma_inc_lower(a,x), gamma_inc_regular(a,x),gamma_inc_complement(a,x)  
+   Supported synonyms include gamma_inc:_G,_g,_P, _Q. 
+   GSL does the underlying numerics.
 
 E. CF-convention "coordinates" attribute strings with excessive whitespace work
 
@@ -72,7 +75,7 @@ H. Reminder: NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO currently supports netCDF4 atomic data types and compression.
-   NCO 3.9.6 with netCDF4 support should work with HDF5 1.8 final
+   NCO 3.9.6 with netCDF4 support should work with HDF5 1.8.1
    and netCDF4 final and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
