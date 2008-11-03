@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1028 2008-10-30 23:19:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1029 2008-11-03 17:47:24 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -674,7 +674,8 @@ nco952. test incomplete gamma function:
 	ncap2 -O -v -s "a=1.0;x=1.0;gamma_inc_P_dfn=gamma_inc_P(a,x);gamma_inc_g_dfn=gamma(a)*gamma_inc_P(a,x);gamma_inc_Q_dfn=1.0-gamma_inc_P(a,x);gamma_inc_G_dfn=gamma(a)-gamma_inc_P(a,x)" ~/nco/data/in.nc ~/foo.nc 
 	ncap2 -O -v -s "a=1.0f;x=1.0f;gamma_inc_P_dfn=gamma_inc_P(a,x);gamma_inc_g_dfn=gamma(a)*gamma_inc_P(a,x);gamma_inc_Q_dfn=1.0f-gamma_inc_P(a,x);gamma_inc_G_dfn=gamma(a)-gamma_inc_P(a,x)" ~/nco/data/in.nc ~/foo.nc 
 	ncks -H ~/foo.nc
-nco953. 
+nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attributes of variable lists, rather than all or nothing selections
+nco954. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
