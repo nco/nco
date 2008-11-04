@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.118 2008-09-18 04:11:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.119 2008-11-04 11:19:32 hmb Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.118 2008-09-18 04:11:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.119 2008-11-04 11:19:32 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.119 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -352,23 +352,34 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_rgl;
 
   for(idx=0;idx<nbr_aed;idx++){
-
-    if(aed_lst[idx].var_nm != NULL){
-
-      /* Is this a global attribute? */
-      if(!strcmp(aed_lst[idx].var_nm,"global")) aed_lst[idx].id=NC_GLOBAL; else (void)nco_inq_varid(nc_id,aed_lst[idx].var_nm,&aed_lst[idx].id);
-
-      /* Edit attribute */
-      (void)nco_aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
-
-    }else{ /* var_nm == NULL */
-      /* Perform operation for every variable for which it makes sense */
-      
-      /* Edit attribute for every variable */
+    /* Edit attribute for every variable */
+    if(aed_lst[idx].var_nm == NULL){
       for(idx_var=0;idx_var<nbr_var_fl;idx_var++) 
 	(void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
+    } 
+    /* regular expression */       
+    else if(strpbrk(aed_lst[idx].var_nm,".*^$\\[]()<>+?|{}")){
+        int nbr_xtr=1;
+        nm_id_sct *xtr_lst=NULL;
 
-    } /* end else var_nm == NULL */
+        xtr_lst=nco_var_lst_mk(nc_id,nbr_var_fl,&aed_lst[idx].var_nm,False,False,&nbr_xtr);
+        /* edit list of attributtes */
+        for(idx_var=0 ; idx_var<nbr_xtr ; idx_var++)
+          (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
+
+          /* Free Extraction list  */
+        xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+    }
+    /* global variable */
+    else if(!strcmp(aed_lst[idx].var_nm,"global")) {
+       /* Edit Global attribute */
+      (void)nco_aed_prc(nc_id,NC_GLOBAL,aed_lst[idx]);
+    }else{ 
+        /* regular variable */
+        (void)nco_inq_varid(nc_id,aed_lst[idx].var_nm,&aed_lst[idx].id);
+        /* Edit attribute */
+        (void)nco_aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
+    }
 
   } /* end loop over idx */
   
