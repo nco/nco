@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.505 2008-10-20 04:20:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.506 2008-11-05 06:07:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7663,12 +7663,6 @@ netcdf-4.0 Final  2008/08/28 @*
  */ 
 @end example
 
-
-
-
-
-
-
 @c End HMB documentation
 
 @page
@@ -7742,7 +7736,13 @@ Attribute name.
 Example: @code{units}
 @item var_nm
 Variable name. 
-Example: @code{pressure}
+@cindex extended regular expressions
+@cindex regular expressions
+@cindex pattern matching
+@cindex wildcards
+Regular expressions (@pxref{Subsetting Variables}) are accepted and will 
+select any matching variable names.
+Example: @code{pressure}, @code{'^H2O'}.
 @item mode
 Edit mode abbreviation. 
 Example: @code{a}. 
@@ -7772,7 +7772,7 @@ will be deleted.
 @cindex attributes, global
 The value of @var{var_nm} is the name of the variable containing the
 attribute (named @var{att_nm}) that you want to edit.
-There are two very important and useful exceptions to this rule.
+There are three very important and useful exceptions to this rule.
 The value of @var{var_nm} can also be used to direct @command{ncatted} to
 edit global attributes, or to repeat the editing operation for every
 variable in a file.
@@ -7784,6 +7784,8 @@ If @var{var_nm} is left blank, on the other hand, then @command{ncatted}
 attempts to perform the editing operation on every variable in the file.
 This option may be convenient to use if you decide to change the
 conventions you use for describing the data.
+Finally, as mentioned above, @var{var_nm} may be specified as a regular
+expression. 
 
 @html
 <a name="mode"></a> <!-- http://nco.sf.net/nco.html#mode -->
@@ -8024,9 +8026,16 @@ To delete all global attributes, simply replace @code{tpt} with
 @code{global} in the above.
 
 @cindex @code{units}
-Modify all existing @code{units} attributes to "meter second-1"
+Modify all existing @code{units} attributes to "meter second-1":
 @example
 ncatted -a units,,m,c,"meter second-1" in.nc
+@end example
+
+@cindex @code{units}
+Add a @code{units} attribute of "kilogram kilogram-1" to all variables 
+whose first three characters are @samp{H2O}:
+@example
+ncatted -a units,'^H2O',c,c,"kilogram kilogram-1" in.nc
 @end example
 
 Overwrite the @code{quanta} attribute of variable

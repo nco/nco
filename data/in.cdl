@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.104 2008-10-08 14:00:37 hmb Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.105 2008-11-05 06:07:55 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -426,6 +426,11 @@ variables:
 	prs_sfc:long_name = "Surface pressure";
 	prs_sfc:units = "pascal";
 
+	float H2O;
+	float H2OH2O;
+	float H2SO4;
+	float H2O_lqd;
+	float H2O_ice;
 	float Q;
 	float Q1;
 	float AQ01;
@@ -861,6 +866,11 @@ data:
 	pi=3.1415926535897932384626433832795029;
 	upk=3.;
 	upk_arr=-32767.,0.,1.,32767.;
+	H2O=1.0;
+	H2OH2O=1.0;
+	H2SO4=1.0;
+	H2O_lqd=1.0;
+	H2O_ice=1.0;
 	Q=1.0e36;
 	Q1=1.0e36;
 	AQ01=1.0e36;

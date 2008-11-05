@@ -1,8 +1,12 @@
+2008-11-04  Charlie Zender  <zender@uci.edu>
+
+	* Document new ncatted rx capabilities for var_nm
+
 2008-11-04  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Added variable wildcarding to ncatted -a arg
-	* -a att_nm,var_nm,mode,type,type,val
-	* ie. var_nm can now be a regular expression
+	-a att_nm,var_nm,mode,type,type,val
+	var_nm can now be a regular expression
 
 2008-10-30  Charlie Zender  <zender@uci.edu>
 

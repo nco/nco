@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.305 2008-11-02 05:04:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.306 2008-11-05 06:07:55 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
@@ -28,11 +28,11 @@ http://nco.wiki.sourceforge.net/Cookbook
 
 Please give it a try!
 
-A. Memory management to improve threading (Henry Butowsky)
+A. Memory management to improve threading
 
 B. Fix Solaris configure problem with _POSIX_SOURCE
 
-C. ncatted workaround for netCDF4 _FillValue (Henry Butowsky)
+C. ncatted workaround for netCDF4 _FillValue
    ncatted can now change _FillValue on netCDF4 files
 
 D. Disable OpenMP on netCDF4/HDF5-enabled operators
@@ -56,6 +56,9 @@ E. Pre-built Debian Sid & Ubuntu Hardy packages are available.
 
 E. ncap2 correctly propogates missing values through expressions with
    constant operands
+
+E. ncatted matches regular expressions to variable names
+   http://nco.sf.net/nco.html#xmp_ncatted
 
 F. Pre-built RPM packages are available.
    http://nco.sf.net#rpm
