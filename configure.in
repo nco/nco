@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.251 2008-11-11 18:12:44 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.252 2008-11-12 16:53:15 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # Newer convention names this file configure.ac, older names it configure.in
@@ -391,7 +391,7 @@ if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 			cc* ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
 		    esac
 		    ;;
-		x86_64-unknown-linux-gnu )
+		x86_64*-linux* )
 		    case ${CC} in
 			gcc* ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
 		    esac

@@ -19501,7 +19501,7 @@ echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a 
 			cc* ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
 		    esac
 		    ;;
-		x86_64-unknown-linux-gnu )
+		x86_64*-linux* )
 		    case ${CC} in
 			gcc* ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
 		    esac
