@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.49 2008-01-06 13:09:50 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.50 2008-11-17 00:43:59 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -21,8 +21,8 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
    See the GNU General Public License for more details.
    
-   The original author of this software, Charlie Zender, wants to improve it
-   with the help of your suggestions, improvements, bug-reports, and patches.
+   The original author of this software, Charlie Zender, seeks to improve
+   it with your suggestions, contributions, bug-reports, and patches.
    Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
