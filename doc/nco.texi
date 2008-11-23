@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.508 2008-11-17 00:43:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.509 2008-11-23 22:28:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9675,6 +9675,9 @@ precision types is tricky so for values equal to zero, i.e.,
 Hence packing to @code{NC_CHAR} is not documented or advertised.  
 Pack into @code{NC_BYTE} (with, e.g., @samp{flt_byt}) instead.
 
+@html
+<a name="rvr"></a> <!-- http://nco.sf.net/nco.html#rvr -->
+@end html
 @unnumberedsubsec Dimension Permutation
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
 and/or reversing dimensions specified in the dimension list.
@@ -9878,7 +9881,7 @@ indicate dimension reversal from being interpreted by the shell as
 dashes that indicate new command line switches.
 @example
 ncpdq -a -lat in.nc out.nc # Dangerous? Whitespace before "-lat"
-ncpdq -a "-lat" in.nc out.nc # OK. Quotes protect "-" in "-lat"
+ncpdq -a '-lat' in.nc out.nc # OK. Quotes protect "-" in "-lat"
 ncpdq -a lon,-lat in.nc out.nc # OK. No whitespace before "-"
 ncpdq --rdr=-lat in.nc out.nc # Preferred. Uses "=" not whitespace
 @end example
