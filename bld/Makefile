@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.466 2008-12-03 20:45:06 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.467 2008-12-03 20:59:52 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -340,6 +340,24 @@ else
  BNR_SFX := ${null}
 endif 
 
+ifeq (${GSL},Y)
+# Build GSL-enabled NCO 
+# Place GSL block after DAP block for both to work together
+ifdef GSL_INC
+ GSL_INC := -I${GSL_INC}
+else
+ GSL_INC := $(shell gsl-config --cflags)
+endif # endif GSL_INC
+ifdef GSL_LIB
+ GSL_LIB := -L${GSL_LIB}
+else
+ GSL_LIB := $(shell gsl-config --libs)
+endif # endif GSL_LIB
+ NETCDF_INC += ${GSL_INC}
+ NC_LDFLAGS += ${GSL_LIB}
+ NC_LIBS += -lgsl
+endif # end if GSL
+
 ifeq (${UDUNITS2},Y)
  UDUNITS := Y
 endif # end if UDUNITS
@@ -530,6 +548,9 @@ endif # !(AIX || SGI)
 ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP
+ifeq (${GSL},Y)
+ CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H
+endif # !GSL
 ifeq (${MPI},Y)
 ifneq (${MPI_FAKE},Y)
  CPP_TKN_OS += -DENABLE_MPI
@@ -1712,7 +1733,9 @@ dbg:
 	@printf "FFLAGS = ${FFLAGS}\n"
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
+	@printf "GSL = $(GSL)\n"
 	@printf "HOST = ${HOST}\n"
+	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
 	@printf "LAMMPICC = ${LAMMPICC}\n"
 	@printf "LAMMPICXX = ${LAMMPICXX}\n"
