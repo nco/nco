@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.112 2008-12-03 20:45:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.113 2008-12-03 21:44:12 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1817,10 +1817,14 @@ ncap_var_var_op   /* [fnc] Add two variables */
   }
  
   // Deal with incomplete gamma function  fuction ( nb function can't be templated )
+
+#ifdef ENABLE_GSL  
   if(op== GAMMA_INC){
     var_ret=ncap_var_var_gamma_inc(var1,var2);
     return var_ret;     
   }
+#endif
+
  // deal with mod function
   if(op==MOD){
     var_ret=ncap_var_var_mod(var1,var2);
