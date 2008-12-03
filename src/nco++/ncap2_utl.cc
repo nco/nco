@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.111 2008-10-30 13:11:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.112 2008-12-03 20:45:06 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -23,9 +23,11 @@
 #include "sdo_utl.hh"
 #include "VarOp.hh" 
 
+#ifdef ENABLE_GSL
 #include "nco_gmm.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf_gamma.h>
+#endif /* !ENABLE_GSL */
 
 int 
 ncap_var_write_tmp(
@@ -33,8 +35,6 @@ var_sct *var,
 bool bram, 
 prs_cls *prs_arg)
 { 
-
-
   /* Purpose: Define variable in output file and write variable */
   /*  const char mss_val_sng[]="missing_value"; *//* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -686,6 +686,7 @@ ncap_var_var_atan2
   return var1;
 } /* end ncap_var_var_atan2 */
 
+#ifdef ENABLE_GSL
 var_sct *           /* O [sct] Calculate incomplete gamma function for each element */
 ncap_var_var_gamma_inc  
 (var_sct *var1,     /* I [sct] Variable structure containing field  */
@@ -777,6 +778,7 @@ ncap_var_var_gamma_inc
   
   return var1;
 } /* end ncap_var_var_gmmi */
+#endif /* !ENABLE_GSL */
 
 var_sct *        /* O [sct] Resultant variable (actually is var) */
 ncap_var_abs /* Purpose: Find absolute value of each element of var */

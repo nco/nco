@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.60 2008-10-30 22:09:42 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.61 2008-12-03 20:45:06 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -110,8 +110,8 @@ ifndef GCC_RCH_ARG
 endif # endif GCC_RCH_ARG
 ifndef GSL
 # Use GSL functionality
- GSL := Y
-endif
+ GSL := N
+endif # endif GSL
 ifndef I18N
  I18N := Y
  MY_SHR_DIR := ${HOME}/share

@@ -15,6 +15,9 @@
 /* Debugging symbols: Produce symbols for debuggers (e.g., dbx, gdb) */
 #undef ENABLE_DEBUG_SYMBOLS
 
+/* Compile operators with GSL support */
+#undef ENABLE_GSL
+
 /* Enable Large File Support (LFS) */
 #undef ENABLE_LARGEFILE
 
@@ -126,6 +129,9 @@
 /* Define to 1 if you have the `getrusage' function. */
 #undef HAVE_GETRUSAGE
 
+/* Define to 1 if <gsl_sf_gamma.h> is present */
+#undef HAVE_GSL_H
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -137,6 +143,9 @@
 
 /* Define to 1 if you have the `f95' library (-lf95). */
 #undef HAVE_LIBF95
+
+/* Define to 1 if you have the `gsl' library (-lgsl). */
+#undef HAVE_LIBGSL
 
 /* Define to 1 if you have the `intl' library (-lintl). */
 #undef HAVE_LIBINTL

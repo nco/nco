@@ -1,3 +1,8 @@
+2008-12-03  Charlie Zender  <zender@uci.edu>
+
+	* Add ENABLE_GSL functionality to configure and to most source code
+	Still needs correct propagation into fmc_cls.cc, maybe ncoGrammar.g
+	
 2008-11-04  Charlie Zender  <zender@uci.edu>
 
 	* Document new ncatted rx capabilities for var_nm

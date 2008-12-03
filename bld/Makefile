@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.465 2008-10-30 20:56:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.466 2008-12-03 20:45:06 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -36,14 +36,15 @@
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
 # cd ~/nco/bld;make DAP=Y;cd -       # DAP support
+# cd ~/nco/bld;make GSL=Y;cd -	     # GSL support
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
+# cd ~/nco/bld;make MPI=Y;cd -       # MPI support
+# cd ~/nco/bld;make MPI_FAKE=Y;cd -  # MPI spoof
 # cd ~/nco/bld;make OMP=Y;cd -       # OpenMP support
 # cd ~/nco/bld;make OPTS=D;cd -      # "Debugging": Enable symbols for debugging
 # cd ~/nco/bld;make OPTS=O;cd -      # "Optimize": For production (includes symbols)
 # cd ~/nco/bld;make OPTS=R;cd -      # "Regular": No optimization or debugging
 # cd ~/nco/bld;make OPTS=X;cd -      # "eXtreme": All debugging switches available
-# cd ~/nco/bld;make MPI=Y;cd -       # MPI support
-# cd ~/nco/bld;make MPI_FAKE=Y;cd -  # MPI spoof
 # cd ~/nco/bld;make sys;cd -         # Install in /usr/local (must sudo)
 # cd ~/nco/bld;make UDUNITS=Y;cd -   # UDUnits support
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
@@ -62,8 +63,8 @@
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on UCI IPCC:
 # cd ${HOME}/nco/bld;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make --jobs=1 ABI=64 allinone;cd -
-# 64-bit ABI on NCAR AIX systems:
-# cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 allinone ABI=64;cd -
+# 64-bit ABI on NCAR AIX systems (bluefire):
+# cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 OPTS=D allinone ABI=64;cd -
 # 64-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.4/include' UDUNITS_LIB='/contrib/udunits-1.12.4/lib' make --jobs=1 ABI=64 USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 32-bit ABI on NCAR IRIX systems:
@@ -122,6 +123,10 @@ endif # endif FL_FMT
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
+ifndef GSL
+# Use GSL functionality
+ GSL := N
+endif # endif GSL
 ifndef ICC_RCH_ARG
  ICC_RCH_ARG :=
 endif # endif ICC_RCH_ARG
