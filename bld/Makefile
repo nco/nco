@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.467 2008-12-03 20:59:52 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.468 2008-12-03 21:05:44 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -50,6 +50,7 @@
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
+# cd ${HOME}/nco/bld;make DAP=N GSL=Y OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # glace, neige, virga
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # glace, neige, virga
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
@@ -1415,9 +1416,9 @@ obj_dir:
 	-mkdir -p ${MY_OBJ_DIR}
 # The whole shebang
 nco_c++: 
-	-cd ../src/nco_c++; ${MAKE} -f Makefile.old OPTS=${OPTS} lib dat all
+	-cd ../src/nco_c++; ${MAKE} -f Makefile.old NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} lib dat all
 nco++: 
-	-cd ../src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} lib all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP=${DAP} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} UDUNITS2=${UDUNITS2} lib all
 allinone: all nco_c++ nco++
 # Targets in bin
 mpi:   mpi_nco
