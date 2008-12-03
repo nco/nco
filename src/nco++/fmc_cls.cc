@@ -910,6 +910,7 @@
   gmm_inc_cls::gmm_inc_cls(bool flg_dbg){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
+#ifdef ENABLE_GSL
       fmc_vtr.push_back( fmc_cls("gamma_inc",this,(int)PGAMMA_INC));
       fmc_vtr.push_back( fmc_cls("gamma_inc_regular",this,(int)PGAMMA_INC));
       fmc_vtr.push_back( fmc_cls("gamma_inc_P",this,(int)PGAMMA_INC));
@@ -923,7 +924,7 @@
       fmc_vtr.push_back( fmc_cls("gamma_inc_lower",this,(int)PGAMMA_LOWER));
       fmc_vtr.push_back( fmc_cls("gamma_inc_g",this,(int)PGAMMA_LOWER));
 #endif
-
+#endif
 
     }
   }
