@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.510 2008-12-04 00:16:44 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.511 2008-12-04 00:36:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7354,10 +7354,10 @@ $P(a,x)$.
 One of the four incomplete gamma functions.
 Example: 
 @tex
-gamma\_inc\_P$(1,1) = \sqrt{\pi}$
+gamma\_inc\_P$(1,1) = 1-\me^{-1}$
 @end tex
 @ifinfo
-@math{gamma_inc_P(1,1) = sqrt(pi)}
+@math{gamma_inc_P(1,1) = 1-1/e}
 @end ifinfo
 @item ln(x)
 @dfn{Natural Logarithm}
