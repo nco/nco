@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.511 2008-12-04 00:36:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.512 2008-12-04 01:17:50 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -709,6 +709,17 @@ Subsequently, @acronym{NCO} requires a C99 compiler to build correctly
 @acronym{ANSI} or @acronym{ISO} C89 or C94/95-compliant compiler if the
 @w{C pre-processor} undefines the @code{restrict} type qualifier, e.g.,
 by invoking the compiler with @samp{-Drestrict=''}.}.
+
+@html
+<a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
+@end html
+@cindex GSL
+@cindex @var{gamma_inc_P}
+In December 2008, @acronym{NCO} version 3.9.6 was the first to link
+to the GNU Scientific Library (@acronym{GSL}).
+@acronym{NCO} now uses the @acronym{GSL} special function library
+for geoscience-relevant mathematics such as Bessel functions and
+incomplete gamma functions.
 
 @cindex @var{gamma}
 In June 2005, @acronym{NCO} version 3.0.1 began to take advantage

@@ -1,5 +1,7 @@
 2008-12-03  Charlie Zender  <zender@uci.edu>
 
+	* Implement --enable-gsl in configure
+
 	* Add ENABLE_GSL functionality to configure and to most source code
 	Still needs correct propagation into fmc_cls.cc, maybe ncoGrammar.g
 	
