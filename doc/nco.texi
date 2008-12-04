@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.509 2008-11-23 22:28:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.510 2008-12-04 00:16:44 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7341,6 +7341,23 @@ gamma$(0.5) = \sqrt{\pi}$
 @end tex
 @ifinfo
 @math{gamma(0.5) = sqrt(pi)}
+@end ifinfo
+@item gamma_inc_P(x)
+@dfn{Incomplete Gamma function}
+Incomplete Gamma function of parameter @var{a} and variable @var{x},
+@tex
+$P(a,x)$.
+@end tex
+@ifinfo
+@math{gamma_inc_P(a,x)}.
+@end ifinfo
+One of the four incomplete gamma functions.
+Example: 
+@tex
+gamma\_inc\_P$(1,1) = \sqrt{\pi}$
+@end tex
+@ifinfo
+@math{gamma_inc_P(1,1) = sqrt(pi)}
 @end ifinfo
 @item ln(x)
 @dfn{Natural Logarithm}
