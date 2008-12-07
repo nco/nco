@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.113 2008-12-03 21:44:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.114 2008-12-07 16:21:10 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1695,6 +1695,166 @@ ncap_var_var_stc
   return var_ret;
 }
 
+
+
+int                /* [flg] true they conform */         
+ncap_var_att_cnf   /* [fnc] Make vars/atts conform */
+(var_sct *&var1,   /* I [sct] Input variable structure  */
+ var_sct *&var2    /* I [sct] Input variable structure  */
+)
+{ 
+  const char fnc_nm[]="ncap_var_att_cnf"; 
+  
+  nco_bool vb1;
+  nco_bool vb2;
+  
+  var_sct *var_ret=NULL_CEWI;
+  
+  
+  vb1 = ncap_var_is_att(var1);
+  vb2 = ncap_var_is_att(var2);
+  
+  // var & var
+  if( !vb1 && !vb2 ) { 
+    char *swp_nm;
+    // (void)ncap_var_retype(var1,var2);
+    
+    // if hyperslabs then check they conform
+    if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 && var2->sz>1){  
+      if(var1->sz != var2->sz) {
+	std::ostringstream os;
+	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have differnet number of elements, so cannot perform arithmetic operation.";
+	err_prn(fnc_nm,os.str());
+      }
+      if( nco_shp_chk(var1,var2)==False){ 
+	std::ostringstream os;
+        os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have same  number of elements, but different shapes.";
+	wrn_prn(fnc_nm,os.str());
+      }
+    }else{   
+      (void)ncap_var_cnf_dmn(&var1,&var2);
+    }
+    // Bare numbers have name prefixed with"_"
+    // for attribute propagation to work we need
+    // to swap names about if first operand is a bare number
+    // and second operand is a var
+    if( (var1->nm[0]=='~') && (var2->nm[0]!='~') ){
+      swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm; 
+    }  
+    // var & att
+  }else  if( !vb1 && vb2 ){ 
+    // var2=nco_var_cnf_typ(var1->type,var2);
+    if(var1->sz > 1 && var2->sz==1)
+      (void)ncap_var_cnf_dmn(&var1,&var2);
+    
+    if(var1->sz != var2->sz) {
+      std::ostringstream os;
+      os<<"Cannot make variable:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
+    }
+    
+    // att & var
+  }else if( vb1 && !vb2){
+    var_sct *var_swp;
+    ptr_unn val_swp;  // Used to swap values around
+    
+    var1=nco_var_cnf_typ(var2->type,var1);
+    if(var2->sz > 1 && var1->sz==1) (void)ncap_var_cnf_dmn(&var1,&var2);
+    
+    if(var1->sz != var2->sz){
+      std::ostringstream os;
+      os<<"Cannot make attribute:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
+    }
+    // Swap values around in var1 and var2;   
+    val_swp=var1->val;
+    var1->val=var2->val;
+    var2->val=val_swp;;
+    // Swap names about 
+    var_swp=var1;
+    var1=var2;
+    var2=var_swp;
+    
+    // att && att
+  } else if (vb1 && vb2) {
+    (void)ncap_var_retype(var1,var2);
+    
+    if( var1->sz ==1 && var2->sz >1) 
+      (void)ncap_att_stretch(var1,var2->sz);
+    else if(var1->sz >1 && var2->sz==1)
+      (void)ncap_att_stretch(var2,var1->sz);
+    
+    // Crash out if atts not equal size
+    if(var1->sz != var2->sz) {
+      std::ostringstream os;
+      os<<"Cannot make attribute:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
+    }
+  }
+  return True;
+
+} /* end ncap_var_att_cnf */
+
+
+
+
+var_sct *              /* O [sct] Result var_sct if binary op had taken place */
+ncap_var_att_cnf_ntl   /*   [fnc] determine resultant struct */
+(var_sct *var1,        /* I [sct] Input variable structure containing first operand */
+ var_sct *var2)         /* I [sct] Input variable structure containing second operand */
+{ 
+  nco_bool vb1;
+  nco_bool vb2;
+  
+  
+  vb1 = ncap_var_is_att(var1);
+  vb2 = ncap_var_is_att(var2);
+  
+  // var & var
+  if( !vb1 && !vb2 ) { 
+    if(var1->undefined ||var2->undefined){
+      var1->undefined=True;
+      var2=nco_var_free(var2);
+      return var1;
+    }
+    
+    // Do variable conformance with empty variables
+    if(var1->nbr_dim > var2->nbr_dim) {
+      var2=nco_var_free(var2);
+      return var1;
+    }else{
+      var1=nco_var_free(var1);
+      return var2;
+    }
+    
+  }
+  // var & att
+  else if( !vb1 && vb2 ){ 
+    var2=nco_var_free(var2);    
+    return var1;
+  }   
+  // att & var
+  else if( vb1 && !vb2){
+    var1=nco_var_free(var1);
+    return var2;  
+  }
+  // att && att
+  else if (vb1 && vb2) {
+    if(var1->sz >= var2->sz) {
+      var2=nco_var_free(var2);
+      return var1;
+    } else {
+      var1=nco_var_free(var1);
+      return var2;
+    }
+  }
+  /* Should not reach end of this function */
+  nco_exit(EXIT_FAILURE);
+  return var1;
+
+} /* ncap_var_att_cnf_ntl */
+
+
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_op   /* [fnc] Add two variables */
 (var_sct *var1,  /* I [sct] Input variable structure containing first operand */
@@ -1722,7 +1882,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
   
   // Deal with pwr/gamma_in fuction
   if( (op == CARET||op==GAMMA_INC) && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
- 
+  
   //Deal with atan2 function
   if(op==ATAN2 ){
     var1=nco_var_cnf_typ((nc_type)NC_DOUBLE,var1);
