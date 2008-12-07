@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.11 2008-09-17 14:48:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.12 2008-12-07 16:19:21 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -183,6 +183,21 @@ nco_bool /* O [flg] Variables now conform */
 ncap_var_stretch /* [fnc] Stretch variables */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2); /* I/O [ptr] Second variable */
+
+
+
+int                /* [flg] true they conform */         
+ncap_var_att_cnf   /* [fnc] Make vars/atts conform */
+(var_sct *&var1,   /* I [sct] Input variable structure  */
+ var_sct *&var2    /* I [sct] Input variable structure  */
+);
+
+
+var_sct *              /* O [sct] Result var_sct as if binary op had taken place */
+ncap_var_att_cnf_ntl   /*   [fnc] determine resultant struct */
+(var_sct *var1,        /* I [sct] Input variable structure containing first operand */
+ var_sct *var2         /* I [sct] Input variable structure containing second operand */
+);
 
 
 var_sct *         /* O  Result of variable operation */
