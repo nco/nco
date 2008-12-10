@@ -1,3 +1,8 @@
+2008-12-10  Charlie Zender  <zender@uci.edu>
+
+	* Check for external (rather than internal) netCDF4 function
+	nc4_enddef_netcdf4_file() in libnetcdf.a 
+
 2008-12-03  Charlie Zender  <zender@uci.edu>
 
 	* Implement --enable-gsl in configure

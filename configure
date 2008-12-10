@@ -18832,9 +18832,9 @@ if test "${enable_netcdf4}" = 'yes'; then
 # Check libnetcdf for netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 		enable_shared='no'
-		{ echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf" >&5
-echo $ECHO_N "checking for find_nc4_file in -lnetcdf... $ECHO_C" >&6; }
-if test "${ac_cv_lib_netcdf_find_nc4_file+set}" = set; then
+		{ echo "$as_me:$LINENO: checking for nc4_enddef_netcdf4_file in -lnetcdf" >&5
+echo $ECHO_N "checking for nc4_enddef_netcdf4_file in -lnetcdf... $ECHO_C" >&6; }
+if test "${ac_cv_lib_netcdf_nc4_enddef_netcdf4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -18852,11 +18852,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char find_nc4_file ();
+char nc4_enddef_netcdf4_file ();
 int
 main ()
 {
-return find_nc4_file ();
+return nc4_enddef_netcdf4_file ();
   ;
   return 0;
 }
@@ -18879,21 +18879,21 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_netcdf_find_nc4_file=yes
+  ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_netcdf_find_nc4_file=no
+	ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_find_nc4_file" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf_find_nc4_file" >&6; }
-if test $ac_cv_lib_netcdf_find_nc4_file = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&6; }
+if test $ac_cv_lib_netcdf_nc4_enddef_netcdf4_file = yes; then
   LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}"
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_NETCDF4 1
@@ -18912,9 +18912,9 @@ fi
 	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
 	echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";
 
-{ echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf" >&5
-echo $ECHO_N "checking for find_nc4_file in -lnetcdf... $ECHO_C" >&6; }
-if test "${ac_cv_lib_netcdf_find_nc4_file+set}" = set; then
+{ echo "$as_me:$LINENO: checking for nc4_enddef_netcdf4_file in -lnetcdf" >&5
+echo $ECHO_N "checking for nc4_enddef_netcdf4_file in -lnetcdf... $ECHO_C" >&6; }
+if test "${ac_cv_lib_netcdf_nc4_enddef_netcdf4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -18932,11 +18932,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char find_nc4_file ();
+char nc4_enddef_netcdf4_file ();
 int
 main ()
 {
-return find_nc4_file ();
+return nc4_enddef_netcdf4_file ();
   ;
   return 0;
 }
@@ -18959,21 +18959,21 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_netcdf_find_nc4_file=yes
+  ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_netcdf_find_nc4_file=no
+	ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_find_nc4_file" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf_find_nc4_file" >&6; }
-if test $ac_cv_lib_netcdf_find_nc4_file = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&6; }
+if test $ac_cv_lib_netcdf_nc4_enddef_netcdf4_file = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBNETCDF 1
 _ACEOF

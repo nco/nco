@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1032 2008-12-05 05:53:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1033 2008-12-10 20:44:15 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -687,7 +687,8 @@ nco957.
 	ncdiff -O -D 1 ~/nco/data/in.nc ~/foo_avg.nc ~/foo_dff.nc
 	ncwa -O -D 1 ~/nco/data/foo_dff.nc ~/foo_dff_avg.nc
 	ncks -H ~/foo_dff.nc | m
-nco958. 
+nco958. remove non-external symbols from autoconf tests
+nco959. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.254 2008-12-04 00:28:42 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.255 2008-12-10 20:44:15 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # Newer convention names this file configure.ac, older names it configure.in
@@ -279,7 +279,7 @@ if test "${enable_netcdf4}" = 'yes'; then
 # Check libnetcdf for netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 		enable_shared='no'
-		AC_CHECK_LIB([netcdf],[find_nc4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
+		AC_CHECK_LIB([netcdf],[nc4_enddef_netcdf4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
 	    fi
 	else
 	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
@@ -288,7 +288,7 @@ if test "${enable_netcdf4}" = 'yes'; then
     else
 	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
 	echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";
-	AC_CHECK_LIB([netcdf],[find_nc4_file],,[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
+	AC_CHECK_LIB([netcdf],[nc4_enddef_netcdf4_file],,[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
     fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
