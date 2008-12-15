@@ -58,6 +58,8 @@
 
 
 //Virtual Class      /******************************************/
+/*
+
   vtl_typ vtl_cls::expr_typ(RefAST expr){
     int nbr_chd;
     int chd_typ=0;
@@ -111,6 +113,8 @@
     return lcl_typ;
 }
 
+
+*/
 
 // function/method class  /****************************************/
   
