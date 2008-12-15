@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.114 2008-12-07 16:21:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.115 2008-12-15 13:12:36 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -302,6 +302,14 @@ ncap_var_udf(const char *var_nm)
   (void)var_dfl_set(var_ret); 
   var_ret->nm=strdup(var_nm);
   var_ret->undefined=True;
+  
+  // Try out code. var_dfl_set sets type=NC_NAT 
+  // This means its not possible to change the 
+  // type as nco_var_cnf_typ bombs out
+  // Temporary solution -- set the type to NC_INT 
+  //var_ret->type=NC_INT;
+
+
   return var_ret;
 }
 
@@ -1723,7 +1731,7 @@ ncap_var_att_cnf   /* [fnc] Make vars/atts conform */
     if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 && var2->sz>1){  
       if(var1->sz != var2->sz) {
 	std::ostringstream os;
-	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have differnet number of elements, so cannot perform arithmetic operation.";
+	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have different number of elements, so cannot perform arithmetic operation.";
 	err_prn(fnc_nm,os.str());
       }
       if( nco_shp_chk(var1,var2)==False){ 
@@ -1755,25 +1763,26 @@ ncap_var_att_cnf   /* [fnc] Make vars/atts conform */
     
     // att & var
   }else if( vb1 && !vb2){
-    var_sct *var_swp;
-    ptr_unn val_swp;  // Used to swap values around
+    var_sct *var_tmp;
     
-    var1=nco_var_cnf_typ(var2->type,var1);
-    if(var2->sz > 1 && var1->sz==1) (void)ncap_var_cnf_dmn(&var1,&var2);
+    if(var2->sz > 1 && var1->sz==1) 
+       (void)ncap_att_stretch(var1,var2->sz);
     
     if(var1->sz != var2->sz){
       std::ostringstream os;
       os<<"Cannot make attribute:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
       err_prn(fnc_nm,os.str()); 
     }
-    // Swap values around in var1 and var2;   
-    val_swp=var1->val;
-    var1->val=var2->val;
-    var2->val=val_swp;;
-    // Swap names about 
-    var_swp=var1;
-    var1=var2;
-    var2=var_swp;
+    // turn att var1 into a variable;
+    var_tmp=nco_var_dpl(var2);
+    var_tmp->val.vp=nco_free(var_tmp->val.vp);
+    var_tmp=nco_var_cnf_typ(var1->type,var_tmp);  
+    var_tmp->val.vp=var1->val.vp;
+    
+    var1->val.vp=(void*)NULL;
+    nco_var_free(var1);
+    var1=var_tmp;   
+     
     
     // att && att
   } else if (vb1 && vb2) {
@@ -1853,6 +1862,8 @@ ncap_var_att_cnf_ntl   /*   [fnc] determine resultant struct */
   return var1;
 
 } /* ncap_var_att_cnf_ntl */
+
+
 
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
@@ -2000,6 +2011,8 @@ ncap_var_var_op   /* [fnc] Add two variables */
   var2=nco_var_free(var2);
   return var_ret;
 }
+
+
 
 var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
 ncap_var_var_op_ntl   /* [fnc] Add two variables */
