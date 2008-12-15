@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.79 2008-11-17 00:43:59 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.80 2008-12-15 13:08:49 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -76,8 +76,13 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
+#include "vtl_cls.hh"
 #include "libnco.h"    /* netCDF Operator (NCO) library */
 #include "sdo_utl.hh"  /* error messages etc */
+
+#ifdef ENABLE_GSL
+#include <gsl/gsl_errno.h>
+#endif
 
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
@@ -87,6 +92,9 @@ char **ncap_fl_spt_glb=NULL_CEWI; /* [fl] Script file */
 /* Forward Declaration */
 void pop_fmc_vtr(std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc);
 void ram_vars_add(prs_cls *prs_arg);
+
+
+
 
 int 
 main(int argc,char **argv)
@@ -132,8 +140,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.79 2008-11-17 00:43:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.79 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.80 2008-12-15 13:08:49 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.80 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -442,6 +450,13 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
   (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
   (void)pop_fmc_vtr(fmc_vtr,&pck_obj);
+
+
+  // split out gsl functions
+#ifdef ENABLE_GSL
+  gsl_cls gsl_obj(true); 
+  (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
+#endif
   
   //Sort Vector 
   std::sort(fmc_vtr.begin(),fmc_vtr.end());
@@ -452,6 +467,12 @@ main(int argc,char **argv)
       std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
   }
+
+
+#ifdef ENABLE_GSL
+  /* set gsl error handler */
+  gsl_set_error_handler_off(); 
+#endif
 
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
