@@ -15,13 +15,18 @@
 #include <vector>
 #include <antlr/AST.hpp>
 #include "ncoTree.hpp"
+#include "ncap2_utl.hh"
+#include "vtl_cls.hh"
+
 
 //forward declarations
 class vtl_cls;
 class ncoTree;
-
 //local enum used to classify expressions 
+/*
 enum vtl_typ { VVAR,VLVAR,VDVAR, VATT,VLATT,VDATT,VDIM, VDIM_SIZE,VEXPR };
+*/
+
 
 // function/method class  ****************************************/
 
@@ -49,7 +54,31 @@ public:
 };
 
 
+
+// maths functions holder (for mth_cls) ********************/
+class sym_cls{ /* sym_sct */
+ public:
+  std::string _fnm;
+  double (*_fnc_dbl)(double); /* [fnc] Double-valued function */
+  float (*_fnc_flt)(float);   /* [fnc] Float-valued function */
+ public:
+  sym_cls(std::string sfnm,  double (*fnc_dbl)(double), float (*fnc_flt)(float)){
+    _fnm=sfnm;
+    _fnc_dbl=fnc_dbl;
+    _fnc_flt=fnc_flt; 
+  } 
+  sym_cls(const char *const pfnm,  double (*fnc_dbl)(double), float (*fnc_flt)(float)){
+    _fnm= static_cast<std::string>(pfnm);
+    _fnc_dbl=fnc_dbl;
+    _fnc_flt=fnc_flt; 
+  } 
+  std::string fnm() { return _fnm;} 
+}; 
+ 
+
+
 //Virtual Class      /******************************************/
+/*
 class vtl_cls: public ncoParserTokenTypes {
 public:
   // expression types,
@@ -61,10 +90,10 @@ public:
   virtual std::vector<fmc_cls> *lst_vtr(void){ return &fmc_vtr;}
   virtual var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker)=0;
   virtual ~vtl_cls(){;}
-  virtual vtl_typ expr_typ(RefAST expr);
+  static vtl_typ expr_typ(RefAST expr);
 };
 
-
+*/
 
 //Conversion Functions **************************************/
 class cnv_cls: public vtl_cls {
@@ -113,27 +142,6 @@ public:
 
 };
 
-
-
-//Maths functions holder (for mth_cls) ********************/
-class sym_cls{ /* sym_sct */
- public:
-  std::string _fnm;
-  double (*_fnc_dbl)(double); /* [fnc] Double-valued function */
-  float (*_fnc_flt)(float);   /* [fnc] Float-valued function */
- public:
-  sym_cls(std::string sfnm,  double (*fnc_dbl)(double), float (*fnc_flt)(float)){
-    _fnm=sfnm;
-    _fnc_dbl=fnc_dbl;
-    _fnc_flt=fnc_flt; 
-  } 
-  sym_cls(const char *const pfnm,  double (*fnc_dbl)(double), float (*fnc_flt)(float)){
-    _fnm= static_cast<std::string>(pfnm);
-    _fnc_dbl=fnc_dbl;
-    _fnc_flt=fnc_flt; 
-  } 
-  std::string fnm() { return _fnm;} 
-}; 
 
 
 
