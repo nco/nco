@@ -38,6 +38,8 @@ union f_unn{
    int (*aid)(int,double,gsl_sf_result*);
    int (*adm)( double, gsl_mode_t,gsl_sf_result*);  
    int (*addm)( double, double, gsl_mode_t,gsl_sf_result*);  
+   int (*adddm)( double,double, double, gsl_mode_t,gsl_sf_result*);  
+   int (*addddm)( double,double,double, double, gsl_mode_t,gsl_sf_result*);  
 
    double (*bd)( double);
    double (*bdd)(double, double);    
@@ -54,6 +56,8 @@ union f_unn{
   f_unn(   int (*a)(int, double,gsl_sf_result*) )     { aid=a; }
   f_unn(   int (*a)(double,gsl_mode_t,gsl_sf_result*)){adm=a; }  
   f_unn(   int (*a)(double,double,gsl_mode_t,gsl_sf_result*)){addm=a; }  
+  f_unn(   int (*a)(double,double,double,gsl_mode_t,gsl_sf_result*)){adddm=a; }  
+  f_unn(   int (*a)(double,double,double,double,gsl_mode_t,gsl_sf_result*)){addddm=a; }  
 
   f_unn(   double (*b)(double)     )    { bd=b; }
   f_unn(   double (*b)( double,double) ) { bdd=b; }
@@ -118,5 +122,6 @@ var_sct *hnd_fnc_iidpd(HANDLE_ARGS);
 var_sct *hnd_fnc_idpd(HANDLE_ARGS);
 var_sct *hnd_fnc_dm(HANDLE_ARGS);
 var_sct *hnd_fnc_ddm(HANDLE_ARGS);
+var_sct *hnd_fnc_ndm(HANDLE_ARGS);
 
 #endif
