@@ -122,18 +122,18 @@
       // Elementary Operations  *****************************************************************/
 
       // Elliptic Integrals  ********************************************************************/
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Kcomp",f_unn(gsl_sf_ellint_Kcomp_e),hnd_fnc_dm));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Ecomp",f_unn(gsl_sf_ellint_Ecomp_e),hnd_fnc_dm));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Pcomp",f_unn(gsl_sf_ellint_Pcomp_e),hnd_fnc_ddm));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Dcomp",f_unn(gsl_sf_ellint_Dcomp_e),hnd_fnc_dm));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_F",f_unn(gsl_sf_ellint_F_e),hnd_fnc_ddm));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Kcomp",f_unn(gsl_sf_ellint_Kcomp_e),hnd_fnc_ndm,1));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Ecomp",f_unn(gsl_sf_ellint_Ecomp_e),hnd_fnc_ndm,1));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Pcomp",f_unn(gsl_sf_ellint_Pcomp_e),hnd_fnc_ndm,2));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Dcomp",f_unn(gsl_sf_ellint_Dcomp_e),hnd_fnc_ndm,1));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_F",f_unn(gsl_sf_ellint_F_e),hnd_fnc_ndm,2));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_E",f_unn(gsl_sf_ellint_E_e),hnd_fnc_ddm));
-	// gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_P",f_unn(gsl_sf_ellint_P_e),));
-	// gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_D",f_unn(gsl_sf_ellint_D_e),));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_P",f_unn(gsl_sf_ellint_P_e),hnd_fnc_ndm,3));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_D",f_unn(gsl_sf_ellint_D_e),hnd_fnc_ndm,3));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RC",f_unn(gsl_sf_ellint_RC_e), hnd_fnc_ddm));
-	// gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RD",f_unn(gsl_sf_ellint_RD_e),));
-	// gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RF",f_unn(gsl_sf_ellint_RF_e),));
-	// gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RJ",f_unn(gsl_sf_ellint_RJ_e),));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RD",f_unn(gsl_sf_ellint_RD_e),hnd_fnc_ndm,3));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RF",f_unn(gsl_sf_ellint_RF_e),hnd_fnc_ndm,3));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RJ",f_unn(gsl_sf_ellint_RJ_e),hnd_fnc_ndm,4));
 
  
       // Elliptic Function (Jacobi)*************************************************************/
@@ -298,7 +298,7 @@
 	gpr_vtr.push_back(gpr_cls("gsl_sf_psi_n",f_unn(gsl_sf_psi_n_e),hnd_fnc_xd,NC_INT));
 
 
-
+ 
        // Synchrotron Functions *********************************************************************/
 	gpr_vtr.push_back(gpr_cls("gsl_sf_synchrotron_1",f_unn(gsl_sf_synchrotron_1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_synchrotron_2",f_unn(gsl_sf_synchrotron_2_e),hnd_fnc_x,NC_DOUBLE));
@@ -1229,3 +1229,214 @@ var_sct *hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 }
 
+var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_ndm");
+            int idx;
+            int jdx;
+            int fdx=gpr_obj.type(); // very important --number of double arguments
+            int args_nbr;
+            nc_type type;
+	    std::string styp=(is_mtd ? "method":"function");
+	    std::string sfnm=gpr_obj.fnm();
+            var_sct *var_ret; 
+            var_sct *var_arr[fdx];
+            var_sct **var_arr_ptr[fdx]; 
+          
+            // de-reference 
+            prs_cls *prs_arg=walker.prs_arg;
+            type=gpr_obj.type();  
+
+            args_nbr=args_vtr.size();
+            
+
+            if(args_nbr <fdx)
+              if(is_mtd)
+                err_prn(sfnm,styp+" \""+sfnm+"\" requires "+nbr2sng(fdx-1)+ " arguments"); 
+              else
+                err_prn(sfnm,styp+" \""+sfnm+"\" requires "+ nbr2sng(fdx) + " arguments.");    
+            
+            for(idx=0; idx<fdx ;idx++){     
+              var_arr[idx]=walker.out(args_vtr[idx]);
+              var_arr_ptr[idx]=&var_arr[idx];
+            } 
+             
+            // Deal with initial scan
+            if(prs_arg->ntl_scn){
+	      // nb ncap_var_att_arr_cnf() frees up sct's in var_att_ptr    
+               var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,fdx );     
+               if(!var_ret->undefined)
+	           var_ret=nco_var_cnf_typ(NC_DOUBLE,var_ret);
+
+      	      return var_ret;
+            } 
+
+
+
+            for(idx=0 ; idx<fdx ; idx++){
+              // convert all to type double
+              var_arr[idx]=nco_var_cnf_typ(NC_DOUBLE,var_arr[idx]);
+              // refrsh var pointers
+              var_arr_ptr[idx]=&var_arr[idx];
+            }
+
+            // make variables conform  
+            (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,fdx );
+
+
+
+	    // do heavy lifting       
+           {
+ 
+	     bool has_mss_val=false;
+             int sz;
+             double *dp[fdx];
+             double mss_val_dbl;
+             gsl_mode_t mde_t=GSL_PREC_DOUBLE;
+             gsl_sf_result rslt;  /* structure for result from gsl lib call */
+             
+
+
+             // assume from here on that args conform
+             sz=var_arr[0]->sz;
+
+            for(idx=0 ; idx<fdx ; idx++){
+             (void)cast_void_nctype(NC_DOUBLE,&(var_arr[idx]->val));                  
+	     dp[idx]=var_arr[idx]->val.dp;
+            }  
+
+             has_mss_val=false;  
+             for(idx=0 ; idx<fdx ;idx++) 
+                if(var_arr[idx]->has_mss_val){
+                 has_mss_val=true; 
+                 (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->mss_val);
+                 mss_val_dbl=var_arr[idx]->mss_val.dp[0]; 
+		 (void)cast_nctype_void(NC_DOUBLE,&(var_arr[idx]->mss_val));
+                 break;
+               } 
+              
+
+             switch(fdx){
+
+               // one double argument
+	     case 1: {
+
+                int (*fnc_int)(double, gsl_mode_t,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().adm;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],mde_t,&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || (*fnc_int)(dp[0][jdx],mde_t, &rslt))
+		       dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
+
+
+
+	       // two double arguments
+	     case 2: {
+
+                int (*fnc_int)(double,double, gsl_mode_t,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().addm;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],dp[1][jdx],mde_t,&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || 
+                      dp[1][jdx] == mss_val_dbl ||
+
+                      (*fnc_int)(dp[0][jdx],dp[1][jdx],mde_t, &rslt)
+		      ) dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
+
+
+
+
+	       //three double args 
+             case 3: {
+
+                int (*fnc_int)(double, double,double, gsl_mode_t,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().adddm;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx],mde_t,&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || 
+                      dp[1][jdx] == mss_val_dbl ||
+                      dp[2][jdx] == mss_val_dbl ||
+
+                      (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx],mde_t, &rslt)
+		      ) dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
+
+
+
+	       //four double args 
+             case 4: {
+
+                int (*fnc_int)(double, double,double,double, gsl_mode_t,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().addddm;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx],mde_t,&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || 
+                      dp[1][jdx] == mss_val_dbl ||
+                      dp[2][jdx] == mss_val_dbl ||
+                      dp[3][jdx] == mss_val_dbl ||
+
+                      (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx],mde_t, &rslt)
+		      ) dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
+
+             default: break;
+
+
+	     }// end switch
+
+
+	     for(idx=0;idx<fdx; idx++){ 
+               (void)cast_nctype_void(NC_DOUBLE,&(var_arr[idx]->val));
+               if(idx>0)  nco_var_free(var_arr[idx]);
+	     }
+
+	   } // end heavy lifting
+
+	    return var_arr[0]; 
+
+} //end hnd_fnc_ndm 
