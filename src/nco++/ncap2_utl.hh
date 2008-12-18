@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.12 2008-12-07 16:19:21 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.13 2008-12-18 15:24:18 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -191,6 +191,14 @@ ncap_var_att_cnf   /* [fnc] Make vars/atts conform */
 (var_sct *&var1,   /* I [sct] Input variable structure  */
  var_sct *&var2    /* I [sct] Input variable structure  */
 );
+
+var_sct *             /* O [sct] Result if ntl_scn true otherwize null */ 
+ncap_var_att_arr_cnf( /* I [fnc] Make all of vars in array conform to each other */
+bool ntl_scn,
+var_sct ***var_arr,   /* I/O [sct] Array of variables */
+int sz);               /* size of array */
+
+
 
 
 var_sct *              /* O [sct] Result var_sct as if binary op had taken place */
