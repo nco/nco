@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.142 2008-10-02 14:41:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.143 2008-12-18 12:02:16 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1875,10 +1875,21 @@ var=NULL_CEWI;
               dbg_prn(fnc_nm,sa);
  
             var1=out(att2->getNextSibling());
-            (void)nco_free(var1->nm);
-            var1->nm=strdup(sa.c_str());
 
-            //var_nw=nco_var_dpl(var);
+            // if RHS is a non scalar variable then loose superfluous dimension data 
+            if( var1->nbr_dim >0){
+              var_sct *var_tmp;
+              var_tmp=ncap_sclr_var_mk(sa,var1->type,false);   
+              var_tmp->sz=var1->sz;
+              var_tmp->val.vp=var1->val.vp;     
+              var1->val.vp =(void*)NULL;
+              var1=nco_var_free(var1);
+              var1=var_tmp;
+            }else{   
+              (void)nco_free(var1->nm);
+               var1->nm=strdup(sa.c_str());
+            }
+
             NcapVar *Nvar=new NcapVar(var1,sa);
             prs_arg->var_vtr.push_ow(Nvar);       
 
