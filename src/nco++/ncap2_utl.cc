@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.115 2008-12-15 13:12:36 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.116 2008-12-18 15:23:39 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1805,9 +1805,60 @@ ncap_var_att_cnf   /* [fnc] Make vars/atts conform */
 } /* end ncap_var_att_cnf */
 
 
+var_sct *             /* O [sct] Result if ntl_scn true otherwize null */ 
+ncap_var_att_arr_cnf( /* I [fnc] Make all of vars in array conform to each other */
+bool ntl_scn,         /* [flg] reurb dim with correct shape as ig op had happened */
+var_sct ***var_arr,   /* I/O [sct] Array of variables */
+int sz)               /* size of array */
+{
+  const char fnc_nm[]="ncap_var_att_arr_op"; 
+  bool undef=false;
+  int idx;
+  int max_idx=0;
+  int nbr_max_dim=0;
+
+  wrn_prn(fnc_nm,"Entered function\n");  
+
+  for(idx=0 ; idx<sz ; idx++){
+    if( (*var_arr[idx])->nbr_dim >nbr_max_dim ){
+      nbr_max_dim=(*var_arr[idx])->nbr_dim;      
+      max_idx=idx;   
+    }
+    if((*var_arr[idx])->undefined )
+     undef=true; 
+  }
+
+  if(ntl_scn) {
+    if(undef) 
+      max_idx=-1;
+    // delete var_sct's
+    for(idx=0; idx<sz ; idx++)   
+      if(idx != max_idx)
+        *var_arr[idx]=nco_var_free(*var_arr[idx]);   
+     
+    if(undef) 
+     return ncap_var_udf("~gsl_cls");
+    else
+      return *var_arr[max_idx];
+
+  } // end ntl_scn 		       
 
 
-var_sct *              /* O [sct] Result var_sct if binary op had taken place */
+  for(idx=0 ; idx<sz ;idx++){
+    if(idx==max_idx)
+      continue;
+    printf("Conforming var=%s making var conform=%s\n",(*var_arr[max_idx])->nm,(*var_arr[idx])->nm);
+   (void)ncap_var_att_cnf( *var_arr[max_idx],*var_arr[idx]);
+
+
+  }  
+  wrn_prn(fnc_nm,"Leaving function\n");  
+    
+  
+} /* end ncap_var_att_arr_cnf */
+
+
+var_sct *    
 ncap_var_att_cnf_ntl   /*   [fnc] determine resultant struct */
 (var_sct *var1,        /* I [sct] Input variable structure containing first operand */
  var_sct *var2)         /* I [sct] Input variable structure containing second operand */
