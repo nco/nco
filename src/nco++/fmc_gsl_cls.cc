@@ -122,18 +122,18 @@
       // Elementary Operations  *****************************************************************/
 
       // Elliptic Integrals  ********************************************************************/
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Kcomp",f_unn(gsl_sf_ellint_Kcomp_e),hnd_fnc_ndm,1));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Ecomp",f_unn(gsl_sf_ellint_Ecomp_e),hnd_fnc_ndm,1));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Pcomp",f_unn(gsl_sf_ellint_Pcomp_e),hnd_fnc_ndm,2));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Dcomp",f_unn(gsl_sf_ellint_Dcomp_e),hnd_fnc_ndm,1));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_F",f_unn(gsl_sf_ellint_F_e),hnd_fnc_ndm,2));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Kcomp",f_unn(gsl_sf_ellint_Kcomp_e),hnd_fnc_nd,P1DBLMD));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Ecomp",f_unn(gsl_sf_ellint_Ecomp_e),hnd_fnc_nd,P1DBLMD));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Pcomp",f_unn(gsl_sf_ellint_Pcomp_e),hnd_fnc_nd,P2DBLMD));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Dcomp",f_unn(gsl_sf_ellint_Dcomp_e),hnd_fnc_nd,P1DBLMD));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_F",f_unn(gsl_sf_ellint_F_e),hnd_fnc_nd,P2DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_E",f_unn(gsl_sf_ellint_E_e),hnd_fnc_ddm));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_P",f_unn(gsl_sf_ellint_P_e),hnd_fnc_ndm,3));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_D",f_unn(gsl_sf_ellint_D_e),hnd_fnc_ndm,3));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_P",f_unn(gsl_sf_ellint_P_e),hnd_fnc_nd,P3DBLMD));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_D",f_unn(gsl_sf_ellint_D_e),hnd_fnc_nd,P3DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RC",f_unn(gsl_sf_ellint_RC_e), hnd_fnc_ddm));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RD",f_unn(gsl_sf_ellint_RD_e),hnd_fnc_ndm,3));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RF",f_unn(gsl_sf_ellint_RF_e),hnd_fnc_ndm,3));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RJ",f_unn(gsl_sf_ellint_RJ_e),hnd_fnc_ndm,4));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RD",f_unn(gsl_sf_ellint_RD_e),hnd_fnc_nd,P3DBLMD));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RF",f_unn(gsl_sf_ellint_RF_e),hnd_fnc_nd,P3DBLMD));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RJ",f_unn(gsl_sf_ellint_RJ_e),hnd_fnc_nd,P4DBLMD));
 
  
       // Elliptic Function (Jacobi)*************************************************************/
@@ -228,7 +228,20 @@
 
 
        // Hypergeometric Functions ****************************************************************/
-       // None implemented    
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_0F1",f_unn(gsl_sf_hyperg_0F1_e),hnd_fnc_nd,P2DBL));
+	//gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_1F1_int",f_unn(gsl_sf_hyperg_1F1_int_e),));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_1F1",f_unn(gsl_sf_hyperg_1F1_e),hnd_fnc_nd,P3DBL));
+	//gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_U_int",f_unn(gsl_sf_hyperg_U_int_e),));
+	//gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_U_int_e10",f_unn(gsl_sf_hyperg_U_int_e10_e),));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_U",f_unn(gsl_sf_hyperg_U_e),hnd_fnc_nd,P3DBL));
+	//gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_U_e10",f_unn(gsl_sf_hyperg_U_e10_e),));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_2F1",f_unn(gsl_sf_hyperg_2F1_e),hnd_fnc_nd,P4DBL));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_2F1_conj",f_unn(gsl_sf_hyperg_2F1_conj_e),hnd_fnc_nd,P4DBL));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_2F1_renorm",f_unn(gsl_sf_hyperg_2F1_renorm_e),hnd_fnc_nd,P4DBL));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_2F1_conj_renorm",f_unn(gsl_sf_hyperg_2F1_conj_renorm_e),hnd_fnc_nd,P4DBL));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_2F0",f_unn(gsl_sf_hyperg_2F0_e),hnd_fnc_nd,P3DBL));
+
+
 
        // Laguerre Functions **********************************************************************/
 	gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_1",f_unn(gsl_sf_laguerre_1_e),hnd_fnc_xd,NC_DOUBLE));
@@ -1229,18 +1242,18 @@ var_sct *hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 }
 
-var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
-  const std::string fnc_nm("hnd_fnc_ndm");
+var_sct *hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_nd");
             int idx;
             int jdx;
-            int fdx=gpr_obj.type(); // very important --number of double arguments
+            int fdx=gpr_obj.type(); // very important 
             int args_nbr;
+            int args_in_nbr;
             nc_type type;
 	    std::string styp=(is_mtd ? "method":"function");
 	    std::string sfnm=gpr_obj.fnm();
             var_sct *var_ret; 
-            var_sct *var_arr[fdx];
-            var_sct **var_arr_ptr[fdx]; 
+
           
             // de-reference 
             prs_cls *prs_arg=walker.prs_arg;
@@ -1248,22 +1261,51 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
             args_nbr=args_vtr.size();
             
-
-            if(args_nbr <fdx)
-              if(is_mtd)
-                err_prn(sfnm,styp+" \""+sfnm+"\" requires "+nbr2sng(fdx-1)+ " arguments"); 
-              else
-                err_prn(sfnm,styp+" \""+sfnm+"\" requires "+ nbr2sng(fdx) + " arguments.");    
+            switch(fdx) {
+	      case P1DBLMD:
+              case P1DBL:
+                args_in_nbr=1;
+                break;    
+	      case P2DBLMD:
+              case P2DBL:
+                args_in_nbr=2;
+                break;    
+	      case P3DBLMD:
+              case P3DBL:
+                args_in_nbr=3;
+                break;    
+	      case P4DBLMD:
+              case P4DBL:
+                args_in_nbr=4;
+                break;    
+                   
+	    default:
+	      break;
+            }
             
-            for(idx=0; idx<fdx ;idx++){     
+
+            if(args_nbr <args_in_nbr)
+              if(is_mtd)
+                err_prn(sfnm,styp+" requires "+nbr2sng(args_in_nbr-1)+ " arguments"); 
+              else
+                err_prn(sfnm,styp+" requires "+ nbr2sng(args_in_nbr) + " arguments.");    
+            
+            // init once we now num of args
+            var_sct *var_arr[args_in_nbr];
+            var_sct **var_arr_ptr[args_in_nbr]; 
+
+             
+
+            for(idx=0; idx<args_in_nbr ;idx++){     
               var_arr[idx]=walker.out(args_vtr[idx]);
               var_arr_ptr[idx]=&var_arr[idx];
             } 
              
             // Deal with initial scan
             if(prs_arg->ntl_scn){
+
 	      // nb ncap_var_att_arr_cnf() frees up sct's in var_att_ptr    
-               var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,fdx );     
+               var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );     
                if(!var_ret->undefined)
 	           var_ret=nco_var_cnf_typ(NC_DOUBLE,var_ret);
 
@@ -1272,7 +1314,7 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 
 
-            for(idx=0 ; idx<fdx ; idx++){
+            for(idx=0 ; idx<args_in_nbr ; idx++){
               // convert all to type double
               var_arr[idx]=nco_var_cnf_typ(NC_DOUBLE,var_arr[idx]);
               // refrsh var pointers
@@ -1280,7 +1322,7 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
             }
 
             // make variables conform  
-            (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,fdx );
+            (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );
 
 
 
@@ -1289,7 +1331,7 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
  
 	     bool has_mss_val=false;
              int sz;
-             double *dp[fdx];
+             double *dp[args_in_nbr];
              double mss_val_dbl;
              gsl_mode_t mde_t=GSL_PREC_DOUBLE;
              gsl_sf_result rslt;  /* structure for result from gsl lib call */
@@ -1299,13 +1341,13 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
              // assume from here on that args conform
              sz=var_arr[0]->sz;
 
-            for(idx=0 ; idx<fdx ; idx++){
+            for(idx=0 ; idx<args_in_nbr ; idx++){
              (void)cast_void_nctype(NC_DOUBLE,&(var_arr[idx]->val));                  
 	     dp[idx]=var_arr[idx]->val.dp;
             }  
 
              has_mss_val=false;  
-             for(idx=0 ; idx<fdx ;idx++) 
+             for(idx=0 ; idx<args_in_nbr ;idx++) 
                 if(var_arr[idx]->has_mss_val){
                  has_mss_val=true; 
                  (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->mss_val);
@@ -1317,8 +1359,30 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
              switch(fdx){
 
-               // one double argument
-	     case 1: {
+             // one double argument
+	     case P1DBL: {
+
+                int (*fnc_int)(double,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().ad;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || (*fnc_int)(dp[0][jdx], &rslt))
+		       dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
+
+
+	     case P1DBLMD: {
 
                 int (*fnc_int)(double, gsl_mode_t,gsl_sf_result*);       
                	fnc_int=gpr_obj.g_args().adm;  
@@ -1339,10 +1403,33 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
                
              } break;
 
+	     // two double arguments
+	     case P2DBL: {
+
+                int (*fnc_int)(double,double,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().add;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],dp[1][jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || 
+                      dp[1][jdx] == mss_val_dbl ||
+
+                      (*fnc_int)(dp[0][jdx],dp[1][jdx],&rslt)
+		      ) dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
 
 
-	       // two double arguments
-	     case 2: {
+	     case P2DBLMD: {
 
                 int (*fnc_int)(double,double, gsl_mode_t,gsl_sf_result*);       
                	fnc_int=gpr_obj.g_args().addm;  
@@ -1369,8 +1456,35 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 
 
-	       //three double args 
-             case 3: {
+	     //three double args 
+             case P3DBL: {
+
+                int (*fnc_int)(double, double,double,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().addd;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || 
+                      dp[1][jdx] == mss_val_dbl ||
+                      dp[2][jdx] == mss_val_dbl ||
+
+                      (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx], &rslt)
+		      ) dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
+
+
+
+             case P3DBLMD: {
 
                 int (*fnc_int)(double, double,double, gsl_mode_t,gsl_sf_result*);       
                	fnc_int=gpr_obj.g_args().adddm;  
@@ -1397,8 +1511,35 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 
 
-	       //four double args 
-             case 4: {
+	     //four double args 
+             case P4DBL: {
+
+                int (*fnc_int)(double, double,double,double,gsl_sf_result*);       
+               	fnc_int=gpr_obj.g_args().adddd;  
+
+                if(!has_mss_val){ 
+      	          for(jdx=0;jdx<sz;jdx++) 
+                    dp[0][jdx]=( (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+    	        }else{
+      		 
+      		  for(jdx=0;jdx<sz;jdx++)
+                    // note fnc_int return status flag, if 0 then no error
+        	    if(dp[0][jdx] == mss_val_dbl || 
+                      dp[1][jdx] == mss_val_dbl ||
+                      dp[2][jdx] == mss_val_dbl ||
+                      dp[3][jdx] == mss_val_dbl ||
+
+                      (*fnc_int)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx], &rslt)
+		      ) dp[0][jdx]=mss_val_dbl;
+		    else
+                      dp[0][jdx]=rslt.val;      
+		 
+		}           
+               
+             } break;
+
+
+             case P4DBLMD: {
 
                 int (*fnc_int)(double, double,double,double, gsl_mode_t,gsl_sf_result*);       
                	fnc_int=gpr_obj.g_args().addddm;  
@@ -1430,7 +1571,7 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 	     }// end switch
 
 
-	     for(idx=0;idx<fdx; idx++){ 
+	     for(idx=0;idx<args_in_nbr; idx++){ 
                (void)cast_nctype_void(NC_DOUBLE,&(var_arr[idx]->val));
                if(idx>0)  nco_var_free(var_arr[idx]);
 	     }
@@ -1439,4 +1580,4 @@ var_sct *hnd_fnc_ndm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 	    return var_arr[0]; 
 
-} //end hnd_fnc_ndm 
+} //end hnd_fnc_nd 
