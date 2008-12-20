@@ -26,15 +26,20 @@
 
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
 
-
+// used to classify double rtype args in handle function hnd_fnc_nd
+enum { P1DBL, P1DBLMD, P2DBL, P2DBLMD,P3DBL, P3DBLMD, P4DBL,P4DBLMD };  
 
 // union class to hold gsl function pointers
 union f_unn{
  public:
    int (*ai)(int, gsl_sf_result*);
    int (*au)(unsigned int, gsl_sf_result*);
+
    int (*ad)(double, gsl_sf_result*);
    int (*add)(double, double,gsl_sf_result*);    
+   int (*addd)(double, double,double,gsl_sf_result*);    
+   int (*adddd)(double,double,double, double,gsl_sf_result*);    
+
    int (*aid)(int,double,gsl_sf_result*);
    int (*adm)( double, gsl_mode_t,gsl_sf_result*);  
    int (*addm)( double, double, gsl_mode_t,gsl_sf_result*);  
@@ -51,8 +56,12 @@ union f_unn{
 
   f_unn(   int (*a)( int,gsl_sf_result*) )            { ai=a; }
   f_unn(   int (*a)( unsigned int,gsl_sf_result*) )   { au=a; }
-  f_unn(   int (*a)( double,gsl_sf_result*) )         { ad=a; }
-  f_unn(   int (*a)( double,double, gsl_sf_result*) ) { add=a; }
+
+  f_unn(   int (*a)( double,gsl_sf_result*) )                  { ad=a; }
+  f_unn(   int (*a)( double,double, gsl_sf_result*) )         { add=a; }
+  f_unn(   int (*a)( double,double,double, gsl_sf_result*) )  { addd=a; }
+  f_unn(   int (*a)( double,double,double,double, gsl_sf_result*) ) { adddd=a; }
+
   f_unn(   int (*a)(int, double,gsl_sf_result*) )     { aid=a; }
   f_unn(   int (*a)(double,gsl_mode_t,gsl_sf_result*)){adm=a; }  
   f_unn(   int (*a)(double,double,gsl_mode_t,gsl_sf_result*)){addm=a; }  
@@ -122,6 +131,6 @@ var_sct *hnd_fnc_iidpd(HANDLE_ARGS);
 var_sct *hnd_fnc_idpd(HANDLE_ARGS);
 var_sct *hnd_fnc_dm(HANDLE_ARGS);
 var_sct *hnd_fnc_ddm(HANDLE_ARGS);
-var_sct *hnd_fnc_ndm(HANDLE_ARGS);
+var_sct *hnd_fnc_nd(HANDLE_ARGS);
 
 #endif
