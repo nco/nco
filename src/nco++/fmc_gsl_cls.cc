@@ -247,7 +247,7 @@
 	gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_1",f_unn(gsl_sf_laguerre_1_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_2",f_unn(gsl_sf_laguerre_2_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_3",f_unn(gsl_sf_laguerre_3_e),hnd_fnc_xd,NC_DOUBLE));
-	//gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_n",f_unn(gsl_sf_laguerre_n_e),hnd_fnc_xdd,NC_DOUBLE));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_n",f_unn(gsl_sf_laguerre_n_e),hnd_fnc_idd));
 
 
        // Lambert W Functions **********************************************************************/
