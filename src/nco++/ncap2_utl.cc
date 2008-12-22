@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.117 2008-12-22 16:25:32 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.118 2008-12-22 16:38:07 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1844,14 +1844,11 @@ int sz)               /* size of array */
 
 
   for(idx=0 ; idx<sz ;idx++){
-    if(idx==max_idx)
-      continue;
+    if(idx==max_idx) continue;
     //  printf("Conforming var=%s making var conform=%s\n",(*var_arr[max_idx])->nm,(*var_arr[idx])->nm);
-   (void)ncap_var_att_cnf( *var_arr[max_idx],*var_arr[idx]);
-
-
+    (void)ncap_var_att_cnf( *var_arr[max_idx],*var_arr[idx]);
   }  
-  wrn_prn(fnc_nm,"Leaving function\n");  
+  
     
   
 } /* end ncap_var_att_arr_cnf */
