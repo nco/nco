@@ -29,6 +29,8 @@
 // used to classify double type args in handle function hnd_fnc_nd
 enum { P1DBL, P1DBLMD, P2DBL, P2DBLMD,P3DBL, P3DBLMD, P4DBL, P4DBLMD };  
 
+// used to classify methods bessel /Legendre  in array function function hnd_fnc_iidpd
+enum { PBESSEL, PLEGEND };
 // union class to hold gsl function pointers
 union f_unn{
  public:
