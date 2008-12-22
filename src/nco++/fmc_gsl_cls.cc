@@ -39,27 +39,27 @@
         gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_J0",f_unn(gsl_sf_bessel_J0_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_J1",f_unn(gsl_sf_bessel_J1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Jn",f_unn(gsl_sf_bessel_Jn_e),hnd_fnc_xd,NC_INT));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Jn_array",f_unn(gsl_sf_bessel_Jn_array),hnd_fnc_iidpd));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Jn_array",f_unn(gsl_sf_bessel_Jn_array),hnd_fnc_iidpd,PBESSEL));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Y0",f_unn(gsl_sf_bessel_Y0_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Y1",f_unn(gsl_sf_bessel_Y1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Yn",f_unn(gsl_sf_bessel_Yn_e),hnd_fnc_xd,NC_INT));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Yn_array",f_unn(gsl_sf_bessel_Yn_array),hnd_fnc_iidpd));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Yn_array",f_unn(gsl_sf_bessel_Yn_array),hnd_fnc_iidpd,PBESSEL));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_I0",f_unn(gsl_sf_bessel_I0_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_I1",f_unn(gsl_sf_bessel_I1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_In",f_unn(gsl_sf_bessel_In_e),hnd_fnc_xd,NC_INT));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_In_array",f_unn(gsl_sf_bessel_In_array),hnd_fnc_iidpd));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_In_array",f_unn(gsl_sf_bessel_In_array),hnd_fnc_iidpd,PBESSEL));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_I0_scaled",f_unn(gsl_sf_bessel_I0_scaled_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_I1_scaled",f_unn(gsl_sf_bessel_I1_scaled_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_In_scaled",f_unn(gsl_sf_bessel_In_scaled_e),hnd_fnc_xd,NC_INT));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_In_scaled_array",f_unn(gsl_sf_bessel_In_scaled_array),hnd_fnc_iidpd));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_In_scaled_array",f_unn(gsl_sf_bessel_In_scaled_array),hnd_fnc_iidpd,PBESSEL));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_K0",f_unn(gsl_sf_bessel_K0_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_K1",f_unn(gsl_sf_bessel_K1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Kn",f_unn(gsl_sf_bessel_Kn_e),hnd_fnc_xd,NC_INT));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Kn_array",f_unn(gsl_sf_bessel_Kn_array),hnd_fnc_iidpd));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Kn_array",f_unn(gsl_sf_bessel_Kn_array),hnd_fnc_iidpd,PBESSEL));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_K0_scaled",f_unn(gsl_sf_bessel_K0_scaled_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_K1_scaled",f_unn(gsl_sf_bessel_K1_scaled_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Kn_scaled",f_unn(gsl_sf_bessel_Kn_scaled_e),hnd_fnc_xd,NC_INT));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Kn_scaled_array",f_unn(gsl_sf_bessel_Kn_scaled_array),hnd_fnc_iidpd));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Kn_scaled_array",f_unn(gsl_sf_bessel_Kn_scaled_array),hnd_fnc_iidpd,PBESSEL));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_j0",f_unn(gsl_sf_bessel_j0_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_j1",f_unn(gsl_sf_bessel_j1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_j2",f_unn(gsl_sf_bessel_j2_e),hnd_fnc_x,NC_DOUBLE));
@@ -127,10 +127,10 @@
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Pcomp",f_unn(gsl_sf_ellint_Pcomp_e),hnd_fnc_nd,P2DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Dcomp",f_unn(gsl_sf_ellint_Dcomp_e),hnd_fnc_nd,P1DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_F",f_unn(gsl_sf_ellint_F_e),hnd_fnc_nd,P2DBLMD));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_E",f_unn(gsl_sf_ellint_E_e),hnd_fnc_ddm));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_E",f_unn(gsl_sf_ellint_E_e),hnd_fnc_nd,P2DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_P",f_unn(gsl_sf_ellint_P_e),hnd_fnc_nd,P3DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_D",f_unn(gsl_sf_ellint_D_e),hnd_fnc_nd,P3DBLMD));
-	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RC",f_unn(gsl_sf_ellint_RC_e), hnd_fnc_ddm));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RC",f_unn(gsl_sf_ellint_RC_e), hnd_fnc_nd,P2DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RD",f_unn(gsl_sf_ellint_RD_e),hnd_fnc_nd,P3DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RF",f_unn(gsl_sf_ellint_RF_e),hnd_fnc_nd,P3DBLMD));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_RJ",f_unn(gsl_sf_ellint_RJ_e),hnd_fnc_nd,P4DBLMD));
@@ -224,7 +224,7 @@
 	gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_2",f_unn(gsl_sf_gegenpoly_2_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_3",f_unn(gsl_sf_gegenpoly_3_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_n",f_unn(gsl_sf_gegenpoly_n_e),hnd_fnc_idd));
-	//gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_array",f_unn(gsl_sf_gegenpoly_array),hnd_fnc_iddpd,NC_DOUBLE));
+	//gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_array",f_unn(gsl_sf_gegenpoly_array),hnd_fnc_iddpd));
 
 
        // Hypergeometric Functions ****************************************************************/
@@ -256,7 +256,7 @@
 
 
        // Legendre Functions ***********************************************************************/
-	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Pl",f_unn(gsl_sf_legendre_Pl_e),hnd_fnc_xd,NC_DOUBLE));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Pl",f_unn(gsl_sf_legendre_Pl_e),hnd_fnc_xd,NC_INT));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Pl_array",f_unn(gsl_sf_legendre_Pl_array),hnd_fnc_idpd));
 	//gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Pl_deriv_array",f_unn(gsl_sf_legendre_Pl_deriv_array), ));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_P1",f_unn(gsl_sf_legendre_P1_e),hnd_fnc_x,NC_DOUBLE));
@@ -266,10 +266,10 @@
 	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Q1",f_unn(gsl_sf_legendre_Q1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Ql",f_unn(gsl_sf_legendre_Ql_e),hnd_fnc_xd,NC_INT));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Plm",f_unn(gsl_sf_legendre_Plm_e),hnd_fnc_iid));
-	// gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Plm_array",f_unn(gsl_sf_legendre_Plm_array),));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Plm_array",f_unn(gsl_sf_legendre_Plm_array),hnd_fnc_iidpd,PLEGEND));
 	// gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_Plm_deriv_array",f_unn(gsl_sf_legendre_Plm_deriv_array),));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_sphPlm",f_unn(gsl_sf_legendre_sphPlm_e),hnd_fnc_iid));
-	//gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_sphPlm_array",f_unn(gsl_sf_legendre_sphPlm_array),));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_sphPlm_array",f_unn(gsl_sf_legendre_sphPlm_array),hnd_fnc_iidpd,PLEGEND));
 	// gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_sphPlm_deriv_array",f_unn(gsl_sf_legendre_sphPlm_deriv_array),));
 	// gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_array_size",f_unn(gsl_sf_legendre_array_size),));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_half",f_unn(gsl_sf_conicalP_half_e),hnd_fnc_xd,NC_DOUBLE));
@@ -784,12 +784,15 @@ var_sct *hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,nc
 
 
 
-
+// used for evaluating arrays of bessel & legendre functions 
+// bessel functions have the arg signature (int min,int max,double x,double *results )
+// legendre functions have the min & max reveresed (int lmin,int m,double x,double *results)
 var_sct *hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
   const std::string fnc_nm("hnd_fnc_iidpd");
             int idx;
             int args_nbr;
-            vtl_typ lcl_typ;
+            int fdx=gpr_obj.type(); // only two types at the moment 
+;            vtl_typ lcl_typ;
 	    std::string serr;
 	    std::string styp=(is_mtd ? "method":"function");
 	    std::string sfnm=gpr_obj.fnm();
@@ -802,8 +805,11 @@ var_sct *hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj
             prs_cls *prs_arg=walker.prs_arg;
 
             args_nbr=args_vtr.size();
-            
-            susg="usage: var_out="+sfnm+"(int nmin, int nmax, double x, var_in)";
+
+            if(fdx==PBESSEL)            
+               susg="usage: var_out="+sfnm+"(int nmin, int nmax, double x, var_in)";
+            else if(fdx==PLEGEND) 
+               susg="usage: var_out="+sfnm+"(int lmax, int m, double x, var_in)";
 
             if(args_nbr <4)
               if(is_mtd)
@@ -851,6 +857,7 @@ var_sct *hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj
             {
 	    int nbr_min;
             int nbr_max;
+            int nbr_tmp; 
             int iret;
             int sz_out;
  
@@ -883,11 +890,20 @@ var_sct *hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj
             xin=var_arr[2]->val.dp[0];    
             (void)cast_nctype_void(NC_DOUBLE,&(var_arr[2]->val));
 
-            sz_out=nbr_max-nbr_min+1;
 
-	    // check int argument
-	    if(sz_out<1 )  
-	      err_prn(sfnm,"nmax must be greater than or equal to nmin\n"+susg);    
+	    
+	    if(fdx==PBESSEL){
+              sz_out=nbr_max-nbr_min+1;
+              if(sz_out<1 )  
+	        err_prn(sfnm,"nmax must be greater than or equal to nmin\n"+susg);    
+            } 
+
+            // nb Legendre array functions have min/max reversed  
+	    if(fdx==PLEGEND){
+              sz_out=nbr_min-nbr_max+1;
+              if(sz_out<1 )  
+	        err_prn(sfnm,"lmax must be greater than or equal to m\n"+susg);    
+	    }
 
             var_out=nco_var_cnf_typ(NC_DOUBLE,var_out);              
             (void)cast_void_nctype(NC_DOUBLE,&(var_out->val));
@@ -919,7 +935,7 @@ var_sct *hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj
 
 
 var_sct *hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
-  const std::string fnc_nm("hnd_fnc_iidpd");
+  const std::string fnc_nm("hnd_fnc_idpd");
             int idx;
             int args_nbr;
             vtl_typ lcl_typ;
