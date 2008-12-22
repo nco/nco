@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.116 2008-12-18 15:23:39 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.117 2008-12-22 16:25:32 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1811,13 +1811,12 @@ bool ntl_scn,         /* [flg] reurb dim with correct shape as ig op had happene
 var_sct ***var_arr,   /* I/O [sct] Array of variables */
 int sz)               /* size of array */
 {
-  const char fnc_nm[]="ncap_var_att_arr_op"; 
+  const char fnc_nm[]="ncap_var_att_arr_cnf"; 
   bool undef=false;
   int idx;
   int max_idx=0;
   int nbr_max_dim=0;
 
-  wrn_prn(fnc_nm,"Entered function\n");  
 
   for(idx=0 ; idx<sz ; idx++){
     if( (*var_arr[idx])->nbr_dim >nbr_max_dim ){
@@ -1847,7 +1846,7 @@ int sz)               /* size of array */
   for(idx=0 ; idx<sz ;idx++){
     if(idx==max_idx)
       continue;
-    printf("Conforming var=%s making var conform=%s\n",(*var_arr[max_idx])->nm,(*var_arr[idx])->nm);
+    //  printf("Conforming var=%s making var conform=%s\n",(*var_arr[max_idx])->nm,(*var_arr[idx])->nm);
    (void)ncap_var_att_cnf( *var_arr[max_idx],*var_arr[idx]);
 
 
