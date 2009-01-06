@@ -57,6 +57,7 @@ union f_unn{
    double (*bid)(int,double);
    int (*bidpd)(int, double, double*); 
    int (*biidpd)(int, int, double, double*); 
+   int (*biddpd)(int, double, double, double*); 
  
    int (*cb)(bool);
 
@@ -81,6 +82,7 @@ union f_unn{
   f_unn(   double (*b)(int, double) )    { bid=b; }
   f_unn(   int (*b)(int, double, double*) ){ bidpd=b;} 
   f_unn(   int (*b)(int, int, double, double*) ){ biidpd=b;} 
+  f_unn(   int (*b)(int, double, double, double*) ){ biddpd=b;} 
 
 };
 
@@ -130,18 +132,16 @@ private:
 public:
   gsl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+static  var_sct *hnd_fnc_x(HANDLE_ARGS);
+static  var_sct *hnd_fnc_xd(HANDLE_ARGS);
+static  var_sct *hnd_fnc_iidpd(HANDLE_ARGS);
+static  var_sct *hnd_fnc_idpd(HANDLE_ARGS);
+static  var_sct *hnd_fnc_dm(HANDLE_ARGS);
+static  var_sct *hnd_fnc_ddm(HANDLE_ARGS);
+static  var_sct *hnd_fnc_nd(HANDLE_ARGS);
+static  var_sct *hnd_fnc_idd(HANDLE_ARGS);
+static  var_sct *hnd_fnc_iid(HANDLE_ARGS);
+     
 };
-
-
-var_sct *hnd_fnc_x(HANDLE_ARGS); 
-var_sct *hnd_fnc_xd(HANDLE_ARGS);
-var_sct *hnd_fnc_iidpd(HANDLE_ARGS);
-var_sct *hnd_fnc_idpd(HANDLE_ARGS);
-var_sct *hnd_fnc_dm(HANDLE_ARGS);
-var_sct *hnd_fnc_ddm(HANDLE_ARGS);
-var_sct *hnd_fnc_nd(HANDLE_ARGS);
-var_sct *hnd_fnc_idd(HANDLE_ARGS);
-var_sct *hnd_fnc_iid(HANDLE_ARGS);
-
 
 #endif
