@@ -56,69 +56,10 @@
   extern float truncf(float);
 #endif
 
-
-//Virtual Class      /******************************************/
-/*
-
-  vtl_typ vtl_cls::expr_typ(RefAST expr){
-    int nbr_chd;
-    int chd_typ=0;
-    vtl_typ lcl_typ;
-    
-
-    nbr_chd=expr->getNumberOfChildren(); 
-
-    if(nbr_chd >0) chd_typ=expr->getFirstChild()->getType();
-      
-
-    switch(expr->getType()) {
-
-      case VAR_ID: 
-	        { if( nbr_chd==0 )          
-	             lcl_typ=VVAR;
-		  else if ( nbr_chd==1 && chd_typ==LMT_LIST)
-		     lcl_typ=VLVAR;
-		  else if (nbr_chd==1 &&  chd_typ==DMN_LIST)
-		     lcl_typ=VDVAR;
-		  else lcl_typ=VEXPR; 
-                }
-		break;
-      case ATT_ID:
-	        { if( nbr_chd==0 )          
-	             lcl_typ=VATT;
-		  else if ( nbr_chd==1 && chd_typ==LMT_LIST)
-		     lcl_typ=VLATT;
-		  else if (nbr_chd==1 &&  chd_typ==DMN_LIST)
-		     lcl_typ=VDATT;
-		  else lcl_typ=VEXPR; 
-                }
-		break;
-
-      case DIM_ID: 
-	        lcl_typ=VDIM;
-                break;
-      
-
-      case DIM_ID_SIZE: 
-	        lcl_typ=VDIM_SIZE;
-                break;
-      
-     
-
-      default:
-           lcl_typ=VEXPR;
-           break;
-    }    
-
-    return lcl_typ;
-}
-
-
-*/
-
 // function/method class  /****************************************/
   
 //constructors
+
   fmc_cls::fmc_cls(std::string cfnm,vtl_cls *cvtl_ref,int cfdx){
     _fnm=cfnm;
     _vtl_obj=cvtl_ref;
@@ -202,7 +143,7 @@
       fmc_vtr.push_back( fmc_cls("rmssdn",this,(int)PRMSSDN));
       fmc_vtr.push_back( fmc_cls("sqravg",this,(int)PSQRAVG));
       fmc_vtr.push_back( fmc_cls("total",this,(int)PTTL));
-	  fmc_vtr.push_back( fmc_cls("ttl",this,(int)PTTL));
+      fmc_vtr.push_back( fmc_cls("ttl",this,(int)PTTL));
     }
   }		      
 		      
