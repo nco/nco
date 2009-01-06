@@ -224,7 +224,7 @@
 	gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_2",f_unn(gsl_sf_gegenpoly_2_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_3",f_unn(gsl_sf_gegenpoly_3_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_n",f_unn(gsl_sf_gegenpoly_n_e),hnd_fnc_idd));
-	//gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_array",f_unn(gsl_sf_gegenpoly_array),hnd_fnc_iddpd));
+	// gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_array",f_unn(gsl_sf_gegenpoly_array),));
 
 
        // Hypergeometric Functions ****************************************************************/
@@ -355,7 +355,7 @@
             std::vector<RefAST> args_vtr; 
             // function pointer
             var_sct* (*hnd_fnc)(HANDLE_ARGS);
-            
+              
             
             // de-reference 
 
@@ -385,7 +385,8 @@
   }
 
 
-var_sct *hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+
+var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_x");
             int idx;
             int args_nbr;
@@ -588,7 +589,7 @@ var_sct *hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,nco
 
 
 
-var_sct *hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
+var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
   const std::string fnc_nm("hnd_fnc_dd");
             int idx;
             int args_nbr;
@@ -786,8 +787,8 @@ var_sct *hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,nc
 
 // used for evaluating arrays of bessel & legendre functions 
 // bessel functions have the arg signature (int min,int max,double x,double *results )
-// legendre functions have the min & max reveresed (int lmin,int m,double x,double *results)
-var_sct *hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
+// legendre functions have the min & max reveresed (int lmax,int m,double x,double *results)
+var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
   const std::string fnc_nm("hnd_fnc_iidpd");
             int idx;
             int args_nbr;
@@ -934,7 +935,7 @@ var_sct *hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj
 } // end function hnd_fnc_iidpd
 
 
-var_sct *hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
+var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){ 
   const std::string fnc_nm("hnd_fnc_idpd");
             int idx;
             int args_nbr;
@@ -1060,7 +1061,7 @@ var_sct *hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,
 } // end function hnd_fnc_iidpd
 
 
-var_sct *hnd_fnc_dm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_dm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_d");
             int idx;
             int args_nbr;
@@ -1141,7 +1142,7 @@ var_sct *hnd_fnc_dm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,nc
  ; }
 
 
-var_sct *hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_ddm");
             int idx;
             int args_nbr;
@@ -1258,7 +1259,7 @@ var_sct *hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 }
 
-var_sct *hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_nd");
             int idx;
             int jdx;
@@ -1600,7 +1601,7 @@ var_sct *hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,nc
 
 
 // handle regular arguments NC_INT,NC_INT,NC_DOUBLE
-var_sct *hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_iid");
             int idx;
             int jdx;
@@ -1724,7 +1725,7 @@ var_sct *hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,n
 
 
 // handle regular arguments NC_INT,NC_DOUBLE,NC_DOUBLE
-var_sct *hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_idd");
             int idx;
             int jdx;
