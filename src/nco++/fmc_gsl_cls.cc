@@ -843,8 +843,7 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
               var_arr[idx]=walker.out(args_vtr[idx]);     
 
             // check the fourth argument, it can only be a var or att identifier
-	    // nb this is a static method
-	    lcl_typ=vtl_cls::expr_typ(args_vtr[3]);          
+	    lcl_typ=expr_typ(args_vtr[3]);          
 
            if(lcl_typ !=VVAR ) {
              serr="The last argument must  be a variable identifer\n";
@@ -987,7 +986,7 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 
             // check the third argument, it can only be a var identifier
 	    // nb this is a static method
-	    lcl_typ=vtl_cls::expr_typ(args_vtr[2]);          
+	    lcl_typ=expr_typ(args_vtr[2]);          
 
            if(lcl_typ !=VVAR ) {
              serr="The last argument must  be a variable identifer\n";
