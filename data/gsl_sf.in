@@ -1,0 +1,358 @@
+// Script to test gsl special functions
+
+print("Test script for gsl Special Functions\n");
+
+// Count number of errors
+nbr_err=0;
+nbr_err_ttl=0;
+
+
+{
+  arg1[time]=1.0;
+  a1@arg1=1s; 
+  a1@arg2=3s;
+  a1@arg3={1,2,3,4,5,6,7,8,9,10};
+  time3[time]=1.0;
+
+}
+
+
+// Bessel functions
+{
+  // a1,a2,a3,a4 all the same
+  a1=gsl_sf_bessel_Jn(1,time);
+  a2=gsl_sf_bessel_Jn(arg1,time);
+  a3=gsl_sf_bessel_Jn(a1@arg1,time);
+  a4=gsl_sf_bessel_Jn(time3,a1@arg3); 
+
+  // a5 and a6 identical
+  a5=gsl_sf_bessel_Jn( time.int()-1,0.5);
+  a6=gsl_sf_bessel_Jn_array(0,9,0.5,time);
+
+  // a7 a8 identical
+  a7=gsl_sf_bessel_il_scaled( time.int()-1,0.5);  
+  a8=gsl_sf_bessel_il_scaled_array(9,0.5,time);  
+
+  a9=gsl_sf_bessel_zero_J0(time.int());
+
+  if( fabs(a1.total()-a2.total()) >0.01){
+     print("ERROR: a1:Bessel functions\n");
+    nbr_err++;	
+  }
+
+
+  if( fabs(a3.total()-a4.total()) >0.01){
+     print("ERROR: a2:Bessel functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(a5.total()-a6.total()) >0.01){
+     print("ERROR: a5:Bessel functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(a7.avg()-a8.avg()) >0.01){
+     print("ERROR: a7:Bessel functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(a9.total()-165.063) >0.01){
+     print("ERROR: a9:Bessel functions\n");
+     nbr_err++;	
+  }
+
+
+
+  print("RESULTS block a: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+
+
+}
+
+// Elliptical Integrals
+{
+  b0=gsl_sf_ellint_Kcomp(three_dmn_var_int/1000);
+  b1=gsl_sf_ellint_P(0.5,2,time);
+  b2=gsl_sf_ellint_D(time/100,time,three_dmn_var_dbl);
+  b3=gsl_sf_ellint_RD(bnd_var@double_att,time,three_dmn_var_dbl);
+  b4=gsl_sf_ellint_RF(bnd_var@double_att,bnd_var@int_att,time);
+  // takes four double args
+  b5=gsl_sf_ellint_RJ(bnd_var@double_att,bnd_var@int_att,time,three_dmn_var_dbl);
+
+
+  if( fabs(b0.total()-103.67256)  >0.01){
+     print("ERROR: b0:Elliptical Integral functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(b1.total()-4.82441) >0.01){
+     print("ERROR: b1:Elliptical Integral functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(b2.total()-0.010359 ) >0.0001){
+     print("ERROR: b2:Elliptical Integral functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(b3.total()-0.94582 ) >0.001){
+     print("ERROR: b3:Elliptical Integral functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(b4.total()-1.58596 ) >0.001){
+     print("ERROR: b4:Elliptical Integral functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(b5.total()-0.441753 ) >0.0001){
+     print("ERROR: b5:Elliptical Integral functions\n");
+     nbr_err++;	
+  }
+
+
+  print("RESULTS block b: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+
+}
+
+//hyper-geometric functions
+{
+
+  chglon=lon;
+  set_miss(chglon,-2000);
+
+  c0=gsl_sf_hyperg_0F1(1.0,time);
+  c1=gsl_sf_hyperg_1F1(three_dmn_var_dbl,1.0,time/100);
+  c2=gsl_sf_hyperg_U(time,1.0,three_dmn_var_dbl.permute($0,$2,$1));
+  c3=gsl_sf_hyperg_2F1(2.0,1.0,chglon,0.1);
+  c4=gsl_sf_hyperg_2F0(1.5,0.5,chglon/10);
+
+
+  if( fabs(c0.total()-309.23826 ) >0.01){
+     print("ERROR: c0:Hypergeometric functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(c1.total()-800.97646 ) >0.01){
+     print("ERROR: c1:Hypergeometric functions\n");
+     nbr_err++;	
+  }
+
+
+
+  if( fabs(c2.total()-2.02375 ) >0.001){
+     print("ERROR: c2:Hypergeometric functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(c3.total()-3.0041 ) >0.001){
+     print("ERROR: c3:Hypergeometric functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(c4.total()-1.0 ) >0.01){
+     print("ERROR: c4:Hypergeometric functions\n");
+     nbr_err++;	
+  }
+
+
+  print("RESULTS block c: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+}
+
+
+
+// Legendre functions
+{
+
+  leg[lon]={0,1,2,3};
+
+  // d0,d1 identical
+  d0=gsl_sf_legendre_Pl(time.int()-1,0.5);
+  d1=gsl_sf_legendre_Pl_array(9,0.5,time);
+
+  // d2,d3 identical
+  d2=gsl_sf_legendre_Plm(time.int()-1,0,0.7);
+  d3=gsl_sf_legendre_Plm_array(9,0,0.7,time);
+
+  // d4,d5 identical
+  d4=gsl_sf_legendre_sphPlm(leg,0,0.7);
+  d5=gsl_sf_legendre_sphPlm_array(3,0,0.7,leg);
+
+
+  if( fabs(d0.total()-d1.total() ) >0.01){
+     print("ERROR: d0:Legendre functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(d2.total()-d3.total() ) >0.01){
+     print("ERROR: d2:Legendre functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(d4.avg()-d5.avg() ) >0.01){
+     print("ERROR: d4:Legendre functions\n");
+     nbr_err++;	
+  }
+
+  print("RESULTS block d: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+}
+
+// Miscellanous Functions
+{
+  mlon[lon]={0,1,2,3};
+  mlon.set_miss(-2000);
+
+  e0=gsl_sf_airy_Bi(three_dmn_var_dbl/100);
+  e1=gsl_sf_clausen(mlon*1e300);
+  e2=gsl_sf_dawson(mlon*1e10);
+  e3=gsl_sf_debye_6(time);
+
+  e4=gsl_sf_log_erfc(time);
+  e5=gsl_sf_exp(time);
+  e6=gsl_sf_Chi(three_dmn_var_int/10);
+  e7=gsl_sf_fermi_dirac_half(lon);
+
+
+  e8=gsl_sf_lngamma(time/10);
+  e9=gsl_sf_gamma_inc(time/10,time);
+  e10=gsl_sf_gegenpoly_n(time.int()-1,0.1,0.3);
+  e11=gsl_sf_laguerre_1(lon,lon/10);
+
+  e12=time.gsl_sf_lambert_W0();
+  e13=time.gsl_sf_synchrotron_1();
+  e14=gsl_sf_transport_4(lon/100);
+
+
+
+
+
+  if( fabs(e0.total()-56.1677 >0.01)){
+     print("ERROR: e0:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e1.total()-1.82804e-322 >1e-334)){
+     print("ERROR: e1:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e2.total()-7.3121e-322 >1e-334)){
+     print("ERROR: e2:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e3.avg()-0.15031 >1e-3)){
+     print("ERROR: e3:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs( fabs(e4.avg())-406.3444 >0.001)){
+     print("ERROR: e4:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e5.min()-2.7182818 >0.001)){
+     print("ERROR: e5:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e6.total()-1667.04887 >0.001)){
+     print("ERROR: e6:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e7.avg()-1449.3344 >0.001)){
+     print("ERROR: e7:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e8.avg()-0.71191 >0.001)){
+     print("ERROR: e8:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e9.avg()-0.032042 >0.0001)){
+     print("ERROR: e9:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e10.total()-0.95417 >0.001)){
+     print("ERROR: e10:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if(e11.total()-490 !=0){
+     print("ERROR: e11:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e12.avg()-1.2985 >0.001)){
+     print("ERROR: e12:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e13.avg()- 0.11694 >0.001)){
+     print("ERROR: e13:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+  if( fabs(e14.max()- 4.6764 >0.001)){
+     print("ERROR: e14:Misc functions\n");
+     nbr_err++;	
+  }
+
+
+
+
+
+
+  print("RESULTS block e: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+
+
+
+}
+
+
+// Results summany
+print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
