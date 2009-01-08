@@ -1,3 +1,7 @@
+2009-01-08 Henry Butowsky  <henryb@ntlworld.com>
+	* added gsl wrapper functions fmc_gsl_cls.cc,
+	fmc_gsl_cls.hh. Added test script data/gsl_sf.in
+
 2008-12-10  Charlie Zender  <zender@uci.edu>
 
 	* Check for external (rather than internal) netCDF4 function
