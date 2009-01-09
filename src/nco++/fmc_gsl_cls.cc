@@ -153,6 +153,7 @@
 	//gpr_vtr.push_back(gpr_cls("gsl_sf_exp_e10",f_unn(gsl_sf_exp_10_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult",f_unn(gsl_sf_exp_mult_e),hnd_fnc_xd,NC_DOUBLE));
 	//gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult_e10",f_unn(gsl_sf_exp_mult_e10_e),hnd_fnc_xd,NC_DOUBLE));
+	gpr_vtr.push_back(gpr_cls("gsl_sf_expm1",f_unn(gsl_sf_expm1_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_exprel",f_unn(gsl_sf_exprel_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_exprel_2",f_unn(gsl_sf_exprel_2_e),hnd_fnc_x,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_exprel_n",f_unn(gsl_sf_exprel_n_e),hnd_fnc_xd,NC_INT));
@@ -204,7 +205,7 @@
 	//gpr_vtr.push_back(gpr_cls("gsl_sf_lnchoose",f_unn(gsl_sf_lnchoose_e),));
 	//gpr_vtr.push_back(gpr_cls("gsl_sf_choose",f_unn(gsl_sf_choose_e),));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_lnpoch",f_unn(gsl_sf_lnpoch_e),hnd_fnc_xd,NC_DOUBLE));
-	// gpr_vtr.push_back(gpr_cls("gsl_sf_gammagsl_sf_lnpoch_sgn",f_unn(gsl_sf_gammagsl_sf_lnpoch_sgn_e),));
+	// gpr_vtr.push_back(gpr_cls("gsl_sf_lnpoch_sgn",f_unn(gsl_sf_lnpoch_sign_e)),);
 	gpr_vtr.push_back(gpr_cls("gsl_sf_poch",f_unn(gsl_sf_poch_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_pochrel",f_unn(gsl_sf_pochrel_e),hnd_fnc_xd,NC_DOUBLE));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_gamma_inc_Q",f_unn(gsl_sf_gamma_inc_Q_e),hnd_fnc_xd,NC_DOUBLE));
@@ -844,7 +845,7 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
             // check the fourth argument, it can only be a var or att identifier
 	    lcl_typ=expr_typ(args_vtr[3]);          
-
+             
            if(lcl_typ !=VVAR ) {
              serr="The last argument must  be a variable identifer\n";
              err_prn(sfnm,serr+susg);
