@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.469 2008-12-04 00:16:44 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.470 2009-01-13 23:17:12 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1238,16 +1238,20 @@ endif
 # endif SGI6, SGI64, SGIMP64
 
 ifeq (${UNAMES},SunOS) 
-CXX := g++
-CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
-CFLAGS := -Wall
-CPP := cpp
+CXX := CC
+CC:= c99 -D_BSD_SOURCE
+CFLAGS := 
+CPP := cc -E
+#CXX := g++
+#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+#CFLAGS := -Wall
+#CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lresolv -lsocket -lnsl -lm
 LEX := flex
 LINT := lint
 YACC := bison

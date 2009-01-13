@@ -1,14 +1,14 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.18 2006-09-01 17:37:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.19 2009-01-13 23:17:13 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
-Choose an MPI distribution: LAM-MPI, MPICH, MPICH2 (recommended), 
-and PPE (AIX only)
+Choose an MPI distribution: LAM-MPI (deprecated), MPICH, MPICH2
+(recommended), Open MPI, and PPE (AIX only)
 
 MPI distribution-specific instructions are given below, in
 alphabetical order of distribution for these parallel environments:
-LAM, MPICH, MPICH2, and PPE (AIX only).
-We intend to support Open MPI when it reaches version 1.0.
+LAM, MPICH, MPICH2, Open MPI, and PPE (AIX only).
+Support for Open MPI is new.
 No other MPI environments are supported.
 
 Test NCO once one of these environments is installed. 
@@ -23,11 +23,11 @@ called mpicc) which simplifies building C programs like NCO.
 
 mpicc --version # LAM, MPICH, MPICH2: C  Compiler/version
 mpicxx --version # MPICH2 (only): C++ Compiler/version
-mpiCC --version # LAM-MPI (only): C++ Compiler/version
-mpic++ --version # LAM-MPI (only): C++ Compiler/version
-mpicc --showme # LAM-MPI (only): C   compilation switches
-mpiCC --showme # LAM-MPI (only): C++ compilation switches
-mpic++ --showme # LAM-MPI (only): C++ compilation switches
+mpiCC --version # LAM-MPI, Open MPI: C++ Compiler/version
+mpic++ --version # LAM-MPI, Open MPI: C++ Compiler/version
+mpicc --showme # LAM-MPI, Open MPI: C   compilation switches
+mpiCC --showme # LAM-MPI, Open MPI: C++ compilation switches
+mpic++ --showme # LAM-MPI, Open MPI: C++ compilation switches
 mpcc -v # PPE (only): C   compilation switches
 mpCC -v # PPE (only): C++ compilation switches
 
@@ -50,15 +50,15 @@ MPI Distribution-specific Instructions
 ************************************************************************
 LAM Instructions:
 Up-to-date versions of LAM-MPI are distributed in RPM and Deb formats.
-(LAM features are included Open MPI, which has not reached 1.0 yet.)
+(LAM features are included in Open MPI)
 
 0. Remove LAM-MPI packages
-   sudo apt-get remove lam4c2 lam4-dev lam-mpidoc lam-runtime
+   sudo aptitude remove lam4c2 lam4-dev lam-mpidoc lam-runtime
    sudo rpm -e lam
    sudo yum remove lam
 
 1. Install LAM-MPI packages
-   sudo apt-get install lam4c2 lam4-dev lam-mpidoc lam-runtime
+   sudo aptitude install lam4c2 lam4-dev lam-mpidoc lam-runtime
    sudo rpm -i lam-7.0.6-3.i386.rpm
 
 2. Start lamd if not already running:
@@ -70,7 +70,7 @@ Up-to-date versions of LAM-MPI are distributed in RPM and Deb formats.
 ************************************************************************
 MPICH (version 1, http://www-unix.mcs.anl.gov/mpi/mpich) Instructions:
 1. Install MPICH packages
-   sudo apt-get install mpich mpich-common
+   sudo aptitude install mpich mpich-common
    sudo rpm -i mpich mpich-doc
    sudo yum install mpich mpich-doc
    sudo rpm -i mpich-1.2.5.2-1mdk.i586.rpm
@@ -82,7 +82,7 @@ MPICH (version 1, http://www-unix.mcs.anl.gov/mpi/mpich) Instructions:
 MPICH2 (i.e., MPICH version 2, http://www-unix.mcs.anl.gov/mpi/mpich2) Instructions:
 0. Remove MPICH2 packages
 
-   sudo apt-get remove libmpich2-1.0 mpich2-doc mpich2 mpich2-mpd mpich2-dev
+   sudo aptitude remove libmpich2-1.0 mpich2-doc mpich2 mpich2-mpd mpich2-dev
 
 1. Install MPICH2 (requires python 2.3 or 2.4)
    wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/libmpich2-1.0_1.0.2p1-2_i386.deb
@@ -91,7 +91,7 @@ MPICH2 (i.e., MPICH version 2, http://www-unix.mcs.anl.gov/mpi/mpich2) Instructi
    wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/mpich2-mpd_1.0.2p1-2_i386.deb
    wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/mpich2-dev_1.0.2p1-2_i386.deb
 
-   sudo apt-get install python2.3 python2.3-xml
+   sudo aptitude install python2.3 python2.3-xml
 
    cd ${DATA}/tmp
    sudo dpkg --install \
@@ -109,6 +109,16 @@ MPICH2 (i.e., MPICH version 2, http://www-unix.mcs.anl.gov/mpi/mpich2) Instructi
    mpdtrace # Test MPD
    mpdallexit # Exit MPD
    mpich2version # Report MPICH2 version
+
+************************************************************************
+Open MPI Instructions:
+Up-to-date versions of LAM-MPI are distributed in RPM and Deb formats.
+
+0. Remove Open MPI packages
+   sudo aptitude remove openmpi_bin
+
+1. Install Open MPI packages
+   sudo aptitude install openmpi-bin openmpi-doc openmpi-dev
 
 ************************************************************************
 Parallel Programming Environment (PPE) (AIX only):

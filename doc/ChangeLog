@@ -1,5 +1,10 @@
+2009-01-13  Charlie Zender  <zender@uci.edu>
+
+	* Tweaked bld/Makefile to incorporate Russ Rew's modifications
+
 2009-01-08 Henry Butowsky  <henryb@ntlworld.com>
-	* added gsl wrapper functions fmc_gsl_cls.cc,
+
+	* Added gsl wrapper functions fmc_gsl_cls.cc,
 	fmc_gsl_cls.hh. Added test script data/gsl_sf.in
 
 2008-12-10  Charlie Zender  <zender@uci.edu>
