@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1035 2009-01-13 23:17:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1036 2009-01-14 01:10:20 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -679,7 +679,8 @@ nco954. ncinsert functionality request posted to help forum 20081116
 nco955. release nco 3.9.6
 nco956. bluefire reported problem with 3.9.5 threading on netcdf3 files:
 	cd /blhome/ddvento/nco_problem
-	/usr/local/apps/nco-3.9.5/bin/ncea -t 1 -v U,V,W,PH,T,MU,QVAPOR wrfinput_d01_mem1 wrfinput_d01_mem3 -o ~/new_nco_output.nc 
+	/usr/local/apps/nco-3.9.5/bin/ncea -t 1 -v U,V,W,PH,T,MU,QVAPOR wrfinput_d01_mem1 wrfinput_d01_mem3 -o ~/new_nco_output.nc
+	ncea -t 1 -v U,V,W,PH,T,MU,QVAPOR -p ${DATA}/tmp wrfinput_d01_mem1 wrfinput_d01_mem3 -o ~/new_nco_output.nc 
 nco957. 
 	ncra -O -D 1 -p ~/nco/data in.nc in.nc in.nc in.nc in.nc ~/foo_avg.nc
 	ncks -H ~/foo_avg.nc | m
