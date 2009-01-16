@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.502 2008-11-02 05:04:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.503 2009-01-16 23:39:12 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -501,6 +501,7 @@ You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
 <li><b>NCO/SDO 3.9.6</b>: (<i>In progress</i>) 
+Fix OpenMP MSA <a href="#bug_thr_msa">bug</a> (<i>upgrade recommended</i>); 
 Memory management to improve threading;
 <tt>ncatted</tt> workaround for netCDF4 <tt>_FillValue</tt>;
 disable OpenMP with netCDF4/HDF;
@@ -510,7 +511,7 @@ no math on type <tt>NC_CHAR</tt>;
 incomplete gamma functions from <a href="http://www.gnu.org/software/gsl">GSL</a>,
 missing value propagation;
 <li><b>NCO/SDO 3.9.5</b>: 
-Multi-slabbing and <tt>-X</tt> everywhere;
+Multi-slabbing (MSA) and <tt>-X</tt> everywhere;
 <tt>ncecat -M</tt>;
 netCDF4-enabled builds on Cygwin;
 <tt>ncap2</tt> builds on Solaris;
@@ -1222,6 +1223,26 @@ incorrect.
 <i>Versions 2.7.3&mdash;2.8.3 are buggy and should be upgraded ASAP</i>.
 Re-do any data-processing that used index-based hyperslabbing with
 these versions of NCO.
+</li>
+
+<!-- http://nco.sf.net#bug_thr_msa -->
+<a name="bug_thr_msa"></a>
+<li><i>Threading problems with MSA:</i>
+NCO versions 3.9.4&mdash;3.9.5 have a nasty bug that causes
+threaded arithmetic operators, e.g., <tt>ncea</tt> to produce
+incorrect results under some conditions.
+The problem may occur whenever OpenMP is enabled and the operators 
+run on a multi-core CPU with more than one thread.
+Fortunately, these incorrect answers, if generated, are relatively
+easy to notice.
+The number of threads used to generate a file is, by default, recorded
+in the global attribute <tt>nco_openmp_thread_number</tt> which may
+be examined with <tt>ncks -M foo.nc | grep nco_openmp_thread_number</tt>.
+The only action that will correct a file that you think (or know)
+contains corrupted data because of this NCO bug is to re-process the
+file with a non-buggy NCO version.
+<i>Versions 3.9.4&mdash;3.9.5 are buggy and should be upgraded ASAP</i>.
+Be careful with data processed using these versions of NCO.
 </li>
 </ul>
 
