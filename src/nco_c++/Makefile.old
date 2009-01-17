@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.67 2008-10-30 20:56:11 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.68 2009-01-17 02:43:41 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -141,7 +141,7 @@ ifndef ${PRC}
  PRC := S
 endif # endif PRC
 ifndef PVM_ARCH
- PVM_ARCH := $(shell ${HOME}/bin/sh/pvmgetarch)
+ PVM_ARCH := $(shell ${HOME}/sh/pvmgetarch)
 endif
 ifndef STC
 # Created statically linked executable

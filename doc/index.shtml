@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.503 2009-01-16 23:39:12 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.504 2009-01-17 02:39:18 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -501,7 +501,7 @@ You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
 <li><b>NCO/SDO 3.9.6</b>: (<i>In progress</i>) 
-Fix OpenMP MSA <a href="#bug_thr_msa">bug</a> (<i>upgrade recommended</i>); 
+Fix OpenMP MSA <a href="#bug_thr_msa">bug</a> (<i>upgrade highly recommended</i>); 
 Memory management to improve threading;
 <tt>ncatted</tt> workaround for netCDF4 <tt>_FillValue</tt>;
 disable OpenMP with netCDF4/HDF;
@@ -1233,8 +1233,7 @@ threaded arithmetic operators, e.g., <tt>ncea</tt> to produce
 incorrect results under some conditions.
 The problem may occur whenever OpenMP is enabled and the operators 
 run on a multi-core CPU with more than one thread.
-Fortunately, these incorrect answers, if generated, are relatively
-easy to notice.
+These incorrect answers, if generated, are relatively easy to notice.
 The number of threads used to generate a file is, by default, recorded
 in the global attribute <tt>nco_openmp_thread_number</tt> which may
 be examined with <tt>ncks -M foo.nc | grep nco_openmp_thread_number</tt>.
@@ -1242,7 +1241,8 @@ The only action that will correct a file that you think (or know)
 contains corrupted data because of this NCO bug is to re-process the
 file with a non-buggy NCO version.
 <i>Versions 3.9.4&mdash;3.9.5 are buggy and should be upgraded ASAP</i>.
-Be careful with data processed using these versions of NCO.
+Be careful with data processed using these versions of NCO on
+multi-core CPUs.
 </li>
 </ul>
 
@@ -1398,7 +1398,7 @@ Adjunct Associate Professor of
 <li>
 <a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
 <a href="http://dust.ess.uci.edu/~wangd">Daniel Wang</a>:
-Ph.D. Candidate, Electrical Engineering and Computer Science
+Ph.D. Candidate (and now Doctor!), Electrical Engineering and Computer Science
 <i>Role</i>: Architect distributed data reduction and analysis
 solutions for geoscience workflows
 <i>Current Research</i>: 
