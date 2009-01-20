@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.81 2009-01-13 23:17:13 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.82 2009-01-20 14:45:55 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.81 2009-01-13 23:17:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.81 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.82 2009-01-20 14:45:55 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.82 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -427,8 +427,6 @@ main(int argc,char **argv)
   mth_cls mth_obj(true);
   // Maths2 Functions
   mth2_cls mth2_obj(true);
-  // Incomplete Gamma functions Functions
-  gmm_inc_cls gmm_inc_obj(true);
   // Basic Functions
   bsc_cls bsc_obj(true);
   //PDQ functions
@@ -444,7 +442,6 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth2_obj);
-  (void)pop_fmc_vtr(fmc_vtr,&gmm_inc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
   (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
@@ -455,6 +452,9 @@ main(int argc,char **argv)
 #ifdef ENABLE_GSL
   gsl_cls gsl_obj(true); 
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
+
+  /* set gsl error handler */
+  gsl_set_error_handler_off(); 
 #endif
   
   //Sort Vector 
@@ -467,11 +467,6 @@ main(int argc,char **argv)
     nco_exit(EXIT_SUCCESS);
   }
 
-
-#ifdef ENABLE_GSL
-  /* set gsl error handler */
-  gsl_set_error_handler_off(); 
-#endif
 
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
