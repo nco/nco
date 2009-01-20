@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.62 2008-05-07 12:00:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.63 2009-01-20 12:31:07 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -558,6 +558,9 @@ lmt_sct **lmt;
 
   nbr_dim=var_in->nbr_dim;	
 
+  // refresh nc_id with in_id, nb makes OpenMP threading work
+  // Should have been included in release 3.9.5
+  var_in->nc_id=in_id; 
   /* Deal with scalar var */
   if(nbr_dim==0){
    var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
