@@ -168,19 +168,6 @@ public:
 };
 
 
-//Incomplete Gamma Function /*********/
-class gmm_inc_cls: public vtl_cls {
-private:
-   enum {PGAMMA_INC,PGAMMA_UPPER,PGAMMA_LOWER,PGAMMA_COMP};
-   bool _flg_dbg;
-public:
-  gmm_inc_cls(bool flg_dbg);
-  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-};
-
-
-
-
 //PDQ Functions /****************************************/
 class pdq_cls: public vtl_cls {
 private: 
