@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.504 2009-01-17 02:39:18 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.505 2009-01-20 18:18:06 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -1228,9 +1228,9 @@ these versions of NCO.
 <!-- http://nco.sf.net#bug_thr_msa -->
 <a name="bug_thr_msa"></a>
 <li><i>Threading problems with MSA:</i>
-NCO versions 3.9.4&mdash;3.9.5 have a nasty bug that causes
-threaded arithmetic operators, e.g., <tt>ncea</tt> to produce
-incorrect results under some conditions.
+NCO version 3.9.5 has a nasty bug that causes threaded arithmetic
+operators, e.g., <tt>ncea</tt> to produce incorrect results under some
+conditions. 
 The problem may occur whenever OpenMP is enabled and the operators 
 run on a multi-core CPU with more than one thread.
 These incorrect answers, if generated, are relatively easy to notice.
@@ -1240,7 +1240,7 @@ be examined with <tt>ncks -M foo.nc | grep nco_openmp_thread_number</tt>.
 The only action that will correct a file that you think (or know)
 contains corrupted data because of this NCO bug is to re-process the
 file with a non-buggy NCO version.
-<i>Versions 3.9.4&mdash;3.9.5 are buggy and should be upgraded ASAP</i>.
+<i>Version&nbsp;3.9.5 is buggy and should be upgraded ASAP</i>.
 Be careful with data processed using these versions of NCO on
 multi-core CPUs.
 </li>

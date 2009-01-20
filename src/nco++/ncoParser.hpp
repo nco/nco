@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.65 2008-11-05 06:07:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.66 2009-01-20 18:18:07 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -47,7 +47,7 @@
 #line 48 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
-#line 74 "ncoGrammer.g"
+#line 73 "ncoGrammer.g"
 
 
 public:
@@ -117,10 +117,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 110;
+	static const int NUM_TOKENS = 109;
 #else
 	enum {
-		NUM_TOKENS = 110
+		NUM_TOKENS = 109
 	};
 #endif
 	

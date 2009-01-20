@@ -1,4 +1,10 @@
-// Script to test gsl special functions
+// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.2 2009-01-20 18:18:06 zender Exp $ -*-C++-*-
+
+// Purpose: Script to test gsl special functions
+
+/* Usage: 
+   ncap2 -O -v -S ~/nco/data/gsl_sf.in ~/nco/data/in.nc ~/foo.nc
+   ncks ~/foo.nc | /bin/more */
 
 print("Test script for gsl Special Functions\n");
 
