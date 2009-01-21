@@ -6,6 +6,8 @@
 
 // Standard C++ headers
 
+#ifdef ENABLE_GSL
+
 #include <assert.h> 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_mode.h>
@@ -228,7 +230,7 @@
 	// gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_array",f_unn(gsl_sf_gegenpoly_array),));
 
 
-       // Hypergeometric Functions ****************************************************************/
+       // Hypergeometric Functions /****************************************************************/
 	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_0F1",f_unn(gsl_sf_hyperg_0F1_e),hnd_fnc_nd,P2DBL));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_1F1_int",f_unn(gsl_sf_hyperg_1F1_int_e),hnd_fnc_iid));
 	gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_1F1",f_unn(gsl_sf_hyperg_1F1_e),hnd_fnc_nd,P3DBL));
@@ -799,6 +801,7 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 	    std::string styp=(is_mtd ? "method":"function");
 	    std::string sfnm=gpr_obj.fnm();
 	    std::string susg;        // usage string;   
+	    std::string var_nm;
             var_sct *var_arr[3];
             var_sct *var_out=NULL_CEWI;
             var_sct *var_tmp=NULL_CEWI;
@@ -809,31 +812,46 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
             args_nbr=args_vtr.size();
 
             if(fdx==PBESSEL)            
-               susg="usage: var_out="+sfnm+"(int nmin, int nmax, double x, var_in)";
+               susg="usage: status="+sfnm+"(int nmin, int nmax, double x, &var_in)";
             else if(fdx==PLEGEND) 
-               susg="usage: var_out="+sfnm+"(int lmax, int m, double x, var_in)";
+               susg="usage: status="+sfnm+"(int lmax, int m, double x, &var_in)";
 
             if(args_nbr <4)
               if(is_mtd)
                 err_prn(sfnm,styp+" requires three arguments\n"+susg); 
               else
                 err_prn(sfnm,styp+" requires four arguments\n"+susg);    
-             
+            
+            args_nbr=4;  
+
+            // check fourth argument 
+
+            // fourth agument must be a call by reference VAR_ID or ATT_ID   
+            if(args_vtr[3]->getType() != CALL_REF ) 
+	      err_prn(sfnm,styp+". fourth argument must be a call by reference variable\n"+susg);   
+	    var_nm=args_vtr[3]->getFirstChild()->getText(); 
+            var_out=prs_arg->ncap_var_init(var_nm,true);             
+
+  
+            if(!var_out->undefined && var_out->type !=NC_DOUBLE )
+	      err_prn(sfnm,styp+". Reference variable var_in must be of type DOUBLE\n"+susg);   
+
               
             // Deal with initial scan 
-            // nb this method returns an int which is the gsl status flag;
             if(prs_arg->ntl_scn){
-              // evaluate args for side effect 
-              for(idx=0 ; idx<args_nbr ; idx++){
+              // evaluate first 3 args for side effect 
+              for(idx=0 ; idx<args_nbr-1 ; idx++){
                 var_tmp=walker.out(args_vtr[idx]);     
 		var_tmp=nco_var_free(var_tmp);     
 	      }
-
-	      var_out=walker.out(args_vtr[3]);
-              var_out=nco_var_cnf_typ(NC_DOUBLE,var_out); 
-              return var_out;
-      	      //return ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nc_type)NC_INT,false);        ;
-            } 
+                
+              if(var_out->undefined)
+                var_out=nco_var_free(var_out);
+              else     
+                (void)prs_arg->ncap_var_write(var_out,false); 
+                      
+      	      return ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nc_type)NC_INT,false);        ;
+            }
                
 
             // Do the real thing 
@@ -842,15 +860,6 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
             // get the first three args                
             for(idx=0 ; idx<3 ; idx++)
               var_arr[idx]=walker.out(args_vtr[idx]);     
-
-            // check the fourth argument, it can only be a var or att identifier
-	    lcl_typ=expr_typ(args_vtr[3]);          
-             
-           if(lcl_typ !=VVAR ) {
-             serr="The last argument must  be a variable identifer\n";
-             err_prn(sfnm,serr+susg);
-           }
-
           
 
 
@@ -858,21 +867,17 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
             {
 	    int nbr_min;
             int nbr_max;
-            int nbr_tmp; 
-            int iret;
+            int status;
             int sz_out;
  
             double xin;     
             double *dp_out;
-	    std::string va_nm;
+
             int (*fnc_int)(int,int,double, double*);
              
             fnc_int=gpr_obj.g_args().biidpd; 
              
-            va_nm=args_vtr[3]->getText();
 
-   
-            var_out=prs_arg->ncap_var_init(va_nm,true);
 
             var_arr[0]=nco_var_cnf_typ(NC_INT,var_arr[0]);              
             (void)cast_void_nctype(NC_INT,&(var_arr[0]->val));
@@ -906,10 +911,9 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 	        err_prn(sfnm,"lmax must be greater than or equal to m\n"+susg);    
 	    }
 
-            var_out=nco_var_cnf_typ(NC_DOUBLE,var_out);              
             (void)cast_void_nctype(NC_DOUBLE,&(var_out->val));
             dp_out=var_out->val.dp;    
-            (void)cast_nctype_void(NC_DOUBLE,&(var_out->val));
+
 
 
 	    if(sz_out>var_out->sz ){
@@ -918,18 +922,21 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
             }
 
             // Call the gsl function  
-            iret=fnc_int(nbr_min,nbr_max,xin,dp_out); 
-            //(void)prs_arg->ncap_var_write(var_out,false);           
+            status=fnc_int(nbr_min,nbr_max,xin,dp_out); 
+            // write the results
+            (void)cast_nctype_void(NC_DOUBLE,&(var_out->val));
+            (void)prs_arg->ncap_var_write(var_out,false);           
              
             // Free args                
             for(idx=0 ; idx<3 ; idx++)
               (void)nco_var_free(var_arr[idx]);
 
-            //var_tmp=ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nco_int)iret);
+            var_tmp=ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nco_int)status);
             
 
             }  
-            return var_out;
+            // return status
+            return var_tmp;
 
 
 } // end function hnd_fnc_iidpd
@@ -944,6 +951,7 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 	    std::string styp=(is_mtd ? "method":"function");
 	    std::string sfnm=gpr_obj.fnm();
 	    std::string susg;        // usage string;   
+	    std::string var_nm;
             var_sct *var_arr[2];
             var_sct *var_out=NULL_CEWI;
             var_sct *var_tmp=NULL_CEWI;
@@ -953,7 +961,7 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 
             args_nbr=args_vtr.size();
             
-            susg="usage: var_out="+sfnm+"(int lmax, double x, var_in)";
+            susg="usage: status="+sfnm+"(int lmax, double x, &var_in)";
 
             if(args_nbr <3)
               if(is_mtd)
@@ -961,7 +969,22 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
               else
                 err_prn(sfnm,styp+" requires three arguments\n"+susg);    
              
+            args_nbr=3; // Ignore extra arguments
               
+
+            // Check third argument 
+
+            // Third agument must be a call by reference VAR_ID or ATT_ID   
+            if(args_vtr[2]->getType() != CALL_REF ) 
+	      err_prn(sfnm,styp+". third argument must be a call by reference variable\n"+susg);   
+	    var_nm=args_vtr[2]->getFirstChild()->getText(); 
+            var_out=prs_arg->ncap_var_init(var_nm,true);             
+
+  
+            if(!var_out->undefined && var_out->type !=NC_DOUBLE )
+	      err_prn(sfnm,styp+". reference variable var_in must be of type DOUBLE\n"+susg);   
+
+
             // Deal with initial scan 
             // nb this method returns an int which is the gsl status flag;
             if(prs_arg->ntl_scn){
@@ -970,11 +993,13 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
                 var_tmp=walker.out(args_vtr[idx]);     
 		var_tmp=nco_var_free(var_tmp);     
 	      }
+                
+              if(var_out->undefined)
+                var_out=nco_var_free(var_out);
+              else     
+                (void)prs_arg->ncap_var_write(var_out,false); 
 
-	      var_out=walker.out(args_vtr[2]);
-              var_out=nco_var_cnf_typ(NC_DOUBLE,var_out); 
-              return var_out;
-      	      //return ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nc_type)NC_INT,false);        ;
+      	      return ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nc_type)NC_INT,false);   
             } 
                
 
@@ -984,37 +1009,21 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
             // get the first two args                
             for(idx=0 ; idx<2 ; idx++)
               var_arr[idx]=walker.out(args_vtr[idx]);     
-
-            // check the third argument, it can only be a var identifier
-	    // nb this is a static method
-	    lcl_typ=expr_typ(args_vtr[2]);          
-
-           if(lcl_typ !=VVAR ) {
-             serr="The last argument must  be a variable identifer\n";
-             err_prn(sfnm,serr+susg);
-           }
-
           
 
 
             // do heavy listing; 
             {
             int nbr_max;
-            int iret;
+            int status;
             int sz_out;
  
             double xin;     
             double *dp_out;
-	    std::string va_nm;
             int (*fnc_int)(int,double, double*);
              
             fnc_int=gpr_obj.g_args().bidpd; 
              
-            va_nm=args_vtr[2]->getText();
-
-   
-            var_out=prs_arg->ncap_var_init(va_nm,true);
-
             var_arr[0]=nco_var_cnf_typ(NC_INT,var_arr[0]);              
             (void)cast_void_nctype(NC_INT,&(var_arr[0]->val));
             nbr_max=var_arr[0]->val.lp[0];    
@@ -1035,7 +1044,7 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
             var_out=nco_var_cnf_typ(NC_DOUBLE,var_out);              
             (void)cast_void_nctype(NC_DOUBLE,&(var_out->val));
             dp_out=var_out->val.dp;    
-            (void)cast_nctype_void(NC_DOUBLE,&(var_out->val));
+
 
 
 	    if(sz_out>var_out->sz ){
@@ -1044,21 +1053,23 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
             }
 
             // Call the gsl function  
-            iret=fnc_int(nbr_max,xin,dp_out); 
-            //(void)prs_arg->ncap_var_write(var_out,false);           
+            status=fnc_int(nbr_max,xin,dp_out); 
+            (void)cast_nctype_void(NC_DOUBLE,&(var_out->val));
+            // write the result
+            (void)prs_arg->ncap_var_write(var_out,false);           
              
             // Free args                
             (void)nco_var_free(var_arr[0]);
             (void)nco_var_free(var_arr[1]);
 
-            //var_tmp=ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nco_int)iret);
+            var_tmp=ncap_sclr_var_mk(static_cast<std::string>("~gsl_function"),(nco_int)status);
             
 
             }  
-            return var_out;
+            return var_tmp;
 
 
-} // end function hnd_fnc_iidpd
+} // end function hnd_fnc_idpd
 
 
 var_sct *gsl_cls::hnd_fnc_dm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
@@ -1852,3 +1863,5 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
            return var_arr[1]; 
 
 } // end function hnd_fnc_idd
+
+#endif /* ENABLE_GSL */ 
