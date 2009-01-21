@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.77 2009-01-21 00:39:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.78 2009-01-21 21:37:19 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -45,7 +45,7 @@
 #line 46 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 625 "ncoGrammer.g"
+#line 628 "ncoGrammer.g"
 
 
 private:
@@ -369,6 +369,7 @@ public:
       ntyp=ntr->getType();
       // we have hit an IF or a basic block
       if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR ||ntyp==WHERE) {
+      //  if(ntyp != EXPR ){ 
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
@@ -438,10 +439,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 109;
+	static const int NUM_TOKENS = 110;
 #else
 	enum {
-		NUM_TOKENS = 109
+		NUM_TOKENS = 110
 	};
 #endif
 	

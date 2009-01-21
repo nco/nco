@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.67 2009-01-21 00:39:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.68 2009-01-21 21:37:18 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -89,6 +89,7 @@ public:
 	public: void dmn_arg_list();
 	public: void value_list();
 	public: void arg_list();
+	public: void call_ref();
 	public: void func_arg();
 	public: void hyper_slb();
 	public: void meth_exp();
@@ -117,10 +118,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 109;
+	static const int NUM_TOKENS = 110;
 #else
 	enum {
-		NUM_TOKENS = 109
+		NUM_TOKENS = 110
 	};
 #endif
 	

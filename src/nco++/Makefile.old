@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.68 2009-01-21 20:50:31 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.69 2009-01-21 21:34:54 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -304,6 +304,7 @@ ifeq (${NETCDF4},Y)
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
  NC_LDFLAGS := -L${NETCDF_LIB}
+# Must add -lsz if szip was used when building HDF5
  NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz
 endif # endif NETCDF4
 
