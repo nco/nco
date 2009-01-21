@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.472 2009-01-21 00:39:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.473 2009-01-21 05:33:57 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -51,7 +51,7 @@
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # glace, neige, virga
-# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # greenplanet
+# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS=N UDUNITS2=N allinone;cd - # greenplanet
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
@@ -270,9 +270,18 @@ endif # !MPI_PRC
 
 ifeq (${NETCDF4},Y)
 # Enable netCDF4 functionality
+ifndef HDF5_ROOT
+ HDF5_ROOT := ${NETCDF4_ROOT}
+endif
+ifndef HDF5_INC
+ HDF5_INC := ${HDF5_ROOT}/include # Directory containing hdf5.h
+endif
+ifndef HDF5_LIB
+ HDF5_LIB := ${HDF5_ROOT}/lib # Directory containing libhdf5.a
+endif
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
- NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
  NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
 endif # endif NETCDF4
 
@@ -1740,6 +1749,9 @@ dbg:
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "GSL = $(GSL)\n"
+	@printf "HDF5_ROOT = ${HDF5_ROOT}\n"
+	@printf "HDF5_INC = ${HDF5_INC}\n"
+	@printf "HDF5_LIB = ${HDF5_LIB}\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
