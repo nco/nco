@@ -1,5 +1,7 @@
 2009-01-20  Charlie Zender  <zender@uci.edu>
 
+	* Separate HDF5_ROOT from NETCDF4_ROOT in bld/Makefile
+
 	* Update copyright year to 2009
 
 2009-01-20 Henry Butowsky  <henryb@ntlworld.com>
