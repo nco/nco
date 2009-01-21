@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.145 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.146 2009-01-21 20:44:13 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -168,7 +168,7 @@ value_list:
       { #value_list = #( [VALUE_LIST, "value_list"], #value_list ); }
     ;        
 
-arg_list: expr|dmn_arg_list|DIM_ID|DIM_MTD_ID
+arg_list: expr|dmn_arg_list|DIM_ID|DIM_MTD_ID|call_ref
      ;
 
 func_arg:  LPAREN! (arg_list)? (COMMA! arg_list)*   RPAREN! 
@@ -178,6 +178,9 @@ func_arg:  LPAREN! (arg_list)? (COMMA! arg_list)*   RPAREN!
 hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
      ;
 
+// call by reference - prefix &
+call_ref: CALL_REF^(VAR_ID|ATT_ID)
+     ;
 
 /*************************************************************/
 /* start  expressions */
@@ -434,7 +437,7 @@ LOR options { paraphrase="||";}: "||" ;
 
 DOT options {paraphrase="dot operator";} : '.';
 
-
+CALL_REF options {paraphrase="call by reference";} : '&';
 
 protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
@@ -945,6 +948,7 @@ public:
       ntyp=ntr->getType();
       // we have hit an IF or a basic block
       if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR ||ntyp==WHERE) {
+      //  if(ntyp != EXPR ){ 
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
