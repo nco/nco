@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.69 2009-01-21 00:15:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.70 2009-01-21 05:44:25 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -12,6 +12,7 @@
 
 # Usage:
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=Y dpn_cln cln all # neige, virga
+# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=Y dpn_cln cln all # greenplanet
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=N dpn_cln cln all # ashes, elnino
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # esmf, sand
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=N dpn_cln cln all # sand
@@ -277,10 +278,22 @@ endif # !MPI_PRC
 
 ifeq (${NETCDF4},Y)
 # Enable netCDF4 functionality
+ifndef HDF5_ROOT
+ HDF5_ROOT := ${NETCDF4_ROOT}
+endif
+ifndef HDF5_INC
+ HDF5_INC := ${HDF5_ROOT}/include # Directory containing hdf5.h
+endif
+ifndef HDF5_LIB
+ HDF5_LIB := ${HDF5_ROOT}/lib # Directory containing libhdf5.a
+endif
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
- NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
  NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
+ifneq (${HDF5_INC},${NETCDF_INC})
+ NETCDF_INC += -I${HDF5_INC}
+endif # end 
 endif # endif NETCDF4
 
 ifeq (${PNETCDF},Y)
