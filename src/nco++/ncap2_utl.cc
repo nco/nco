@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.120 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.121 2009-01-21 20:45:46 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -3080,6 +3080,7 @@ void ncap_mpi_get_lvl(
   case DEC:
   case POST_INC:
   case POST_DEC:
+  case CALL_REF:
     str_vtr.push_back(tr->getText());
     break;
     
