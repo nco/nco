@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.3 2009-01-21 12:48:16 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.4 2009-01-21 20:50:46 hmb Exp $ -*-C++-*-
 
 // Purpose: Script to test gsl special functions
 
@@ -33,11 +33,13 @@ nbr_err_ttl=0;
 
   // a5 and a6 identical
   a5=gsl_sf_bessel_Jn( time.int()-1,0.5);
-  a6=gsl_sf_bessel_Jn_array(0,9,0.5,time);
+  a6=time;
+  gsl_sf_bessel_Jn_array(0,9,0.5,&a6);
 
   // a7 a8 identical
   a7=gsl_sf_bessel_il_scaled( time.int()-1,0.5);  
-  a8=gsl_sf_bessel_il_scaled_array(9,0.5,time);  
+  a8=time;
+  gsl_sf_bessel_il_scaled_array(9,0.5,&a8);  
 
   a9=gsl_sf_bessel_zero_J0(time.int());
 
@@ -193,15 +195,18 @@ nbr_err_ttl=0;
 
   // d0,d1 identical
   d0=gsl_sf_legendre_Pl(time.int()-1,0.5);
-  d1=gsl_sf_legendre_Pl_array(9,0.5,time);
+  d1=time;
+  gsl_sf_legendre_Pl_array(9,0.5,&d1);
 
   // d2,d3 identical
   d2=gsl_sf_legendre_Plm(time.int()-1,0,0.7);
-  d3=gsl_sf_legendre_Plm_array(9,0,0.7,time);
+  d3=time;
+  gsl_sf_legendre_Plm_array(9,0,0.7,&d3);
 
   // d4,d5 identical
   d4=gsl_sf_legendre_sphPlm(leg,0,0.7);
-  d5=gsl_sf_legendre_sphPlm_array(3,0,0.7,leg);
+  d5=leg.double();
+  gsl_sf_legendre_sphPlm_array(3,0,0.7,&d5);
 
 
   if( fabs(d0.total()-d1.total() ) >0.01){
