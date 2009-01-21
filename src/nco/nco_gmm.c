@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.c,v 1.3 2008-09-29 15:05:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_gmm.c,v 1.4 2009-01-21 00:15:38 zender Exp $ */
 
 /* Purpose: Calculate incomplete gamma function */
 
@@ -8,7 +8,7 @@
    http://people.scs.fsu.edu/~burkardt/cpp_src/asa032/asa032.html
    Additional copyright below is for NCO interface only */
 
-/* Copyright (C) 1995--2008 Charlie Zender
+/* Copyright (C) 1995--2009 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

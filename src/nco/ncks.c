@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.219 2008-11-17 00:43:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.220 2009-01-21 00:15:38 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
 /* Purpose: Extract (subsets of) variables from a netCDF file 
    Print them to screen, or copy them to a new file, or both */
 
-/* Copyright (C) 1995--2008 Charlie Zender
+/* Copyright (C) 1995--2009 Charlie Zender
 
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.219 2008-11-17 00:43:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.219 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.220 2009-01-21 00:15:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.220 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

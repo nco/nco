@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.68 2009-01-17 02:43:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.69 2009-01-21 00:15:38 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -6,7 +6,7 @@
 # scp ~/nco/src/nco_c++/Makefile.old soot.ess.uci.edu:nco/src/nco_c++
 # scp ~/nco/src/nco_c++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco_c++
 
-# Copyright (C) 1994--2008 Charlie Zender
+# Copyright (C) 1994--2009 Charlie Zender
 # You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
