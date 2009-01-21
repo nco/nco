@@ -1,7 +1,11 @@
+2009-01-20  Charlie Zender  <zender@uci.edu>
+
+	* Update copyright year to 2009
+
 2009-01-20 Henry Butowsky  <henryb@ntlworld.com>
-	*Completly removed gmm_inc_cls() and associated code
-	from ncap2_utl.cc. Been superseded by the gamma functions
-	in the gsl library
+
+	* Removed gmm_inc_cls() and associated code from ncap2_utl.cc. 
+	Superseded by GSL library gamma functions.
 
 2009-01-16  Charlie Zender  <zender@uci.edu>
 
