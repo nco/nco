@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.474 2009-01-21 05:44:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.475 2009-01-21 20:43:18 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -51,7 +51,7 @@
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # glace, neige, virga
-# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS=N UDUNITS2=N allinone;cd - # greenplanet
+# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # greenplanet
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
@@ -282,7 +282,7 @@ endif
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
  NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
- NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
+ NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5
 ifneq (${HDF5_INC},${NETCDF_INC})
  NETCDF_INC += -I${HDF5_INC}
 endif # end 
