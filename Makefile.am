@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.11 2005-12-14 08:01:11 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.12 2009-01-22 22:41:47 zender Exp $ -*-makefile-*-
 
 SUBDIRS = data doc src man
 
@@ -6,6 +6,7 @@ SUBDIRS = data doc src man
 # does not work with it (bld/Makefile is not autoconf's)
 bld_extras = bld/Makefile bld/pvmgetarch bld/nco.spec
 EXTRA_DIST = $(bld_extras)
+ACLOCAL_AMFLAGS = -I m4
 
 test:
 	$(MAKE) check
