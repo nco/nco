@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.256 2009-01-21 00:15:37 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.257 2009-01-22 22:30:06 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # Newer convention names this file configure.ac, older names it configure.in
@@ -37,6 +37,8 @@ AC_COPYRIGHT
 AC_CONFIG_SRCDIR([src/nco/ncks.c])
 # Put helper scripts here to reduce top level clutter
 AC_CONFIG_AUX_DIR(autobld)
+# 
+AC_CONFIG_MACRO_DIR([m4])
 
 # Get build system parameters, need config.guess and config.sub to use these
 # Set $build
