@@ -2,7 +2,7 @@ nco (3.9.6-1) sid; urgency=medium
 
   * new upstream version (fixes MSA bug, adds GSL)
 
- -- Charlie Zender <zender@uci.edu>  jeudi 22 janvier 2009, 13:15:56 (UTC-0800)
+ -- Charlie Zender <zender@uci.edu>  Thu, 22 Jan 2009 13:27:19 -0800
 
 nco (3.9.5-1) sid; urgency=low
 
