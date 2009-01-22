@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.34 2008-09-25 15:49:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.35 2009-01-22 22:46:11 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -33,6 +33,7 @@ nco/bm		Benchmark directory and related plot scripts
 nco/debian	Scripts for Debian GNU/Linux .deb builds
 nco/data	Sample I/O datasets
 nco/doc		Documentation
+nco/m4		M4 macros for libtool
 nco/man		Man pages
 nco/obj		Object files
 nco/src		Source files
