@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.89 2008-10-29 17:36:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.90 2009-01-22 22:38:39 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -37,7 +37,7 @@ target_triplet = @target@
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(top_srcdir)/configure autobld/config.guess \
+	$(top_srcdir)/configure INSTALL autobld/config.guess \
 	autobld/config.sub autobld/depcomp autobld/install-sh \
 	autobld/ltmain.sh autobld/missing autobld/mkinstalldirs \
 	autobld/texinfo.tex autobld/ylwrap

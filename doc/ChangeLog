@@ -5,6 +5,8 @@
 	  cvs tag -c nco-3_9_6;cvs tag -c nco-3_9_6-1
 	  Changes since nco-3_9_5: fix MSA bug, add GSL
 
+	* Added m4 directory
+
 	* Updated m4, libtool, autoconf macros with autoreconf -f -i
 
 2009-01-20  Charlie Zender  <zender@uci.edu>
