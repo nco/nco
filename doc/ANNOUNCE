@@ -1,38 +1,31 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.306 2008-11-05 06:07:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.307 2009-01-22 19:10:18 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version has been "extensively" tested with netCDF4.0.
-We tried to make sure that NCO produces the same output 
-regardless of the back-end library (netCDF3 or netCDF4) and
-filetype (netCDF3 or netCDF4).
-This was not trivial because of the differen ways that the
-two libraries handle, e.g., threading, _FillValue's, and corner-case
-variable names.
+This version fixes a nasty bug introduced in NCO version 3.9.5
+that causeed threaded arithmetic operators, e.g., ncea/ncra, to
+produce incorrect results under some conditions:
 
-Thank you NSF for funding NCO from 20040901 through 20080831.
-We will finish the projects already in the pipeline.
-This includes an NCO 4.0 once a few details are cleared up, and, 
-perhaps, installing SWAMP on the NCAR Community Data Portal (CDP).
+http://nco.sf.net#bug_thr_msa
 
-Thanks to Tom Roche, NCO now has a Wiki:
+If you have 3.9.5, upgrading to 3.9.6 is highly recommended.
 
-http://nco.wiki.sourceforge.net
+NSF funding for NCO expired 20080831 so development has slowed.
+So it with some pleasure that we announce version 3.9.6 contains
+a major new feature: integration with GSL.
+The GNU Scientific Library performs fast and accurate computations
+of many mathematical/physics equations.
+Many of these special functions are available in ncap2.
 
-Including a site for new "NCO Hacks", i.e., usage examples:
-
-http://nco.wiki.sourceforge.net/Cookbook
-
-Please give it a try!
-
-A. Memory management to improve threading
+A. Fix threading bug introduced in 3.9.5 (upgrade recommended)
+   http://nco.sf.net#bug_thr_msa
 
 B. Fix Solaris configure problem with _POSIX_SOURCE
 
-C. ncatted workaround for netCDF4 _FillValue
+C. ncatted workaround for netCDF4 _FillValue (Henry Butowsky)
    ncatted can now change _FillValue on netCDF4 files
 
 D. Disable OpenMP on netCDF4/HDF5-enabled operators
@@ -44,10 +37,10 @@ E. ncra does not attempt to average record variables of type NC_CHAR
 
 E. ncap2 supports #include files, syntax is #include "pi.nco" 
 
-E. ncap2 supports incomplete gamma functions: gamma_inc_upper(a,x),
-   gamma_inc_lower(a,x), gamma_inc_regular(a,x),gamma_inc_complement(a,x)  
-   Supported synonyms include gamma_inc:_G,_g,_P, _Q. 
-   GSL does the underlying numerics.
+E. ncap2 supports GNU Scientific library functions, e.g., incomplete
+   gamma functions, Bessel functions, Legendre polynomials: 
+   ncap2 -s 'gsl_sf_legendre_sphPlm_array(3,0,0.7,&answer);' in.nc out.nc
+   http://nco.sf.net/nco.html#gsl
 
 E. CF-convention "coordinates" attribute strings with excessive whitespace work
 
@@ -62,6 +55,10 @@ E. ncatted matches regular expressions to variable names
 
 F. Pre-built RPM packages are available.
    http://nco.sf.net#rpm
+
+F. Find/add NCO tips and tricks on the NCO Wiki (thanks to Tom Roche):
+
+   http://nco.wiki.sourceforge.net
 
 G. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    SWAMP efficiently schedules and executes NCO scripts on remote servers: 

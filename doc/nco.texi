@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.513 2009-01-21 00:15:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.514 2009-01-22 19:10:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -102,9 +102,9 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set nco-edition 3.9.6
 @set doc-edition 3.9.6
 @set copyright-years 1995--2009
-@set update-year 2008
-@set update-date 17 October 2008
-@set update-month October 2008
+@set update-year 2009
+@set update-date 22 January 2009
+@set update-month January 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -714,12 +714,12 @@ by invoking the compiler with @samp{-Drestrict=''}.}.
 <a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
 @end html
 @cindex GSL
-@cindex @var{gamma_inc_P}
+@cindex @var{gamma_inc}
 In December 2008, @acronym{NCO} version 3.9.6 was the first to link
 to the GNU Scientific Library (@acronym{GSL}).
 @acronym{NCO} now uses the @acronym{GSL} special function library
-for geoscience-relevant mathematics such as Bessel functions and
-incomplete gamma functions.
+for geoscience-relevant mathematics such as Bessel functions, Legendre
+polynomials, and incomplete gamma functions.
 
 @cindex @var{gamma}
 In June 2005, @acronym{NCO} version 3.0.1 began to take advantage

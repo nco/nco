@@ -113,6 +113,9 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
+* Thu Jan 22 2009 Charlie Zender <zender@uci.edu> - 3.9.6-1
+- new upstream 3.9.6
+
 * Thu Oct 30 2008 Charlie Zender <zender@uci.edu> - 3.9.5-2
 - buildrequire GSL
 
