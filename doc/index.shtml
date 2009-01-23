@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.506 2009-01-22 19:10:18 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.507 2009-01-23 06:02:18 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -103,6 +103,8 @@ Send it in!<br>
 
 
 <ul>
+<li>January&nbsp;22, 2009: NCO 3.9.6 released</li>
+
 <li>September&nbsp;24, 2008: Extensive <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a> available</li>
 
 <li>August&nbsp;8, 2008: NCO <a href="http://nco.wiki.sourceforge.net">Wiki</a> is up!</li>
@@ -500,16 +502,17 @@ New releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
-<li><b>NCO/SDO 3.9.6</b>: (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.7</b>: (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.6</b>: 
 Fix OpenMP MSA <a href="#bug_thr_msa">bug</a> (<i>upgrade highly recommended</i>); 
 Memory management to improve threading;
 <tt>ncatted</tt> workaround for netCDF4 <tt>_FillValue</tt>;
 disable OpenMP with netCDF4/HDF;
 no math on type <tt>NC_CHAR</tt>;
 <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a>,
+better missing value propagation,
 <tt>#include</tt> files,
-incomplete gamma functions from <a href="http://www.gnu.org/software/gsl">GSL</a>,
-missing value propagation;
+<a href="http://nco.sf.net/nco.html#gsl">GSL</a> math functions;
 <li><b>NCO/SDO 3.9.5</b>: 
 Multi-slabbing (MSA) and <tt>-X</tt> everywhere;
 <tt>ncecat -M</tt>;
@@ -737,10 +740,10 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
 <ul>
-<dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.6-1.fc7.i386.rpm</tt>&rsquo;):</dt>
-<li><a href="src/nco-3.9.6-1.fc7.i386.rpm">nco-3.9.6-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.6-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.6-1.fc7.i386.rpm"-->)</li>
-<li><a href="src/nco-3.9.6-1.fc7.src.rpm">nco-3.9.6-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.6-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.6-1.fc7.src.rpm"-->)</li>
-<li><a href="src/nco-3.9.6-1.x86_64.rpm">nco-3.9.6-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.6-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.6-1.x86_64.rpm"-->)</li>
+<dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):</dt>
+<li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
+<li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
+<li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
 <li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/~wangd/s9y">here</a></li>
 
 From about 2004&ndash;2006, NCO was part of the Fedora Extras distribution (thanks to Ed Hill).

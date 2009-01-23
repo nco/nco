@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1037 2009-01-21 18:10:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1038 2009-01-23 06:02:18 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -640,7 +640,6 @@ nco931. nco_c++ nc_put_var1_string wrapper currently kludged and untested
 nco932. ncwa and packed data: help forum 20080214: When using ncwa to calculate a weighted average from a packed file (NC_SHORT, scale_factor=0.1, _FillValue=32766), the data in the resulting file is in double precision. However, the _FillValue attribute is not changed to the double precision value (3276.6)....it is left at 32766. Shouldn't ncwa writeout the new _FillValue attribute?
 nco934. Add ncecat -M option to other operators?
 nco935. Make single-file operators (SFOs) default out.nc to in.nc
-nco936. Add -X to all MSA operators
 nco937. dupload fails with "GPG signature is missing"
 nco938. ncks -m problem: 
 	cd ~/Desktop;ncks -m NCEP-NAM-CONUS_80km_best.ncd.nc
@@ -648,12 +647,6 @@ nco938. ncks -m problem:
 	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
 	nco_err_exit(): ERROR NCO will now exit with system call abort()
 nco939. Enable netCDF4-NCO OpenMP iff HDF5 configured with --enable-threadsafe?
-nco940. make tst shows multiple regressions with netCDF4/hardy as of 20080615
-	Not sure what causes them---NCO changes, netCDF4 changes, or OS changes
-	Thankfully netCDF3 regression tests still work fine, so I assume most
-	regressions are due to changes in netCDF4-final.
-	If so, need to fix or mark those regressions as "expected with netCDF4".
-	e.g., netCDF4-final disallows variable names that start with numbers.
 nco941. ncra (now? when was regression?) tries to average NC_CHAR record variables:
 	Reported by Alberto Corbi Bello 
   	ncra -O -v two_dmn_rec_var_sng ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
@@ -669,14 +662,9 @@ nco945. ncra problem with netcdf4 record mean of packed double with double missi
 nco947. Try DAP from netCDF4 daily snapshots
 nco949. Make --no-clobber option for all operators
 nco950. Add --secret option to print secret/unsupported options
-nco951. Better incomplete gamma function solver
-nco952. test incomplete gamma function:
-	ncap2 -O -v -s "a=1.0;x=1.0;gamma_inc_P_dfn=gamma_inc_P(a,x);gamma_inc_g_dfn=gamma(a)*gamma_inc_P(a,x);gamma_inc_Q_dfn=1.0-gamma_inc_P(a,x);gamma_inc_G_dfn=gamma(a)-gamma_inc_P(a,x)" ~/nco/data/in.nc ~/foo.nc 
-	ncap2 -O -v -s "a=1.0f;x=1.0f;gamma_inc_P_dfn=gamma_inc_P(a,x);gamma_inc_g_dfn=gamma(a)*gamma_inc_P(a,x);gamma_inc_Q_dfn=1.0f-gamma_inc_P(a,x);gamma_inc_G_dfn=gamma(a)-gamma_inc_P(a,x)" ~/nco/data/in.nc ~/foo.nc 
-	ncks -H ~/foo.nc
+nco951. Better incomplete gamma function solver?
 nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attributes of variable lists, rather than all-or-nothing selections
 nco954. ncinsert functionality request posted to help forum 20081116
-nco955. release nco 3.9.6
 nco957. 
 	ncra -O -D 1 -p ~/nco/data in.nc in.nc in.nc in.nc in.nc ~/foo_avg.nc
 	ncks -H ~/foo_avg.nc | m
