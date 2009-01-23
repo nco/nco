@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.146 2009-01-21 20:44:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.147 2009-01-23 11:21:42 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1053,17 +1053,20 @@ static std::vector<std::string> lpp_vtr;
 
       if(br){ 
          // Execute 2nd sibling  
-         if(stmt->getType()==BLOCK)
-           iret=run_exe(stmt,lpp_vtr.size());
-         else
+         if(stmt->getType()==BLOCK ) {
+           if(stmt->getFirstChild()) 
+             iret=run_exe(stmt->getFirstChild(),lpp_vtr.size());
+         }else
            iret=statements(stmt);     
+         
       }
 
       // See if else stmt exists (3rd sibling)       
 	  if(!br && (stmt=stmt->getNextSibling()) ){
-         if(stmt->getType()==BLOCK)
-           iret=run_exe(stmt,lpp_vtr.size());
-         else
+         if(stmt->getType()==BLOCK ){
+           if(stmt->getFirstChild()) 
+           iret=run_exe(stmt->getFirstChild(),lpp_vtr.size());
+         }else
            iret=statements(stmt);     
              
       }
