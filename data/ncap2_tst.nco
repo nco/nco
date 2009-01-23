@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.15 2008-10-27 12:04:04 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.16 2009-01-23 11:18:42 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -492,6 +492,110 @@ nbr_err_ttl=0;
   nbr_err=0;
 
 }
+
+// check if /else construct
+
+{
+  k1=0;
+  k2=0;
+  k3=0;
+  k4=0;
+  k5=0;
+  k6=time.int();
+  k7=0;
+
+  if(one==0) 
+   { k1=10; }
+  else {k1=5;}
+
+  if(k1!=5){
+    print("ERROR: k1: if/else test with blocks\n");
+    nbr_err++;
+
+  }
+
+  if(0) { k2=1;}
+  else if(1) k2=10; 
+  
+
+  if(k2!=10){
+    print("ERROR: k2: if/else test with blocks\n");
+    nbr_err++;
+
+  }
+
+  if(one==0) 
+    k3=1;
+  else if(one==0) k3=2;
+  else k3=3;
+
+
+  if(k3!=3){
+    print("ERROR: k3: if/else test with blocks\n");
+    nbr_err++;
+
+  }
+
+
+  if(one==0) 
+    { k4=1; }
+   else { if(one==0) k4=2;
+  else k4=3;
+   }
+
+
+  if(k4!=3){
+    print("ERROR: k4: if/else test with blocks\n");
+    nbr_err++;
+
+  }
+
+  // dangling else
+  if(four==0) k5=1;
+  else if(one==0) k5=2;
+  else k5=3;		    
+
+
+  if(k5!=3){
+    print("ERROR: k5: if/else test with blocks\n");
+    nbr_err++;
+
+  }
+
+
+  if(four==4) 
+    where(time>5)
+      k6=10;
+    elsewhere
+      k6=1;         
+
+
+  if(k6.total()!=55){
+    print("ERROR: k6: if/else test with blocks\n");
+    nbr_err++;
+
+  }
+
+
+  if(one==1) 
+   { k7=7; }
+  else {k7=-7;}
+
+  if(k7!=7){
+    print("ERROR: k7: if/else test with blocks\n");
+    nbr_err++;
+
+  }
+
+
+
+
+  print("RESULTS block k: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+}
+
 
 
 // Results summany
