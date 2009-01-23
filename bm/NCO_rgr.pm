@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.87 2008-11-04 11:17:01 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.88 2009-01-23 15:42:13 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -438,6 +438,23 @@ sub tst_rgr {
     $tst_cmd[5] = "NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+
+	
+    $tst_cmd[0]="/bin/rm -f %tempf_00%";
+    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tempf_00%";
+    $tst_cmd[2]="ncra -Y ncea -t1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tempf_01%";
+    $tst_cmd[3]="ncbo -C -h -O   %tempf_00% %tempf_01% %tempf_02%";
+    $tst_cmd[4]="ncwa  -t1 -O -C  %tempf_02% %tempf_03% 2>%tempf_05%";
+    $dsc_sng="Check op with OpenMP";
+#    $tst_cmd[5]="ncks -C -H -s '%d' -v R %tempf_03%";
+    $tst_cmd[5]="ncap2 -t1 -h -v -O -s 'n2= ( (fabs(R)<0.01) && (fabs(S)<0.01) && (fabs(T)<0.01) && (fabs(U)<0.01) && (fabs(V)<0.01) && (fabs(W)<0.01) && (fabs(X)<0.01) );print(n2)' %tempf_03% %tempf_04%";
+    $tst_cmd[6] = "n2 = 1";
+    $tst_cmd[7] = "NO_SS";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
 
     
 # print "paused - hit return to continue"; my $wait = <STDIN>;
@@ -991,6 +1008,21 @@ sub tst_rgr {
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+	
+    $tst_cmd[0]="/bin/rm -f %tempf_00%";
+    $tst_cmd[1]="ncra  $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tempf_00%";
+    $tst_cmd[2]="ncra  -t1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tempf_01%";
+    $tst_cmd[3]="ncbo -C -h -O   %tempf_00% %tempf_01% %tempf_02%";
+    $tst_cmd[4]="ncwa  -t1 -O -C  %tempf_02% %tempf_03% 2>%tempf_05%";
+    $dsc_sng="Check op with OpenMP";
+    $tst_cmd[5]="ncap2 -t1 -h -v -O -s 'n2= ( (fabs(R)<0.01) && (fabs(S)<0.01) && (fabs(T)<0.01) && (fabs(U)<0.01) && (fabs(V)<0.01) && (fabs(W)<0.01) && (fabs(X)<0.01) );print(n2)' %tempf_03% %tempf_04%";
+    $tst_cmd[6] = "n2 = 1";
+    $tst_cmd[7] = "NO_SS";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
 
     
 #print "paused - hit return to continue"; my $wait = <STDIN>;
