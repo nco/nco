@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.69 2009-01-21 00:15:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.70 2009-01-23 15:44:59 hmb Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -198,6 +198,14 @@ sub bm_ntl($$){
     unless (-e "in.nc"){
 	system("ncgen -o in.nc in.cdl") if (`which ncgen` and -e "in.cdl");
     } die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$drc_in_nc\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$drc_in_nc/in.cdl\" does not exist.\n stopped" unless (-e "in.nc");
+#create large files openMP testing
+    if( !(-e "lrg_bm.nc") && (-e "lrg_bm.in") && (-e "$MY_BIN_DIR/ncap2")   ){
+# make lrg_bm.nc
+	system("$MY_BIN_DIR/ncap2 -C -v -O -t1 -S lrg_bm.in in.nc lrg_bm.nc");
+# make lrg_bm1.nc
+	system("$MY_BIN_DIR/ncap2 -C -v -O -t1 -S lrg_bm.in lrg_bm.nc lrg_bm1.nc");
+    } 
+      
     
 # Initialize hashes for each operator to test
     foreach(@opr_lst) {
