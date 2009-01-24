@@ -1,15 +1,17 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.70 2009-01-24 00:19:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.71 2009-01-24 05:58:32 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
-# Requires GNU Make. AT&T Make will not process this file
-# scp ~/nco/src/nco++/Makefile.old dust.ess.uci.edu:nco/src/nco++
-# scp ~/nco/src/nco++/Makefile.old esmf.ess.uci.edu:nco/src/nco++
-# scp ~/nco/src/nco++/Makefile.old soot.ess.uci.edu:nco/src/nco++
-# scp ~/nco/src/nco++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco++
+# Requires GNU Make---AT&T Make chokes on GNU syntax
 
 # Copyright (C) 1994--2009 Charlie Zender
 # You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
 # See http://www.gnu.org/copyleft/gpl.html for full license text
+
+# Quickie test copies:
+# scp ~/nco/src/nco++/Makefile.old dust.ess.uci.edu:nco/src/nco++
+# scp ~/nco/src/nco++/Makefile.old esmf.ess.uci.edu:nco/src/nco++
+# scp ~/nco/src/nco++/Makefile.old soot.ess.uci.edu:nco/src/nco++
+# scp ~/nco/src/nco++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco++
 
 # Usage:
 # cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
@@ -81,7 +83,7 @@ endif
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DODS=Y
 ifndef ${ABI}
-# 32 vs. 64 bit ABI: 32=32 bit mode (default), 64=64 bit mode if available
+# 32- vs. 64-bit ABI: 32=32-bit mode (default), 64=64-bit mode if available
  ABI := 64
 endif # endif ABI
 ifndef ANTLR

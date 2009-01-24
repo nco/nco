@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.477 2009-01-24 00:19:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.478 2009-01-24 05:58:32 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -104,7 +104,7 @@ NCOXX_SRC_DIR := ${MY_SRC_DIR}/../nco++
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DAP=Y
 ifndef ${ABI}
-# 32 vs. 64 bit ABI: 32=32 bit mode, 64=64 bit mode (default) if available
+# 32- vs. 64-bit ABI: 32=32-bit mode, 64=64-bit mode (default) if available
  ABI := 64
 endif # endif ABI
 ifndef ${CCACHE}
