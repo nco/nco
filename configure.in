@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.259 2009-01-22 22:38:39 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.260 2009-01-27 16:58:13 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # Newer convention names this file configure.ac, older names it configure.in
@@ -674,7 +674,7 @@ if test "${enable_gsl}" != 'no'; then
     if test "${GSL_PATH}"; then
 	AC_CHECK_FILE([${GSL_PATH}/gsl/gsl_sf_gamma.h],AC_DEFINE([HAVE_GSL_H],1,[Define to 1 if <gsl/gsl_sf_gamma.h> is present]),enable_gsl=no)
     else
-	AC_CHECK_HEADER([gsl_sf_gamma.h],AC_DEFINE([HAVE_GSL_H],1,[Define to 1 if <gsl_sf_gamma.h> is present]),enable_gsl=no)
+	AC_CHECK_HEADER([gsl/gsl_sf_gamma.h],AC_DEFINE([HAVE_GSL_H],1,[Define to 1 if <gsl_sf_gamma.h> is present]),enable_gsl=no)
     fi
     if test "${enable_gsl}" = 'no'; then
 	AC_MSG_WARN([GSL support disabled (missing/unusable library or header file)])
