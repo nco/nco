@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.147 2009-01-23 11:21:42 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.148 2009-01-27 11:29:03 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1702,12 +1702,14 @@ var=NULL_CEWI;
                  mult_srd*=lmt_vtr[idx]->srd;
                } /* end loop over idx */
     
+
                /* Check for stride */
                if(mult_srd == 1L)
 	            (void)nco_put_vara(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],var_rhs->val.vp,var_rhs->type);
                else
 	            (void)nco_put_vars(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],&dmn_srd_vtr[0],var_rhs->val.vp,var_rhs->type);
                
+
               } // end put block !!
 
                  
@@ -1764,8 +1766,8 @@ var=NULL_CEWI;
               var_cst=ncap_cst_mk(str_vtr,prs_arg);     
               var1=out(vid1->getNextSibling());
 
-              (void)nco_free(var_cst->val.vp);
-              var_cst->val.vp=(void*)NULL;
+              /* NB var_cst->val.vp always now set to null */ 
+
 
               bool br1=(var_cst->sz >1 && var1->sz==1);
               bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
@@ -2640,8 +2642,7 @@ var=NULL_CEWI;
            if(bnrm){
                var=ncap_cst_mk(dmn_nrm_vtr,prs_arg);
                (void)nco_free(var->nm);
-               if(var->val.vp)
-                 var->val.vp=nco_free(var->val.vp); 
+               
 
                var->nm=strdup(var_nm.c_str());
                var=nco_var_cnf_typ(var_rhs->type,var);
