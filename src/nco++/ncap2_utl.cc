@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.121 2009-01-21 20:45:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.122 2009-01-27 11:30:41 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2274,6 +2274,16 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
   
+
+  /* NOTE VERY IMPORTANT 27-01-2009
+  /* var->val.vp is never used in an initial or final scan 
+     So we can safely set it to null here and get an immediate 
+     performance boost */
+        
+     var->val.vp=(void*)NULL;
+     goto end_var;   
+   
+
   /* Do not initialize val in initial scan  */
   if(prs_arg->ntl_scn) {
     var->val.vp=(void*)NULL;
