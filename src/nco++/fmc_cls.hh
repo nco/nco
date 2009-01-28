@@ -5,19 +5,20 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 // Standard C++ headers
-#ifndef INC_FMC_CLS_hh_
-#define INC_FMC_CLS_hh_
+#ifndef FMC_CLS_HH
+#define FMC_CLS_HH
 
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
+
 #include <antlr/AST.hpp>
+
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
-
 
 //forward declarations
 class vtl_cls;
@@ -203,5 +204,4 @@ public:
 
 };
 
-
-#endif
+#endif // FMC_CLS_HH

@@ -4,25 +4,23 @@
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-#ifndef INC_FMC_GSL_CLS_hh_
-#define INC_FMC_GSL_CLS_hh_
-
+#ifndef FMC_GSL_CLS_HH // Contents have not yet been inserted in current source file  
+#define FMC_GSL_CLS_HH
 
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <antlr/AST.hpp>
-#include "ncoTree.hpp"
-#include "ncap2_utl.hh"
-#include "vtl_cls.hh"
 
 #include <antlr/AST.hpp>
-
 #include <gsl/gsl_mode.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
+
+#include "ncoTree.hpp"
+#include "ncap2_utl.hh"
+#include "vtl_cls.hh"
 
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
 
@@ -31,7 +29,7 @@ enum { P1DBL, P1DBLMD, P2DBL, P2DBLMD,P3DBL, P3DBLMD, P4DBL, P4DBLMD };
 
 // used to classify methods bessel /Legendre  in array function function hnd_fnc_iidpd
 enum { PBESSEL, PLEGEND };
-// union class to hold gsl function pointers
+// union class to hold GSL function pointers
 union f_unn{
  public:
    int (*ai)(int, gsl_sf_result*);
@@ -144,4 +142,4 @@ static  var_sct *hnd_fnc_iid(HANDLE_ARGS);
      
 };
 
-#endif
+#endif // FMC_GSL_CLS_HH

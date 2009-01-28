@@ -1864,4 +1864,4 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
 
 } // end function hnd_fnc_idd
 
-#endif /* ENABLE_GSL */ 
+#endif // !ENABLE_GSL
