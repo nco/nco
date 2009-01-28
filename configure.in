@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.262 2009-01-28 23:05:17 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.263 2009-01-28 23:23:37 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # Newer convention names this file configure.ac, older names it configure.in
@@ -672,18 +672,20 @@ if test "${enable_gsl}" != 'no'; then
 # fxm: make code path for when cannot find gsl-config
     if test -z "${GSL_ROOT}"; then
 	GSL_ROOT="`gsl-config --prefix`"
+    else
+	gsl_config="${GSL_ROOT}/bin/gsl-config"
     fi
     if test "${GSL_INC}"; then
 	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
     else
 	GSL_INC="${GSL_ROOT}/include"
-	CPPFLAGS="`gsl-config --cflags` ${CPPFLAGS}"
+	CPPFLAGS="`${gsl_config} --cflags` ${CPPFLAGS}"
     fi
     if test "${GSL_LIB}"; then
 	LIBS="-L${GSL_LIB} ${LIBS}"
     else
 	GSL_LIB="${GSL_LIB}/lib"
-	LIBS="`gsl-config --libs` ${LIBS}"
+	LIBS="`${gsl_config} --libs` ${LIBS}"
     fi
     AC_MSG_NOTICE([These tests of GSL library and header must succeed for GSL support:])
     AC_CHECK_LIB([gsl],[gsl_sf_gamma_inc],,enable_gsl=no)
@@ -1171,11 +1173,11 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-echo "ENABLE_DAP........... ${ENABLE_DAP}"
-echo "ENABLE_GSL........... ${ENABLE_GSL}"
-echo "ENABLE_MPI........... ${ENABLE_MPI}"
-echo "ENABLE_NETCDF4....... ${ENABLE_NETCDF4}"
-echo "ENABLE_UDUNITS....... ${ENABLE_UDUNITS}"
+echo "ENABLE_DAP........... ${enable_dap}"
+echo "ENABLE_GSL........... ${enable_gsl}"
+echo "ENABLE_MPI........... ${enable_mpi}"
+echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
+echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"

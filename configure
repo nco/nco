@@ -22556,18 +22556,20 @@ echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
 # fxm: make code path for when cannot find gsl-config
     if test -z "${GSL_ROOT}"; then
 	GSL_ROOT="`gsl-config --prefix`"
+    else
+	gsl_config="${GSL_ROOT}/bin/gsl-config"
     fi
     if test "${GSL_INC}"; then
 	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
     else
 	GSL_INC="${GSL_ROOT}/include"
-	CPPFLAGS="`gsl-config --cflags` ${CPPFLAGS}"
+	CPPFLAGS="`${gsl_config} --cflags` ${CPPFLAGS}"
     fi
     if test "${GSL_LIB}"; then
 	LIBS="-L${GSL_LIB} ${LIBS}"
     else
 	GSL_LIB="${GSL_LIB}/lib"
-	LIBS="`gsl-config --libs` ${LIBS}"
+	LIBS="`${gsl_config} --libs` ${LIBS}"
     fi
     { echo "$as_me:$LINENO: These tests of GSL library and header must succeed for GSL support:" >&5
 echo "$as_me: These tests of GSL library and header must succeed for GSL support:" >&6;}
@@ -27338,11 +27340,11 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-echo "ENABLE_DAP........... ${ENABLE_DAP}"
-echo "ENABLE_GSL........... ${ENABLE_GSL}"
-echo "ENABLE_MPI........... ${ENABLE_MPI}"
-echo "ENABLE_NETCDF4....... ${ENABLE_NETCDF4}"
-echo "ENABLE_UDUNITS....... ${ENABLE_UDUNITS}"
+echo "ENABLE_DAP........... ${enable_dap}"
+echo "ENABLE_GSL........... ${enable_gsl}"
+echo "ENABLE_MPI........... ${enable_mpi}"
+echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
+echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
