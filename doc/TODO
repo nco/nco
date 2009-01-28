@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1038 2009-01-23 06:02:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1039 2009-01-28 23:05:18 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -662,7 +662,6 @@ nco945. ncra problem with netcdf4 record mean of packed double with double missi
 nco947. Try DAP from netCDF4 daily snapshots
 nco949. Make --no-clobber option for all operators
 nco950. Add --secret option to print secret/unsupported options
-nco951. Better incomplete gamma function solver?
 nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attributes of variable lists, rather than all-or-nothing selections
 nco954. ncinsert functionality request posted to help forum 20081116
 nco957. 
@@ -672,7 +671,9 @@ nco957.
 	ncdiff -O -D 1 ~/nco/data/in.nc ~/foo_avg.nc ~/foo_dff.nc
 	ncwa -O -D 1 ~/nco/data/foo_dff.nc ~/foo_dff_avg.nc
 	ncks -H ~/foo_dff.nc | m
-nco960. 
+nco960. Warn when attempted hyperslab on 2-D (or more) coordinates, e.g., https://sourceforge.net/forum/message.php?msg_id=6282324
+nco961. Add bld/Makefile mechanism to specify SZ libs
+nco962. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

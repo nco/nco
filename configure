@@ -22541,6 +22541,7 @@ echo "########################################"
 # Begin GSL
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_GSL="${LIBS}"
+nco_CPPFLAGS_no_GSL="${CPPFLAGS}"
 # Check whether --enable-gsl was given.
 if test "${enable_gsl+set}" = set; then
   enableval=$enable_gsl; enable_gsl=${enableval}
@@ -22552,10 +22553,24 @@ fi
 if test "${enable_gsl}" != 'no'; then
     { echo "$as_me:$LINENO: NB: 'gsl-config' command must be in default path" >&5
 echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
-    CPPFLAGS="`gsl-config --cflags` ${CPPFLAGS}"
-    LIBS="`gsl-config --libs` ${LIBS}"
-    { echo "$as_me:$LINENO: Following tests of GSL library and header must succeed for GSL support:" >&5
-echo "$as_me: Following tests of GSL library and header must succeed for GSL support:" >&6;}
+# fxm: make code path for when cannot find gsl-config
+    if test -z "${GSL_ROOT}"; then
+	GSL_ROOT="`gsl-config --prefix`"
+    fi
+    if test "${GSL_INC}"; then
+	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
+    else
+	GSL_INC="${GSL_ROOT}/include"
+	CPPFLAGS="`gsl-config --cflags` ${CPPFLAGS}"
+    fi
+    if test "${GSL_LIB}"; then
+	LIBS="-L${GSL_LIB} ${LIBS}"
+    else
+	GSL_LIB="${GSL_LIB}/lib"
+	LIBS="`gsl-config --libs` ${LIBS}"
+    fi
+    { echo "$as_me:$LINENO: These tests of GSL library and header must succeed for GSL support:" >&5
+echo "$as_me: These tests of GSL library and header must succeed for GSL support:" >&6;}
 
 { echo "$as_me:$LINENO: checking for gsl_sf_gamma_inc in -lgsl" >&5
 echo $ECHO_N "checking for gsl_sf_gamma_inc in -lgsl... $ECHO_C" >&6; }
@@ -22629,10 +22644,10 @@ else
   enable_gsl=no
 fi
 
-    if test "${GSL_PATH}"; then
-	as_ac_File=`echo "ac_cv_file_${GSL_PATH}/gsl/gsl_sf_gamma.h" | $as_tr_sh`
-{ echo "$as_me:$LINENO: checking for ${GSL_PATH}/gsl/gsl_sf_gamma.h" >&5
-echo $ECHO_N "checking for ${GSL_PATH}/gsl/gsl_sf_gamma.h... $ECHO_C" >&6; }
+    if test "${GSL_ROOT}"; then
+	as_ac_File=`echo "ac_cv_file_${GSL_INC}/gsl/gsl_sf_gamma.h" | $as_tr_sh`
+{ echo "$as_me:$LINENO: checking for ${GSL_INC}/gsl/gsl_sf_gamma.h" >&5
+echo $ECHO_N "checking for ${GSL_INC}/gsl/gsl_sf_gamma.h... $ECHO_C" >&6; }
 if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -22640,7 +22655,7 @@ else
   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
 echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
    { (exit 1); exit 1; }; }
-if test -r "${GSL_PATH}/gsl/gsl_sf_gamma.h"; then
+if test -r "${GSL_INC}/gsl/gsl_sf_gamma.h"; then
   eval "$as_ac_File=yes"
 else
   eval "$as_ac_File=no"
@@ -22806,6 +22821,7 @@ fi
 	{ echo "$as_me:$LINENO: WARNING: GSL support disabled (missing/unusable library or header file)" >&5
 echo "$as_me: WARNING: GSL support disabled (missing/unusable library or header file)" >&2;}
 	LIBS="${nco_LIBS_no_GSL}"
+	CPPFLAGS="${nco_CPPFLAGS_no_GSL}"
     elif test "${enable_gsl}" = 'yes'; then
 
 cat >>confdefs.h <<\_ACEOF
@@ -27322,8 +27338,12 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-#echo "ENABLE_MPI........... ${ENABLE_MPI}"
-#echo "HAVE_MPI_H........... ${HAVE_MPI_H}"
+echo "ENABLE_DAP........... ${ENABLE_DAP}"
+echo "ENABLE_GSL........... ${ENABLE_GSL}"
+echo "ENABLE_MPI........... ${ENABLE_MPI}"
+echo "ENABLE_NETCDF4....... ${ENABLE_NETCDF4}"
+echo "ENABLE_UDUNITS....... ${ENABLE_UDUNITS}"
+echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"

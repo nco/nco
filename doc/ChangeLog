@@ -1,5 +1,8 @@
 2009-01-28  Charlie Zender  <zender@uci.edu>
 
+	* Allow configure to work when GSL_ROOT specified and when
+	gsl-config is not necessarily on path
+
 	* Eliminate GSL references from libnco++ when GSL not present
 
 	* Tweak configure.in for GSL
