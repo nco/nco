@@ -1586,8 +1586,7 @@ Some influential environment variables:
   NETCDF_INC  Location of netCDF headers (compile-time)
   NETCDF_LIB  Location of netCDF library (compile-time)
   NETCDF4_ROOT
-              Root of netCDF4 installation---must be separate from netCDF3.x
-              installation (compile-time)
+              Root of netCDF4 installation (compile-time)
   HDF5_LIB_DIR
               Location of HDF5 libraries (compile-time)
   DEFS        List of MPI NCOs: not user-configurable
@@ -6202,13 +6201,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:6205: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:6204: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6208: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:6207: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6211: output\"" >&5)
+  (eval echo "\"\$as_me:6210: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -7307,7 +7306,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7310 "configure"' > conftest.$ac_ext
+  echo '#line 7309 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9629,11 +9628,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9632: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9631: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9636: \$? = $ac_status" >&5
+   echo "$as_me:9635: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9953,11 +9952,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9956: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9955: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9960: \$? = $ac_status" >&5
+   echo "$as_me:9959: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10058,11 +10057,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10061: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10060: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10065: \$? = $ac_status" >&5
+   echo "$as_me:10064: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10113,11 +10112,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10116: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10115: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10120: \$? = $ac_status" >&5
+   echo "$as_me:10119: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12874,7 +12873,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12877 "configure"
+#line 12876 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12974,7 +12973,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12977 "configure"
+#line 12976 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14977,11 +14976,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14980: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14979: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14984: \$? = $ac_status" >&5
+   echo "$as_me:14983: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15076,11 +15075,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15079: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15078: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15083: \$? = $ac_status" >&5
+   echo "$as_me:15082: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15128,11 +15127,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15131: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15130: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15135: \$? = $ac_status" >&5
+   echo "$as_me:15134: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18815,10 +18814,10 @@ fi
 
 
 
-# Must link with HDF5 if netCDF4 libnetcdf used but netCDF4 capabilities not wanted
+# Link with HDF5 if netCDF4 libnetcdf used but netCDF4 capabilities not wanted
 # Following line enables and initializes this configure option
 echo "################################################"
-echo "# Testing whether libnetcdf is Version 3 or 4  #"
+echo "# Testing whether libnetcdf.a is version 3 or 4  #"
 echo "################################################"
 echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
 
@@ -22537,7 +22536,7 @@ fi
 # End nco_c++
 
 echo "########################################"
-echo "#     Testing for GSL support      #"
+echo "#     Testing for GSL support          #"
 echo "########################################"
 # Begin GSL
 # Store pre-DAP LIBS value to restore from later
@@ -22551,10 +22550,12 @@ fi
 
 # Check for GSL libraries unless told not to
 if test "${enable_gsl}" != 'no'; then
+    { echo "$as_me:$LINENO: NB: 'gsl-config' command must be in default path" >&5
+echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
     CPPFLAGS="`gsl-config --cflags` ${CPPFLAGS}"
     LIBS="`gsl-config --libs` ${LIBS}"
-    { echo "$as_me:$LINENO: NB: Following tests of GSL library and header must succeed for GSL support:" >&5
-echo "$as_me: NB: Following tests of GSL library and header must succeed for GSL support:" >&6;}
+    { echo "$as_me:$LINENO: Following tests of GSL library and header must succeed for GSL support:" >&5
+echo "$as_me: Following tests of GSL library and header must succeed for GSL support:" >&6;}
 
 { echo "$as_me:$LINENO: checking for gsl_sf_gamma_inc in -lgsl" >&5
 echo $ECHO_N "checking for gsl_sf_gamma_inc in -lgsl... $ECHO_C" >&6; }
