@@ -22571,8 +22571,9 @@ echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
 	GSL_LIB="${GSL_ROOT}/lib"
 	LIBS="`${gsl_config} --libs` ${LIBS}"
     fi
-    { echo "$as_me:$LINENO: These tests of GSL library and header must succeed for GSL support:" >&5
-echo "$as_me: These tests of GSL library and header must succeed for GSL support:" >&6;}
+    { echo "$as_me:$LINENO: These GSL library and header tests must succeed for GSL support:" >&5
+echo "$as_me: These GSL library and header tests must succeed for GSL support:" >&6;}
+# fxm: default action of check_lib puts and additional -lgsl into LIBS
 
 { echo "$as_me:$LINENO: checking for gsl_sf_gamma_inc in -lgsl" >&5
 echo $ECHO_N "checking for gsl_sf_gamma_inc in -lgsl... $ECHO_C" >&6; }

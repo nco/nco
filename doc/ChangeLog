@@ -1,6 +1,8 @@
 2009-01-28  Charlie Zender  <zender@uci.edu>
 
-	* Allow specification of Szip library with SZ and SZ_LIB
+	* automake now builds src before doc in case makeinfo not present
+
+	* Allow specification of Szip library in bld/Makefile with SZ and SZ_LIB
 
 	* Allow configure to work when GSL_ROOT specified and when
 	gsl-config is not necessarily on path

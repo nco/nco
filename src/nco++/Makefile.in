@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.40 2009-01-27 16:58:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.41 2009-01-29 00:30:38 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -54,8 +54,9 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_ncap2_OBJECTS = Invoke.$(OBJEXT) ncap2.$(OBJEXT) \
 	ncap2_utl.$(OBJEXT) sdo_utl.$(OBJEXT) fmc_cls.$(OBJEXT) \
-	prs_cls.$(OBJEXT) NcapVar.$(OBJEXT) NcapVarVector.$(OBJEXT) \
-	ncoLexer.$(OBJEXT) ncoParser.$(OBJEXT) ncoTree.$(OBJEXT)
+	fmc_gsl_cls.$(OBJEXT) prs_cls.$(OBJEXT) NcapVar.$(OBJEXT) \
+	NcapVarVector.$(OBJEXT) ncoLexer.$(OBJEXT) ncoParser.$(OBJEXT) \
+	ncoTree.$(OBJEXT)
 ncap2_OBJECTS = $(am_ncap2_OBJECTS)
 ncap2_DEPENDENCIES =
 ncap2_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
@@ -227,7 +228,7 @@ ANTLR = runantlr
 #	${ANTLR} ncoGrammer.g
 
 # fxm: Split off all sources except front-end into nco++ library
-ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc fmc_cls.cc prs_cls.cc NcapVar.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
+ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc fmc_cls.cc fmc_gsl_cls.cc prs_cls.cc NcapVar.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
 ncap2_LDADD = -lnco -lantlr
 @ENABLE_GSL_FALSE@ncap2_LDFLAGS = -L../nco
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
@@ -316,6 +317,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NcapVar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NcapVarVector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmc_cls.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmc_gsl_cls.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap2_utl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncoLexer.Po@am__quote@
