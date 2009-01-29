@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.508 2009-01-25 06:22:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.509 2009-01-29 19:25:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -662,19 +662,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>3.9.6</tt> (which is
-tagged as <tt>nco-3_9_6</tt> due to CVS rules) into local directory
-<tt>nco-3.9.6</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_6 -d nco-3.9.6 nco</tt></p>
+This command retrieves and places NCO version <tt>3.9.7</tt> (which is
+tagged as <tt>nco-3_9_7</tt> due to CVS rules) into local directory
+<tt>nco-3.9.7</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_7 -d nco-3.9.7 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-3_9_6</tt>) and the development version is that the
+(e.g., <tt>nco-3_9_7</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>3.9.6</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>3.9.7</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.

@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.308 2009-01-22 19:21:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.309 2009-01-29 19:25:16 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.6 are ready. 
+The netCDF operators NCO version 3.9.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -11,10 +11,10 @@ produce incorrect results under some conditions:
 
 http://nco.sf.net#bug_thr_msa
 
-If you have 3.9.5, upgrading to 3.9.6 is highly recommended!
+If you have 3.9.5, upgrading to 3.9.7 is highly recommended!
 
 NSF funding for NCO expired 20080831 so development has slowed.
-So we announce with some pleasure that 3.9.6 contains a major new
+So we announce with some pleasure that 3.9.7 contains a major new
 feature: integration with the GNU Scientific Library (GSL). 
 GSL performs fast and accurate computations of many
 mathematical/physics equations: 
@@ -76,7 +76,7 @@ O. Reminder: NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO currently supports netCDF4 atomic data types and compression.
-   NCO 3.9.6 with netCDF4 support should work with HDF5 1.8.1
+   NCO 3.9.7 with netCDF4 support should work with HDF5 1.8.1
    and netCDF4 final and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location

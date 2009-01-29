@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.514 2009-01-22 19:10:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.515 2009-01-29 19:25:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,8 +99,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 3.9.6
-@set doc-edition 3.9.6
+@set nco-edition 3.9.7
+@set doc-edition 3.9.7
 @set copyright-years 1995--2009
 @set update-year 2009
 @set update-date 22 January 2009
@@ -715,7 +715,7 @@ by invoking the compiler with @samp{-Drestrict=''}.}.
 @end html
 @cindex GSL
 @cindex @var{gamma_inc}
-In December 2008, @acronym{NCO} version 3.9.6 was the first to link
+In December 2008, @acronym{NCO} version 3.9.7 was the first to link
 to the GNU Scientific Library (@acronym{GSL}).
 @acronym{NCO} now uses the @acronym{GSL} special function library
 for geoscience-relevant mathematics such as Bessel functions, Legendre
