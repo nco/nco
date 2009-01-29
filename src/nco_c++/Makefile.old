@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.73 2009-01-24 05:58:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.74 2009-01-29 00:51:05 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -14,7 +14,7 @@
 
 # Usage:
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=Y dpn_cln cln all # neige, virga
-# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=Y dpn_cln cln all # greenplanet
+# cd ~/nco/src/nco_c++;SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=Y OMP=Y SZ=Y dpn_cln cln all # greenplanet
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=N dpn_cln cln all # ashes, elnino
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # esmf, sand
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=N dpn_cln cln all # sand
@@ -145,6 +145,10 @@ ifndef ${PRC}
 endif # endif PRC
 ifndef PVM_ARCH
  PVM_ARCH := $(shell ${HOME}/sh/pvmgetarch)
+endif
+ifndef SZ
+# Link to Szip library
+ SZ := N
 endif
 ifndef STC
 # Created statically linked executable
@@ -293,6 +297,13 @@ endif
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
  NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
  NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz
+ifeq (${SZ},Y)
+ifndef SZ_LIB
+ SZ_LIB := /usr/lib # Directory containing libsz.a
+endif
+ NC_LDFLAGS += -L${SZ_LIB}
+ NC_LIBS += -lsz
+endif # !SZ
 ifneq (${HDF5_INC},${NETCDF_INC})
  NETCDF_INC += -I${HDF5_INC}
 endif # end 

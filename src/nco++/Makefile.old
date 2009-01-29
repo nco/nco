@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.71 2009-01-24 05:58:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.72 2009-01-29 00:51:05 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -16,7 +16,7 @@
 # Usage:
 # cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D UDUNITS2=Y all # neige, virga
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D UDUNITS2=N all # greenplanet
+# cd ~/nco/src/nco++;SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D SZ=Y UDUNITS2=N all # greenplanet
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=N OPTS=D UDUNITS2=Y all # ashes, elnino
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=N all # esmf
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=N OPTS=D UDUNITS2=N all # sand, silt, clay, tephra
@@ -169,6 +169,10 @@ ifndef STC
 # Created statically linked executable
  STC := N
 endif
+ifndef SZ
+# Link to Szip library
+ SZ := N
+endif
 ifndef UDUNITS
 # Use UDUnits functionality
  UDUNITS := Y
@@ -303,11 +307,29 @@ endif # !MPI_PRC
 
 ifeq (${NETCDF4},Y)
 # Enable netCDF4 functionality
+ifndef HDF5_ROOT
+ HDF5_ROOT := ${NETCDF4_ROOT}
+endif
+ifndef HDF5_INC
+ HDF5_INC := ${HDF5_ROOT}/include # Directory containing hdf5.h
+endif
+ifndef HDF5_LIB
+ HDF5_LIB := ${HDF5_ROOT}/lib # Directory containing libhdf5.a
+endif
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
- NC_LDFLAGS := -L${NETCDF_LIB}
-# Must add -lsz if szip was used when building HDF5
+ NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
  NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz
+ifeq (${SZ},Y)
+ifndef SZ_LIB
+ SZ_LIB := /usr/lib # Directory containing libsz.a
+endif
+ NC_LDFLAGS += -L${SZ_LIB}
+ NC_LIBS += -lsz
+endif # !SZ
+ifneq (${HDF5_INC},${NETCDF_INC})
+ NETCDF_INC += -I${HDF5_INC}
+endif # end 
 endif # endif NETCDF4
 
 ifeq (${PNETCDF},Y)

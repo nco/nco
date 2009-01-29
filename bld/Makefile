@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.482 2009-01-29 00:21:34 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.483 2009-01-29 00:51:05 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1445,9 +1445,9 @@ obj_dir:
 	-mkdir -p ${MY_OBJ_DIR}
 # The whole shebang
 nco_c++: 
-	-cd ../src/nco_c++; ${MAKE} -f Makefile.old NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} lib dat all
+	-cd ../src/nco_c++; ${MAKE} -f Makefile.old NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} lib dat all
 nco++: 
-	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP=${DAP} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} UDUNITS2=${UDUNITS2} lib all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP=${DAP} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} UDUNITS2=${UDUNITS2} lib all
 allinone: all nco_c++ nco++
 # Targets in bin
 mpi:   mpi_nco
