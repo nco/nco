@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.266 2009-01-29 19:25:15 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.267 2009-01-29 20:45:14 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # Newer convention names this file configure.ac, older names it configure.in
@@ -673,19 +673,19 @@ if test "${enable_gsl}" != 'no'; then
     if test -z "${GSL_ROOT}"; then
 	GSL_ROOT="`gsl-config --prefix`"
     else
-	gsl_config="${GSL_ROOT}/bin/gsl-config"
+	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"
     fi
     if test "${GSL_INC}"; then
 	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
     else
 	GSL_INC="${GSL_ROOT}/include"
-	CPPFLAGS="`${gsl_config} --cflags` ${CPPFLAGS}"
+	CPPFLAGS="`${GSL_CONFIG} --cflags` ${CPPFLAGS}"
     fi
     if test "${GSL_LIB}"; then
 	LIBS="-L${GSL_LIB} ${LIBS}"
     else
 	GSL_LIB="${GSL_ROOT}/lib"
-	LIBS="`${gsl_config} --libs` ${LIBS}"
+	LIBS="`${GSL_CONFIG} --libs` ${LIBS}"
     fi
     AC_MSG_NOTICE([These GSL library and header tests must succeed for GSL support:])
 # fxm: default action of check_lib puts and additional -lgsl into LIBS
