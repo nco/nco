@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.72 2009-01-29 00:51:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.73 2009-01-29 18:01:06 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -900,14 +900,14 @@ ifeq (${FC},ifort)
 # -ip: enable single-file IP optimizations
 # -ipo: enable multi-file IP optimizations
 # -module: specifies path to place .mod files
-# -mp: maintain floating point precision (disables some optimizations)
+# -mp: maintain floating point precision (disables some optimizations) (deprecated 20090129)
 # -nus: do not append an underscore to external subroutine names
 # -vec_report1: indicate vectorized loops (DEFAULT)
 # -tune pn4: optimize for Pentium(R) 4 processor (DEFAULT)
 # -us: append an underscore to external subroutine names
 # -vms: enable VMS and DEC statement extensions
 # -w95: supress warnings for non-standard fortran (which includes OpenMP)
- FFLAGS := -extend_source -fpconstant -fpp2 -implicitnone -us -w95 -mp
+ FFLAGS := -extend_source -fpconstant -fpp2 -implicitnone -us -w95
 # -lsvml needed with -[a]xW
  LDFLAGS_F += -lsvml
  OMP_FLG_F := -openmp
