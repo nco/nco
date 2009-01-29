@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.481 2009-01-28 23:05:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.482 2009-01-29 00:21:34 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -46,12 +46,13 @@
 # cd ~/nco/bld;make OPTS=R;cd -      # "Regular": No optimization or debugging
 # cd ~/nco/bld;make OPTS=X;cd -      # "eXtreme": All debugging switches available
 # cd ~/nco/bld;make sys;cd -         # Install in /usr/local (must sudo)
+# cd ~/nco/bld;make SZ=Y;cd -	     # Szip support
 # cd ~/nco/bld;make UDUNITS=Y;cd -   # UDUnits support
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # glace, neige, virga
-# cd ${HOME}/nco/bld;LDFLAGS='-lsz' UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # greenplanet
+# cd ${HOME}/nco/bld;SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make DAP=N OMP=Y OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
 # cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
@@ -186,6 +187,10 @@ ifndef STC
 # Created statically linked executable
  STC := N
 endif
+ifndef SZ
+# Link to Szip library
+ SZ := N
+endif
 ifndef UDUNITS
 # Use UDUnits functionality
  UDUNITS := Y
@@ -283,6 +288,13 @@ endif
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
  NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
  NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz
+ifeq (${SZ},Y)
+ifndef SZ_LIB
+ SZ_LIB := /usr/lib # Directory containing libsz.a
+endif
+ NC_LDFLAGS += -L${SZ_LIB}
+ NC_LIBS += -lsz
+endif # !SZ
 ifneq (${HDF5_INC},${NETCDF_INC})
  NETCDF_INC += -I${HDF5_INC}
 endif # end 
@@ -1806,6 +1818,7 @@ dbg:
 	@printf "RPM = ${RPM}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
 	@printf "STC = ${STC}\n"
+	@printf "SZ = ${SZ}\n"
 	@printf "THR_NBR = ${THR_NBR}\n"
 	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
 	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
