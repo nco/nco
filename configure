@@ -22568,7 +22568,7 @@ echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
     if test "${GSL_LIB}"; then
 	LIBS="-L${GSL_LIB} ${LIBS}"
     else
-	GSL_LIB="${GSL_LIB}/lib"
+	GSL_LIB="${GSL_ROOT}/lib"
 	LIBS="`${gsl_config} --libs` ${LIBS}"
     fi
     { echo "$as_me:$LINENO: These tests of GSL library and header must succeed for GSL support:" >&5
