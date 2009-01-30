@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.510 2009-01-30 00:59:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.511 2009-01-30 16:07:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -103,9 +103,14 @@ Send it in!<br>
 
 
 <ul>
+<li>Winter, 2009: NCO 3.9.7 released (TBD)</li>
+
 <li>January&nbsp;22, 2009: NCO 3.9.6 released</li>
 
 <li>September&nbsp;24, 2008: Extensive <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a> available</li>
+
+<li>August&nbsp;31, 2008:
+<a href="http://www.nsf.gov">National Science Foundation (NSF)</a> funding for NCO/SDO ends</a></li>
 
 <li>August&nbsp;8, 2008: NCO <a href="http://nco.wiki.sourceforge.net">Wiki</a> is up!</li>
 
@@ -193,9 +198,9 @@ SWAMP at Fall AGU, San Francisco, California</li>
 
 <li>September&nbsp;7, 2004: NCO 2.9.9 released&mdash;<tt>ncpdq</tt> now packs data quietly</li>
 
-<li>August&nbsp;21, 2004:
+<li>September&nbsp;1, 2004:
 <a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
-funds the <a href="#prp_sei">NCO&rarr;SDO Project</a>!</li>
+begins funding the <a href="#prp_sei">NCO&rarr;SDO Project</a>!</li>
 
 <li>August&nbsp;7, 2004: NCO 2.9.8 debuts <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> operator&mdash;performs arbitrary dimension re-ordering and reversal</li>
 
@@ -295,8 +300,8 @@ name="submit" alt="Donate to NCO with PayPal - it's fast, free and secure!">
 </form>
 These homepage donation counters track the influence of your monetary
 donations on NCO development: 
-<dt>Donations received between 20030624 and 20070531: US$60.00.</dt>
-<dt>NCO features "incentivized" by these donations: None.</dt>
+<dt>Donations received between 20030624 and 20090131: US$80.00.</dt>
+<dt>NCO features &ldquo;incentivized&rdquo; by these donations: More happy-face emoticons in the sourcecode.</dt>
 <hr></p>
 
 <a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
@@ -308,11 +313,12 @@ donations on NCO development:
 <p>
 The National Science Foundation
 <a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">NSF IIS-0431203</a>
-funds our
+funded our
 <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>,
 &ldquo;SEI(GEO): Scientific Data Operators Optimized for Efficient Distributed Interactive and Batch Analysis of Tera-Scale Geophysical Data&rdquo;
 as part of the 
-<a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science and Engineering Informatics (SEI)</a> program.
+<a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science
+  and Engineering Informatics (SEI)</a> program from 20040901&ndash;20080831.
 We appreciate the proposal reviewers for and staff of the Divisions of
 <a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
 and
@@ -321,8 +327,7 @@ in the
 <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
 NCO development was completely voluntary and without institutional
 support from its inception until September 2004.
-Hence this NSF support has dramatically changed the scale and pace of 
-NCO/SDO development.
+This NSF support dramatically changed the scale and pace of NCO/SDO development.
 This URL,
 <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a>,
 points to the most up-to-date information on the NCO/SDO proposal.</p> 
@@ -351,25 +356,25 @@ code changes.
 Contact us if you are seriously interested in tackling these
 problems on a full-time, part-time, or pay-per-feature basis.</p>
 
-<p>On the institutional and hardware side, this project connects the
+<p>On the institutional and hardware side, this project connected the
 <a href="http://www.ess.uci.edu/esmf">Earth System Modeling Facility</a> (ESMF)
 to the
 <a href="http://www.calit2.net">California Institute for Telecommunications and Information Technology</a> (Cal-IT2)
 <a href="http://www.optiputer.net">OptIPuter</a> at the
 <a href="http://sdsc.ucsd.edu">San Diego Supercomputer Center</a>.
-These supercomputers will dedicate a TB of storage each to
+These supercomputers dedicated a TB of storage each to
 <a href="http://www.opendap.org">OPeNDAP</a>-served climate simulation
 datasets for DDRA.
-Once the proof-of-concept SDO DDRA is complete, we will attempt a DDRA 
+After the proof-of-concept SDO DDRA was complete, we attempted a DDRA 
 intercomparison of the internationally distributed
 <a href="http://www.ccsm.ucar.edu/experiments/ccsm3.0">global climate change simulations</a>
 that reside on the 
 <a href="http://www.earthsystemgrid.org">Earth System Grid</a>.
-We expect our analyses to yield otherwise undiscovered patterns among
-different climate prediction scenarios for the same model, and among
-different climate models.</p>
+Our techniques tremendously accelerated the analysis of different
+climate prediction scenarios for the same model, and among different
+climate models.</p> 
 
-<p>Finally we still encourage you to e-mail NCO/SDO endorsements to
+<p>We encourage you to e-mail NCO/SDO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
 with Subject: &ldquo;NCO/SDO Proposal Endorsement&rdquo;. 
 An endorsement can be a sentence or a page, describing how NCO/SDO
