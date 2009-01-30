@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.509 2009-01-29 19:25:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.510 2009-01-30 00:59:31 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -503,6 +503,8 @@ You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
 <li><b>NCO/SDO 3.9.7</b>: (<i>In progress</i>) 
+Improve GSL-build support;
+<tt>ncap2</tt> threading improvements;
 <li><b>NCO/SDO 3.9.6</b>: 
 Fix OpenMP MSA <a href="#bug_thr_msa">bug</a> (<i>upgrade highly recommended</i>); 
 Memory management to improve threading;

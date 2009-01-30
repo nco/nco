@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.516 2009-01-29 19:39:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.517 2009-01-30 00:59:31 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.7
 @set copyright-years 1995--2009
 @set update-year 2009
-@set update-date 22 January 2009
+@set update-date 29 January 2009
 @set update-month January 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -715,7 +715,7 @@ by invoking the compiler with @samp{-Drestrict=''}.}.
 @end html
 @cindex GSL
 @cindex @var{gamma_inc}
-In December 2008, @acronym{NCO} version 3.9.7 was the first to link
+In January 2009, @acronym{NCO} version 3.9.6 was the first to link
 to the GNU Scientific Library (@acronym{GSL}).
 @acronym{NCO} now uses the @acronym{GSL} special function library
 for geoscience-relevant mathematics such as Bessel functions, Legendre
@@ -944,26 +944,27 @@ installation).
 @acronym{HDF} @w{version 5} became available in 1999, but did not
 support netCDF (or, for that matter, Fortran) as of December 1999.
 By early 2001, @acronym{HDF5} did support Fortran90.
-However, support for netCDF4 in @acronym{HDF5} is incomplete. 
-Much of the HDF5-netCDF interface is complete, however, and it may be
-separately downloaded from the
-@uref{http://my.unidata.ucar.edu/content/software/netcdf/netcdf-4,netCDF4}
-website. 
-We are eager for @acronym{HDF5} to complete netCDF support.
-This is scheduled to occur sometime in 2007, with the releases of 
-HDF @w{version 1.8} and netCDF @w{version 4}, which are collaborations 
-between Unidata and @acronym{NCSA}. 
+In 2004, Unidata and @acronym{NCSA} began a project to implement
+the @acronym{HDF5} features necessary to support the netCDF API.
 @acronym{NCO} version 3.0.3 added support for reading/writing
 netCDF4-formatted @acronym{HDF5} files in October, 2005.
 See @ref{Selecting Output File Format} for more details.
 
+HDF support for netCDF was completed with HDF5 version 
+@w{version 1.8} in 2007. 
+The netCDF front-end that uses this @acronym{HDF5} back-end 
+was completed and released soon after as netCDF @w{version 4}.
+Download it from the
+@uref{http://my.unidata.ucar.edu/content/software/netcdf/netcdf-4,netCDF4}
+website. 
+
 @html
 <a name="nco4"></a> <!-- http://nco.sf.net/nco.html#nco4 -->
 @end html
-@acronym{NCO} version 3.9.0 added full support for all netCDF4
-atomic data types in May, 2007.
-Support for netCDF4 features will be incremental, i.e., 
-we will add one netCDF4 feature at a time.
+@acronym{NCO} version 3.9.0 added support for all netCDF4 atomic data
+types in May, 2007. 
+Support for additional netCDF4 features has been incremental.
+We add one netCDF4 feature at a time.
 You must build @acronym{NCO} with netCDF4 to obtain this support.
 
 @cindex @code{NC_UBYTE}
