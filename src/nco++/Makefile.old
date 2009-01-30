@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.73 2009-01-29 18:01:06 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.74 2009-01-30 21:10:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -514,8 +514,8 @@ ${MY_DPN_DIR}/%.d : %.cc
 ${MY_DPN_DIR}/%.d : %.cpp
 	${CXX} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
-# The first LDFLAGS is for typical C programs with netCDF, math, and networking
-# The second LDFLAGS enables C/Fortran linking
+# First LDFLAGS is for typical C programs with netCDF, math, and networking
+# Second LDFLAGS enables C/Fortran linking
 
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty

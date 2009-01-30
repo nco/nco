@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.159 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.160 2009-01-30 21:10:29 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.159 2009-01-21 00:15:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.159 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.160 2009-01-30 21:10:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.160 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -416,7 +416,7 @@ main(int argc,char **argv)
 
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-  /* Initilize lmt_all_sct's */ 
+  /* Initialize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
   
   /* Find dimensions associated with variables to be extracted */

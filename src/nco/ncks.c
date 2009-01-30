@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.220 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.221 2009-01-30 21:10:30 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -89,6 +89,7 @@ main(int argc,char **argv)
   nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
+  nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
   nco_bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
   nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
   nco_bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
@@ -117,8 +118,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.220 2009-01-21 00:15:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.220 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.221 2009-01-30 21:10:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.221 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -469,7 +470,7 @@ main(int argc,char **argv)
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
   
-  /* Initilize lmt_all_sct's */ 
+  /* Initialize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
   
   if(fl_out){
@@ -598,7 +599,7 @@ main(int argc,char **argv)
     
     if(PRN_VAR_DATA){
       /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-      for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
+      for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
     } /* end if PRN_VAR_DATA */
     
   } /* !fl_out */

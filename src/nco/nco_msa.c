@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.65 2009-01-21 18:10:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.66 2009-01-30 21:10:30 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -773,12 +773,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_VAR_NM) /* I [flg] Print dimension/variable names */
 {
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose:
      Get variable with limits from input file
-     User supplied dlm_sng, print var (includes nbr_dmim == 0)
+     User supplied dlm_sng, print var (includes nbr_dim == 0)
      Get dimensional units
      if nbr_dim ==0 and dlm_sng==NULL  print variable
      if PRN.. = False print var taking account of FORTRAN (need var indices)

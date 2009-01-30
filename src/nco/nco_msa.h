@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.30 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.31 2009-01-30 21:10:30 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -126,8 +126,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */
-
+ const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_VAR_NM); /* I [flg] Print dimension/variable names */
 
 void
 nco_msa_var_get  /* [fnc] Get var data from disk taking accound of multihyperslabs */
@@ -144,8 +144,6 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
  const int nbr_var,  /* I [nbr] Number of variables */
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
-
-
 
 #ifdef __cplusplus
 } /* end extern "C" */

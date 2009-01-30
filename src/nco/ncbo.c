@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.136 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.137 2009-01-30 21:10:29 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.136 2009-01-21 00:15:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.136 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.137 2009-01-30 21:10:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.137 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -467,7 +467,7 @@ main(int argc,char **argv)
 
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_all_sct *));
-  /* Initilize lmt_all_sct's */ 
+  /* Initialize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr);
 
   /* Find dimensions associated with variables to be extracted */
