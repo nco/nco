@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.74 2009-01-30 21:10:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.75 2009-01-30 21:22:57 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -907,7 +907,7 @@ ifeq (${FC},ifort)
 # -us: append an underscore to external subroutine names
 # -vms: enable VMS and DEC statement extensions
 # -w95: supress warnings for non-standard fortran (which includes OpenMP)
- FFLAGS := -extend_source -fpconstant -fpp2 -implicitnone -us -w95
+ FFLAGS := -extend_source -fpconstant -fpp2 -implicitnone -w95
 # -lsvml needed with -[a]xW
  LDFLAGS_F += -lsvml
  OMP_FLG_F := -openmp
