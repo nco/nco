@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.77 2009-01-30 21:22:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.78 2009-01-31 20:11:55 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -801,7 +801,7 @@ ifeq (icpc,$(firstword ${CXX}))
 # remark #1572: floating-point equality and inequality comparisons are unreliable
  CFLAGS := -w1
  CPPFLAGS += -I${IA32ROOT}/include -I${IA32ROOT}/include/c++
- LDFLAGS := -cxxlib-icc -L${IA32ROOT}/lib ${LDFLAGS} -lsvml
+ LDFLAGS := -L${IA32ROOT}/lib ${LDFLAGS} -lsvml
  OMP_FLG_C := -openmp -openmp_report0
 ifeq (${OPTS},O)
  CFLAGS += -O3 -g ${ICC_RCH_ARG}
