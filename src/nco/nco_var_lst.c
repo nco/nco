@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.81 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.82 2009-02-02 23:50:31 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -308,7 +308,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
        all variables in file, not just over current extraction list. */ 
     /* ...for each variable in file... */
     for(idx_var=0;idx_var<nbr_var;idx_var++){
-      /* This assumption is valid in netCDF2, netCDF3, and netCDF4 */
+      /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
       var_id=idx_var;
       /* fxm: Functionalize remainder and call from both 
 	 nco_var_lst_crd_ass_add() and nco_var_lst_crd_add()? */
@@ -328,8 +328,9 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 	  if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
 	  /* NUL-terminate attribute */
 	  att_val[att_sz]='\0';
-	  /* Split list into separate coordinate names */
-	  crd_lst=nco_lst_prs_2D(att_val,dlm_sng,&nbr_crd);
+	  /* Split list into separate coordinate names
+             Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	  crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
 	  /* ...for each coordinate in "coordinates" attribute... */
 	  for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
 	    /* Verify "coordinate" exists in input file */
@@ -459,10 +460,9 @@ nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables 
 	  if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
 	  /* NUL-terminate attribute */
 	  att_val[att_sz]='\0';
-	  /* Split list into separate coordinate names */
-          /* using nco_lst_prs_sgl_2D() and not nco_lst_prs_2D */
-          /* see TODO 944   */                                        
-	  crd_lst=nco_lst_prs_sgl_2D(att_val ,dlm_sng,&nbr_crd);
+	  /* Split list into separate coordinate names
+             Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	  crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
 	  /* ...for each coordinate in "coordinates" attribute... */
 	  for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
             if(crd_lst[idx_crd]==NULL)

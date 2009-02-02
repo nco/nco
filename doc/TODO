@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1040 2009-02-02 21:50:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1041 2009-02-02 23:51:43 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -674,7 +674,6 @@ nco957.
 nco960. Warn when attempted hyperslab on 2-D (or more) coordinates, e.g., https://sourceforge.net/forum/message.php?msg_id=6282324
 nco961. Add bld/Makefile mechanism to specify SZ libs
 nco962. ncks print coords but not indices or names
-nco963. ncks -c ~/nco/data/in.nc produces segfault
 nco964. 
 ************************************************************************
 End ncoXXX TODOs
