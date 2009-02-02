@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.66 2009-01-30 21:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.67 2009-02-02 21:50:40 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -850,7 +850,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
   /* Call also initializes var.sz with final size */
   
-  /* User supplied dlm_sng, print var (includes nbr_dmim == 0) */  
+  /* User supplied dlm_sng, print var (includes nbr_dmn == 0) */  
   if(dlm_sng != NULL){
     /* Print each element with user-supplied formatting code */
     /* Replace C language '\X' escape codes with ASCII bytes */
@@ -906,29 +906,54 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is scalar, byte, or character */
     lmn=0;
-    (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type));
-    switch(var.type){
-    case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
-    case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
-    case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
-    case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
-    case NC_CHAR:
-      if(var.val.cp[lmn] != '\0'){
-        (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
-        (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
-      }else{ /* Deal with NUL character here */
-        (void)fprintf(stdout, "%s = \"\" %s\n",var_nm,unit_sng);
-      } /* end if */
-      break;
-    case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
-    case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng); break;
-    case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng); break;
-    case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
-    case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
-    case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
-    case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
-    default: nco_dfl_case_nc_type_err(); break;
-    } /* end switch */
+    if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
+    if(PRN_DMN_VAR_NM){
+      switch(var.type){
+      case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
+      case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
+      case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
+      case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
+      case NC_CHAR:
+	if(var.val.cp[lmn] != '\0'){
+	  (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
+	  (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
+	}else{ /* Deal with NUL character here */
+	  (void)fprintf(stdout, "%s = \"\" %s\n",var_nm,unit_sng);
+	} /* end if */
+	break;
+      case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
+      case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng); break;
+      case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng); break;
+      case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
+      case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
+      case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
+      case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
+      default: nco_dfl_case_nc_type_err(); break;
+      } /* end switch */
+    }else{ /* !PRN_DMN_VAR_NM */
+      switch(var.type){
+      case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn]); break;
+      case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn]); break;
+      case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn]); break;
+      case NC_INT: (void)fprintf(stdout,var_sng,var.val.lp[lmn]); break;
+      case NC_CHAR:
+	if(var.val.cp[lmn] != '\0'){
+	  (void)sprintf(var_sng,"'%s'\n",nco_typ_fmt_sng(var.type));
+	  (void)fprintf(stdout,var_sng,var.val.cp[lmn]);
+	}else{ /* Deal with NUL character here */
+	  (void)fprintf(stdout, "\"\"\n");
+	} /* end if */
+	break;
+      case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn]); break;
+      case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn]); break;
+      case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn]); break;
+      case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn]); break;
+      case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn]); break;
+      case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn]); break;
+      case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn]); break;
+      default: nco_dfl_case_nc_type_err(); break;
+      } /* end switch */
+    } /* !PRN_DMN_VAR_NM */
   } /* end if variable is scalar, byte, or character */
   
   if(var.nbr_dim > 0 && dlm_sng == NULL){
@@ -955,7 +980,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       for(jdx=idx;jdx<var.nbr_dim;jdx++)
 	mod_map_out[idx]*=lmt_mult[jdx]->dmn_cnt;
     
-    /* Read in co-ord dims if required */
+    /* Read coordinate dimensions if required */
     if(PRN_DMN_IDX_CRD_VAL){
       var_sct var_crd;
       
@@ -977,7 +1002,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         var_crd.nm=dim[idx].nm;
         var_crd.type=dim[idx].type;
         var_crd.id=dim[idx].cid;
-        /* Read in coordinate var with limits applied */
+        /* Read coordinate variable with limits applied */
 	/* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
 	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx,&var_crd);
 	
@@ -1017,11 +1042,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  /* Format and print dimension part of output string for non-coordinate variables */
 	  if(dim[dmn_idx].cid == var.id) continue; /* If variable is a coordinate then skip printing until later */
 	  if(!dim[dmn_idx].is_crd_dmn){ /* If dimension is not a coordinate... */
-	    if(FORTRAN_IDX_CNV) (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
+	    if(PRN_DMN_VAR_NM){
+	      if(FORTRAN_IDX_CNV) (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
+	    } /* !PRN_DMN_VAR_NM */
 	    continue;
 	  } /* end if */
 	  
-	  (void)sprintf(dmn_sng,"%%s[%%ld]=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
+	  if(PRN_DMN_VAR_NM) (void)sprintf(dmn_sng,"%%s[%%ld]=%s ",nco_typ_fmt_sng(dim[dmn_idx].type)); else (void)sprintf(dmn_sng,"%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 	  
 	  if(FORTRAN_IDX_CNV){
@@ -1031,21 +1058,39 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  
 	  /* Account for hyperslab offset in coordinate values*/
 	  crd_idx_crr=dmn_sbs_ram[dmn_idx];
-	  switch(dim[dmn_idx].type){
-	  case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
-	  case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
-	  case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
-	  case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
-	  case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
-	  case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
-	  case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
-	  case NC_USHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.usp[crd_idx_crr]); break;
-	  case NC_UINT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.uip[crd_idx_crr]); break;
-	  case NC_INT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
-	  case NC_UINT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
-	  case NC_STRING: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sngp[crd_idx_crr]); break;
-	  default: nco_dfl_case_nc_type_err(); break;
-	  } /* end switch */
+	  if(PRN_DMN_VAR_NM){
+	    switch(dim[dmn_idx].type){
+	    case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
+	    case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
+	    case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
+	    case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
+	    case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
+	    case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
+	    case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
+	    case NC_USHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.usp[crd_idx_crr]); break;
+	    case NC_UINT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.uip[crd_idx_crr]); break;
+	    case NC_INT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
+	    case NC_UINT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
+	    case NC_STRING: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sngp[crd_idx_crr]); break;
+	    default: nco_dfl_case_nc_type_err(); break;
+	    } /* end switch */
+	  }else{ /* !PRN_DMN_VAR_NM */
+	    switch(dim[dmn_idx].type){
+	    case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.fp[crd_idx_crr]); break;
+	    case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.dp[crd_idx_crr]); break;
+	    case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.sp[crd_idx_crr]); break;
+	    case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.lp[crd_idx_crr]); break;
+	    case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.cp[crd_idx_crr]); break;
+	    case NC_BYTE: (void)fprintf(stdout,dmn_sng,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
+	    case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
+	    case NC_USHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.usp[crd_idx_crr]); break;
+	    case NC_UINT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.uip[crd_idx_crr]); break;
+	    case NC_INT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
+	    case NC_UINT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
+	    case NC_STRING: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.sngp[crd_idx_crr]); break;
+	    default: nco_dfl_case_nc_type_err(); break;
+	    } /* end switch */
+	  } /* !PRN_DMN_VAR_NM */
 	} /* end loop over dimensions */
       } /* end if PRN_DMN_IDX_CRD_VAL */
       
@@ -1100,27 +1145,45 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       } /* end if NC_CHAR */
       
       /* Print variable name, index, and value */
-      (void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type));
+      if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
       if(FORTRAN_IDX_CNV){
 	(void)nco_msa_c_2_f(var_sng);
 	var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
       
-      switch(var.type){
-      case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
-      case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
-      case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sp[lmn],unit_sng); break;
-      case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.lp[lmn],unit_sng); break;
-      case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.cp[lmn],unit_sng); break;
-      case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,(unsigned char)var.val.bp[lmn],unit_sng); break;
-      case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ubp[lmn],unit_sng); break;
-      case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.usp[lmn],unit_sng); break;
-      case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.uip[lmn],unit_sng); break;
-      case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.i64p[lmn],unit_sng); break;
-      case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ui64p[lmn],unit_sng); break;
-      case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sngp[lmn],unit_sng); break;
-      default: nco_dfl_case_nc_type_err(); break;
-      } /* end switch */
+      if(PRN_DMN_VAR_NM){
+	switch(var.type){
+	case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
+	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
+	case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sp[lmn],unit_sng); break;
+	case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.lp[lmn],unit_sng); break;
+	case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.cp[lmn],unit_sng); break;
+	case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,(unsigned char)var.val.bp[lmn],unit_sng); break;
+	case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ubp[lmn],unit_sng); break;
+	case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.usp[lmn],unit_sng); break;
+	case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.uip[lmn],unit_sng); break;
+	case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.i64p[lmn],unit_sng); break;
+	case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ui64p[lmn],unit_sng); break;
+	case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sngp[lmn],unit_sng); break;
+	default: nco_dfl_case_nc_type_err(); break;
+	} /* end switch */
+      }else{ /* !PRN_DMN_VAR_NM */
+	switch(var.type){
+	case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn],unit_sng); break;
+	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn],unit_sng); break;
+	case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn],unit_sng); break;
+	case NC_INT: (void)fprintf(stdout,var_sng,var.val.lp[lmn],unit_sng); break;
+	case NC_CHAR: (void)fprintf(stdout,var_sng,var.val.cp[lmn],unit_sng); break;
+	case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn],unit_sng); break;
+	case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn],unit_sng); break;
+	case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn],unit_sng); break;
+	case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn],unit_sng); break;
+	case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn],unit_sng); break;
+	case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn],unit_sng); break;
+	case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn],unit_sng); break;
+	default: nco_dfl_case_nc_type_err(); break;
+	} /* end switch */
+      } /* !PRN_DMN_VAR_NM */
     } /* end loop over elements */
     
     (void)nco_free(mod_map_in);

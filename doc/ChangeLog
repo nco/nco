@@ -1,3 +1,7 @@
+2009-02-02  Charlie Zender  <zender@uci.edu>
+
+	* ncks --no_dmn_var_nm implements naked printing requested in TODO nco962 
+
 2009-01-29  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1

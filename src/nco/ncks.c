@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.221 2009-01-30 21:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.222 2009-02-02 21:50:40 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.221 2009-01-30 21:10:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.221 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.222 2009-02-02 21:50:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.222 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -180,6 +180,7 @@ main(int argc,char **argv)
       {"noclobber",no_argument,0,0},
       {"no-clobber",no_argument,0,0},
       {"no_clobber",no_argument,0,0},
+      {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
@@ -283,6 +284,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")){
 	FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
+      } /* endif "no_clb" */
+      if(!strcmp(opt_crr,"no_dmn_var_nm")){
+	PRN_DMN_VAR_NM=False;
       } /* endif "no_clb" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
