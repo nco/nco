@@ -1,5 +1,8 @@
 2009-02-02  Charlie Zender  <zender@uci.edu>
 
+	* Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 
+	in nco_var_lst_crd_add(). Fixes crash on 'ncks -c ~/nco/data/in.nc'.
+	
 	* ncks --no_dmn_var_nm implements naked printing requested in TODO nco962 
 
 2009-01-29  Charlie Zender  <zender@uci.edu>
