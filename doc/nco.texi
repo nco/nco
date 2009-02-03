@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.517 2009-01-30 00:59:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.518 2009-02-03 00:08:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.7
 @set copyright-years 1995--2009
 @set update-year 2009
-@set update-date 29 January 2009
-@set update-month January 2009
+@set update-date 2 February 2009
+@set update-month February 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -3169,9 +3169,12 @@ indicates that @emph{only} user-defined variables should be output.
 @cindex pattern matching
 @cindex wildcards
 @cindex @command{egrep}
+@cindex @command{ncatted}
 @cindex @acronym{GNU}
 As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
 of the @samp{-v} switch may contain @dfn{extended regular expressions}.
+As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
+to @command{ncatted} may contain @dfn{extended regular expressions}. 
 For example, @samp{-v '^DST'} selects all variables beginning with the 
 string @samp{DST}.
 Extended regular expressions are defined by the @acronym{GNU}
@@ -8072,6 +8075,19 @@ Overwrite the @code{quanta} attribute of variable
 @example
 ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
 @end example
+
+@cindex extended regular expressions
+@cindex regular expressions
+@cindex pattern matching
+@cindex wildcards
+As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
+to @command{ncatted} may contain @dfn{extended regular expressions}.
+Create @code{isotope} attributes for all variables containing @samp{H2O}
+in their names.
+@example
+ncatted -O -a isotope,'^H2O*',c,s,"18" in.nc
+@end example
+See @ref{Subsetting Variables} for more details.
 
 Demonstrate input of C-language escape sequences (e.g., @code{\n}) and
 other special characters (e.g., @code{\"}) 

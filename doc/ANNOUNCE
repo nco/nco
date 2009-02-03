@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.309 2009-01-29 19:25:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.310 2009-02-03 00:08:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.7 are ready. 
 
@@ -29,27 +29,11 @@ B. ncap2 supports dozens of GNU Scientific library functions, e.g.,
    ncap2 -s 'foo=gsl_sf_gamma_inc(time/10,time);' in.nc out.nc
    http://nco.sf.net/nco.html#gsl
 
-C. ncap2 supports #include files, syntax is #include "pi.nco" 
-
 D. ncatted matches regular expressions to variable names
    http://nco.sf.net/nco.html#xmp_ncatted
 
-E. ncatted workaround for netCDF4 _FillValue (Henry Butowsky)
-   ncatted can now change _FillValue on netCDF4 files
-
-F. Disable OpenMP on netCDF4/HDF5-enabled operators
-   It is too difficult for the NCO "configure" apparatus to determine
-   whether the underlying libraries (HDF5, netCDF4) support OpenMP.
-   So, for now, we assume they do not.
-
-G. Fix Solaris configure problem with _POSIX_SOURCE
-
-H. ncra does not attempt to average record variables of type NC_CHAR
-
-I. CF-convention "coordinates" attribute strings with excessive whitespace work
-
-J. ncap2 correctly propagates missing values through expressions with
-   constant operands
+I. CF-convention "coordinates" attribute strings with excessive
+   whitespace work with ncks -c
 
 K. Pre-built Debian Sid & Ubuntu Hardy packages are available.
    http://nco.sf.net#debian

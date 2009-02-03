@@ -1,5 +1,7 @@
 2009-02-02  Charlie Zender  <zender@uci.edu>
 
+	* Add variable wildcarding in ncatted example
+
 	* Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 
 	in nco_var_lst_crd_add(). Fixes crash on 'ncks -c ~/nco/data/in.nc'
 	separately listed as TODO nco963. 
