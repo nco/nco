@@ -1,4 +1,3 @@
-
 /* Purpose: netCDF arithmetic processor -  */
 /* prs_cls -- symbol table - data members & class methods */
 
@@ -29,7 +28,8 @@ class fmc_cls;
   char *fl_in; /* [sng] Input data file */
   int in_id; /* [id] Input data file ID */
   char *fl_out; /* [sng] Output data file */
-  int out_id;   /* [id] Output data file ID */
+  int out_id;   /* [id] Output data file ID -Handle for reading & writing */
+  int r_out_id; /* [id] Output data file ID -Handle for reading only */
   NcapVector<dmn_sct*> &dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
   NcapVector<dmn_sct*> &dmn_out_vtr;       //Vector of dimensions in output file file
   std::vector<fmc_cls> &fmc_vtr;         //List of functions/methods nb doesn't change 
@@ -69,6 +69,7 @@ class fmc_cls;
      in_id=prs_cpy.in_id;
      fl_out=prs_cpy.fl_out;
      out_id=prs_cpy.out_id;         
+     r_out_id=prs_cpy.r_out_id;         
 
      ntl_scn=prs_cpy.ntl_scn;
      FORTRAN_IDX_CNV=prs_cpy.FORTRAN_IDX_CNV;
@@ -131,6 +132,20 @@ ncap_var_write             /*    [fnc] Write var to output file prs_arg->fl_out 
  bool bram);               /* I  [bool] true if a ram only variable */
 
 
+int                        /* O  [bool] bool - true if sucessful */
+ncap_var_write_slb(        /*    [fnc] Write hyperslab to O var already exists in O */ 
+var_sct *var               /* I  [bool] var contains data + hyperslab limits */   
+);
+
+
+                              
+int                         /* O  [bool] bool - true if sucessful */
+ncap_var_write_wrp(         /*    [fnc] Write hyperslab or regular var */ 
+var_sct *var,               /* I  [sct] data + limits if needed   */
+bool bram,                  /* I  [flg] true if ram variable */     
+bool bslb);                 /* I  [flg] true if slab to write */      
+
+
 int 
 ncap_var_write_omp(
 var_sct *var,
@@ -141,7 +156,7 @@ void
 ncap_def_ntl_scn           /* define variables captured on first parse */
 (void); 
 
-};
+ };
 
 
 #endif
