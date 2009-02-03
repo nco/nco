@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.148 2009-01-27 11:29:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.149 2009-02-03 14:31:55 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -860,8 +860,9 @@ public:
      ncoTree** wlk_ptr,
      int nbr_wlk);
 
-
-      
+     if(tr== ANTLR_USE_NAMESPACE(antlr)nullAST)
+        err_prn("run_dbl"," REPORTS given a null AST Refrence\n");
+            
      //small list dont bother with double parsing     
      if(icnt <4) goto small;
 
@@ -876,6 +877,9 @@ public:
     (void)nco_redef(prs_arg->out_id);  
     (void)prs_arg->ncap_def_ntl_scn();
     (void)nco_enddef(prs_arg->out_id);  
+
+    // see if below does anything ? 
+    (void)nco_sync(prs_arg->out_id); 
 
 
     // Sort expressions - MPI preparation
@@ -899,6 +903,8 @@ public:
       
     goto end;
     } //end if
+
+
 
 small: 
      idx=0;
@@ -973,7 +979,18 @@ exit: return iret;
 
     } // end run_exe
 
-
+public:
+RefAST nco_dupList(RefAST tr){
+      RefAST otr;  
+      // nb astFactory is protected- must call from within class
+      otr=astFactory->dupList(tr);      
+      otr->setNextSibling( ANTLR_USE_NAMESPACE(antlr)nullAST ) ;
+      /*  
+      if(otr->getNextSibling()!= ANTLR_USE_NAMESPACE(antlr)ASTNULL )     
+        err_prn("nco_dupList", "NON NULL AST SIBLING\n");
+      */ 
+      return otr; 
+     }
 } // end native block
 
 
@@ -1013,8 +1030,8 @@ static std::vector<std::string> lpp_vtr;
     | #(exp:EXPR ass:.) {
        RefAST tr;
        RefAST ntr;  
-
-       if(ass->getType()==ASSIGN && !prs_arg->ntl_scn ){
+       
+       if(ass->getType()==ASSIGN && prs_arg->ntl_scn ){
          ntr=ass->getFirstChild();
          if(ntr->getType()==UTIMES) 
            ntr=ntr->getFirstChild();
@@ -1024,7 +1041,7 @@ static std::vector<std::string> lpp_vtr;
            // std::cout << "Modified assign "<<exp->toStringTree()<<std::endl;      
          }
        } 
-
+       
 
        var=out(exp->getFirstChild());
        if(var != (var_sct*)NULL)
@@ -1688,34 +1705,30 @@ var=NULL_CEWI;
                  err_prn(fnc_nm, "Hyperslab for "+var_nm+" - number of elements on LHS(" +nbr2sng(var_lhs->sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
                  }
 
-              //put block              
+                
+              // swap values about
+              var_lhs->val.vp=var_rhs->val.vp; 
+              var_rhs->val.vp=(void*)NULL; 
+
+              //write block              
               { 
-               long mult_srd=1L;
-               std::vector<long> dmn_srt_vtr;
-               std::vector<long> dmn_cnt_vtr;
-               std::vector<long> dmn_srd_vtr;
-    
                for(idx=0;idx<nbr_dmn;idx++){
-                 dmn_srt_vtr.push_back(lmt_vtr[idx]->srt);
-                 dmn_cnt_vtr.push_back(lmt_vtr[idx]->cnt);
-                 dmn_srd_vtr.push_back(lmt_vtr[idx]->srd);  
-                 mult_srd*=lmt_vtr[idx]->srd;
+                 var_lhs->srt[idx]=lmt_vtr[idx]->srt; 
+                 var_lhs->cnt[idx]=lmt_vtr[idx]->cnt; 
+                 var_lhs->srd[idx]=lmt_vtr[idx]->srd; 
                } /* end loop over idx */
     
 
-               /* Check for stride */
-               if(mult_srd == 1L)
-	            (void)nco_put_vara(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],var_rhs->val.vp,var_rhs->type);
-               else
-	            (void)nco_put_vars(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],&dmn_srd_vtr[0],var_rhs->val.vp,var_rhs->type);
-               
+               // write slab to O contains call to Open MP critical region
+               // routine also frees up calling var    
+               (void)prs_arg->ncap_var_write_slb(var_lhs);     
+                 
 
               } // end put block !!
 
                  
-              var_lhs=nco_var_free(var_lhs);
 
-             } // end else
+             } // end else if regular var
 
 
               var_rhs=nco_var_free(var_rhs);
