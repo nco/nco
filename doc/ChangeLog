@@ -1,5 +1,10 @@
 2009-02-03  Charlie Zender  <zender@uci.edu>
 
+	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.7 release"
+	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
+	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
+
 	* Tweak ./configure for GSL
 
 2009-02-02  Charlie Zender  <zender@uci.edu>
@@ -11,13 +16,6 @@
 	separately listed as TODO nco963. 
 	
 	* ncks --no_dmn_var_nm implements naked printing requested in TODO nco962 
-
-2009-01-29  Charlie Zender  <zender@uci.edu>
-
-	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
-	  cd ~/nco;cvs commit -m "Preparing nco-3.9.6 release"
-	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
-	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
 
 2009-01-28  Charlie Zender  <zender@uci.edu>
 
