@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.83 2009-01-21 00:15:38 zender Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.84 2009-02-03 14:31:14 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.83 2009-01-21 00:15:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.83 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.84 2009-02-03 14:31:14 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.84 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -513,9 +513,7 @@ main(int argc,char **argv)
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   (void)nco_enddef(out_id);
-  
-  
-  
+    
   
   /* Set arguments for  script execution nb all these are use as references  */
   prs_cls prs_arg(dmn_in_vtr,dmn_out_vtr,fmc_vtr,var_vtr,int_vtr);
@@ -524,6 +522,8 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
+  //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_arg.r_out_id); /* Read Output file */
+  rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_arg.r_out_id); /* Read Output file */
 
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
@@ -547,8 +547,12 @@ main(int argc,char **argv)
 
     // open files for each thread
     rcd=nco_open(fl_in,NC_NOWRITE,&prs_tmp.in_id);
-    //prs_tmp.in_id=in_id;
-    //rcd=nco_open(fl_out_tmp, NC_WRITE|NC_SHARE,&prs_tmp.out_id);
+
+    // Handle to read output Only
+    //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_tmp.r_out_id);
+   rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_tmp.r_out_id);
+   
+    // only one handle for reading & writing 
     prs_tmp.out_id=out_id;
 
     prs_vtr.push_back(prs_tmp);
@@ -767,7 +771,7 @@ main(int argc,char **argv)
   /* Close all files in threads --except main thread */
   for( idx=1; idx<thr_nbr; idx++){
     rcd=nco_close(prs_vtr[idx].in_id);
-    //rcd=nco_close(prs_vtr[idx].out_id);
+    rcd=nco_close(prs_vtr[idx].r_out_id);
   }
 
   /* Remove local copy of file */
