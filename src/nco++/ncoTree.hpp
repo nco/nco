@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.78 2009-01-21 21:37:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.79 2009-02-03 22:11:12 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -281,8 +281,9 @@ public:
      ncoTree** wlk_ptr,
      int nbr_wlk);
 
-
-      
+     if(tr== ANTLR_USE_NAMESPACE(antlr)nullAST)
+        err_prn("run_dbl"," REPORTS given a null AST Refrence\n");
+            
      //small list dont bother with double parsing     
      if(icnt <4) goto small;
 
@@ -297,6 +298,9 @@ public:
     (void)nco_redef(prs_arg->out_id);  
     (void)prs_arg->ncap_def_ntl_scn();
     (void)nco_enddef(prs_arg->out_id);  
+
+    // see if below does anything ? 
+    (void)nco_sync(prs_arg->out_id); 
 
 
     // Sort expressions - MPI preparation
@@ -320,6 +324,8 @@ public:
       
     goto end;
     } //end if
+
+
 
 small: 
      idx=0;
@@ -394,7 +400,18 @@ exit: return iret;
 
     } // end run_exe
 
-
+public:
+RefAST nco_dupList(RefAST tr){
+      RefAST otr;  
+      // nb astFactory is protected- must call from within class
+      otr=astFactory->dupList(tr);      
+      otr->setNextSibling( ANTLR_USE_NAMESPACE(antlr)nullAST ) ;
+      /*  
+      if(otr->getNextSibling()!= ANTLR_USE_NAMESPACE(antlr)ASTNULL )     
+        err_prn("nco_dupList", "NON NULL AST SIBLING\n");
+      */ 
+      return otr; 
+     }
 #line 50 "ncoTree.hpp"
 public:
 	ncoTree();

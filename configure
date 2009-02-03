@@ -22557,19 +22557,19 @@ echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
     if test -z "${GSL_ROOT}"; then
 	GSL_ROOT="`gsl-config --prefix`"
     else
-	gsl_config="${GSL_ROOT}/bin/gsl-config"
+	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"
     fi
     if test "${GSL_INC}"; then
 	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
     else
 	GSL_INC="${GSL_ROOT}/include"
-	CPPFLAGS="`${gsl_config} --cflags` ${CPPFLAGS}"
+	CPPFLAGS="`${GSL_CONFIG} --cflags` ${CPPFLAGS}"
     fi
     if test "${GSL_LIB}"; then
 	LIBS="-L${GSL_LIB} ${LIBS}"
     else
 	GSL_LIB="${GSL_ROOT}/lib"
-	LIBS="`${gsl_config} --libs` ${LIBS}"
+	LIBS="`${GSL_CONFIG} --libs` ${LIBS}"
     fi
     { echo "$as_me:$LINENO: These GSL library and header tests must succeed for GSL support:" >&5
 echo "$as_me: These GSL library and header tests must succeed for GSL support:" >&6;}

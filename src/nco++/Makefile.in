@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.42 2009-01-29 19:39:11 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.43 2009-02-03 22:11:11 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -230,12 +230,14 @@ ANTLR = runantlr
 # fxm: Split off all sources except front-end into nco++ library
 ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc fmc_cls.cc fmc_gsl_cls.cc prs_cls.cc NcapVar.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
 ncap2_LDADD = -lnco -lantlr
-@ENABLE_GSL_FALSE@ncap2_LDFLAGS = -L../nco
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
 # ncap2_LDADD = ../nco/.libs/libnco.dylib -lantlr
-@ENABLE_GSL_TRUE@ncap2_LDFLAGS = -L../nco $(shell 'gsl-config --libs')
+@ENABLE_GSL_TRUE@GSL_LIB_ARG = $(shell 'gsl-config --libs')
+@ENABLE_GSL_TRUE@GSL_INC_ARG = $(shell 'gsl-config --cflags')
+@ENABLE_GSL_FALSE@ncap2_LDFLAGS = -L../nco
+@ENABLE_GSL_TRUE@ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
 @ENABLE_GSL_FALSE@INCLUDES = -I./ -I../nco
-@ENABLE_GSL_TRUE@INCLUDES = -I./ -I../nco $(shell 'gsl-config --cflags')
+@ENABLE_GSL_TRUE@INCLUDES = -I./ -I../nco ${GSL_INC_ARG}
 
 # 20060824: *.hpp and *.cpp files are now part of source tree
 # DISTCLEANFILES=ncoLexer.hpp ncoParser.hpp ncoParserTokenTypes.hpp ncoParserTokenTypes.txt ncoTree.hpp
