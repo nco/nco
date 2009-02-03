@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.88 2009-01-23 15:42:13 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.89 2009-02-03 01:46:57 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -231,8 +231,7 @@ sub tst_rgr {
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0;  # Reset array
 
-
-	$tst_cmd[0]="ncatted -O  $nco_D_flg -a nw1,'^three*',c,i,999  $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999  $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tempf_00% %tempf_01%";
 	$tst_cmd[2]="ncks -O -C -H -s '%i'  -v n2 %tempf_01%";
 	$dsc_sng="Check ncatted variable wildcarding -(Failure expected when NOT built with regex)";
@@ -240,14 +239,9 @@ sub tst_rgr {
 	$tst_cmd[4] = "SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0;  # Reset array
-
-
-
-
     }
     
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
-    
     
 ####################
 #### ncbo tests ####
