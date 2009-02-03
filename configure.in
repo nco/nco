@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.268 2009-02-03 22:33:00 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.269 2009-02-03 23:00:12 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # Newer convention names this file configure.ac, older names it configure.in
@@ -679,7 +679,7 @@ if test "${enable_gsl}" != 'no'; then
 	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
     else
 	GSL_INC="${GSL_ROOT}/include"
-	GSL_INC_ARG=`${GSL_CONFIG} --cflags`
+	GSL_INC_ARG="`${GSL_CONFIG} --cflags`"
 	CPPFLAGS="${GSL_INC_ARG} ${CPPFLAGS}"
     fi
     if test "${GSL_LIB}"; then

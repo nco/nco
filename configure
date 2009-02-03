@@ -22563,7 +22563,7 @@ echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
 	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
     else
 	GSL_INC="${GSL_ROOT}/include"
-	GSL_INC_ARG=`${GSL_CONFIG} --cflags`
+	GSL_INC_ARG="`${GSL_CONFIG} --cflags`"
 	CPPFLAGS="${GSL_INC_ARG} ${CPPFLAGS}"
     fi
     if test "${GSL_LIB}"; then
