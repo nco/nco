@@ -13,7 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <antlr/AST.hpp>
-#include "ncoParserTokenTypes.hpp"
+#include "ncoEnumTokenTypes.hpp"
 #include "libnco++.hh"
 #include "ncoLexer.hpp"
 #include "ncoParser.hpp"
@@ -48,6 +48,8 @@ int kdx;
 int mdx;
 int lcl_sz;
 int nbr_sz;
+var_sct *var;
+RefAST tr;
 
 static int nbr_wlk; //same as number of threads
 static ncoTree** wlk_ptr;
@@ -91,15 +93,28 @@ static ncoTree** wlk_ptr;
      continue; 
    } 
 
+  
+   // do an nc_sync for all output threads
+   (void)nco_sync(wlk_ptr[0]->prs_arg->out_id);      
+   for(mdx=0; mdx<nbr_wlk; mdx++)
+     (void)nco_sync(wlk_ptr[mdx]->prs_arg->r_out_id); 
+
+   
    inn_vtr=all_ast_vtr[idx+1];
-
-
+   /*
+   for(mdx=0; mdx<inn_vtr.size(); mdx++){
+     tr=wlk_ptr[0]->nco_dupList(inn_vtr[mdx]);
+     inn_vtr[mdx]=tr;
+   } 
+   */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(kdx,wlk_lcl) shared(wlk_ptr,idx,nbr_sz,inn_vtr) 
+#pragma omp parallel for default(none) private(kdx,wlk_lcl,var,tr) shared(wlk_ptr,idx,nbr_sz,inn_vtr )
 #endif
    for(kdx=0 ;kdx< nbr_sz; kdx++) {      
      wlk_lcl= wlk_ptr[omp_get_thread_num()];
-     wlk_lcl->statements(inn_vtr[kdx]);
+       tr=inn_vtr[kdx];
+     wlk_lcl->statements(tr);
+
    } //end OPENMP parallel loop
 
    // Copy all atts defined in thread in to var_vtr
@@ -113,12 +128,16 @@ static ncoTree** wlk_ptr;
        wlk_ptr[0]->prs_arg->var_vtr.push_ow(lcl_vtr[mdx]); 
      lcl_vtr.clear();   
    }
-  
+
+   // do an nc_sync for all output threads
+   (void)nco_sync(wlk_ptr[0]->prs_arg->out_id);      
+   for(mdx=0; mdx<nbr_wlk; mdx++)
+     (void)nco_sync(wlk_ptr[mdx]->prs_arg->r_out_id); 
 
 
+ } // end for idx
 
- } 
- // end for idx
+
 
  return 1;
 }
@@ -131,7 +150,8 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
   
   const std::string fnc_nm("parse_antlr"); // [sng] Function name
 
-  int idx;  
+  int idx;
+  int thd_nbr=(int)prs_vtr.size();  
   std::string filename(fl_spt_usr);
   
   prs_cls *prs_arg;
@@ -221,7 +241,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
   
   try {   
     ncoTree* wlk_obj;    
-    for(idx=0 ; idx< (int)prs_vtr.size(); idx++){
+    for(idx=0 ; idx< thd_nbr; idx++){
       wlk_obj=new ncoTree(&prs_vtr[idx]);  
       wlk_obj->initializeASTFactory(ast_factory);
       wlk_obj->setASTFactory(&ast_factory);
@@ -229,7 +249,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
     }      
 
     // initialize static members 
-    (void)ncap_omp_exe(all_ast_vtr,&wlk_vtr[0],(int)wlk_vtr.size());
+    (void)ncap_omp_exe(all_ast_vtr,&wlk_vtr[0],thd_nbr);
     if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walkers initialized");
   
     wlk_vtr[0]->run_exe(t,0);
