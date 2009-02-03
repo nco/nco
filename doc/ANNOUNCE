@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.310 2009-02-03 00:08:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.311 2009-02-03 22:33:00 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.7 are ready. 
 
@@ -35,10 +35,10 @@ D. ncatted matches regular expressions to variable names
 I. CF-convention "coordinates" attribute strings with excessive
    whitespace work with ncks -c
 
-K. Pre-built Debian Sid & Ubuntu Hardy packages are available.
+K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages available:
    http://nco.sf.net#debian
 
-L. Pre-built RPM packages are available.
+L. Pre-built (possibly out-of-date) Fedora and CentOS RPMs available:
    http://nco.sf.net#rpm
 
 M. Find/add NCO tips and tricks on the NCO Wiki (thanks to Tom Roche):
