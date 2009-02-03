@@ -41,31 +41,22 @@ bool bfll){
      Parser calls ncap_var_init() when it encounters a new RHS variable */
   
   const char fnc_nm[]="prs_cls::ncap_var_init"; 
+  bool bskp_npt=false;
   
   int idx;
   int dmn_var_nbr;
-  int *dim_id=NULL_CEWI;
   int var_id;
   int rcd;
   int fl_id;
-  
-  bool bskp_npt=false;
-  
   char dmn_nm[NC_MAX_NAME];
   const char *var_nm;
+
+  var_sct *var=NULL_CEWI;;
   
-  dmn_sct *dmn_fd; 
-  dmn_sct *dmn_nw;
-  
-   
-  var_sct *var;
-  
- NcapVar *Nvar;
-  
+  NcapVar *Nvar;
+
   var_nm=snm.c_str();
 
-  std::vector<dmn_sct*> dmn_tp_out;
-  
   
   // INITIAL SCAN
   if(ntl_scn){
@@ -81,7 +72,14 @@ bool bfll){
     }
     bfll=false;
   }
+ 
   
+  if(dbg_lvl_get() > 2 && !ntl_scn) {
+    std::ostringstream os;
+    os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
+    dbg_prn(fnc_nm,os.str());  
+  }
+ 
   
   // FINAL SCAN
   // We have a  dilema -- its possible for a variable to exist in input & output 
@@ -91,21 +89,30 @@ bool bfll){
   // So what we want to happen in these cases is read the original var from
   // input. --Later on in the script the empty var in output will be populated 
   // and subsequent reads will occur from  output 
+
   if(!ntl_scn){
     Nvar=var_vtr.find(var_nm);
     
     // var is defined in O and populated
     if(Nvar && Nvar->flg_stt==2 && !Nvar->flg_mem){
       var=Nvar->cpyVarNoData();
-      //var=Nvar->cpyVar();
-      fl_id=out_id; 
-      //yuck - yuck use a goto
-      goto lbl_end; 
+
+#ifdef _OPENMP
+      fl_id= ( omp_in_parallel() ? r_out_id : out_id );
+#else    
+      fl_id=out_id;  
+#endif
+      var->tally=(long *)NULL;
+      /* Retrieve variable values from disk into memory */
+      if(bfll)
+        (void)nco_var_get(fl_id,var); 
+
+      return var;
     }
+
     // var is defined in O and populated && a RAM variable
     if(Nvar && Nvar->flg_stt==2 && Nvar->flg_mem){
       var=Nvar->cpyVar();
-      var->tally=(long *)NULL;
       return var;
     }
     
@@ -114,94 +121,112 @@ bool bfll){
     // Set flag so read is tried only from input
     // Maybe not the best solution ?
     // what else ??? 
-    if(Nvar && Nvar->flg_stt==1){
+    if(Nvar && Nvar->flg_stt==1 )
       bskp_npt=true;
-      
-    } 
-  }
+     
+  } // end !ntl_scn
+
+
   
+
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_id);
   if(rcd == NC_NOERR && !bskp_npt){
-    fl_id=out_id;
-  }else{
-    /* Check input file for ID */
-    rcd=nco_inq_varid_flg(in_id,var_nm,&var_id);
-    if(rcd != NC_NOERR){
-      /* Return NULL if variable not in input or output file */
-      std::ostringstream os;
-      os<<"Unable to find variable " <<var_nm << " in " << fl_in <<" or " << fl_out;
-      wrn_prn(fnc_nm,os.str());
-      return NULL_CEWI;
-    } /* end if */
-    
-    /* Find dimensions used in var
-       Learn which are not already in output list dmn_out and output file
-       Add these to output list and output file */
-    //(void)nco_redef(out_id);
-    fl_id=in_id;
-    
-    (void)nco_inq_varndims(fl_id,var_id,&dmn_var_nbr);
-    if(dmn_var_nbr>0){
-      dim_id=(int *)nco_malloc(dmn_var_nbr*sizeof(int));
-      
-      (void)nco_inq_vardimid(fl_id,var_id,dim_id);
-      for(idx=0;idx<dmn_var_nbr;idx++){ 
-	// get dim name
-	(void)nco_inq_dimname(fl_id,dim_id[idx],dmn_nm);
-        // check if dim is already in output
-        if(dmn_out_vtr.find(dmn_nm) != NULL) continue; 
-	// Get dim from input list
-        dmn_fd= dmn_in_vtr.find(dmn_nm);
-	// not in list -- crash out
-	if(dmn_fd == NULL_CEWI){
-          std::ostringstream os;
-          os<<"Unable to find dimension " <<dmn_nm << " in " << fl_in <<" or " << fl_out;
-          err_prn(fnc_nm,os.str());
-	}
-	
-        dmn_tp_out.push_back(dmn_fd);
-        
-      }
-      if(dmn_tp_out.size() >0){
 
 #ifdef _OPENMP
-	if( omp_in_parallel())
-	  err_prn(fnc_nm,"Attempt to go into netcdf define mode while in OPENMP parallel mode");
-      
+    fl_id= ( omp_in_parallel() ? r_out_id : out_id );
+#else    
+    fl_id=out_id;  
 #endif
 
-        (void)nco_redef(out_id);
-	for(idx=0; idx< (int)dmn_tp_out.size();idx++){
-	  dmn_nw=nco_dmn_dpl(dmn_tp_out[idx]);
-          (void)nco_dmn_xrf(dmn_nw,dmn_tp_out[idx]);
-	  (void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
-	  (void)dmn_out_vtr.push_back(dmn_nw);
+    var=nco_var_fll(fl_id,var_id,var_nm,&dmn_out_vtr[0],dmn_out_vtr.size());
+    var->tally=(long *)NULL;
+    /* Retrieve variable values from disk into memory */
+    if(bfll)
+      (void)nco_var_get(fl_id,var); 
 
-	  if(dbg_lvl_get() > 2) {
-            std::ostringstream os;
-            os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " <<fl_in;
-            os << ". Defining dimension " << dmn_nw->nm << " in output file " << fl_out;
-            dbg_prn(fnc_nm,os.str());
-	  
-	  }
-	}// end idx
-          (void)nco_enddef(out_id);
-          dmn_tp_out.clear(); 
-      } // end if 
-
-
-    }
-      (void)nco_free(dim_id);
+    return var;
   }
    
-   
-  if(dbg_lvl_get() > 2) {
+  /* Rest of function assumes var to be read is in Input */
+  /* Check input file for ID */
+  rcd=nco_inq_varid_flg(in_id,var_nm,&var_id);
+  if(rcd != NC_NOERR){
+    /* Return NULL if variable not in input or output file */
     std::ostringstream os;
-    os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
-    dbg_prn(fnc_nm,os.str());  
-  }
-  
+    os<<"Unable to find variable " <<var_nm << " in " << fl_in <<" or " << fl_out;
+    wrn_prn(fnc_nm,os.str());
+    return NULL_CEWI;
+  } /* end if */
+    
+  /* Find dimensions used in var
+     Learn which are not already in output list dmn_out and output file
+     Add these to output list and output file */
+
+  fl_id=in_id;
+    
+  (void)nco_inq_varndims(fl_id,var_id,&dmn_var_nbr);
+  if(dmn_var_nbr>0){
+    int *dim_id=NULL_CEWI;
+    dmn_sct *dmn_fd; 
+    dmn_sct *dmn_nw;
+    std::vector<dmn_sct*> dmn_tp_out;
+
+    dim_id=(int *)nco_malloc(dmn_var_nbr*sizeof(int));
+      
+    (void)nco_inq_vardimid(fl_id,var_id,dim_id);
+    for(idx=0;idx<dmn_var_nbr;idx++){ 
+      // get dim name
+      (void)nco_inq_dimname(fl_id,dim_id[idx],dmn_nm);
+      // check if dim is already in output
+      if(dmn_out_vtr.find(dmn_nm) != NULL) continue; 
+      // Get dim from input list
+      dmn_fd= dmn_in_vtr.find(dmn_nm);
+      // not in list -- crash out
+      if(dmn_fd == NULL_CEWI){
+        std::ostringstream os;
+        os<<"Unable to find dimension " <<dmn_nm << " in " << fl_in <<" or " << fl_out;
+        err_prn(fnc_nm,os.str());
+      }
+	
+      dmn_tp_out.push_back(dmn_fd);
+        
+    } // end idx
+    // no longer needed
+
+    (void)nco_free(dim_id);
+
+    // define new dims in output if necessary  
+    if(dmn_tp_out.size() >0){
+
+#ifdef _OPENMP
+      if( omp_in_parallel())
+	err_prn(fnc_nm,"Attempt to go into netcdf define mode while in OPENMP parallel mode");
+#endif
+
+      (void)nco_redef(out_id);
+      for(idx=0; idx< (int)dmn_tp_out.size();idx++){
+        dmn_nw=nco_dmn_dpl(dmn_tp_out[idx]);
+        (void)nco_dmn_xrf(dmn_nw,dmn_tp_out[idx]);
+	(void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
+	(void)dmn_out_vtr.push_back(dmn_nw);
+
+	if(dbg_lvl_get() > 2) {
+          std::ostringstream os;
+          os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " <<fl_in;
+          os << ". Defining dimension " << dmn_nw->nm << " in output file " << fl_out;
+          dbg_prn(fnc_nm,os.str());
+	}
+      }// end idx
+
+      (void)nco_enddef(out_id);
+
+    } // end if 
+
+  } // end if
+
+
+   
       
   var=nco_var_fll(fl_id,var_id,var_nm,&dmn_out_vtr[0],dmn_out_vtr.size());
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
@@ -210,38 +235,75 @@ bool bfll){
   /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
      (void)nco_zero_long(var->sz,var->tally); */
   
- lbl_end:
-  var->tally=(long *)NULL;
-  
+   var->tally=(long *)NULL;
   /* Retrieve variable values from disk into memory */
   if(bfll)
     (void)nco_var_get(fl_id,var); 
   
+
   return var;
 
 }            
+
+
+int 
+prs_cls::ncap_var_write_slb( 
+var_sct *var)
+{
+int bret;
+
+ bret=ncap_var_write_wrp(var,false,true);
+ return bret;
+
+}
+
 
 int 
 prs_cls::ncap_var_write( 
 var_sct *var,
 bool bram){
+int bret;
 
-  int bret;
+ bret=ncap_var_write_wrp(var,bram,false);
+ return bret;
+
+}
+
+
+// We need this function for OpenMP Threading as ncap_var_write() and ncap_var_write_slb
+// both write to Output -  nb only one thread can write!! 
+int
+prs_cls::ncap_var_write_wrp(
+var_sct *var,
+bool bram,
+bool bslb){
+int bret;
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif
     {
+      if(bslb){
+      
+       // put the slab -nb var already defined+ populated in 0
+       (void)nco_put_vars(out_id,var->id,var->srt,var->cnt,var->srd,var->val.vp,var->type);
+       var=nco_var_free(var);       
+       bret=1;  
 
- bret=ncap_var_write_omp(var,bram);
 
+      }else{  
+          
+       bret=ncap_var_write_omp(var,bram);
+      } 
     } // end pragma
 
  return bret;
- 
+
+
+} // end ncap_var_write_wrp()
 
 
 
-}
 
 int 
 prs_cls::ncap_var_write_omp(
