@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.149 2009-02-03 14:31:55 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.150 2009-02-03 16:15:34 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2591,6 +2591,12 @@ var=NULL_CEWI;
 
           var_nm=vid->getText(); 
           var_rhs=prs_arg->ncap_var_init(var_nm,false);            
+         
+          if(var_rhs->undefined){
+              var=ncap_var_udf("~rhs_undefined");       
+              goto end2;  // cannot use return var!!
+            }
+
           nbr_dmn=var_rhs->nbr_dim;          
           lRef=lmt;
 
@@ -2689,10 +2695,22 @@ var=NULL_CEWI;
            if(!bram){
             // Fudge -- fill out var again -but using dims defined in dmn_vtr
             // We need data in var so that LHS logic in assign can access var shape 
-            var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size()); 
+            int fl_id;
+            // variable in output 
+            if(Nvar) {
+#ifdef _OPENMP
+              fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
+#else    
+              fl_id=prs_arg->out_id;  
+#endif               
+            } else 
+               fl_id=prs_arg->in_id;
+            
+ 
+            var_nw=nco_var_fll(fl_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size()); 
 
             // Now get data from disk - use nco_var_get() 
-            (void)nco_var_get(var_nw->nc_id,var_nw); 
+            (void)nco_var_get(fl_id,var_nw); 
            }
             
            // Ram variable -do an in memory get  
