@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.511 2009-01-30 16:07:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.512 2009-02-04 23:25:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -283,10 +283,10 @@ The <a href="http://sf.net/projects/nco">NCO project homepage</a>
 contains mailing lists, discussion forums, and instructions to make
 contributing to NCO easy. 
 
-<p>As of June, 2003, you may donate money to NCO via Paypal.
-Your donation will be distributed to NCO developers as an incentive
-for them to tackle <a href="./TODO"><tt>TODO</tt></a> items on a
-pay-per-feature basis.
+<p>As of June, 2003, you may easily donate your hard-earned money to NCO.
+Send your donation to NCO developers as a reward for good behavior, 
+or as an incentive to tackle more <a href="./TODO"><tt>TODO</tt></a>
+items. 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="zender@uci.edu">
@@ -295,11 +295,11 @@ pay-per-feature basis.
 <input type="hidden" name="no_note" value="1">
 <input type="hidden" name="currency_code" value="USD">
 <input type="hidden" name="tax" value="0">
-<input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0"
-name="submit" alt="Donate to NCO with PayPal - it's fast, free and secure!">
+<input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0" name="submit" alt="Donate to NCO with PayPal - it's fast, free and secure!">
 </form>
-These homepage donation counters track the influence of your monetary
-donations on NCO development: 
+Inspired by President Obama's plan to bring more transparency to
+government investment, these homepage donation counters track the
+influence of your monetary donations on NCO development: 
 <dt>Donations received between 20030624 and 20090131: US$80.00.</dt>
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More happy-face emoticons in the sourcecode.</dt>
 <hr></p>
