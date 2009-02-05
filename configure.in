@@ -1,7 +1,7 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.269 2009-02-03 23:00:12 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.270 2009-02-05 21:10:09 zender Exp $ -*-Shell-script-*-
 
-# Purpose: Template used by autoconf to generate NCO ./configure script
-# Newer convention names this file configure.ac, older names it configure.in
+# Purpose: Template autoconf uses to generate NCO configure script
+# Newer convention names this file configure.ac, rather than configure.in
 
 # Copyright (C) 2003--2009 Charlie Zender
 # You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -12,12 +12,18 @@
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
 
+# Distribution:
+# scp ~/nco/configure virga.ess.uci.edu:nco
+# scp ~/nco/configure esmf.ess.uci.edu:nco
+# scp ~/nco/configure greenplanet.ess.uci.edu:nco
+
 # NB: Different versions of the GNU toolchain produce different (but equivalent)
 # configure scripts from the same autotools inputs.
 # To keep proliferation of different but equivalent versions of automatically
 # generated scripts (e.g., configure, Makefile.in) from cluttering repository,
 # please try to generate scripts only from current autotools distributions
-# on machines running an up-to-date version of Debian Linux, preferably Sid.
+# on machines running an up-to-date version of a Debian-flavor of Linux, 
+# preferably Sid or Ubuntu
 
 # GNU autotools rely on ~/nco/autobld/config.[guess,sub]
 # Auto-configuration fails if these routines cannot detect your machine type
