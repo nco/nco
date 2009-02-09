@@ -10,10 +10,10 @@
 #include "ncoParserTokenTypes.hpp"
 #include "ncap2_utl.hh"
 #include "ncoTree.hpp"
+#include "fmc_cls.hh"
 
 // forward declaration
 class ncoTree;
-class fmc_cls;
 
 
 enum vtl_typ { VVAR,VLVAR,VDVAR, VATT,VLATT,VDATT,VDIM, VDIM_SIZE,VEXPR,VCALL_REF };
