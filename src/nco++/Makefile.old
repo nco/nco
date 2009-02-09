@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.77 2009-02-03 05:25:49 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.78 2009-02-09 11:58:09 hmb Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -383,7 +383,8 @@ endif # end if UDUNITS
 
 # TMP_* and NCO_* are required to play nicely with DAP flags
 NCO_LDFLAGS := -L${MY_LIB_DIR}
-NCO_LIBS := -lnco++ -lnco -lnco_c++
+# NCO_LIBS := -lnco++ -lnco -lnco_c++
+NCO_LIBS := -lnco++ -lnco 
 TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} -L${ANTLR_LIB}
 TMP_LIBS := ${NCO_LIBS} ${NC_LIBS} -lantlr
 # sort removes duplicates but unfortunately changes precedence too
@@ -1335,7 +1336,9 @@ inc_cln :
 # Targets in lib
 lib : inc $(libnco++).a
 	-cd ../../bld; ${MAKE} $@ # Rebuild libnco if necessary
-$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/fmc_cls.o) \
+$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/sym_cls.o) \
+        $(libnco++).a(${MY_OBJ_DIR}/fmc_cls.o) \
+        $(libnco++).a(${MY_OBJ_DIR}/fmc_all_cls.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVar.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
