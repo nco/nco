@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.13 2009-02-09 11:51:38 hmb Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.14 2009-02-10 12:46:58 hmb Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco++
 
@@ -17,13 +17,18 @@
 #define LIBNCOXX_HH
 
 // Personal headers
-#include "ncap2_utl.hh"
-#include "prs_cls.hh"
-// #include "fmc_cls.hh"
+#include "sym_cls.hh"
+#include "fmc_cls.hh"
 #include "fmc_all_cls.hh"
 #ifdef ENABLE_GSL
 # include "fmc_gsl_cls.hh"
 #endif // !ENABLE_GSL
+#include "NcapVar.hh"
+#include "NcapVarVector.hh"
+#include "ncap2_utl.hh"
+#include "prs_cls.hh"
+#include "sdo_utl.hh"
+#include "ncap2_utl.hh"
 
 //#include "ncoLexer.hpp" // 
 //#include "ncoParser.hpp" //
