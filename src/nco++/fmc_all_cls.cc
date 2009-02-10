@@ -8,10 +8,9 @@
 
 
 
-#include <math.h>
+
 #include "fmc_all_cls.hh"
-#include "ncap2_utl.hh"
-#include "libnco.h"
+
 
 
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
