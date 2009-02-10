@@ -1135,6 +1135,10 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
   var_sct *var_ret; 
+  var_sct **var_arr;
+  var_sct ***var_arr_ptr;
+
+
   
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
@@ -1168,9 +1172,10 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     if(is_mtd) err_prn(sfnm,styp+" requires "+nbr2sng(args_in_nbr-1)+ " arguments"); else err_prn(sfnm,styp+" requires "+ nbr2sng(args_in_nbr) + " arguments.");    
   
   // init once we now num of args
-  var_sct *var_arr[args_in_nbr];
-  var_sct **var_arr_ptr[args_in_nbr]; 
-  
+  var_arr=(var_sct**)nco_malloc(sizeof(var_sct*)*args_in_nbr);
+  var_arr_ptr=(var_sct***)nco_malloc(sizeof(var_sct**)*args_in_nbr);
+   
+    
   for(idx=0; idx<args_in_nbr ;idx++){     
     var_arr[idx]=walker.out(args_vtr[idx]);
     var_arr_ptr[idx]=&var_arr[idx];
@@ -1200,10 +1205,12 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   {
     bool has_mss_val=false;
     int sz;
-    double *dp[args_in_nbr];
+    double **dp;
     double mss_val_dbl;
     gsl_mode_t mde_t=GSL_PREC_DOUBLE;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
+
+    dp=(double**)nco_malloc(sizeof(double*)*args_in_nbr);
     
     // assume from here on that args conform
     sz=var_arr[0]->sz;
@@ -1411,11 +1418,15 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     
     for(idx=0;idx<args_in_nbr; idx++){ 
       (void)cast_nctype_void(NC_DOUBLE,&(var_arr[idx]->val));
-      if(idx>0)  nco_var_free(var_arr[idx]);
+      if(idx>0) nco_var_free(var_arr[idx]);
     }
+
+    dp=(double**)nco_free(dp);
     
   } // end heavy lifting
   
+  var_arr_ptr=(var_sct***)nco_free(var_arr_ptr);
+
   return var_arr[0]; 
   
 } //end hnd_fnc_nd 
