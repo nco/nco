@@ -1,3 +1,7 @@
+2009-02-09  Charlie Zender  <zender@uci.edu>
+
+	* Added sym_cls.[cc,hh] and fmc_all_cls.[cc,hh] to configure
+
 2009-02-03  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1

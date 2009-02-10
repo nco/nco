@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.22 2009-02-03 22:11:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.23 2009-02-10 01:00:23 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -17,7 +17,7 @@ ANTLR = runantlr
 #	${ANTLR} ncoGrammer.g
 
 # fxm: Split off all sources except front-end into nco++ library
-ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc fmc_cls.cc fmc_gsl_cls.cc prs_cls.cc NcapVar.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
+ncap2_SOURCES = sym_cls.cc Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc fmc_all_cls.cc fmc_cls.cc fmc_gsl_cls.cc prs_cls.cc NcapVar.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
 
 ncap2_LDADD = -lnco -lantlr
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
