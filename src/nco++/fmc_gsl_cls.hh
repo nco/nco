@@ -7,8 +7,7 @@
 #ifndef FMC_GSL_CLS_HH // Contents have not yet been inserted in current source file  
 #define FMC_GSL_CLS_HH
 
-#include <algorithm>
-#include <iostream>
+
 #include <sstream>
 #include <string>
 #include <vector>
@@ -18,9 +17,11 @@
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
 
+
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
+
 
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
 

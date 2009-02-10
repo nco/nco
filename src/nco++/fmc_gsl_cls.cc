@@ -8,10 +8,6 @@
 
 #ifdef ENABLE_GSL
 
-#include <assert.h> 
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_mode.h>
-#include <gsl/gsl_sf.h>
 #include "fmc_gsl_cls.hh"
 
 // GSL Functions
