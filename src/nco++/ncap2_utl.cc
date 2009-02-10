@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.123 2009-01-28 23:05:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.124 2009-02-10 12:23:13 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -6,22 +6,7 @@
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-// Standard C++ headers
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-#include <string>
-
-// Standard C headers
-#include <assert.h>
-#include <cmath> // sin cos cos sin 3.14159
-#include <ctype.h>
-
-// Personal headers
-#include "ncap2_utl.hh" /* netCDF arithmetic processor */
-#include "NcapVar.hh"
-#include "sdo_utl.hh"
-#include "VarOp.hh" 
+#include "ncap2_utl.hh"
 
 
 int 

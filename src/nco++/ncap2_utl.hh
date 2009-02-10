@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.13 2008-12-18 15:24:18 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.14 2009-02-10 12:25:50 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -18,7 +18,6 @@
 
 /* Standard header files */
 #include <string>
-
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -29,25 +28,34 @@
 #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t
 #endif // C++ compilers that do not allow stdint.h
 
+#include <assert.h>
+#include <cmath> // sin cos cos sin 3.14159
+#include <ctype.h>
+
+// Standard C++ headers
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for libnetcdf.a */
+#include <antlr/AST.hpp> /* nneeded for ast_ind struct */
+#include "ncoParserTokenTypes.hpp"
+
 
 /* Personal headers */
 #include "libnco.h" /* netCDF Operator (NCO) library */
-//#include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
-
-// defines custom "template" lists
 #include "ncap2.hh"
-#include <vector>
 #include "NcapVector.hh"
 #include "NcapVarVector.hh"
 #include "NcapVar.hh"
-#include <antlr/AST.hpp> /* nneeded for ast_ind struct */
-
-#include "ncoParserTokenTypes.hpp"
-
+#include "sdo_utl.hh"
+#include "VarOp.hh" 
 #include "prs_cls.hh"
+
 
 /* Don't know what Charlies done to the bools */
 /* Temporary fix for now !!*/
@@ -272,6 +280,7 @@ void ncap_mpi_get_id  /* Extract all VAR_ID & ATT_ID from an Expression */
 (
 RefAST ntr,
 std::vector<std::string> &str_vtr);
+
 
 int            /* Sort expressions for MPI Optimization */  
 ncap_mpi_srt(
