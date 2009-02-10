@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.151 2009-02-09 12:07:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.152 2009-02-10 12:46:11 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -7,11 +7,7 @@ header {
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-    #include <algorithm>
-    #include <iostream>
-    #include <sstream>
-    #include <fstream>
-    #include <string>
+    // C Standard Headers
     #include <assert.h>
     #include <ctype.h>
     #include <malloc.h>
@@ -19,7 +15,15 @@ header {
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
-    // #include "libnco++.hh"
+
+    // C++ Standard Headers 
+    #include <algorithm>
+    #include <iostream>
+    #include <sstream>
+    #include <fstream>
+    #include <string>
+  
+    // Custom Headers
     #include "prs_cls.hh"
     #include "ncap2_utl.hh"
     #include "fmc_cls.hh"
