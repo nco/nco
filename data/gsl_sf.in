@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.4 2009-01-21 20:50:46 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.5 2009-02-10 11:14:50 hmb Exp $ -*-C++-*-
 
 // Purpose: Script to test gsl special functions
 
@@ -240,7 +240,7 @@ nbr_err_ttl=0;
   e0=gsl_sf_airy_Bi(three_dmn_var_dbl/100);
   e1=gsl_sf_psi(mlon+1);
   e2=gsl_sf_zeta(mlon*10);
-  e3=gsl_sf_debye_6(time);
+  e3=gsl_sf_debye_1(time);
 
   e4=gsl_sf_log_erfc(time);
   e5=gsl_sf_exp(time);
@@ -279,7 +279,7 @@ nbr_err_ttl=0;
   }
 
 
-  if( fabs(e3.avg()-0.15031 >1e-3)){
+  if( fabs(e3.avg()-0.3631 >1e-3)){
      print("ERROR: e3:Misc functions\n");
      nbr_err++;	
   }
