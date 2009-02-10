@@ -8,9 +8,8 @@
 #ifndef FMC_ALL_CLS_HH
 #define FMC_ALL_CLS_HH
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
+#include <math.h>
+
 #include <string>
 #include <vector>
 
@@ -21,6 +20,52 @@
 #include "vtl_cls.hh"
 
 #include "sym_cls.hh" // holder for float/double math function pointers
+
+
+
+  /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
+  /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
+  
+  /* GNU g++ barfs at these float declartions -- remove if g++ used */
+#ifndef __GNUG__
+  extern float acosf(float);
+  extern float asinf(float);
+  extern float atanf(float);
+  extern float cosf(float);
+  extern float expf(float);
+  extern float fabsf(float); /* 20040629: Only AIX may need this */
+  extern float logf(float);
+  extern float log10f(float);
+  extern float rnd_nbrf(float);
+  extern float sinf(float);
+  extern float sqrtf(float);
+  extern float tanf(float);
+  
+  /* Advanced math: erf, erfc, gamma */
+  extern float erff(float);
+  extern float erfcf(float);
+  extern float gammaf(float);
+
+  /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
+  extern float acoshf(float);
+  extern float asinhf(float);
+  extern float atanhf(float);
+  extern float coshf(float);
+  extern float sinhf(float);
+  extern float tanhf(float);
+  
+  /* Basic Rounding: ceil, floor */
+  extern float ceilf(float);
+  extern float floorf(float);
+  
+  /* Advanced Rounding: nearbyint, rint, round, trunc */
+  extern float nearbyintf(float);
+  extern float rintf(float);
+  extern float roundf(float);
+  extern float truncf(float);
+#endif
+
+
 
 
 //Conversion Functions **************************************/
