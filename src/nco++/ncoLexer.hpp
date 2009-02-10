@@ -10,7 +10,7 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.70 2009-01-21 21:37:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.71 2009-02-10 17:26:43 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -18,11 +18,7 @@
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-    #include <algorithm>
-    #include <iostream>
-    #include <sstream>
-    #include <fstream>
-    #include <string>
+    // C Standard Headers
     #include <assert.h>
     #include <ctype.h>
     #include <malloc.h>
@@ -30,7 +26,18 @@
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
-    #include "libnco++.hh"
+
+    // C++ Standard Headers 
+    #include <algorithm>
+    #include <iostream>
+    #include <sstream>
+    #include <fstream>
+    #include <string>
+  
+    // Custom Headers
+    #include "prs_cls.hh"
+    #include "ncap2_utl.hh"
+    #include "fmc_cls.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
@@ -44,10 +51,10 @@
 
     
 
-#line 48 "ncoLexer.hpp"
+#line 55 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 331 "ncoGrammer.g"
+#line 338 "ncoGrammer.g"
 
 
 private:
@@ -80,7 +87,7 @@ public:
 	}
 
 
-#line 52 "ncoLexer.hpp"
+#line 59 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

@@ -1324,7 +1324,7 @@ void ncoLexer::mBLASTOUT(bool _createToken) {
 	ANTLR_USE_NAMESPACE(std)string::size_type _saveIndex;
 	
 	matchNot(EOF/*_CHAR*/);
-#line 451 "ncoGrammer.g"
+#line 458 "ncoGrammer.g"
 	
 	// blast out of lexer & parser
 	// Can't use RecognitionException() as 
@@ -1381,7 +1381,7 @@ void ncoLexer::mUNUSED_OPS(bool _createToken) {
 	}
 	}
 	}
-#line 471 "ncoGrammer.g"
+#line 478 "ncoGrammer.g"
 	
 	
 	ostringstream os;
@@ -1415,7 +1415,7 @@ void ncoLexer::mWS(bool _createToken) {
 	case 0x9 /* '\t' */ :
 	{
 		match('\t' /* charlit */ );
-#line 485 "ncoGrammer.g"
+#line 492 "ncoGrammer.g"
 		tab();
 #line 1421 "ncoLexer.cpp"
 		break;
@@ -1428,7 +1428,7 @@ void ncoLexer::mWS(bool _createToken) {
 	case 0xa /* '\n' */ :
 	{
 		match('\n' /* charlit */ );
-#line 485 "ncoGrammer.g"
+#line 492 "ncoGrammer.g"
 		newline();
 #line 1434 "ncoLexer.cpp"
 		break;
@@ -1439,7 +1439,7 @@ void ncoLexer::mWS(bool _createToken) {
 	}
 	}
 	}
-#line 486 "ncoGrammer.g"
+#line 493 "ncoGrammer.g"
 	_ttype = antlr::Token::SKIP;
 #line 1445 "ncoLexer.cpp"
 	if ( _createToken && _token==ANTLR_USE_NAMESPACE(antlr)nullToken && _ttype!=ANTLR_USE_NAMESPACE(antlr)Token::SKIP ) {
@@ -1469,7 +1469,7 @@ void ncoLexer::mCXX_COMMENT(bool _createToken) {
 	_loop149:;
 	} // ( ... )*
 	match('\n' /* charlit */ );
-#line 493 "ncoGrammer.g"
+#line 500 "ncoGrammer.g"
 	_ttype = antlr::Token::SKIP; newline();
 #line 1475 "ncoLexer.cpp"
 	if ( _createToken && _token==ANTLR_USE_NAMESPACE(antlr)nullToken && _ttype!=ANTLR_USE_NAMESPACE(antlr)Token::SKIP ) {
@@ -1510,7 +1510,7 @@ void ncoLexer::mC_COMMENT(bool _createToken) {
 			}
 			}
 			}
-#line 501 "ncoGrammer.g"
+#line 508 "ncoGrammer.g"
 			newline();
 #line 1516 "ncoLexer.cpp"
 			break;
@@ -1658,7 +1658,7 @@ void ncoLexer::mC_COMMENT(bool _createToken) {
 	_loop154:;
 	} // ( ... )*
 	match("*/");
-#line 505 "ncoGrammer.g"
+#line 512 "ncoGrammer.g"
 	_ttype = antlr::Token::SKIP;
 #line 1664 "ncoLexer.cpp"
 	if ( _createToken && _token==ANTLR_USE_NAMESPACE(antlr)nullToken && _ttype!=ANTLR_USE_NAMESPACE(antlr)Token::SKIP ) {
@@ -1697,7 +1697,7 @@ void ncoLexer::mNUMBER_DOT(bool _createToken) {
 	}
 	
 	}
-#line 512 "ncoGrammer.g"
+#line 519 "ncoGrammer.g"
 	_ttype = DOUBLE;
 #line 1703 "ncoLexer.cpp"
 	{
@@ -1723,7 +1723,7 @@ void ncoLexer::mNUMBER_DOT(bool _createToken) {
 		}
 		}
 		}
-#line 513 "ncoGrammer.g"
+#line 520 "ncoGrammer.g"
 		_ttype = DOUBLE;
 #line 1729 "ncoLexer.cpp"
 		break;
@@ -1749,7 +1749,7 @@ void ncoLexer::mNUMBER_DOT(bool _createToken) {
 		}
 		}
 		}
-#line 514 "ncoGrammer.g"
+#line 521 "ncoGrammer.g"
 		_ttype = FLOAT;
 #line 1755 "ncoLexer.cpp"
 		break;
@@ -1775,7 +1775,7 @@ void ncoLexer::mNUMBER_DOT(bool _createToken) {
 		}
 		}
 		}
-#line 515 "ncoGrammer.g"
+#line 522 "ncoGrammer.g"
 		_ttype = DOUBLE;
 #line 1781 "ncoLexer.cpp"
 		break;
@@ -1812,7 +1812,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 	}
 	_loop165:;
 	}  // ( ... )+
-#line 520 "ncoGrammer.g"
+#line 527 "ncoGrammer.g"
 	_ttype = INT;
 #line 1818 "ncoLexer.cpp"
 	{
@@ -1867,7 +1867,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 		
 		}
 		}
-#line 521 "ncoGrammer.g"
+#line 528 "ncoGrammer.g"
 		_ttype = DOUBLE;
 #line 1873 "ncoLexer.cpp"
 		break;
@@ -1878,7 +1878,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 		{
 		mXPN(false);
 		}
-#line 522 "ncoGrammer.g"
+#line 529 "ncoGrammer.g"
 		_ttype = DOUBLE;
 #line 1884 "ncoLexer.cpp"
 		break;
@@ -1904,7 +1904,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 		}
 		}
 		}
-#line 524 "ncoGrammer.g"
+#line 531 "ncoGrammer.g"
 		_ttype = SHORT;
 #line 1910 "ncoLexer.cpp"
 		break;
@@ -1930,7 +1930,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 		}
 		}
 		}
-#line 525 "ncoGrammer.g"
+#line 532 "ncoGrammer.g"
 		_ttype = BYTE;
 #line 1936 "ncoLexer.cpp"
 		break;
@@ -1955,7 +1955,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 			}
 			}
-#line 530 "ncoGrammer.g"
+#line 537 "ncoGrammer.g"
 			_ttype = UINT64;
 #line 1961 "ncoLexer.cpp"
 		}
@@ -1978,7 +1978,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 			}
 			}
-#line 526 "ncoGrammer.g"
+#line 533 "ncoGrammer.g"
 			_ttype = UBYTE;
 #line 1984 "ncoLexer.cpp"
 		}
@@ -2001,7 +2001,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 			}
 			}
-#line 527 "ncoGrammer.g"
+#line 534 "ncoGrammer.g"
 			_ttype = USHORT;
 #line 2007 "ncoLexer.cpp"
 		}
@@ -2024,7 +2024,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 			}
 			}
-#line 529 "ncoGrammer.g"
+#line 536 "ncoGrammer.g"
 			_ttype = INT64;
 #line 2030 "ncoLexer.cpp"
 		}
@@ -2047,7 +2047,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 			}
 			}
-#line 523 "ncoGrammer.g"
+#line 530 "ncoGrammer.g"
 			_ttype = INT;
 #line 2053 "ncoLexer.cpp"
 		}
@@ -2070,7 +2070,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 			
 			}
-#line 528 "ncoGrammer.g"
+#line 535 "ncoGrammer.g"
 			_ttype = UINT;
 #line 2076 "ncoLexer.cpp"
 		}
@@ -2101,7 +2101,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 		}
 		}
 		}
-#line 532 "ncoGrammer.g"
+#line 539 "ncoGrammer.g"
 		_ttype = FLOAT;
 #line 2107 "ncoLexer.cpp"
 		break;
@@ -2127,7 +2127,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 		}
 		}
 		}
-#line 533 "ncoGrammer.g"
+#line 540 "ncoGrammer.g"
 		_ttype = DOUBLE;
 #line 2133 "ncoLexer.cpp"
 		break;
@@ -2235,7 +2235,7 @@ void ncoLexer::mVAR_ATT(bool _createToken) {
 	}
 	_loop188:;
 	} // ( ... )*
-#line 542 "ncoGrammer.g"
+#line 549 "ncoGrammer.g"
 	
 	// check function/method vector
 	if( std::binary_search(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(text.substr(_begin,text.length()-_begin))))
@@ -2333,7 +2333,7 @@ void ncoLexer::mVAR_ATT(bool _createToken) {
 		}
 		_loop192:;
 		} // ( ... )*
-#line 550 "ncoGrammer.g"
+#line 557 "ncoGrammer.g"
 		_ttype = ATT_ID;
 #line 2339 "ncoLexer.cpp"
 	}
@@ -2361,7 +2361,7 @@ void ncoLexer::mVAR_ATT_QT(bool _createToken) {
 	text.erase(_saveIndex);
 	}
 	mVAR_NM_QT(false);
-#line 556 "ncoGrammer.g"
+#line 563 "ncoGrammer.g"
 	_ttype = VAR_ID;
 #line 2367 "ncoLexer.cpp"
 	{
@@ -2370,7 +2370,7 @@ void ncoLexer::mVAR_ATT_QT(bool _createToken) {
 	{
 		match('@' /* charlit */ );
 		mVAR_NM_QT(false);
-#line 557 "ncoGrammer.g"
+#line 564 "ncoGrammer.g"
 		_ttype = ATT_ID;
 #line 2376 "ncoLexer.cpp"
 		break;
@@ -2413,7 +2413,7 @@ void ncoLexer::mDIM_QT(bool _createToken) {
 	match('$' /* charlit */ );
 	text.erase(_saveIndex);
 	mVAR_NM_QT(false);
-#line 566 "ncoGrammer.g"
+#line 573 "ncoGrammer.g"
 	_ttype = DIM_ID;
 #line 2419 "ncoLexer.cpp"
 	}
@@ -2427,7 +2427,7 @@ void ncoLexer::mDIM_QT(bool _createToken) {
 		_saveIndex = text.length();
 		match(".size");
 		text.erase(_saveIndex);
-#line 568 "ncoGrammer.g"
+#line 575 "ncoGrammer.g"
 		_ttype = DIM_ID_SIZE;
 #line 2433 "ncoLexer.cpp"
 	}
@@ -2536,7 +2536,7 @@ void ncoLexer::mDIM_VAL(bool _createToken) {
 	}
 	_loop205:;
 	} // ( ... )*
-#line 573 "ncoGrammer.g"
+#line 580 "ncoGrammer.g"
 	_ttype = DIM_ID;
 #line 2542 "ncoLexer.cpp"
 	{
@@ -2544,7 +2544,7 @@ void ncoLexer::mDIM_VAL(bool _createToken) {
 		_saveIndex = text.length();
 		match(".size");
 		text.erase(_saveIndex);
-#line 575 "ncoGrammer.g"
+#line 582 "ncoGrammer.g"
 		_ttype = DIM_ID_SIZE;
 #line 2550 "ncoLexer.cpp"
 	}
@@ -2615,7 +2615,7 @@ void ncoLexer::mNSTRING(bool _createToken) {
 	_saveIndex = text.length();
 	match('\"' /* charlit */ );
 	text.erase(_saveIndex);
-#line 590 "ncoGrammer.g"
+#line 597 "ncoGrammer.g"
 	_ttype = NSTRING;
 #line 2621 "ncoLexer.cpp"
 	if ( _createToken && _token==ANTLR_USE_NAMESPACE(antlr)nullToken && _ttype!=ANTLR_USE_NAMESPACE(antlr)Token::SKIP ) {
@@ -2655,7 +2655,7 @@ void ncoLexer::mINCLUDE(bool _createToken) {
 	}
 	mNSTRING(true);
 	f=_returnToken;
-#line 596 "ncoGrammer.g"
+#line 603 "ncoGrammer.g"
 	
 			// ANTLR_USING_NAMESPACE(std)
 			// create lexer to handle include
