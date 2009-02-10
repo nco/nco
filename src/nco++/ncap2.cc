@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.84 2009-02-03 14:31:14 hmb Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.85 2009-02-10 13:34:00 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -44,9 +44,6 @@
 #include "config.h" /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
-// Standard C++ headers
-#include <string>
-
 // Standard C headers
 #include <assert.h>  /* assert() debugging macro */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -68,6 +65,9 @@
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
+// Standard C++ headers
+#include <string>
+
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
@@ -76,9 +76,8 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
-#include "vtl_cls.hh"
 #include "libnco.h"    /* netCDF Operator (NCO) library */
-#include "sdo_utl.hh"  /* error messages etc */
+
 
 #ifdef ENABLE_GSL
 #include <gsl/gsl_errno.h>
@@ -140,8 +139,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.84 2009-02-03 14:31:14 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.84 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.85 2009-02-10 13:34:00 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.85 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
