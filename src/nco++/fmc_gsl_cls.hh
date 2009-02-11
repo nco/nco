@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <antlr/AST.hpp>
+#include <gsl/gsl_version.h>
 #include <gsl/gsl_mode.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
