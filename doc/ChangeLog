@@ -1,3 +1,8 @@
+2009-02-12  Henry Butowsky  <henryb@hush.com>
+	* Made gsl_cls aware of gsl lib version -added the
+	pre-processor token NCO_GSL_MINOR_VERSION. This token is 
+	initialized in nco++/Makefile.old 
+
 2009-02-09  Charlie Zender  <zender@uci.edu>
 
 	* Added sym_cls.[cc,hh] and fmc_all_cls.[cc,hh] to configure
