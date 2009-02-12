@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.78 2009-02-09 11:58:09 hmb Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.79 2009-02-12 11:33:06 hmb Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -354,6 +354,8 @@ endif # endif GSL_LIB
  NETCDF_INC += ${GSL_INC}
  NC_LDFLAGS += ${GSL_LIB}
  NC_LIBS += -lgsl
+ # ASSUMES VERSION NUM IS OF THE FORM 1.NUM eg, 1.4 .. 1.10
+ GSL_MINOR_VERSION := $(subst 1.,, $(shell gsl-config --version))
 endif # end if GSL
 
 ifeq (${UDUNITS2},Y)
@@ -539,7 +541,8 @@ ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP
 ifeq (${GSL},Y)
- CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H
+ CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H -DNCO_GSL_MINOR_VERSION='${GSL_MINOR_VERSION}'
+# CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H 
 endif # !GSL
 ifeq (${MPI},Y)
 ifneq (${MPI_FAKE},Y)
