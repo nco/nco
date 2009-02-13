@@ -2,7 +2,10 @@
 	* global var ncap_gsl_mode_prec is initialized 
 	from the environment var 'GSL_MODE_PREC'. This variable
 	determines the precision of the Airy & elliptical 
-	functions
+	functions:
+	GSL_PREC_DOUBLE=0
+	GSL_PREC_SINGLE=1
+	GSL_PREC_APPROX=2
 
 2009-02-12  Henry Butowsky  <henryb@hush.com>
 	* Made gsl_cls aware of gsl lib version -added the
