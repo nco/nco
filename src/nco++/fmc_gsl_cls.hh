@@ -23,8 +23,10 @@
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
 
-
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
+
+// global variable initialized in ncap2.cc (defines precision for functions that take a mode_t argument)
+extern int ncap_gsl_mode_prec;
 
 // used to classify double type args in handle function hnd_fnc_nd
 enum { P1DBL, P1DBLMD, P2DBL, P2DBLMD,P3DBL, P3DBLMD, P4DBL, P4DBLMD };  
@@ -107,7 +109,7 @@ public:
     _hnd_fnc=hnd_fnc;
     _type=NC_NAT; 
   }
-
+   
 
   gpr_cls(const char *const pfnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS), int type_in  ):_pfptr_e(pfptr_e){
     _fnm= static_cast<std::string>(pfnm);
