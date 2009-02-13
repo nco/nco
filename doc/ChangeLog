@@ -1,3 +1,9 @@
+2009-02-13  Henry Butowsky  <henryb@hush.com>
+	* global var ncap_gsl_mode_prec is initialized 
+	from the environment var 'GSL_MODE_PREC'. This variable
+	determines the precision of the Airy & elliptical 
+	functions
+
 2009-02-12  Henry Butowsky  <henryb@hush.com>
 	* Made gsl_cls aware of gsl lib version -added the
 	pre-processor token NCO_GSL_MINOR_VERSION. This token is 
