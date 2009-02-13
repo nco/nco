@@ -1009,7 +1009,7 @@ var_sct *gsl_cls::hnd_fnc_dm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     double mss_val_dbl;
     double *dp;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
-    gsl_mode_t mde_t=GSL_PREC_DOUBLE;
+    gsl_mode_t mde_t=ncap_gsl_mode_prec;
     int (*fnc_int)(double, gsl_mode_t, gsl_sf_result*);
     
     fnc_int=gpr_obj.g_args().adm; 
@@ -1086,7 +1086,7 @@ var_sct *gsl_cls::hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     double *dp1;
     double *dp2; 
     double mss_val_dbl;
-    gsl_mode_t mde_t=GSL_PREC_DOUBLE;
+    gsl_mode_t mde_t=ncap_gsl_mode_prec;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
     
     int (*fnc_int)(double, double, gsl_mode_t,gsl_sf_result*);
@@ -1223,7 +1223,8 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     int sz;
     double **dp;
     double mss_val_dbl;
-    gsl_mode_t mde_t=GSL_PREC_DOUBLE;
+              
+    gsl_mode_t mde_t=ncap_gsl_mode_prec; // initialize local from global variable */
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
 
     dp=(double**)nco_malloc(sizeof(double*)*args_in_nbr);
