@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.14 2009-02-10 12:25:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.15 2009-02-18 17:08:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -77,12 +77,6 @@ typedef struct{ /* nm_lst_sct */
 } exp_sct ;	
 
 /* Begin funtions in ncap2_utl.cc */
-int 
-ncap_var_write_tmp(
-var_sct *var,
-bool bram, 
-prs_cls *prs_arg);
-
 
 var_sct*               /* O [sct] variable containing attribute */
 ncap_att_get	       /*   [fnc] Grab an attribute from input file */	
