@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.124 2009-02-10 12:23:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.125 2009-02-18 17:07:28 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -7,260 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "ncap2_utl.hh"
-
-
-int 
-ncap_var_write_tmp(
-var_sct *var,
-bool bram, 
-prs_cls *prs_arg)
-{ 
-  /* Purpose: Define variable in output file and write variable */
-  /*  const char mss_val_sng[]="missing_value"; *//* [sng] Unidata standard string for missing value */
-  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-  const char fnc_nm[]="ncap_var_write_omp"; 
-  
-  int rcd; /* [rcd] Return code */
-  int var_out_id;
-  int out_id;
-  int dfl_lvl;
-
-  char *fl_out;
-  
-  
-  bool bdef=false;
-  NcapVar *Nvar;
-  
-#ifdef NCO_RUSAGE_DBG
-  long maxrss; /* [B] Maximum resident set size */
-#endif /* !NCO_RUSAGE_DBG */
-  
-   out_id=prs_arg->out_id;
-   fl_out=prs_arg->fl_out;
-   dfl_lvl=prs_arg->dfl_lvl;  
-  
-  // INITIAL SCAN
-  if(prs_arg->ntl_scn){
-    Nvar=prs_arg->var_vtr.find(var->nm);
-    if(Nvar) { 
-      var=nco_var_free(var);
-      return True;
-    }
-    
-    Nvar=prs_arg->int_vtr.find(var->nm);
-    if(Nvar) { 
-      var=nco_var_free(var);
-      return True;
-    }  
-    
-    Nvar=new NcapVar(var);
-    Nvar->flg_mem=bram;
-    prs_arg->int_vtr.push(Nvar);
-    return True;
-  } 
-  
-  // FINAL SCAN
-  Nvar=prs_arg->var_vtr.find(var->nm);
-  if(Nvar) {
-    // temporary fix make typ_dsk same as type
-    Nvar->var->typ_dsk=Nvar->var->type;
-    bdef=true;
-
-    //Possibly overwrite bram !!
-    bram=Nvar->flg_mem;
-      
-    if(var->has_mss_val)
-      (void)nco_mss_val_cp(var,Nvar->var);
-    // delete missing value
-    else if(Nvar->var->has_mss_val){
-      Nvar->var->has_mss_val=False;
-      Nvar->var->mss_val.vp=(void*)nco_free(Nvar->var->mss_val.vp);
-    }      
-
-  } 
-
-  
-  // Deal with a new RAM only variable
-  if(!bdef && bram){
-    NcapVar *NewNvar=new NcapVar(var);
-    NewNvar->flg_mem=bram;
-    NewNvar->flg_stt=2;
-    NewNvar->var->id=-1;
-    NewNvar->var->nc_id=-1;
-    prs_arg->var_vtr.push(NewNvar);
-    return True;
-  }
-
-  
-  // Deal with a an existing RAM variable
-  if(bdef && bram){
-    var_sct *var_ref;
-    void *vp_swp;
-        
-    // De-reference
-    var_ref=Nvar->var;
-
-
-    
-    // check sizes are the same 
-    if(var_ref->sz != var->sz) {
-      std::ostringstream os;
-      os<< "RAM Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
-      os<< fl_out << " with size=" << var_ref->sz;
-      
-      wrn_prn(fnc_nm,os.str());  
-      var = nco_var_free(var);
-      return False;
-    }
-    
-    /* convert type to disk type */
-    var=nco_var_cnf_typ(var_ref->type,var);    
-    
-    //Swap values about  
-    vp_swp=var_ref->val.vp;
-    var_ref->val.vp=var->val.vp;
-    var->val.vp=vp_swp;
-    
-    Nvar->flg_stt=2;
-    
-        
-    (void)nco_var_free(var);
-    
-    return True;
-  }
-  
-  // var is already defined but not populated 
-  if(bdef && !bram && Nvar->flg_stt==1){
-    ;
-  }
-  
-  // var is already defined & populated in output 
-  if(bdef && !bram && Nvar->flg_stt==2){
-    var_sct* var_swp;
-    var_sct* var_inf;
-    var_inf=Nvar->cpyVarNoData();
-    
-    
-    /* check sizes are the same */
-    if(var_inf->sz != var->sz) {
-      std::ostringstream os;
-      os<< "Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
-      os<< fl_out << " with size=" << var_inf->sz;
-      
-      wrn_prn(fnc_nm,os.str());  
-      
-      var = nco_var_free(var);
-      var_inf=nco_var_free(var_inf);
-      return False;
-    }
-    
-    /* convert type to disk type */
-    var=nco_var_cnf_typ(var_inf->type,var);
-    
-    
-    //Swap values about
-    var_inf->val=var->val;var->val.vp=(void*)NULL;
-    var_swp=var;var=var_inf;var_inf=var_swp;
-    
-    var_inf=nco_var_free(var_inf);
-    
-    var_out_id=var->id;
-    
-  } 
-  
-  
-  rcd=nco_inq_varid_flg(out_id,var->nm,&var_out_id);
-
-  if(rcd !=NC_NOERR){
-    std::ostringstream os;
-    os<<" Unable to find  "<<var->nm <<" in output."<<std::endl;
-    wrn_prn(fnc_nm,os.str());
-    var_out_id=Nvar->var->id;
-  }
-
-
-
-#ifdef _OPENMP
-#pragma omp critical
-#endif
- {
-
-
-
-  // Only go into define mode if necessary
-  if(!bdef || var->pck_ram ){  
-
-     (void)nco_redef(out_id);
-
-  /* Define variable */   
-  if(!bdef){
-    (void)nco_def_var(out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
-    /* Set HDF Lempel-Ziv compression level, if requested */
-    if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
-  } // bdef
-  /* Put missing value 
-  if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
-  */
-  
-  /* Write/overwrite scale_factor and add_offset attributes */
-  if(var->pck_ram){ /* Variable is packed in memory */
-    if(var->has_scl_fct) (void)nco_put_att(out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
-    if(var->has_add_fst) (void)nco_put_att(out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
-  } /* endif pck_ram */
-  
-  /* Take output file out of define mode */
-  (void)nco_enddef(out_id);
-  
-  } // end defines
-
-  /* Write variable */ 
-  if(var->nbr_dim == 0){
-    (void)nco_put_var1(out_id,var_out_id,0L,var->val.vp,var->type);
-  }else{
-    (void)nco_put_vara(out_id,var_out_id,var->srt,var->cnt,var->val.vp,var->type);
-  } /* end else */
-  
-#ifdef NCO_RUSAGE_DBG
-  /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
-  /* Print rusage memory usage statistics */
-  if(dbg_lvl_get() >= 0) {
-    std::ostringstream os;
-    os<<" Writing variable "<<var_nm; <<" to disk.";
-    dbg_prn(fnc_nm,os.str());
-  }
-  maxrss=nco_mmr_rusage_prn((int)0);
-#endif /* !NCO_RUSAGE_DBG */
-  
-  // save variable to output vector if new
-  if(!bdef) {
-    var_sct *var1;
-
-    var->val.vp=(void*)nco_free(var->val.vp);
-    var1=nco_var_dpl(var);
-
-    var1->id=var_out_id;
-    var1->nc_id=out_id;
-    //temporary fix .. make typ_dsk same as type
-    var1->typ_dsk=var1->type;
-    Nvar=new NcapVar(var1);
-    (void)prs_arg->var_vtr.push(Nvar);          
-  } 
-  
-  var=nco_var_free(var);
-  
-  //Set flag -  indicates var is DEFINED && POPULATED
-  Nvar->flg_stt=2;
-  
-  //return True;
- 
- } // end mp critical
-
- return True;
-}
-
-
-
 
 // check if var is really an attribute
 nco_bool 
@@ -1413,9 +1159,9 @@ ncap_def_dim(
 	     prs_cls *prs_arg){
   const char fnc_nm[]="ncap_def_dim"; 
   
-  int idx;
+  // int idx;
+  // char ch; 
   int len;
-  char ch; 
   
   dmn_sct *dmn_nw;             
   dmn_sct *dmn_in_e;
@@ -1603,9 +1349,6 @@ ncap_var_att_cnf   /* [fnc] Make vars/atts conform */
   nco_bool vb1;
   nco_bool vb2;
   
-  var_sct *var_ret=NULL_CEWI;
-  
-  
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
   
@@ -1698,7 +1441,6 @@ bool ntl_scn,         /* [flg] reurb dim with correct shape as ig op had happene
 var_sct ***var_arr,   /* I/O [sct] Array of variables */
 int sz)               /* size of array */
 {
-  const char fnc_nm[]="ncap_var_att_arr_cnf"; 
   bool undef=false;
   int idx;
   int max_idx=0;
