@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.80 2009-02-12 14:16:47 hmb Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.81 2009-02-19 10:56:54 hmb Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1285,7 +1285,7 @@ libnco_c++ := ${MY_LIB_DIR}/libnco_c++
 libnco++ := ${MY_LIB_DIR}/libnco++
 
 # Default targets
-all: ant ${MDL_BIN_TRG} inc lib
+all: ncoParser.hpp ${MDL_BIN_TRG} inc lib
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all cln dst_cln debug ${MDL_BIN_TRG}
 # Delete default suffixes---this should increase speed
@@ -1366,9 +1366,10 @@ obj_cln :
 	mv $< $(basename $<).cc
 
 # fxm: change to common dependency rule
-ant: ncoGrammer.g
+ncoParser.hpp : ncoGrammer.g
 	${ANTLR} ncoGrammer.g
 	- nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
+	touch nco{Lexer,Parser,Tree}.{cpp,hpp}
 
 src_cln :
 	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
