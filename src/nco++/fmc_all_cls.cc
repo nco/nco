@@ -126,7 +126,7 @@
             var1=walker.out(vtr_args[0]);
 
             // Process function arguments if any exist !! 
-            for(idx=1; idx<vtr_args.size(); idx++){  
+            for(idx=1; idx<nbr_args; idx++){  
                 aRef=vtr_args[idx];
            
                 switch(aRef->getType()){
@@ -276,7 +276,7 @@
 
   var_sct *utl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fnd");
-    int rval;
+    int rval=0;
     int nbr_args; 
     int fdx=fmc_obj.fdx();   //index
     prs_cls *prs_arg=walker.prs_arg;    
@@ -711,7 +711,6 @@
     var_sct *var2=NULL_CEWI;
     std::string styp;
     RefAST tr;
-    vtl_typ lcl_typ;
  
     std::vector<RefAST> vtr_args; 
 
@@ -969,10 +968,8 @@
     prs_cls* prs_arg=walker.prs_arg;
     var_sct *var=NULL_CEWI;
     var_sct *var_msk=NULL_CEWI;
-    var_sct *var_tmp=NULL_CEWI;
     std::string styp;
     RefAST tr;
-    vtl_typ lcl_typ;
 
     std::string sfnm =fmc_obj.fnm(); //method name
 
@@ -1155,7 +1152,6 @@
     int nbr_fargs; 
     int fdx=fmc_obj.fdx();   //index
     prs_cls *prs_arg=walker.prs_arg;    
-    vtl_typ lcl_typ;
     var_sct *var_in=NULL_CEWI;
     var_sct *var_out=NULL_CEWI;
     nc_type typ;

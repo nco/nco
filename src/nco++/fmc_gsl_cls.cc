@@ -338,9 +338,7 @@ gsl_cls::gsl_cls(bool flg_dbg){
 var_sct * gsl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gsl_cls::fnd");
   bool is_mtd;
-  int idx;
   int fdx;
-  int nbr_args;
   var_sct *var_ret=NULL_CEWI;
   
   RefAST tr;
@@ -402,7 +400,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
     { 
       bool has_mss_val;
       int sz=var->sz;
-      double mss_val_dbl; 
+      double mss_val_dbl=0.0; 
       long *lp;
       double *dp;
       
@@ -457,7 +455,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
     { 
       bool has_mss_val;
       int sz=var->sz;
-      double mss_val_dbl; 
+      double mss_val_dbl=0; 
       long *lp;
       double *dp;
       
@@ -739,7 +737,6 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   int idx;
   int args_nbr;
   int fdx=gpr_obj.type(); // only two types at the moment 
-  ;            vtl_typ lcl_typ;
   std::string serr;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
@@ -804,7 +801,7 @@ var_sct *gsl_cls::hnd_fnc_iidpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     int nbr_min;
     int nbr_max;
     int status;
-    int sz_out;
+    int sz_out=0;
     
     double xin;     
     double *dp_out;
@@ -869,7 +866,6 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   const std::string fnc_nm("hnd_fnc_idpd");
   int idx;
   int args_nbr;
-  vtl_typ lcl_typ;
   std::string serr;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
@@ -1222,7 +1218,7 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     bool has_mss_val=false;
     int sz;
     double **dp;
-    double mss_val_dbl;
+    double mss_val_dbl=0.0;
               
     gsl_mode_t mde_t=ncap_gsl_mode_prec; // initialize local from global variable */
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
