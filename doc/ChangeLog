@@ -1,5 +1,11 @@
+2009-02-24  Charlie Zender  <zender@uci.edu>
+
+	* Add doc/.htaccess file to copy to sourceforge to re-enable
+	directory index display
+
 2009-02-24  Henry Butowsky  <henryb@hush.com>
-	* added chapter on ncap GSL functions
+
+	* Add chapter on ncap GSL functions
 
 2009-02-23  Charlie Zender  <zender@uci.edu>
 

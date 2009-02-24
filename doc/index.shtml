@@ -1,10 +1,12 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.512 2009-02-04 23:25:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.513 2009-02-24 18:43:13 zender Exp $
 Purpose: NCO homepage
 
-Usage:
+URL:
+http://nco.sourceforge.net/index.shtml
 http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
+Usage:
 /usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
 scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:/var/www/html/nco
 -->
@@ -501,7 +503,7 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 <!-- http://nco.sf.net#vrs -->
 <dt><a name="Version"></a><a name="vrs"></a></dt>
 <h2>Version Summary</h2>
-New releases receive unique CVS tags and their tarballs are stored  
+Releases receive unique CVS tags and their tarballs are stored  
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="http://dust.ess.uci.edu/nco/src">here</a> on my server.
 You can also retrieve the source of tagged versions directly
@@ -707,18 +709,20 @@ infrequently updated. Comments and suggestions are certainly welcomed on the
 <h3>NCO Binaries and OS-specific Packages</h3>
 <p>NCO developers are too short-handed to provide pre-built binary
 executables for all platforms.
-We do attempt to provide (theoretically) platform-independent sources
-in the most common UNIX packaging formats (Debian and RPM).
-Moreover, the source tarballs are always up-to-date, and work on our
+Our source tarballs are always up-to-date, and work on our
 development systems 
 (<a href="http://www.ubuntu.com">Ubuntu</a>-flavored <a
 href="http://www.debian.org">Debian</a> GNU/Linux for x86 and x86_64) 
 and in our high-end scientific computing environments
-(<a href="http://www-1.ibm.com/servers/aix">AIX&nbsp;5</a> for Power4/5).
-Below there are also links to binaries and packages created by
-volunteers and organizations who port NCO to other platforms. 
-We welcome volunteers willing to perform regular regression testing
-and porting of NCO to other platforms. 
+(<a href="http://www-1.ibm.com/servers/aix">AIX&nbsp;5</a> for Power4/5/6).
+We also attempt to provide (theoretically) platform-independent sources
+in the most common UNIX packaging formats (Debian and RPM).
+Below are links to these and to packages created by volunteers who
+port NCO to other platforms.  
+Volunteers willing to perform regular regression testing and porting
+of NCO to other platforms are welcome.  
+Previous versions of these binaries are still available by searching
+the raw directory listing <a href="src">here</a>.
 
 <a name="debian"></a><a name="dbn"></a> <!-- http://nco.sf.net#debian -->
 <a name="ubuntu"></a><a name="ubn"></a> <!-- http://nco.sf.net#ubuntu -->
