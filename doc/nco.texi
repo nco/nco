@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.518 2009-02-03 00:08:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.519 2009-02-24 15:44:10 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5470,6 +5470,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Loops::
 * Include files::
 * Irregular grids::
+* GSL special functions::
 * Examples ncap2::             
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity::
@@ -6719,7 +6720,7 @@ e=2.71828;
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
-@node Irregular grids, Examples ncap2, Include files, ncap2 netCDF Arithmetic Processor
+@node Irregular grids, GSL special functions, Include files, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
@@ -6848,10 +6849,100 @@ The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
 
+
+@html
+<a name="ncap_gsl"></a> <!-- http://nco.sf.net/nco.html#ncap_gsl -->
+@end html
+@node GSL special functions, Examples ncap2, Irregular grids, ncap2 netCDF Arithmetic Processor
+@subsection GSL special functions
+@noindent As of release nco-3.9.7 it is possible to link nco to  the GNU Scientific Library (GSL). This enables the ncap user to access many of the GSL Special Functions such as the Airy Functions, Bessel Functions, Elliptical Integrals, Error Functions, Gamma and Beta Functions, Hypergeometric Functions and Legendre Functions.
+
+@noindent The GSL library must be version 1.4 or later. To see the available  functions on your build enter the command @command{ ncap2 -f|grep ^gsl } 
+
+
+@noindent The wrapper names mirror the GSL names. However it is important to note that the wrappers call the error version of the function where there is a choice. (in the GSL library these are C function names postfixed with _e ). The reason  for this is that, if there is a domain error or a floating point exception then a missing value is returned.      
+
+@noindent For example consider a call to the gamma function.@*
+@noindent The gsl function prototype is @*
+@code{ int gsl_sf_gamma_e(const double x, gsl_sf_result * result)}
+
+The ncap script call is:
+@example
+lon_in[lon]=@{-1,0.1,0,2,0.3@};
+lon_out=gsl_sf_gamma(lon_in);
+lon_out= _, 9.5135, 4.5908, 2.9915 
+@end example
+
+@noindent The first value is set to 'missing value' since the gamma function is undefined when 'x' is equal to a negative integer. If the input variable has a missing value then this is the value used - else the default double fill value is used ( this is defined in the netcdf file netcdf.h as NC_FILL_DOUBLE = 9.969e+36)  
+
+
+@noindent Lets consider a call to a bessel function @*
+@noindent The gsl function prototype is @*
+@code{int gsl_sf_bessel_Jn_e(int n, double x, gsl_sf_result * result)} 
+
+The ncap script call is
+@example
+lon_out=gsl_sf_bessel_Jn(2,lon_in);  
+lon_out=0.11490, 0.0012, 0.00498, 0.011165
+@end example
+
+@noindent So all the values in lon_in have been calculated for 'n=2'.  This integer argument can also be a non-scalar variable.  
+@example
+n_in[lon]=@{0,1,2,3@};
+lon_out=gsl_sf_bessel_Jn(n_in,0.5);
+lon_out= 0.93846, 0.24226, 0.03060, 0.00256
+@end example
+
+@noindent The aguments to the ncap wrapper must conformable to one another. ie They must share the same sub-set of dimensions.  For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)} is valid because the variable @code{three_dmn_var_dbl} has a lon dimension,so @code{n_in} in can be broadcast to conform to @code{three_dmn_var_dbl}.  However @code{ time_out=gsl_sf_bessel_Jn(n_in,time)} is invalid. 
+
+@noindent Lets try an elliptical inegral @*
+@noindent The gsl function prototype @* 
+@code{int gsl_sf_ellint_RD_e(double x, double y, double z, gsl_mode_t mode, gsl_sf_result * result)}
+
+@example
+ three_out=gsl_sf_ellint_RD(0.5,time,three_dmn_var_dbl);
+@end example
+
+@noindent The three arguments are all conformable so the above ncap call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environemnt variable @code{GSL_MODE_PREC}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the GSL manual for more details. 
+@example
+export GSL_MODE_PREC=0 // GSL_PREC_DOUBLE
+export GSL_MODE_PREC=1 // GSL_PREC_SINGLE
+export GSL_MODE_PREC=2 // GSL_PREC_APPROX
+@end example
+
+
+@noindent The ncap wrappers to the array functions are slightly different. Lets consider the following gsl prototype @*
+@code{int gsl_sf_bessel_Jn_array(int nmin, int nmax, double x, double *result_array)}
+
+@example
+b1=lon.double();
+x=0.5;
+status=gsl_sf_bessel_Jn_array(1,4,x,&b1);
+print(status);
+b1=0.24226, 0.0306, 0.00256, 0.00016 ;
+
+@end example
+@noindent This calculates the bessel function of x=0.5 for n=1 to 4. The first three arguments are scalar values. if a non-scalar variable is supplied as an argument then only the first value is used.The final argument is the variable where the results go ( note the '&' this indicates a call by reference). This final argument must be of type @code{double} and must be of least size (nmax-nmin+1). If either of these conditions are not met then then the function will blow out with an error message. The function/wrapper returns a status flag. Zero indicates success.
+
+
+@noindent Lets look at another array function @* 
+@code{int gsl_sf_legendre_Pl_array( int lmax, double x, double *result_array);}
+
+@example
+a1=time.double();
+x=0.3;
+status=gsl_sf_legendre_Pl_array(a1.size()-1, x,&a1);  
+print(status);
+@end example
+
+@noindent This call calculates P_l(0.3) for l=0..9. Note |x|<=1, otherwise there will be a domain error. See the GSL documentation for more details. 
+
+
+
 @html
 <a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
 @end html
-@node Examples ncap2, Intrinsic mathematical methods, Irregular grids, ncap2 netCDF Arithmetic Processor
+@node Examples ncap2, Intrinsic mathematical methods, GSL special functions, ncap2 netCDF Arithmetic Processor
 @subsection Examples ncap2
 
 See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
@@ -7080,7 +7171,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 <a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
 @end html
 @node Intrinsic mathematical methods, Operators precedence and associativity, Examples ncap2, ncap2 netCDF Arithmetic Processor
-@subsection Intrinsic mathematical methods
+              @subsection Intrinsic mathematical methods
 @command{ncap2} supports the standard mathematical functions supplied with
 most operating systems.
 @cindex addition
@@ -7617,6 +7708,7 @@ This page lists the ncap operators in order of precedence (highest to lowest). T
 @item @code{+= -=} @tab	Addition/subtraction assignment	
 @item @code{*= /=} @tab	Multiplication/division assignment
 @end multitable
+
 
 
 @html
