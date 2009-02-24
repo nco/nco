@@ -19,7 +19,7 @@
 	GSL_PREC_APPROX=2
 
 2009-02-12  Henry Butowsky  <henryb@hush.com>
-	* Made gsl_cls aware of gsl lib version
+	* Made gsl_cls aware of GSL library version
 	Add pre-processor token NCO_GSL_MINOR_VERSION
 	Token is initialized in nco++/Makefile.old 
 

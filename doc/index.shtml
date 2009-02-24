@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.513 2009-02-24 18:43:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.514 2009-02-24 19:52:05 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -9,6 +9,8 @@ file:///home/zender/nco/doc/index.shtml
 Usage:
 /usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
 scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:/var/www/html/nco
+scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:/var/www/html/nco/src
 -->
 
 <!--
@@ -722,7 +724,7 @@ port NCO to other platforms.
 Volunteers willing to perform regular regression testing and porting
 of NCO to other platforms are welcome.  
 Previous versions of these binaries are still available by searching
-the raw directory listing <a href="src">here</a>.
+the directory index <a href="src">here</a>.
 
 <a name="debian"></a><a name="dbn"></a> <!-- http://nco.sf.net#debian -->
 <a name="ubuntu"></a><a name="ubn"></a> <!-- http://nco.sf.net#ubuntu -->

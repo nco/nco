@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.519 2009-02-24 15:44:10 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.520 2009-02-24 19:52:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.7
 @set copyright-years 1995--2009
 @set update-year 2009
-@set update-date 2 February 2009
+@set update-date 24 February 2009
 @set update-month February 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -713,7 +713,7 @@ by invoking the compiler with @samp{-Drestrict=''}.}.
 @html
 <a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
 @end html
-@cindex GSL
+@cindex @acronym{GSL}
 @cindex @var{gamma_inc}
 In January 2009, @acronym{NCO} version 3.9.6 was the first to link
 to the GNU Scientific Library (@acronym{GSL}).
@@ -5741,7 +5741,7 @@ RDM2= RDM <<90s;     RDM3=1, 9, 36, 84, 90, 90, 84, 36, 9, 1 ;        // type in
 @end html
 @node Dimensions, Left hand casting, Expressions, ncap2 netCDF Arithmetic Processor
 @subsection Dimensions
-@cindex dimensions ncap
+@cindex dimensions@command{ncap}
 @cindex defdim()
 Dimensions can be defined in Output using the @code{defdim()} function.
 @example
@@ -5870,7 +5870,7 @@ coordinate system is easy with left hand casting.
 @node Arrays and hyperslabs, Attributes, Left hand casting, ncap2 netCDF Arithmetic Processor
 @subsection Arrays and hyperslabs
 @cindex hyperslabs
-Hyperslabs in ncap2 are a bit more limited than  hyperslabs with the other nco operators.
+Hyperslabs in @command{ncap2} are a bit more limited than  hyperslabs with the other nco operators.
 There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntactic magic they are all are possible.
 @example
   var1( hyper_arg1, hyper_arg2 .. hyper_argN)
@@ -6019,7 +6019,7 @@ three_dmn_var_pm=
 @end html
 @node Attributes, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
-@cindex attributes ncap
+@cindex attributes@command{ncap}
 @noindent Attributes are referred to by @emph{var_nm@@att_nm} @*
 All the following are valid statements
 
@@ -6090,7 +6090,7 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 @end html
 @node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Number literals
-@cindex number lierals ncap
+@cindex number literals @command{ncap}
 The table below lists the postfix character(s) to add to a number literal for type cohesion. To use the new netcdf4 types nco must be compiled/linked to the netcdf4 library and the Output file must be hdf5.
 
 
@@ -6227,7 +6227,7 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint(): three_dmn_var_sht.int(
 @end html
 @node print statement, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
 @subsection print statement
-@cindex print() ncap
+@cindex print()@command{ncap}
 @example
 print( variable_name/attribute name/string, format string);
 @end example  
@@ -6261,7 +6261,7 @@ This function is 	  monotonic
 @node Missing values ncap2, Methods and functions, print statement, ncap2 netCDF Arithmetic Processor
 @subsection Missing values ncap2
 @cindex missing values ncap2
-Missing values operate slightly differently in ncap2 
+Missing values operate slightly differently in @command{ncap2} 
 Consider the expression where op is any of the following operators (excluding '=')
  
 @example
@@ -6464,7 +6464,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @sp 1
 @noindent @strong{Type Conversion Methods @*}
-@noindent These methods allow ncap2 to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You can only use the new netcdf4 types if you have compiled/links nco with the netcdf4 library and the Output file is hdf5.
+@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You can only use the new netcdf4 types if you have compiled/links nco with the netcdf4 library and the Output file is hdf5.
 
 @table @code
 @item
@@ -6565,7 +6565,6 @@ A @code{where()} combines the definition and application of a mask all in one go
 The full syntax of a @code{where()} statement is as follows:
 
 @example
-
 // Single assign (nb the else block is optional)
 where (mask) 
    var1=expr1;
@@ -6588,7 +6587,7 @@ where( mask) @{
 @end example
 
 @itemize @bullet
-@item The only expression allowed within a where is the assign 'var=expr'. This is different from a regular ncap2 assign. The LHS var must already exist in Input or Output. The expression on the RHS must evaluate to a scalar or a variable/attribute of the same size as the LHS variable. 
+@item The only expression allowed within a where is the assign 'var=expr'. This is different from a regular @command{ncap2} assign. The LHS var must already exist in Input or Output. The expression on the RHS must evaluate to a scalar or a variable/attribute of the same size as the LHS variable. 
 @item Taking the general case of a variable on the LHS side and RHS. For every element of the mask which is True , the corresponding LHS variable element  is re-assigned with its partner element on the RHS. In the elsewhere part the mask is logically inverted and the assign process continues
 
 @item if the mask dimensions are a subset of the LHS variable's dimensions , then it is made to conform; if it  can't be made to conform then script execution halts.  
@@ -6650,7 +6649,7 @@ temp_max=temperature.max();
 @subsection Loops
 @cindex while()
 @cindex for()
-In ncap there are for() loops and while() loops. They are currently completely unoptimized So use them with  RAM variables unless you want thrash your disk to death. To break out of a loop use "break" command. To iterate to the next cycle use the "continue" command.
+In @command{ncap} there are for() loops and while() loops. They are currently completely unoptimized So use them with  RAM variables unless you want thrash your disk to death. To break out of a loop use "break" command. To iterate to the next cycle use the "continue" command.
 
 @example
 // Follwing sets elements in variable double temp(time,lat) 
@@ -6848,25 +6847,24 @@ Irregular regions are the union of arrays lat/lon_min/max's.
 The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
-
-
 @html
 <a name="ncap_gsl"></a> <!-- http://nco.sf.net/nco.html#ncap_gsl -->
 @end html
 @node GSL special functions, Examples ncap2, Irregular grids, ncap2 netCDF Arithmetic Processor
-@subsection GSL special functions
-@noindent As of release nco-3.9.7 it is possible to link nco to  the GNU Scientific Library (GSL). This enables the ncap user to access many of the GSL Special Functions such as the Airy Functions, Bessel Functions, Elliptical Integrals, Error Functions, Gamma and Beta Functions, Hypergeometric Functions and Legendre Functions.
+@subsection @acronym{GSL} special functions
+@noindent As of release nco-3.9.7 it is possible to link nco to  the GNU Scientific Library (@acronym{GSL}). This enables the @command{ncap} user to access many of the @acronym{GSL} Special Functions such as the Airy Functions, Bessel Functions, Elliptical Integrals, Error Functions, Gamma and Beta Functions, Hypergeometric Functions and Legendre Functions.
 
-@noindent The GSL library must be version 1.4 or later. To see the available  functions on your build enter the command @command{ ncap2 -f|grep ^gsl } 
+@noindent The @acronym{GSL} library must be version 1.4 or later. To see the
+available  functions on your build enter the command 
+@command{ncap2 -f |grep ^gsl}
 
-
-@noindent The wrapper names mirror the GSL names. However it is important to note that the wrappers call the error version of the function where there is a choice. (in the GSL library these are C function names postfixed with _e ). The reason  for this is that, if there is a domain error or a floating point exception then a missing value is returned.      
+@noindent The wrapper names mirror the @acronym{GSL} names. However it is important to note that the wrappers call the error version of the function where there is a choice. (in the @acronym{GSL} library these are C function names postfixed with _e ). The reason  for this is that, if there is a domain error or a floating point exception then a missing value is returned.      
 
 @noindent For example consider a call to the gamma function.@*
 @noindent The gsl function prototype is @*
-@code{ int gsl_sf_gamma_e(const double x, gsl_sf_result * result)}
+@code{int gsl_sf_gamma_e(const double x, gsl_sf_result * result)}
 
-The ncap script call is:
+The @command{ncap} script call is:
 @example
 lon_in[lon]=@{-1,0.1,0,2,0.3@};
 lon_out=gsl_sf_gamma(lon_in);
@@ -6875,25 +6873,25 @@ lon_out= _, 9.5135, 4.5908, 2.9915
 
 @noindent The first value is set to 'missing value' since the gamma function is undefined when 'x' is equal to a negative integer. If the input variable has a missing value then this is the value used - else the default double fill value is used ( this is defined in the netcdf file netcdf.h as NC_FILL_DOUBLE = 9.969e+36)  
 
-
-@noindent Lets consider a call to a bessel function @*
+@noindent Consider a call to a Bessel function @*
 @noindent The gsl function prototype is @*
 @code{int gsl_sf_bessel_Jn_e(int n, double x, gsl_sf_result * result)} 
 
-The ncap script call is
+The @command{ncap} script call is
 @example
 lon_out=gsl_sf_bessel_Jn(2,lon_in);  
 lon_out=0.11490, 0.0012, 0.00498, 0.011165
 @end example
 
-@noindent So all the values in lon_in have been calculated for 'n=2'.  This integer argument can also be a non-scalar variable.  
+@noindent The values in lon_in have been calculated for 'n=2'.
+This integer argument can also be a non-scalar variable.  
 @example
 n_in[lon]=@{0,1,2,3@};
 lon_out=gsl_sf_bessel_Jn(n_in,0.5);
 lon_out= 0.93846, 0.24226, 0.03060, 0.00256
 @end example
 
-@noindent The aguments to the ncap wrapper must conformable to one another. ie They must share the same sub-set of dimensions.  For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)} is valid because the variable @code{three_dmn_var_dbl} has a lon dimension,so @code{n_in} in can be broadcast to conform to @code{three_dmn_var_dbl}.  However @code{ time_out=gsl_sf_bessel_Jn(n_in,time)} is invalid. 
+@noindent The aguments to the @command{ncap} wrapper must conformable to one another. ie They must share the same sub-set of dimensions.  For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)} is valid because the variable @code{three_dmn_var_dbl} has a lon dimension,so @code{n_in} in can be broadcast to conform to @code{three_dmn_var_dbl}.  However @code{ time_out=gsl_sf_bessel_Jn(n_in,time)} is invalid. 
 
 @noindent Lets try an elliptical inegral @*
 @noindent The gsl function prototype @* 
@@ -6903,15 +6901,14 @@ lon_out= 0.93846, 0.24226, 0.03060, 0.00256
  three_out=gsl_sf_ellint_RD(0.5,time,three_dmn_var_dbl);
 @end example
 
-@noindent The three arguments are all conformable so the above ncap call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environemnt variable @code{GSL_MODE_PREC}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the GSL manual for more details. 
+@noindent The three arguments are all conformable so the above @command{ncap} call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environemnt variable @code{GSL_MODE_PREC}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the @acronym{GSL} manual for more details. 
 @example
 export GSL_MODE_PREC=0 // GSL_PREC_DOUBLE
 export GSL_MODE_PREC=1 // GSL_PREC_SINGLE
 export GSL_MODE_PREC=2 // GSL_PREC_APPROX
 @end example
 
-
-@noindent The ncap wrappers to the array functions are slightly different. Lets consider the following gsl prototype @*
+@noindent The @command{ncap} wrappers to the array functions are slightly different. Lets consider the following gsl prototype @*
 @code{int gsl_sf_bessel_Jn_array(int nmin, int nmax, double x, double *result_array)}
 
 @example
@@ -6924,7 +6921,6 @@ b1=0.24226, 0.0306, 0.00256, 0.00016 ;
 @end example
 @noindent This calculates the bessel function of x=0.5 for n=1 to 4. The first three arguments are scalar values. if a non-scalar variable is supplied as an argument then only the first value is used.The final argument is the variable where the results go ( note the '&' this indicates a call by reference). This final argument must be of type @code{double} and must be of least size (nmax-nmin+1). If either of these conditions are not met then then the function will blow out with an error message. The function/wrapper returns a status flag. Zero indicates success.
 
-
 @noindent Lets look at another array function @* 
 @code{int gsl_sf_legendre_Pl_array( int lmax, double x, double *result_array);}
 
@@ -6935,7 +6931,7 @@ status=gsl_sf_legendre_Pl_array(a1.size()-1, x,&a1);
 print(status);
 @end example
 
-@noindent This call calculates P_l(0.3) for l=0..9. Note |x|<=1, otherwise there will be a domain error. See the GSL documentation for more details. 
+@noindent This call calculates P_l(0.3) for l=0..9. Note |x|<=1, otherwise there will be a domain error. See the @acronym{GSL} documentation for more details. 
 
 
 
@@ -7672,7 +7668,7 @@ other OSs.}
 @end html
 @node Operators precedence and associativity , ID Quoting, Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
 @subsection Operators precedence and associativity
-This page lists the ncap operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
+This page lists the @command{ncap} operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
 
 @multitable @columnfractions .18 .62 .20
 @headitem Operator @tab Description @tab Associativity

@@ -1,33 +1,22 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.311 2009-02-03 22:33:00 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.312 2009-02-24 19:52:05 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version fixes a nasty bug introduced in NCO version 3.9.5
-that caused threaded arithmetic operators, e.g., ncea/ncra, to
-produce incorrect results under some conditions:
+This version primarily improves documentation and buildability
+of the GSL-library functions introduced in 3.9.6.
 
-http://nco.sf.net#bug_thr_msa
+http://nco.sf.net#gsl
 
-If you have 3.9.5, upgrading to 3.9.7 is highly recommended!
+A. Document GSL functions in ncap2
+   http://nco.sf.net#ncap2
 
-NSF funding for NCO expired 20080831 so development has slowed.
-So we announce with some pleasure that 3.9.7 contains a major new
-feature: integration with the GNU Scientific Library (GSL). 
-GSL performs fast and accurate computations of many
-mathematical/physics equations: 
-
-   ncap2 -s 'foo=gsl_sf_gamma_inc(time/10,time);' in.nc out.nc
-
-A. Fix threading bug introduced in 3.9.5 (upgrade recommended)
-   http://nco.sf.net#bug_thr_msa
-
-B. ncap2 supports dozens of GNU Scientific library functions, e.g.,
-   incomplete gamma functions, Bessel functions, Legendre polynomials:  
-   ncap2 -s 'foo=gsl_sf_gamma_inc(time/10,time);' in.nc out.nc
-   http://nco.sf.net/nco.html#gsl
+B. Improve ./configure ability to find and work with GSL
+   
+C. New ncks --no_dmn_var_nm switch implements "naked" column printing
+   http://nco.sf.net#ncks
 
 D. ncatted matches regular expressions to variable names
    http://nco.sf.net/nco.html#xmp_ncatted
