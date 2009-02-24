@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.29 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.30 2009-02-24 00:55:51 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -33,9 +33,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#ifndef HPUX
+#if !defined(HPUX) && !defined(__INTEL_COMPILER)
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX
-     20040708: HP-UX does not like these */
+     20040708: HP-UX does not like these 
+     20090223: Intel compilers version 11.x complains about these */
+
   /* Basic math: acos, asin, atan, atan2, cos, exp, fabs, log, log10, pow, sin, sqrt, tan */
   float acosf(float);
   float asinf(float);

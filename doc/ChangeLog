@@ -1,16 +1,18 @@
+2009-02-23  Charlie Zender  <zender@uci.edu>
+
+	* Use native float prototypes for math functions if __INTEL_COMPILER
+
 2009-02-13  Henry Butowsky  <henryb@hush.com>
-	* global var ncap_gsl_mode_prec is initialized 
-	from the environment var 'GSL_MODE_PREC'. This variable
-	determines the precision of the Airy & elliptical 
-	functions:
+	* Global ncap_gsl_mode_prec initialized from environment var. GSL_MODE_PREC
+	This sets the precision of the Airy & elliptical functions:
 	GSL_PREC_DOUBLE=0
 	GSL_PREC_SINGLE=1
 	GSL_PREC_APPROX=2
 
 2009-02-12  Henry Butowsky  <henryb@hush.com>
-	* Made gsl_cls aware of gsl lib version -added the
-	pre-processor token NCO_GSL_MINOR_VERSION. This token is 
-	initialized in nco++/Makefile.old 
+	* Made gsl_cls aware of gsl lib version
+	Add pre-processor token NCO_GSL_MINOR_VERSION
+	Token is initialized in nco++/Makefile.old 
 
 2009-02-09  Charlie Zender  <zender@uci.edu>
 
