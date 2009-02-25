@@ -16,7 +16,7 @@
 	* Use native float prototypes for math functions if __INTEL_COMPILER
 
 2009-02-13  Henry Butowsky  <henryb@hush.com>
-	* Global ncap_gsl_mode_prec initialized from environment var. GSL_MODE_PREC
+	* Global ncap_gsl_mode_prec initialized from environment var. GSL_PREC_MODE
 	This sets the precision of the Airy & elliptical functions:
 	GSL_PREC_DOUBLE=0
 	GSL_PREC_SINGLE=1
