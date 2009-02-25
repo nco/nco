@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.520 2009-02-24 19:52:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.521 2009-02-25 13:10:00 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6891,7 +6891,7 @@ lon_out=gsl_sf_bessel_Jn(n_in,0.5);
 lon_out= 0.93846, 0.24226, 0.03060, 0.00256
 @end example
 
-@noindent The aguments to the @command{ncap} wrapper must conformable to one another. ie They must share the same sub-set of dimensions.  For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)} is valid because the variable @code{three_dmn_var_dbl} has a lon dimension,so @code{n_in} in can be broadcast to conform to @code{three_dmn_var_dbl}.  However @code{ time_out=gsl_sf_bessel_Jn(n_in,time)} is invalid. 
+@noindent The aguments to the @command{ncap} wrapper must be conformable to one another. ie they must share the same sub-set of dimensions.  For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)} is valid because the variable @code{three_dmn_var_dbl} has a lon dimension,so @code{n_in} in can be broadcast to conform to @code{three_dmn_var_dbl}.  However @code{ time_out=gsl_sf_bessel_Jn(n_in,time)} is invalid. 
 
 @noindent Lets try an elliptical inegral @*
 @noindent The gsl function prototype @* 
@@ -6901,11 +6901,11 @@ lon_out= 0.93846, 0.24226, 0.03060, 0.00256
  three_out=gsl_sf_ellint_RD(0.5,time,three_dmn_var_dbl);
 @end example
 
-@noindent The three arguments are all conformable so the above @command{ncap} call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environemnt variable @code{GSL_MODE_PREC}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the @acronym{GSL} manual for more details. 
+@noindent The three arguments are all conformable so the above @command{ncap} call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environment variable @code{GSL_PREC_MODE}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the @acronym{GSL} manual for more details. 
 @example
-export GSL_MODE_PREC=0 // GSL_PREC_DOUBLE
-export GSL_MODE_PREC=1 // GSL_PREC_SINGLE
-export GSL_MODE_PREC=2 // GSL_PREC_APPROX
+export GSL_PREC_MODE=0 // GSL_PREC_DOUBLE
+export GSL_PREC_MODE=1 // GSL_PREC_SINGLE
+export GSL_PREC_MODE=2 // GSL_PREC_APPROX
 @end example
 
 @noindent The @command{ncap} wrappers to the array functions are slightly different. Lets consider the following gsl prototype @*
