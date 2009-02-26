@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.523 2009-02-25 21:17:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.524 2009-02-26 17:58:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,11 +107,16 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set update-month February 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
+
 @c Uncomment following line to produce guide in smallbook format
 @c @smallbook
 @c Merge function index into concept index
 @syncodeindex fn cp
 @c end of header
+
+@c 20090226 Add bibliography capabilities
+@include my-bib-macros.texi
+@mybibuselist{References}
 
 @c TeXInfo macros may not appear before TeXInfo @setfilename header
 @c [idx] Index
@@ -710,17 +715,15 @@ Subsequently, @acronym{NCO} requires a C99 compiler to build correctly
 @w{C pre-processor} undefines the @code{restrict} type qualifier, e.g.,
 by invoking the compiler with @samp{-Drestrict=''}.}.
 
-@html
-<a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
-@end html
 @cindex @acronym{GSL}
+@findex ncap2
 In January 2009, @acronym{NCO} version 3.9.6 was the first to link
 to the GNU Scientific Library (@acronym{GSL}).
-@acronym{NCO}, in particular @command{ncap2}, now uses the @acronym{GSL}
-special function library for geoscience-relevant mathematics such as
-Bessel functions, Legendre polynomials, and incomplete gamma functions
-(@pxref{GSL special functions}).
 @acronym{GSL} must be @w{version 1.4} or later. 
+@acronym{NCO}, in particular @command{ncap2}, uses the @acronym{GSL}
+special function library to evaluate geoscience-relevant mathematics
+such as Bessel functions, Legendre polynomials, and incomplete gamma
+functions (@pxref{GSL special functions}).
  
 @cindex @var{gamma}
 In June 2005, @acronym{NCO} version 3.0.1 began to take advantage
@@ -5456,26 +5459,26 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 
 @menu
 * Syntax of ncap2 statements::  
-* Expressions::
-* Dimensions::
-* Left hand casting::
-* Arrays and hyperslabs::
-* Attributes::
-* Number literals::
-* if statement::
-* print statement::
-* Missing values ncap2::
-* Methods and functions::
-* RAM variables::
-* Where statement::
-* Loops::
-* Include files::
-* Irregular grids::
-* GSL special functions::
-* Examples ncap2::             
+* Expressions::                 
+* Dimensions::                  
+* Left hand casting::           
+* Arrays and hyperslabs::       
+* Attributes::                  
+* Number literals::             
+* if statement::                
+* print statement::             
+* Missing values ncap2::        
+* Methods and functions::       
+* RAM variables::               
+* Where statement::             
+* Loops::                       
+* Include files::               
+* Irregular grids::             
+* GSL special functions::       
+* Examples ncap2::              
 * Intrinsic mathematical methods::  
-* Operators precedence and associativity::
-* ID Quoting::
+* Operators precedence and associativity ::  
+* ID Quoting::                  
 @end menu
 
 @html
@@ -6709,11 +6712,7 @@ The synatax of an include file is:
 *pi=3.1415926535;
 *h=6.62607095e-34;
 e=2.71828;
-
 @end example
- 
-
-
 
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
@@ -6849,36 +6848,41 @@ The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
 @html
-<a name="ncap_gsl"></a> <!-- http://nco.sf.net/nco.html#ncap_gsl -->
+<a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
 @end html
 @node GSL special functions, Examples ncap2, Irregular grids, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} special functions
+@cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
 can link to the GNU Scientific Library (@acronym{GSL}). 
-This enables @command{ncap} to access most of the @acronym{GSL} special 
-functions including Airy, Bessel, error, gamma, beta, hypergeometric, 
-and Legendre functions and elliptical integrals.
+@command{ncap} can access most @acronym{GSL} special functions including
+Airy, Bessel, error, gamma, beta, hypergeometric, and Legendre functions
+and elliptical integrals. 
 @acronym{GSL} must be @w{version 1.4} or later. 
-To see the available functions on your @acronym{NCO} build,
-enter the command @command{ncap2 -f | grep ^gsl}.
+To list the @acronym{GSL} functions available with your @acronym{NCO} 
+build, use @command{ncap2 -f | grep ^gsl}.
 
-@noindent The function names used by @acronym{ncap2} mirror the
+@noindent The function names used by @acronym{ncap2} mirror their
 @acronym{GSL} names.
-The wrappers automatically call the error-handling version of the
-@acronym{GSL} function when available 
+The @acronym{NCO} wrappers for @acronym{GSL} functions automatically
+call the error-handling version of the @acronym{GSL} function when
+available  
 @footnote{   
-In @acronym{GSL}, these are the standard @w{C function} names 
-postfixed with @code{_e}. 
-@acronym{NCO} will calls these functions automatically, without
-the user specifically calling the @code{_e} function.
+These are the @acronym{GSL} standard function names postfixed with
+@code{_e}.  
+@acronym{NCO} calls these functions automatically, without the 
+@acronym{NCO} command having to specifically indicate the @code{_e}
+function suffix.
 }.
 This allows @acronym{NCO} to return a missing value when the
 @acronym{GSL} library encounters a domain error or a floating point 
 exception. 
-The slowdown due to calling the error-handling version of the 
-numerical functions was found to be negligible (please let us know
-if you find otherwise).
+The slow-down due to calling the error-handling version of the 
+@acronym{GSL} numerical functions was found to be negligible (please let
+us know if you find otherwise).
 
+@cindex gamma function
+@cindex @var{gsl_sf_gamma}
 @noindent Consider the gamma function.@*
 @noindent The @acronym{GSL} function prototype is @*
 @code{int gsl_sf_gamma_e(const double x, gsl_sf_result * result)}
@@ -6896,6 +6900,8 @@ Otherwise, the default double fill value is used
 (defined in the netCDF header @file{netcdf.h} as 
 @code{NC_FILL_DOUBLE = 9.969e+36}).
 
+@cindex Bessel function
+@cindex @var{gsl_sf_bessel_Jn}
 @noindent Consider a call to a Bessel function with @acronym{GSL}
 prototype@* 
 @code{int gsl_sf_bessel_Jn_e(int n, double x, gsl_sf_result * result)} 
@@ -6905,29 +6911,30 @@ An @command{ncap} script would be
 lon_out=gsl_sf_bessel_Jn(2,lon_in);  
 lon_out=0.11490, 0.0012, 0.00498, 0.011165
 @end example
-
-@noindent The values in @code{lon_in} have been calculated for 'n=2'.
-This integer argument can also be a non-scalar variable, i.e., an array.
+This computes the Bessel function of order @var{n=2} for every value in
+@code{lon_in}.
+The Bessel order argument, an integer, can also be a non-scalar
+variable, i.e., an array.  
 @example
 n_in[lon]=@{0,1,2,3@};
 lon_out=gsl_sf_bessel_Jn(n_in,0.5);
 lon_out= 0.93846, 0.24226, 0.03060, 0.00256
 @end example
 
-@noindent Arguments to the @command{ncap} wrapper must conform to one
-another, i.e., they must share the same sub-set of dimensions.
-For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)} is
-valid because the variable @code{three_dmn_var_dbl} has a @var{lon}
+@noindent Arguments to @acronym{GSL} wrapper functions in @command{ncap}
+must conform to one another, i.e., they must share the same sub-set of
+dimensions.  
+For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)}
+is valid because the variable @code{three_dmn_var_dbl} has a @var{lon} 
 dimension, so @code{n_in} in can be broadcast to conform to
-@code{three_dmn_var_dbl}.  However
-@code{time_out=gsl_sf_bessel_Jn(n_in,time)} is invalid.
+@code{three_dmn_var_dbl}.  
+However @code{time_out=gsl_sf_bessel_Jn(n_in,time)} is invalid.
 
-@noindent Lets try an elliptical inegral @*
-@noindent The gsl function prototype @* 
+@cindex Elliptic integrals
+Consider the elliptical integral with prototype
 @code{int gsl_sf_ellint_RD_e(double x, double y, double z, gsl_mode_t mode, gsl_sf_result * result)}
-
 @example
- three_out=gsl_sf_ellint_RD(0.5,time,three_dmn_var_dbl);
+three_out=gsl_sf_ellint_RD(0.5,time,three_dmn_var_dbl);
 @end example
 
 @noindent The three arguments are all conformable so the above @command{ncap} call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environment variable @code{GSL_PREC_MODE}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the @acronym{GSL} manual for more details. 
@@ -6953,6 +6960,8 @@ b1=0.24226, 0.0306, 0.00256, 0.00016 ;
 @noindent Lets look at another array function @* 
 @code{int gsl_sf_legendre_Pl_array( int lmax, double x, double *result_array);}
 
+@cindex Legendre polynomial
+@findex gsl_sf_legendre_Pl
 @example
 a1=time.double();
 x=0.3;
@@ -7478,12 +7487,11 @@ any scalar @var{time} variable from being written to the output file.
 Knowing when to use @command{ncwa -a time} rather than the default
 @command{ncra} for time-averaging takes, well, time.
 
-
 @html
 <a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
 @end html
-@node Intrinsic mathematical methods, Operators precedence and associativity, Examples ncap2, ncap2 netCDF Arithmetic Processor
-              @subsection Intrinsic mathematical methods
+@node Intrinsic mathematical methods, Operators precedence and associativity , Examples ncap2, ncap2 netCDF Arithmetic Processor
+@subsection Intrinsic mathematical methods
 @command{ncap2} supports the standard mathematical functions supplied with
 most operating systems.
 @cindex addition
@@ -8026,7 +8034,7 @@ This page lists the @command{ncap} operators in order of precedence (highest to 
 @html
 <a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
 @end html
-@node ID Quoting, ,Operators precedence and associativity, ncap2 netCDF Arithmetic Processor
+@node ID Quoting,  , Operators precedence and associativity , ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
 In this section when I refer to a name I mean a variable name, attribute name or a dimension name

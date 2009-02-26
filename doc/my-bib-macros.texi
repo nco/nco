@@ -1,0 +1,232 @@
+\input texinfo   @c -*-texinfo-*-
+@c %% my-bib-macros.texi --- Texinfo macros providing a crude
+@c %% bibliography and citation capability.
+
+@c % Copyright (C) 2004  Aaron S. Hawley
+
+@c % Author: Aaron S. Hawley <ashawley@gnu.uvm.edu>
+@c % Keywords: docs, texinfo, extensions, bib
+
+@c % This file is free software; you can redistribute it and/or modify
+@c % it under the terms of the GNU General Public License as published by
+@c % the Free Software Foundation; either version 2, or (at your option)
+@c % any later version.
+
+@c % This file is distributed in the hope that it will be useful,
+@c % but WITHOUT ANY WARRANTY; without even the implied warranty of
+@c % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+@c % GNU General Public License for more details.
+
+@c % You should have received a copy of the GNU General Public License
+@c % along with GNU Emacs; see the file COPYING.  If not, write to
+@c % the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+@c % Boston, MA 02111-1307, USA.
+
+@c %% Commentary:
+
+@c %%% Introduction
+
+@c %% Creates references to a ``Bibliography'' or ``References''
+@c %% section of a Texinfo document, using Texinfo's
+@c %% macro system.  Although not as terse a way to cite systems as is
+@c %% found in document systems like TeX, the format is simpler and
+@c %% the rendering  is easier for non-academic readers.
+
+@c %
+
+@c %%% Usage
+
+@c %% References to cited works can be put in any section of a document.
+@c %% The cited works must be put in either a Texinfo table (for
+@c %% instance with ``@table @asis ... @end table'') or within a
+@c %% Texinfo list (something like ``@enumerate ... @end enumerate''
+@c %% or ``@itemize @bullet ... @end itemize'').  They are created
+@c %% with the command ``@mybibitem{REF-NAME}''.  To cite a reference
+@c %% with a @mybibitem use ``@mybibcite{REF-NAME}''.
+
+@c %% The beginning of a document must include (using the @include
+@c %% command) the file my-bib-macros.texi, which should be made
+@c %% available in the current directory of the parent file.  A single
+@c %% call should be made to choose to use a list or a table.  The
+@c %% command to chose is called @mybibuselist{NODE}, where NODE is
+@c %% the node containing the location where the references are listed.
+
+@c %
+
+@c %%% Example
+
+@c %% \input texinfo   @c -*-texinfo-*-
+@c %% @comment %**start of header
+@c %% @setfilename my-file-with-bib.info
+@c %% @settitle Texinfo with a Bibliography and References
+@c %%
+@c %% @include my-bib-macros.texi
+@c %% @mybibuselist{References}
+@c %%
+@c %% @comment %**end of header
+@c %%
+@c %% @node Top
+@c %% @top Top
+@c %%
+@c %% @menu
+@c %% * Introduction::
+@c %% * @mybibnode{}::
+@c %%
+@c %% @end menu
+@c %%
+@c %% @node Introduction
+@c %% @chapter Introduction
+@c %%
+@c %% The ability of a documentation format to make cross references to a
+@c %% bibliography, a feature of LaTeX @mybibcite{LaTeX2e}, isn't
+@c %% currently supported in Texinfo.
+@c %%
+@c %% @node @mybibnode{}
+@c %% @chapter References
+@c %%
+@c %% @itemize @asis
+@c %%
+@c %% @mybibitem{LaTeX2e} Leslie Lamport, LaTeX User's Guide and
+@c %% Reference Manual, 2nd edition, Addison-Wesley, Reading,
+@c %% Massachusetts, 1994.
+@c %%
+@c %% @end itemize
+@c %%
+@c %% @bye
+
+@c %%
+
+@c %% This example produces (in Info):
+
+@c %%       1 Introduction
+@c %%       **************
+@c %%
+@c %%       The ability of a documentation format to make cross
+@c %%       references to a bibliography, a feature of LaTeX (See item
+@c %%       [LaTeX2e] in *Note LaTeX2e: References.), is not currently
+@c %%       supported in Texinfo.
+@c %%
+@c %%
+@c %%       2 References
+@c %%       ************
+@c %%
+@c %%       [LaTeX2e] Leslie Lamport, LaTeX User's Guide and Reference
+@c %%       Manual, 2nd edition, Addison-Wesley, Reading,
+@c %%       Massachusetts, 1994.
+
+@c %% and (in printed output):
+
+@c %%       1 Introduction
+@c %%       **************
+@c %%
+@c %%       The ability of a documentation format to make cross
+@c %%       references to a bibliography, a feature of LaTeX (See item
+@c %%       [LaTeX2e] in Chapter 2 [References], page 3.), is not
+@c %%       currently supported in Texinfo.
+@c %%
+@c %%
+@c %%       2 References
+@c %%       ************
+@c %%
+@c %%       [LaTeX2e] Leslie Lamport, LaTeX User's Guide and Reference
+@c %%       Manual, 2nd edition, Addison-Wesley, Reading,
+@c %%       Massachusetts, 1994.
+
+@c %
+
+@c %%% Notes
+
+@c %% The pointers to references will be functional in hypertext
+@c %% documentation (info, HTML, XML and others) and properly rendered
+@c %% in print documents, because they are implemented with Texinfo's
+@c %% cross referencing capabilities (using @anchor and @ref).  Failures
+@c %% by an author to make proper references with ``my-bib-macros'' in
+@c %% their document will give cross referencing errors by Texinfo
+@c %% conversion tools.
+
+@c %% Only one ``Reference'' section is allowed per document.
+
+@c %% An improvement of this system would create cross references
+@c %% (with @xref) at each cited work to all the originating cross
+@c %% refererences.
+
+@c %
+
+@c %% Code:
+
+@c % Configuration Options
+
+@c %% @mybibsetrefnode : Defines the name of the node to contain
+@c %% references.
+
+@macro mybibsetrefnode{node}
+@set mybibrefnode \node\
+@end macro
+
+@c %% @mybibnode{} : Macro to be placed at node containing references
+@c %% and calls to @mybibcite{}
+
+@macro mybibnode{}
+@value{mybibrefnode}
+@end macro
+
+@c %% @mybibusetable : Whether each @mybibitem will be put in a
+@c %% table.
+
+@macro mybibusetable{node}
+@set mybibtable true
+@ifset mybiblist
+@clear mybiblist
+@end ifset
+@mybibsetrefnode{\node\}
+@end macro
+
+@c %% @mybibuselist : Whether each @mybibitem will be put in a
+@c %% list.
+
+@macro mybibuselist{node}
+@set mybiblist true
+@ifset mybibtable
+@clear mybibtable
+@end ifset
+@mybibsetrefnode{\node\}
+@end macro
+
+
+@c %% @mybibcite{REF} : Cites the cross reference REF.
+
+@macro mybibcite{ref}
+@ifclear mybibrefnode
+@mybibmakeref{mybibsetrefnode was not used, \ref\}
+@end ifclear
+@c %**else if
+@ifset mybibrefnode
+@mybibmakeref{@mybibnode{}, \ref\}
+@end ifset
+
+@end macro
+
+@macro mybibmakeref{node, ref}
+(See item [\ref\] in @ref{\node\, \ref\}.)
+@end macro
+
+@c %% @mybibcite{REF} : Creates a cross referenced citation REF.
+
+@macro mybibitem{ref}
+@ifclear mybiblist
+@ifclear mybibtable
+@set mybiblist true
+@end ifclear
+@end ifclear
+@ifset mybiblist
+@item
+@anchor{\ref\}[\ref\]
+@end ifset
+@c %**else if
+@ifset mybibtable
+@item @anchor{\ref\}[\ref\]
+@end ifset
+
+@end macro
+
+@c %% my-bib-macros.texi ends here
