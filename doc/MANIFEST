@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.35 2009-01-22 22:46:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.36 2009-02-26 23:42:02 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -100,6 +100,7 @@ nco/doc/dods.sh		Install OPeNDAP 3.4.X for NCO DAP-enabled clients
 nco/doc/help.txt	Advertisement for help with NCO (outdated---from 2000)
 nco/doc/index.shtml	NCO website homepage
 nco/doc/mpi.txt		MPI Environments for NCO
+nco/doc/my-bib-macros.texi TeXInfo bibliography macros for nco.texi
 nco/doc/ncap.txt	Description of the ncap operator (not yet used)
 nco/doc/nco.dvi(v)	NCO User's Guide: DVI format
 nco/doc/nco.html(v)	NCO User's Guide: HTML format

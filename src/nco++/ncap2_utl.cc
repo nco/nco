@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.125 2009-02-18 17:07:28 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.126 2009-02-26 23:42:02 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1446,7 +1446,6 @@ int sz)               /* size of array */
   int max_idx=0;
   int nbr_max_dim=0;
 
-
   for(idx=0 ; idx<sz ; idx++){
     if( (*var_arr[idx])->nbr_dim >nbr_max_dim ){
       nbr_max_dim=(*var_arr[idx])->nbr_dim;      
@@ -1471,17 +1470,13 @@ int sz)               /* size of array */
 
   } // end ntl_scn 		       
 
-
   for(idx=0 ; idx<sz ;idx++){
     if(idx==max_idx) continue;
     //  printf("Conforming var=%s making var conform=%s\n",(*var_arr[max_idx])->nm,(*var_arr[idx])->nm);
     (void)ncap_var_att_cnf( *var_arr[max_idx],*var_arr[idx]);
   }  
-  
-    
-  
+  return NULL; // fxm correct? csz 20090226
 } /* end ncap_var_att_arr_cnf */
-
 
 var_sct *    
 ncap_var_att_cnf_ntl   /*   [fnc] determine resultant struct */
@@ -1538,9 +1533,6 @@ ncap_var_att_cnf_ntl   /*   [fnc] determine resultant struct */
   return var1;
 
 } /* ncap_var_att_cnf_ntl */
-
-
-
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_op   /* [fnc] Add two variables */

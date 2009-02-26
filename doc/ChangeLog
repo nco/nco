@@ -1,5 +1,10 @@
 2009-02-26  Charlie Zender  <zender@uci.edu>
 
+	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.7 release"
+	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
+	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
+
 	* Adding texinfo bibliography to nco.texi
 
 2009-02-25  Charlie Zender  <zender@uci.edu>
@@ -25,6 +30,7 @@
 	* Use native float prototypes for math functions if __INTEL_COMPILER
 
 2009-02-13  Henry Butowsky  <henryb@hush.com>
+
 	* Global ncap_gsl_mode_prec initialized from environment var. GSL_PREC_MODE
 	This sets the precision of the Airy & elliptical functions:
 	GSL_PREC_DOUBLE=0
@@ -32,6 +38,7 @@
 	GSL_PREC_APPROX=2
 
 2009-02-12  Henry Butowsky  <henryb@hush.com>
+
 	* Made gsl_cls aware of GSL library version
 	Add pre-processor token NCO_GSL_MINOR_VERSION
 	Token is initialized in nco++/Makefile.old 
@@ -41,11 +48,6 @@
 	* Added sym_cls.[cc,hh] and fmc_all_cls.[cc,hh] to configure
 
 2009-02-03  Charlie Zender  <zender@uci.edu>
-
-	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
-	  cd ~/nco;cvs commit -m "Preparing nco-3.9.7 release"
-	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
-	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
 
 	* Tweak ./configure for GSL
 
