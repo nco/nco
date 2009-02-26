@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.524 2009-02-26 17:58:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.525 2009-02-26 23:39:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -378,6 +378,7 @@ Charlie Zender
 * Operator Reference Manual::   
 * Contributing::                
 * CCSM Example::                
+* mybibnode::                   
 * General Index::               
 @end menu
 
@@ -538,6 +539,18 @@ Hence the documentation in every format is very similar.
 However, some of the complex mathematical expressions needed to describe
 @command{ncwa} can only be displayed in @acronym{DVI}, Postscript, and 
 @acronym{PDF} formats. 
+
+@cindex publications
+@cindex presentations
+A complete list of papers and publications on/about @acronym{NCO} 
+is available on the @acronym{NCO} homepage.
+Most of these are freely available. 
+@c fxm query replace mybibnode with @mybibnode{}
+@c The primary refereed publications are @mybibcite{ZeM06} and
+@c @mybibcite{Zen07}. 
+The primary refereed publications are fxm ZeM06 and fxm Zen07. 
+These contain copyright restrictions which limit their redistribution,
+but they are freely available in preprint form from the @acronym{NCO}.
 
 @cindex @acronym{NCO} homepage
 If you want to quickly see what the latest improvements in @acronym{NCO}
@@ -11510,7 +11523,7 @@ Comments on the proposals and letters of support are also very welcome.
 @html
 <a name="ccsm"></a> <!-- http://nco.sf.net/nco.html#ccsm -->
 @end html
-@node CCSM Example, General Index, Contributing, Top
+@node CCSM Example, mybibnode, Contributing, Top
 @chapter CCSM Example
 @cindex CCSM
 
@@ -11809,6 +11822,25 @@ Level III: Many derived products from level II, e.g.,
 	   sresa1b_ukmo_hadcm3_run1_200001_209912_xy_Cal.nc
 @end example
 
+@html
+<a name="bibliography"></a> <!-- http://nco.sf.net/nco.html#bibliography -->
+<a name="bib"></a> <!-- http://nco.sf.net/nco.html#bib -->
+@end html
+@node mybibnode, General Index, CCSM Example, Top
+@chapter References
+@itemize @asis
+@mybibitem{ZeM07} Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
+@mybibitem{Zen08} Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
+@mybibitem{WZJ07} Wang, D. L., C. S. Zender, and S. F. Jenks (2007), DAP-enabled Server-side Data Reduction and Analysis, Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology, Paper 3B.2, January 14-18, San Antonio, TX. American Meteorological Society, AMS Press, Boston, MA.
+@mybibitem{ZMW06} Zender, C. S., H. Mangalam, and D. L. Wang (2006), Improving Scaling Properties of Common Statistical Operators for Gridded Geoscience Datasets, Eos Trans. AGU, 87(52), Fall Meet. Suppl., Abstract IN53B-0827.
+@mybibitem{ZeW07} Zender, C. S., and D. L. Wang (2007), High performance distributed data reduction and analysis with the netCDF Operators (NCO), Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology, Paper 3B.4, January 14-18, San Antonio, TX. American Meteorological Society, AMS Press, Boston, MA.
+@mybibitem{WZJ06} Wang, D. L., C. S. Zender, and S. F. Jenks (2006), Server-side netCDF Data Reduction and Analysis, Eos Trans. AGU, 87(52), Fall Meet. Suppl., Abstract IN53B-0826.
+@mybibitem{WZJ073} Wang, D. L., C. S. Zender, and S. F. Jenks (2007), Server-side parallel data reduction and analysis, in Advances in Grid and Pervasive Computing, Second International Conference, GPC 2007, Paris, France, May 2-4, 2007, Proceedings. IEEE Lecture Notes in Computer Science, vol. 4459, edited by C. Cerin and K.-C. Li, pp. 744-750, Springer-Verlag, Berlin/Heidelberg, doi:10.1007/978-3-540-72360-8_67.
+@mybibitem{WZJ074} Wang, D. L., C. S. Zender and S. F. Jenks (2007), A System for Scripted Data Analysis at Remote Data Centers, Eos Trans. AGU, 88(52), Fall Meet. Suppl., Abstract IN11B-0469.
+@mybibitem{WZJ081} Wang, D. L., C. S. Zender and S. F. Jenks (2008), Cluster Workflow Execution of Retargeted Data Analysis Scripts, Proceedings of the 8th IEEE Int'l Symposium on Cluster Computing and the Grid (IEEE CCGRID '08), pp. 449-458, Lyon, France, May 2008.
+@mybibitem{WZJ091} Wang, D. L., C. S. Zender, and S. F. Jenks (2009), Efficient Clustered Server-side Data Analysis Workflows using SWAMP, In Press in Earth Sci. Inform..
+@end itemize
+
 @c @node Name Index, General Index, Operators, Top
 @c @unnumbered Function and Variable Index
 
@@ -11818,7 +11850,7 @@ Level III: Many derived products from level II, e.g.,
 <a name="index"></a> <!-- http://nco.sf.net/nco.html#index -->
 <a name="idx"></a> <!-- http://nco.sf.net/nco.html#idx -->
 @end html
-@node General Index,  , CCSM Example, Top
+@node General Index,  , mybibnode, Top
 @unnumbered General Index
 
 @syncodeindex fn cp

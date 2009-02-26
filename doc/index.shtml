@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.516 2009-02-26 17:58:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.517 2009-02-26 23:39:31 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -404,10 +404,11 @@ Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008), Compiling the 
 <a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.bib">BibTeX</a>
 <a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.pdf">PDF</a> (&copy;&nbsp;2008 by Springer-Verlag)</a></li>
 
-<li><!-- WZJ082 --> <a name="WZJ082"></a> <!--http://www.ess.uci.edu/~zender#WZJ082 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008), Efficient Clustered Remote Data Analysis Workflows using SWAMP, <i>Submitted to Earth Sci. Inform.</i>.
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ082.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ082.pdf">PDF</a> (&copy;&nbsp;2008 by ACM)</a></li>
+<li><!-- WZJ091 --> <a name="WZJ091"></a> <!--http://www.ess.uci.edu/~zender#WZJ091 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008),
+  Efficient Clustered Remote Data Analysis Workflows using SWAMP, <i>In Press in Earth Sci. Inform.</i>.
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ091.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ091.pdf">PDF</a> (&copy;&nbsp;2009 by ACM)</a></li>
 
 <li><!-- WZJ081 --> <a name="WZJ081"></a> <!--http://www.ess.uci.edu/~zender#WZJ081 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks: Cluster Workflow Execution of Retargeted Data Analysis Scripts, in <i>Cluster Computing and the Grid, 2008. CCGRID&nbsp;'08. 8th&nbsp;IEEE International Symposium on</i>. Lyons, France, 19&nbsp;22 May, 2008. IEEE Computer Society, 449&ndash;458, doi:10.1109/CCGRID.2008.69.
