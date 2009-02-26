@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.525 2009-02-26 23:39:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.526 2009-02-26 23:44:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8915,8 +8915,8 @@ file receiving an equal weight in the average.
 @cindex ensemble
 @command{ncea} averages entire files, and weights each file evenly.
 This is distinct from @command{ncra}, which only averages over the
-record dimension (e.g., time), and weights each record in the record
-dimension evenly,  
+record dimension (e.g., @var{time}), and weights each record in the
+record dimension evenly,  
 
 Variables in the @var{output-file} are the same size as the variable
 in each of the @var{input-files}, and all @var{input-files} must be
@@ -8930,8 +8930,10 @@ the record dimension size if the requested record hyperslab
 each input file so that coordinate limits may be used to select equal
 length timeseries from unequal length files.
 @cindex IPCC
+@cindex AR4
+@cindex CMIP
 This simplifies analysis of unequal length timeseries from simulation
-ensembles (e.g., the IPCC AR4 archive).  
+ensembles (e.g., the CMIP IPCC AR4 archive).  
 
 @cindex operation types
 @command{ncea} @emph{always averages} coordinate variables regardless of 
@@ -8961,10 +8963,15 @@ whose goal is to compute anomalies from a mean state.
 In any case, when one desires to generate a file whose properties are
 the mean of all the input files, then @command{ncea} is the operator to 
 use. 
-@command{ncea} assumes coordinate variable are properties common to all
-of the experiments and so does not average them across files.
-Instead, @command{ncea} copies the values of the coordinate variables
-from the first input file to the output file.
+
+@command{ncea} only allows coordinate variables to be processed by
+the linear average, minimum, and maximum operations.
+@command{ncea} will return the linear average of coordinates unless
+extrema are explicitly requested.
+Other requested operations (e.g., square-root, RMS) are applied only
+to non-coordinate variables.
+In these cases the linear average of the coordinate variable will be
+returned.
 
 @noindent
 @html
