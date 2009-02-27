@@ -7,7 +7,6 @@
 #ifndef FMC_GSL_CLS_HH // Contents have not yet been inserted in current source file  
 #define FMC_GSL_CLS_HH
 
-
 #include <sstream>
 #include <string>
 #include <vector>
@@ -17,7 +16,6 @@
 #include <gsl/gsl_mode.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
-
 
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
@@ -29,15 +27,15 @@
 
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
 
-// global variable initialized in ncap2.cc (defines precision for functions that take a mode_t argument)
-extern int ncap_gsl_mode_prec;
+// Global variable initialized in ncap2.cc
+extern int ncap_gsl_mode_prec; /* Precision for GSL functions with mode_t argument (Airy, hypergeometric) */ 
 
-// used to classify double type args in handle function hnd_fnc_nd
+// Classify double-type arguments in handler function hnd_fnc_nd()
 enum { P1DBL, P1DBLMD, P2DBL, P2DBLMD,P3DBL, P3DBLMD, P4DBL, P4DBLMD };  
 
-// used to classify methods bessel /Legendre  in array function function hnd_fnc_iidpd
+// Classify Bessel/Legendre methods in array function function hnd_fnc_iidpd()
 enum { PBESSEL, PLEGEND };
-// union class to hold GSL function pointers
+// Union class to hold GSL function pointers
 union f_unn{
  public:
    int (*ai)(int, gsl_sf_result*);
@@ -92,8 +90,7 @@ union f_unn{
 
 };
 
-
-// class to hold gsl function name, function pointers,function handler
+// Class to hold GSL function name, function pointers, function handler
 class gpr_cls { 
  private:
   std::string _fnm;
@@ -113,7 +110,6 @@ public:
     _hnd_fnc=hnd_fnc;
     _type=NC_NAT; 
   }
-   
 
   gpr_cls(const char *const pfnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS), int type_in  ):_pfptr_e(pfptr_e){
     _fnm= static_cast<std::string>(pfnm);
@@ -121,15 +117,12 @@ public:
     _type=(nc_type)type_in;
   }
 
-
- 
   std::string fnm() { return _fnm;} 
   f_unn g_args()    { return _pfptr_e; }     
   nc_type type(){ return _type;}
 }; 
 
-
-// GSL Function /****************************************/
+// GSL Function
 class gsl_cls : public vtl_cls {
 private:
    bool _flg_dbg;
@@ -147,7 +140,6 @@ static  var_sct *hnd_fnc_ddm(HANDLE_ARGS);
 static  var_sct *hnd_fnc_nd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_idd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_iid(HANDLE_ARGS);
-     
 };
 
 #endif // FMC_GSL_CLS_HH

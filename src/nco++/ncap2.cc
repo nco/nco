@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.88 2009-02-27 12:51:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.89 2009-02-27 19:20:24 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -76,23 +76,20 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
-#include "libnco.h"    /* netCDF Operator (NCO) library */
+#include "libnco.h" /* netCDF Operator (NCO) library */
 
 #ifdef ENABLE_GSL
 #include <gsl/gsl_errno.h>
-#endif
+#endif // !ENABLE_GSL
 
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
 char **ncap_fl_spt_glb=NULL_CEWI; /* [fl] Script file */
-int ncap_gsl_mode_prec=0;  /* define precision for some of the gsl functions (mainly airy & hypergeometric) */ 
+int ncap_gsl_mode_prec=0; /* Precision for GSL functions with mode_t argument (Airy, hypergeometric) */ 
 /* Forward Declaration */
 void pop_fmc_vtr(std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc);
 void ram_vars_add(prs_cls *prs_arg);
-
-
-
 
 int 
 main(int argc,char **argv)
@@ -138,8 +135,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.88 2009-02-27 12:51:34 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.88 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.89 2009-02-27 19:20:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.89 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -150,10 +147,10 @@ main(int argc,char **argv)
     NcapVector<dmn_sct*> dmn_in_vtr;  
   NcapVector<dmn_sct*> dmn_out_vtr;  
   
-  // Holder for attributtes and vectors
+  // Holder for attributes and vectors
   NcapVarVector var_vtr;
   
-  // Holder for attributtes and vectors in FIRST PARSE
+  // Holder for attributes and vectors in FIRST PARSE
   NcapVarVector int_vtr;
   
   //Method/function holder

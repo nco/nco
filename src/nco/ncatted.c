@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.121 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.122 2009-02-27 19:20:23 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.121 2009-01-21 00:15:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.121 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.122 2009-02-27 19:20:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.122 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -363,7 +363,7 @@ main(int argc,char **argv)
         nm_id_sct *xtr_lst=NULL;
 
         xtr_lst=nco_var_lst_mk(nc_id,nbr_var_fl,&aed_lst[idx].var_nm,False,False,&nbr_xtr);
-        /* edit list of attributtes */
+        /* edit list of attributes */
         for(idx_var=0 ; idx_var<nbr_xtr ; idx_var++)
           (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
 

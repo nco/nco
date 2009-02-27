@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.126 2009-02-26 23:42:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.127 2009-02-27 19:20:24 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -172,7 +172,7 @@ ncap_att_gnrl
 
   // De-reference 
   NcapVarVector &var_vtr=prs_arg->var_vtr;
-  NcapVarVector att_vtr; //hold new attributtes.
+  NcapVarVector att_vtr; //hold new attributes.
   
 
   // get var_id
