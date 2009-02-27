@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.6 2009-02-27 16:54:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.7 2009-02-27 16:57:45 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1124,8 +1124,7 @@
 
   } // end switch
 
-
-
+    return NULL; // fxm csz correct? 20090228
 } // end function
 
 //Pack Function /******************************************/

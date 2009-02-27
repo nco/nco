@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.80 2009-02-10 17:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.81 2009-02-27 16:55:01 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -44,15 +44,16 @@
     #include "ncoParser.hpp"
     #include "Invoke.hh"
 
+
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
     
 
-#line 53 "ncoTree.hpp"
+#line 54 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 635 "ncoGrammer.g"
+#line 637 "ncoGrammer.g"
 
 
 private:
@@ -419,7 +420,7 @@ RefAST nco_dupList(RefAST tr){
       */ 
       return otr; 
      }
-#line 57 "ncoTree.hpp"
+#line 58 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
@@ -463,10 +464,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 110;
+	static const int NUM_TOKENS = 111;
 #else
 	enum {
-		NUM_TOKENS = 110
+		NUM_TOKENS = 111
 	};
 #endif
 	

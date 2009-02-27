@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.69 2009-02-10 17:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.70 2009-02-27 16:54:49 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -46,21 +46,22 @@
     #include "ncoParser.hpp"
     #include "Invoke.hh"
 
+
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
     
 
-#line 55 "ncoParser.hpp"
+#line 56 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
-#line 80 "ncoGrammer.g"
+#line 82 "ncoGrammer.g"
 
 
 public:
    std::vector<std::string> inc_vtr;
 
-#line 59 "ncoParser.hpp"
+#line 60 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
@@ -125,10 +126,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 110;
+	static const int NUM_TOKENS = 111;
 #else
 	enum {
-		NUM_TOKENS = 110
+		NUM_TOKENS = 111
 	};
 #endif
 	

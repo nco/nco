@@ -1,4 +1,6 @@
-/* Purpose: netCDF arithmetic processor class methods */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.21 2009-02-27 16:54:43 zender Exp $ */
+
+/* Purpose: netCDF arithmetic processor class methods for GSL */
 
 /* Copyright (C) 1995--2009 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -1118,7 +1120,6 @@ var_sct *gsl_cls::hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
       for(idx=0;idx<sz;idx++) 
 	dp2[idx]=( (*fnc_int)(dp1[idx],dp2[idx],mde_t,&rslt) ? NC_FILL_DOUBLE : rslt.val );
     }else{
-      
       for(idx=0;idx<sz;idx++)
 	// note fnc_int return status flag, if 0 then no error
 	if(dp1[idx] == mss_val_dbl || 
@@ -1128,7 +1129,6 @@ var_sct *gsl_cls::hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
 	else
 	  dp2[idx]=rslt.val;      
     }           
-    
     (void)cast_nctype_void(NC_DOUBLE,&(var1->val));
     (void)cast_nctype_void(NC_DOUBLE,&(var2->val));
     nco_var_free(var1);
@@ -1149,8 +1149,6 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   var_sct *var_ret; 
   var_sct **var_arr;
   var_sct ***var_arr_ptr;
-
-
   
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
@@ -1175,7 +1173,6 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   case P4DBL:
     args_in_nbr=4;
     break;    
-    
   default:
     break;
   }
