@@ -765,15 +765,16 @@
 
       case PCONVERT:{
         /* Change type to int */
-       int c_typ;
+        int c_typ;
 
-       var2=nco_var_cnf_typ(NC_INT,var2);
-       (void)cast_void_nctype(NC_INT,&var2->val);
-       c_typ=var2->val.lp[0];      
-       (void)cast_nctype_void(NC_INT,&var2->val);
-       var2=nco_var_free(var2);
+        var2=nco_var_cnf_typ(NC_INT,var2);
+        (void)cast_void_nctype(NC_INT,&var2->val);
+        c_typ=var2->val.lp[0];      
+        (void)cast_nctype_void(NC_INT,&var2->val);
+        var2=nco_var_free(var2);
 
-       var=nco_var_cnf_typ( (nc_type)c_typ, var1);
+        var=nco_var_cnf_typ( (nc_type)c_typ, var1);
+        break;
       }    
 
     }
@@ -1256,6 +1257,55 @@
 
 
 
+//Sort Functions /***********************************/
+ 
+  srt_cls::srt_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("sort" , this,PSORT)); 
+
+			     		      
+    }
+  }
+  
+  var_sct * srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("srt_cls::fnd");
+    int nbr_fargs;
+    int fdx=fmc_obj.fdx();
+    var_sct *var1;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    prs_cls *prs_arg=walker.prs_arg;    
+
+    //n.b fargs is an imaginary node -and is ALWAYS present
+    nbr_fargs=fargs->getNumberOfChildren();
+    
+    // no arguments - bomb out
+    if(!expr && nbr_fargs==0){    
+        std::string serr;
+	serr="Function "+sfnm + " has been called without an argument";               
+        err_prn(fnc_nm,serr);
+    }
+
+    if(expr) 
+      var1=walker.out(expr);
+    else
+      var1=walker.out(fargs->getFirstChild());   
+
+    if(prs_arg->ntl_scn)
+      return var1;
 
 
+    // only one method at the moment
+    switch(fdx) {
+             
+      case PSORT:
+	  var1=ncap_var_var_op(var1,(var_sct*)NULL,VSORT);  
+          break;   
 
+    }
+
+
+    return var1;
+
+
+  }  
