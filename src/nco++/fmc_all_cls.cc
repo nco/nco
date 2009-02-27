@@ -1,18 +1,12 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.6 2009-02-27 16:54:43 zender Exp $ */
 
-/* Purpose: netCDF arithmetic processor -  */
-/* class methods - familes of functions/methods */
+/* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
 /* Copyright (C) 1995--2007 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-
-
-
 #include "fmc_all_cls.hh"
-
-
-
 
 //Conversion Functions /***********************************/
  
