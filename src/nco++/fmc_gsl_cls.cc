@@ -106,7 +106,7 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_debye_3",f_unn(gsl_sf_debye_3_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_debye_4",f_unn(gsl_sf_debye_4_e),hnd_fnc_x,NC_DOUBLE));
 
-    #if NCO_GSL_MINOR_VERSION >=8
+    #if NCO_GSL_MINOR_VERSION >= 8
       gpr_vtr.push_back(gpr_cls("gsl_sf_debye_5",f_unn(gsl_sf_debye_5_e),hnd_fnc_x,NC_DOUBLE));
       gpr_vtr.push_back(gpr_cls("gsl_sf_debye_6",f_unn(gsl_sf_debye_6_e),hnd_fnc_x,NC_DOUBLE));
     #endif
@@ -167,7 +167,7 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_expint_E1_scaled",f_unn(gsl_sf_expint_E1_scaled_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_expint_E2_scaled",f_unn(gsl_sf_expint_E2_scaled_e),hnd_fnc_x,NC_DOUBLE));
 
-    #if NCO_GSL_MINOR_VERSION >=10 
+    #if NCO_GSL_MINOR_VERSION >= 10 
       gpr_vtr.push_back(gpr_cls("gsl_sf_expint_En",f_unn(gsl_sf_expint_En_e),hnd_fnc_xd,NC_INT));
       gpr_vtr.push_back(gpr_cls("gsl_sf_expint_En_scaled",f_unn(gsl_sf_expint_En_scaled_e),hnd_fnc_xd,NC_INT));
     #endif
@@ -298,7 +298,7 @@ gsl_cls::gsl_cls(bool flg_dbg){
     // gpr_vtr.push_back(gpr_cls("gsl_sf_complex_psi",f_unn(gsl_sf_complex_psi_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_psi_1_int",f_unn(gsl_sf_psi_1_int_e),hnd_fnc_x,NC_INT));
    
-    #if NCO_GSL_MINOR_VERSION >=5 
+    #if NCO_GSL_MINOR_VERSION >= 5 
       gpr_vtr.push_back(gpr_cls("gsl_sf_psi_1",f_unn(gsl_sf_psi_1_e),hnd_fnc_x,NC_DOUBLE));
     #endif
 
@@ -321,7 +321,7 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_zeta_int",f_unn(gsl_sf_zeta_int_e),hnd_fnc_x,NC_INT));
     gpr_vtr.push_back(gpr_cls("gsl_sf_zeta",f_unn(gsl_sf_zeta_e),hnd_fnc_x,NC_DOUBLE));
 
-    #if NCO_GSL_MINOR_VERSION >=5 
+    #if NCO_GSL_MINOR_VERSION >= 5 
       gpr_vtr.push_back(gpr_cls("gsl_sf_zetam1",f_unn(gsl_sf_zetam1_e),hnd_fnc_x,NC_DOUBLE));
       gpr_vtr.push_back(gpr_cls("gsl_sf_zetam1_int",f_unn(gsl_sf_zetam1_int_e),hnd_fnc_x,NC_INT));
     #endif
