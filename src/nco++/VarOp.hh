@@ -1,7 +1,7 @@
 #ifndef INC_VAR_OP_hh_
 #define INC_VAR_OP_hh_
 
-
+#include <algorithm>
 #include "nco.h"
 #include "ncoParserTokenTypes.hpp"
 template<class T>
@@ -331,8 +331,9 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 
         break;
 
-
-
+    case VSORT: 
+         std::sort(tp1,tp1+sz );  
+         break; 
 
       default: break;	
 
