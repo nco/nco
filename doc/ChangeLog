@@ -1,3 +1,7 @@
+2009-02-27  Henry Butowsky  <henryb@hush.com>
+	* added srt_cls to fmc_all_cls.cc . Only one method at the
+	moment  var_expr.sort()
+	
 2009-02-26  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
