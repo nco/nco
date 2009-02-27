@@ -1,4 +1,4 @@
-///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.87 2009-02-25 13:06:43 hmb Exp $ */
+///* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.88 2009-02-27 12:51:34 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -138,8 +138,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.87 2009-02-25 13:06:43 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.87 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.88 2009-02-27 12:51:34 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.88 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -433,6 +433,8 @@ main(int argc,char **argv)
   msk_cls msk_obj(true);
   //Pack functions
   pck_cls pck_obj(true); 
+  //Sort functions
+  srt_cls srt_obj(true); 
 
   //populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
@@ -444,6 +446,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
   (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
   (void)pop_fmc_vtr(fmc_vtr,&pck_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&srt_obj);
 
 
   // split out gsl functions
