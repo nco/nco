@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.152 2009-02-10 12:46:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.153 2009-02-27 13:56:53 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -34,6 +34,7 @@ header {
     #include "antlr/TokenStreamSelector.hpp"
     #include "ncoParser.hpp"
     #include "Invoke.hh"
+
 
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
@@ -76,6 +77,7 @@ tokens {
     ATAN2;  //Used indirectly
     WHERE_ASSIGN;
     MISS2ZERO; //used only in VarOp -sets all missing values to zero
+    VSORT;     // only used outside of grammer to sort in VarOp 
 }
 {
 
