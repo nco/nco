@@ -5,6 +5,8 @@
 	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
 	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
 
+	* GSL build tweaks for NCO_GSL_MINOR_VERSION
+
 	* Adding texinfo bibliography to nco.texi
 
 2009-02-25  Charlie Zender  <zender@uci.edu>

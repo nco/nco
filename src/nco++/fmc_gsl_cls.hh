@@ -23,6 +23,10 @@
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
 
+#ifndef NCO_GSL_MINOR_VERSION
+#define NCO_GSL_MINOR_VERSION 12
+#endif NCO_GSL_MINOR_VERSION
+
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
 
 // global variable initialized in ncap2.cc (defines precision for functions that take a mode_t argument)
