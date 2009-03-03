@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.527 2009-02-27 01:01:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.528 2009-03-03 10:07:05 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11471,6 +11471,8 @@ Large work-load testing
 @cindex Remik Ziemlinski
 @item Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Remik Ziemlinski
 Excellent bug reports and feature requests.
+@item Markus Liebig
+Proof read the ncap documentation
 @end table
 
 @html
