@@ -22555,6 +22555,7 @@ if test "${enable_gsl}" != 'no'; then
 echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
 # fxm: make code path for when cannot find gsl-config
     if test -z "${GSL_ROOT}"; then
+	GSL_CONFIG='gsl-config'
 	GSL_ROOT="`gsl-config --prefix`"
     else
 	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"

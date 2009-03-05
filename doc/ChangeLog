@@ -1,6 +1,11 @@
+2009-03-05  Charlie Zender  <zender@uci.edu>
+
+	* GSL configure patch
+
 2009-02-27  Henry Butowsky  <henryb@hush.com>
-	* added srt_cls to fmc_all_cls.cc . Only one method at the
-	moment  var_expr.sort()
+
+	* Add srt_cls to fmc_all_cls.cc
+	Only one method at the moment var_expr.sort()
 	
 2009-02-26  Charlie Zender  <zender@uci.edu>
 
@@ -19,8 +24,8 @@
 
 2009-02-24  Henry Butowsky  <henryb@hush.com>
 
-	* Added basic macro to the spreadsheet doc/nco_gsl.ods
-	macro outputs selection in texi @multitable format
+	* Add basic macro to the spreadsheet doc/nco_gsl.ods
+	Macro outputs selection in texi @multitable format
 
 2009-02-24  Charlie Zender  <zender@uci.edu>
 

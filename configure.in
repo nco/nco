@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.270 2009-02-05 21:10:09 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.271 2009-03-05 23:18:58 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -677,6 +677,7 @@ if test "${enable_gsl}" != 'no'; then
     AC_MSG_NOTICE([NB: 'gsl-config' command must be in default path])
 # fxm: make code path for when cannot find gsl-config
     if test -z "${GSL_ROOT}"; then
+	GSL_CONFIG='gsl-config'
 	GSL_ROOT="`gsl-config --prefix`"
     else
 	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"
