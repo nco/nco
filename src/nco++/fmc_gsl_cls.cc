@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.21 2009-02-27 16:54:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.22 2009-03-05 11:12:59 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -7,6 +7,12 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 // Standard C++ headers
+
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 
 #ifdef ENABLE_GSL
 
