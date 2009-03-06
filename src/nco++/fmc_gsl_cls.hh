@@ -17,6 +17,12 @@
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
 
+
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"

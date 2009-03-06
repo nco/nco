@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.22 2009-03-05 11:12:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.23 2009-03-06 09:42:06 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -8,17 +8,13 @@
 
 // Standard C++ headers
 
+#include "fmc_gsl_cls.hh"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
-#endif /* !HAVE_CONFIG_H */
+// GSL Functions
 
 
 #ifdef ENABLE_GSL
 
-#include "fmc_gsl_cls.hh"
-
-// GSL Functions
 
 gsl_cls::gsl_cls(bool flg_dbg){
 
