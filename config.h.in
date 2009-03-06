@@ -378,6 +378,9 @@
 /* Location of mpich2 src root */
 #undef MPICH2_ROOT
 
+/* GSL minor version number */
+#undef NCO_GSL_MINOR_VERSION
+
 /* POSIX extended regular expressions available */
 #undef NCO_HAVE_REGEX_FUNCTIONALITY
 
