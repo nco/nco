@@ -1,5 +1,10 @@
 2009-03-05  Charlie Zender  <zender@uci.edu>
 
+	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.7 release"
+	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
+	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
+
 	* GSL configure patch
 
 2009-02-27  Henry Butowsky  <henryb@hush.com>
@@ -8,11 +13,6 @@
 	Only one method at the moment var_expr.sort()
 	
 2009-02-26  Charlie Zender  <zender@uci.edu>
-
-	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
-	  cd ~/nco;cvs commit -m "Preparing nco-3.9.7 release"
-	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
-	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
 
 	* GSL build tweaks for NCO_GSL_MINOR_VERSION
 
