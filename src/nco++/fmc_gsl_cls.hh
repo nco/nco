@@ -141,8 +141,6 @@ static  var_sct *hnd_fnc_x(HANDLE_ARGS);
 static  var_sct *hnd_fnc_xd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_iidpd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_idpd(HANDLE_ARGS);
-static  var_sct *hnd_fnc_dm(HANDLE_ARGS);
-static  var_sct *hnd_fnc_ddm(HANDLE_ARGS);
 static  var_sct *hnd_fnc_nd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_idd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_iid(HANDLE_ARGS);
