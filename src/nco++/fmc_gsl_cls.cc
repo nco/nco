@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.23 2009-03-06 09:42:06 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.24 2009-03-14 14:43:16 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -23,14 +23,14 @@ gsl_cls::gsl_cls(bool flg_dbg){
   if(fmc_vtr.empty()){
     
     // Airy Functions
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai",f_unn(gsl_sf_airy_Ai_e),hnd_fnc_dm));  
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi",f_unn(gsl_sf_airy_Bi_e),hnd_fnc_dm));  
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai_scaled",f_unn(gsl_sf_airy_Ai_scaled_e),hnd_fnc_dm));  
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi_scaled",f_unn(gsl_sf_airy_Bi_scaled_e),hnd_fnc_dm));  
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai_deriv",f_unn(gsl_sf_airy_Ai_deriv_e),hnd_fnc_dm));  
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi_deriv",f_unn(gsl_sf_airy_Bi_deriv_e),hnd_fnc_dm));  
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai_deriv_scaled",f_unn(gsl_sf_airy_Ai_deriv_scaled_e),hnd_fnc_dm));  
-    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi_deriv_scaled",f_unn(gsl_sf_airy_Bi_deriv_scaled_e),hnd_fnc_dm));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai",f_unn(gsl_sf_airy_Ai_e),hnd_fnc_nd,P1DBLMD));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi",f_unn(gsl_sf_airy_Bi_e),hnd_fnc_nd,P1DBLMD));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai_scaled",f_unn(gsl_sf_airy_Ai_scaled_e),hnd_fnc_nd,P1DBLMD));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi_scaled",f_unn(gsl_sf_airy_Bi_scaled_e),hnd_fnc_nd,P1DBLMD));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai_deriv",f_unn(gsl_sf_airy_Ai_deriv_e),hnd_fnc_nd,P1DBLMD));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi_deriv",f_unn(gsl_sf_airy_Bi_deriv_e),hnd_fnc_nd,P1DBLMD));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai_deriv_scaled",f_unn(gsl_sf_airy_Ai_deriv_scaled_e),hnd_fnc_nd,P1DBLMD));  
+    gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi_deriv_scaled",f_unn(gsl_sf_airy_Bi_deriv_scaled_e),hnd_fnc_nd,P1DBLMD));  
     gpr_vtr.push_back(gpr_cls("gsl_sf_airy_zero_Ai",f_unn(gsl_sf_airy_zero_Ai_e),hnd_fnc_x,NC_UINT));  
     gpr_vtr.push_back(gpr_cls("gsl_sf_airy_zero_Bi",f_unn(gsl_sf_airy_zero_Bi_e),hnd_fnc_x,NC_UINT));  
     gpr_vtr.push_back(gpr_cls("gsl_sf_airy_zero_Ai_deriv",f_unn(gsl_sf_airy_zero_Ai_deriv_e),hnd_fnc_x,NC_UINT));  
@@ -82,14 +82,14 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_k2_scaled",f_unn(gsl_sf_bessel_k2_scaled_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_kl_scaled",f_unn(gsl_sf_bessel_kl_scaled_e),hnd_fnc_xd,NC_INT));
     gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_kl_scaled_array",f_unn(gsl_sf_bessel_kl_scaled_array),hnd_fnc_idpd));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Jnu",f_unn(gsl_sf_bessel_Jnu_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Ynu",f_unn(gsl_sf_bessel_Ynu_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Jnu",f_unn(gsl_sf_bessel_Jnu_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Ynu",f_unn(gsl_sf_bessel_Ynu_e),hnd_fnc_nd,P2DBL));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_sequence_Jnu",f_unn(gsl_sf_bessel_sequence_Jnu_e),));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Inu_scaled",f_unn(gsl_sf_bessel_Inu_scaled_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Inu",f_unn(gsl_sf_bessel_Inu_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Knu_scaled",f_unn(gsl_sf_bessel_Knu_scaled_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Knu",f_unn(gsl_sf_bessel_Knu_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_lnKnu",f_unn(gsl_sf_bessel_lnKnu_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Inu_scaled",f_unn(gsl_sf_bessel_Inu_scaled_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Inu",f_unn(gsl_sf_bessel_Inu_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Knu_scaled",f_unn(gsl_sf_bessel_Knu_scaled_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_Knu",f_unn(gsl_sf_bessel_Knu_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_lnKnu",f_unn(gsl_sf_bessel_lnKnu_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_zero_J0",f_unn(gsl_sf_bessel_zero_J0_e),hnd_fnc_x,NC_UINT));
     gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_zero_J1",f_unn(gsl_sf_bessel_zero_J1_e),hnd_fnc_x,NC_UINT));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_bessel_zero_Jnu",f_unn(gsl_sf_bessel_zero_Jnu_e),));
@@ -153,16 +153,16 @@ gsl_cls::gsl_cls(bool flg_dbg){
     // Exponential  Functions
     gpr_vtr.push_back(gpr_cls("gsl_sf_exp",f_unn(gsl_sf_exp_e),hnd_fnc_x,NC_DOUBLE));
     //gpr_vtr.push_back(gpr_cls("gsl_sf_exp_e10",f_unn(gsl_sf_exp_10_e),hnd_fnc_x,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult",f_unn(gsl_sf_exp_mult_e),hnd_fnc_xd,NC_DOUBLE));
-    //gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult_e10",f_unn(gsl_sf_exp_mult_e10_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult",f_unn(gsl_sf_exp_mult_e),hnd_fnc_nd,P2DBL));
+    //gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult_e10",f_unn(gsl_sf_exp_mult_e10_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_expm1",f_unn(gsl_sf_expm1_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_exprel",f_unn(gsl_sf_exprel_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_exprel_2",f_unn(gsl_sf_exprel_2_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_exprel_n",f_unn(gsl_sf_exprel_n_e),hnd_fnc_xd,NC_INT));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_exp_err",f_unn(gsl_sf_exp_err_e),hnd_fnc_xd,NC_DOUBLE));
-    // gpr_vtr.push_back(gpr_cls("gsl_sf_exp_err_e10",f_unn(gsl_sf_exp_err_e10_e),hnd_fnc_xd,NC_DOUBLE));
-    // gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult_err_e",f_unn(gsl_sf_exp_mult_err_e),hnd_fnc_xd,NC_DOUBLE));
-    // gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult_err_e10_e",f_unn(gsl_sf_exp_mult_err_e10_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_exp_err",f_unn(gsl_sf_exp_err_e),hnd_fnc_nd,P2DBL));
+    // gpr_vtr.push_back(gpr_cls("gsl_sf_exp_err_e10",f_unn(gsl_sf_exp_err_e10_e),hnd_fnc_nd,P2DBL));
+    // gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult_err_e",f_unn(gsl_sf_exp_mult_err_e),hnd_fnc_nd,P2DBL));
+    // gpr_vtr.push_back(gpr_cls("gsl_sf_exp_mult_err_e10_e",f_unn(gsl_sf_exp_mult_err_e10_e),hnd_fnc_nd,P2DBL));
     
     // Exponential Integral Functions
     gpr_vtr.push_back(gpr_cls("gsl_sf_expint_E1",f_unn(gsl_sf_expint_E1_e),hnd_fnc_x,NC_DOUBLE));
@@ -194,7 +194,7 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_fermi_dirac_mhalf",f_unn(gsl_sf_fermi_dirac_mhalf_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_fermi_dirac_half",f_unn(gsl_sf_fermi_dirac_half_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_fermi_dirac_3half",f_unn(gsl_sf_fermi_dirac_3half_e),hnd_fnc_x,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_fermi_dirac_inc_0",f_unn(gsl_sf_fermi_dirac_inc_0_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_fermi_dirac_inc_0",f_unn(gsl_sf_fermi_dirac_inc_0_e),hnd_fnc_nd,P2DBL));
     
     // Gamma & Beta Functions
     gpr_vtr.push_back(gpr_cls("gsl_sf_lngamma",f_unn(gsl_sf_lngamma_e),hnd_fnc_x,NC_DOUBLE));
@@ -210,22 +210,22 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_lndoublefact",f_unn(gsl_sf_lndoublefact_e),hnd_fnc_x,NC_UINT));
     //gpr_vtr.push_back(gpr_cls("gsl_sf_lnchoose",f_unn(gsl_sf_lnchoose_e),));
     //gpr_vtr.push_back(gpr_cls("gsl_sf_choose",f_unn(gsl_sf_choose_e),));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_lnpoch",f_unn(gsl_sf_lnpoch_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_lnpoch",f_unn(gsl_sf_lnpoch_e),hnd_fnc_nd,P2DBL));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_lnpoch_sgn",f_unn(gsl_sf_lnpoch_sign_e)),);
-    gpr_vtr.push_back(gpr_cls("gsl_sf_poch",f_unn(gsl_sf_poch_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_pochrel",f_unn(gsl_sf_pochrel_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_gamma_inc_Q",f_unn(gsl_sf_gamma_inc_Q_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_gamma_inc_P",f_unn(gsl_sf_gamma_inc_P_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_gamma_inc",f_unn(gsl_sf_gamma_inc_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_lnbeta",f_unn(gsl_sf_lnbeta_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_poch",f_unn(gsl_sf_poch_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_pochrel",f_unn(gsl_sf_pochrel_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_gamma_inc_Q",f_unn(gsl_sf_gamma_inc_Q_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_gamma_inc_P",f_unn(gsl_sf_gamma_inc_P_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_gamma_inc",f_unn(gsl_sf_gamma_inc_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_lnbeta",f_unn(gsl_sf_lnbeta_e),hnd_fnc_nd,P2DBL));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_gammagsl_sf_lnbeta_sgn",f_unn(gsl_sf_gammagsl_sf_lnbeta_sgn_e),));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_beta",f_unn(gsl_sf_beta_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_beta",f_unn(gsl_sf_beta_e),hnd_fnc_nd,P2DBL));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_beta_inc",f_unn(gsl_sf_beta_inc_e),));
     
     // Gegenbauer Functions
-    gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_1",f_unn(gsl_sf_gegenpoly_1_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_2",f_unn(gsl_sf_gegenpoly_2_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_3",f_unn(gsl_sf_gegenpoly_3_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_1",f_unn(gsl_sf_gegenpoly_1_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_2",f_unn(gsl_sf_gegenpoly_2_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_3",f_unn(gsl_sf_gegenpoly_3_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_n",f_unn(gsl_sf_gegenpoly_n_e),hnd_fnc_idd));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_gegenpoly_array",f_unn(gsl_sf_gegenpoly_array),));
     
@@ -244,9 +244,9 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_hyperg_2F0",f_unn(gsl_sf_hyperg_2F0_e),hnd_fnc_nd,P3DBL));
     
     // Laguerre Functions
-    gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_1",f_unn(gsl_sf_laguerre_1_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_2",f_unn(gsl_sf_laguerre_2_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_3",f_unn(gsl_sf_laguerre_3_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_1",f_unn(gsl_sf_laguerre_1_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_2",f_unn(gsl_sf_laguerre_2_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_3",f_unn(gsl_sf_laguerre_3_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_laguerre_n",f_unn(gsl_sf_laguerre_n_e),hnd_fnc_idd));
     
     // Lambert W Functions
@@ -270,14 +270,14 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_sphPlm_array",f_unn(gsl_sf_legendre_sphPlm_array),hnd_fnc_iidpd,PLEGEND));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_sphPlm_deriv_array",f_unn(gsl_sf_legendre_sphPlm_deriv_array),));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_array_size",f_unn(gsl_sf_legendre_array_size),));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_half",f_unn(gsl_sf_conicalP_half_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_mhalf",f_unn(gsl_sf_conicalP_mhalf_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_0",f_unn(gsl_sf_conicalP_0_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_1",f_unn(gsl_sf_conicalP_1_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_half",f_unn(gsl_sf_conicalP_half_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_mhalf",f_unn(gsl_sf_conicalP_mhalf_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_0",f_unn(gsl_sf_conicalP_0_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_1",f_unn(gsl_sf_conicalP_1_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_sph_reg",f_unn(gsl_sf_conicalP_sph_reg_e),hnd_fnc_idd));
     gpr_vtr.push_back(gpr_cls("gsl_sf_conicalP_cyl_reg",f_unn(gsl_sf_conicalP_cyl_reg_e),hnd_fnc_idd));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_H3d_0",f_unn(gsl_sf_legendre_H3d_0_e),hnd_fnc_xd,NC_DOUBLE));
-    gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_H3d_1",f_unn(gsl_sf_legendre_H3d_1_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_H3d_0",f_unn(gsl_sf_legendre_H3d_0_e),hnd_fnc_nd,P2DBL));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_H3d_1",f_unn(gsl_sf_legendre_H3d_1_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_H3d",f_unn(gsl_sf_legendre_H3d_e),hnd_fnc_idd));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_H3d_array",f_unn(gsl_sf_legendre_H3d_array),));
     // gpr_vtr.push_back(gpr_cls("gsl_sf_legendre_array_size",f_unn(gsl_sf_legendre_array_size),));
@@ -330,7 +330,7 @@ gsl_cls::gsl_cls(bool flg_dbg){
       gpr_vtr.push_back(gpr_cls("gsl_sf_zetam1_int",f_unn(gsl_sf_zetam1_int_e),hnd_fnc_x,NC_INT));
     #endif
     
-    gpr_vtr.push_back(gpr_cls("gsl_sf_hzeta",f_unn(gsl_sf_hzeta_e),hnd_fnc_xd,NC_DOUBLE));
+    gpr_vtr.push_back(gpr_cls("gsl_sf_hzeta",f_unn(gsl_sf_hzeta_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_eta_int",f_unn(gsl_sf_eta_int_e),hnd_fnc_x,NC_INT));
     gpr_vtr.push_back(gpr_cls("gsl_sf_eta",f_unn(gsl_sf_eta),hnd_fnc_x,NC_DOUBLE));
     
@@ -606,62 +606,9 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   case NC_UINT:
     break; 
     
-  case NC_DOUBLE: {
-    
-    bool has_mss_val=false;
-    int sz;
-    double *dp1;
-    double *dp2; 
-    double mss_val_dbl;
-    gsl_sf_result rslt;  /* structure for result from gsl lib call */
-    int (*fnc_int)(double, double, gsl_sf_result*);
-    
-    fnc_int=gpr_obj.g_args().add; 
-    
-    // convert to type double
-    var1=nco_var_cnf_typ(NC_DOUBLE,var1); 
-    var2=nco_var_cnf_typ(NC_DOUBLE,var2); 
-    // make operands conform  
-    ncap_var_att_cnf(var2,var1);
-    
-    sz=var1->sz;
-    
-    (void)cast_void_nctype(NC_DOUBLE,&(var1->val));
-    dp1=var1->val.dp;  
-    (void)cast_void_nctype(NC_DOUBLE,&(var2->val));
-    dp2=var2->val.dp;  
-    
-    if(var1->has_mss_val){
-      has_mss_val=true; 
-      (void)cast_void_nctype(NC_DOUBLE,&var1->mss_val);
-      mss_val_dbl=*var1->mss_val.dp;
-      (void)cast_nctype_void(NC_DOUBLE,&(var1->mss_val));
-    }else if(var2->has_mss_val){
-      has_mss_val=true; 
-      (void)cast_void_nctype(NC_DOUBLE,&var2->mss_val);
-      mss_val_dbl=*var2->mss_val.dp;
-      (void)cast_nctype_void(NC_DOUBLE,&(var2->mss_val));
-    }
-    
-    if(!has_mss_val){ 
-      for(idx=0;idx<sz;idx++) 
-	dp2[idx]=( (*fnc_int)(dp1[idx],dp2[idx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
-    }else{
-      
-      for(idx=0;idx<sz;idx++)
-	// note fnc_int return status flag, if 0 then no error
-	if(dp1[idx] == mss_val_dbl || 
-	   dp2[idx] == mss_val_dbl ||
-	   (*fnc_int)(dp1[idx],dp2[idx], &rslt)
-	   ) dp2[idx]=mss_val_dbl;
-	else
-	  dp2[idx]=rslt.val;      
-    }           
-    
-    (void)cast_nctype_void(NC_DOUBLE,&(var1->val));
-    (void)cast_nctype_void(NC_DOUBLE,&(var2->val));
-    nco_var_free(var1);
-  } break;
+  case NC_DOUBLE:
+    // This is handled in hnd_fnc_nd,P2DBL
+     break;
     
   case NC_INT: { 
     bool has_mss_val=false;
@@ -981,162 +928,6 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   return var_tmp;
 } // end function hnd_fnc_idpd
 
-var_sct *gsl_cls::hnd_fnc_dm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
-  const std::string fnc_nm("hnd_fnc_d");
-  int idx;
-  int args_nbr;
-  std::string styp=(is_mtd ? "method":"function");
-  std::string sfnm=gpr_obj.fnm();
-  var_sct *var=NULL_CEWI;
-  // de-reference 
-  prs_cls *prs_arg=walker.prs_arg;
-  
-  args_nbr=args_vtr.size();
-  
-  if(args_nbr==0) err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
-  
-  var=walker.out(args_vtr[0]);
-  
-  if(prs_arg->ntl_scn){
-    if(!var->undefined) var=nco_var_cnf_typ(NC_DOUBLE,var);                  
-    return var;
-  }
-  
-  // do heavy lifting 
-  { 
-    bool has_mss_val;
-    int sz=var->sz;
-    double mss_val_dbl;
-    double *dp;
-    gsl_sf_result rslt;  /* structure for result from gsl lib call */
-    gsl_mode_t mde_t=ncap_gsl_mode_prec;
-    int (*fnc_int)(double, gsl_mode_t, gsl_sf_result*);
-    
-    fnc_int=gpr_obj.g_args().adm; 
-    // convert to double
-    var=nco_var_cnf_typ(NC_DOUBLE,var);                     
-    
-    (void)cast_void_nctype(NC_DOUBLE,&(var->val));
-    dp=var->val.dp;  
-    
-    has_mss_val=false;
-    if(var->has_mss_val){
-      has_mss_val=true;
-      (void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
-      mss_val_dbl=var->mss_val.dp[0];    
-      (void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
-    }
-    
-    if(has_mss_val){  
-      for(idx=0;idx<sz;idx++)
-	if(dp[idx] != mss_val_dbl)
-	  // note fnc_int return status flag, if 0 then no error occured
-	  dp[idx]=( (*fnc_int)(dp[idx],mde_t,&rslt) ? mss_val_dbl : rslt.val );             
-    }else{
-      for(idx=0;idx<sz;idx++) 
-	dp[idx]=( (*fnc_int)(dp[idx],mde_t,&rslt) ? NC_FILL_DOUBLE : rslt.val );
-    }
-    
-    (void)cast_nctype_void(NC_DOUBLE,&(var->val));
-  } 
-  return var;
-  }
-
-var_sct *gsl_cls::hnd_fnc_ddm(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
-  const std::string fnc_nm("hnd_fnc_ddm");
-  int idx;
-  int args_nbr;
-  nc_type type;
-  std::string styp=(is_mtd ? "method":"function");
-  std::string sfnm=gpr_obj.fnm();
-  var_sct *var1=NULL_CEWI;
-  var_sct *var2=NULL_CEWI;
-  var_sct *var_ret=NULL_CEWI;
-  
-  // de-reference 
-  prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
-  
-  args_nbr=args_vtr.size();
-  
-  if(args_nbr <2){
-    if(is_mtd) err_prn(fnc_nm,styp+" \""+sfnm+"\" requires one argument. None given"); else err_prn(fnc_nm,styp+" \""+sfnm+"\" requires two arguments");
-  }
-  
-  var1=walker.out(args_vtr[0]);
-  var2=walker.out(args_vtr[1]);  
-  
-  // Deal with initial scan
-  if(prs_arg->ntl_scn){
-    if(var1->undefined || var2->undefined){
-      var1=nco_var_free(var1);
-      var2=nco_var_free(var2);
-      var_ret=ncap_var_udf("~gsl_cls");
-    }else{
-      var_ret=ncap_var_att_cnf_ntl(var2,var1);
-      var_ret=nco_var_cnf_typ(NC_DOUBLE,var_ret);
-    } 
-    return var_ret;
-  } 
-  
-  // do heavy lifting       
-  {
-    bool has_mss_val=false;
-    int sz;
-    double *dp1;
-    double *dp2; 
-    double mss_val_dbl;
-    gsl_mode_t mde_t=ncap_gsl_mode_prec;
-    gsl_sf_result rslt;  /* structure for result from gsl lib call */
-    
-    int (*fnc_int)(double, double, gsl_mode_t,gsl_sf_result*);
-    
-    fnc_int=gpr_obj.g_args().addm; 
-    
-    // convert to type double
-    var1=nco_var_cnf_typ(NC_DOUBLE,var1); 
-    var2=nco_var_cnf_typ(NC_DOUBLE,var2); 
-    // make operands conform  
-    ncap_var_att_cnf(var2,var1);
-    
-    sz=var1->sz;
-    
-    (void)cast_void_nctype(NC_DOUBLE,&(var1->val));
-    dp1=var1->val.dp;  
-    (void)cast_void_nctype(NC_DOUBLE,&(var2->val));
-    dp2=var2->val.dp;  
-    
-    if(var1->has_mss_val){
-      has_mss_val=true; 
-      (void)cast_void_nctype(NC_DOUBLE,&var1->mss_val);
-      mss_val_dbl=*var1->mss_val.dp;
-      (void)cast_nctype_void(NC_DOUBLE,&(var1->mss_val));
-    }else if(var2->has_mss_val){
-      has_mss_val=true; 
-      (void)cast_void_nctype(NC_DOUBLE,&var2->mss_val);
-      mss_val_dbl=*var2->mss_val.dp;
-      (void)cast_nctype_void(NC_DOUBLE,&(var2->mss_val));
-    }
-    
-    if(!has_mss_val){ 
-      for(idx=0;idx<sz;idx++) 
-	dp2[idx]=( (*fnc_int)(dp1[idx],dp2[idx],mde_t,&rslt) ? NC_FILL_DOUBLE : rslt.val );
-    }else{
-      for(idx=0;idx<sz;idx++)
-	// note fnc_int return status flag, if 0 then no error
-	if(dp1[idx] == mss_val_dbl || 
-	   dp2[idx] == mss_val_dbl ||
-	   (*fnc_int)(dp1[idx],dp2[idx],mde_t, &rslt)
-	   ) dp2[idx]=mss_val_dbl;
-	else
-	  dp2[idx]=rslt.val;      
-    }           
-    (void)cast_nctype_void(NC_DOUBLE,&(var1->val));
-    (void)cast_nctype_void(NC_DOUBLE,&(var2->val));
-    nco_var_free(var1);
-  }
-  return var2; 
-}
 
 var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_nd");
@@ -1194,8 +985,13 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   
   // Deal with initial scan
   if(prs_arg->ntl_scn){
+
+    if(args_in_nbr >1 )
     // nb ncap_var_att_arr_cnf() frees up sct's in var_att_ptr    
-    var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );     
+      var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );     
+    else
+      var_ret=var_arr[0];
+  
     if(!var_ret->undefined)
       var_ret=nco_var_cnf_typ(NC_DOUBLE,var_ret);
     
@@ -1209,8 +1005,10 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     var_arr_ptr[idx]=&var_arr[idx];
   }
   
-  // make variables conform  
-  (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );
+
+  if(args_in_nbr >1)
+    // make variables conform  
+    (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );
   
   // do heavy lifting       
   {
