@@ -1534,10 +1534,9 @@ Optional Features:
   --enable-maintainer-mode  enable make rules and dependencies not useful
 			  (and sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
-  --enable-dap            Build DAP-enabled clients with OPeNDAP (conflicts
-                          with netcdf4) [default=yes]
-  --enable-netcdf4        Use netCDF Version 4 (WARNING: Experimental)
-                          [default=no]
+  --enable-dap-opendap    Build DAP-enabled clients with OPeNDAP
+                          [default=yes]
+  --enable-netcdf4        Enable netCDF Version 4 features [default=no]
   --enable-ncoxx          Build nco++ directory and ncap2 [default=yes]
   --enable-mpi            Build NCOs for Message Passing Interface (detects
                           LAM or MPICH2) [default=no]
@@ -6201,13 +6200,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:6204: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:6203: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6207: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:6206: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6210: output\"" >&5)
+  (eval echo "\"\$as_me:6209: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -7306,7 +7305,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7309 "configure"' > conftest.$ac_ext
+  echo '#line 7308 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9628,11 +9627,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9631: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9630: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9635: \$? = $ac_status" >&5
+   echo "$as_me:9634: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9952,11 +9951,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9955: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9954: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9959: \$? = $ac_status" >&5
+   echo "$as_me:9958: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10057,11 +10056,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10060: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10059: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10064: \$? = $ac_status" >&5
+   echo "$as_me:10063: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10112,11 +10111,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10115: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10114: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10119: \$? = $ac_status" >&5
+   echo "$as_me:10118: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12873,7 +12872,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12876 "configure"
+#line 12875 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12973,7 +12972,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12976 "configure"
+#line 12975 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14976,11 +14975,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14979: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14978: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14983: \$? = $ac_status" >&5
+   echo "$as_me:14982: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15075,11 +15074,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15078: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15077: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15082: \$? = $ac_status" >&5
+   echo "$as_me:15081: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15127,11 +15126,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15130: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15129: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15134: \$? = $ac_status" >&5
+   echo "$as_me:15133: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18631,56 +18630,41 @@ fi
 
 
 echo "########################################"
-echo "#  Testing for DAP (aka DODS) support  #"
+echo "# Testing for OPeNDAP (née DODS) support #"
 echo "########################################"
-# Begin DAP (aka DODS) support
-# Store pre-DAP LIBS value to restore from later
-nco_LIBS_no_DAP="${LIBS}"
+# Begin DAP-OPeNDAP (née DODS) support
+# Store pre-DAP_OPENDAP LIBS value to restore from later
+nco_LIBS_no_DAP_OPENDAP="${LIBS}"
 # Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
 
-# DAP_ROOT is value of "${prefix}" set when building/installing OPeNDAP code
+# DAP_OPENDAP_ROOT is value of "${prefix}" set when building/installing OPeNDAP code
 # Scripts dap-config and ncdap-config are in ${prefix}/bin
 # Use them to find how to link for this particular build. jhrg 20050525
 
 # libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
 # definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
 # Sorry about version numbers being confusing... jhrg 20050603
-
-# fxm: is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+?
-# Eliminate these 3 lines after running the dap tests with it disabled.
-#  AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 # Check whether --enable-dap was given.
 if test "${enable_dap+set}" = set; then
-  enableval=$enable_dap; enable_dap=${enableval}
+  enableval=$enable_dap; enable_dap_opendap=${enableval}
 else
-  enable_dap=yes
+  enable_dap_opendap=yes
 fi
 
 
-echo "#################################"
-echo "#  Testing for netCDF4 support  #"
-echo "#################################"
-# Check whether --enable-netcdf4 was given.
-if test "${enable_netcdf4+set}" = set; then
-  enableval=$enable_netcdf4; enable_netcdf4=${enableval}
-else
-  enable_netcdf4=no
-fi
-
-
-# Check to see if netCDF4 is requested
-echo "DEBUG: enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
-if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
-# Override netCDF4 request
+# Check to see if both DAP-OPeNDAP and DAP-netCDF are requested
+echo "DEBUG: enable_dap_netcdf = ${enable_dap_netcdf} and enable_dap_opendap = ${enable_dap_opendap}"
+if (test "${enable_dap_netcdf}" != 'no' && test "${enable_dap_opendap}" != 'no'); then
+# Override OPeNDAP request
     echo ""
-    echo "WARNING: Requested both netCDF4 and DAP support---overriding netCDF4"
-    echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
+    echo "WARNING: Requested both DAP-netCDF and DAP-OPeNDAP support---overriding OPeNDAP"
+    echo "NCO will be built with DAP support from netCDF4, not from OPeNDAP"
     echo ""
-    enable_netcdf4='no'
-fi # End test for netCDF4 libs
+    enable_dap_opendap='no'
+fi # End test for DAP duplication
 
-# Check for DAP libraries unless told not to
-if test "${enable_dap}" != 'no'; then
+# Check for OPeNDAP libraries unless told not to
+if test "${enable_dap_opendap}" != 'no'; then
     if which ncdap-config > /dev/null; then
 # Place DAP netcdf.h path ahead of system netcdf.h path
 	CPPFLAGS="`ncdap-config --cflags` ${CPPFLAGS}"
@@ -18772,7 +18756,7 @@ _ACEOF
   LIBS="-lnc-dap $LIBS"
 
 else
-  enable_dap=no
+  enable_dap_opendap=no
 fi
 
     ac_ext=c
@@ -18782,24 +18766,37 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-    if test "${enable_dap}" = 'no'; then
-	{ echo "$as_me:$LINENO: WARNING: DAP support disabled (missing libraries)" >&5
-echo "$as_me: WARNING: DAP support disabled (missing libraries)" >&2;}
+    if test "${enable_dap_opendap}" = 'no'; then
+	{ echo "$as_me:$LINENO: WARNING: DAP support disabled (missing OPeNDAP libraries)" >&5
+echo "$as_me: WARNING: DAP support disabled (missing OPeNDAP libraries)" >&2;}
 	LIBS="${nco_LIBS_no_DAP}"
-    elif test "${enable_dap}" = 'yes'; then
+    elif test "${enable_dap_opendap}" = 'yes'; then
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_DAP 1
 _ACEOF
 
-	{ echo "$as_me:$LINENO: DAP support enabled" >&5
-echo "$as_me: DAP support enabled" >&6;}
 # libtool cleans up duplicate library links (e.g., dap, nc-dap) unless told not to
 # New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
 	LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
     fi
 fi
- if test "${enable_dap}" = 'yes'; then
+# End OPeNDAP support
+
+# Perform elaborate "or" test since autoconf dislikes [ -o ] syntax
+DAP_NETCDF_OR_DAP_OPENDAP='no'
+enable_dap='no'
+if (test "x${DAP_NETCDF}" = 'xyes'); then
+    DAP_NETCDF_OR_DAP_OPENDAP='yes'
+fi
+if (test "x${DAP_OPENDAP}" = 'xyes'); then
+    DAP_NETCDF_OR_DAP_OPENDAP='yes'
+fi
+if test "x${DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
+    enable_dap='yes'
+    { echo "$as_me:$LINENO: DAP support enabled" >&5
+echo "$as_me: DAP support enabled" >&6;}
+     if test "${enable_dap}" = 'yes'; then
   TEST_DAP_TRUE=
   TEST_DAP_FALSE='#'
 else
@@ -18807,6 +18804,7 @@ else
   TEST_DAP_FALSE=
 fi
 
+fi
 # End DAP support
 
 # Begin mandatory link test with libnetcdf.a
@@ -18814,12 +18812,23 @@ fi
 
 
 
+echo "#################################"
+echo "#  Testing for netCDF4 support  #"
+echo "#################################"
+# Check whether --enable-netcdf4 was given.
+if test "${enable_netcdf4+set}" = set; then
+  enableval=$enable_netcdf4; enable_netcdf4=${enableval}
+else
+  enable_netcdf4=no
+fi
+
+
 # Link with HDF5 if netCDF4 libnetcdf used but netCDF4 capabilities not wanted
 # Following line enables and initializes this configure option
 echo "################################################"
 echo "# Testing whether libnetcdf.a is version 3 or 4  #"
 echo "################################################"
-echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
+echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap_opendap: ${enable_dap_opendap}"
 
 
 # Test if user set NETCDF4_ROOT and it exists
@@ -18829,7 +18838,7 @@ if test "${enable_netcdf4}" = 'yes'; then
 	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
 	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
-	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
+	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap_opendap}" = 'no'); then
 # Check libnetcdf for netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 		enable_shared='no'
@@ -18997,7 +19006,7 @@ echo "DEBUG: LIBS = ${LIBS}"
 # HDF5 libraries may be in standard places but netCDF4 libnetcdf must be
 # in NETCDF4_ROOT to avoid conflicting with netCDF3 libnetcdf
 # Is this redundant if previous netCDF4 AC_CHECK_LIB succeeded?
-if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
+if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap_opendap}" = 'no'); then
 # Assume HDF5 libraries are in standard places, let user override
 
 # Add ${HDF5_LIB_DIR} to search path if present
@@ -19225,9 +19234,9 @@ _ACEOF
 echo "$as_me: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&2;}
     fi # End test for HDF5 libs
 
-elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
+elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap_opendap}" = 'no'); then
 # Try next stanza iff enable-netcdf4=no
-# Look for real netCDF library iff enable_dap=no jhrg 05/26/05
+# Look for real netCDF library iff enable_dap_opendap=no jhrg 05/26/05
 # However: If libnetcdf4 installed instead of libnetcdf3x,
 # must link with HDF5 libraries to compile correctly.
 # User-specified netCDF locations, if any, take precedence
@@ -19245,7 +19254,7 @@ elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
 	    echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
 	fi
     fi # !NETCDF_INC
-fi # enable_dap
+fi # enable_dap_opendap
 
 # At this point we either want netCDF4 and have HDF5 or have used DAP's libnetcdf
 # or do not have HDF5 and do not want netCDF4 (aka just want netCDF3)
@@ -19401,7 +19410,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
+if (test "${enable_dap_opendap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
@@ -19595,9 +19604,9 @@ fi
 
 # End Mandatory Link Test with libnetcdf.a
 
-fi # enable_dap
+fi # enable_dap_opendap
 
-echo "DEBUG: After enable_dap section LIBS = ${LIBS}"
+echo "DEBUG: After enable_dap_opendap section LIBS = ${LIBS}"
 
 ##################################################
 # Begin Library checks
@@ -24120,7 +24129,7 @@ esac
 # End Default OS-specific Compiler Arguments
 
 # Begin custom GCC switches
-# Perform elaborate "or" test since autoconf does not like [ -o ] syntax
+# Perform elaborate "or" test since autoconf dislikes [ -o ] syntax
 GCC_OR_GXX='no'
 if (test "x${GCC}" = 'xyes'); then
     GCC_OR_GXX='yes'
@@ -27351,7 +27360,7 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-echo "ENABLE_DAP........... ${enable_dap}"
+echo "ENABLE_DAP_OPENDAP... ${enable_dap_opendap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
 echo "ENABLE_MPI........... ${enable_mpi}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.80 2009-02-03 05:25:49 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.81 2009-03-17 21:18:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -17,7 +17,7 @@
 # cd ~/nco/src/nco_c++;SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=N OMP=Y SZ=Y dpn_cln cln all # greenplanet
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=N dpn_cln cln all # ashes, elnino
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # esmf, sand
-# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=N dpn_cln cln all # sand
+# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=N dpn_cln cln all # sand, tephra
 
 # In rule 
 # foobar.o : foo.c bar.c
@@ -86,9 +86,12 @@ endif
 ifndef ${CCACHE}
  CCACHE := N
 endif # CCACHE
-ifndef DAP
- DAP := N
-endif
+ifndef DAP_NETCDF
+ DAP_NETCDF := N
+endif # DAP_NETCDF
+ifndef DAP_OPENDAP
+ DAP_OPENDAP := N
+endif # DAP_OPENDAP
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -225,33 +228,44 @@ CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNA
 NC_LDFLAGS := -L${NETCDF_LIB}
 NC_LIBS := -lnetcdf 
 
-ifeq (${DAP},Y)
-# Build NCO as DAP-enabled clients
+ifeq (${DAP_NETCDF},Y)
+# Build NCO as DAP-enabled clients with netCDF-provided DAP
+ifndef DAP_NETCDF_ROOT
+# Directory containing libcurl.a
+ DAP_NETCDF_ROOT := /usr
+endif # DAP_NETCDF_ROOT
+ NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
+# netCDF 4.0.1+:
+ NC_LIBS := -lcurl
+endif # end DAP_NETCDF
+
+ifeq (${DAP_OPENDAP},Y)
+# Build NCO as DAP-enabled clients with OPeNDAP
 # fxm: OPeNDAP bloats executables, should automagically enable stripping?
 # http://www.opendap.org/user/guide-html/guide_28.html
-ifndef DAP_ROOT
+ifndef DAP_OPENDAP_ROOT
 # Directory containing libdap.a, libnc-dap.a
- DAP_ROOT := /usr/local
-endif # DAP_ROOT
- NC_LDFLAGS := -L${DAP_ROOT}/lib
+ DAP_OPENDAP_ROOT := /usr/local
+endif # DAP_OPENDAP_ROOT
+ NC_LDFLAGS := -L${DAP_OPENDAP_ROOT}/lib
 # NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
 # Required libraries for
 # DODS 3.3-:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
 # DODS 3.4.X:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
-# DAP 3.5.0-3.5.1:
+# OPeNDAP 3.5.0-3.5.1:
 # NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
-# DAP 3.5+:
+# OPeNDAP 3.5+:
  NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
 # In addition, AIX OPeNDAP requires these libraries...
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
  NC_LIBS += -lcrypto -liconv -lssl -lz
 endif # end AIX
 # Get netCDF from OPeNDAP version
- NETCDF_INC=${DAP_ROOT}/include/libnc-dap
- NETCDF_LIB=${DAP_ROOT}/lib
-endif # end DAP
+ NETCDF_INC=${DAP_OPENDAP_ROOT}/include/libnc-dap
+ NETCDF_LIB=${DAP_OPENDAP_ROOT}/lib
+endif # end DAP_OPENDAP
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
@@ -317,7 +331,7 @@ endif # endif PNETCDF
 
 ifeq (${UDUNITS},Y)
 # Build UDUnits-enabled NCO 
-# Place UDUNITS block after DAP block for both to work together
+# Place UDUNITS block after DAP blocks for both to work together
 ifndef UDUNITS_INC
  UDUNITS_INC := /usr/local/include # Directory containing udunits.h
 endif
@@ -467,9 +481,12 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # Visual age compiler headers must occur before g++ headers
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # AIX
-ifeq (${DAP},Y)
+ifeq (${DAP_NETCDF},Y)
  CPP_TKN_OS += -DENABLE_DAP
-endif # !DAP
+endif # !DAP_NETCDF
+ifeq (${DAP_OPENDAP},Y)
+ CPP_TKN_OS += -DENABLE_DAP
+endif # !DAP_OPENDAP
 ifeq (${MPI},Y)
 ifneq (${MPI_FAKE},Y)
  CPP_TKN_OS += -DENABLE_MPI
@@ -1289,8 +1306,10 @@ dbg:
 	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
-	@printf "DAP = ${DAP}\n"
-	@printf "DAP_ROOT = ${DAP_ROOT}\n"
+	@printf "DAP_NETCDF = ${DAP_NETCDF}\n"
+	@printf "DAP_NETCDF_ROOT = ${DAP_NETCDF_ROOT}\n"
+	@printf "DAP_OPENDAP = ${DAP_OPENDAP}\n"
+	@printf "DAP_OPENDAP_ROOT = ${DAP_OPENDAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"

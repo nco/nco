@@ -6,7 +6,7 @@
 /* Compatibility pvmgetarch token for UNICOS on DEC Alpha */
 #undef CRAY
 
-/* Compile operators with OPeNDAP/DODS support */
+/* Compile operators with DAP support from OPeNDAP */
 #undef ENABLE_DAP
 
 /* Custom debugging: Pedantic, bounds checking (slowest execution) */

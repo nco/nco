@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.492 2009-03-17 17:10:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.493 2009-03-17 21:18:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -16,7 +16,7 @@
 # Development machines default configuration:
 # netCDF4, UDUnits2: ashes, elnino, virga, neige
 # netCDF3: sand
-# netCDF3, DAP: soot, esmf
+# netCDF3, OPeNDAP: soot, esmf
 # netCDF3, configure: clay
 
 # Usage (testing):
@@ -35,7 +35,7 @@
 # cd ~/nco/bld;make cln bin_cln;cd - # Clean all dependencies for fresh build
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
-# cd ~/nco/bld;make DAP=Y;cd -       # DAP support
+# cd ~/nco/bld;make DAP_OPENDAP=Y;cd - # DAP support via OPeNDAP
 # cd ~/nco/bld;make GSL=Y;cd -	     # GSL support
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
 # cd ~/nco/bld;make MPI=Y;cd -       # MPI support
@@ -51,30 +51,30 @@
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
-# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # givre, glace, neige, virga
-# cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make DAP=N OMP=Y OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet
-# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
-# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
-# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
-# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNCO_GSL_MINOR_VERSION=4' allinone;cd - # esmf
-# cd ${HOME}/nco/bld;make DAP=N GSL=Y OMP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNCO_GSL_MINOR_VERSION=4' allinone;cd - # sand, tephra
-# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # silt, clay
-# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # soot
-# cd ${HOME}/nco/bld;make DAP=Y OMP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd - # soot w/DAP
-# cd ${HOME}/nco/bld;make OPTS=D DAP=Y USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
+# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # givre, glace, neige, virga
+# cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet
+# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
+# cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
+# cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
+# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNCO_GSL_MINOR_VERSION=4' allinone;cd - # esmf
+# cd ${HOME}/nco/bld;make GSL=Y OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNCO_GSL_MINOR_VERSION=4' allinone;cd - # sand, tephra
+# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # silt, clay
+# cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # soot
+# cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=Y OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd - # soot w/OPeNDAP
+# cd ${HOME}/nco/bld;make OPTS=D USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 64-bit ABI on UCI MPC:
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on UCI IPCC:
 # cd ${HOME}/nco/bld;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on NCAR AIX systems (bluefire):
-# cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 OPTS=D allinone ABI=64;cd -
+# cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 DAP_OPENDAP=Y OPTS=D allinone ABI=64;cd -
 # 64-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.4/include' UDUNITS_LIB='/contrib/udunits-1.12.4/lib' make --jobs=1 ABI=64 GSL=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 32-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib32/r4i4' UDUNITS_INC='/contrib/include' UDUNITS_LIB='/contrib/lib' make --jobs=1 ABI=32 GSL=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 
 # Top-level tokens defining directory structure
-# These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP=Y
+# These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP_OPENDAP=Y
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
  PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
@@ -102,7 +102,7 @@ NCO_CXX_SRC_DIR := ${MY_SRC_DIR}/../nco_c++
 NCOXX_SRC_DIR := ${MY_SRC_DIR}/../nco++
 
 # Primary tokens which determine build options
-# Specify non-default when invoking make, e.g. make DAP=Y
+# Specify non-default when invoking make, e.g. make DAP_OPENDAP=Y
 ifndef ${ABI}
 # 32- vs. 64-bit ABI: 32=32-bit mode, 64=64-bit mode (default) if available
  ABI := 64
@@ -110,9 +110,12 @@ endif # endif ABI
 ifndef ${CCACHE}
  CCACHE := N
 endif # CCACHE
-ifndef DAP
- DAP := N
-endif
+ifndef DAP_OPENDAP
+ DAP_OPENDAP := N
+endif # DAP_OPENDAP
+ifndef DAP_OPENDAP
+ DAP_OPENDAP := N
+endif # DAP_OPENDAP
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -217,37 +220,48 @@ endif # endif ZNETCDF
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 
-# Default NCO build. DAP, NETCDF4, PNETCDF, and ZNETCDF clauses may overwrite this
+# Default NCO build: DAP_NETCDF, DAP_OPENDAP, NETCDF4, PNETCDF, and ZNETCDF clauses may overwrite this
 NC_LDFLAGS := -L${NETCDF_LIB}
 NC_LIBS := -lnetcdf 
 
-ifeq (${DAP},Y)
-# Build NCO as DAP-enabled clients
+ifeq (${DAP_NETCDF},Y)
+# Build NCO as DAP-enabled clients with netCDF-provided DAP
+ifndef DAP_NETCDF_ROOT
+# Directory containing libcurl.a
+ DAP_NETCDF_ROOT := /usr
+endif # DAP_NETCDF_ROOT
+ NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
+# netCDF 4.0.1+:
+ NC_LIBS := -lcurl
+endif # end DAP_NETCDF
+
+ifeq (${DAP_OPENDAP},Y)
+# Build NCO as DAP-enabled clients with OPeNDAP
 # fxm: OPeNDAP bloats executables, should automagically enable stripping?
 # http://www.opendap.org/user/guide-html/guide_28.html
-ifndef DAP_ROOT
+ifndef DAP_OPENDAP_ROOT
 # Directory containing libdap.a, libnc-dap.a
- DAP_ROOT := /usr/local
-endif # DAP_ROOT
- NC_LDFLAGS := -L${DAP_ROOT}/lib
+ DAP_OPENDAP_ROOT := /usr/local
+endif # DAP_OPENDAP_ROOT
+ NC_LDFLAGS := -L${DAP_OPENDAP_ROOT}/lib
 # NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
 # Required libraries for
 # DODS 3.3-:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
 # DODS 3.4.X:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
-# DAP 3.5.0-3.5.1:
+# OPeNDAP 3.5.0-3.5.1:
 # NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
-# DAP 3.5+:
+# OPeNDAP 3.5+:
  NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
 # In addition, AIX OPeNDAP requires these libraries...
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
  NC_LIBS += -lcrypto -liconv -lssl -lz
 endif # end AIX
 # Get netCDF from OPeNDAP version
- NETCDF_INC=${DAP_ROOT}/include/libnc-dap
- NETCDF_LIB=${DAP_ROOT}/lib
-endif # end DAP
+ NETCDF_INC=${DAP_OPENDAP_ROOT}/include/libnc-dap
+ NETCDF_LIB=${DAP_OPENDAP_ROOT}/lib
+endif # end DAP_OPENDAP
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
@@ -368,7 +382,7 @@ endif
 
 ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
-# Place GSL block after DAP block for both to work together
+# Place GSL block after DAP blocks for both to work together
 ifdef GSL_INC
  GSL_INC := -I${GSL_INC}
 else
@@ -389,7 +403,7 @@ ifeq (${UDUNITS2},Y)
 endif # end if UDUNITS
 ifeq (${UDUNITS},Y)
 # Build UDUnits-enabled NCO 
-# Place UDUNITS block after DAP block for both to work together
+# Place UDUNITS block after DAP blocks for both to work together
 ifndef UDUNITS_INC
  UDUNITS_INC := /usr/local/include # Directory containing udunits.h
 endif
@@ -571,9 +585,12 @@ endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
 endif # !(AIX || SGI)
-ifeq (${DAP},Y)
+ifeq (${DAP_NETCDF},Y)
  CPP_TKN_OS += -DENABLE_DAP
-endif # !DAP
+endif # !DAP_NETCDF
+ifeq (${DAP_OPENDAP},Y)
+ CPP_TKN_OS += -DENABLE_DAP
+endif # !DAP_OPENDAP
 ifeq (${GSL},Y)
  CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H
 endif # !GSL
@@ -1325,9 +1342,9 @@ ${MY_OBJ_DIR}/%.o : %.f
 endif
 # endif WIN32
 
-# Link to DAP libraries first, see OPeNDAP User's Guide
-# Currently this is invoked by using 'make DAP=Y'
-ifeq (${DAP},Y)
+# Link to OPeNDAP libraries first, see OPeNDAP User's Guide
+# Currently this is invoked by using 'make DAP_OPENDAP=Y'
+ifeq (${DAP_OPENDAP},Y)
 # OPeNDAP >= 3.7.0 defines NC_64BIT_OFFSET correctly
 # CPPFLAGS += -DNC_64BIT_OFFSET=0
 ifneq (${CC},g++)
@@ -1336,8 +1353,8 @@ ifeq (${null},$(findstring xl,${CC}))
  LDFLAGS := ${LDFLAGS} -lstdc++
 endif # !xl*
 endif # !g++
-endif # !DAP
-# endif DAP
+endif # !DAP_OPENDAP
+# endif DAP_OPENDAP
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
@@ -1447,7 +1464,7 @@ obj_dir:
 nco_c++: 
 	-cd ../src/nco_c++; ${MAKE} -f Makefile.old DBG=${DBG} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} lib dat all
 nco++: 
-	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP=${DAP} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} UDUNITS2=${UDUNITS2} lib all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP_NETCDF=${DAP_NETCDF} DAP_OPENDAP=${DAP_OPENDAP} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} UDUNITS2=${UDUNITS2} lib all
 allinone: all nco_c++ nco++
 # Targets in bin
 mpi:   mpi_nco
@@ -1756,8 +1773,10 @@ dbg:
 	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
-	@printf "DAP = ${DAP}\n"
-	@printf "DAP_ROOT = ${DAP_ROOT}\n"
+	@printf "DAP_NETCDF = ${DAP_NETCDF}\n"
+	@printf "DAP_NETCDF_ROOT = ${DAP_NETCDF_ROOT}\n"
+	@printf "DAP_OPENDAP = ${DAP_OPENDAP}\n"
+	@printf "DAP_OPENDAP_ROOT = ${DAP_OPENDAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"

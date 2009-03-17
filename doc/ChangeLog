@@ -5,6 +5,13 @@
 	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
 	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
 
+	* Convert DAP to DAP_OPENDAP and add stub support for DAP_NETCDF
+	in configure.in
+
+	* Eliminate obsolete ${DAP_ROOT} lines from configure.in
+
+	* Rename DAP option to DAP_OPENDAP in preparation DAP_NETCDF option
+
 	* More GSL tidying
 
 2009-03-06  Charlie Zender  <zender@uci.edu>
