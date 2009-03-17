@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.272 2009-03-06 19:53:30 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.273 2009-03-17 17:10:53 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -192,9 +192,9 @@ AC_CXX_HAVE_VALARRAY
 AC_SYS_LARGEFILE
 
 echo "########################################"
-echo "#  Testing for DAP (aka DODS) support  #"
+echo "#  Testing for DAP (née DODS) support  #"
 echo "########################################"
-# Begin DAP (aka DODS) support
+# Begin DAP (née DODS) support
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
 # Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
@@ -207,7 +207,7 @@ nco_LIBS_no_DAP="${LIBS}"
 # definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
 # Sorry about version numbers being confusing... jhrg 20050603
 
-# fxm: is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+?
+# fxm: is DAP_ROOT (or DODS_ROOT) obsolete in DAP 3.5+?
 # Eliminate these 3 lines after running the dap tests with it disabled.
 #  AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build DAP-enabled clients with OPeNDAP (conflicts with netcdf4)  [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.528 2009-03-03 10:07:05 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.529 2009-03-17 17:10:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2989,6 +2989,10 @@ Conversely, operators given the @samp{-3} (or @samp{--3}) switch
 without arguments will (attempt to) produce netCDF3 @code{CLASSIC}
 output, even from netCDF4 input files. 
 
+@html
+<a name="3to4"></a> <!-- http://nco.sf.net/nco.html#3to4 -->
+<a name="4to3"></a> <!-- http://nco.sf.net/nco.html#4to3 -->
+@end html
 These examples demonstrate converting a file from any netCDF format
 into any other netCDF format (subject to limits of the format): 
 @example
@@ -5138,6 +5142,7 @@ may amount to many thousands of filenames in a metadata attribute.
 
 @html
 <a name="CF"></a> <!-- http://nco.sf.net/nco.html#CF -->
+<a name="cnv"></a> <!-- http://nco.sf.net/nco.html#cnv -->
 <a name="cnv_CF"></a> <!-- http://nco.sf.net/nco.html#cnv_CF -->
 <a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
 @end html

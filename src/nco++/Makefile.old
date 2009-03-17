@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.86 2009-02-27 18:56:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.87 2009-03-17 17:10:54 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1342,6 +1342,7 @@ lib : inc $(libnco++).a
 	-cd ../../bld; ${MAKE} $@ # Rebuild libnco if necessary
 $(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/sym_cls.o) \
         $(libnco++).a(${MY_OBJ_DIR}/fmc_cls.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/fmc_gsl_cls.o) \
         $(libnco++).a(${MY_OBJ_DIR}/fmc_all_cls.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVar.o) \
@@ -1351,8 +1352,7 @@ $(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/sym_cls.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoParser.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoTree.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/prs_cls.o) \
-	$(libnco++).a(${MY_OBJ_DIR}/sdo_utl.o) \
-	$(libnco++).a(${MY_OBJ_DIR}/fmc_gsl_cls.o)
+	$(libnco++).a(${MY_OBJ_DIR}/sdo_utl.o)
 # NB: Do not place comments in the middle of a rule, or have \ at the end
 lib_cln :
 	rm -f $(libnco++).a $(libnco++).la $(libnco++).so*
