@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.94 2009-01-27 16:58:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.95 2009-03-17 23:14:44 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -49,7 +49,7 @@ target_triplet = @target@
 @ENABLE_MPI_TRUE@	mpncflint$(EXEEXT) mpncpdq$(EXEEXT) \
 @ENABLE_MPI_TRUE@	mpncra$(EXEEXT) mpncwa$(EXEEXT) \
 @ENABLE_MPI_TRUE@	$(am__EXEEXT_2)
-TESTS = $(am__EXEEXT_3)
+TESTS =
 subdir = src/nco
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in ncap_lex.c \
 	ncap_yacc.c ncap_yacc.h
@@ -192,7 +192,6 @@ DIST_SOURCES = $(am__libnco_la_SOURCES_DIST) $(mpncbo_SOURCES) \
 	$(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
 ETAGS = etags
 CTAGS = ctags
-am__EXEEXT_3 =
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -336,7 +335,6 @@ top_srcdir = @top_srcdir@
 @BUILD_YACC_SOURCE_TRUE@NCAP = ncap
 @BUILD_YACC_SOURCE_FALSE@NCWA = 
 @BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
-@TEST_DAP_FALSE@DAP_TESTS = 
 @NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
 AM_YFLAGS = -d
@@ -970,8 +968,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-hook uninstall-libLTLIBRARIES
 
-
-@TEST_DAP_TRUE@echo "ARCHAIC: Test DAP with <NCO_ROOT>/bm/nco_bm.pl now"
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)

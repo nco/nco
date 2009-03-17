@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.40 2008-09-25 20:30:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.41 2009-03-17 23:14:44 zender Exp $ -*-makefile-*-
 
 if BUILD_YACC_SOURCE
 NCAP=ncap
@@ -10,12 +10,6 @@ if BUILD_YACC_SOURCE
 NCWA=ncwa
 else
 NCWA=
-endif
-
-if TEST_DAP
-echo "ARCHAIC: Test DAP with <NCO_ROOT>/bm/nco_bm.pl now"
-else
-DAP_TESTS=
 endif
 
 if NCO_NEED_GETOPT_LONG

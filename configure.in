@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.275 2009-03-17 23:10:47 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.276 2009-03-17 23:14:44 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -264,7 +264,8 @@ fi
 if test "x${ENABLE_DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
     enable_dap='yes'
     AC_MSG_NOTICE([DAP support enabled])
-    AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
+# This would activate conditional GSL tests, if there were any
+#    AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 fi
 # End DAP support
 
