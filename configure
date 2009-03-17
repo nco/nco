@@ -18784,15 +18784,15 @@ fi
 # End OPeNDAP support
 
 # Perform elaborate "or" test since autoconf dislikes [ -o ] syntax
-DAP_NETCDF_OR_DAP_OPENDAP='no'
+ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='no'
 enable_dap='no'
-if (test "x${DAP_NETCDF}" = 'xyes'); then
-    DAP_NETCDF_OR_DAP_OPENDAP='yes'
+if (test "x${enable_dap_netcdf}" = 'xyes'); then
+    ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='yes'
 fi
-if (test "x${DAP_OPENDAP}" = 'xyes'); then
-    DAP_NETCDF_OR_DAP_OPENDAP='yes'
+if (test "x${enable_dap_opendap}" = 'xyes'); then
+    ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='yes'
 fi
-if test "x${DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
+if test "x${ENABLE_DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
     enable_dap='yes'
     { echo "$as_me:$LINENO: DAP support enabled" >&5
 echo "$as_me: DAP support enabled" >&6;}

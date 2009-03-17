@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.89 2009-03-17 22:40:06 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.90 2009-03-17 23:10:47 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1375,7 +1375,7 @@ src_cln :
 	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
 # Targets in /usr/local
 sys: ${MDL_BIN_TRG}
-	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin
+	cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin
 sys_cln:
 	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 # Housekeeping
