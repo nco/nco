@@ -1,20 +1,25 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.313 2009-02-25 21:17:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.314 2009-03-18 23:48:19 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version primarily improves documentation and buildability
+This version primarily improves documentation and build-ability
 of the GSL-library functions introduced in ncap2 version 3.9.6.
 A list of the functions/methods available in ncap2 is below.
 
 http://nco.sf.net/nco.html#gsl
 
+Plans for 3.9.8 are underway. Three areas of improvement will be 
+generalized sorting, support for GSL distribution functions,
+and support for a new DAP library provided by libnetcdf.
+
 A. Document GSL functions in ncap2
    http://nco.sf.net/nco.html#ncap2
 
-B. Improve ./configure ability to find and work with GSL
+B. Improve ./configure ability to find and work with GSL, including
+   older versions of GSL
    
 C. New ncks --no_dmn_var_nm switch implements "naked" column printing
    http://nco.sf.net/nco.html#ncks
@@ -22,8 +27,14 @@ C. New ncks --no_dmn_var_nm switch implements "naked" column printing
 D. ncatted matches regular expressions to variable names
    http://nco.sf.net/nco.html#xmp_ncatted
 
-I. CF-convention "coordinates" attribute strings with excessive
+E. CF-convention "coordinates" attribute strings with excessive
    whitespace work with ncks -c
+
+F. ncap2 has sort function
+
+G. Remove assumption that DAP means OPeNDAP. 
+   Configure takes either --enable-dap-opendap or --enable-dap-netcdf
+   bld/Makefile takes either DAP_OPENDAP=Y or DAP_NETCDF=Y (untested)
 
 K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages available:
    http://nco.sf.net#debian

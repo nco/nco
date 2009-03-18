@@ -2,21 +2,21 @@ nco (3.9.7-1) sid; urgency=low
 
   * new upstream version (improves GSL builds, ncap2 threading)
 
- -- Charlie Zender <zender@virga>  Thu, 29 Jan 2009 11:22:29 -0800
+ -- Charlie Zender <zender@neige.ess.uci.edu>  Wed, 18 Mar 2009 16:43:24 -0700
 
-nco (3.9.6-1) sid; urgency=medium
+nco (3.9.6-1) UNRELEASED; urgency=medium
 
   * new upstream version (fixes MSA bug, adds GSL)
 
  -- Charlie Zender <zender@uci.edu>  Thu, 22 Jan 2009 13:27:19 -0800
 
-nco (3.9.5-1) sid; urgency=low
+nco (3.9.5-1) UNRELEASED; urgency=low
 
   * new upstream version (MSA everywhere)
 
  -- Charlie Zender <zender@neige.ess.uci.edu>  Sun, 11 May 2008 17:39:52 +0200
 
-nco (3.9.4-1) sid; urgency=low
+nco (3.9.4-1) UNRELEASED; urgency=low
 
   * new upstream version (-3, -X, --msa_usr_rdr, ncap2 mask, WIN32)
 
