@@ -7,6 +7,9 @@
 #ifndef FMC_GSL_CLS_HH // Contents have not yet been inserted in current source file  
 #define FMC_GSL_CLS_HH
 
+// Only use when GSL is present and enabled
+#ifdef ENABLE_GSL
+
 #include <sstream>
 #include <string>
 #include <vector>
@@ -16,8 +19,6 @@
 #include <gsl/gsl_mode.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
-
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -145,5 +146,7 @@ static  var_sct *hnd_fnc_nd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_idd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_iid(HANDLE_ARGS);
 };
+
+#endif // !ENABLE_GSL
 
 #endif // FMC_GSL_CLS_HH

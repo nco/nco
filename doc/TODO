@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1042 2009-03-17 17:10:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1043 2009-03-18 23:23:35 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -676,7 +676,9 @@ nco961. Add bld/Makefile mechanism to specify SZ libs
 nco962. ncks print coords but not indices or names
 nco964. nco: fsync()?
 nco965. nco: dap in libnetcdf.a
-nco966. 
+nco966. ncap2 failure on silt (and only silt):
+        ncap2 -O -v -S /home/scapps/qscat/scripts/wnd_pfl/ncap2_wblpwr_truncated.nco /home/scapps/qscat/scripts/wnd_pfl/test.nc ~/out.nc
+nco967. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

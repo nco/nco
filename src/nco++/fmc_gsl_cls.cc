@@ -1,12 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.25 2009-03-17 17:10:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.26 2009-03-18 23:23:36 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
 /* Copyright (C) 1995--2009 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
-
-// Standard C++ headers
 
 #include "fmc_gsl_cls.hh"
 
@@ -1453,4 +1451,11 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
   return var_arr[1]; 
 } // end function hnd_fnc_idd
 
+#else // !ENABLE_GSL
+
+/* Dummy stub function so fmc_gsl_cls.o is not empty when GSL unavailable
+   Function should never be called */
+int gsl_dmm_stb(void);
+int gsl_dmm_stb(void){return 1;}
+ 
 #endif // !ENABLE_GSL
