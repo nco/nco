@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.493 2009-03-17 21:18:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.494 2009-03-18 15:39:22 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -39,9 +39,9 @@
 # cd ~/nco/bld;make GSL=Y;cd -	     # GSL support
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
 # cd ~/nco/bld;make MPI=Y;cd -       # MPI support
-# cd ~/nco/bld;make MPI_FAKE=Y;cd -  # MPI spoof
+# cd ~/nco/bld;make MPI_FAKE=Y;cd -  # Spoof MPI support
 # cd ~/nco/bld;make OMP=Y;cd -       # OpenMP support
-# cd ~/nco/bld;make OPTS=D;cd -      # "Debugging": Enable symbols for debugging
+# cd ~/nco/bld;make OPTS=D;cd -      # "Debugging": Enough symbols for debugging
 # cd ~/nco/bld;make OPTS=O;cd -      # "Optimize": For production (includes symbols)
 # cd ~/nco/bld;make OPTS=R;cd -      # "Regular": No optimization or debugging
 # cd ~/nco/bld;make OPTS=X;cd -      # "eXtreme": All debugging switches available
@@ -1751,7 +1751,7 @@ src_cln:
 	rm -f ${MDL_NCAP}
 # Targets in /usr/local
 sys: ${MDL_BIN_TRG}
-	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
+	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} ncap2 /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
 sys_cln:
 	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 
