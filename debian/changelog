@@ -2,7 +2,7 @@ nco (3.9.7-1) sid; urgency=low
 
   * new upstream version (improves GSL builds, ncap2 threading)
 
- -- Charlie Zender <zender@neige.ess.uci.edu>  Wed, 18 Mar 2009 16:43:24 -0700
+ -- Charlie Zender <zender@uci.edu>  Wed, 18 Mar 2009 16:43:24 -0700
 
 nco (3.9.6-1) UNRELEASED; urgency=medium
 
