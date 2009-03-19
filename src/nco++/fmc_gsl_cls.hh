@@ -7,6 +7,10 @@
 #ifndef FMC_GSL_CLS_HH // Contents have not yet been inserted in current source file  
 #define FMC_GSL_CLS_HH
 
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 // Only use when GSL is present and enabled
 #ifdef ENABLE_GSL
 
@@ -19,10 +23,6 @@
 #include <gsl/gsl_mode.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
-
-#ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
-#endif /* !HAVE_CONFIG_H */
 
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
