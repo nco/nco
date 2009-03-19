@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.26 2009-03-18 23:23:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.27 2009-03-19 15:34:09 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -828,11 +828,9 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   
   susg="usage: status="+sfnm+"(int lmax, double x, &var_in)";
   
-  if(args_nbr <3)
-    if(is_mtd)
-      err_prn(sfnm,styp+" requires two arguments\n"+susg); 
-    else
-      err_prn(sfnm,styp+" requires three arguments\n"+susg);    
+  if(args_nbr < 3){
+    if(is_mtd) err_prn(sfnm,styp+" requires two arguments\n"+susg); else err_prn(sfnm,styp+" requires three arguments\n"+susg);
+  }
   
   args_nbr=3; // Ignore extra arguments
   
@@ -930,7 +928,7 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   int jdx;
   int fdx=gpr_obj.type(); // very important 
   int args_nbr;
-  int args_in_nbr;
+  int args_in_nbr(-1); // CEWI
   nc_type type;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
@@ -965,15 +963,15 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     break;
   }
 
-  if(args_nbr <args_in_nbr)
+  if(args_nbr < args_in_nbr){
     if(is_mtd) err_prn(sfnm,styp+" requires "+nbr2sng(args_in_nbr-1)+ " arguments"); else err_prn(sfnm,styp+" requires "+ nbr2sng(args_in_nbr) + " arguments.");    
-  
+  }
+
   // init once we now num of args
   var_arr=(var_sct**)nco_malloc(sizeof(var_sct*)*args_in_nbr);
   var_arr_ptr=(var_sct***)nco_malloc(sizeof(var_sct**)*args_in_nbr);
-   
     
-  for(idx=0; idx<args_in_nbr ;idx++){     
+  for(idx=0;idx<args_in_nbr;idx++){     
     var_arr[idx]=walker.out(args_vtr[idx]);
     var_arr_ptr[idx]=&var_arr[idx];
   } 

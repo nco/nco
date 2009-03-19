@@ -1,9 +1,15 @@
-2009-03-18  Charlie Zender  <zender@uci.edu>
+2009-03-19  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_7;cvs tag -d nco-3_9_7-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.7 release"
 	  cvs tag -c nco-3_9_7;cvs tag -c nco-3_9_7-1
 	  Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
+
+	* Finally get gsl-config to work in automake
+
+	* Cleanup compiler warnings in fmc_gsl_cls.cc
+
+2009-03-18  Charlie Zender  <zender@uci.edu>
 
 	* Dummy stub function so fmc_gsl_cls.o not empty when GSL unavailable
 
