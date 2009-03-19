@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.122 2009-03-19 17:44:06 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.123 2009-03-19 18:05:42 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -179,7 +179,7 @@ cd ${DATA}
 # dget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1-1.dsc
 # apt-get source nco # Get package source
 DIST=sid sudo pbuilder build nco_3.9.7-1.dsc
-debsign -k6F635D10 /var/cache/pbuilder/result/nco_3.9.7-1_*.changes
+cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_3.9.7-1_*.changes
 lintian /var/cache/pbuilder/result/nco_3.9.7-1_*.deb
 # NB: Debian versions is a PITA, ensure RPMs build before uploading to Debian
 cd /var/cache/pbuilder/result;dupload -t mentors nco_3.9.7-1_*.changes
@@ -219,8 +219,9 @@ zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 
 # RPM builds as user
 # http://myy.helia.fi/~karte/linux/doc/rpm-build-as-user.html
+# sudo yum install netcdf netcdf-devel udunits udunits-devel gsl gsl-devel libdap libdap-devel libnc-dap libnc-dap-devel
 export rpm_root="${DATA}/rpm/nco"
-cd ~/nco;cvc;cvu
+#cd ~/nco;cvc;cvu # This risks committing unwanted *.[ch]pp files
 mkdir -p ${DATA}/rpm/nco/TMP ${DATA}/rpm/nco/BUILD
 /bin/rm -rf ${DATA}/nco-3.9.7 ${DATA}/nco-3.9.7* # Cleanup last build
 /bin/rm -r -f \
