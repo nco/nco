@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.89 2009-02-03 01:46:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.90 2009-03-19 16:14:13 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -175,7 +175,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",3);defdim(\"b\",4); a[\$a,\$b]=10;c=a(1,1);' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v c -s '%i' %tempf_00%";
-    $dsc_sng="Casting a var with same name a dim (failure expected on netcdf4 ncap81)";
+    $dsc_sng="Casting variable with same name as dimension (failure expected on netcdf4 ncap81)";
     ##TODO ncap81
     $tst_cmd[2] = "10";
     $tst_cmd[3] = "SS_OK";

@@ -15,8 +15,7 @@
 
 2009-03-17  Charlie Zender  <zender@uci.edu>
 
-	* Convert DAP to DAP_OPENDAP and add stub support for DAP_NETCDF
-	in configure.in
+	* Convert DAP to DAP_OPENDAP, add stub for DAP_NETCDF in configure.in
 
 	* Eliminate obsolete ${DAP_ROOT} lines from configure.in
 
