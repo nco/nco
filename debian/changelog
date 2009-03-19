@@ -1,10 +1,10 @@
-nco (3.9.7-1) sid; urgency=low
+nco (3.9.7-1) unstable; urgency=low
 
   * new upstream version (improves GSL builds, ncap2 threading)
 
  -- Charlie Zender <zender@uci.edu>  Wed, 18 Mar 2009 16:43:24 -0700
 
-nco (3.9.6-1) UNRELEASED; urgency=medium
+nco (3.9.6-1) UNRELEASED; urgency=low
 
   * new upstream version (fixes MSA bug, adds GSL)
 
