@@ -52,6 +52,7 @@ config.status: configure
 		--infodir=/usr/share/info \
 		--libdir=/usr/lib/nco \
 		--mandir=/usr/share/man \
+		--enable-gsl \
 		--disable-dap \
 		--disable-nco_cplusplus \
 		--disable-netcdf4 \

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.276 2009-03-17 23:14:44 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.277 2009-03-19 00:30:25 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -683,10 +683,17 @@ echo "########################################"
 nco_LIBS_no_GSL="${LIBS}"
 nco_CPPFLAGS_no_GSL="${CPPFLAGS}"
 AC_ARG_ENABLE(gsl,AS_HELP_STRING([--enable-gsl],[Build-in GSL support if possible [[default=yes]]]),enable_gsl=${enableval},enable_gsl=yes)
+if test "${enable_gsl}" = 'yes'; then
+    if which gsl-config > /dev/null; then
+	enable_gsl='yes'
+    else
+	AC_MSG_NOTICE([WARNING: Did not find 'gsl-config' command in your default path])
+	enable_gsl='no'
+    fi
+fi
 # Check for GSL libraries unless told not to
 if test "${enable_gsl}" != 'no'; then
-    AC_MSG_NOTICE([NB: 'gsl-config' command must be in default path])
-# fxm: make code path for when cannot find gsl-config
+# fxm: make non-fatal code path for when cannot find gsl-config
     if test -z "${GSL_ROOT}"; then
 	GSL_CONFIG='gsl-config'
 	GSL_ROOT="`gsl-config --prefix`"

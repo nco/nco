@@ -22550,11 +22550,18 @@ else
   enable_gsl=yes
 fi
 
+if test "${enable_gsl}" = 'yes'; then
+    if which gsl-config > /dev/null; then
+	enable_gsl='yes'
+    else
+	{ echo "$as_me:$LINENO: WARNING: Did not find 'gsl-config' command in your default path" >&5
+echo "$as_me: WARNING: Did not find 'gsl-config' command in your default path" >&6;}
+	enable_gsl='no'
+    fi
+fi
 # Check for GSL libraries unless told not to
 if test "${enable_gsl}" != 'no'; then
-    { echo "$as_me:$LINENO: NB: 'gsl-config' command must be in default path" >&5
-echo "$as_me: NB: 'gsl-config' command must be in default path" >&6;}
-# fxm: make code path for when cannot find gsl-config
+# fxm: make non-fatal code path for when cannot find gsl-config
     if test -z "${GSL_ROOT}"; then
 	GSL_CONFIG='gsl-config'
 	GSL_ROOT="`gsl-config --prefix`"

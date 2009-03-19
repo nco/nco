@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.89 2009-02-27 19:20:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.90 2009-03-19 00:30:25 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -37,12 +37,12 @@
    ncap2 -O -v -D 1 -s "one_dmn_rec_var(0)=one_dmn_rec_var(0)+1" ~/nco/data/in.nc ~/foo.nc
    ncap2 -O -v -D 1 -s "three_dmn_rec_var(0,,)=three_dmn_rec_var(0,,)+1" ~/nco/data/in.nc ~/foo.nc */
 
-/* temporary define --not for release */
-//#define HAVE_CONFIG_H 1
-
 #ifdef HAVE_CONFIG_H
-#include "config.h" /* Autotools tokens */
+# include "config.h" /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
+
+// Standard C++ headers
+#include <string>
 
 // Standard C headers
 #include <assert.h>  /* assert() debugging macro */
@@ -58,17 +58,17 @@
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
    fxm: I'm not sure what ALPHA and SGI do */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
-#endif /* !HAVE_GETOPT_H */ 
+# ifdef HAVE_GETOPT_H
+#  include <getopt.h>
+# endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
-// Standard C++ headers
-#include <string>
-
 /* 3rd party vendors */
+#ifdef ENABLE_GSL
+# include <gsl/gsl_errno.h>
+#endif // !ENABLE_GSL
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
 
@@ -78,15 +78,14 @@
 #include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-#ifdef ENABLE_GSL
-#include <gsl/gsl_errno.h>
-#endif // !ENABLE_GSL
-
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
 char **ncap_fl_spt_glb=NULL_CEWI; /* [fl] Script file */
+#ifdef ENABLE_GSL
 int ncap_gsl_mode_prec=0; /* Precision for GSL functions with mode_t argument (Airy, hypergeometric) */ 
+#endif // !ENABLE_GSL
+
 /* Forward Declaration */
 void pop_fmc_vtr(std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc);
 void ram_vars_add(prs_cls *prs_arg);
@@ -135,8 +134,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.89 2009-02-27 19:20:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.89 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.90 2009-03-19 00:30:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.90 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -445,25 +444,21 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&pck_obj);
   (void)pop_fmc_vtr(fmc_vtr,&srt_obj);
 
-
-  // split out gsl functions
+  // GSL functions
 #ifdef ENABLE_GSL
   char *str_ptr;
 
   gsl_cls gsl_obj(true); 
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
 
-  /* set gsl error handler */
+  /* Set GSL error handler */
   gsl_set_error_handler_off(); 
 
   /* initialize global from environment variable */  
-  if((str_ptr=getenv("GSL_PREC_MODE")) != NULL) 
-     ncap_gsl_mode_prec=(int)strtol(str_ptr,(char **)NULL,10);
+  if((str_ptr=getenv("GSL_PREC_MODE")) != NULL) ncap_gsl_mode_prec=(int)strtol(str_ptr,(char **)NULL,10);
 
-  if(ncap_gsl_mode_prec<0 || ncap_gsl_mode_prec >2)
-     ncap_gsl_mode_prec=0;
-
-#endif
+  if(ncap_gsl_mode_prec<0 || ncap_gsl_mode_prec>2) ncap_gsl_mode_prec=0;
+#endif // !ENABLE_GSL
   
   //Sort Vector 
   std::sort(fmc_vtr.begin(),fmc_vtr.end());
