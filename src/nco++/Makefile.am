@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.24 2009-02-10 01:11:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.25 2009-03-19 00:37:19 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -24,8 +24,8 @@ ncap2_LDADD = -lnco -lantlr
 # ncap2_LDADD = ../nco/.libs/libnco.dylib -lantlr
 
 if ENABLE_GSL
-GSL_LIB_ARG = $(shell 'gsl-config --libs')
-GSL_INC_ARG = $(shell 'gsl-config --cflags')
+GSL_LIB_ARG = $(shell gsl-config --libs)
+GSL_INC_ARG = $(shell gsl-config --cflags)
 ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
 INCLUDES = -I./ -I../nco ${GSL_INC_ARG}
 else

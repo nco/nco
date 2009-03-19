@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.45 2009-02-10 01:11:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.46 2009-03-19 00:37:19 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -232,8 +232,8 @@ ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc sym_cls.cc fmc_cls.cc
 ncap2_LDADD = -lnco -lantlr
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
 # ncap2_LDADD = ../nco/.libs/libnco.dylib -lantlr
-@ENABLE_GSL_TRUE@GSL_LIB_ARG = $(shell 'gsl-config --libs')
-@ENABLE_GSL_TRUE@GSL_INC_ARG = $(shell 'gsl-config --cflags')
+@ENABLE_GSL_TRUE@GSL_LIB_ARG = $(shell gsl-config --libs)
+@ENABLE_GSL_TRUE@GSL_INC_ARG = $(shell gsl-config --cflags)
 @ENABLE_GSL_FALSE@ncap2_LDFLAGS = -L../nco
 @ENABLE_GSL_TRUE@ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
 @ENABLE_GSL_FALSE@INCLUDES = -I./ -I../nco
