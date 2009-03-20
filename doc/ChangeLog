@@ -5,6 +5,8 @@
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.8 release"
 	  cvs tag -c nco-3_9_8;cvs tag -c nco-3_9_8-1
 
+	* Introduce full DAP-netCDF block to configure
+
 2009-03-19  Charlie Zender  <zender@uci.edu>
 
 	* Changes since nco-3_9_6: improve GSL-builds, ncap2 threading
