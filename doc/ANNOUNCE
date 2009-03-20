@@ -1,13 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.314 2009-03-18 23:48:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.315 2009-03-20 00:34:02 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.7 are ready. 
+The netCDF operators NCO version 3.9.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This version primarily improves documentation and build-ability
 of the GSL-library functions introduced in ncap2 version 3.9.6.
-A list of the functions/methods available in ncap2 is below.
+A list all ncap2 functions/methods appears below.
 
 http://nco.sf.net/nco.html#gsl
 
@@ -30,16 +30,16 @@ D. ncatted matches regular expressions to variable names
 E. CF-convention "coordinates" attribute strings with excessive
    whitespace work with ncks -c
 
-F. ncap2 has sort function
+F. ncap2 has sort() function
 
 G. Remove assumption that DAP means OPeNDAP. 
    Configure takes either --enable-dap-opendap or --enable-dap-netcdf
    bld/Makefile takes either DAP_OPENDAP=Y or DAP_NETCDF=Y (untested)
 
-K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages available:
+K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages:
    http://nco.sf.net#debian
 
-L. Pre-built (possibly out-of-date) Fedora and CentOS RPMs available:
+L. Pre-built (possibly out-of-date) Fedora and CentOS RPMs:
    http://nco.sf.net#rpm
 
 M. Find/add NCO tips and tricks on the NCO Wiki (thanks to Tom Roche):
@@ -47,7 +47,7 @@ M. Find/add NCO tips and tricks on the NCO Wiki (thanks to Tom Roche):
    http://nco.wiki.sourceforge.net
 
 N. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
-   SWAMP efficiently schedules and executes NCO scripts on remote servers: 
+   SWAMP efficiently schedules/executes NCO scripts on remote servers:  
 
    http://swamp.googlecode.com
 
@@ -61,7 +61,7 @@ O. Reminder: NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO currently supports netCDF4 atomic data types and compression.
-   NCO 3.9.7 with netCDF4 support should work with HDF5 1.8.1
+   NCO 3.9.8 with netCDF4 support should work with HDF5 1.8.1
    and netCDF4 final and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
