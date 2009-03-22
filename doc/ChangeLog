@@ -1,9 +1,13 @@
-2009-03-20  Charlie Zender  <zender@uci.edu>
+2009-03-21  Charlie Zender  <zender@uci.edu>
 
 	* Changes since nco-3_9_7: DAP-netCDF support, sort(), GSL distributions
 	  cd ~/nco;cvs tag -d nco-3_9_8;cvs tag -d nco-3_9_8-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.8 release"
 	  cvs tag -c nco-3_9_8;cvs tag -c nco-3_9_8-1
+
+	* More attempts to configure DAP-netCDF
+
+2009-03-20  Charlie Zender  <zender@uci.edu>
 
 	* Introduce full DAP-netCDF block to configure
 

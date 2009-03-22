@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.279 2009-03-20 23:06:19 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.280 2009-03-22 19:32:36 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -191,46 +191,44 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
+# Begin DAP-OPeNDAP (née DODS) support
+# Store pre-DAP LIBS value to restore from later
 echo "########################################"
 echo "# Testing for OPeNDAP (née DODS) support #"
 echo "########################################"
-# Begin DAP-OPeNDAP (née DODS) support
-# Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
-# Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
 
-# DAP_OPENDAP_ROOT is value of "${prefix}" set when building/installing OPeNDAP code
-# Scripts dap-config and ncdap-config are in ${prefix}/bin
-# Use them to find how to link for this particular build. jhrg 20050525
-
-# libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
-# definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
-# Sorry about version numbers being confusing... jhrg 20050603
 AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap-netcdf],[Build DAP-enabled clients with netCDF-provided DAP [[default=yes]]]),enable_dap_netcdf=${enableval},enable_dap_netcdf=yes)
 AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap-opendap],[Build DAP-enabled clients with OPeNDAP-provided DAP [[default=yes]]]),enable_dap_opendap=${enableval},enable_dap_opendap=yes)
 
-# Check to see if both DAP-OPeNDAP and DAP-netCDF are requested
+# Are both DAP-OPeNDAP and DAP-netCDF requested?
 echo "DEBUG: enable_dap_netcdf = ${enable_dap_netcdf} and enable_dap_opendap = ${enable_dap_opendap}"
 if (test "${enable_dap_netcdf}" != 'no' && test "${enable_dap_opendap}" != 'no'); then
 # Override OPeNDAP request
-    echo ""
     echo "WARNING: Requested both DAP-netCDF and DAP-OPeNDAP support---overriding OPeNDAP"
     echo "NCO will be built with DAP support from netCDF4, not from OPeNDAP"
-    echo ""
     enable_dap_opendap='no'
 fi # End test for DAP duplication
 
+# Begin DAP-netCDF
 # Check for DAP-netCDF libraries unless told not to
 if test "${enable_dap_netcdf}" != 'no'; then
     LIBS="${LIBS} -lcurl"
 else
     AC_MSG_WARN([DAP-netCDF support disabled (missing DAP library)])
 fi
-# End DAP-netCDF support
+# End DAP-netCDF
 
+# Begin DAP-OPeNDAP
 # Check for DAP-OPeNDAP libraries unless told not to
 if test "${enable_dap_opendap}" != 'no'; then
     if which ncdap-config > /dev/null; then
+# Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
+
+# DAP_OPENDAP_ROOT is value of "${prefix}" set to build OPeNDAP
+# Scripts dap-config and ncdap-config are in ${prefix}/bin
+# Use them to find how to link this particular build. jhrg 20050525
+
 # Place DAP netcdf.h path ahead of system netcdf.h path
 	CPPFLAGS="`ncdap-config --cflags` ${CPPFLAGS}"
 # Grab libraries DAP-OPeNDAP requires
@@ -239,27 +237,31 @@ if test "${enable_dap_opendap}" != 'no'; then
 	nc_dap_vrs_mjr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\1@'`
 	nc_dap_vrs_mnr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\2@'`
 	nc_dap_vrs_pch=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\3@'`
+# libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
+# definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
+# Sorry about version numbers being confusing... jhrg 20050603
 	if test ${nc_dap_vrs_mjr} -le 3 -a ${nc_dap_vrs_mnr} -le 6 -a ${nc_dap_vrs_pch} -le 1 ; then
 # OPeNDAP versions <= 3.6.1 do not support netCDF 3.6 
 	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
+# libtool cleans-up duplicate library links (e.g., dap, nc-dap) unless told not to
+# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
+	    LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
 	fi
+    else
+# ncdap-config not found
+	enable_dap_opendap='no'
     fi
-    
     AC_LANG_PUSH([C++])
     AC_CHECK_LIB([nc-dap],[nc_open],,enable_dap_opendap=no)
     AC_LANG_POP([C++])
-    
     if test "${enable_dap_opendap}" = 'no'; then
 	AC_MSG_WARN([DAP-OPeNDAP support disabled (missing OPeNDAP libraries)])
 	LIBS="${nco_LIBS_no_DAP}"
-    elif test "${enable_dap_opendap}" = 'yes'; then
-# libtool cleans up duplicate library links (e.g., dap, nc-dap) unless told not to
-# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
-	LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
     fi
 fi
-# End DAP-OPeNDAP support
+# End DAP-OPeNDAP
 
+# Begin DAP (all flavors)
 # Perform elaborate "or" test since autoconf dislikes [ -o ] syntax
 ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='no'
 enable_dap='no'
@@ -276,7 +278,7 @@ if test "x${ENABLE_DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
 # This would activate conditional GSL tests, if there were any
 #    AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 fi
-# End DAP support
+# End DAP (all flavors)
 
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
@@ -446,15 +448,22 @@ echo "DEBUG: After enable_dap_opendap section LIBS = ${LIBS}"
 ##################################################
 
 #AC_CHECK_LIB([C],[cosf])
+AC_CHECK_FUNC(getopt_long,,[nco_need_getopt_long='yes'])
 AC_CHECK_LIB([f95],[_g95_ac_array],,,[-lm])
 AC_CHECK_LIB([m],[sin])
 AC_CHECK_LIB([sunmath],[sinf])
-NCO_CHECK_FUNCS([nc_inq_format])
-NCO_CHECK_FUNCS([getopt getopt_long])
-AC_CHECK_FUNC(getopt_long,,[nco_need_getopt_long='yes'])
+AC_CHECK_LIB([intl],[gettext])
+AC_CHECK_LIB([resolv],[res_init])
+AC_CHECK_LIB([socket],[main])
+AC_CHECK_LIB([thread],[main])
+AC_CHECK_LIB([nsl],[main])
+AC_CHECK_LIB([nco],[nco_open],[enable_libnco=yes],,)
 AM_CONDITIONAL(NCO_NEED_GETOPT_LONG,test "${nco_need_getopt_long}" = 'yes')
+
 # NCO_CHECK_FUNC defines HAVE_xxxx = 0 and NEED_xxxx = 1 when xxxx is not found
 # Using if(NEED_xxxx) in CPP conditionals is easier than if (!HAVE_xxxx)
+NCO_CHECK_FUNCS([nc_inq_format])
+NCO_CHECK_FUNCS([getopt getopt_long])
 NCO_CHECK_FUNCS([atan2])
 NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
 NCO_CHECK_FUNCS([erff erfcf gammaf])
@@ -463,12 +472,6 @@ NCO_CHECK_FUNCS([ceilf floorf])
 NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
 NCO_CHECK_FUNCS([getopt_long])
 NCO_CHECK_FUNCS([strdup strcasecmp])
-AC_CHECK_LIB([intl],[gettext])
-AC_CHECK_LIB([resolv],[res_init])
-AC_CHECK_LIB([socket],[main])
-AC_CHECK_LIB([thread],[main])
-AC_CHECK_LIB([nsl],[main])
-AC_CHECK_LIB([nco],[nco_open],[enable_libnco=yes],,)
 
 echo "##########################################################"
 echo "#     Sorting out MacOSX build parameters                #"
@@ -478,16 +481,14 @@ if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
     echo "Phew, NOT MacOSX, adding -lnco to LIBS"
     LIBS="-lnco ${LIBS}"
 fi
+echo "DEBUG: After library checks LIBS=$LIBS"
 # End Library checks
 
-echo "DEBUG: After library checks LIBS=$LIBS"
-echo "DEBUG: enable_mpi = '${enable_mpi}'"
-
+# Begin ANTLR
 echo "#################################"
 echo "#  Testing for ANTLR support    #"
 echo "#################################"
 AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build nco++ directory and ncap2 [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
-
 if test "${C_INC}"; then
 # Prepend ${C_INC} to search path if present
 # C_INC refers to a directory that is guaranteed to be searched first
@@ -497,7 +498,6 @@ if test "${C_INC}"; then
 # Using C_INC is required on UCI's ESMF
     CPPFLAGS="-I${C_INC} ${CPPFLAGS}"
 fi
-
 AC_LANG_PUSH([C++])
 if test "${enable_ncoxx}" != 'no'; then
     if test "${ANTLR_ROOT}"; then
@@ -539,10 +539,13 @@ if test "${enable_ncoxx}" != 'no'; then
     fi
 fi
 if test "${enable_ncoxx}" != 'yes'; then
-    echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr C++ development package, e.g., apt-get install antlr libantlr-dev"
+    echo "INFO: ANTLR support not found. To build ncap2, please install ANTLR and its C++ development package, e.g., 'sudo aptitude install antlr libantlr-dev' or 'sudo yum install antlr antlr-c++-devel'"
 fi
 AC_LANG_POP([C++])
+# end ANTLR
 
+# Begin MPI
+echo "DEBUG: enable_mpi = '${enable_mpi}'"
 if test "${enable_mpi}" = 'yes'; then
     echo "##################################################"
     echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
@@ -623,13 +626,13 @@ if test "${enable_mpi}" = 'yes'; then
     enable_ncoxx='no'
     echo "### End MPI Checks ###"
 fi
-
 AM_CONDITIONAL(ENABLE_MPI,[test "${enable_mpi}" = 'yes'])
 AM_CONDITIONAL(ENABLE_LAM,[test "${enable_lam}" = 'yes'])
 AM_CONDITIONAL(ENABLE_MPICH2,[test "${enable_mpich2}" = 'yes'])
 AC_DEFINE_UNQUOTED([MPICH2_ROOT],["$MPICH2_ROOT"],[Location of mpich2 src root])
+# End MPI
 
-# Begin Fortran
+# Begin Fortran (obsolete)
 # If --enable-fortran define USE_FORTRAN_ARITHMETIC
 AC_ARG_ENABLE(fortran,AS_HELP_STRING([--enable-fortran],[Use Fortran arithmetic (deprecated) [[default=no]]]),enable_fortran=${enableval},enable_fortran=no)
 if test "${enable_fortran}" = 'yes'; then

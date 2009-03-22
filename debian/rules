@@ -36,13 +36,12 @@ else
 	CFLAGS += -O2
 endif
 
-# Explicitly set Debian system netCDF directories to override development netCDF
+# Set Debian-default netCDF directories to override development netCDF
 # installations in, e.g., /usr/local
 # 20070721: This may inadvertently cause libtool to set set rpath
-# In turn this generate linda warnings about hard-coded rpath
-#	NETCDF_INC='/usr/include' \
-#	NETCDF_LIB='/usr/lib' \
-
+# In turn this generates linda warnings about hard-coded rpath
+# Since their Debian packages exist, enable GSL and ncap2
+# Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, and UDUnits
 config.status: configure
 	dh_testdir
 	NETCDF_INC='/usr/include' \
@@ -53,7 +52,9 @@ config.status: configure
 		--libdir=/usr/lib/nco \
 		--mandir=/usr/share/man \
 		--enable-gsl \
-		--disable-dap \
+		--enable-nco++ \
+		--disable-dap-netcdf \
+		--disable-dap-opendap \
 		--disable-nco_cplusplus \
 		--disable-netcdf4 \
 		--disable-rpath \
