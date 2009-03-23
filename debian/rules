@@ -52,7 +52,7 @@ config.status: configure
 		--libdir=/usr/lib/nco \
 		--mandir=/usr/share/man \
 		--enable-gsl \
-		--enable-nco++ \
+		--enable-ncoxx \
 		--disable-dap-netcdf \
 		--disable-dap-opendap \
 		--disable-nco_cplusplus \
