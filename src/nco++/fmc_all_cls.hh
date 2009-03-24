@@ -20,7 +20,7 @@
 #include "vtl_cls.hh"
 
 #include "sym_cls.hh" // holder for float/double math function pointers
-
+#include "map_srt_tmp.hh" // template -used in srt_cls
 
 
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
@@ -181,14 +181,13 @@ public:
 //Sort Function /****************************************/
 class srt_cls: public vtl_cls {
 private:
-   enum {PSORT };
+   enum {PSORT,PDSORT };
    bool _flg_dbg;
 public:
   srt_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
-
 
 
 #endif // FMC_ALL_CLS_HH
