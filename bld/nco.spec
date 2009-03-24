@@ -1,7 +1,7 @@
 Name:           nco
 Version:        3.9.8
 Release:        1%{?dist}
-Summary:        Suite of programs for manipulating netCDF files
+Summary:        Programs that manipulate netCDF files
 Group:          Applications/Engineering
 License:        GPL3
 URL:            http://nco.sourceforge.net/
@@ -112,6 +112,9 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
+* Mon Mar 23 2009 Charlie Zender <zender@uci.edu> - 3.9.8-1
+- new upstream 3.9.8
+
 * Wed Mar 18 2009 Charlie Zender <zender@uci.edu> - 3.9.7-1
 - new upstream 3.9.7
 

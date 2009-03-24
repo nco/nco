@@ -1533,14 +1533,14 @@ Optional Features:
 			  (and sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
   --enable-dap-netcdf     Build DAP-enabled NCO with netCDF-provided DAP
-                          [default=yes]
+                          [default=no]
   --enable-dap-opendap    Build DAP-enabled NCO with OPeNDAP-provided DAP
                           [default=yes]
   --enable-netcdf4        Enable netCDF Version 4 features [default=no]
   --enable-ncoxx          Build libnco++ and ncap2 (same as enable-ncap2)
                           [default=yes]
-  --enable-ncap2          Build ncap2 and libnco++ and ncap2 (same as
-                          enable-ncoxx) [default=yes]
+  --enable-ncap2          Build ncap2 and libnco++ (same as enable-ncoxx)
+                          [default=yes]
   --enable-mpi            Build NCOs for Message Passing Interface (detects
                           LAM or MPICH2) [default=no]
   --enable-fortran        Use Fortran arithmetic (deprecated) [default=no]
@@ -22561,7 +22561,7 @@ echo "########################################"
 echo "#     Testing for GSL support          #"
 echo "########################################"
 # Begin GSL
-# Store pre-DAP LIBS value to restore from later
+# Store pre-GSL LIBS value to restore from later
 nco_LIBS_no_GSL="${LIBS}"
 nco_CPPFLAGS_no_GSL="${CPPFLAGS}"
 # Check whether --enable-gsl was given.
