@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.7 2009-02-27 16:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.8 2009-03-24 14:50:20 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "fmc_all_cls.hh"
+
 
 //Conversion Functions /***********************************/
  
@@ -512,7 +513,7 @@
 
     //n.b fargs is an imaginary node -and is ALWAYS present
     nbr_fargs=fargs->getNumberOfChildren();
-    
+
     // no arguments - bomb out
     if(!expr && nbr_fargs==0){    
         std::string serr;
@@ -1256,6 +1257,7 @@
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("sort" , this,PSORT)); 
+          fmc_vtr.push_back( fmc_cls("dsort" , this,PDSORT)); 
 
 			     		      
     }
@@ -1263,37 +1265,188 @@
   
   var_sct * srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("srt_cls::fnd");
-    int nbr_fargs;
+    int nbr_args;
     int fdx=fmc_obj.fdx();
-    var_sct *var1;
+    var_sct *var1=NULL_CEWI;
+    var_sct *var2=NULL_CEWI;
     std::string sfnm =fmc_obj.fnm(); //method name
+    std::string styp;
+    std::string var_nm;
+    std::string susg;
     prs_cls *prs_arg=walker.prs_arg;    
+    RefAST tr;
+    std::vector<RefAST> vtr_args; 
 
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren();
+    styp=(expr ? "method":"function");
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+        vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+    nbr_args=vtr_args.size();  
+
+
+
+           
+    if( fdx== PDSORT) {
+      if(nbr_args<2 && expr)
+        err_prn(sfnm,"method requires one argument"); 
+
+      if(nbr_args<2 && !expr)
+        err_prn(sfnm,"function requires two arguments"); 
+
+      var1=walker.out(vtr_args[0]);
+      var2=walker.out(vtr_args[1]);
+      var2=nco_var_cnf_typ(NC_INT, var2);
+      
+      if(prs_arg->ntl_scn){
+        var2=nco_var_free(var2);
+        return var1;    
+      }
+    }   
     
-    // no arguments - bomb out
-    if(!expr && nbr_fargs==0){    
-        std::string serr;
-	serr="Function "+sfnm + " has been called without an argument";               
-        err_prn(fnc_nm,serr);
+       
+    if(fdx==PSORT) {
+        
+      susg="usage: var_out=sort(var_exp,&var_map)\n";  
+      if(nbr_args==0)
+        err_prn(sfnm,styp+" has been called with no arguments"); 
+         
+      var1=walker.out(vtr_args[0]);
+       
+      if(nbr_args>1){
+       if(vtr_args[1]->getType() != CALL_REF ) 
+         err_prn(sfnm," second argument must be a call by reference variable\n"+susg);   
+       var_nm=vtr_args[1]->getFirstChild()->getText(); 
+       var2=prs_arg->ncap_var_init(var_nm,true); 
+      }
+      if(prs_arg->ntl_scn){
+	if(var2) var2=nco_var_free(var2); 	
+        return var1;
+      } 
     }
 
-    if(expr) 
-      var1=walker.out(expr);
-    else
-      var1=walker.out(fargs->getFirstChild());   
-
-    if(prs_arg->ntl_scn)
-      return var1;
-
-
-    // only one method at the moment
     switch(fdx) {
              
       case PSORT:
-	  var1=ncap_var_var_op(var1,(var_sct*)NULL,VSORT);  
-          break;   
+	   if(var2==NULL){
+	     var1=ncap_var_var_op(var1,(var_sct*)NULL,VSORT);  
+             break;   
+           }
+
+           // convert map to type int
+           var2=nco_var_cnf_typ(NC_INT, var2);  
+
+           // check if map is large enough  
+           if( var2->sz < var1->sz) {
+             ostringstream os; 
+	     os<<"Size of map  "<<var_nm<<"("<< var2->sz<<") is less than size of var(" << var1->sz<<")";
+             err_prn(sfnm,os.str());
+           }
+
+           switch (var1->type) {
+             case NC_DOUBLE: 
+	        (void)ncap_sort_and_map<double>(var1,var2);    
+                break;  
+             case NC_FLOAT: 
+	        (void)ncap_sort_and_map<float>(var1,var2);    
+                break;  
+             case NC_INT: 
+	        (void)ncap_sort_and_map<nco_int>(var1,var2);    
+                break;  
+             case NC_SHORT: 
+	        (void)ncap_sort_and_map<nco_short>(var1,var2);    
+                break;  
+             case NC_USHORT: 
+	        (void)ncap_sort_and_map<nco_ushort>(var1,var2);    
+                break;  
+             case NC_UINT: 
+	        (void)ncap_sort_and_map<nco_uint>(var1,var2);    
+                break;  
+             case NC_INT64: 
+	        (void)ncap_sort_and_map<nco_int64>(var1,var2);    
+                break;  
+             case NC_UINT64: 
+	        (void)ncap_sort_and_map<nco_uint64>(var1,var2);    
+                break;  
+             case NC_BYTE: 
+	        (void)ncap_sort_and_map<nco_byte>(var1,var2);    
+                break;  
+             case NC_UBYTE: 
+	        (void)ncap_sort_and_map<nco_ubyte>(var1,var2);    
+                break;  
+             case NC_CHAR: 
+	        (void)ncap_sort_and_map<char>(var1,var2);    
+                break;  
+             case NC_STRING: break; /* Do nothing */
+             
+            default: nco_dfl_case_nc_type_err(); break;
+            
+           } // end big switch
+ 
+           // Write out mapping
+           (void)prs_arg->ncap_var_write(var2,false);             
+           break; 
+
+
+      case PDSORT:{
+          char *cp_in;
+          char *cp_out;
+          long idx; 
+          long jdx;
+          long sz; 
+          long sz_idx;
+          long slb_sz;
+          long *lp_mp; 
+          var_sct *var_out;
+
+          var_out=nco_var_dpl(var1); 
+           
+
+          sz=var2->sz;
+          sz_idx=var_out->sz/var2->sz;
+
+          // var size must be exactly divisble by map size
+          if( var_out->sz % var2->sz != 0   ) {
+             ostringstream os; 
+	     os<<"Size of input var("<< var_out->sz<<") must be exactly divisble by map size(" << var2->sz<<")";
+             err_prn(sfnm,os.str());
+          }
+
+          slb_sz=nco_typ_lng(var_out->type);
+          cp_in=(char*)var1->val.vp; 
+
+          // var2 contains the mapping
+          (void)cast_void_nctype(NC_INT,&var2->val);
+          lp_mp=var2->val.lp; 
+         
+          for(idx=0; idx<sz_idx; idx++){ 
+            cp_out=(char*)var_out->val.vp+ (ptrdiff_t)idx*sz*slb_sz;              
+            for(jdx=0 ;jdx<sz; jdx++){
+              // do bounds checking for the mapping
+	      if(lp_mp[jdx] !=jdx && lp_mp[jdx] >=0 && lp_mp[jdx]< sz )
+                // copy element from var1 to var_out
+                (void)memcpy(cp_out+(ptrdiff_t)(lp_mp[jdx]*slb_sz),cp_in,slb_sz); 
+	      cp_in+=(ptrdiff_t)slb_sz;
+	    } // end jdx
+          } //end idx; 
+          
+         
+          var1=nco_var_free(var1);
+          (void)cast_nctype_void(NC_INT,&var2->val);
+          var2=nco_var_free(var2);
+             
+          var1=var_out;
+
+ 
+       } break;  
+
+
 
     }
 
