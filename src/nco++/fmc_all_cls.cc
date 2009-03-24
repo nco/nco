@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.8 2009-03-24 14:50:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.9 2009-03-24 15:37:32 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1326,7 +1326,8 @@
        var2=prs_arg->ncap_var_init(var_nm,true); 
       }
       if(prs_arg->ntl_scn){
-	if(var2) var2=nco_var_free(var2); 	
+	if(var2) 
+          prs_arg->ncap_var_write(var2,false);
         return var1;
       } 
     }
