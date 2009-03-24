@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.282 2009-03-24 16:49:59 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.283 2009-03-24 21:19:49 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -17,7 +17,7 @@
 # scp ~/nco/configure esmf.ess.uci.edu:nco
 # scp ~/nco/configure greenplanet.ess.uci.edu:nco
 
-# NB: Different versions of the GNU toolchain produce different (but equivalent)
+# NB: Different GNU toolchain versions produce different (though equivalent)
 # configure scripts from the same autotools inputs.
 # To keep proliferation of different but equivalent versions of automatically
 # generated scripts (e.g., configure, Makefile.in) from cluttering repository,
@@ -32,7 +32,16 @@
 # and we will update the config files from the upstream source,
 # ftp://ftp.gnu.org/pub/gnu/config/config.[guess,sub]
 
-# Process file with autoconf to produce configure script
+# Autotools glossary:
+# AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
+# AC_MSG_NOTICE Print MSG to output
+# AC_MSG_WARN Print MSG to output
+# AC_ARG_VAR Add token TKN to environment variables ingested by configure
+# AC_ARG_ENABLE(foo,...) Create configure option --enable-foo
+# AC_CHECK_LIB Find libXXX.a, prepend -lXXX to LIBS, define HAVE_LIBXXX
+# AC_CHECK_HEADER Find libXXX.a and add to linkage in order
+
+# Process configure input with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
 AC_INIT([NCO netCDF Operators],[3.9.8],[help@nco.sf.net],[nco])
 
@@ -167,7 +176,7 @@ AC_FUNC_STAT
 AC_FUNC_STRTOD
 
 # Check for library functions, if found then #define HAVE_FUNCTION in config.h
-AC_CHECK_FUNCS([floor canonicalize_file_name gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
+AC_CHECK_FUNCS([canonicalize_file_name floor gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
 
 # Check for header files
 AC_HEADER_STDC
@@ -191,13 +200,10 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
-# Begin DAP-OPeNDAP (née DODS) support
+# Begin DAP support
+echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
-echo "########################################"
-echo "# Testing for OPeNDAP (née DODS) support #"
-echo "########################################"
 nco_LIBS_no_DAP="${LIBS}"
-
 AC_ARG_ENABLE(dap-netcdf,AS_HELP_STRING([--enable-dap-netcdf],[Build DAP-enabled NCO with netCDF-provided DAP [[default=no]]]),enable_dap_netcdf=${enableval},enable_dap_netcdf=yes)
 AC_ARG_ENABLE(dap-opendap,AS_HELP_STRING([--enable-dap-opendap],[Build DAP-enabled NCO with OPeNDAP-provided DAP [[default=yes]]]),enable_dap_opendap=${enableval},enable_dap_opendap=yes)
 
@@ -213,15 +219,18 @@ fi # End test for DAP duplication
 # Begin DAP-netCDF
 # Check for DAP-netCDF libraries unless told not to
 if test "${enable_dap_netcdf}" != 'no'; then
-    LIBS="${LIBS} -lcurl"
-else
-    AC_MSG_WARN([DAP-netCDF support disabled (missing DAP library)])
+    echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
+    AC_CHECK_LIB([netcdf],[nc__opendap],,enable_dap_netcdf=no,[-lcurl])
+    if test "${enable_dap_netcdf}" = 'no'; then
+	AC_MSG_WARN([DAP-netCDF support through libnetCDF disabled (missing DAP library)])
+    fi
 fi
 # End DAP-netCDF
 
 # Begin DAP-OPeNDAP
 # Check for DAP-OPeNDAP libraries unless told not to
 if test "${enable_dap_opendap}" != 'no'; then
+    echo "Testing for DAP-OPeNDAP support (is DAP in libnc-dap.a and libdap++?)..."
     if which ncdap-config > /dev/null; then
 # Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
 
@@ -452,8 +461,9 @@ AC_CHECK_LIB([nsl],[main])
 AC_CHECK_LIB([nco],[nco_open],[enable_libnco=yes],,)
 AM_CONDITIONAL(NCO_NEED_GETOPT_LONG,test "${nco_need_getopt_long}" = 'yes')
 
-# NCO_CHECK_FUNC defines HAVE_xxxx = 0 and NEED_xxxx = 1 when xxxx is not found
-# Using if(NEED_xxxx) in CPP conditionals is easier than if (!HAVE_xxxx)
+# NCO_CHECK_FUNC, defined in acinclude.m4, defines HAVE_XXX = 0
+# _and_ NEED_XXX = 1 when function xxx() is not found
+# Using if(NEED_XXX) in CPP conditionals is easier than if (!HAVE_xxx)
 NCO_CHECK_FUNCS([nc_inq_format])
 NCO_CHECK_FUNCS([getopt getopt_long])
 NCO_CHECK_FUNCS([atan2])

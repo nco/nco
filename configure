@@ -16684,7 +16684,7 @@ fi
 
 
 
-for ac_func in floor canonicalize_file_name gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol
+for ac_func in canonicalize_file_name floor gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 { echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -18632,13 +18632,10 @@ rm -f conftest*
 fi
 
 
-# Begin DAP-OPeNDAP (née DODS) support
+# Begin DAP support
+echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
-echo "########################################"
-echo "# Testing for OPeNDAP (née DODS) support #"
-echo "########################################"
 nco_LIBS_no_DAP="${LIBS}"
-
 # Check whether --enable-dap-netcdf was given.
 if test "${enable_dap_netcdf+set}" = set; then
   enableval=$enable_dap_netcdf; enable_dap_netcdf=${enableval}
@@ -18666,16 +18663,91 @@ fi # End test for DAP duplication
 # Begin DAP-netCDF
 # Check for DAP-netCDF libraries unless told not to
 if test "${enable_dap_netcdf}" != 'no'; then
-    LIBS="${LIBS} -lcurl"
+    echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
+
+{ echo "$as_me:$LINENO: checking for nc__opendap in -lnetcdf" >&5
+echo $ECHO_N "checking for nc__opendap in -lnetcdf... $ECHO_C" >&6; }
+if test "${ac_cv_lib_netcdf_nc__opendap+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-    { echo "$as_me:$LINENO: WARNING: DAP-netCDF support disabled (missing DAP library)" >&5
-echo "$as_me: WARNING: DAP-netCDF support disabled (missing DAP library)" >&2;}
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnetcdf -lcurl $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char nc__opendap ();
+int
+main ()
+{
+return nc__opendap ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_netcdf_nc__opendap=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_netcdf_nc__opendap=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc__opendap" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_nc__opendap" >&6; }
+if test $ac_cv_lib_netcdf_nc__opendap = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNETCDF 1
+_ACEOF
+
+  LIBS="-lnetcdf $LIBS"
+
+else
+  enable_dap_netcdf=no
+fi
+
+    if test "${enable_dap_netcdf}" = 'no'; then
+	{ echo "$as_me:$LINENO: WARNING: DAP-netCDF support through libnetCDF disabled (missing DAP library)" >&5
+echo "$as_me: WARNING: DAP-netCDF support through libnetCDF disabled (missing DAP library)" >&2;}
+    fi
 fi
 # End DAP-netCDF
 
 # Begin DAP-OPeNDAP
 # Check for DAP-OPeNDAP libraries unless told not to
 if test "${enable_dap_opendap}" != 'no'; then
+    echo "Testing for DAP-OPeNDAP support (is DAP in libnc-dap.a and libdap++?)..."
     if which ncdap-config > /dev/null; then
 # Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
 
@@ -20330,8 +20402,9 @@ else
 fi
 
 
-# NCO_CHECK_FUNC defines HAVE_xxxx = 0 and NEED_xxxx = 1 when xxxx is not found
-# Using if(NEED_xxxx) in CPP conditionals is easier than if (!HAVE_xxxx)
+# NCO_CHECK_FUNC, defined in acinclude.m4, defines HAVE_XXX = 0
+# _and_ NEED_XXX = 1 when function xxx() is not found
+# Using if(NEED_XXX) in CPP conditionals is easier than if (!HAVE_xxx)
 
 
 

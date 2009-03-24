@@ -45,4 +45,3 @@ AC_CHECK_FUNC($ac_func,
               [AC_DEFINE_UNQUOTED([AS_TR_CPP([NEED_$ac_func])])])dnl
 done
 ])
-
