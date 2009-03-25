@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.153 2009-02-27 13:56:53 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.154 2009-03-25 16:44:56 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1873,19 +1873,30 @@ var=NULL_CEWI;
               
                if(!Nvar || Nvar && Nvar->flg_stt==1)
                  (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
-                 
-                           
+               
+                // var is defined and populated &  RHS is scalar -then stretch var to match
+               if(Nvar && Nvar->flg_stt==2) 
+                  if(var1->sz ==1 && Nvar->var->sz >1){
+                    var1=nco_var_cnf_typ(Nvar->var->type,var1);  
+                    (void)ncap_att_stretch(var1,Nvar->var->sz);
+                    
+                    // this is a special case -- if the RHS scalar has
+                    // no missing value then retain LHS missing value
+                    // else LHS missing value gets over written by RHS
+                    if(!var1->has_mss_val)
+                      (void)nco_mss_val_cp(Nvar->var,var1);   
+                  }
  
-               // See If we have to return something
-               if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
-                 var=NULL_CEWI;
-               else 
-                 var=nco_var_dpl(var1);               ;
-
-
                // Write var to disk
                (void)prs_arg->ncap_var_write(var1,bram);
                //(void)ncap_var_write_omp(var1,bram,prs_arg);
+
+                          
+                // See If we have to return something
+               if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
+                 var=NULL_CEWI;
+               else 
+                 var=prs_arg->ncap_var_init(var_nm,true);               ;
 
                          
        } // end action
