@@ -1,8 +1,12 @@
+2009-03-26  Charlie Zender  <zender@uci.edu>
+
+	* Place new NCO logo candidate, logo_pch, by Tony Freeman, on homepage
+
 2009-02-25  Henry Butowsky  <henryb@hush.com> 
-	* changed assign action so that non-scalar var can be redefined
-	  with a RHS scalar.
-	  e.g  n1=three_dmn_var_dbl;
-	       n1=20; // nb previously defined missing value for n1 is retained    
+
+	* Changed assign action non-scalar variables can be redefined
+	  with a RHS scalar, e.g., n1=three_dmn_var_dbl;n1=20; 
+	  n1 is now 3-D and retains previously defined missing value for n1
 
 2009-03-24  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.518 2009-03-18 23:48:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.519 2009-03-26 22:02:19 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -7,8 +7,8 @@ http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
-scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:/var/www/html/nco
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
+scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png dust.ess.uci.edu:/var/www/html/nco
 scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:/var/www/html/nco/src
 -->
@@ -92,10 +92,11 @@ Try to disable Spammers' machines:
 </td>
 
 <td>
+<img src="logo_pch.png" height=321 width=195 align=right>
 <img src="nco.png" height=180 width=180 align=right>
-The temporary NCO logo&hellip;<br>
-Have a better one?<br>
-Send it in!<br>
+The original NCO logo&hellip;and a new contender from Tony Freeman.<br>
+Which do you prefer? The Mandelblob or the patch?<br>
+Have a better one? Send it in!<br>
 </td>
 
 </table>
