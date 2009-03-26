@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.283 2009-03-24 21:19:49 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.284 2009-03-26 00:32:49 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -33,13 +33,15 @@
 # ftp://ftp.gnu.org/pub/gnu/config/config.[guess,sub]
 
 # Autotools glossary:
+# AC_ARG_ENABLE(foo,...) Create configure option --enable-foo
+# AC_ARG_VAR Add token TKN to environment variables ingested by configure
+# AC_CHECK_FUNC Find fnc_nm() in libXXX.a, define ${flg} accordingly
+# AC_CHECK_HEADER Find libXXX.a and add to linkage in order
+# AC_CHECK_LIB Find libXXX.a, prepend -lXXX to LIBS, define HAVE_LIBXXX
+# AC_CHECK_PROG Find whether prg_nm is on ${PATH}, define ${flg} accordingly
 # AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
 # AC_MSG_NOTICE Print MSG to output
 # AC_MSG_WARN Print MSG to output
-# AC_ARG_VAR Add token TKN to environment variables ingested by configure
-# AC_ARG_ENABLE(foo,...) Create configure option --enable-foo
-# AC_CHECK_LIB Find libXXX.a, prepend -lXXX to LIBS, define HAVE_LIBXXX
-# AC_CHECK_HEADER Find libXXX.a and add to linkage in order
 
 # Process configure input with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.495 2009-03-20 00:34:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.496 2009-03-26 00:32:49 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -8,9 +8,9 @@
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
 # Quickie test copies:
-# scp ~/nco/bld/Makefile cg1.calit2.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
+# scp ~/nco/bld/Makefile greenplanet.ps.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 
 # Development machines default configuration:

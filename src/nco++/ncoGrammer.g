@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.154 2009-03-25 16:44:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.155 2009-03-26 00:32:49 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -35,11 +35,8 @@ header {
     #include "ncoParser.hpp"
     #include "Invoke.hh"
 
-
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
-
-    
 }
 options {
 	language="Cpp";
@@ -356,8 +353,8 @@ public:
 public:
 	void uponEOF() /*throws TokenStreamException, CharStreamException*/ {
 		if ( selector.getCurrentStream() != lexer ) {
-			// don't allow EOF until main lexer.  Force the
-			// selector to retry for another token.
+            // Do not allow EOF until main lexer 
+            // Force selector to retry for another token
             parser->inc_vtr.pop_back();
             std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
             parser->setFilename(parser->inc_vtr.back());
@@ -466,7 +463,7 @@ protected BLASTOUT: .
           ostringstream os;
           char ch=LA(0);
           os << getFilename() << " line " << getLine() << ", column "<< getColumn() 
-             << ": unexpected character '" << ch << "'" << endl;
+             << ": unexpected character '" << ch << "'" <<std::endl;
 
           ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
@@ -481,7 +478,7 @@ UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
   
           ostringstream os;
           os << getFilename() << " line " << getLine() << ", column "<< getColumn() 
-             << ": unused operator '" << getText() << "'" << endl;
+             << ": unused operator '" << getText() << "'" <<std::endl;
 
           ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
@@ -1031,7 +1028,7 @@ const std::string fnc_nm("statements");
 static std::vector<std::string> lpp_vtr;
 }
     : blk:BLOCK { 
-       //cout <<"Num of Children in block="<<blk->getNumberOfChildren()<<endl;
+       //std::cout <<"Num of Children in block="<<blk->getNumberOfChildren()<<endl;
        iret=run_exe(blk->getFirstChild(),lpp_vtr.size() );
             
                 }
@@ -2114,7 +2111,7 @@ out returns [var_sct *var]
             //Call function
             var=we->vfnc()->fnd(tr ,args, *we,*this); 
           } else { 
-              cout << "Function  " << sfnm << " not found" << endl;
+              std::cout << "Function  " << sfnm << " not found" <<std::endl;
               exit(1);
           }
      }
@@ -2128,7 +2125,7 @@ out returns [var_sct *var]
             //Call function
             var=we->vfnc()->fnd(mtd ,margs, *we,*this); 
           } else { 
-              cout << "Method  " << sfnm << " not found" << endl;
+              std::cout << "Method  " << sfnm << " not found" <<std::endl;
               exit(1);
           }
      }
