@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.90 2009-03-19 00:30:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.91 2009-03-27 21:54:02 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
 /* Copyright (C) 1995--2009 Charlie Zender
-
+   
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
@@ -15,7 +15,7 @@
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
    HDF, netCDF, OPeNDAP, and UDUnits licenses.
-
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
@@ -56,7 +56,7 @@
 
 /* GNU getopt() is independent system header on FREEBSD, LINUX, LINUXALPHA, LINUXAMD, LINUXARM, WIN32
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
-   fxm: I'm not sure what ALPHA and SGI do */
+   fxm: Unsure what ALPHA and SGI do */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
@@ -96,7 +96,7 @@ main(int argc,char **argv)
   const char fnc_nm[]="main"; 
   FILE *yyin; /* file handle used to check file existance */
   int parse_antlr(std::vector<prs_cls> &prs_vtr ,char*,char*);
-
+  
   /* fxm TODO nco652 */
   double rnd_nbr(double);
   
@@ -132,35 +132,35 @@ main(int argc,char **argv)
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
-
-  const char * const att_nm_tmp="eulaVlliF_"; /* name used for netcdf4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.90 2009-03-19 00:30:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.90 $";
+  
+  const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.91 2009-03-27 21:54:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.91 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
-
+  
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct *dmn_new;
   dmn_sct *dmn_item;
-
-  // template lists
-    NcapVector<dmn_sct*> dmn_in_vtr;  
+  
+  // Template lists
+  NcapVector<dmn_sct*> dmn_in_vtr;  
   NcapVector<dmn_sct*> dmn_out_vtr;  
   
   // Holder for attributes and vectors
   NcapVarVector var_vtr;
   
-  // Holder for attributes and vectors in FIRST PARSE
+  // Holder for attributes and vectors in first parse
   NcapVarVector int_vtr;
   
-  //Method/function holder
+  // Method/function holder
   std::vector<fmc_cls> fmc_vtr;
-
-  //Holder for prs_cls --nb used for OPENMP
+  
+  // Holder for prs_cls, NB: used for OpenMP
   std::vector<prs_cls> prs_vtr;
-
+  
   extern char *optarg;
   extern int optind;
-
+  
   int abb_arg_nbr=0;
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
@@ -200,9 +200,9 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
-
+  
   aed_sct att_item; // Used to convert atts in vector to normal form  
-
+  
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
@@ -278,7 +278,7 @@ main(int argc,char **argv)
     /* NB: access to opt_crr is only valid when long_opt is detected */
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
     opt_crr=(char *)strdup(opt_lng[opt_idx].name);
-
+    
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
@@ -332,7 +332,7 @@ main(int argc,char **argv)
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 3)
 	err_prn(fnc_nm, "Incorrect abbreviation for file list\n");
-
+      
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -372,11 +372,11 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       /*
-      if(EXCLUDE_INPUT_LIST) 
+	if(EXCLUDE_INPUT_LIST) 
         err_prn(fnc_nm,std::string(prg_nm_get())+ " does not currently implement -x option\n");
       */
       break;
-
+      
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
@@ -408,9 +408,9 @@ main(int argc,char **argv)
     } /* end else */
   } /* end if */    
   
-
+  
   /* create function/method vector */
-
+  
   // Conversion functions
   cnv_cls cnv_obj(true);
   // Aggregate functions
@@ -431,7 +431,7 @@ main(int argc,char **argv)
   pck_cls pck_obj(true); 
   //Sort functions
   srt_cls srt_obj(true); 
-
+  
   //populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
   (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
@@ -443,37 +443,36 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&msk_obj);
   (void)pop_fmc_vtr(fmc_vtr,&pck_obj);
   (void)pop_fmc_vtr(fmc_vtr,&srt_obj);
-
+  
   // GSL functions
 #ifdef ENABLE_GSL
   char *str_ptr;
-
+  
   gsl_cls gsl_obj(true); 
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
-
+  
   /* Set GSL error handler */
   gsl_set_error_handler_off(); 
-
+  
   /* initialize global from environment variable */  
   if((str_ptr=getenv("GSL_PREC_MODE")) != NULL) ncap_gsl_mode_prec=(int)strtol(str_ptr,(char **)NULL,10);
-
+  
   if(ncap_gsl_mode_prec<0 || ncap_gsl_mode_prec>2) ncap_gsl_mode_prec=0;
 #endif // !ENABLE_GSL
   
   //Sort Vector 
   std::sort(fmc_vtr.begin(),fmc_vtr.end());
-
+  
   if(PRN_FNC_TBL){
     (void)fprintf(stdout,"Methods available in %s:\n",prg_nm_get());
     for(idx=0;idx<(signed int)fmc_vtr.size();idx++)
       std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
   }
-
-
+  
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
-
+  
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
@@ -493,7 +492,7 @@ main(int argc,char **argv)
   
   //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_in;idx++) dmn_in_vtr.push_back(nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm));
-
+  
   //sort vector
   dmn_in_vtr.sort();
   dmn_in=&dmn_in_vtr[0];
@@ -503,7 +502,7 @@ main(int argc,char **argv)
   
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-
+  
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
   
@@ -514,27 +513,26 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
-  (void)nco_enddef(out_id);
-    
   
-  /* Set arguments for  script execution nb all these are use as references  */
+  (void)nco_enddef(out_id);
+  
+  /* Set arguments for script execution NB: all these are used as references */
   prs_cls prs_arg(dmn_in_vtr,dmn_out_vtr,fmc_vtr,var_vtr,int_vtr);
-
+  
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
   //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_arg.r_out_id); /* Read Output file */
   rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_arg.r_out_id); /* Read Output file */
-
+  
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
   prs_arg.ATT_INHERIT=ATT_INHERIT;
-  prs_arg.NCAP_MPI_SORT= (thr_nbr>1 ? true :false );
-
+  prs_arg.NCAP_MPI_SORT=(thr_nbr>1 ? true:false);
+  
   prs_arg.dfl_lvl=dfl_lvl; /* [enm] Deflate level */
-
+  
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 || fl_out_fmt==NC_FORMAT_NETCDF4_CLASSIC);
 # else
@@ -542,48 +540,48 @@ main(int argc,char **argv)
 #endif
   prs_arg.ntl_scn=false;
   (void)ram_vars_add(&prs_arg);
-
+  
   prs_vtr.push_back(prs_arg); 
-
-  for(idx=1;idx < thr_nbr;idx++){
+  
+  for(idx=1;idx<thr_nbr;idx++){
     prs_cls prs_tmp(prs_arg);
-
-    // open files for each thread
+    
+    // Open files for each thread
     rcd=nco_open(fl_in,NC_NOWRITE,&prs_tmp.in_id);
-
-    // Handle to read output Only
+    
+    // Handle to read output only
     //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_tmp.r_out_id);
-   rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_tmp.r_out_id);
-   
+    rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_tmp.r_out_id);
+    
     // only one handle for reading & writing 
     prs_tmp.out_id=out_id;
-
+    
     prs_vtr.push_back(prs_tmp);
-  }
-
-   if(fl_spt_usr == NULL_CEWI){
+  } /* end loop over threads */
+  
+  if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0)
       err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
-      
-     /* Print all command-line scripts */
-     if(dbg_lvl_get() > 0){
-       for(idx=0;idx<nbr_spt;idx++) 
-         (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
-     } /* endif debug */
-      
-     /* Parse command line scripts */
-     fl_spt_usr=(char *)strdup("Command-line script");
-     }else{ /* ...endif command-line scripts, begin script file... */
-      /* Open script file for reading */
-      if((yyin=fopen(fl_spt_usr,"r")) == NULL_CEWI)
-        err_prn(fnc_nm,"Unable to open script file "+std::string(fl_spt_usr));
-      fclose(yyin); 
-    } /* end else script file */
     
+    /* Print all command-line scripts */
+    if(dbg_lvl_get() > 0){
+      for(idx=0;idx<nbr_spt;idx++) 
+	(void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
+    } /* endif debug */
+    
+    /* Parse command line scripts */
+    fl_spt_usr=(char *)strdup("Command-line script");
+  }else{ /* ...endif command-line scripts, begin script file... */
+    /* Open script file for reading */
+    if((yyin=fopen(fl_spt_usr,"r")) == NULL_CEWI)
+      err_prn(fnc_nm,"Unable to open script file "+std::string(fl_spt_usr));
+    fclose(yyin); 
+  } /* end else script file */
+  
   /* Invoke ANTLR parser */
   rcd=parse_antlr(prs_vtr,fl_spt_usr,spt_arg_cat);
-    
+  
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
   
@@ -624,7 +622,7 @@ main(int argc,char **argv)
   
   /* Free current list of all dimensions in input file */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_in);
-
+  
   /* Make list of dimensions of variables in xtr_lst */
   if(nbr_xtr > 0) dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
   
@@ -638,15 +636,15 @@ main(int argc,char **argv)
     (void)nco_dmn_dfn(fl_out,out_id,&dmn_new,1);
     (void)nco_dmn_xrf(dmn_new,dmn_item);
     (void)dmn_out_vtr.push_back(dmn_new);
-   }  /* end loop over idx */
+  }  /* end loop over idx */
   
   /* Free current list of all dimensions in input file */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_ass);
-
+  
   /* Dimensions for manually specified extracted variables are now defined in output file
      Add coordinate variables to extraction list
      If EXTRACT_ALL_COORDINATES then write associated dimension to output */
-
+  
   if(EXTRACT_ASSOCIATED_COORDINATES){
     for(idx=0;idx<dmn_in_vtr.size();idx++){
       if(!dmn_in_vtr[idx]->is_crd_dmn) continue;
@@ -664,7 +662,7 @@ main(int argc,char **argv)
       if(dmn_in_vtr[idx]->xrf){
 	for(jdx=0;jdx<nbr_xtr;jdx++)
 	  if(!strcmp(xtr_lst[jdx].nm,dmn_in_vtr[idx]->nm)) break;
-
+	
 	if(jdx != nbr_xtr) continue;
 	/* If coordinate is not on list then add it to extraction list */
 	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(nbr_xtr+1)*sizeof(nm_id_sct));
@@ -673,13 +671,13 @@ main(int argc,char **argv)
       } /* endif */
     } /* end loop over idx */	      
   } /* end if */ 
- 
+  
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
+  
   /* Add coordinates defined by CF convention */
   if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
-
+  
   /* Subtract list A again (it may contain re-defined coordinates) */
   if(nbr_xtr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
   
@@ -695,7 +693,7 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
-
+  
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
@@ -703,20 +701,20 @@ main(int argc,char **argv)
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
-
+  
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
     /* write misssing value contained inside var */
     if(var_vtr[idx]->xpr_typ == ncap_var) {
       var_sct *var_ref;
-
+      
       var_ref=var_vtr[idx]->var;
       rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
-        
+      
       /* skip RAM vars and orphaned vars */
       if(rcd!=NC_NOERR|| !var_ref->has_mss_val)
         continue;  
- 
+      
       /* Do netdf4 name hack */
       if(prs_arg.NCAP4_FILL){
         (void)nco_put_att(out_id,var_id,att_nm_tmp,var_ref->type,1,var_ref->mss_val.vp);
@@ -726,38 +724,38 @@ main(int argc,char **argv)
       }
       continue;
     }
-   
-  
+    
+    
     /* Skip misssing values for now !!! */
     if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) 
       continue;     
-  
+    
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
     att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
     att_item.sz=var_vtr[idx]->var->sz;
     att_item.type=var_vtr[idx]->var->type;
     att_item.val=var_vtr[idx]->var->val;
     att_item.mode=aed_overwrite;
-
+    
     if(!strcmp(att_item.var_nm,"global")) 
-       var_id=NC_GLOBAL;
+      var_id=NC_GLOBAL;
     else {
-       rcd=nco_inq_varid_flg(out_id,att_item.var_nm,&var_id);
-       if(rcd != NC_NOERR)  goto cln_up;
+      rcd=nco_inq_varid_flg(out_id,att_item.var_nm,&var_id);
+      if(rcd != NC_NOERR)  goto cln_up;
     }
     // Check size;
-      if(att_item.sz > NC_MAX_ATTRS ){ 
-	(void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximium %d\n",prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
-	goto cln_up;
-      }
+    if(att_item.sz > NC_MAX_ATTRS ){ 
+      (void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximium %d\n",prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
+      goto cln_up;
+    }
     /* NB: These attributes should probably be written prior to last data mode */
-
-
+    
+    
     (void)nco_aed_prc(out_id,var_id,att_item);
-
-    cln_up: att_item.var_nm=(char*)nco_free(att_item.var_nm);
-            att_item.att_nm=(char*)nco_free(att_item.att_nm);
-   }/* end for */
+    
+  cln_up: att_item.var_nm=(char*)nco_free(att_item.var_nm);
+    att_item.att_nm=(char*)nco_free(att_item.att_nm);
+  }/* end for */
   
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -776,7 +774,7 @@ main(int argc,char **argv)
     rcd=nco_close(prs_vtr[idx].in_id);
     rcd=nco_close(prs_vtr[idx].r_out_id);
   }
-
+  
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
   
@@ -820,13 +818,13 @@ main(int argc,char **argv)
       for(idx=0;idx< dmn_out_vtr.size();idx++)
 	(void)nco_dmn_free(dmn_out_vtr[idx]);
     }
-
+    
     /* Free var_vtr */
     if(var_vtr.size() > 0) { 
       for(idx=0; idx < var_vtr.size(); idx++)
 	delete var_vtr[idx];
     }  
-
+    
     /* Clear vectors */
     fmc_vtr.clear();
     cnv_obj.fmc_vtr.clear();
@@ -868,52 +866,40 @@ void
 ram_vars_add
 (prs_cls *prs_arg)
 {
-var_sct *var1;
-
-var1=ncap_sclr_var_mk(std::string("__BYTE"),nco_int(NC_BYTE));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__CHAR"),nco_int(NC_CHAR));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__SHORT"),nco_int(NC_SHORT));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__INT"),nco_int(NC_INT));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__FLOAT"),nco_int(NC_FLOAT));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__DOUBLE"),nco_int(NC_DOUBLE));
-prs_arg->ncap_var_write(var1,true);
-
+  var_sct *var1;
+  
+  var1=ncap_sclr_var_mk(std::string("__BYTE"),nco_int(NC_BYTE));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__CHAR"),nco_int(NC_CHAR));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__SHORT"),nco_int(NC_SHORT));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__INT"),nco_int(NC_INT));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__FLOAT"),nco_int(NC_FLOAT));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__DOUBLE"),nco_int(NC_DOUBLE));
+  prs_arg->ncap_var_write(var1,true);
+  
 #ifdef ENABLE_NETCDF4
-var1=ncap_sclr_var_mk(std::string("__UBYTE"),nco_int(NC_UBYTE));
-prs_arg->ncap_var_write(var1,true); 
-
-var1=ncap_sclr_var_mk(std::string("__USHORT"),nco_int(NC_USHORT));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__UINT"),nco_int(NC_UINT));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__INT64"),nco_int(NC_INT64));
-prs_arg->ncap_var_write(var1,true);
-
-var1=ncap_sclr_var_mk(std::string("__UINT64"),nco_int(NC_UINT64));
-prs_arg->ncap_var_write(var1,true);
+  var1=ncap_sclr_var_mk(std::string("__UBYTE"),nco_int(NC_UBYTE));
+  prs_arg->ncap_var_write(var1,true); 
+  
+  var1=ncap_sclr_var_mk(std::string("__USHORT"),nco_int(NC_USHORT));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__UINT"),nco_int(NC_UINT));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__INT64"),nco_int(NC_INT64));
+  prs_arg->ncap_var_write(var1,true);
+  
+  var1=ncap_sclr_var_mk(std::string("__UINT64"),nco_int(NC_UINT64));
+  prs_arg->ncap_var_write(var1,true);
 #endif // !ENABLE_NETCDF4
 } // end ram_vars_add()
-
-
-
-
-
-
-
-
-
-
-
-

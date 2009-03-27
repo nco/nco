@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.44 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.45 2009-03-27 21:54:02 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -111,17 +111,26 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     /* Request maximum number of threads permitted */
     thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
 
-    /* Disable threading on per-program basis to play nicely with others */
+    /* Restrict threading on per-program basis to play nicely with others */
     switch(prg_get()){
-      /* Operators with pre-set thread limit */
+      /* Operators with pre-set thread limit
+	 NB: All operators currently have default restrictions
+	 Only ncwa and ncap2 have a chance to scale on non-parallel filesystems
+	 ncap2 may, one day, see a big performance boost from threading
+	 However, as of 20090327, ncap2 threading may be buggy due to ANTLR
+	 Moreover, we want to prevent hogging processes on 32-way nodes
+	 until/unless clear benefits of threading are demonstrated. */
+    case ncap: 
+      /* 20090327: Restrict ncap2 to one thread until ANTLR threading resolved */
+      thr_nbr_max_fsh=1;
+      break;
     case ncecat: 
     case ncrcat: 
       /* ncecat and ncrcat are extremely I/O intensive 
 	 Maximum efficiency when one thread reads from input file while other writes to output file */
       thr_nbr_max_fsh=2;
       break;
-      /* Operators without maximum pre-set thread limit (NB: not all of these are threaded!) */
-    case ncap: 
+      /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncbo: 
     case ncatted: 
     case ncea:
@@ -131,6 +140,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     case ncra:
     case ncrename: 
     case ncwa: 
+      thr_nbr_max_fsh=4;
       break;
     default: nco_dfl_case_prg_id_err(); break;
     } /* end case */

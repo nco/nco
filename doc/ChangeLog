@@ -1,3 +1,11 @@
+2009-03-27  Charlie Zender  <zender@uci.edu>
+
+	* Restrict other operators to maximum four threads by default
+
+	* Turn-off ncap2 threading until ANTLR threading issues resolved
+
+	* Clean-up ncap2
+
 2009-03-26  Charlie Zender  <zender@uci.edu>
 
 	* Place new NCO logo candidate, logo_pch, by Tony Freeman, on homepage
