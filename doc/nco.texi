@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.531 2009-03-20 00:34:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.532 2009-03-28 00:25:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.8
 @set copyright-years 1995--2009
 @set update-year 2009
-@set update-date 18 March 2009
+@set update-date 27 March 2009
 @set update-month March 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -2110,7 +2110,7 @@ library (@pxref{Selecting Output File Format}).
 @cindex @code{--omp_num_threads @var{thr_nbr}}
 @cindex @code{-t @var{thr_nbr}}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncrcat},
 @command{ncwa}@*
 Short options: @samp{-t}@*
@@ -2131,6 +2131,7 @@ If not user-specified, OpenMP obtains @var{thr_nbr} from the
 @cindex @code{OMP_NUM_THREADS}
 @cindex @command{ncrcat}
 @cindex @command{ncwa}
+@cindex @command{ncap}
 @cindex @command{ncpdq}
 @cindex large datasets
 @acronym{NCO} may modify @var{thr_nbr} according to its own internal
@@ -2148,15 +2149,15 @@ In the future (perhaps with netCDF4), we hope to
 demonstrate significant threading improvements with operators
 like @code{ncrcat} by performing multiple simultaneous writes.
 
-Compute-intensive operators (@code{ncwa} and @code{ncpdq})
-are expected to benefit the most from threading.
-The greatest increases in throughput due to threading will occur on
-large dataset where each thread performs millions or more floating
-point operations.
-Otherwise, the system overhead of setting up threads may outweigh
-the theoretical speed enhancements due to @acronym{SMP} parallelism.
-However, we have not yet demonstrated that the @acronym{SMP} parallelism
-scales well beyone four threads for these operators.
+Compute-intensive operators (@code{ncap}, @code{ncwa} and @code{ncpdq}) 
+benefit most from threading.
+The greatest increases in throughput due to threading occur on
+large datasets where each thread performs millions, at least,
+of floating point operations.
+Otherwise, the system overhead of setting up threads probably outweighs 
+the speed enhancements due to @acronym{SMP} parallelism.
+However, we have not yet demonstrated that the @acronym{SMP} parallelism 
+scales well beyond four threads for these operators.
 Hence we restrict @math{@var{thr_nbr} <= 4} for all operators.
 We encourage users to play with these limits (edit file
 @file{nco_omp.c}) and send us their feedback.
@@ -2171,10 +2172,10 @@ based on this request.
 Users may keep track of this information by running the operator with
 @math{@var{dbg_lvl} > 0}.
 
-By default, operators with thread attach one global attribute to any
-file they create or modify. 
-The @code{nco_openmp_thread_number} global attribute contains the
-number of threads the operator used to process the input files.
+By default, threaded operators attach one global attribute,
+@code{nco_openmp_thread_number}, to any file they create or modify. 
+This attribute contains the number of threads the operator used to
+process the input files. 
 This information helps to verify that the answers with threaded and
 non-threaded operators are equal to within machine precision.
 @cindex benchmarks
@@ -5434,7 +5435,7 @@ SYNTAX
 @example
 ncap2 [-3] [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] [-F] [-f] [-L @var{dfl_lvl}] 
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-s @var{algebra}] [-S @var{fl.nco}] [-v]
+[-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
 @var{input-file} [@var{output-file}]  
 @end example
  

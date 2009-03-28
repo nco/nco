@@ -1,5 +1,7 @@
 2009-03-27  Charlie Zender  <zender@uci.edu>
 
+	* Add ncap2 threading to all docs: .texi, .man, ncap2 -r
+
 	* Restrict other operators to maximum four threads by default
 
 	* Turn-off ncap2 threading until ANTLR threading issues resolved

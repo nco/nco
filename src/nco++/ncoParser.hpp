@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.70 2009-02-27 16:54:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.71 2009-03-28 00:25:25 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -46,22 +46,19 @@
     #include "ncoParser.hpp"
     #include "Invoke.hh"
 
-
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-    
-
-#line 56 "ncoParser.hpp"
+#line 53 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
-#line 82 "ncoGrammer.g"
+#line 79 "ncoGrammer.g"
 
 
 public:
    std::vector<std::string> inc_vtr;
 
-#line 60 "ncoParser.hpp"
+#line 57 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:

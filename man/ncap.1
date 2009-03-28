@@ -23,6 +23,17 @@ ncap [-3] [-4] [-A] [-C] [-c] [-D
 .PP
 .B ncap 
 arithmetically processes a netCDF file.
+However, in about 2008
+.B ncap 
+was deprecated in favor of
+.B ncap2
+which far surpasses its capbilities.
+.B ncap will eventually be completely removed from
+.B NCO.
+It is currently retained only because it provides an easier-to-build 
+arithmetic operator than
+.B ncap2.
+
 The processing instructions are contained either in the 
 .B NCO
 script file 
@@ -75,7 +86,7 @@ ncap -s "T2=T*T" in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncap.1,v 1.10 2009-01-22 23:07:06 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncap.1,v 1.11 2009-03-28 00:25:25 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

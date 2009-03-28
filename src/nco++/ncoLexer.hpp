@@ -10,7 +10,7 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.72 2009-02-27 16:54:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.73 2009-03-28 00:25:25 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -46,16 +46,13 @@
     #include "ncoParser.hpp"
     #include "Invoke.hh"
 
-
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
 
-    
-
-#line 56 "ncoLexer.hpp"
+#line 53 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 340 "ncoGrammer.g"
+#line 337 "ncoGrammer.g"
 
 
 private:
@@ -75,8 +72,8 @@ public:
 public:
 	void uponEOF() /*throws TokenStreamException, CharStreamException*/ {
 		if ( selector.getCurrentStream() != lexer ) {
-			// don't allow EOF until main lexer.  Force the
-			// selector to retry for another token.
+            // Do not allow EOF until main lexer 
+            // Force selector to retry for another token
             parser->inc_vtr.pop_back();
             std::cout<<"Setting parser(filename)=" <<parser->inc_vtr.back()<<std::endl; 
             parser->setFilename(parser->inc_vtr.back());
@@ -88,7 +85,7 @@ public:
 	}
 
 
-#line 60 "ncoLexer.hpp"
+#line 57 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

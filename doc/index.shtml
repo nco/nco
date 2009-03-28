@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.519 2009-03-26 22:02:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.520 2009-03-28 00:25:19 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -82,7 +82,7 @@ Try to disable Spammers' machines:
 <li><a href="#RTFM">Documentation and User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#FAQ">FAQ</a></li>
-<li><a href="#HPCC">Using NCO at UCI, NCAR, and other HPCCs</a></li>
+<li><a href="#NCAR">Availability at UCI and NCAR</a></li>
 <li><a href="#BM">Benchmarks</a></li>
 <li><a href="#bld">Building from Source</a></li>
 <li><a href="#bug">Known Problems</a></li>
@@ -907,27 +907,23 @@ This list is for NCO-related announcements, not for questions.
 <hr></p>
 
 <!-- http://nco.sf.net#HPCC -->
+<!-- http://nco.sf.net#NCAR -->
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
-<p>Users at UC Irvine, NCAR, and SDSC <i>may</i> find pre-built,
+<p>Users at UC Irvine and NCAR <i>may</i> find pre-built,
 <i>almost</i> up-to-date NCO executables in the following locations.
 These executables are <i>unsupported</i> and are almost
 <i>guaranteed</i> to hail from different NCO versions and thus to
 behave slightly differently.
-(They are built from the main trunk, not a tagged version, and
-currently it is impossible to tell exactly what version they are). 
-Moreover they may be compiled with debugging enabled and thus may be
-<i>slower</i> than executables optimized for production use. 
+(They are built from the main trunk, not a tagged version).
 Users at NCAR should try the <i>supported</i> executables in
 <tt>/usr/local/bin</tt> first. 
 <ul>
-<li>ESS <tt>soot.ess.uci.edu</tt> (Linux 2.6.19): <tt>/home/zender/bin/LINUX</tt></li>
+<li>CGD network (Solaris 2.x): <tt>/home/zender/bin/SUNMP</tt></li>
+<li>ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
-<li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.6.19): <tt>/home/zender/bin/LINUXAMD64</tt></li>
-<li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
-<li>SCD <tt>blueice.ucar.edu</tt> (AIX 5.3): <tt>/usr/local/bin</tt></li>
-<li>SCD <tt>bluevista.ucar.edu</tt> (AIX 5.3): <tt>/usr/local/bin</tt></li>
-<li>SCD <tt>tempest.ucar.edu</tt> (IRIX 6.5): <tt>/usr/local/bin</tt></li>
+<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUXAMD64</tt></li>
+<li>SCD <tt>bluefire.ucar.edu</tt> (AIX 5.3): <tt>~zender/bin/AIX</tt></li>
 </ul>
 <hr></p>
 
