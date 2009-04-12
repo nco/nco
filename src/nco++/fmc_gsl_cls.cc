@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.28 2009-04-12 17:32:22 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.29 2009-04-12 17:38:07 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -2289,7 +2289,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       unsigned long int(*fnc_int)(const gsl_rng*,unsigned long int);
       
       fnc_int=gpr_obj.g_args().eru; 
-
+ 
 
       var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                        
 
@@ -2395,7 +2395,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       switch(fdx) {
        case  PGSL_RNG_MIN:
        case  PGSL_RNG_MAX:
-        return ncap_sclr_var_mk(static_cast<std::string>("~gsl2_functions"),(nc_type)NC_UINT,false);        
+        return ncap_sclr_var_mk(static_cast<std::string>("~gsl2_functions"),(nc_type)NC_DOUBLE,false);        
         break;
       
        case PGSL_RNG_NAME:
@@ -2412,11 +2412,11 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     switch(fdx){ 
            case PGSL_RNG_MIN:
              vlng= gsl_rng_min(ncap_rng);
-             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),static_cast<double>(vlng));
+             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),(double)(vlng));
              break;
            case PGSL_RNG_MAX:
              vlng= gsl_rng_max(ncap_rng);
-             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),static_cast<double>(vlng));
+             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),(double)(vlng));
              break;
            case PGSL_RNG_NAME:
 	    //var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_functions"),(nco_int)var1->nbr_dim);            
