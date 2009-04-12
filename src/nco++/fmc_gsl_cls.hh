@@ -24,6 +24,10 @@
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf.h>
 
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_randist.h>
+
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
@@ -37,8 +41,13 @@
 // Global variable initialized in ncap2.cc
 extern int ncap_gsl_mode_prec; /* Precision for GSL functions with mode_t argument (Airy, hypergeometric) */ 
 
-// Classify double-type arguments in handler function hnd_fnc_nd()
-enum { P1DBL, P1DBLMD, P2DBL, P2DBLMD,P3DBL, P3DBLMD, P4DBL, P4DBLMD };  
+
+
+// Classify double-type arguments in handler function hnd_fnc_nd(),hnd_fnc_rnd()
+enum { P1DBL,   P2DBL,   P3DBL,   P4DBL,  
+       P1DBLMD, P2DBLMD, P3DBLMD, P4DBLMD,  
+       P0DBLX,  P1DBLX,  P2DBLX,  P3DBLX,  P4DBLX, P5DBLX};  
+
 
 // Classify Bessel/Legendre methods in array function function hnd_fnc_iidpd()
 enum { PBESSEL, PLEGEND };
@@ -62,16 +71,50 @@ union f_unn{
    int (*addm)( double, double, gsl_mode_t,gsl_sf_result*);  
    int (*adddm)( double,double, double, gsl_mode_t,gsl_sf_result*);  
    int (*addddm)( double,double,double, double, gsl_mode_t,gsl_sf_result*);  
-
-   double (*bd)( double);
-   double (*bdd)(double, double);    
-   double (*bid)(int,double);
+   
    int (*bidpd)(int, double, double*); 
    int (*biidpd)(int, int, double, double*); 
    int (*biddpd)(int, double, double, double*); 
  
-   int (*cb)(bool);
+  
+   double (*cd)( double);
+   double (*cdd)(double, double);    
+   double (*cddd)(double, double,double);    
+   double (*cdddd)(double,double,double,double);    
+   double (*cddddd)(double, double,double,double,double);    
 
+   double (*cu)(unsigned);
+   double (*cud)(unsigned,double);
+   double (*cudd)(unsigned,double,double);
+   double (*cuu)(unsigned,unsigned); 
+   double (*cuuu)(unsigned,unsigned,unsigned); 
+   double (*cuuuu)(unsigned,unsigned,unsigned,unsigned); 
+   double (*cudu)(unsigned,double,unsigned);
+
+
+   double (*cr)(const gsl_rng*);
+   double (*crd)(const gsl_rng*,double);
+   double (*crdd)(const gsl_rng*,double, double);    
+   double (*crddd)(const gsl_rng*,double, double,double);    
+   double (*crdddd)(const gsl_rng*,double,double,double,double);    
+   double (*crddddd)(const gsl_rng*,double, double,double,double,double);    
+   double (*cru)(const gsl_rng*,unsigned);
+   double (*cruu)(const gsl_rng*,unsigned,unsigned);
+   double (*cruuu)(const gsl_rng*,unsigned,unsigned,unsigned);
+   
+   unsigned int (*dru)(const gsl_rng*,unsigned);
+   unsigned int (*druu)(const gsl_rng*,unsigned,unsigned);
+   unsigned int (*druuu)(const gsl_rng*,unsigned,unsigned,unsigned);
+   unsigned int (*drd)(const gsl_rng*,double);
+   unsigned int (*drdd)(const gsl_rng*,double,double);
+
+   unsigned long int (*er)(const gsl_rng*);
+   unsigned long int (*eru)(const gsl_rng*,unsigned long int);
+
+
+   double (*cid)(int,double);
+
+  //Return type int
   f_unn(   int (*a)( int,gsl_sf_result*) )            { ai=a; }
   f_unn(   int (*a)( unsigned int,gsl_sf_result*) )   { au=a; }
 
@@ -88,12 +131,43 @@ union f_unn{
   f_unn(   int (*a)(double,double,double,gsl_mode_t,gsl_sf_result*)){adddm=a; }  
   f_unn(   int (*a)(double,double,double,double,gsl_mode_t,gsl_sf_result*)){addddm=a; }  
 
-  f_unn(   double (*b)(double)     )    { bd=b; }
-  f_unn(   double (*b)( double,double) ) { bdd=b; }
-  f_unn(   double (*b)(int, double) )    { bid=b; }
   f_unn(   int (*b)(int, double, double*) ){ bidpd=b;} 
   f_unn(   int (*b)(int, int, double, double*) ){ biidpd=b;} 
   f_unn(   int (*b)(int, double, double, double*) ){ biddpd=b;} 
+
+  //Return type double
+  f_unn(   double (*c)(double)     )                   { cd=c; }
+  f_unn(   double (*c)( double,double) )               { cdd=c; }
+  f_unn(   double (*c)( double,double,double) )        { cddd=c; }
+  f_unn(   double (*c)( double,double,double,double) ) { cdddd=c; }
+  f_unn(   double (*c)( double,double,double,double,double) ) { cddddd=c; }
+  f_unn(   double (*c) (unsigned)       )                       {cu=c;}
+  f_unn(   double (*c) (unsigned,double)        )               {cud=c;}
+  f_unn(   double (*c) (unsigned,double,double)  )              {cudd=c;}
+  f_unn(   double (*c) (unsigned,unsigned)        )             {cuu=c;}
+  f_unn(   double (*c) (unsigned,unsigned,unsigned)  )          {cuuu=c;}
+  f_unn(   double (*c) (unsigned,unsigned,unsigned,unsigned))   {cuuuu=c;}
+  f_unn(   double (*c) (unsigned,double,unsigned) )             {cudu=c;} 
+
+
+
+  f_unn(   double (*c)(const gsl_rng*)     )                          { cr=c; }
+  f_unn(   double (*c)(const gsl_rng*,double)     )                   { crd=c; }
+  f_unn(   double (*c)(const gsl_rng*, double,double) )               { crdd=c; }
+  f_unn(   double (*c)(const gsl_rng*, double,double,double) )        { crddd=c; }
+  f_unn(   double (*c)(const gsl_rng*, double,double,double,double) ) { crdddd=c; }
+  f_unn(   double (*c)(const gsl_rng*, double,double,double,double,double) ) { crddddd=c; }
+  f_unn(   double (*c)(const gsl_rng*,unsigned)     )                 { cru=c; }
+
+  // return type unsigned int
+  f_unn(unsigned int (*d)(const gsl_rng*, unsigned) )                   { dru=d; }
+  f_unn(unsigned int (*d)(const gsl_rng*, unsigned,unsigned) )          { druu=d; }
+  f_unn(unsigned int (*d)(const gsl_rng*, unsigned,unsigned,unsigned) ) { druuu=d; }
+  f_unn(unsigned int (*d)(const gsl_rng*, double) )                     { drd=d; }
+  f_unn(unsigned int (*d)(const gsl_rng*, double,double) )              { drdd=d; }
+
+  f_unn(unsigned long int(*e)(const gsl_rng*))                          {er=e;}
+  f_unn(unsigned long int(*e)(const gsl_rng*,unsigned long int))        {eru=e;}
 
 };
 
@@ -137,6 +211,10 @@ private:
 
 public:
   gsl_cls(bool flg_dbg);
+  void gsl_ini_sf(void);
+  void gsl_ini_cdf(void);
+  void gsl_ini_ran(void);
+
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 static  var_sct *hnd_fnc_x(HANDLE_ARGS);
 static  var_sct *hnd_fnc_xd(HANDLE_ARGS);
@@ -145,7 +223,28 @@ static  var_sct *hnd_fnc_idpd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_nd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_idd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_iid(HANDLE_ARGS);
+static  var_sct *hnd_fnc_rnd(HANDLE_ARGS);
+static  var_sct *hnd_fnc_udrx(HANDLE_ARGS);
+static  var_sct *hnd_fnc_uerx(HANDLE_ARGS);
+
 };
+
+
+
+//GSL2  /****************************************/
+// nb For custom gsl functions that don't fit into gsl_cls 
+class gsl2_cls: public vtl_cls {
+private:
+   enum {PGSL_RNG_MIN,PGSL_RNG_MAX,PGSL_RNG_NAME };
+   bool _flg_dbg;
+public:
+  gsl2_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+
+};
+
+
+
 
 #endif // !ENABLE_GSL
 
