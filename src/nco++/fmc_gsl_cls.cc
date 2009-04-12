@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.27 2009-03-19 15:34:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.28 2009-04-12 17:32:22 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -13,10 +13,19 @@
 #ifdef ENABLE_GSL
 
 gsl_cls::gsl_cls(bool flg_dbg){
-
-  // Populate only on first constructor call
-  if(fmc_vtr.empty()){
+    // populate gpr_vtr
+  gsl_ini_sf();    // Special Functions 
+  gsl_ini_cdf();   // Cumulative distribution Functions
+  gsl_ini_ran();   // Random Number Generator functions
     
+  // Copy into fmc_cls vector  
+  for(unsigned idx=0;idx<gpr_vtr.size();idx++) 
+   fmc_vtr.push_back(fmc_cls(gpr_vtr[idx].fnm(),this,idx));
+ 
+}
+
+void gsl_cls::gsl_ini_sf(void) {
+
     // Airy Functions
     gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai",f_unn(gsl_sf_airy_Ai_e),hnd_fnc_nd,P1DBLMD));  
     gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi",f_unn(gsl_sf_airy_Bi_e),hnd_fnc_nd,P1DBLMD));  
@@ -328,11 +337,278 @@ gsl_cls::gsl_cls(bool flg_dbg){
     gpr_vtr.push_back(gpr_cls("gsl_sf_hzeta",f_unn(gsl_sf_hzeta_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_eta_int",f_unn(gsl_sf_eta_int_e),hnd_fnc_x,NC_INT));
     gpr_vtr.push_back(gpr_cls("gsl_sf_eta",f_unn(gsl_sf_eta),hnd_fnc_x,NC_DOUBLE));
+
+} // end gsl_ini_sf
+
+
+// Cumulative Distribution Functions
+void gsl_cls::gsl_ini_cdf(void){
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_ugaussian_P",f_unn(gsl_cdf_ugaussian_P),hnd_fnc_nd,P1DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_ugaussian_Q",f_unn(gsl_cdf_ugaussian_Q),hnd_fnc_nd,P1DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_ugaussian_Pinv",f_unn(gsl_cdf_ugaussian_Pinv),hnd_fnc_nd,P1DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_ugaussian_Qinv",f_unn(gsl_cdf_ugaussian_Qinv),hnd_fnc_nd,P1DBLX));
     
-    for(unsigned idx=0;idx<gpr_vtr.size();idx++) 
-      fmc_vtr.push_back(fmc_cls(gpr_vtr[idx].fnm(),this,idx));
-  }
-}
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gaussian_P",f_unn(gsl_cdf_gaussian_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gaussian_Q",f_unn(gsl_cdf_gaussian_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gaussian_Pinv",f_unn(gsl_cdf_gaussian_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gaussian_Qinv",f_unn(gsl_cdf_gaussian_Qinv),hnd_fnc_nd,P2DBLX));
+  
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gamma_P",f_unn(gsl_cdf_gamma_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gamma_Q",f_unn(gsl_cdf_gamma_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gamma_Pinv",f_unn(gsl_cdf_gamma_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gamma_Qinv",f_unn(gsl_cdf_gamma_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_cauchy_P",f_unn(gsl_cdf_cauchy_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_cauchy_Q",f_unn(gsl_cdf_cauchy_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_cauchy_Pinv",f_unn(gsl_cdf_cauchy_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_cauchy_Qinv",f_unn(gsl_cdf_cauchy_Qinv),hnd_fnc_nd,P2DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_laplace_P",f_unn(gsl_cdf_laplace_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_laplace_Q",f_unn(gsl_cdf_laplace_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_laplace_Pinv",f_unn(gsl_cdf_laplace_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_laplace_Qinv",f_unn(gsl_cdf_laplace_Qinv),hnd_fnc_nd,P2DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_rayleigh_P",f_unn(gsl_cdf_rayleigh_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_rayleigh_Q",f_unn(gsl_cdf_rayleigh_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_rayleigh_Pinv",f_unn(gsl_cdf_rayleigh_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_rayleigh_Qinv",f_unn(gsl_cdf_rayleigh_Qinv),hnd_fnc_nd,P2DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_chisq_P",f_unn(gsl_cdf_chisq_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_chisq_Q",f_unn(gsl_cdf_chisq_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_chisq_Pinv",f_unn(gsl_cdf_chisq_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_chisq_Qinv",f_unn(gsl_cdf_chisq_Qinv),hnd_fnc_nd,P2DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_exponential_P",f_unn(gsl_cdf_exponential_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_exponential_Q",f_unn(gsl_cdf_exponential_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_exponential_Pinv",f_unn(gsl_cdf_exponential_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_exponential_Qinv",f_unn(gsl_cdf_exponential_Qinv),hnd_fnc_nd,P2DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_exppow_P",f_unn(gsl_cdf_exppow_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_exppow_Q",f_unn(gsl_cdf_exppow_Q),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_tdist_P",f_unn(gsl_cdf_tdist_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_tdist_Q",f_unn(gsl_cdf_tdist_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_tdist_Pinv",f_unn(gsl_cdf_tdist_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_tdist_Qinv",f_unn(gsl_cdf_tdist_Qinv),hnd_fnc_nd,P2DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_P",f_unn(gsl_cdf_fdist_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Q",f_unn(gsl_cdf_fdist_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Pinv",f_unn(gsl_cdf_fdist_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Qinv",f_unn(gsl_cdf_fdist_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_P",f_unn(gsl_cdf_beta_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Q",f_unn(gsl_cdf_beta_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Pinv",f_unn(gsl_cdf_beta_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Qinv",f_unn(gsl_cdf_beta_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_P",f_unn(gsl_cdf_flat_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_Q",f_unn(gsl_cdf_flat_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_Pinv",f_unn(gsl_cdf_flat_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_Qinv",f_unn(gsl_cdf_flat_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_lognormal_P",f_unn(gsl_cdf_lognormal_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_lognormal_Q",f_unn(gsl_cdf_lognormal_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_lognormal_Pinv",f_unn(gsl_cdf_lognormal_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_lognormal_Qinv",f_unn(gsl_cdf_lognormal_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel1_P",f_unn(gsl_cdf_gumbel1_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel1_Q",f_unn(gsl_cdf_gumbel1_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel1_Pinv",f_unn(gsl_cdf_gumbel1_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel1_Qinv",f_unn(gsl_cdf_gumbel1_Qinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel2_P",f_unn(gsl_cdf_gumbel2_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel2_Q",f_unn(gsl_cdf_gumbel2_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel2_Pinv",f_unn(gsl_cdf_gumbel2_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_gumbel2_Qinv",f_unn(gsl_cdf_gumbel2_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_weibull_P",f_unn(gsl_cdf_weibull_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_weibull_Q",f_unn(gsl_cdf_weibull_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_weibull_Pinv",f_unn(gsl_cdf_weibull_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_weibull_Qinv",f_unn(gsl_cdf_weibull_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_P",f_unn(gsl_cdf_pareto_P),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_Q",f_unn(gsl_cdf_pareto_Q),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_Pinv",f_unn(gsl_cdf_pareto_Pinv),hnd_fnc_nd,P3DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_Qinv",f_unn(gsl_cdf_pareto_Qinv),hnd_fnc_nd,P3DBLX));
+
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_P",f_unn(gsl_cdf_logistic_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Q",f_unn(gsl_cdf_logistic_Q),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Pinv",f_unn(gsl_cdf_logistic_Pinv),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Qinv",f_unn(gsl_cdf_logistic_Qinv),hnd_fnc_nd,P2DBLX));
+
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_binomial_P",f_unn(gsl_cdf_binomial_P),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_binomial_Q",f_unn(gsl_cdf_binomial_Q),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_poisson_P",f_unn(gsl_cdf_poisson_P),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_poisson_Q",f_unn(gsl_cdf_poisson_Q),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_geometric_P",f_unn(gsl_cdf_geometric_P),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_geometric_Q",f_unn(gsl_cdf_geometric_Q),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_negative_binomial_P",f_unn(gsl_cdf_negative_binomial_P),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_negative_binomial_Q",f_unn(gsl_cdf_negative_binomial_Q),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_pascal_P",f_unn(gsl_cdf_pascal_P),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_pascal_Q",f_unn(gsl_cdf_pascal_Q),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_hypergeometric_P",f_unn(gsl_cdf_hypergeometric_P),hnd_fnc_nd,P1DBLX));
+//     gpr_vtr.push_back(gpr_cls("gsl_cdf_hypergeometric_Q",f_unn(gsl_cdf_hypergeometric_Q),hnd_fnc_nd,P1DBLX));
+
+
+
+
+
+
+} // end gsl_ini_cdf()
+
+
+// Random Number Generators
+void gsl_cls::gsl_ini_ran(void){
+ 
+  gpr_vtr.push_back(gpr_cls("gsl_ran_bernoulli",f_unn(gsl_ran_bernoulli),hnd_fnc_udrx,NC_DOUBLE));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_bernoulli_pdf",f_unn(gsl_ran_bernoulli_pdf),hnd_fnc_rnd,P1DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_beta",f_unn(gsl_ran_beta),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_beta_pdf",f_unn(gsl_ran_beta_pdf),hnd_fnc_nd,P3DBLX));
+
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial",f_unn(gsl_ran_binomial),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_knuth",f_unn(gsl_ran_binomial_knuth),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_tpe",f_unn(gsl_ran_binomial_tpe),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_pdf",f_unn(gsl_ran_binomial_pdf),hnd_fnc_rnd,P1DBLX));
+ 
+  gpr_vtr.push_back(gpr_cls("gsl_ran_exponential",f_unn(gsl_ran_exponential),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_exponential_pdf",f_unn(gsl_ran_exponential_pdf),hnd_fnc_nd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_exppow",f_unn(gsl_ran_exppow),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_exppow_pdf",f_unn(gsl_ran_exppow_pdf),hnd_fnc_nd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_cauchy",f_unn(gsl_ran_cauchy),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_cauchy_pdf",f_unn(gsl_ran_cauchy_pdf),hnd_fnc_nd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_chisq",f_unn(gsl_ran_chisq),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_chisq_pdf",f_unn(gsl_ran_chisq_pdf),hnd_fnc_nd,P2DBLX));
+
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_dirichlet",f_unn(gsl_ran_dirichlet),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_dirichlet_pdf",f_unn(gsl_ran_dirichlet_pdf),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_dirichlet_lnpdf",f_unn(gsl_ran_dirichlet_lnpdf),hnd_fnc_rnd,P1DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_erlang",f_unn(gsl_ran_erlang),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_erlang_pdf",f_unn(gsl_ran_erlang_pdf),hnd_fnc_nd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_fdist",f_unn(gsl_ran_fdist),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_fdist_pdf",f_unn(gsl_ran_fdist_pdf),hnd_fnc_nd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_flat",f_unn(gsl_ran_flat),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_flat_pdf",f_unn(gsl_ran_flat_pdf),hnd_fnc_nd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gamma",f_unn(gsl_ran_gamma),hnd_fnc_rnd,P2DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_int",f_unn(gsl_ran_gamma_int),hnd_fnc_udru,NC_UINT));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_pdf",f_unn(gsl_ran_gamma_pdf),hnd_fnc_nd,P3DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_mt",f_unn(gsl_ran_gamma_mt),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_knuth",f_unn(gsl_ran_gamma_knuth),hnd_fnc_rnd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian",f_unn(gsl_ran_gaussian),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_ratio_method",f_unn(gsl_ran_gaussian_ratio_method),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_ziggurat",f_unn(gsl_ran_gaussian_ziggurat),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_pdf",f_unn(gsl_ran_gaussian_pdf),hnd_fnc_nd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_ugaussian",f_unn(gsl_ran_ugaussian),hnd_fnc_rnd,P0DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_ugaussian_ratio_method",f_unn(gsl_ran_ugaussian_ratio_method),hnd_fnc_rnd,P0DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_ugaussian_pdf",f_unn(gsl_ran_ugaussian_pdf),hnd_fnc_nd,P1DBLX));
+
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_tail",f_unn(gsl_ran_gaussian_tail),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_tail_pdf",f_unn(gsl_ran_gaussian_tail_pdf),hnd_fnc_nd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_ugaussian_tail",f_unn(gsl_ran_ugaussian_tail),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_ugaussian_tail_pdf",f_unn(gsl_ran_ugaussian_tail_pdf),hnd_fnc_nd,P2DBLX));
+
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_bivariate_gaussian",f_unn(gsl_ran_bivariate_gaussian),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_bivariate_gaussian_pdf",f_unn(gsl_ran_bivariate_gaussian_pdf),hnd_fnc_nd,P5DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_landau",f_unn(gsl_ran_landau),hnd_fnc_rnd,P0DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_landau_pdf",f_unn(gsl_ran_landau_pdf),hnd_fnc_nd,P1DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_geometric",f_unn(gsl_ran_geometric),hnd_fnc_udrx,NC_DOUBLE));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_geometric_pdf",f_unn(gsl_ran_geometric_pdf),hnd_fnc_nd,P1DBLX));
+
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_hypergeometric",f_unn(gsl_ran_hypergeometric),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_hypergeometric_pdf",f_unn(gsl_ran_hypergeometric_pdf),hnd_fnc_rnd,P1DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gumbel1",f_unn(gsl_ran_gumbel1),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gumbel1_pdf",f_unn(gsl_ran_gumbel1_pdf),hnd_fnc_nd,P3DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gumbel2",f_unn(gsl_ran_gumbel2),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gumbel2_pdf",f_unn(gsl_ran_gumbel2_pdf),hnd_fnc_nd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_logistic",f_unn(gsl_ran_logistic),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_logistic_pdf",f_unn(gsl_ran_logistic_pdf),hnd_fnc_nd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_lognormal",f_unn(gsl_ran_lognormal),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_lognormal_pdf",f_unn(gsl_ran_lognormal_pdf),hnd_fnc_nd,P3DBLX));
+
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_logarithmic",f_unn(gsl_ran_logarithmic),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_logarithmic_pdf",f_unn(gsl_ran_logarithmic_pdf),hnd_fnc_nd,P1DBLX));
+
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_multinomial",f_unn(gsl_ran_multinomial),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_multinomial_pdf",f_unn(gsl_ran_multinomial_pdf),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_multinomial_lnpdf",f_unn(gsl_ran_multinomial_lnpdf),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_negative_binomial",f_unn(gsl_ran_negative_binomial),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_negative_binomial_pdf",f_unn(gsl_ran_negative_binomial_pdf),hnd_fnc_rnd,P1DBLX));
+
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_pascal",f_unn(gsl_ran_pascal),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_pascal_pdf",f_unn(gsl_ran_pascal_pdf),hnd_fnc_rnd,P1DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_pareto",f_unn(gsl_ran_pareto),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_pareto_pdf",f_unn(gsl_ran_pareto_pdf),hnd_fnc_nd,P3DBLX));
+
+  //gpr_vtr.pus h_back(gpr_cls("gsl_ran_poisson",f_unn(gsl_ran_poisson),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_poisson_array",f_unn(gsl_ran_poisson_array),hnd_fnc_rnd,P1DBLX));
+  //gpr_vtr.push_back(gpr_cls("gsl_ran_poisson_pdf",f_unn(gsl_ran_poisson_pdf),hnd_fnc_rnd,P1DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_rayleigh",f_unn(gsl_ran_rayleigh),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_rayleigh_pdf",f_unn(gsl_ran_rayleigh_pdf),hnd_fnc_nd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_rayleigh_tail",f_unn(gsl_ran_rayleigh_tail),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_rayleigh_tail_pdf",f_unn(gsl_ran_rayleigh_tail_pdf),hnd_fnc_nd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_tdist",f_unn(gsl_ran_tdist),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_tdist_pdf",f_unn(gsl_ran_tdist_pdf),hnd_fnc_nd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_laplace",f_unn(gsl_ran_laplace),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_laplace_pdf",f_unn(gsl_ran_laplace_pdf),hnd_fnc_nd,P2DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_levy",f_unn(gsl_ran_levy),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_levy_skew",f_unn(gsl_ran_levy_skew),hnd_fnc_rnd,P3DBLX));
+
+  gpr_vtr.push_back(gpr_cls("gsl_ran_weibull",f_unn(gsl_ran_weibull),hnd_fnc_rnd,P2DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_weibull_pdf",f_unn(gsl_ran_weibull_pdf),hnd_fnc_nd,P3DBLX));
+
+//   gpr_vtr.push_back(gpr_cls("gsl_ran_dir_2d",f_unn(gsl_ran_dir_2d),hnd_fnc_rnd,P1DBLX));
+//   gpr_vtr.push_back(gpr_cls("gsl_ran_dir_2d_trig_method",f_unn(gsl_ran_dir_2d_trig_method),hnd_fnc_rnd,P1DBLX));
+//   gpr_vtr.push_back(gpr_cls("gsl_ran_dir_3d",f_unn(gsl_ran_dir_3d),hnd_fnc_rnd,P1DBLX));
+//   gpr_vtr.push_back(gpr_cls("gsl_ran_dir_nd",f_unn(gsl_ran_dir_nd),hnd_fnc_rnd,P1DBLX));
+
+// gpr_vtr.push_back(gpr_cls("gsl_ran_shuffle",f_unn(gsl_ran_shuffle),hnd_fnc_rnd,P1DBLX));
+//gpr_vtr.push_back(gpr_cls("gsl_ran_choose",f_unn(gsl_ran_choose),hnd_fnc_rnd,P1DBLX));
+//gpr_vtr.push_back(gpr_cls("gsl_ran_sample",f_unn(gsl_ran_sample),hnd_fnc_rnd,P1DBLX));
+//gpr_vtr.push_back(gpr_cls("gsl_ran_discrete_t",f_unn(gsl_ran_discrete_t),hnd_fnc_rnd,P1DBLX));
+//gpr_vtr.push_back(gpr_cls("gsl_ran_discrete_free",f_unn(gsl_ran_discrete_free),hnd_fnc_rnd,P1DBLX));
+//gpr_vtr.push_back(gpr_cls("gsl_ran_discrete",f_unn(gsl_ran_discrete),hnd_fnc_rnd,P1DBLX));
+//gpr_vtr.push_back(gpr_cls("gsl_ran_discrete_pdf",f_unn(gsl_ran_discrete_pdf),hnd_fnc_rnd,P1DBLX));
+
+
+
+  // functions from gsl_rng.h
+  gpr_vtr.push_back(gpr_cls("gsl_rng_get",f_unn(gsl_rng_get),hnd_fnc_uerx,NC_NAT));
+  gpr_vtr.push_back(gpr_cls("gsl_rng_uniform",f_unn(gsl_rng_uniform),hnd_fnc_rnd,P0DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_rng_uniform_pos",f_unn(gsl_rng_uniform_pos),hnd_fnc_rnd,P0DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_rng_uniform_int",f_unn(gsl_rng_uniform_int),hnd_fnc_uerx,NC_UINT));
+
+
+
+
+
+
+
+
+
+} // gsl_ini_ran()
+
 
 var_sct * gsl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gsl_cls::fnd");
@@ -945,20 +1221,29 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   switch(fdx) {
   case P1DBLMD:
   case P1DBL:
+  case P1DBLX:
     args_in_nbr=1;
     break;    
   case P2DBLMD:
   case P2DBL:
+  case P2DBLX:
     args_in_nbr=2;
     break;    
   case P3DBLMD:
   case P3DBL:
+  case P3DBLX:
     args_in_nbr=3;
     break;    
   case P4DBLMD:
   case P4DBL:
+  case P4DBLX:
     args_in_nbr=4;
     break;    
+  
+  case P5DBLX:
+    args_in_nbr=5;  
+    break;
+
   default:
     break;
   }
@@ -1054,6 +1339,27 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
 	    dp[0][jdx]=rslt.val;      
       }           
     } break;
+
+
+    case P1DBLX: {
+      
+      double (*fnc_dbl)(double);       
+      fnc_dbl=gpr_obj.g_args().cd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]= (*fnc_dbl)(dp[0][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+
+	  if(dp[0][jdx] != mss_val_dbl )
+	  // note fnc_dbl returns a double
+	    dp[0][jdx]=(*fnc_dbl)(dp[0][jdx]);
+
+      }           
+    } break;
+
       
     case P1DBLMD: {
       
@@ -1096,6 +1402,25 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
 	    dp[0][jdx]=rslt.val;      
       }           
     } break;
+
+    case P2DBLX: {
+      
+      double (*fnc_dbl)(double,double);       
+      fnc_dbl=gpr_obj.g_args().cdd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  if(dp[0][jdx]==mss_val_dbl || dp[1][jdx]==mss_val_dbl )
+	    dp[0][jdx]=mss_val_dbl;
+	  else
+	    dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx]);
+      }           
+    } break;
+
       
     case P2DBLMD: {
       
@@ -1141,6 +1466,30 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
 	    dp[0][jdx]=rslt.val;      
       }           
     } break;
+
+    case P3DBLX: {
+      
+      double (*fnc_dbl)(double, double,double);       
+      fnc_dbl=gpr_obj.g_args().cddd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx],dp[2][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  // note fnc_dbl return status flag, if 0 then no error
+	  if(dp[0][jdx] == mss_val_dbl || 
+	     dp[1][jdx] == mss_val_dbl ||
+	     dp[2][jdx] == mss_val_dbl)
+ 
+            dp[0][jdx]=mss_val_dbl; 
+	  else
+	    dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx],dp[2][jdx]);
+      }           
+    } break;
+
+
 
     case P3DBLMD: {
       int (*fnc_int)(double, double,double, gsl_mode_t,gsl_sf_result*);       
@@ -1191,6 +1540,32 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
       
     } break;
 
+     
+    case P4DBLX: {
+      
+      double (*fnc_dbl)(double, double,double,double);       
+      fnc_dbl=gpr_obj.g_args().cdddd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  if(dp[0][jdx] == mss_val_dbl || 
+	     dp[1][jdx] == mss_val_dbl ||
+	     dp[2][jdx] == mss_val_dbl ||
+	     dp[3][jdx] == mss_val_dbl 
+            ) dp[0][jdx]=mss_val_dbl;       
+	  else   
+	    dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx]);
+
+      }           
+      
+    } break;
+
+
+
     case P4DBLMD: {
       
       int (*fnc_int)(double, double,double,double, gsl_mode_t,gsl_sf_result*);       
@@ -1215,6 +1590,33 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
       }           
       
     } break;
+
+
+    // whew --five double arguments only one case here
+    case P5DBLX: {
+      
+      double (*fnc_dbl)(double, double,double,double,double);       
+      fnc_dbl=gpr_obj.g_args().cddddd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx],dp[4][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  if(dp[0][jdx] == mss_val_dbl || 
+	     dp[1][jdx] == mss_val_dbl ||
+	     dp[2][jdx] == mss_val_dbl ||
+	     dp[3][jdx] == mss_val_dbl ||
+	     dp[4][jdx] == mss_val_dbl 
+            ) dp[0][jdx]=mss_val_dbl;       
+	  else   
+	    dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx],dp[4][jdx]);
+
+      }           
+      
+    } break;
+
       
     default: break;
     }// end big switch
@@ -1448,6 +1850,606 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
   
   return var_arr[1]; 
 } // end function hnd_fnc_idd
+
+
+var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_rnd");
+  int idx;
+  int jdx;
+  int fdx=gpr_obj.type(); // very important 
+  int args_nbr;
+  int args_in_nbr(-1); // CEWI
+  nc_type type;
+  std::string styp=(is_mtd ? "method":"function");
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var_ret; 
+  var_sct **var_arr;
+  var_sct ***var_arr_ptr;
+  // GSL random Number stuff
+  gsl_rng *ncap_rng;
+
+  // initialize 
+  ncap_rng=gsl_rng_alloc(gsl_rng_default);  
+
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  type=gpr_obj.type();  
+  
+  args_nbr=args_vtr.size();
+  
+  switch(fdx) {
+  case P0DBLX:
+  case P1DBLX:
+    args_in_nbr=1;
+    break;    
+  case P2DBLX:
+    args_in_nbr=2;
+    break;    
+  case P3DBLX:
+    args_in_nbr=3;
+    break;    
+
+  default:
+    break;
+  }
+
+  if(args_nbr < args_in_nbr){
+    if(is_mtd) err_prn(sfnm,styp+" requires "+nbr2sng(args_in_nbr-1)+ " arguments"); else err_prn(sfnm,styp+" requires "+ nbr2sng(args_in_nbr) + " arguments.");    
+  }
+
+  // init once we now num of args
+  var_arr=(var_sct**)nco_malloc(sizeof(var_sct*)*args_in_nbr);
+  var_arr_ptr=(var_sct***)nco_malloc(sizeof(var_sct**)*args_in_nbr);
+    
+  for(idx=0;idx<args_in_nbr;idx++){     
+    var_arr[idx]=walker.out(args_vtr[idx]);
+    var_arr_ptr[idx]=&var_arr[idx];
+  } 
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+
+    if(args_in_nbr >1 )
+    // nb ncap_var_att_arr_cnf() frees up sct's in var_att_ptr    
+      var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );     
+    else
+      var_ret=var_arr[0];
+  
+    if(!var_ret->undefined)
+      var_ret=nco_var_cnf_typ(NC_DOUBLE,var_ret);
+    
+    return var_ret;
+  } 
+  
+  for(idx=0 ; idx<args_in_nbr ; idx++){
+    // convert all to type double
+    var_arr[idx]=nco_var_cnf_typ(NC_DOUBLE,var_arr[idx]);
+    // refrsh var pointers
+    var_arr_ptr[idx]=&var_arr[idx];
+  }
+  
+
+  if(args_in_nbr >1)
+    // make variables conform  
+    (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,args_in_nbr );
+  
+  // do heavy lifting       
+  {
+    bool has_mss_val=false;
+    int sz;
+    double **dp;
+    double mss_val_dbl=0.0;
+              
+    gsl_mode_t mde_t=ncap_gsl_mode_prec; // initialize local from global variable */
+    gsl_sf_result rslt;  /* structure for result from gsl lib call */
+
+    dp=(double**)nco_malloc(sizeof(double*)*args_in_nbr);
+    
+    // assume from here on that args conform
+    sz=var_arr[0]->sz;
+    
+    for(idx=0 ; idx<args_in_nbr ; idx++){
+      (void)cast_void_nctype(NC_DOUBLE,&(var_arr[idx]->val));                  
+      dp[idx]=var_arr[idx]->val.dp;
+    }  
+    
+    has_mss_val=false;  
+    for(idx=0 ; idx<args_in_nbr ;idx++) 
+      if(var_arr[idx]->has_mss_val){
+	has_mss_val=true; 
+	(void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->mss_val);
+	mss_val_dbl=var_arr[idx]->mss_val.dp[0]; 
+	(void)cast_nctype_void(NC_DOUBLE,&(var_arr[idx]->mss_val));
+	break;
+      } 
+    
+
+
+    switch(fdx){
+
+      
+      // no double argument
+    case P0DBLX: {
+      
+      double (*fnc_dbl)(const gsl_rng*);       
+      fnc_dbl=gpr_obj.g_args().cr;  
+      
+      // no need to worry about missing values here !! 
+      for(jdx=0;jdx<sz;jdx++) 
+	dp[0][jdx]= (*fnc_dbl)(ncap_rng);
+ 
+    } break;
+
+      
+      // one double argument
+    case P1DBLX: {
+      
+      double (*fnc_dbl)(const gsl_rng*,double);       
+      fnc_dbl=gpr_obj.g_args().crd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]= (*fnc_dbl)(ncap_rng,dp[0][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  if(dp[0][jdx] != mss_val_dbl )
+	  // note fnc_dbl returns a double
+	    dp[0][jdx]=(*fnc_dbl)(ncap_rng,dp[0][jdx]);
+
+      }           
+    } break;
+
+    // two double argument
+    case P2DBLX: {
+      
+      double (*fnc_dbl)(const gsl_rng*,double,double);       
+      fnc_dbl=gpr_obj.g_args().crdd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]=(*fnc_dbl)(ncap_rng,dp[0][jdx],dp[1][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  if(dp[0][jdx]==mss_val_dbl || dp[1][jdx]==mss_val_dbl )
+	    dp[0][jdx]=mss_val_dbl;
+	  else
+	    dp[0][jdx]=(*fnc_dbl)(ncap_rng,dp[0][jdx],dp[1][jdx]);
+      }           
+    } break;
+
+
+
+    // Three double args    
+    case P3DBLX: {
+      
+      double (*fnc_dbl)(const gsl_rng*,double, double,double);       
+      fnc_dbl=gpr_obj.g_args().crddd;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[0][jdx]=(*fnc_dbl)(ncap_rng,dp[0][jdx],dp[1][jdx],dp[2][jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  // note fnc_dbl return status flag, if 0 then no error
+	  if(dp[0][jdx] == mss_val_dbl || 
+	     dp[1][jdx] == mss_val_dbl ||
+	     dp[2][jdx] == mss_val_dbl)
+ 
+            dp[0][jdx]=mss_val_dbl; 
+	  else
+	    dp[0][jdx]=(*fnc_dbl)(ncap_rng,dp[0][jdx],dp[1][jdx],dp[2][jdx]);
+      }           
+    } break;
+
+      
+    default: break;
+
+    }// end big switch
+    
+    for(idx=0;idx<args_in_nbr; idx++){ 
+      (void)cast_nctype_void(NC_DOUBLE,&(var_arr[idx]->val));
+      if(idx>0) nco_var_free(var_arr[idx]);
+    }
+
+    dp=(double**)nco_free(dp);
+    
+  } // end heavy lifting
+  
+  // free Random Number generator
+  gsl_rng_free(ncap_rng);
+
+  var_arr_ptr=(var_sct***)nco_free(var_arr_ptr);
+
+  return var_arr[0]; 
+
+} // hnd_fnc_rnd
+
+
+
+
+
+var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_udrx");
+  int idx;
+  int args_nbr;
+  nc_type type;
+  std::string styp=(is_mtd ? "method":"function");
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var=NULL_CEWI;
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  gsl_rng *ncap_rng;
+  
+  
+  args_nbr=args_vtr.size();
+  
+  type=gpr_obj.type(); 
+  
+  if(args_nbr==0) err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+  
+  var=walker.out(args_vtr[0]);
+    
+  if(prs_arg->ntl_scn){
+    if(!var->undefined)
+      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
+    return var;
+  }
+
+
+  // initialize 
+  ncap_rng=gsl_rng_alloc(gsl_rng_default);  
+  
+  switch(type){ 
+    
+  case NC_UINT:
+    { 
+      long sz=var->sz;
+      nco_uint64  mss_val_lng=0LL; 
+      nco_uint64 *lp;
+      
+      unsigned (*fnc_int)(const gsl_rng*,unsigned);
+      
+      fnc_int=gpr_obj.g_args().dru; 
+      
+      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
+      (void)cast_void_nctype((nc_type)NC_UINT64,&(var->val));
+      lp=var->val.ui64p;  
+      
+      if(var->has_mss_val)
+        mss_val_lng=var->mss_val.lp[0]; 
+       
+      
+      if(var->has_mss_val){  
+	for(idx=0;idx<sz;idx++)
+	  if(lp[idx] != mss_val_lng)
+            lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);   
+
+      }else{
+	for(idx=0;idx<sz;idx++) 
+	  lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);
+      }
+      
+      
+      (void)cast_nctype_void((nc_type)NC_UINT64,&(var->val));
+      
+      
+    } 
+    break;  
+    
+  case NC_DOUBLE:
+    { 
+      bool has_mss_val;
+      int sz=var->sz;
+      nco_uint64 *lp;
+      double mss_val_dbl;
+      double *dp;
+
+      var_sct *var_out;
+      
+      unsigned (*fnc_int)(const gsl_rng*,double);
+      
+      
+
+      fnc_int=gpr_obj.g_args().drd; 
+
+      // convert to double
+      var=nco_var_cnf_typ(NC_DOUBLE,var);                     
+
+      var_out=nco_var_dpl(var);
+
+      var_out=nco_var_cnf_typ((nc_type)NC_UINT64,var_out);                        
+
+      (void)cast_void_nctype((nc_type)NC_UINT64,&(var_out->val));
+      lp=var_out->val.ui64p;  
+      
+      
+      (void)cast_void_nctype(NC_DOUBLE,&(var->val));
+      dp=var->val.dp;  
+      
+      has_mss_val=false;
+      if(var->has_mss_val){
+	has_mss_val=true;
+	(void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
+	mss_val_dbl=var->mss_val.dp[0];    
+	(void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
+      }
+      
+      if(has_mss_val){  
+	for(idx=0;idx<sz;idx++)
+	  if(dp[idx] != mss_val_dbl)
+	   lp[idx]=(*fnc_int)(ncap_rng,dp[idx]);
+      }else{
+	for(idx=0;idx<sz;idx++) 
+	  lp[idx]=(*fnc_int)(ncap_rng,dp[idx]);
+      }
+      
+      
+      (void)cast_nctype_void(NC_DOUBLE,&(var->val));
+      var=nco_var_free(var);
+     
+      (void)cast_nctype_void((nc_type)NC_UINT64,&(var_out->val));     
+      var=var_out; 
+  
+
+    } 
+    break;
+    
+  default:
+    break; 
+    
+  } // end big switch 
+
+  gsl_rng_free(ncap_rng);
+  
+  return var;
+} // end hnd_fnc_udrx
+
+
+
+
+var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_udrx");
+  int idx;
+  int args_nbr;
+  nc_type type;
+  std::string styp=(is_mtd ? "method":"function");
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var=NULL_CEWI;
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  gsl_rng *ncap_rng;
+  
+  
+  args_nbr=args_vtr.size();
+  
+  type=gpr_obj.type(); 
+  
+  if(args_nbr==0) err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+  
+  var=walker.out(args_vtr[0]);
+    
+  if(prs_arg->ntl_scn){
+    if(!var->undefined)
+      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
+    return var;
+  }
+
+
+  // initialize 
+  ncap_rng=gsl_rng_alloc(gsl_rng_default);  
+  
+  switch(type){ 
+    
+  case NC_NAT:
+    { 
+      long sz=var->sz;
+      nco_uint64  mss_val_lng=0LL; 
+      nco_uint64 *lp;
+      
+      unsigned long int (*fnc_int)(const gsl_rng*);
+      
+      fnc_int=gpr_obj.g_args().er; 
+      
+      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
+      (void)cast_void_nctype((nc_type)NC_UINT64,&(var->val));
+      lp=var->val.ui64p;  
+      
+      /* missing values 
+      if(var->has_mss_val)
+        mss_val_lng=var->mss_val.lp[0]; 
+       
+      //  missing values ? 
+      
+      if(var->has_mss_val){  
+	for(idx=0;idx<sz;idx++)
+	  if(lp[idx] != mss_val_lng)
+            lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);   
+
+      */
+      for(idx=0;idx<sz;idx++) 
+	lp[idx]=(*fnc_int)(ncap_rng);
+      
+      (void)cast_nctype_void((nc_type)NC_UINT64,&(var->val));
+      
+      
+    } 
+    break;  
+    
+  case NC_UINT:
+    { 
+      bool has_mss_val;
+      int sz=var->sz;
+      nco_uint64 *lp;
+      nco_uint64 mss_val_lng;
+      double *dp; 
+
+      unsigned long int(*fnc_int)(const gsl_rng*,unsigned long int);
+      
+      fnc_int=gpr_obj.g_args().eru; 
+
+
+      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                        
+
+      (void)cast_void_nctype((nc_type)NC_UINT64,&(var->val));
+      lp=var->val.ui64p;  
+      
+      
+      has_mss_val=false;
+      if(var->has_mss_val){
+	has_mss_val=true;
+	(void)cast_void_nctype((nc_type)NC_UINT64,&(var->mss_val));
+	mss_val_lng=var->mss_val.ui64p[0];    
+	(void)cast_nctype_void((nc_type)NC_UINT64,&(var->mss_val));
+      }
+      
+      if(has_mss_val){  
+	for(idx=0;idx<sz;idx++)
+	  if(lp[idx] != mss_val_lng)
+	   lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);
+      }else{
+	for(idx=0;idx<sz;idx++) 
+	  lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);
+      }
+      
+      
+      (void)cast_nctype_void((nc_type)NC_UINT64,&(var->val));     
+
+  
+
+    } 
+    break;
+    
+  default:
+    break; 
+    
+  } // end big switch 
+
+  gsl_rng_free(ncap_rng);
+  
+  return var;
+} // end hnd_fnc_uerx
+
+
+
+
+
+
+
+
+//GSL2 Class /******************************************/
+  gsl2_cls::gsl2_cls(bool  flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("gsl_rng_min",this,(int)PGSL_RNG_MIN));
+      fmc_vtr.push_back( fmc_cls("gsl_rng_max",this,(int)PGSL_RNG_MAX));
+      fmc_vtr.push_back( fmc_cls("gsl_rng_name",this,(int)PGSL_RNG_NAME));
+
+    }
+  }
+
+
+
+  var_sct *gsl2_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl2_cls::fnd");
+
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_args;
+    unsigned long vlng;
+    var_sct *var;
+    prs_cls* prs_arg=walker.prs_arg;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string styp;
+    RefAST tr;
+    std::vector<RefAST> vtr_args; 
+
+    gsl_rng *ncap_rng;
+
+
+    styp=(expr ? "method":"function");
+    nbr_args=0;
+
+
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+      
+     if(nbr_args >0) 
+       wrn_prn(fnc_nm,styp+" \""+sfnm+"\" requires no arguments"); 
+
+
+
+    // If initial scan
+    if(prs_arg->ntl_scn){
+
+      switch(fdx) {
+       case  PGSL_RNG_MIN:
+       case  PGSL_RNG_MAX:
+        return ncap_sclr_var_mk(static_cast<std::string>("~gsl2_functions"),(nc_type)NC_UINT,false);        
+        break;
+      
+       case PGSL_RNG_NAME:
+        return ncap_var_udf("~gsl2_functions");  
+        break;       
+    
+      }// end switch  
+    } 
+    
+   // initialize 
+   ncap_rng=gsl_rng_alloc(gsl_rng_default);  
+
+    
+    switch(fdx){ 
+           case PGSL_RNG_MIN:
+             vlng= gsl_rng_min(ncap_rng);
+             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),static_cast<double>(vlng));
+             break;
+           case PGSL_RNG_MAX:
+             vlng= gsl_rng_max(ncap_rng);
+             var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_function"),static_cast<double>(vlng));
+             break;
+           case PGSL_RNG_NAME:
+	    //var=ncap_sclr_var_mk(static_cast<std::string>("~gsl2_functions"),(nco_int)var1->nbr_dim);            
+	    break;
+
+    }// end switch        
+      
+
+
+
+  // free Random Number generator
+  gsl_rng_free(ncap_rng);
+  return var;		 
+
+}       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #else // !ENABLE_GSL
 
