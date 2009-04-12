@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.91 2009-03-27 21:54:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.92 2009-04-12 17:30:27 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -67,7 +67,9 @@
 
 /* 3rd party vendors */
 #ifdef ENABLE_GSL
-# include <gsl/gsl_errno.h>
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_rng.h>
+
 #endif // !ENABLE_GSL
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
@@ -134,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.91 2009-03-27 21:54:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.91 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.92 2009-04-12 17:30:27 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.92 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -449,7 +451,9 @@ main(int argc,char **argv)
   char *str_ptr;
   
   gsl_cls gsl_obj(true); 
+  gsl2_cls gsl2_obj(true); 
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&gsl2_obj);
   
   /* Set GSL error handler */
   gsl_set_error_handler_off(); 
@@ -458,6 +462,13 @@ main(int argc,char **argv)
   if((str_ptr=getenv("GSL_PREC_MODE")) != NULL) ncap_gsl_mode_prec=(int)strtol(str_ptr,(char **)NULL,10);
   
   if(ncap_gsl_mode_prec<0 || ncap_gsl_mode_prec>2) ncap_gsl_mode_prec=0;
+
+  /* create a generator chosen by the 
+    environment variables GSL_RNG_TYPE ,GSL_RNG_SEED */
+     
+ gsl_rng_env_setup();
+
+
 #endif // !ENABLE_GSL
   
   //Sort Vector 
