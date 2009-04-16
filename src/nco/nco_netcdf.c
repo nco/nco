@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.99 2009-01-21 00:15:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.100 2009-04-16 22:02:47 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -694,6 +694,19 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
   return rcd;
 } /* end nco_def_var */
 
+int nco_def_var_chunking
+(const int nc_id, /* [ID] netCDF ID */
+ const int var_id, /* [ID] Variable ID */
+ const int srg_typ, /* [enm] Storage type */
+ const size_t *cnk_sz) /* [nbr] Chunk size for every dimension */
+{
+  /* Purpose: Wrapper for nc_def_var_chunking() */
+  int rcd;
+  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,cnk_sz);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_chunking()");
+  return rcd;
+} /* end nco_def_var_chunking() */
+
 int nco_def_var_deflate
 (const int nc_id, /* [ID] netCDF ID */
  const int var_id, /* [ID] Variable ID */
@@ -1208,6 +1221,7 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 
 /* Begin netCDF4 stubs */
 #ifndef ENABLE_NETCDF4
+int nc_def_var_chunking(const int nc_id,const int var_id,const int str_typ,const size_t *cnk_sz){return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 /* NB: netCDF inquire function only works on netCDF4 files
    NCO stub works on netCDF3 and netCDF4 files */

@@ -1,10 +1,14 @@
+2009-04-16  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_def_var_chunking() and stubs for chunk-size patch
+
 2009-03-27  Charlie Zender  <zender@uci.edu>
 
 	* Add ncap2 threading to all docs: .texi, .man, ncap2 -r
 
 	* Restrict other operators to maximum four threads by default
 
-	* Turn-off ncap2 threading until ANTLR threading issues resolved
+	* Turn-off ncap2 threading (until ANTLR threading issues resolved?)
 
 	* Clean-up ncap2
 
@@ -12,11 +16,11 @@
 
 	* Place new NCO logo candidate, logo_pch, by Tony Freeman, on homepage
 
-2009-02-25  Henry Butowsky  <henryb@hush.com> 
+2009-03-25  Henry Butowsky  <henryb@hush.com> 
 
-	* Changed assign action non-scalar variables can be redefined
-	  with a RHS scalar, e.g., n1=three_dmn_var_dbl;n1=20; 
-	  n1 is now 3-D and retains previously defined missing value for n1
+	* Change assign action to redefine non-scalar variable with RHS scalar:
+	  e.g., n1=three_dmn_var_dbl;n1=20;
+	  fills 3-D array n1 with 20 and retains missing value, if any
 
 2009-03-24  Charlie Zender  <zender@uci.edu>
 
