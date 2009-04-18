@@ -1,5 +1,7 @@
 2009-04-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO_GSL_MINOR_VERSION >= 8 for select GSL *_cdf_* and *_ran_* functions 
+
 	* Add abs() as synonym for fabs() in ncap2
 
 2009-04-16  Charlie Zender  <zender@uci.edu>

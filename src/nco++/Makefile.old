@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.90 2009-03-17 23:10:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.91 2009-04-18 18:59:34 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -15,7 +15,7 @@
 
 # Usage:
 # cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
-# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=Y all # neige, virga
+# cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=Y all # givre, neige, virga
 # cd ~/nco/src/nco++;SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=Y OMP=Y OPTS=D SZ=Y UDUNITS2=N all # greenplanet
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=Y OMP=N OPTS=D UDUNITS2=Y all # ashes, elnino
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=N all # esmf

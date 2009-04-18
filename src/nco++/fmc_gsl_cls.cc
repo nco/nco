@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.29 2009-04-12 17:38:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.30 2009-04-18 18:59:34 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -394,13 +394,17 @@ void gsl_cls::gsl_ini_cdf(void){
 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_P",f_unn(gsl_cdf_fdist_P),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Q",f_unn(gsl_cdf_fdist_Q),hnd_fnc_nd,P3DBLX));
+# if NCO_GSL_MINOR_VERSION >= 8 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Pinv",f_unn(gsl_cdf_fdist_Pinv),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Qinv",f_unn(gsl_cdf_fdist_Qinv),hnd_fnc_nd,P3DBLX));
+# endif // NCO_GSL_MINOR_VERSION < 8
 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_P",f_unn(gsl_cdf_beta_P),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Q",f_unn(gsl_cdf_beta_Q),hnd_fnc_nd,P3DBLX));
+# if NCO_GSL_MINOR_VERSION >= 8 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Pinv",f_unn(gsl_cdf_beta_Pinv),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Qinv",f_unn(gsl_cdf_beta_Qinv),hnd_fnc_nd,P3DBLX));
+# endif // NCO_GSL_MINOR_VERSION < 8
 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_P",f_unn(gsl_cdf_flat_P),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_flat_Q",f_unn(gsl_cdf_flat_Q),hnd_fnc_nd,P3DBLX));
@@ -499,12 +503,16 @@ void gsl_cls::gsl_ini_ran(void){
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma",f_unn(gsl_ran_gamma),hnd_fnc_rnd,P2DBLX));
   //gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_int",f_unn(gsl_ran_gamma_int),hnd_fnc_udru,NC_UINT));
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_pdf",f_unn(gsl_ran_gamma_pdf),hnd_fnc_nd,P3DBLX));
+# if NCO_GSL_MINOR_VERSION >= 8 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_mt",f_unn(gsl_ran_gamma_mt),hnd_fnc_rnd,P2DBLX));
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_knuth",f_unn(gsl_ran_gamma_knuth),hnd_fnc_rnd,P2DBLX));
+# endif // NCO_GSL_MINOR_VERSION < 8
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian",f_unn(gsl_ran_gaussian),hnd_fnc_rnd,P1DBLX));
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_ratio_method",f_unn(gsl_ran_gaussian_ratio_method),hnd_fnc_rnd,P1DBLX));
+# if NCO_GSL_MINOR_VERSION >= 8 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_ziggurat",f_unn(gsl_ran_gaussian_ziggurat),hnd_fnc_rnd,P1DBLX));
+# endif // NCO_GSL_MINOR_VERSION < 8
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_pdf",f_unn(gsl_ran_gaussian_pdf),hnd_fnc_nd,P2DBLX));
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_ugaussian",f_unn(gsl_ran_ugaussian),hnd_fnc_rnd,P0DBLX));
