@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.9 2009-03-24 15:37:32 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.10 2009-04-18 18:48:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -581,6 +581,7 @@
 
 
       /* Basic math: acos, asin, atan, cos, exp, log, log10, rnd_nbr, sin, sqrt, tan */
+      //sym_vtr.push_back(sym_cls("rnd_nbr",rnd_nbr,rnd_nbrf));
       sym_vtr.push_back(sym_cls("acos",acos,acosf));  
       sym_vtr.push_back(sym_cls("asin",asin,asinf));
       sym_vtr.push_back(sym_cls("atan",atan,atanf));
@@ -589,12 +590,12 @@
       sym_vtr.push_back(sym_cls("fabs",fabs,fabsf));
       sym_vtr.push_back(sym_cls("log",log,logf));
       sym_vtr.push_back(sym_cls("log10",log10,log10f));
-      //sym_vtr.push_back(sym_cls("rnd_nbr",rnd_nbr,rnd_nbrf));
       sym_vtr.push_back(sym_cls("sin",sin,sinf));
       sym_vtr.push_back(sym_cls("sqrt",sqrt,sqrtf));
       sym_vtr.push_back(sym_cls("tan",tan,tanf));
 
       /* Basic math synonyms: ln */
+      sym_vtr.push_back(sym_cls("abs",fabs,fabsf)); /* abs() is synonym for fabs() */
       sym_vtr.push_back(sym_cls("ln",log,logf)); /* ln() is synonym for log() */
   
       /* Basic Rounding: ceil, fl<oor */

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.520 2009-03-28 00:25:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.521 2009-04-18 18:48:19 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -518,7 +518,8 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO/SDO 3.9.8</b>: (<i>In progress</i>) 
 generalized sorting routines;
 support new DAP provided by libnetcdf;
-GSL distribution functions;
+GSL distribution and random number functions;
+New <tt>ncks</tt> options: <tt>--chunksize</tt>, <tt>--fixed</tt>, <tt>-N</tt>
 <li><b>NCO/SDO 3.9.7</b>:
 Improve GSL-build support;
 <tt>ncap2</tt> threading improvements;
@@ -766,7 +767,7 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
-<li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/~wangd/s9y">here</a></li>
+<li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a></li>
 
 From about 2004&ndash;2006, NCO was part of the Fedora Extras distribution (thanks to Ed Hill).
 Then NCO <a href="http://www.rpm.org">RPMs</a> in Fedora Core release

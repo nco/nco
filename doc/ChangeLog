@@ -1,3 +1,7 @@
+2009-04-18  Charlie Zender  <zender@uci.edu>
+
+	* Add abs() as synonym for fabs() in ncap2
+
 2009-04-16  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_def_var_chunking() and stubs for chunk-size patch

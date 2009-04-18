@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.317 2009-03-28 00:25:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.318 2009-04-18 18:48:19 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.8 are ready. 
 
@@ -19,19 +19,15 @@ A. New NCO logo candidate submitted by Tony Freeman:
    What do you think? Should it replace the mandleblob?
    http://nco.sf.net/logo_pch.png
 
-B. Improve ./configure ability to find and work with GSL, including
-   older versions of GSL
-   
-C. ncap2 can assign non-scalar variables on the LHS to a RHS scalar
-   e.g., var=three_dmn_var_dbl; // Define var as a 3-D variable
-   	 var=20; // Fill all (non-missing) values with 20
-   http://nco.sf.net/nco.html#xmp_ncap
+B. Improve ./configure ability to find and work with GSL   
 
-D. Restrict most operators to four threads default maximum,
-   ncecat and ncrcat to two, and ncap2 to one. -t thr_nbr overrides.
-   http://nco.sf.net/nco.html#openmp
+C. ncks has new -f option (thanks to Denis Nadeau) fxm
 
-F. ncap2 sort() function improved...fxm
+D. ncks has new -N option (thanks to Denis Nadeau) fxm
+
+D. ncks has new chunk option (thanks to Denis Nadeau) fxm
+
+F. ncap2 sort() function improved...sort of fxm
 
 G. Remove assumption that DAP means OPeNDAP. 
    Configure takes either --enable-dap-opendap or --enable-dap-netcdf
