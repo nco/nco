@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.222 2009-02-02 21:50:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.223 2009-04-19 23:17:04 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -7,7 +7,7 @@
 
 /* Copyright (C) 1995--2009 Charlie Zender
 
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.222 2009-02-02 21:50:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.222 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.223 2009-04-19 23:17:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.223 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

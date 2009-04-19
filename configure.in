@@ -1,10 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.284 2009-03-26 00:32:49 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.285 2009-04-19 23:17:03 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
 
 # Copyright (C) 2003--2009 Charlie Zender
-# You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+# License: GNU General Public License (GPL) Version 3
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
 # Usage:
@@ -214,7 +214,7 @@ echo "DEBUG: enable_dap_netcdf = ${enable_dap_netcdf} and enable_dap_opendap = $
 if (test "${enable_dap_netcdf}" != 'no' && test "${enable_dap_opendap}" != 'no'); then
 # Override OPeNDAP request
     echo "WARNING: Requested both DAP-netCDF and DAP-OPeNDAP support---overriding OPeNDAP"
-    echo "NCO will be built with DAP support from netCDF4, not from OPeNDAP"
+    echo "Will attempt to build NCO with DAP support from netCDF4, not from OPeNDAP"
     enable_dap_opendap='no'
 fi # End test for DAP duplication
 
