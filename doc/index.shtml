@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.522 2009-04-19 23:17:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.523 2009-04-20 20:20:56 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -517,9 +517,10 @@ You can also retrieve the source of tagged versions directly
 <ul>
 <li><b>NCO/SDO 3.9.8</b>: (<i>In progress</i>) 
 generalized sorting routines;
-support new DAP provided by libnetcdf;
-GSL distribution and random number functions;
-New <tt>ncks</tt> options: <tt>--chunksize</tt>, <tt>--fixed</tt>, <tt>-N</tt>
+DAP in libnetcdf;
+GSL distribution/RNG functions;
+<tt>ncks</tt> options: <tt>--chunksize</tt>, <tt>--fixed</tt>, <tt>-N</tt>;
+UDUnits2;
 <li><b>NCO/SDO 3.9.7</b>:
 Improve GSL-build support;
 <tt>ncap2</tt> threading improvements;

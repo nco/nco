@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.63 2009-04-19 23:17:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.64 2009-04-20 20:20:57 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -169,6 +169,7 @@ SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+UDUNITS2_PATH = @UDUNITS2_PATH@
 UDUNITS_PATH = @UDUNITS_PATH@
 VERSION = @VERSION@
 YACC = @YACC@

@@ -1,3 +1,9 @@
+2009-04-20  Charlie Zender  <zender@uci.edu>
+
+	* ncks --secret lists hidden/unsupported functions
+
+	* UDUnits2 supported by configure --enable_udunits2 
+
 2009-04-19  Charlie Zender  <zender@uci.edu>
 
 	* Changes since nco-3_9_7: DAP-netCDF support, sort(), GSL distributions, chunksize

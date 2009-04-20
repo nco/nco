@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.93 2009-04-19 23:17:03 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.94 2009-04-20 20:20:56 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -155,6 +155,7 @@ SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+UDUNITS2_PATH = @UDUNITS2_PATH@
 UDUNITS_PATH = @UDUNITS_PATH@
 VERSION = @VERSION@
 YACC = @YACC@
@@ -218,8 +219,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = data src man doc
 
-# Everything in bld/ is added to distribution separately since autoconf
-# does not work with it (bld/Makefile is not autoconf's)
+# Separately add desired files from nco/bld/ to distribution
+# Autoconf does not know about the bld directory 
+# In particular, nco/bld/Makefile was created manually, not by autoconf
 bld_extras = bld/Makefile bld/pvmgetarch bld/nco.spec
 EXTRA_DIST = $(bld_extras)
 ACLOCAL_AMFLAGS = -I m4

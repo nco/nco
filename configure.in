@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.285 2009-04-19 23:17:03 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.286 2009-04-20 20:20:56 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -795,12 +795,11 @@ if test "${enable_udunits}" != 'no'; then
 	    fi
 	done
     fi
-# Warn if udunits.dat is not found, but continue anyway since the builder may be savvy enough to add it when building packages (e.g., .debs)
-    AC_CHECK_FILE([$nco_udunits_dat],,AC_WARN([file $nco_udunits_dat was not found but will be compiled into NCO. Some executables may fail without it.]))
-  # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
+# Warn if udunits.dat is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
+    AC_CHECK_FILE([$nco_udunits_dat],,AC_WARN([file $nco_udunits_dat was not found but will still attempt to build NCO with UDUnits support.]))
+# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
     AC_DEFINE_UNQUOTED([UDUNITS_PATH],["$nco_udunits_dat"],[Location of UDUnits data file])
-  # MacOS X requires libudport for threaded functions
-  # Following need to know about non-standard Lib locations if used
+# MacOS X requires libudport for threaded functions
     AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
     AC_MSG_NOTICE([NB: Following tests of UDUnits library and header must succeed for UDUnits support:])
     AC_CHECK_LIB([udunits],[utInit],,enable_udunits=no)
@@ -819,12 +818,63 @@ if test "${enable_udunits}" != 'no'; then
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_PATH need not be known at compile time
 #   AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
-    AC_ARG_VAR([UDUNITS_PATH],Root directory of UDUnits (normally contains etc, include, and lib subdirectories))
+    AC_ARG_VAR([UDUNITS_PATH],Root directory of UDUnits (normally contains [bin, etc, include, lib] subdirectories))
 fi
 echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 # This would activate conditional UDUnits tests, if there were any
 # AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
 # End UDUnits
+
+echo "########################################"
+echo "#     Testing for UDUNITS2 support     #"
+echo "########################################"
+# Begin UDUnits2
+AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [[default=yes]]]),enable_udunits2=${enableval},enable_udunits2=yes)
+# Check for UDUnits2 libraries unless told not to
+if test "${enable_udunits2}" != 'no'; then
+    if test "${UDUNITS2_PATH}"; then
+# Add ${UDUNITS2_PATH}/lib to search path if present
+	nco_udunits2_dat=${UDUNITS2_PATH}/share/udunits2.xml
+	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
+	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
+#    nco_udunits2_dat=${UDUNITS2_PATH}/src/lib/udunits2.xml
+    elif test "${NETCDF_INC}"; then
+	nco_udunits_dat="${NETCDF_INC}/../share/udunits2.xml"
+    else
+# Patch from Fedora Core 6 nco.spec:
+	for udunits2_fdat_file in /usr/local/share/udunits2.xml /share/udunits2.xml ; do
+	    if test -e "$udunits2_fdat_file" ; then
+		nco_udunits2_dat="$udunits2_fdat_file"
+	    fi
+	done
+    fi
+# Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
+    AC_CHECK_FILE([$nco_udunits2_dat],,AC_WARN([file $nco_udunits2_dat was not found but will still attempt to build NCO with UDUnits2 support.]))
+# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
+    AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_dat"],[Location of UDUnits2 data file])
+    AC_MSG_NOTICE([NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:])
+    AC_CHECK_LIB([udunits2],[ut_read_xml],,enable_udunits2=no)
+    if test "${UDUNITS2_PATH}"; then
+	AC_CHECK_FILE([${UDUNITS2_PATH}/include/udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
+    else
+	AC_CHECK_HEADER([udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
+    fi
+    if test "${enable_udunits2}" = 'no'; then
+	AC_MSG_WARN([UDUnits2 support disabled (missing/unusable library or header file)])
+    elif test "${enable_udunits2}" = 'yes'; then
+	LIBS="${LIBS} -ludunits2"
+	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits2 support)
+	AC_MSG_NOTICE([UDUnits2 support enabled])
+    fi
+# When empty, utInit() uses environment variable UDUNITS2_PATH, if any (see nco_lmt.c)
+# Thus UDUNITS2_PATH need not be known at compile time
+#   AC_ARG_VAR([UDUNITS2_PATH],Location of UDUnits2 database 'udunits2.xml' (run-time))
+    AC_ARG_VAR([UDUNITS2_PATH],Root directory of UDUnits2 (normally contains [bin, include, lib, share] subdirectories))
+fi
+echo "DEBUG: After UDUnits2 tests LIBS = ${LIBS}"
+# This would activate conditional UDUnits2 tests, if there were any
+# AM_CONDITIONAL(TEST_UDUNITS2,[test "${enable_udunits2}" = 'yes'])
+# End UDUnits2
 
 # Begin Default OS-specific Compiler Arguments
 # Perform standard additions to compilers and preprocessor flags before testing anything
@@ -1219,11 +1269,14 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
+echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP_OPENDAP... ${enable_dap_opendap}"
+echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
 echo "ENABLE_MPI........... ${enable_mpi}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"
+echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"

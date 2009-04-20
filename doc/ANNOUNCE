@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.318 2009-04-18 18:48:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.319 2009-04-20 20:20:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.8 are ready. 
 
@@ -32,6 +32,10 @@ F. ncap2 sort() function improved...sort of fxm
 G. Remove assumption that DAP means OPeNDAP. 
    Configure takes either --enable-dap-opendap or --enable-dap-netcdf
    bld/Makefile takes either DAP_OPENDAP=Y or DAP_NETCDF=Y (untested)
+
+H. Chunking fxm
+
+I. UDUnits2 supported by configure --enable_udunits2
 
 K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages:
    http://nco.sf.net#debian
