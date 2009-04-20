@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.96 2009-04-19 23:17:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.97 2009-04-20 04:43:52 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -423,9 +423,9 @@ libnco_la_LDFLAGS = -release @VERSION@
 
 # Fedora Core nco.spec in nco-3.1.2 wants to install headers
 # Maybe smart/required for -devel packages
-# To my knowledge, thought, only NCO programs use libnco
+# To my knowledge, though, only NCO programs use libnco
 # For this reason Debian packages should not install NCO headers (yet)
-# Remove following line until learn how to prevent debian from installing headers
+# Remove following line until learn how to prevent Debian from installing headers
 #include_HEADERS = $(HEADER_SRC)
 libnco_la_SOURCES = \
 ${HEADER_SRC} \

@@ -1,3 +1,6 @@
+# Fedora RPMs are up-to-date!
+# http://cvs.fedoraproject.org/viewvc/devel/nco/nco.spec?view=co
+
 Name:           nco
 Version:        3.9.8
 Release:        1%{?dist}
