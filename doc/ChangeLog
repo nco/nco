@@ -1,3 +1,10 @@
+2009-04-19  Charlie Zender  <zender@uci.edu>
+
+	* Changes since nco-3_9_7: DAP-netCDF support, sort(), GSL distributions, chunksize
+	  cd ~/nco;cvs tag -d nco-3_9_8;cvs tag -d nco-3_9_8-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.8 release"
+	  cvs tag -c nco-3_9_8;cvs tag -c nco-3_9_8-1
+
 2009-04-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO_GSL_MINOR_VERSION >= 8 for select GSL *_cdf_* and *_ran_* functions 
@@ -27,13 +34,6 @@
 	* Change assign action to redefine non-scalar variable with RHS scalar:
 	  e.g., n1=three_dmn_var_dbl;n1=20;
 	  fills 3-D array n1 with 20 and retains missing value, if any
-
-2009-03-24  Charlie Zender  <zender@uci.edu>
-
-	* Changes since nco-3_9_7: DAP-netCDF support, sort(), GSL distributions
-	  cd ~/nco;cvs tag -d nco-3_9_8;cvs tag -d nco-3_9_8-1
-	  cd ~/nco;cvs commit -m "Preparing nco-3.9.8 release"
-	  cvs tag -c nco-3_9_8;cvs tag -c nco-3_9_8-1
 
 2009-03-21  Charlie Zender  <zender@uci.edu>
 

@@ -1,9 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.13 2009-01-29 00:30:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.14 2009-04-20 00:28:31 zender Exp $ -*-makefile-*-
 
 SUBDIRS = data src man doc
 
-# Everything in bld/ is added to distribution separately since autoconf
-# does not work with it (bld/Makefile is not autoconf's)
+# Separately add desired files from nco/bld/ to distribution
+# Autoconf does not know about the bld directory 
+# In particular, nco/bld/Makefile was created manually, not by autoconf
 bld_extras = bld/Makefile bld/pvmgetarch bld/nco.spec
 EXTRA_DIST = $(bld_extras)
 ACLOCAL_AMFLAGS = -I m4
