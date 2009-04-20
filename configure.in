@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.286 2009-04-20 20:20:56 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.287 2009-04-20 20:30:27 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -209,7 +209,7 @@ nco_LIBS_no_DAP="${LIBS}"
 AC_ARG_ENABLE(dap-netcdf,AS_HELP_STRING([--enable-dap-netcdf],[Build DAP-enabled NCO with netCDF-provided DAP [[default=no]]]),enable_dap_netcdf=${enableval},enable_dap_netcdf=yes)
 AC_ARG_ENABLE(dap-opendap,AS_HELP_STRING([--enable-dap-opendap],[Build DAP-enabled NCO with OPeNDAP-provided DAP [[default=yes]]]),enable_dap_opendap=${enableval},enable_dap_opendap=yes)
 
-# Are both DAP-OPeNDAP and DAP-netCDF requested?
+# Are both DAP-netCDF and DAP-OPeNDAP requested?
 echo "DEBUG: enable_dap_netcdf = ${enable_dap_netcdf} and enable_dap_opendap = ${enable_dap_opendap}"
 if (test "${enable_dap_netcdf}" != 'no' && test "${enable_dap_opendap}" != 'no'); then
 # Override OPeNDAP request
@@ -773,10 +773,22 @@ fi
 echo "########################################"
 echo "#     Testing for UDUNITS support      #"
 echo "########################################"
+# Begin UDUnits support
+echo "Beginning generic tests for UDUnits"
+AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=yes]]]),enable_udunits=${enableval},enable_udunits=yes)
+AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [[default=no]]]),enable_udunits2=${enableval},enable_udunits2=yes)
+# Are both UDUnits and UDUnits2 requested?
+echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_udunits2}"
+if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
+# Override UDUnits request
+    echo "WARNING: Requested both UDUnits and UDUnits2 support---overriding UDUnits"
+    echo "Will attempt to build NCO with UDUnits support from libudunits2, not from libudunits"
+    enable_udunits='no'
+fi # End test for UDUnits duplication
+
 # Begin UDUnits
 # MacOS X requires libudport for threaded functions
 AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
-AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=yes]]]),enable_udunits=${enableval},enable_udunits=yes)
 # Check for UDUnits libraries unless told not to
 if test "${enable_udunits}" != 'no'; then
     if test "${UDUNITS_PATH}"; then
@@ -825,11 +837,7 @@ echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 # AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
 # End UDUnits
 
-echo "########################################"
-echo "#     Testing for UDUNITS2 support     #"
-echo "########################################"
 # Begin UDUnits2
-AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [[default=yes]]]),enable_udunits2=${enableval},enable_udunits2=yes)
 # Check for UDUnits2 libraries unless told not to
 if test "${enable_udunits2}" != 'no'; then
     if test "${UDUNITS2_PATH}"; then
