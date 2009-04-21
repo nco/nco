@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.523 2009-04-20 20:20:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.524 2009-04-21 21:58:08 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -744,10 +744,10 @@ the directory index <a href="src">here</a>.
 <!--
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.9.7</a></li>
 -->
-<a href="http://packages.debian.org/unstable/science/nco.html">Debian</a> and 
-<a href="http://packages.ubuntu.com/hardy/nco">Ubuntu</a>
-GNU/Linux homepages for NCO. 
+<a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
+<a href="http://packages.ubuntu.com/jaunty/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
+This standard package is, unfortunately, <i>old</i> (version 3.9.0, from about 2005).
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.7-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_3.9.7-1_amd64.deb">nco_3.9.7-1_amd64.deb</a> (<!--#fsize file="src/nco_3.9.7-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.9.7-1_amd64.deb"-->)</li>
 <li><a href="src/nco_3.9.7-1_i386.deb">nco_3.9.7-1_i386.deb</a> (<!--#fsize file="src/nco_3.9.7-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.9.7-1_i386.deb"-->)</li>
@@ -764,20 +764,14 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
 <ul>
+<a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> homepage.
 <dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):</dt>
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
 <li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a></li>
-
-From about 2004&ndash;2006, NCO was part of the Fedora Extras distribution (thanks to Ed Hill).
-Then NCO <a href="http://www.rpm.org">RPMs</a> in Fedora Core release
-lagged our upstream RPMs by no more than 6&ndash;8 months. 
-A new volunteer is needed to update NCO to 3.9.x and maintain it in the Fedora distribution.
-Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these 
-<a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">NCO RPMs</a>:
-<li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-0-3.1.5-3.fc6.html">nco-0-3.1.5-3.fc6.html</a>: Official Fedora Core&nbsp;6 NCO binary package (contains all executables) homepage</li>
-<li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-devel-0-3.1.5-3.fc6.html">nco-devel-0-3.1.5-3.fc6.html</a>: Official Fedora Core&nbsp;6 NCO development package (contains libraries and headers) homepage</li>
+Volunteers have updated and maintained fairly up-to-date NCO packages in Fedora since it was added by Ed Hill in about 2004.
+Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs over the years.
 </ul>
 
 <a name="gentoo"></a>
