@@ -2515,7 +2515,7 @@ _ACEOF
 # 20090421 Added for autoreconf to complete after Ubuntu Jaunty upgrade to autoconf 2.6.3
 
 cat >>confdefs.h <<\_ACEOF
-#define  /**/
+#define  csz_fxm
 _ACEOF
 
 

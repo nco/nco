@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.95 2009-04-21 21:58:07 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.96 2009-04-21 22:17:37 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -674,14 +674,17 @@ uninstall-am:
 	tags tags-recursive uninstall uninstall-am
 
 
-test:
+test:	tst
+tst:
 	$(MAKE) check
 	cd bm && env MY_BIN_DIR=../src/nco DATA=/tmp ./nco_bm.pl --regress
 
-regress:
+regress:	rgr
+rgr:
 	cd bm && env MY_BIN_DIR=../src/nco DATA=/tmp ./nco_bm.pl --regress
 
-regress-mpi:
+regress-mpi:	rgr_mpi
+rgr_mpi:
 	cd bm && env MY_BIN_DIR=../src/nco DATA=/tmp ./nco_bm.pl --regress --mpi_prc=2
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
