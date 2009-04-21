@@ -3,6 +3,9 @@
 /* Compatibility pvmgetarch token for AIX on IBM RS6000 */
 #undef AIX
 
+/* Description */
+#undef AS_TR_CPP
+
 /* Compatibility pvmgetarch token for UNICOS on DEC Alpha */
 #undef CRAY
 
@@ -36,7 +39,7 @@
 /* Enable static libraries */
 #undef ENABLE_STATIC
 
-/* Compile operators with UDUnits support */
+/* Compile operators with UDUnits2 support */
 #undef ENABLE_UDUNITS
 
 /* Compatibility pvmgetarch token for FreeBSD on Intel x86 */
@@ -183,6 +186,9 @@
 /* Define to 1 if you have the `udunits' library (-ludunits). */
 #undef HAVE_LIBUDUNITS
 
+/* Define to 1 if you have the `udunits2' library (-ludunits2). */
+#undef HAVE_LIBUDUNITS2
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -327,6 +333,9 @@
 
 /* Define to 1 if compiler finds external `truncf' function */
 #undef HAVE_TRUNCF
+
+/* Define to 1 if <udunits2.h> is present */
+#undef HAVE_UDUNITS2_H
 
 /* Define to 1 if <udunits.h> is present */
 #undef HAVE_UDUNITS_H
@@ -527,6 +536,9 @@
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
+
+/* Location of UDUnits2 data file */
+#undef UDUNITS2_PATH
 
 /* Location of UDUnits data file */
 #undef UDUNITS_PATH

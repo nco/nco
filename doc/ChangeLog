@@ -1,3 +1,8 @@
+2009-04-21  Charlie Zender  <zender@uci.edu>
+
+	* Add COPYING and INSTALL to top-level directory to make
+	autoreconf, and FSF, happy
+
 2009-04-20  Charlie Zender  <zender@uci.edu>
 
 	* ncks --secret lists hidden/unsupported functions
