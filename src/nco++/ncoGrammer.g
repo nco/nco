@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.156 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.157 2009-04-22 13:03:40 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -67,7 +67,6 @@ tokens {
     POST_INC;
     POST_DEC;
     UTIMES;
-    SQR2;
     PROP; // used to differenciate properties & methods
     FOR2;    
     NORET;
@@ -75,6 +74,9 @@ tokens {
     WHERE_ASSIGN;
     MISS2ZERO; //used only in VarOp -sets all missing values to zero
     VSORT;     // only used outside of grammer to sort in VarOp 
+    VABS;      // imaginary token used in VarOp to return absolute value 
+    VSQR2;     // imaginary token used in VarOp to return square of number 
+
 }
 {
 
