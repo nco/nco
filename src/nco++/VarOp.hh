@@ -314,7 +314,15 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 	}
         break;
 
-    case SQR2:
+
+    case MISS2ZERO:
+	if(bmss) 
+	  for(idx=0 ; idx<sz ; idx++) 
+            if( tp1[idx]==tmss) tp1[idx]=0;
+
+        break;
+
+    case VSQR2:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]*=tp1[idx];
 	}else{
@@ -324,18 +332,24 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 	}
         break;
 
-    case MISS2ZERO:
-	if(bmss) 
-	  for(idx=0 ; idx<sz ; idx++) 
-            if( tp1[idx]==tmss) tp1[idx]=0;
-
-        break;
-
     case VSORT: 
          std::sort(tp1,tp1+sz );  
          break; 
 
-      default: break;	
+    // return absolute value 
+    case VABS:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++)
+            if(tp1[idx] < 0) tp1[idx]*=-1;  
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if( tp1[idx] != tmss && tp1[idx] < 0 ) tp1[idx]*=-1;
+	  }  
+	}
+        break;
+
+
+    default: break;	
 
     } // end switch	
 
