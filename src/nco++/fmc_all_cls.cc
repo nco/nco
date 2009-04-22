@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.10 2009-04-18 18:48:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.11 2009-04-22 12:41:03 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -203,7 +203,7 @@
                     break;
                     
                 case PAVGSQR:
-                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
+                    var1=ncap_var_var_op(var1, NULL_CEWI,VSQR2);
                     var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
                     // Normalize
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
@@ -218,7 +218,7 @@
                     break; 
                     
                 case PRMS:
-                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
+                    var1=ncap_var_var_op(var1, NULL_CEWI,VSQR2);
                     var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
                     // Normalize
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
@@ -227,7 +227,7 @@
                     break;
                     
                 case PRMSSDN:
-                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
+                    var1=ncap_var_var_op(var1, NULL_CEWI,VSQR2);
                     var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
                     // Normalize
                     (void)nco_var_nrm_sdn(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
@@ -595,7 +595,6 @@
       sym_vtr.push_back(sym_cls("tan",tan,tanf));
 
       /* Basic math synonyms: ln */
-      sym_vtr.push_back(sym_cls("abs",fabs,fabsf)); /* abs() is synonym for fabs() */
       sym_vtr.push_back(sym_cls("ln",log,logf)); /* ln() is synonym for log() */
   
       /* Basic Rounding: ceil, fl<oor */
@@ -954,7 +953,6 @@
       fmc_vtr.push_back( fmc_cls("mask",this,(int)PMASK1));
       fmc_vtr.push_back( fmc_cls("mask_clip",this,(int)PMASK_CLIP));
 
-
     }
   }
 
@@ -1011,6 +1009,7 @@
              var_msk=nco_var_free(var_msk);
              return var;
              break;
+
       }// end switch
     } // end if
 
@@ -1457,3 +1456,64 @@
 
 
   }  
+
+
+
+//Unary Functions /***********************************/
+ 
+  unr_cls::unr_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("abs",this,PABS)); 
+          fmc_vtr.push_back( fmc_cls("sqr",this,PSQR)); 
+
+    }		      
+  } 
+  var_sct * unr_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("unr_cls::fnd");
+    int nbr_fargs;
+    int fdx=fmc_obj.fdx();
+    var_sct *var1; 
+    std::string sfnm =fmc_obj.fnm(); //method name
+    prs_cls *prs_arg=walker.prs_arg;    
+
+
+    //n.b fargs is an imaginary node -and is ALWAYS present
+    nbr_fargs=fargs->getNumberOfChildren();
+    
+    // no arguments - bomb out
+    if(!expr && nbr_fargs==0){    
+        std::string serr;
+	serr="Function "+sfnm + " has been called without an argument";               
+        err_prn(fnc_nm,serr);
+    }
+
+    if(expr) 
+      var1=walker.out(expr);
+    else
+      var1=walker.out(fargs->getFirstChild());   
+
+
+    if(prs_arg->ntl_scn)
+      return var1;      
+
+    
+    // do the deed
+    switch(fdx){
+
+      case PABS: 
+        var1=ncap_var_var_op(var1,NULL_CEWI,VABS);
+        break;             
+
+      case PSQR: 
+        var1=ncap_var_var_op(var1,NULL_CEWI,VSQR2);
+        break;             
+    }
+     
+    return var1;
+
+  }
+
+
+
+
