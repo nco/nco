@@ -1,3 +1,9 @@
+2009-04-22  Henry Butowsky  <henryb@hush.com> 
+	* added unary functions abs(), sqr()
+	* abs() -absolute value for any type 
+	* fabs() -absolute value for float/double types
+        * sqr()  - square of number for any data type 
+
 2009-04-21  Charlie Zender  <zender@uci.edu>
 
 	* Add COPYING and INSTALL to top-level directory to make
