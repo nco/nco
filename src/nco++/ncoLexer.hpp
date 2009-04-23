@@ -10,12 +10,12 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.74 2009-04-18 18:48:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.75 2009-04-23 04:07:42 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
 /* Copyright (C) 2005--2009 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
     // C Standard Headers
@@ -52,7 +52,7 @@
 #line 53 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 337 "ncoGrammer.g"
+#line 339 "ncoGrammer.g"
 
 
 private:

@@ -10,12 +10,12 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.72 2009-04-18 18:48:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.73 2009-04-23 04:07:42 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
 /* Copyright (C) 2005--2009 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
     // C Standard Headers
@@ -52,7 +52,7 @@
 #line 53 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
-#line 79 "ncoGrammer.g"
+#line 81 "ncoGrammer.g"
 
 
 public:
@@ -123,10 +123,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 111;
+	static const int NUM_TOKENS = 112;
 #else
 	enum {
-		NUM_TOKENS = 111
+		NUM_TOKENS = 112
 	};
 #endif
 	

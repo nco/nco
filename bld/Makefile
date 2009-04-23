@@ -1,10 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.496 2009-03-26 00:32:49 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.497 2009-04-23 04:07:41 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
 
 # Copyright (C) 1994--2009 Charlie Zender
-# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 3
+# License: GNU General Public License (GPL) Version 3
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
 # Quickie test copies:
@@ -110,9 +110,9 @@ endif # endif ABI
 ifndef ${CCACHE}
  CCACHE := N
 endif # CCACHE
-ifndef DAP_OPENDAP
- DAP_OPENDAP := N
-endif # DAP_OPENDAP
+ifndef DAP_NETCDF
+ DAP_NETCDF := N
+endif # DAP_NETCDF
 ifndef DAP_OPENDAP
  DAP_OPENDAP := N
 endif # DAP_OPENDAP
@@ -1461,11 +1461,11 @@ obj_dir:
 #	-install -d ${MY_BIN_DIR}
 	-mkdir -p ${MY_OBJ_DIR}
 # The whole shebang
+allinone: all nco_c++ nco++
 nco_c++: 
 	-cd ../src/nco_c++; ${MAKE} -f Makefile.old DBG=${DBG} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} lib dat all
 nco++: 
 	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP_NETCDF=${DAP_NETCDF} DAP_OPENDAP=${DAP_OPENDAP} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} UDUNITS2=${UDUNITS2} lib all
-allinone: all nco_c++ nco++
 # Targets in bin
 mpi:   mpi_nco
 mpinco:   mpi_nco
@@ -1902,7 +1902,7 @@ else
 endif
 	chmod 755 ${MY_BIN_DIR}/$@${BNR_SFX}
 ncap2 :
-	-cd ../src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
+	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP_NETCDF=${DAP_NETCDF} DAP_OPENDAP=${DAP_OPENDAP} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} UDUNITS2=${UDUNITS2} $@
 
 #	/bin/rm -f ${MDL_NCAP} ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/ncap_yacc.h ${MY_OBJ_DIR}/ncap_yacc.c
 
