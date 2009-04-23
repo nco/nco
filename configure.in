@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.290 2009-04-21 22:17:37 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.291 2009-04-23 23:17:41 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -11,7 +11,7 @@
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
-# cd ~/nco;autoreconf -f -i
+# cd ~/nco;autoreconf -f -i --foreign
 
 # Distribution:
 # scp ~/nco/configure virga.ess.uci.edu:nco
@@ -98,7 +98,7 @@ AC_DEFINE_UNQUOTED(HOSTNAME,${nco_hostname},Hostname alias)
 AC_DEFINE_UNQUOTED(GNU_TRP,${build},Autoconf-generated architecture \"triplet\")
 
 # 20090421 Added for autoreconf to complete after Ubuntu Jaunty upgrade to autoconf 2.6.3
-AC_DEFINE([AS_TR_CPP], [csz_fxm], [Description])
+#AC_DEFINE([AS_TR_CPP], [csz_fxm], [Description])
 
 # Begin pvmgetarch Compatibility
 # Compatibility map between pvmgetarch and GNU triplets
