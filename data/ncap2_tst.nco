@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.16 2009-01-23 11:18:42 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.17 2009-04-23 10:23:43 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -29,6 +29,21 @@ nbr_err_ttl=0;
   b5=three_dmn_var_dbl.rmssdn($1).avgsqr();
   b6=three_dmn_var_dbl.total($2).avg();
 
+  //check total handles missing values correctly  
+  // two missing values
+  b10[time]={1,2,3,4,5,6,7,8,9,1};
+  b10.set_miss(1L);
+  // all missing values
+  b11[time]=1s;
+  b11.set_miss(1s);
+ 
+  // various missing values
+  b12=three_dmn_var_dbl;
+  // set all values to 2.0
+  b12=2.0;
+  b12.set_miss(1.0);
+  // sprinke a few missing values about
+  b12(:,:,0:1)=1.0;
 
   if( fabs(a1-40.609d) >0.01) {
     print("ERROR: a1:method test\n");
@@ -99,6 +114,24 @@ nbr_err_ttl=0;
   print("ERROR: b6:method test\n");
   nbr_err++;
  }
+
+
+  if( b10.total() !=44L ) {
+  print("ERROR: b10:method test\n");
+  nbr_err++;
+ }
+
+
+  if( b11.total() !=1s ) {
+  print("ERROR: b11:method test\n");
+  nbr_err++;
+ }
+
+  if( fabs(b12.total() -80.0d) >0.01 ) {
+  print("ERROR: b12:method test\n");
+  nbr_err++;
+ }
+
 
 
   print("RESULTS block a,b: Num errors="); print(nbr_err,"%d");
