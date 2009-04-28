@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.157 2009-04-22 13:03:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.158 2009-04-28 12:33:56 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2739,7 +2739,13 @@ var=NULL_CEWI;
               (void)nco_get_var_mem(var_rhs,dmn_vtr);
               var_nw=nco_var_dpl(var_rhs);
            }
-                
+           
+
+           // copy missing value if any from var_rhs to var_nw
+           if(var_rhs->has_mss_val){
+             wrn_prn("var_lmt","Copying missing value to new var");
+             nco_mss_val_cp(var_rhs,var_nw);
+           }
            
           /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
              a hyperslabed var and not a regular var  -- It shouldn't cause 
@@ -2759,6 +2765,12 @@ var=NULL_CEWI;
 
              var1->val.vp=(void*)nco_malloc(nco_typ_lng(var1->type));
              (void)memcpy( (void*)var1->val.vp,var_nw->val.vp,nco_typ_lng(var1->type));
+             
+             
+             // copy missing value if any from var_rhs to var_nw
+             nco_mss_val_cp(var_nw,var1);
+           
+
              var_nw=nco_var_free(var_nw);
              
              // free casting variable
@@ -2776,6 +2788,11 @@ var=NULL_CEWI;
                // swap values about in var_nm & var (the var cast earlier)
                //(void)nco_free(var->val.vp);
                var->val.vp=var_nw->val.vp;
+               
+               // copy missing value if any from var_rhs to var_nw
+               nco_mss_val_cp(var_nw,var);
+           
+
                var_nw->val.vp=(void*)NULL;       
                (void)nco_var_free(var_nw);    
              }
