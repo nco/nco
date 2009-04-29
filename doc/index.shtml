@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.526 2009-04-29 20:35:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.527 2009-04-29 20:49:23 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -763,7 +763,7 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
 <ul>
-<dt>The <a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> RPMs are usually quite up-to-date, e.g., 
+<dt>The <a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> RPMs are usually quite up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; might install, e.g., 
 <li><a href="http://rpmfind.net/linux/RPM/fedora/devel/x86_64/nco-3.9.7-1.fc11.x86_64.html">nco-3.9.7-1.fc11.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for x86_64/Fedora Core&nbsp;11-compatible environments</li>
 If not, try our own most recent self-built NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):</dt>
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>

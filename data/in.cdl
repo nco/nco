@@ -1,4 +1,4 @@
-// Purpose: CDL file to generate netCDF test file
+// Purpose: CDL file to generate netCDF test file for NCO
 
 // Usage:
 // ncgen -b -o in.nc in.cdl
@@ -20,9 +20,9 @@
 // WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.pl test script
 // Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
 // In particular, do not change number of elements in record coordinate, time, without simultaneously changing number of data in all record variables
-// My convention is that the _FillValue, if any, of any packed variable should be of the same type as the expanded variable. Hence _FillValue, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
+// My (and NCO's) convention is that the _FillValue, if any, of any packed variable should be of the same type as the expanded variable. Hence _FillValue, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
 
-// Data constants in CDL:
+// CDL Data constants:
 // byte: 'a'
 // char: "a"
 // short: 1s
@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.107 2009-03-27 21:55:14 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.108 2009-04-29 20:49:23 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -127,6 +127,10 @@ variables:
 	lon_grd:units = "degrees_east";
 
 	double time(time);
+	time: long_name = "time";
+	time: units = "days since 1964-03-12 12:09:00 -9:00"; 
+	time: calendar = "gregorian";
+
 	float lsmlev(lsmlev);
 	lsmlev:purpose = "Homebrew level coordinate for LSM";
 	lsmlev:long_name = "Soil depth";
