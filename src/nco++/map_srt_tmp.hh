@@ -58,4 +58,25 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
  } // end function
 
 
+template<typename T> 
+void ncap_array(var_sct *var1, var_sct *var2,var_sct *var_ret)
+{
+long idx;
+long sz=var_ret->sz;
+T *tp;
+T srt;
+T inc;
+   
+ srt=*( (T*)(var1->val.vp));
+ inc=*( (T*)(var2->val.vp));
+
+ tp=(T*)var_ret->val.vp; 
+  
+ for(idx=0 ;idx<sz; idx++){
+   tp[idx]=srt;
+   srt+=inc;
+ }
+ 
+}
+
 #endif
