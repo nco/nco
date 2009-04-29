@@ -3693,6 +3693,11 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			}
 			
 			
+			
+			
+			nco_mss_val_cp(var_rhs,var_nw);
+			
+			
 			/* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
 			a hyperslabed var and not a regular var  -- It shouldn't cause 
 			any abberant behaviour!! */ 
@@ -3711,6 +3716,12 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			var1->val.vp=(void*)nco_malloc(nco_typ_lng(var1->type));
 			(void)memcpy( (void*)var1->val.vp,var_nw->val.vp,nco_typ_lng(var1->type));
+			
+			
+			// copy missing value if any from var_rhs to var_nw
+			nco_mss_val_cp(var_nw,var1);
+			
+			
 			var_nw=nco_var_free(var_nw);
 			
 			// free casting variable
@@ -3728,6 +3739,11 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			// swap values about in var_nm & var (the var cast earlier)
 			//(void)nco_free(var->val.vp);
 			var->val.vp=var_nw->val.vp;
+			
+			// copy missing value if any from var_rhs to var_nw
+			nco_mss_val_cp(var_nw,var);
+			
+			
 			var_nw->val.vp=(void*)NULL;       
 			(void)nco_var_free(var_nw);    
 			}
@@ -3755,7 +3771,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			end3: ;
 			
 			
-#line 3759 "ncoTree.cpp"
+#line 3775 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
