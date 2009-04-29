@@ -1,19 +1,27 @@
+2009-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Changes since nco-3_9_7: DAP-netCDF support, sort(), GSL distributions, chunksize
+	  cd ~/nco;cvs tag -d nco-3_9_8;cvs tag -d nco-3_9_8-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.8 release"
+	  cvs tag -c nco-3_9_8;cvs tag -c nco-3_9_8-1
+
+	* Change debian files per Barry deFreese's instructions
+
 2009-04-29  Henry Butowsky  <henryb@hush.com> 
-	* Added the array function usage:
-	var_out=array(srt,inc,$dim);
-	e.g var_out=array(2,3,$time)
+
+	* Add array function usage: var_out=array(srt,ncr,$dim);
 	
-	* Added more gsl handler functions for _ran and _pdf 
+	* Add more GSL handler functions for _ran and _pdf 
 
 2009-04-23  Henry Butowsky  <henryb@hush.com> 
-	* added tests to ncap2_tst.nco to check that
-	total() method handles missing values correctly
+
+	* Add total() regression test for missing_values to ncap2_tst.nco
 
 2009-04-22  Henry Butowsky  <henryb@hush.com> 
-	* added unary functions abs(), sqr()
-	* abs() -absolute value for any type 
-	* fabs() -absolute value for float/double types
-        * sqr()  - square of number for any data type 
+
+	* Added unary functions abs(), sqr(), fabs():
+	abs()=absolute value for any type; fabs()=absolute value for
+	float/double types; sqr()=square of number for any data type 
 
 2009-04-21  Charlie Zender  <zender@uci.edu>
 
@@ -25,13 +33,6 @@
 	* ncks --secret lists hidden/unsupported functions
 
 	* UDUnits2 supported by configure --enable_udunits2 
-
-2009-04-19  Charlie Zender  <zender@uci.edu>
-
-	* Changes since nco-3_9_7: DAP-netCDF support, sort(), GSL distributions, chunksize
-	  cd ~/nco;cvs tag -d nco-3_9_8;cvs tag -d nco-3_9_8-1
-	  cd ~/nco;cvs commit -m "Preparing nco-3.9.8 release"
-	  cvs tag -c nco-3_9_8;cvs tag -c nco-3_9_8-1
 
 2009-04-18  Charlie Zender  <zender@uci.edu>
 
