@@ -37,18 +37,11 @@ Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 
 %description
-The netCDF Operators (NCO) are a suite of command line programs known
-as operators.  The operators facilitate manipulation and analysis of
-self-describing data stored in the freely available netCDF and HDF
-formats (http://www.unidata.ucar.edu/packages/netcdf and
-http://www.hdfgroup.org, respectively).  Each NCO operator (e.g.,
-ncks) takes netCDF input file(s), performs an operation (e.g.,
-averages, hyperslabs, or renames), and outputs a processed netCDF
-file.  Although most users of netCDF data are involved in scientific 
-research, these data formats, and thus NCO, are generic and are 
-equally useful in fields from atheism to zoology.  The NCO Users Guide 
-illustrates NCO use with examples from the field of climate modeling 
-and analysis.  The NCO homepage is http://nco.sourceforge.net
+NCO is a suite of programs known as operators. The operators are stand-alone, 
+command-line programs executable in a POSIX shell. Operators take one or more 
+netCDF files as input, perform operations (e.g., averaging, hyperslabbing), 
+and produce a netCDF output file. NCO was originally designed to manipulate and 
+analyze climate data, though it works on any netCDF format datasets.
 
 %description devel
 This package contains NCO header files and static libraries.
