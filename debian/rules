@@ -57,7 +57,6 @@ config.status: configure
 		--disable-dap-opendap \
 		--disable-nco_cplusplus \
 		--disable-netcdf4 \
-		--disable-rpath \
 		--disable-udunits \
 		--disable-udunits2 \
 		--disable-static

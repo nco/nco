@@ -4,6 +4,8 @@ nco (3.9.8-1) unstable; urgency=low
   * debian/control
     - BR libnetcdf-dev
     - debhelper > 5
+  * debian/rules
+    - remove --disable-rpath
 
  -- Charlie Zender <zender@uci.edu>  Wed, 29 Apr 2009 13:28:07 -0700
 
