@@ -5,6 +5,8 @@
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.8 release"
 	  cvs tag -c nco-3_9_8;cvs tag -c nco-3_9_8-1
 
+	* UDUnits2 build tweaks for Debian
+
 	* Change debian files per Barry deFreese's instructions
 
 2009-04-29  Henry Butowsky  <henryb@hush.com> 

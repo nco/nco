@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.291 2009-04-23 23:17:41 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.292 2009-04-29 21:33:37 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -795,6 +795,7 @@ fi # End test for UDUnits duplication
 AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
 # Check for UDUnits libraries unless told not to
 if test "${enable_udunits}" != 'no'; then
+    nco_udunits_dat='/usr/local/etc/udunits.dat'
     if test "${UDUNITS_PATH}"; then
 # Add ${UDUNITS_PATH}/lib to search path if present
 	nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
@@ -805,9 +806,9 @@ if test "${enable_udunits}" != 'no'; then
 	nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
     else
 # Patch from Fedora Core 6 nco.spec:
-	for udunits_fdat_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
-	    if test -e "$udunits_fdat_file" ; then
-		nco_udunits_dat="$udunits_fdat_file"
+	for udunits_data_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
+	    if test -e "$udunits_data_file" ; then
+		nco_udunits_dat="$udunits_data_file"
 	    fi
 	done
     fi
@@ -846,24 +847,24 @@ echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 if test "${enable_udunits2}" != 'no'; then
     if test "${UDUNITS2_PATH}"; then
 # Add ${UDUNITS2_PATH}/lib to search path if present
-	nco_udunits2_dat=${UDUNITS2_PATH}/share/udunits2.xml
+	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits2.xml
 	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
 	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
-#    nco_udunits2_dat=${UDUNITS2_PATH}/src/lib/udunits2.xml
+#    nco_udunits2_xml=${UDUNITS2_PATH}/src/lib/udunits2.xml
     elif test "${NETCDF_INC}"; then
-	nco_udunits_dat="${NETCDF_INC}/../share/udunits2.xml"
+	nco_udunits_xml="${NETCDF_INC}/../share/udunits2.xml"
     else
 # Patch from Fedora Core 6 nco.spec:
-	for udunits2_fdat_file in /usr/local/share/udunits2.xml /share/udunits2.xml ; do
-	    if test -e "$udunits2_fdat_file" ; then
-		nco_udunits2_dat="$udunits2_fdat_file"
+	for udunits2_data_file in /usr/local/share/udunits2.xml /share/udunits2.xml ; do
+	    if test -e "$udunits2_data_file" ; then
+		nco_udunits2_xml="$udunits2_data_file"
 	    fi
 	done
     fi
 # Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    AC_CHECK_FILE([$nco_udunits2_dat],,AC_WARN([file $nco_udunits2_dat was not found but will still attempt to build NCO with UDUnits2 support.]))
+    AC_CHECK_FILE([$nco_udunits2_xml],,AC_WARN([file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.]))
 # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
-    AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_dat"],[Location of UDUnits2 data file])
+    AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_xml"],[Location of UDUnits2 data file])
     AC_MSG_NOTICE([NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:])
     AC_CHECK_LIB([udunits2],[ut_read_xml],,enable_udunits2=no)
     if test "${UDUNITS2_PATH}"; then

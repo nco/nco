@@ -41,7 +41,7 @@ endif
 # 20070721: This may inadvertently cause libtool to set set rpath
 # In turn this generates linda warnings about hard-coded rpath
 # Since their Debian packages exist, enable GSL and ncap2
-# Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, and UDUnits
+# Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, UDUnits, and UDUnits2
 config.status: configure
 	dh_testdir
 	NETCDF_INC='/usr/include' \
@@ -59,6 +59,7 @@ config.status: configure
 		--disable-netcdf4 \
 		--disable-rpath \
 		--disable-udunits \
+		--disable-udunits2 \
 		--disable-static
 
 # Architecture 

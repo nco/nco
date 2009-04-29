@@ -24389,6 +24389,7 @@ fi
 
 # Check for UDUnits libraries unless told not to
 if test "${enable_udunits}" != 'no'; then
+    nco_udunits_dat='/usr/local/etc/udunits.dat'
     if test "${UDUNITS_PATH}"; then
 # Add ${UDUNITS_PATH}/lib to search path if present
 	nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
@@ -24399,9 +24400,9 @@ if test "${enable_udunits}" != 'no'; then
 	nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
     else
 # Patch from Fedora Core 6 nco.spec:
-	for udunits_fdat_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
-	    if test -e "$udunits_fdat_file" ; then
-		nco_udunits_dat="$udunits_fdat_file"
+	for udunits_data_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
+	    if test -e "$udunits_data_file" ; then
+		nco_udunits_dat="$udunits_data_file"
 	    fi
 	done
     fi
@@ -24892,24 +24893,24 @@ echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 if test "${enable_udunits2}" != 'no'; then
     if test "${UDUNITS2_PATH}"; then
 # Add ${UDUNITS2_PATH}/lib to search path if present
-	nco_udunits2_dat=${UDUNITS2_PATH}/share/udunits2.xml
+	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits2.xml
 	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
 	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
-#    nco_udunits2_dat=${UDUNITS2_PATH}/src/lib/udunits2.xml
+#    nco_udunits2_xml=${UDUNITS2_PATH}/src/lib/udunits2.xml
     elif test "${NETCDF_INC}"; then
-	nco_udunits_dat="${NETCDF_INC}/../share/udunits2.xml"
+	nco_udunits_xml="${NETCDF_INC}/../share/udunits2.xml"
     else
 # Patch from Fedora Core 6 nco.spec:
-	for udunits2_fdat_file in /usr/local/share/udunits2.xml /share/udunits2.xml ; do
-	    if test -e "$udunits2_fdat_file" ; then
-		nco_udunits2_dat="$udunits2_fdat_file"
+	for udunits2_data_file in /usr/local/share/udunits2.xml /share/udunits2.xml ; do
+	    if test -e "$udunits2_data_file" ; then
+		nco_udunits2_xml="$udunits2_data_file"
 	    fi
 	done
     fi
 # Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    as_ac_File=`$as_echo "ac_cv_file_$nco_udunits2_dat" | $as_tr_sh`
-{ $as_echo "$as_me:$LINENO: checking for $nco_udunits2_dat" >&5
-$as_echo_n "checking for $nco_udunits2_dat... " >&6; }
+    as_ac_File=`$as_echo "ac_cv_file_$nco_udunits2_xml" | $as_tr_sh`
+{ $as_echo "$as_me:$LINENO: checking for $nco_udunits2_xml" >&5
+$as_echo_n "checking for $nco_udunits2_xml... " >&6; }
 if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
   $as_echo_n "(cached) " >&6
 else
@@ -24917,7 +24918,7 @@ else
   { { $as_echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
 $as_echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
    { (exit 1); exit 1; }; }
-if test -r "$nco_udunits2_dat"; then
+if test -r "$nco_udunits2_xml"; then
   eval "$as_ac_File=yes"
 else
   eval "$as_ac_File=no"
@@ -24932,14 +24933,14 @@ as_val=`eval 'as_val=${'$as_ac_File'}
    if test "x$as_val" = x""yes; then
   :
 else
-  { $as_echo "$as_me:$LINENO: WARNING: file $nco_udunits2_dat was not found but will still attempt to build NCO with UDUnits2 support." >&5
-$as_echo "$as_me: WARNING: file $nco_udunits2_dat was not found but will still attempt to build NCO with UDUnits2 support." >&2;}
+  { $as_echo "$as_me:$LINENO: WARNING: file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&5
+$as_echo "$as_me: WARNING: file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&2;}
 fi
 
 # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
 
 cat >>confdefs.h <<_ACEOF
-#define UDUNITS2_PATH "$nco_udunits2_dat"
+#define UDUNITS2_PATH "$nco_udunits2_xml"
 _ACEOF
 
     { $as_echo "$as_me:$LINENO: NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:" >&5
