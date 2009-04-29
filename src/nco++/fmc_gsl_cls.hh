@@ -14,6 +14,10 @@
 // Only use when GSL is present and enabled
 #ifdef ENABLE_GSL
 
+
+/* used in some of _ran handles, need it for INT_MAX */
+#include <limits.h> 
+
 #include <sstream>
 #include <string>
 #include <vector>
@@ -35,6 +39,16 @@
 #ifndef NCO_GSL_MINOR_VERSION
 # define NCO_GSL_MINOR_VERSION 12
 #endif // NCO_GSL_MINOR_VERSION
+
+
+// Some of the gsl_ran_* functions return an unsigned int (NC_UINT)
+// netcdf3 has no NC_UINT type So we converte the returned values to an NC_INT
+// For some of the _ran functions may cause an overflow. In this 
+// case we recomend that users switch ntecdf4 and use the NC_UINT return type
+
+#define NCO_TYP_GSL_UINT NC_INT
+//#define NCO_TYP_GSL_UINT NC_UINT
+
 
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
 
@@ -107,6 +121,8 @@ union f_unn{
    unsigned int (*druuu)(const gsl_rng*,unsigned,unsigned,unsigned);
    unsigned int (*drd)(const gsl_rng*,double);
    unsigned int (*drdd)(const gsl_rng*,double,double);
+   unsigned int (*drdu)(const gsl_rng*,double,unsigned);
+
 
    unsigned long int (*er)(const gsl_rng*);
    unsigned long int (*eru)(const gsl_rng*,unsigned long int);
@@ -165,6 +181,7 @@ union f_unn{
   f_unn(unsigned int (*d)(const gsl_rng*, unsigned,unsigned,unsigned) ) { druuu=d; }
   f_unn(unsigned int (*d)(const gsl_rng*, double) )                     { drd=d; }
   f_unn(unsigned int (*d)(const gsl_rng*, double,double) )              { drdd=d; }
+  f_unn(unsigned int (*d)(const gsl_rng*, double,unsigned) )            { drdu=d; }
 
   f_unn(unsigned long int(*e)(const gsl_rng*))                          {er=e;}
   f_unn(unsigned long int(*e)(const gsl_rng*,unsigned long int))        {eru=e;}
@@ -223,10 +240,15 @@ static  var_sct *hnd_fnc_idpd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_nd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_idd(HANDLE_ARGS);
 static  var_sct *hnd_fnc_iid(HANDLE_ARGS);
+static  var_sct *hnd_fnc_ud(HANDLE_ARGS);
+static  var_sct *hnd_fnc_udu(HANDLE_ARGS);
+
+// the following functions handle explicitly _ran & _rng functions
 static  var_sct *hnd_fnc_rnd(HANDLE_ARGS);
+static  var_sct *hnd_fnc_ru(HANDLE_ARGS);
 static  var_sct *hnd_fnc_udrx(HANDLE_ARGS);
 static  var_sct *hnd_fnc_uerx(HANDLE_ARGS);
-
+static  var_sct *hnd_fnc_udrdu(HANDLE_ARGS); // explict handler
 };
 
 
