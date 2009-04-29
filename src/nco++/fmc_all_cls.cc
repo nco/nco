@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.11 2009-04-22 12:41:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.12 2009-04-29 11:09:55 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1513,6 +1513,168 @@
     return var1;
 
   }
+
+
+
+
+//Array Functions /***********************************/ 
+  arr_cls::arr_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("array",this,PARRAY)); 
+
+    }		      
+  } 
+  var_sct * arr_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("arr_cls::fnd");
+  int fdx;
+  int nbr_args;
+  int idx;
+  int nbr_dim;
+  dmn_sct **dim;
+  var_sct *var1=NULL_CEWI;
+  var_sct *var2=NULL_CEWI;
+  var_sct *var_ret;
+           
+  std::string styp;
+  std::string sfnm=fmc_obj.fnm();
+
+  RefAST tr;
+  std::vector<RefAST> vtr_args; 
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;            
+  vtl_typ lcl_typ;
+
+  fdx=fmc_obj.fdx();
+ 
+  styp=(expr ? "method":"function");
+
+
+  if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+  nbr_args=vtr_args.size();  
+
+
+  if(nbr_args >3) 
+      wrn_prn(sfnm,"Has been called with more than three arguments"); 
+  
+  if(nbr_args<3)
+      err_prn(sfnm,"Has been called with less than three arguments"); 
+   
+  
+  var1=walker.out(vtr_args[0]);  
+  var2=walker.out(vtr_args[1]);  
+
+  
+  if(prs_arg->ntl_scn && var1->undefined ){
+    var2=nco_var_free(var2);
+    return var1;
+  }
+
+          
+
+  /* third argument must be a single dimension */
+  if(vtr_args[2]->getType() != DIM_ID ) 
+    err_prn(sfnm,"Third argument must be a dimension"); 
+
+  // cast a var from using the dim arg
+  {
+   std::vector<std::string> cst_vtr;              
+   cst_vtr.push_back(vtr_args[2]->getText());
+     
+   var_ret=ncap_cst_mk(cst_vtr,prs_arg);
+   
+   // convert to type of first arg
+   var_ret=nco_var_cnf_typ(var1->type,var_ret);  
+
+  }
+
+  if(prs_arg->ntl_scn){
+    
+    var1=nco_var_free(var1);
+    var2=nco_var_free(var2);
+
+    return var_ret; 
+
+  }
+
+    
+  // do the deed
+  switch(fdx){
+
+
+    // This array method returns an array of numbers of type var1->type
+    // The array starts at the first value in var1 and the increment is         
+    // is the first value in var2. When necessary the var2 type is converted
+    // to the var one type. The size of array is equal to the dimension size
+    // arguments 
+    // e.g  var_out=array(1,-3, $time);  
+    //      var_out={1,-2,-5,-8,-11,-14,-17,-20,-23,-26 };        
+    
+     case PARRAY: {
+
+         var2=nco_var_cnf_typ(var1->type,var2);  
+         // malloc space
+         var_ret->val.vp= (void*)nco_malloc(var_ret->sz*nco_typ_lng(var1->type));   
+
+           switch (var1->type) {
+             case NC_DOUBLE: 
+	        (void)ncap_array<double>(var1,var2,var_ret);    
+                break;  
+             case NC_FLOAT: 
+	        (void)ncap_array<float>(var1,var2,var_ret);    
+                break;  
+             case NC_INT: 
+	        (void)ncap_array<nco_int>(var1,var2,var_ret);    
+                break;  
+             case NC_SHORT: 
+	        (void)ncap_array<nco_short>(var1,var2,var_ret);    
+                break;  
+             case NC_USHORT: 
+	        (void)ncap_array<nco_ushort>(var1,var2,var_ret);    
+                break;  
+             case NC_UINT: 
+	        (void)ncap_array<nco_uint>(var1,var2,var_ret);    
+                break;  
+             case NC_INT64: 
+	        (void)ncap_array<nco_int64>(var1,var2,var_ret);    
+                break;  
+             case NC_UINT64: 
+	        (void)ncap_array<nco_uint64>(var1,var2,var_ret);    
+                break;  
+             case NC_BYTE: 
+	        (void)ncap_array<nco_byte>(var1,var2,var_ret);    
+                break;  
+             case NC_UBYTE: 
+	        (void)ncap_array<nco_ubyte>(var1,var2,var_ret);    
+                break;  
+             case NC_CHAR: 
+	        (void)ncap_array<char>(var1,var2,var_ret);    
+                break;  
+             case NC_STRING: break; /* Do nothing */
+             
+            default: nco_dfl_case_nc_type_err(); break;
+            
+           } // end big switch
+ 
+           var1=nco_var_free(var1);
+           var2=nco_var_free(var2);
+  
+     } break;             
+
+
+  } // end switch
+     
+  return var_ret;
+
+  } 
 
 
 
