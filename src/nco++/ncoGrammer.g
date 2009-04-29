@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.158 2009-04-28 12:33:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.159 2009-04-29 15:51:24 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2741,11 +2741,10 @@ var=NULL_CEWI;
            }
            
 
-           // copy missing value if any from var_rhs to var_nw
-           if(var_rhs->has_mss_val){
-             wrn_prn("var_lmt","Copying missing value to new var");
-             nco_mss_val_cp(var_rhs,var_nw);
-           }
+
+
+           nco_mss_val_cp(var_rhs,var_nw);
+
            
           /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
              a hyperslabed var and not a regular var  -- It shouldn't cause 
