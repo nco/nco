@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.30 2009-04-18 18:59:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.31 2009-04-29 11:12:40 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -435,7 +435,7 @@ void gsl_cls::gsl_ini_cdf(void){
     gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_Pinv",f_unn(gsl_cdf_pareto_Pinv),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_Qinv",f_unn(gsl_cdf_pareto_Qinv),hnd_fnc_nd,P3DBLX));
 
-    gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_P",f_unn(gsl_cdf_logistic_P),hnd_fnc_nd,P2DBLX));
+      gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_P",f_unn(gsl_cdf_logistic_P),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Q",f_unn(gsl_cdf_logistic_Q),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Pinv",f_unn(gsl_cdf_logistic_Pinv),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Qinv",f_unn(gsl_cdf_logistic_Qinv),hnd_fnc_nd,P2DBLX));
@@ -465,15 +465,15 @@ void gsl_cls::gsl_ini_cdf(void){
 void gsl_cls::gsl_ini_ran(void){
  
   gpr_vtr.push_back(gpr_cls("gsl_ran_bernoulli",f_unn(gsl_ran_bernoulli),hnd_fnc_udrx,NC_DOUBLE));
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_bernoulli_pdf",f_unn(gsl_ran_bernoulli_pdf),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_bernoulli_pdf",f_unn(gsl_ran_bernoulli_pdf),hnd_fnc_ud));
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_beta",f_unn(gsl_ran_beta),hnd_fnc_rnd,P2DBLX));
   gpr_vtr.push_back(gpr_cls("gsl_ran_beta_pdf",f_unn(gsl_ran_beta_pdf),hnd_fnc_nd,P3DBLX));
 
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial",f_unn(gsl_ran_binomial),hnd_fnc_rnd,P1DBLX));
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_knuth",f_unn(gsl_ran_binomial_knuth),hnd_fnc_rnd,P1DBLX));
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_tpe",f_unn(gsl_ran_binomial_tpe),hnd_fnc_rnd,P1DBLX));
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_pdf",f_unn(gsl_ran_binomial_pdf),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_binomial",f_unn(gsl_ran_binomial),hnd_fnc_udrdu));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_knuth",f_unn(gsl_ran_binomial_knuth),hnd_fnc_udrdu));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_tpe",f_unn(gsl_ran_binomial_tpe),hnd_fnc_udrdu));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_pdf",f_unn(gsl_ran_binomial_pdf),hnd_fnc_udu));
  
   gpr_vtr.push_back(gpr_cls("gsl_ran_exponential",f_unn(gsl_ran_exponential),hnd_fnc_rnd,P1DBLX));
   gpr_vtr.push_back(gpr_cls("gsl_ran_exponential_pdf",f_unn(gsl_ran_exponential_pdf),hnd_fnc_nd,P2DBLX));
@@ -501,7 +501,7 @@ void gsl_cls::gsl_ini_ran(void){
   gpr_vtr.push_back(gpr_cls("gsl_ran_flat_pdf",f_unn(gsl_ran_flat_pdf),hnd_fnc_nd,P3DBLX));
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma",f_unn(gsl_ran_gamma),hnd_fnc_rnd,P2DBLX));
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_int",f_unn(gsl_ran_gamma_int),hnd_fnc_udru,NC_UINT));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_int",f_unn(gsl_ran_gamma_int),hnd_fnc_ru));
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_pdf",f_unn(gsl_ran_gamma_pdf),hnd_fnc_nd,P3DBLX));
 # if NCO_GSL_MINOR_VERSION >= 8 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_mt",f_unn(gsl_ran_gamma_mt),hnd_fnc_rnd,P2DBLX));
@@ -533,7 +533,7 @@ void gsl_cls::gsl_ini_ran(void){
   gpr_vtr.push_back(gpr_cls("gsl_ran_landau_pdf",f_unn(gsl_ran_landau_pdf),hnd_fnc_nd,P1DBLX));
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_geometric",f_unn(gsl_ran_geometric),hnd_fnc_udrx,NC_DOUBLE));
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_geometric_pdf",f_unn(gsl_ran_geometric_pdf),hnd_fnc_nd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_geometric_pdf",f_unn(gsl_ran_geometric_pdf),hnd_fnc_ud));
 
   //gpr_vtr.push_back(gpr_cls("gsl_ran_hypergeometric",f_unn(gsl_ran_hypergeometric),hnd_fnc_rnd,P1DBLX));
   //gpr_vtr.push_back(gpr_cls("gsl_ran_hypergeometric_pdf",f_unn(gsl_ran_hypergeometric_pdf),hnd_fnc_rnd,P1DBLX));
@@ -558,8 +558,8 @@ void gsl_cls::gsl_ini_ran(void){
   //gpr_vtr.push_back(gpr_cls("gsl_ran_negative_binomial",f_unn(gsl_ran_negative_binomial),hnd_fnc_rnd,P1DBLX));
   //gpr_vtr.push_back(gpr_cls("gsl_ran_negative_binomial_pdf",f_unn(gsl_ran_negative_binomial_pdf),hnd_fnc_rnd,P1DBLX));
 
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_pascal",f_unn(gsl_ran_pascal),hnd_fnc_rnd,P1DBLX));
-  //gpr_vtr.push_back(gpr_cls("gsl_ran_pascal_pdf",f_unn(gsl_ran_pascal_pdf),hnd_fnc_rnd,P1DBLX));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_pascal",f_unn(gsl_ran_pascal),hnd_fnc_udrdu));
+  gpr_vtr.push_back(gpr_cls("gsl_ran_pascal_pdf",f_unn(gsl_ran_pascal_pdf),hnd_fnc_udu));
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_pareto",f_unn(gsl_ran_pareto),hnd_fnc_rnd,P2DBLX));
   gpr_vtr.push_back(gpr_cls("gsl_ran_pareto_pdf",f_unn(gsl_ran_pareto_pdf),hnd_fnc_nd,P3DBLX));
@@ -1616,7 +1616,7 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
 	     dp[1][jdx] == mss_val_dbl ||
 	     dp[2][jdx] == mss_val_dbl ||
 	     dp[3][jdx] == mss_val_dbl ||
-	     dp[4][jdx] == mss_val_dbl 
+  	     dp[4][jdx] == mss_val_dbl 
             ) dp[0][jdx]=mss_val_dbl;       
 	  else   
 	    dp[0][jdx]=(*fnc_dbl)(dp[0][jdx],dp[1][jdx],dp[2][jdx],dp[3][jdx],dp[4][jdx]);
@@ -1643,6 +1643,7 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   return var_arr[0]; 
   
 } //end hnd_fnc_nd 
+
 
 // handle regular arguments NC_INT,NC_INT,NC_DOUBLE
 var_sct *gsl_cls::hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
@@ -1860,6 +1861,207 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
 } // end function hnd_fnc_idd
 
 
+
+// handle regular arguments NC_UINT,NC_DOUBLE
+var_sct *gsl_cls::hnd_fnc_ud(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_ud");
+  long idx;
+  int args_nbr;
+  nc_type type;
+  std::string styp=(is_mtd ? "method":"function");
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var1=NULL_CEWI;
+  var_sct *var2=NULL_CEWI;
+  var_sct *var_ret=NULL_CEWI;
+  
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  type=gpr_obj.type();  
+  
+  args_nbr=args_vtr.size();
+  
+  if(args_nbr <2){
+    if(is_mtd) err_prn(fnc_nm,styp+" \""+sfnm+"\" requires one argument. None given"); else err_prn(fnc_nm,styp+" \""+sfnm+"\" requires two arguments");
+  }
+  
+  var1=walker.out(args_vtr[0]);
+  var2=walker.out(args_vtr[1]);  
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+    
+    if(var1->undefined || var2->undefined){
+      var1=nco_var_free(var1);
+      var2=nco_var_free(var2);
+      var_ret=ncap_var_udf("~gsl_cls");
+    }else {
+      var_ret=ncap_var_att_cnf_ntl(var2,var1);
+      var_ret=nco_var_cnf_typ(NC_DOUBLE,var_ret);
+    } 
+    return var_ret;
+  } 
+  
+    
+  { 
+    bool has_mss_val=false;
+    long sz;
+    nco_uint *lp; 
+    double *dp;
+    double mss_val_dbl;
+    double (*fnc_dbl)(unsigned,double);
+    
+    // convert to type double
+    var1=nco_var_cnf_typ((nc_type)NC_UINT,var1); 
+    var2=nco_var_cnf_typ(NC_DOUBLE,var2); 
+    
+    // make operands conform  
+    ncap_var_att_cnf(var2,var1);
+    
+    sz=var1->sz; 
+    fnc_dbl=gpr_obj.g_args().cud; 
+    
+    (void)cast_void_nctype((nc_type)NC_UINT,&(var1->val));
+    lp=var1->val.uip;  
+    (void)cast_void_nctype(NC_DOUBLE,&(var2->val));
+    dp=var2->val.dp;  
+    
+
+    if(var2->has_mss_val){
+      has_mss_val=true; 
+      (void)cast_void_nctype(NC_DOUBLE,&var2->mss_val);
+      mss_val_dbl=var2->mss_val.dp[0];
+      (void)cast_nctype_void(NC_DOUBLE,&(var2->mss_val));
+    }
+    
+    if(!has_mss_val){ 
+      for(idx=0;idx<sz;idx++) 
+	dp[idx]=(*fnc_dbl)(lp[idx],dp[idx]);
+    }else{
+      
+      for(idx=0;idx<sz;idx++)
+	if(dp[idx] != mss_val_dbl)
+	  dp[idx]=(*fnc_dbl)(lp[idx],dp[idx]);
+
+    }           
+    
+    (void)cast_nctype_void((nc_type)NC_UINT,&(var1->val));
+    (void)cast_nctype_void(NC_DOUBLE,&(var2->val));
+    nco_var_free(var1);
+    
+  }
+    
+  return var2;
+
+}
+
+
+
+// handle regular arguments NC_UINT,NC_DOUBLE,NC_UINT
+var_sct *gsl_cls::hnd_fnc_udu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_udu");
+  int idx;
+  int jdx;
+  //int fdx=gpr_obj.type(); // very important 
+  int args_nbr;
+  std::string styp=(is_mtd ? "method":"function");
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var_ret; 
+  var_sct *var_arr[3];
+  var_sct **var_arr_ptr[3]; 
+  
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  
+  args_nbr=args_vtr.size(); 
+  
+  
+  if(args_nbr <3){
+    if(is_mtd) err_prn(sfnm,styp+" requires two arguments"); else err_prn(sfnm,styp+" requires three arguments.");    
+  }
+
+  for(idx=0; idx< 3 ;idx++){     
+    var_arr[idx]=walker.out(args_vtr[idx]);
+    var_arr_ptr[idx]=&var_arr[idx];
+  } 
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+    
+    // nb ncap_var_att_arr_cnf() frees up sct's in var_att_ptr    
+    var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,3 );     
+    if(!var_ret->undefined)
+      var_ret=nco_var_cnf_typ(NC_DOUBLE,var_ret);
+    
+    return var_ret;
+  } 
+
+  var_arr[0]=nco_var_cnf_typ((nc_type)NC_UINT,var_arr[0]);
+  var_arr[1]=nco_var_cnf_typ(NC_DOUBLE,var_arr[1]);
+  var_arr[2]=nco_var_cnf_typ((nc_type)NC_UINT,var_arr[2]);
+  
+  // now make variables conform 
+  // make variables conform  
+  (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,3 );
+  
+  // do heavy lifting       
+  {
+    bool has_mss_val=false;
+    int sz;
+    double *dp;
+    nco_uint *lp[2]; 
+    double mss_val_dbl;
+    double (*fnc_dbl)(unsigned,double,unsigned);       
+
+    fnc_dbl=gpr_obj.g_args().cudu;  
+     
+    // assume from here on that args conform
+    sz=var_arr[0]->sz;
+
+    (void)cast_void_nctype((nc_type)NC_UINT,&(var_arr[0]->val));                  
+    lp[0]=var_arr[0]->val.uip;
+    
+    (void)cast_void_nctype(NC_DOUBLE,&(var_arr[1]->val));                  
+    dp=var_arr[1]->val.dp;
+    
+    (void)cast_void_nctype((nc_type)NC_UINT,&(var_arr[2]->val));                  
+    lp[1]=var_arr[1]->val.uip;
+    
+    has_mss_val=false;  
+    if(var_arr[1]->has_mss_val){
+      has_mss_val=true; 
+      (void)cast_void_nctype(NC_DOUBLE,&var_arr[1]->mss_val);
+      mss_val_dbl=var_arr[1]->mss_val.dp[0]; 
+      (void)cast_nctype_void(NC_DOUBLE,&(var_arr[1]->mss_val));
+    }
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  dp[jdx]=(*fnc_dbl)(lp[0][jdx],dp[jdx],lp[1][jdx] );
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  if(dp[jdx] != mss_val_dbl)
+	   dp[jdx]=(*fnc_dbl)(lp[0][jdx],dp[jdx],lp[1][jdx] );
+
+      } // end else           
+
+    
+    (void)cast_nctype_void((nc_type)NC_UINT,&(var_arr[0]->val));
+    (void)cast_nctype_void(NC_DOUBLE,&(var_arr[1]->val));  
+    (void)cast_nctype_void((nc_type)NC_UINT,&(var_arr[2]->val));
+    
+    (void)nco_var_free(var_arr[0]);
+    (void)nco_var_free(var_arr[2]);
+  }  
+  
+  return var_arr[1]; 
+
+} //end hnd_fnc_udu
+
+
+
+
+
 var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_rnd");
   int idx;
@@ -1875,9 +2077,6 @@ var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
   var_sct ***var_arr_ptr;
   // GSL random Number stuff
   gsl_rng *ncap_rng;
-
-  // initialize 
-  ncap_rng=gsl_rng_alloc(gsl_rng_default);  
 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
@@ -1928,6 +2127,11 @@ var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     
     return var_ret;
   } 
+
+
+  // initialize 
+  ncap_rng=gsl_rng_alloc(gsl_rng_default);  
+
   
   for(idx=0 ; idx<args_in_nbr ; idx++){
     // convert all to type double
@@ -2078,6 +2282,96 @@ var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
 
 
 
+var_sct *gsl_cls::hnd_fnc_ru(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_ru");
+  int idx;
+  int args_nbr;
+  nc_type type;
+  std::string styp=(is_mtd ? "method":"function");
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var=NULL_CEWI;
+  var_sct *var1=NULL_CEWI;
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  gsl_rng *ncap_rng;
+  
+  
+  args_nbr=args_vtr.size();
+  
+  type=gpr_obj.type(); 
+  
+  if(args_nbr==0) err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+  
+  var=walker.out(args_vtr[0]);
+    
+  if(prs_arg->ntl_scn){
+    if(!var->undefined)
+      var=nco_var_cnf_typ(NC_DOUBLE,var);                     
+    return var;
+  }
+ 
+
+  // initialize 
+  ncap_rng=gsl_rng_alloc(gsl_rng_default);  
+  
+
+    { 
+      long sz=var->sz;
+      nco_uint  mss_val_lng=0; 
+      nco_uint *lp;
+      double *dp;      
+
+      double (*fnc_dbl)(const gsl_rng*,unsigned);
+      
+      fnc_dbl=gpr_obj.g_args().cru; 
+      
+      var=nco_var_cnf_typ((nc_type)NC_UINT,var); 
+      
+      var1=nco_var_dpl(var);
+      var1=nco_var_cnf_typ(NC_DOUBLE,var1);         
+      (void)cast_void_nctype(NC_DOUBLE,&(var1->val));
+      dp=var1->val.dp;
+                     
+      (void)cast_void_nctype((nc_type)NC_UINT,&(var->val));
+      lp=var->val.uip;  
+      
+      
+      if(var->has_mss_val){
+	(void)cast_void_nctype((nc_type)NC_UINT,&(var->mss_val));
+	mss_val_lng=var->mss_val.uip[0];    
+	(void)cast_nctype_void((nc_type)NC_UINT,&(var->mss_val));
+      }
+
+      
+      if(var->has_mss_val){  
+	for(idx=0;idx<sz;idx++)
+	  if(lp[idx] != mss_val_lng)
+            dp[idx]=(*fnc_dbl)(ncap_rng,lp[idx]);   
+
+      }else{
+	for(idx=0;idx<sz;idx++) 
+	  dp[idx]=(*fnc_dbl)(ncap_rng,lp[idx]);
+      }
+      
+      
+      (void)cast_nctype_void((nc_type)NC_UINT,&(var->val));
+      nco_var_free(var);
+
+     (void)cast_nctype_void(NC_DOUBLE,&(var1->val));
+      
+    }
+
+     
+  gsl_rng_free(ncap_rng);
+  
+  return var1;
+
+} // end hnd_fnc_ru
+
+
+
+
+
 
 var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_udrx");
@@ -2094,7 +2388,7 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   
   args_nbr=args_vtr.size();
   
-  type=gpr_obj.type(); 
+        type=gpr_obj.type(); 
   
   if(args_nbr==0) err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
   
@@ -2102,10 +2396,10 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     
   if(prs_arg->ntl_scn){
     if(!var->undefined)
-      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
+      var=nco_var_cnf_typ((nc_type)NCO_TYP_GSL_UINT,var);                     
     return var;
   }
-
+ 
 
   // initialize 
   ncap_rng=gsl_rng_alloc(gsl_rng_default);  
@@ -2115,19 +2409,19 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   case NC_UINT:
     { 
       long sz=var->sz;
-      nco_uint64  mss_val_lng=0LL; 
-      nco_uint64 *lp;
+      nco_uint  mss_val_lng=0; 
+      nco_uint *lp;
       
       unsigned (*fnc_int)(const gsl_rng*,unsigned);
       
       fnc_int=gpr_obj.g_args().dru; 
       
-      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
-      (void)cast_void_nctype((nc_type)NC_UINT64,&(var->val));
-      lp=var->val.ui64p;  
+      var=nco_var_cnf_typ((nc_type)NC_UINT,var);                     
+      (void)cast_void_nctype((nc_type)NC_UINT,&(var->val));
+      lp=var->val.uip;  
       
       if(var->has_mss_val)
-        mss_val_lng=var->mss_val.lp[0]; 
+        mss_val_lng=var->mss_val.uip[0]; 
        
       
       if(var->has_mss_val){  
@@ -2141,7 +2435,7 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       }
       
       
-      (void)cast_nctype_void((nc_type)NC_UINT64,&(var->val));
+      (void)cast_nctype_void((nc_type)NC_UINT,&(var->val));
       
       
     } 
@@ -2151,7 +2445,7 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     { 
       bool has_mss_val;
       int sz=var->sz;
-      nco_uint64 *lp;
+      nco_uint *lp;
       double mss_val_dbl;
       double *dp;
 
@@ -2168,10 +2462,10 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 
       var_out=nco_var_dpl(var);
 
-      var_out=nco_var_cnf_typ((nc_type)NC_UINT64,var_out);                        
+      var_out=nco_var_cnf_typ((nc_type)NC_UINT,var_out);                        
 
-      (void)cast_void_nctype((nc_type)NC_UINT64,&(var_out->val));
-      lp=var_out->val.ui64p;  
+      (void)cast_void_nctype((nc_type)NC_UINT,&(var_out->val));
+      lp=var_out->val.uip;  
       
       
       (void)cast_void_nctype(NC_DOUBLE,&(var->val));
@@ -2198,7 +2492,7 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       (void)cast_nctype_void(NC_DOUBLE,&(var->val));
       var=nco_var_free(var);
      
-      (void)cast_nctype_void((nc_type)NC_UINT64,&(var_out->val));     
+      (void)cast_nctype_void((nc_type)NC_UINT,&(var_out->val));     
       var=var_out; 
   
 
@@ -2210,6 +2504,9 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     
   } // end big switch 
 
+  // convert var if necessary
+  var=nco_var_cnf_typ((nc_type)NCO_TYP_GSL_UINT,var);                     
+
   gsl_rng_free(ncap_rng);
   
   return var;
@@ -2217,11 +2514,137 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 
 
 
+var_sct *gsl_cls::hnd_fnc_udrdu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_udrdu");
+  int idx;
+  long jdx;
+  int args_nbr;
+  std::string styp=(is_mtd ? "method":"function");
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var_ret; 
+  var_sct *var_arr[2];
+  var_sct **var_arr_ptr[2]; 
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  gsl_rng *ncap_rng;
+
+  
+  args_nbr=args_vtr.size(); 
+  
+  
+  if(args_nbr <2){
+    if(is_mtd) err_prn(sfnm,styp+" requires one argument"); else err_prn(sfnm,styp+" requires two arguments.");    
+  }
+
+  for(idx=0; idx< 2 ;idx++){     
+    var_arr[idx]=walker.out(args_vtr[idx]);
+    var_arr_ptr[idx]=&var_arr[idx];
+  } 
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+    
+    // nb ncap_var_att_arr_cnf() frees up sct's in var_att_ptr    
+    var_ret=ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,2 );     
+    if(!var_ret->undefined)
+      var_ret=nco_var_cnf_typ((nc_type)NCO_TYP_GSL_UINT,var_ret);
+    
+    return var_ret;
+  } 
+
+
+  // initialize 
+  ncap_rng=gsl_rng_alloc(gsl_rng_default);  
+
+
+  var_arr[0]=nco_var_cnf_typ(NC_DOUBLE,var_arr[0]);
+  var_arr[1]=nco_var_cnf_typ((nc_type)NC_UINT,var_arr[1]);
+  
+  // now make variables conform 
+  // make variables conform  
+  (void)ncap_var_att_arr_cnf(prs_arg->ntl_scn,var_arr_ptr,2 );
+  
+  // do heavy lifting       
+  {
+    bool has_mss_val=false;
+    long sz;
+    double *dp;
+    nco_uint  mss_val_lng=0; 
+    nco_uint *lp;
+
+    double mss_val_dbl;
+    
+    // assume from here on that args conform
+    sz=var_arr[0]->sz;
+
+    (void)cast_void_nctype(NC_DOUBLE,&(var_arr[0]->val));                  
+    dp=var_arr[0]->val.dp;
+    
+    (void)cast_void_nctype((nc_type)NC_UINT,&(var_arr[1]->val));                  
+    lp=var_arr[1]->val.uip;
+    
+    
+    has_mss_val=false;  
+    if(var_arr[0]->has_mss_val){
+      has_mss_val=true; 
+      (void)cast_void_nctype(NC_DOUBLE,&var_arr[0]->mss_val);
+      mss_val_dbl=var_arr[2]->mss_val.dp[0]; 
+      (void)cast_nctype_void(NC_DOUBLE,&(var_arr[0]->mss_val));
+      // use C imlicit conversion  
+      mss_val_lng=(unsigned int)mss_val_dbl;  
+    } 
+    
+    // do the deed !!!
+    {
+      unsigned int (*fnc_int)(const gsl_rng* ,double,unsigned);       
+      fnc_int=gpr_obj.g_args().drdu;  
+      
+      if(!has_mss_val){ 
+	for(jdx=0;jdx<sz;jdx++) 
+	  lp[jdx]=(*fnc_int)(ncap_rng,dp[jdx],lp[jdx]);
+      }else{
+	
+	for(jdx=0;jdx<sz;jdx++)
+	  if(dp[jdx] != mss_val_dbl )
+             lp[jdx]=(*fnc_int)(ncap_rng,dp[jdx],lp[jdx]);  
+	  else
+	     lp[jdx]=mss_val_lng;      
+      } // end else           
+    
+    } // done the deed !!
+    
+
+    (void)cast_nctype_void(NC_DOUBLE,&(var_arr[0]->val));
+    (void)cast_nctype_void((nc_type)NC_UINT,&(var_arr[1]->val));  
+
+    
+    (void)nco_var_free(var_arr[0]);
+
+  }  
+
+  gsl_rng_free(ncap_rng);
+
+
+  // Convert if necessary
+  var_arr[1]=nco_var_cnf_typ((nc_type)NCO_TYP_GSL_UINT,var_arr[1]);
+
+  return var_arr[1]; 
+
+
+} // end hnd_fnc_udrdu
+
+
+
+
+
+
 
 var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_udrx");
-  int idx;
   int args_nbr;
+  long idx;
+  unsigned long rng_max_lng;
+  const char* rng_nm_sng;
   nc_type type;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
@@ -2241,55 +2664,61 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     
   if(prs_arg->ntl_scn){
     if(!var->undefined)
-      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
+      var=nco_var_cnf_typ((nc_type)NCO_TYP_GSL_UINT,var);                    
     return var;
   }
 
 
   // initialize 
   ncap_rng=gsl_rng_alloc(gsl_rng_default);  
-  
+
+  rng_max_lng=gsl_rng_max(ncap_rng);
+  rng_nm_sng=gsl_rng_name(ncap_rng);
+
   switch(type){ 
     
+
+  // This case is a wrapper for the single function
+  // gsl_rng_get(). It shouldn't be used for any other function
   case NC_NAT:
     { 
       long sz=var->sz;
-      nco_uint64  mss_val_lng=0LL; 
-      nco_uint64 *lp;
+      nco_uint *lp;
       
       unsigned long int (*fnc_int)(const gsl_rng*);
       
       fnc_int=gpr_obj.g_args().er; 
-      
-      var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                     
-      (void)cast_void_nctype((nc_type)NC_UINT64,&(var->val));
-      lp=var->val.ui64p;  
-      
-      /* missing values 
-      if(var->has_mss_val)
-        mss_val_lng=var->mss_val.lp[0]; 
-       
-      //  missing values ? 
-      
-      if(var->has_mss_val){  
-	for(idx=0;idx<sz;idx++)
-	  if(lp[idx] != mss_val_lng)
-            lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);   
 
-      */
+      /* bomb out if max value of number generator can't be held in regular int */
+      if( NCO_TYP_GSL_UINT==NC_INT &&  rng_max_lng > INT_MAX ){
+        ostringstream os; 
+        os<<"Possible integer overflow. You are using the random number generator \"" <<rng_nm_sng<<"\". This can return a value up to "<<rng_max_lng<<". This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
+
+        err_prn(sfnm,os.str());
+      } 
+
+
+      
+      var=nco_var_cnf_typ((nc_type)NC_UINT,var);                     
+      (void)cast_void_nctype((nc_type)NC_UINT,&(var->val));
+      lp=var->val.uip;  
+
       for(idx=0;idx<sz;idx++) 
 	lp[idx]=(*fnc_int)(ncap_rng);
       
-      (void)cast_nctype_void((nc_type)NC_UINT64,&(var->val));
+      (void)cast_nctype_void((nc_type)NC_UINT,&(var->val));
       
       
     } 
     break;  
-    
+
+
+  // This case is a wrapper for the single function
+  // gsl_rng_uniform_int(). It shouldn't be used for any other function
   case NC_UINT:
     { 
       bool has_mss_val;
-      int sz=var->sz;
+      long sz=var->sz;
       nco_uint64 *lp;
       nco_uint64 mss_val_lng;
       double *dp; 
@@ -2304,7 +2733,16 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       (void)cast_void_nctype((nc_type)NC_UINT64,&(var->val));
       lp=var->val.ui64p;  
       
-      
+      //check requested  max values
+      if( NCO_TYP_GSL_UINT==NC_INT && rng_max_lng > INT_MAX)
+        for(idx=0 ; idx<sz ;idx++)
+          if( lp[idx]>INT_MAX ) {
+	    // bomb out if necessary  
+            ostringstream os; 
+            os<<"Possible integer overflow. You have rquested the generation of integers up to the value of " <<lp[idx]<<" .This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
+            err_prn(sfnm,os.str());
+          }
+          
       has_mss_val=false;
       if(var->has_mss_val){
 	has_mss_val=true;
@@ -2325,9 +2763,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       
       (void)cast_nctype_void((nc_type)NC_UINT64,&(var->val));     
 
-  
-
-    } 
+    }
     break;
     
   default:
@@ -2337,6 +2773,9 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 
   gsl_rng_free(ncap_rng);
   
+  // convert if necessary
+  var=nco_var_cnf_typ((nc_type)NCO_TYP_GSL_UINT,var);                        
+
   return var;
 } // end hnd_fnc_uerx
 
