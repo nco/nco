@@ -1,3 +1,14 @@
+2009-04-29  Henry Butowsky  <henryb@hush.com> 
+	* Added the array function usage:
+	var_out=array(srt,inc,$dim);
+	e.g var_out=array(2,3,$time)
+	
+	* Added more gsl handler functions for _ran and _pdf 
+
+2009-04-23  Henry Butowsky  <henryb@hush.com> 
+	* added tests to ncap2_tst.nco to check that
+	total() method handles missing values correctly
+
 2009-04-22  Henry Butowsky  <henryb@hush.com> 
 	* added unary functions abs(), sqr()
 	* abs() -absolute value for any type 
