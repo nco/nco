@@ -1,42 +1,35 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.320 2009-04-29 20:20:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.321 2009-04-30 02:30:45 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version primarily improves documentation and build-ability
-of the GSL-library functions introduced in ncap2 version 3.9.6.
-A list all ncap2 functions/methods appears below.
+This version extends the GSL-library functions supported to
+include all GSL random number generator (_rnd) and distribution
+function (_cdf and _pdf) routines in GSL Chapters 17 and 19.
+A list of ncap2 GSL functions added since 3.9.7 is below.
 
 http://nco.sf.net/nco.html#gsl
 
-Plans for 3.9.8 are underway. Three areas of improvement will be 
-generalized sorting, support for GSL distribution functions,
-and support for a new DAP library provided by libnetcdf.
+Work on 3.9.9 is underway. Areas of improvement include
+netCDF4 chunking support, better UDUnits2 time support, and
+GSL statistics functions support.
 
-A. New NCO logo candidate submitted by Tony Freeman:
+A. See the NCO logo candidate submitted by Tony Freeman?
    What do you think? Should it replace the mandleblob?
    http://nco.sf.net/logo_pch.png
 
 B. Improve ./configure ability to find and work with GSL   
 
-C. ncks has new -f option (thanks to Denis Nadeau) fxm
-
-D. ncks has new -N option (thanks to Denis Nadeau) fxm
-
-D. ncks has new chunk option (thanks to Denis Nadeau) fxm
-
 E. ncap2 array() function: var_out=array(start,increment,dimension),
    e.g., var_out=array(1,1,$time);
 
-F. ncap2 sort() function improved...sort of fxm
+F. ncap2 sort() function improved
 
 G. Remove assumption that DAP means OPeNDAP. 
    Configure takes either --enable-dap-opendap or --enable-dap-netcdf
    bld/Makefile takes either DAP_OPENDAP=Y or DAP_NETCDF=Y (untested)
-
-H. Chunking fxm
 
 I. UDUnits2 supported by configure --enable_udunits2
 
@@ -46,7 +39,7 @@ J. GSL random number and distribution functions
 K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages:
    http://nco.sf.net#debian
 
-L. Pre-built (possibly out-of-date) Fedora and CentOS RPMs:
+L. Pre-built Fedora and CentOS RPMs:
    http://nco.sf.net#rpm
 
 M. Find/add NCO tips and tricks on the NCO Wiki (thanks to Tom Roche):

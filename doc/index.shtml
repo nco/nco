@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.527 2009-04-29 20:49:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.528 2009-04-30 02:30:45 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -515,11 +515,13 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
-<li><b>NCO/SDO 3.9.8</b>: (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.9</b>: (<i>In progress</i>) 
+<tt>ncks</tt> options: <tt>--chunksize</tt>, <tt>--fixed</tt>;
+GSL statistics functions;
+<li><b>NCO/SDO 3.9.8</b>: 
 <tt>ncap2</tt> supports <tt>sort()</tt>, <tt>array()</tt>;
-improved builds with DAP in libnetcdf and with UDUnits2;
+better DAP/libnetcdf and UDUnits2 builds;
 GSL distribution/RNG functions;
-<tt>ncks</tt> options: <tt>--chunksize</tt>, <tt>--fixed</tt>, <tt>-N</tt>;
 <li><b>NCO/SDO 3.9.7</b>:
 Improve GSL-build support;
 <tt>ncap2</tt> threading improvements;
