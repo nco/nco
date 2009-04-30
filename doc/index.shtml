@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.528 2009-04-30 02:30:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.529 2009-04-30 16:49:33 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -108,7 +108,9 @@ Have a better one? Send it in!<br>
 
 
 <ul>
-<li>Spring, 2009: NCO 3.9.8 released (netCDF4 chunksize support) (TBD)</li>
+<li>Late Spring, 2009: NCO 3.9.9 released (netCDF4 chunksize support) (TBD)</li>
+
+<li>April%nbsp;29, 2009: NCO 3.9.8 released (GSL RNG/PDF functions)</li>
 
 <li>March&nbsp;18, 2009: NCO 3.9.7 released</li>
 
