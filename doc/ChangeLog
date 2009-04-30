@@ -1,3 +1,7 @@
+2009-04-30  Charlie Zender  <zender@uci.edu>
+
+	* Output GCC compiler version from nco_cmp_get()
+
 2009-04-29  Charlie Zender  <zender@uci.edu>
 
 	* Changes since nco-3_9_7: DAP-netCDF support, sort(), GSL distributions, chunksize

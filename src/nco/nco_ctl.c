@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.239 2009-04-29 20:35:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.240 2009-04-30 17:45:41 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -26,6 +26,17 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
      including Intel's, define GCC macros for compatibility */
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(), probably compiled with GNU gcc"; /* [sng] Compiler string */
+  static const char cmp_vrs[]=TKN2SNG(__VERSION__); // [sng] Compiler version
+  static const char cmp_vrs_mjr[]=TKN2SNG(__GNUC__); // [sng] Compiler major version
+  static const char cmp_vrs_mnr[]=TKN2SNG(__GNUC_MINOR__); // [sng] Compiler minor version
+  static const char cmp_vrs_pch[]=TKN2SNG(__GNUC_PATCHLEVEL__); // [sng] Compiler patch version
+
+  if(dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stderr,"%s: INFO GCC major version is %s\n",prg_nm_get(),cmp_vrs_mjr);
+    (void)fprintf(stderr,"%s: INFO GCC minor version is %s\n",prg_nm_get(),cmp_vrs_mnr);
+    (void)fprintf(stderr,"%s: INFO GCC patch version is %s\n",prg_nm_get(),cmp_vrs_pch);
+    (void)fprintf(stderr,"%s: INFO GCC version is %s\n",prg_nm_get(),cmp_vrs);
+  } /* endif dbg */
 #endif /* !__GNUC__ */
 #ifdef __INTEL_COMPILER
   /* Some compilers, including icc, also define __GNUC__ by default */

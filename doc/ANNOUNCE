@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.321 2009-04-30 02:30:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.322 2009-04-30 17:45:41 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.8 are ready. 
 
@@ -22,16 +22,11 @@ A. See the NCO logo candidate submitted by Tony Freeman?
 
 B. Improve ./configure ability to find and work with GSL   
 
-E. ncap2 array() function: var_out=array(start,increment,dimension),
-   e.g., var_out=array(1,1,$time);
+C. ncks has new -f option (thanks to Denis Nadeau) fxm
 
-F. ncap2 sort() function improved
+D. ncks has new chunk option (thanks to Denis Nadeau) fxm
 
-G. Remove assumption that DAP means OPeNDAP. 
-   Configure takes either --enable-dap-opendap or --enable-dap-netcdf
-   bld/Makefile takes either DAP_OPENDAP=Y or DAP_NETCDF=Y (untested)
-
-I. UDUnits2 supported by configure --enable_udunits2
+C. ncks --secret prints hidden/unsupported options
 
 J. GSL random number and distribution functions
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var=gsl_ran_gaussian(sigma).sort();nbr_neg=(var<0).total();print(var);print(nbr_neg)' ~/nco/data/in.nc ~/foo.nc
