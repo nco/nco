@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.159 2009-04-29 15:51:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.160 2009-05-01 10:20:22 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2593,43 +2593,31 @@ var=NULL_CEWI;
             bool bnrm;
             int idx;
             int nbr_dmn;
-            std::string var_nm;
-            var_sct *var_rhs;
-          var_sct *var_nw=NULL_CEWI;
-          var_sct *var1=NULL_CEWI;
-          dmn_sct *dmn_nw;
- 
-          
-          NcapVar *Nvar;
-          RefAST lRef;           
+            int fl_id;
 
-          NcapVector<lmt_sct*> lmt_vtr;
-          NcapVector<dmn_sct*> dmn_vtr;
-          NcapVector<std::string> dmn_nrm_vtr;  // list of normalized vectors    
+            var_sct *var1;
+            var_sct *var_rhs;
+
+            std::string var_nm;
+           
+            NcapVar *Nvar;
+            RefAST lRef;           
+
+            NcapVector<lmt_sct*> lmt_vtr;
+            NcapVector<dmn_sct*> dmn_vtr;
+            NcapVector<std::string> dmn_nrm_vtr;  // list of dimension names
      
 
-          var_nm=vid->getText(); 
-          var_rhs=prs_arg->ncap_var_init(var_nm,false);            
+            var_nm=vid->getText(); 
+            var_rhs=prs_arg->ncap_var_init(var_nm,false);            
          
-          if(var_rhs->undefined){
+            if(var_rhs->undefined){
               var=ncap_var_udf("~rhs_undefined");       
               goto end2;  // cannot use return var!!
             }
 
-          nbr_dmn=var_rhs->nbr_dim;          
-          lRef=lmt;
-
-          // Check for RAM variable
-          Nvar=prs_arg->var_vtr.find(var_nm);
-          if(Nvar && Nvar->flg_mem){ 
-             bram=true;
-             var_rhs=nco_var_free(var_rhs);
-              
-             var_rhs=Nvar->cpyVar();
-             var_rhs->nc_id=prs_arg->out_id;
-           }else{
-             bram=false;
-           }
+            nbr_dmn=var_rhs->nbr_dim;          
+            lRef=lmt;
 
 
           if(prs_arg->ntl_scn){
@@ -2650,7 +2638,7 @@ var=NULL_CEWI;
            }
 
          if( lmt_vtr.size() != nbr_dmn)
-            err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
+            err_prn(fnc_nm,"Number of hyperslab limits for variable "+ var_nm+" doesn't match number of dimensions");
          
 
           // add dim names to dimension list 
@@ -2661,41 +2649,52 @@ var=NULL_CEWI;
            for(idx=0 ; idx < nbr_dmn ;idx++)
             (void)ncap_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],prs_arg);
 
+
           // See if var can be normalized
            for(idx=0; idx<nbr_dmn ; idx++){
-             if(lmt_vtr[idx]->cnt==1) 
-               continue;
-             if(lmt_vtr[idx]->cnt != var_rhs->dim[idx]->cnt) 
+             if(lmt_vtr[idx]->cnt==1) continue;
+
+             if(lmt_vtr[idx]->cnt == var_rhs->dim[idx]->cnt) 
+               dmn_nrm_vtr.push_back(std::string(lmt_vtr[idx]->nm));
+             else
                break;
-             dmn_nrm_vtr.push_back(std::string(lmt_vtr[idx]->nm));
            } 
-            bnrm= (idx==nbr_dmn ? true:false);       
 
-           // Blow out 
-           if(!bnrm && prs_arg->ntl_scn){ 
-              var=ncap_var_udf("~rhs_undefined");       
-              goto end1;
-           }     
-           // Create var with normalized dims
-           if(bnrm){
-               var=ncap_cst_mk(dmn_nrm_vtr,prs_arg);
-               (void)nco_free(var->nm);
+           bnrm= (idx==nbr_dmn ? true:false);       
+
+
+
+           // deal more with inital scan 
+           if(prs_arg->ntl_scn){
+
+             if(bnrm){   
                
+               var=ncap_cst_mk(dmn_nrm_vtr,prs_arg);
 
+               (void)nco_free(var->nm);
                var->nm=strdup(var_nm.c_str());
-               var=nco_var_cnf_typ(var_rhs->type,var);
-           }
 
-           if(bnrm && prs_arg->ntl_scn) {
+               var=nco_var_cnf_typ(var_rhs->type,var);
+                
                // apply LHS cast if necessary 
-               if(var->sz >1 && bcst)
+               if(var->sz>1 && bcst) 
                  var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
-               goto end1;
-           }
+                
+              }else{
+                var=ncap_var_udf("~rhs_undefined");             
+              }
+                  
+             goto end1;
+
+           }           
+
+
+           /**** From here on we are dealing with a final scan -- prs_arg->ntl_scn == true **/
+
             
-           
            // copy lmt_sct to dmn_sct;
            for(idx=0 ;idx <nbr_dmn ; idx++){
+              dmn_sct *dmn_nw;
               dmn_nw=(dmn_sct*)nco_malloc(sizeof(dmn_sct));
               dmn_nw->nm=strdup(lmt_vtr[idx]->nm);
 
@@ -2710,105 +2709,113 @@ var=NULL_CEWI;
               dmn_nw->srd=lmt_vtr[idx]->srd;  
               dmn_vtr.push_back(dmn_nw);
            }
-          
-           if(!bram){
+
+          Nvar=prs_arg->var_vtr.find(var_nm);
+          if(Nvar && Nvar->flg_mem)
+             bram=true;
+          else
+             bram=false;
+ 
+ 
+          // Ram variable -do an in memory get  
+          if(bram){
+            var=prs_arg->ncap_var_init(var_nm,true);                         
+            //Do an in memory get 
+            (void)nco_get_var_mem(var,dmn_vtr);
+
+          // regular variable
+          }else{
+ 
+
+
+            // variable in output 
+           if(Nvar) {
+#ifdef _OPENMP
+             fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
+#else    
+             fl_id=prs_arg->out_id;  
+#endif      
+            // variable in input         
+            }else{ 
+             fl_id=prs_arg->in_id;
+            }
+ 
             // Fudge -- fill out var again -but using dims defined in dmn_vtr
             // We need data in var so that LHS logic in assign can access var shape 
-            int fl_id;
-            // variable in output 
-            if(Nvar) {
-#ifdef _OPENMP
-              fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
-#else    
-              fl_id=prs_arg->out_id;  
-#endif               
-            } else 
-               fl_id=prs_arg->in_id;
-            
- 
-            var_nw=nco_var_fll(fl_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size()); 
+            var=nco_var_fll(fl_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size()); 
 
             // Now get data from disk - use nco_var_get() 
-            (void)nco_var_get(fl_id,var_nw); 
-           }
-            
-           // Ram variable -do an in memory get  
-           if(bram){
+            (void)nco_var_get(fl_id,var); 
 
-              //Do an in memory get 
-              (void)nco_get_var_mem(var_rhs,dmn_vtr);
-              var_nw=nco_var_dpl(var_rhs);
-           }
+           } // end if(nbram)
            
 
-
-
-           nco_mss_val_cp(var_rhs,var_nw);
+           // copy missing value over
+           nco_mss_val_cp(var_rhs,var);
 
            
           /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
              a hyperslabed var and not a regular var  -- It shouldn't cause 
              any abberant behaviour!! */ 
+           var->has_dpl_dmn=-1;  
 
-           var_nw->has_dpl_dmn=-1;  
 
-           //if variable is scalar -- re-organize in a  new var - loose extraneous material
-           if(var_nw->sz ==1) {
-             var1=(var_sct *)nco_malloc(sizeof(var_sct));
-             /* Set defaults */
-             (void)var_dfl_set(var1); 
-             var1->nm=strdup(var_nw->nm);
-             var1->nbr_dim=0;
-             var1->sz=1;
-             var1->type=var_nw->type;
 
-             var1->val.vp=(void*)nco_malloc(nco_typ_lng(var1->type));
-             (void)memcpy( (void*)var1->val.vp,var_nw->val.vp,nco_typ_lng(var1->type));
+           // if variable is scalar re-organize in a new var 
+           // loose extraneous material
+           if(var->sz ==1) {
+              
+             var1=ncap_sclr_var_mk(var_nm,var->type,true);
+             (void)memcpy( (void*)var1->val.vp,var->val.vp,nco_typ_lng(var1->type));
              
              
-             // copy missing value if any from var_rhs to var_nw
-             nco_mss_val_cp(var_nw,var1);
+             // copy missing value if any from var_rhs to var1
+             nco_mss_val_cp(var_rhs,var1);
            
-
-             var_nw=nco_var_free(var_nw);
-             
-             // free casting variable
-             if(bnrm)
-                var=nco_var_free(var);
+             // free main var
+             var=nco_var_free(var);
 
              var=var1;
               
+            // if hyperslab -nomalizable 
+            // nb the returned var is just like a regular var 
+            }else if(bnrm) {
 
-            }else{
+              // nb dmn_nrm_vtr was populated much earlier in function
+              var1=ncap_cst_mk(dmn_nrm_vtr,prs_arg);
+              (void)nco_free(var1->nm);
+                
 
-             if(!bnrm)
-               var=var_nw;
-             else{
-               // swap values about in var_nm & var (the var cast earlier)
-               //(void)nco_free(var->val.vp);
-               var->val.vp=var_nw->val.vp;
-               
-               // copy missing value if any from var_rhs to var_nw
-               nco_mss_val_cp(var_nw,var);
-           
+              var1->nm=strdup(var_nm.c_str());
+              var1=nco_var_cnf_typ(var_rhs->type,var1);
+              nco_mss_val_cp(var_rhs,var);
 
-               var_nw->val.vp=(void*)NULL;       
-               (void)nco_var_free(var_nw);    
-             }
+              // swap values about in var1 & var 
+              var1->val.vp=var->val.vp;
 
-            }   
-            
-          /* Casting a hyperslab --this makes my brain  hurt!!! */
-          if(bnrm && bcst && var->sz >1)
-            var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
-          
-          
+              // free var  
+              var->val.vp=(void*)NULL;       
+              (void)nco_var_free(var);    
+                
+              // copy missing value if any from var_rhs to var
+              nco_mss_val_cp(var_rhs,var1);
+                
+
+              /* Casting a hyperslab --this makes my brain  hurt!!! */
+              if(bcst)
+                var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
+
+              var=var1;
+                
+           }
+
+
           
           //free vectors
           end0: ;
           for(idx=0 ; idx < nbr_dmn ; idx++)
             (void)nco_dmn_free(dmn_vtr[idx]);
-          
+
           end1: ;
           for(idx=0 ; idx < nbr_dmn ; idx++)
             (void)nco_lmt_free(lmt_vtr[idx]);
