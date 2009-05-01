@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.90 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.91 2009-05-01 22:31:24 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.90 2009-04-19 23:17:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.90 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.91 2009-05-01 22:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.91 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -159,6 +159,7 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   
+  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;
@@ -572,7 +573,7 @@ main(int argc,char **argv)
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
     
     /* Define variables in output file, copy their attributes */
-    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,cnk_sz,dfl_lvl);
     
     /* Turn off default filling behavior to enhance efficiency */
     (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -1214,7 +1215,7 @@ main(int argc,char **argv)
 
     /* Add time variable to output file
        NB: nco_cnv_arm_time_install() contains OpenMP critical region */
-    if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
+    if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,cnk_sz,dfl_lvl);
 #ifdef ENABLE_MPI
     nco_close(out_id); 
     printf("DEBUG: Mgr prc_rnk %d closed out file %d after fixing date, time \n", prc_rnk, out_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.68 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.69 2009-05-01 22:31:24 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.68 2009-04-19 23:17:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.68 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.69 2009-05-01 22:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.69 $";
   const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -536,7 +536,7 @@ main(int argc,char **argv)
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
     
     /* Define variables in output file, copy their attributes */
-    (void)nco_var_dfn(in_id_1,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+    (void)nco_var_dfn(in_id_1,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,cnk_sz,dfl_lvl);
     
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

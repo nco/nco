@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.141 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.142 2009-05-01 22:31:24 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -226,6 +226,8 @@ ncap_var_write
     (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
     /* Set HDF Lempel-Ziv compression level, if requested */
     if(prs_arg->dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)True,(int)True,prs_arg->dfl_lvl);    
+    /* Set chunk sizes, if requested */
+    if(prs_arg->cnk_sz != NULL && var->nbr_dim > 0) (void)nco_def_var_chunking(prs_arg->out_id,var_out_id,(int)NC_CHUNKED,prs_arg->cnk_sz);
     
     /* Put missing value */  
     if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);

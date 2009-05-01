@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.226 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.227 2009-05-01 22:31:24 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.226 2009-04-19 23:17:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.226 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.227 2009-05-01 22:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.227 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -181,6 +181,8 @@ main(int argc,char **argv)
   extern float roundf(float);
   extern float truncf(float);
 #endif
+
+  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
 
   int abb_arg_nbr=0;
   int dfl_lvl=0; /* [enm] Deflate level */
@@ -635,6 +637,8 @@ main(int argc,char **argv)
       (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
       /* Set HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl > 0 && var_ycc[idx]->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
+      /* Set chunk sizes, if requested */
+      if(cnk_sz != NULL && var_ycc[idx]->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,cnk_sz);
       var_ycc[idx]->val.vp=nco_free(var_ycc[idx]->val.vp);
     } /* end loop over idx */
     (void)nco_enddef(out_id);
@@ -760,7 +764,7 @@ main(int argc,char **argv)
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,cnk_sz,dfl_lvl);
   
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<nbr_att;idx++){

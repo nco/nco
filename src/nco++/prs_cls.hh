@@ -5,11 +5,8 @@
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-
-
 #ifndef INC_PRS_CLS_hh_
 #define INC_PRS_CLS_hh_
-
 
 #include <vector>
 #include <string>
@@ -21,7 +18,6 @@
 
 //forward declaration
 class fmc_cls;
-
 
  class prs_cls{ /* prs_cls */
   public:
@@ -43,7 +39,9 @@ class fmc_cls;
                                          // in the input file 
   bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
   bool NCAP4_FILL;                        //if true Ouptut file is netcdf4 & missing value="_FillValue"
-  int dfl_lvl;                           // Set Lempel-Ziv compression level                                              
+  int *cnk_sz; /* [nbr] Chunk sizes */
+  int dfl_lvl; /* [enm] Deflate level */
+
   // Constructor
   prs_cls( NcapVector<dmn_sct*> &p_dmn_in_vtr, 
 		NcapVector<dmn_sct*> &p_dmn_out_vtr, 

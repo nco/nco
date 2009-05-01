@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.132 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.133 2009-05-01 22:31:24 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -177,7 +177,7 @@ extern "C" {
   
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
-  /* Compatibility tokens when compiled without netCDF4 netcdf.h */
+  /* Compatibility tokens for when NCO compiled _without_ netCDF4 netcdf.h */
 #ifndef ENABLE_NETCDF4
 /* Single compatibility token new to netCDF4 netcdf.h */
 # define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
@@ -200,6 +200,12 @@ extern "C" {
 # endif
 # ifndef NC_FORMAT_NETCDF4_CLASSIC
 #  define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+# endif
+# ifndef NC_CHUNKED
+#  define NC_CHUNKED (0)
+# endif
+# ifndef NC_CONTIGUOUS
+#  define NC_CONTIGUOUS (1)
 # endif
 #endif /* !ENABLE_NETCDF4 */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.95 2009-04-29 11:07:57 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.96 2009-05-01 22:31:24 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.95 2009-04-29 11:07:57 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.95 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.96 2009-05-01 22:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.96 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -163,6 +163,8 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
+  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
+
   int abb_arg_nbr=0;
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
@@ -550,6 +552,7 @@ main(int argc,char **argv)
   prs_arg.NCAP_MPI_SORT=(thr_nbr>1 ? true:false);
   
   prs_arg.dfl_lvl=dfl_lvl; /* [enm] Deflate level */
+  prs_arg.cnk_sz=cnk_sz; /* [nbr] Chunk sizes */
   
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 || fl_out_fmt==NC_FORMAT_NETCDF4_CLASSIC);
@@ -718,7 +721,7 @@ main(int argc,char **argv)
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,cnk_sz,dfl_lvl);
   
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){

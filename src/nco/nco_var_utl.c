@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.131 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.132 2009-05-01 22:31:24 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -14,6 +14,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
  const char * const var_nm, /* I [sng] Input variable name */
+ const int *cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -78,6 +79,8 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   
   /* Set HDF Lempel-Ziv compression level, if requested */
   if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+  /* Set chunk sizes, if requested */
+  if(cnk_sz != NULL && nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
 
   /* Free the space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
@@ -94,6 +97,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const char * const var_nm, /* I [sng] Input variable name */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+ const int *cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -166,6 +170,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   
   /* Set HDF Lempel-Ziv compression level, if requested */
   if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+  /* Set chunk sizes, if requested */
+  if(cnk_sz != NULL && nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
 
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
@@ -176,11 +182,11 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
 void
 nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
-(int in_id, /* I [id] netCDF input file ID */
- int out_id, /* I [id] netCDF output file ID */
+(const int in_id, /* I [id] netCDF input file ID */
+ const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
- char *var_nm) /* I [sng] Variable name */
+ const char *var_nm) /* I [sng] Variable name */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
   /* Purpose: Copy single variable from input netCDF file to output netCDF file
@@ -821,13 +827,14 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
  const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
  const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_plc, /* I [enm] Packing policy */
+ const int *cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Define variables in output file, copy their attributes */
 
   /* This function is unusual (for me) in that dimension arguments are only intended
      to be used by certain programs, those that alter the rank of input variables. 
-     If program does not alter input variable rank (dimensionality) then it should
+     Programs that do not alter input variable rank (dimensionality) should
      call this function with NULL dimension list and nbr_dmn_ncl=0. 
      Otherwise, this routine attempts to define variable correctly in output file 
      (allowing variable to be defined with only those dimensions that are in dimension inclusion list) 
@@ -937,6 +944,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       
       /* Set HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl > 0 && dmn_nbr > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
+      /* Set chunk sizes, if requested */
+      if(cnk_sz != NULL && dmn_nbr > 0) (void)nco_def_var_chunking(out_id,var[idx]->id,(int)NC_CHUNKED,cnk_sz);
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm

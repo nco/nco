@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.101 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.102 2009-05-01 22:31:24 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -36,7 +36,7 @@
 /* NB: nco_netcdf.c does not #include nco.h which #defines forward-compatibility tokens
    This barrier helps segregate NCO from wrappers
    Re-define minimal sub-set of tokens for nco_netcdf.c as necessary
-   This small exception to the barrier */
+   This is small exception to the barrier */
 #ifndef NC_FORMAT_CLASSIC
 # define NC_FORMAT_CLASSIC (1)
 #endif
@@ -48,6 +48,12 @@
 #endif
 #ifndef NC_FORMAT_NETCDF4_CLASSIC
 # define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+#endif
+#ifndef NC_CHUNKED
+# define NC_CHUNKED (0)
+#endif
+#ifndef NC_CONTIGUOUS
+# define NC_CONTIGUOUS (1)
 #endif
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
@@ -537,8 +543,8 @@ nco_inq_var_deflate
  int * const dfl_lvl) /* O [enm] Deflate level [0..9] */
 {
   /* Purpose: Wrapper for nc_inq_var_deflate() */
-  /* NB: netCDF inquire function only works on netCDF4 files
-     NCO stub works on netCDF3 and netCDF4 files */
+  /* NB: netCDF deflate inquire function only works on netCDF4 files
+     NCO wrapper works on netCDF3 and netCDF4 files */
   int rcd;
   int fl_fmt; /* [enm] Input file format */
   rcd=nco_inq_format(nc_id,&fl_fmt);
@@ -698,7 +704,7 @@ int nco_def_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
  const int var_id, /* [ID] Variable ID */
  const int srg_typ, /* [enm] Storage type */
- const size_t *cnk_sz) /* [nbr] Chunk size for every dimension */
+ const int *cnk_sz) /* [nbr] Chunk size for every dimension */
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
@@ -706,6 +712,28 @@ int nco_def_var_chunking
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_chunking()");
   return rcd;
 } /* end nco_def_var_chunking() */
+
+int nco_inq_var_chunking
+(const int nc_id, /* [ID] netCDF ID */
+ const int var_id, /* [ID] Variable ID */
+ int * const srg_typ, /* [enm] Storage type */
+ size_t * const cnk_sz) /* [nbr] Chunk size for every dimension */
+{
+  /* Purpose: Wrapper for nc_inq_var_chunking() */
+  /* NB: netCDF chunking inquire function only works on netCDF4 files
+     NCO wrapper works on netCDF3 and netCDF4 files */
+  int rcd;
+  int fl_fmt; /* [enm] Input file format */
+  rcd=nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    rcd=nc_inq_var_chunking(nc_id,var_id,srg_typ,cnk_sz);
+  }else{ /* !netCDF4 */
+    *srg_typ=NC_CONTIGUOUS;
+    *cnk_sz=NULL;
+  } /* !netCDF4 */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_chunking()");
+  return rcd;
+} /* end nco_inq_var_chunking() */
 
 int nco_def_var_deflate
 (const int nc_id, /* [ID] netCDF ID */
@@ -1221,10 +1249,11 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 
 /* Begin netCDF4 stubs */
 #ifndef ENABLE_NETCDF4
-int nc_def_var_chunking(const int nc_id,const int var_id,const int str_typ,const size_t *cnk_sz){return 1;}
+/* NB: chunking and deflate define/inquire functions only work on netCDF4 files
+   NCO stubs perform no-ops on netCDF3 files */
+int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const int *cnk_sz){return 1;}
+int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,int *const cnk_sz){*srg_typ=NC_CONTIGUOUS;*cnk_sz=NULL;return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
-/* NB: netCDF inquire function only works on netCDF4 files
-   NCO stub works on netCDF3 and netCDF4 files */
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){*shuffle=0;*deflate=0;*dfl_lvl=0;return 1;}
 #endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.92 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.93 2009-05-01 22:31:24 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.92 2009-04-19 23:17:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.92 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.93 2009-05-01 22:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.93 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -145,6 +145,7 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
   
+  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;
@@ -692,7 +693,7 @@ main(int argc,char **argv)
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
     
     /* Define variables in output file, copy their attributes */
-    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out,nco_pck_plc_nil,nco_pck_map_nil,cnk_sz,dfl_lvl);
     
 #ifdef ENABLE_MPI
   } /* prc_rnk != rnk_mgr */

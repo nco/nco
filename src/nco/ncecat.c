@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.161 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.162 2009-05-01 22:31:24 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -76,6 +76,7 @@ main(int argc,char **argv)
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
+  char **cnk_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
@@ -91,8 +92,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.161 2009-04-19 23:17:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.161 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.162 2009-05-01 22:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.162 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -112,10 +113,12 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
+  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
+  int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
@@ -148,6 +151,7 @@ main(int argc,char **argv)
   
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */  
+
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
@@ -168,6 +172,8 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
+      {"cnk_sz",required_argument,0,0}, /* [nbr] Chunk sizes */
+      {"chunk_size",required_argument,0,0}, /* [nbr] Chunk sizes */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
@@ -238,6 +244,16 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cnk_sz") || !strcmp(opt_crr,"chunk_size")){
+	optarg_lcl=(char *)strdup(optarg);
+	(void)nco_lst_comma2hash(optarg_lcl);
+	/* Replace commas with hashes when within braces */
+	cnk_lst_in=nco_lst_prs_2D(optarg_lcl,",",&cnk_nbr);
+	optarg_lcl=(char *)nco_free(optarg_lcl);
+	cnk_sz=(int *)nco_malloc(cnk_nbr*sizeof(int));
+	/* fxm: use strtol() instead? */
+	for(idx=0;idx<cnk_nbr;idx++) sscanf(cnk_lst_in[idx],"%d",cnk_sz+idx);
+      } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
@@ -479,6 +495,9 @@ main(int argc,char **argv)
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+  if(cnk_sz != NULL && fl_out_fmt != NC_NETCDF4){
+    (void)fprintf(stderr,"%s: INFO Output file format is %s so chunking request must be ignored\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+  } /* endif netCDF4 */
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
@@ -570,7 +589,7 @@ main(int argc,char **argv)
   } /* end if */
 
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,cnk_sz,dfl_lvl);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -669,6 +688,7 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cnk_sz != NULL) cnk_sz=(int *)nco_free(cnk_sz);
     if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
     if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
@@ -676,6 +696,7 @@ main(int argc,char **argv)
     if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
     /* Free lists of strings */
+    if(cnk_lst_in != NULL) cnk_lst_in=nco_sng_lst_free(cnk_lst_in,cnk_nbr); 
     if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);

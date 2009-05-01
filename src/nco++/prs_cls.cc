@@ -1,13 +1,11 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.12 2009-05-01 22:31:24 zender Exp $ */
 
-/* Purpose: netCDF arithmetic processor -  */
+/* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
 
 /* Copyright (C) 1995--2007 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
-
-
-
 
 // Standard C++ headers
 #include <algorithm>
@@ -25,8 +23,6 @@
 #include "ncap2_utl.hh" /* netCDF arithmetic processor */
 #include "NcapVar.hh"
 #include "sdo_utl.hh"
-
-
 
 /********Begin prs_cls methods********************************************************/
 /*************************************************************************************/
@@ -479,6 +475,8 @@ bool bram){
     (void)nco_def_var(out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
     /* Set HDF Lempel-Ziv compression level, if requested */
     if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
+    /* Set chunk sizes, if requested */
+    if(cnk_sz != NULL && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
   } // bdef
   /* Put missing value 
   if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
@@ -569,6 +567,8 @@ void prs_cls::ncap_def_ntl_scn(void)
 	(void)nco_def_var(out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
 	/* Set HDF Lempel-Ziv compression level, if requested */
 	if(dfl_lvl > 0 && var1->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
+	/* Set chunk sizes, if requested */
+	if(cnk_sz != NULL && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,cnk_sz);
 	Nvar->var->id=var_id;
 	Nvar->var->nc_id=out_id;
 	Nvar->flg_stt=1;

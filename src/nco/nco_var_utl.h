@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.49 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.50 2009-05-01 22:31:24 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -48,6 +48,7 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
    const char * const var_nm, /* I [sng] Input variable name */
+   const int *cnk_sz, /* I [nbr] Chunk sizes */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   int /* O [id] Output file variable ID */
@@ -58,15 +59,16 @@ extern "C" {
    const char * const var_nm, /* I [sng] Input variable name */
    CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
    const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+   const int *cnk_sz, /* I [nbr] Chunk sizes */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   void
   nco_cpy_var_val /* [fnc] Copy variable data from input to output file, no limits */
-  (int in_id, /* I [id] netCDF input file ID */
-   int out_id, /* I [id] netCDF output file ID */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
-   char *var_nm); /* I [sng] Variable name */
+   const char *var_nm); /* I [sng] Variable name */
 
   void
   nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simple hyperslabs */
@@ -100,6 +102,7 @@ extern "C" {
    const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
    const int nco_pck_map, /* I [enm] Packing map */
    const int nco_pck_plc, /* I [enm] Packing policy */
+   const int *cnk_sz, /* I [nbr] Chunk sizes */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
   
   var_sct * /* O [sct] Copy of input variable */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.224 2009-04-20 20:20:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.225 2009-05-01 22:31:24 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.224 2009-04-20 20:20:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.224 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.225 2009-05-01 22:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.225 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -132,6 +132,8 @@ main(int argc,char **argv)
   extern int optind;
   
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
+
+  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
@@ -273,7 +275,7 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nVersion\t\t\t--vrs, --version\n\n");
+	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nChunk sizes\t\t--cnk_sz, --chunk_size\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
@@ -542,7 +544,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,dfl_lvl);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,cnk_sz,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,cnk_sz,dfl_lvl);
       /* Copy variable's attributes */
       if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */
