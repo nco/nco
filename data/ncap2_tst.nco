@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.17 2009-04-23 10:23:43 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.18 2009-05-01 10:19:11 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -442,7 +442,7 @@ nbr_err_ttl=0;
 // Check hyperslab normalization
 // n.b This is where a limit in a hyperslab collapses to a single index 
 // or the slab specified is equal to all the indixes in the dimension
-// e.g three_dmn_var_dbl(1,:,:), 
+// e.g three_d  mn_var_dbl(1,:,:), 
 //     three_dmn_var_dbl(0:9,:,1);
 //     three_dmn_var_dbl(:,0,:);
 {
@@ -456,6 +456,16 @@ nbr_err_ttl=0;
   i3[$time,$lat,$lon]=three_dmn_var_int(1,:,:);
     
   i4=i3.avg($time); //nb i4 has dims $lat,$lon   
+
+  //Check that missing value is preserved in a hyperslab
+  i5=three_dmn_var_sht(:,:,:);
+
+  // check size of a un-nomalizable hyperslab
+  i5@size=three_dmn_var_sht(0,:,0:1).size();
+
+  // check min and max
+  i6=three_dmn_var_sht(:,1,3); 
+
 
   if( fabs( i1.avg() -17L)>0.001 ){
         print("ERROR: i1: hyperslab normalization test \n");
@@ -471,6 +481,27 @@ nbr_err_ttl=0;
         print("ERROR: i3: hyperslab normalization test \n");
         nbr_err++;
     } 
+
+  
+  if( i5.total()-three_dmn_var_sht.total() !=0){
+        print("ERROR: i5: hyperslab normalization test \n");
+        nbr_err++;
+  } 
+
+
+  if( i5@size-4 !=0){
+        print("ERROR: i5a: hyperslab size test \n");
+        nbr_err++;
+  } 
+
+
+
+  if( i6.min()!=8 || i6.max()!=72 ){
+        print("ERROR: i6: hyperslab min/max test \n");
+        nbr_err++;
+  } 
+
+
 
   print("RESULTS block i: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
