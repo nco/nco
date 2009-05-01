@@ -1,3 +1,7 @@
+2009-05-01 Henry Butowsky  <henryb@hush.com> 
+	* Rewrite of RHS hyperslabbing routine var_lmt in grammer file
+	* more hyperslabbing tests in ncap2_tst.nco
+
 2009-04-30  Charlie Zender  <zender@uci.edu>
 
 	* Output GCC compiler version from nco_cmp_get()
