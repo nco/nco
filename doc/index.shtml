@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.531 2009-04-30 17:45:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.532 2009-05-01 00:35:09 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -311,22 +311,21 @@ influence of your monetary donations on NCO development:
 <h2>NCO&rarr;SDO Project</h2>
 <img src="nsf.png" height=180 width=180 align=right>
 <p>
-The National Science Foundation
+The National Science Foundation Grant
 <a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">NSF IIS-0431203</a>
 funded our
 <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>,
 &ldquo;SEI(GEO): Scientific Data Operators Optimized for Efficient Distributed Interactive and Batch Analysis of Tera-Scale Geophysical Data&rdquo;
-as part of the 
+from 20040901&ndash;20080831 as part of the 
 <a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science
-  and Engineering Informatics (SEI)</a> program from 20040901&ndash;20080831.
+  and Engineering Informatics (SEI)</a> program.
 We appreciate the proposal reviewers for and staff of the Divisions of
 <a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
 and
 <a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">Shared Cyberinfrastructure (SC)</a>
 in the 
 <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
-NCO development was completely voluntary and without institutional
-support from its inception until September 2004.
+Until September 2004, NCO development was completely voluntary and without institutional support.
 This NSF support dramatically changed the scale and pace of NCO/SDO development.
 This URL,
 <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a>,

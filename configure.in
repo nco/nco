@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.292 2009-04-29 21:33:37 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.293 2009-05-01 00:35:09 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -450,8 +450,8 @@ fi # enable_netCDF3
 echo "DEBUG: After enable_dap_opendap section LIBS = ${LIBS}"
 
 ##################################################
-# Begin Library checks
-# Check for libraries, add to link path if found
+# Check libraries, add to link path if found
+# fxm: move some checks to OS-specific blocks
 ##################################################
 
 #AC_CHECK_LIB([C],[cosf])
