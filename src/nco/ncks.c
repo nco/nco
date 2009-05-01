@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.225 2009-05-01 22:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.226 2009-05-01 22:54:24 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -102,6 +102,7 @@ main(int argc,char **argv)
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
+  char **cnk_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL;
@@ -118,8 +119,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.225 2009-05-01 22:31:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.225 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.226 2009-05-01 22:54:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.226 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -137,6 +138,7 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
+  int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
@@ -189,6 +191,8 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
+      {"cnk_sz",required_argument,0,0}, /* [nbr] Chunk sizes */
+      {"chunk_size",required_argument,0,0}, /* [nbr] Chunk sizes */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
@@ -270,14 +274,25 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cnk_sz") || !strcmp(opt_crr,"chunk_size")){
+	optarg_lcl=(char *)strdup(optarg);
+	(void)nco_lst_comma2hash(optarg_lcl);
+	/* Replace commas with hashes when within braces */
+	cnk_lst_in=nco_lst_prs_2D(optarg_lcl,",",&cnk_nbr);
+	optarg_lcl=(char *)nco_free(optarg_lcl);
+	cnk_sz=(int *)nco_malloc(cnk_nbr*sizeof(int));
+	/* fxm: use strtol() instead? */
+	for(idx=0;idx<cnk_nbr;idx++) sscanf(cnk_lst_in[idx],"%d",cnk_sz+idx);
+	if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
+	if(dbg_lvl >= nco_dbg_scl){
+	  (void)fprintf(stderr,"idx cnk_sz:\n");
+	  for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %d\n",idx,cnk_sz[idx]);
+	} /* endif dbg */
+      } /* endif cnk */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
-      if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nChunk sizes\t\t--cnk_sz, --chunk_size\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nVersion\t\t\t--vrs, --version\n\n");
-	nco_exit(EXIT_SUCCESS);
-      } /* endif "shh" */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
@@ -297,6 +312,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")){
 	PRN_DMN_VAR_NM=False;
       } /* endif "no_clb" */
+      if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
+	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nChunk sizes\t\t--cnk_sz, --chunk_size\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nVersion\t\t\t--vrs, --version\n\n");
+	nco_exit(EXIT_SUCCESS);
+      } /* endif "shh" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
@@ -531,6 +550,9 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+    if(cnk_sz != NULL && fl_out_fmt != NC_NETCDF4){
+      (void)fprintf(stderr,"%s: INFO Output file format is %s so chunking request must be ignored\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+    } /* endif netCDF4 */
 
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
@@ -643,12 +665,14 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cnk_sz != NULL) cnk_sz=(int *)nco_free(cnk_sz);
     if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
     if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
     if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
     if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     /* Free lists of strings */
+    if(cnk_lst_in != NULL) cnk_lst_in=nco_sng_lst_free(cnk_lst_in,cnk_nbr); 
     if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
