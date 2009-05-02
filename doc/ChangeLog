@@ -2,7 +2,9 @@
 
 	* Enable command-line chunking arguments to ncks only
 	Generic chunking requires dimension/variable-specific routines
-	nco_cnk_sz_set(cnk_sz_lst,cnk_nbr), nco_cnk_sz_get(dmn_lst,chk_sz)
+	similar to dimension limits for hyperslabbing, something like
+	rcd=nco_cnk_sz_set(cnk_sz_lst,cnk_nbr)
+	nco_cnk_sz_get(dmn_lst,chk_sz)
 
 	* Add NCO-wide chunking infrastructure 
 

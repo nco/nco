@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.147 2009-05-01 22:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.148 2009-05-02 00:18:25 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.147 2009-05-01 22:31:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.147 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.148 2009-05-02 00:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.148 $";
   const char * const opt_sht_lst="34Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -468,7 +468,7 @@ main(int argc,char **argv)
   for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
-    /* add limts info to dmn_out from lmt_all_lst */ 
+    /* Merge limit from lmt_all_lst into dmn_out  */ 
     for(jdx=0; jdx<nbr_dmn_fl; jdx++)
        if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
          dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
