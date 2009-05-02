@@ -3,9 +3,14 @@
 // Test var int64_var below is commented out until ncgen supports it
 
 // Usage:
-// /usr/local/netcdf4/bin/ncgen -k hdf5 -b -o in_4.nc in_4.cdl
-// /usr/local/netcdf4/bin/ncgen -k hdf5 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in_4.cdl
+// NB: ncgen arguments depend on version:
+// "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
+// "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
+// /usr/local/netcdf4/bin/ncgen -k netCDF-4 -b -o in_4.nc in_4.cdl
+// /usr/local/netcdf4/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in_4.cdl
 // scp ~/nco/data/in_4.cdl esmf.ess.uci.edu:nco/data
+// scp ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/nco
+// scp dust.ess.uci.edu:/var/www/html/nco/in_4.nc ~/nco/data
 // mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/in_4.nc
 // mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/h0001.nc
 // mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/h0002.nc
@@ -42,7 +47,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.5 2007-12-13 15:35:10 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.6 2009-05-02 20:44:32 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";

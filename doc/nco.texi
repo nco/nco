@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.533 2009-04-30 02:30:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.534 2009-05-02 20:44:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.8
 @set copyright-years 1995--2009
 @set update-year 2009
-@set update-date 29 April 2009
-@set update-month April 2009
+@set update-date 2 May 2009
+@set update-month May 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -3027,11 +3027,15 @@ As of October, 2005, @acronym{NCO} writes no netCDF4-specific data
 structures and so always succeeds at writing @code{NETCDF4_CLASSIC}  
 files.
 
+@html
+<a name="fmt_inq"></a> <!-- http://nco.sf.net/nco.html#fmt_inq -->
+@end html
 There are at least three ways to discover the format of a netCDF file,
 i.e., whether it is a classic (32-bit offset) or newer 64-bit offset
 netCDF3 format, or is netCDF4 format. 
 Each method returns the information using slightly different terminology 
 that becomes easier to understand with practice.
+
 First, examine the end of the first line of global metadata output by
 @samp{ncks -M}: 
 @cindex netCDF3 classic file format
@@ -3055,6 +3059,9 @@ Opened file foo_4c.nc: dimensions = 19, variables = 261, global atts. = 4,
 Opened file foo_4.nc: dimensions = 19, variables = 261, global atts. = 4,
   id = 65536, type = NC_FORMAT_NETCDF4
 @end example
+This method requires a netCDF4-enabled @acronym{NCO} version 3.9.0+
+(i.e., from 2007 or later).
+
 Second, query the file with @samp{ncdump -k}:
 @cindex @command{ncdump} 
 @example
@@ -3067,9 +3074,11 @@ netCDF-4 classic model
 % ncdump -k foo_4.nc
 netCDF-4
 @end example
-The third option works even if you do not have @acronym{NCO} or
-@command{ncdump} installed,  or they are not netCDF4-aware. 
-Use the standard @command{od} (octal dump) command:  
+This method requires a netCDF4-enabled @acronym{netCDF} 3.6.2+
+(i.e., from 2007 or later).
+
+The third option uses the POSIX-standard @command{od} (octal dump)
+command:   
 @cindex @command{od} 
 @cindex octal dump
 @example
@@ -3082,6 +3091,7 @@ Use the standard @command{od} (octal dump) command:
 % od -An -c -N4 foo_4.nc
  211   H   D   F
 @end example
+This option works without @acronym{NCO} and @command{ncdump}.
 Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
 (classic) and 64-bit netCDF3 formats, respectively, while values of
 @samp{211 H D F} indicate the newer netCDF4 file format.
