@@ -39,7 +39,7 @@ class fmc_cls;
                                          // in the input file 
   bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
   bool NCAP4_FILL;                        //if true Ouptut file is netcdf4 & missing value="_FillValue"
-  int *cnk_sz; /* [nbr] Chunk sizes */
+  size_t *cnk_sz; /* [nbr] Chunk sizes */
   int dfl_lvl; /* [enm] Deflate level */
 
   // Constructor

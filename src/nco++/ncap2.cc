@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.96 2009-05-01 22:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.97 2009-05-02 22:22:30 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.96 2009-05-01 22:31:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.96 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.97 2009-05-02 22:22:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.97 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -163,7 +163,7 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
-  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
+  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
 
   int abb_arg_nbr=0;
   int dfl_lvl=0; /* [enm] Deflate level */

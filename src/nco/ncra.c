@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.234 2009-05-02 00:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.235 2009-05-02 22:22:30 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.234 2009-05-02 00:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.234 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.235 2009-05-02 22:22:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.235 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -144,7 +144,7 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
+  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;

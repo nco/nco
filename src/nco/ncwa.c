@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.266 2009-05-01 22:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.267 2009-05-02 22:22:30 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.266 2009-05-01 22:31:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.266 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.267 2009-05-02 22:22:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.267 $";
   const char * const opt_sht_lst="34Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -142,7 +142,7 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
+  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;

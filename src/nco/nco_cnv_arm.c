@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.24 2009-05-01 22:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.25 2009-05-02 22:22:30 zender Exp $ */
 
 /* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 
@@ -75,7 +75,7 @@ void
 nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_int base_time_srt, /* I [s] base_time of first input file */
- const int *cnk_sz, /* I [nbr] Chunk sizes */
+ const size_t *cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* NB: nco_cnv_arm_time_install() contains OpenMP critical region */

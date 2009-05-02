@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.148 2009-05-02 00:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.149 2009-05-02 22:22:30 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.148 2009-05-02 00:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.149 2009-05-02 22:22:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
   const char * const opt_sht_lst="34Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -134,7 +134,7 @@ main(int argc,char **argv)
 
   int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
 
-  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
+  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.104 2009-05-02 20:44:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.105 2009-05-02 22:22:30 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -679,7 +679,7 @@ int nco_def_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
  const int var_id, /* [ID] Variable ID */
  const int srg_typ, /* [enm] Storage type */
- const int *cnk_sz) /* [nbr] Chunk sizes */
+ const size_t * const cnk_sz) /* [nbr] Chunk sizes */
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
@@ -716,7 +716,7 @@ int nco_inq_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
  const int var_id, /* [ID] Variable ID */
  int * const srg_typ, /* [enm] Storage type */
- int * const cnk_sz) /* [nbr] Chunk sizes */
+ size_t * const cnk_sz) /* [nbr] Chunk sizes */
 {
   /* Purpose: Wrapper for nc_inq_var_chunking() */
   /* NB: netCDF chunking inquire function only works on netCDF4 files
@@ -1251,8 +1251,8 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 #ifndef ENABLE_NETCDF4
 /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
    NCO stubs perform no-ops on netCDF3 files */
-int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const int *cnk_sz){return 1;}
-int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,int *const cnk_sz){*srg_typ=NC_CONTIGUOUS;*cnk_sz=NULL;return 1;}
+int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz){return 1;}
+int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t *const cnk_sz){*srg_typ=NC_CONTIGUOUS;*cnk_sz=NULL;return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){*shuffle=0;*deflate=0;*dfl_lvl=0;return 1;}
 #endif /* ENABLE_NETCDF4 */

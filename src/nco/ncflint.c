@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.163 2009-05-02 00:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.164 2009-05-02 22:22:30 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.163 2009-05-02 00:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.163 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.164 2009-05-02 22:22:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.164 $";
   const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -127,7 +127,7 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
-  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
+  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_1_arr;
   int *in_id_2_arr;
 

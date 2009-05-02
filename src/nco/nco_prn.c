@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.50 2009-05-02 20:18:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.51 2009-05-02 22:22:30 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -187,7 +187,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Purpose: Print variable metadata. This routine does not take into 
      account any user-specified limits, it just prints what it finds. */
   int *dmn_id=NULL_CEWI;
-  int cnk_sz[NC_MAX_DIMS]; /* [nbr] Chunk sizes */
+  size_t *cnk_sz=NULL_CEWI; /* [nbr] Chunk sizes */
   int idx;
   int nbr_dim;
   int nbr_att;
@@ -217,6 +217,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   if(nbr_dim > 0){
     /* Allocate space for dimension info */
+    cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t)); /* [nbr] Chunk sizes */
     dim=(dmn_sct *)nco_malloc(nbr_dim*sizeof(dmn_sct));
     dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   } /* end if nbr_dim > 0 */
@@ -259,10 +260,10 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     } /* end loop over dim */
     (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
-    /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
-       NCO stubs perform no-ops on netCDF3 files */
+    /* NB: netCDF chunking/deflate define/inquire functions only work with netCDF4
+       NCO wrappers perform no-ops on netCDF3 files */
     rcd=nco_inq_var_chunking(in_id,var_id,&srg_typ,cnk_sz);
-    if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s written with chunk size = %d\n",var_nm,cnk_sz[0]);
+    if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s written with chunk size = %lu\n",var_nm,(unsigned long)cnk_sz[0]);
     rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
     if(deflate) (void)fprintf(stdout,"%s stored compressed (Lempel-Ziv %s shuffling) at level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
     (void)fprintf(stdout,"%s memory size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
@@ -276,6 +277,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Free space allocated for dimension information */
   for(idx=0;idx<nbr_dim;idx++) dim[idx].nm=(char *)nco_free(dim[idx].nm);
   if(nbr_dim > 0){
+    cnk_sz=(size_t *)nco_free(cnk_sz); /* [nbr] Chunk sizes */
     dim=(dmn_sct *)nco_free(dim);
     dmn_id=(int *)nco_free(dmn_id);
   } /* end if nbr_dim > 0*/

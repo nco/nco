@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.226 2009-05-01 22:54:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.227 2009-05-02 22:22:30 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.226 2009-05-01 22:54:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.226 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.227 2009-05-02 22:22:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.227 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -134,7 +134,7 @@ main(int argc,char **argv)
   
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
-  int *cnk_sz=NULL; /* [nbr] Chunk sizes */
+  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
