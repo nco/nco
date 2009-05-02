@@ -1,3 +1,7 @@
+2009-05-02  Charlie Zender  <zender@uci.edu>
+
+	* Print chunking parameters, when used, with ncks -m
+
 2009-05-01  Charlie Zender  <zender@uci.edu>
 
 	* Enable command-line chunking arguments to ncks only

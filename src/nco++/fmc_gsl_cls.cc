@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.31 2009-04-29 11:12:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.32 2009-05-02 20:18:47 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
 /* Copyright (C) 1995--2009 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "fmc_gsl_cls.hh"

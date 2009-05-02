@@ -1,7 +1,7 @@
 /* Purpose: netCDF arithmetic processor class methods */
 
 /* Copyright (C) 1995--2007 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 // Standard C++ headers

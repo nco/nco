@@ -2,7 +2,7 @@
 /* prs_cls -- symbol table - data members & class methods */
 
 /* Copyright (C) 1995--2007 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #ifndef INC_PRS_CLS_hh_

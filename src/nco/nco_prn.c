@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.49 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.50 2009-05-02 20:18:47 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -187,12 +187,14 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Purpose: Print variable metadata. This routine does not take into 
      account any user-specified limits, it just prints what it finds. */
   int *dmn_id=NULL_CEWI;
+  int cnk_sz[NC_MAX_DIMS]; /* [nbr] Chunk sizes */
   int idx;
   int nbr_dim;
   int nbr_att;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id;
   int var_id;
+  int srg_typ; /* [enm] Storage type */
   int shuffle; /* [flg] Shuffling is on */
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
@@ -207,10 +209,10 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Get number of dimensions, type, and number of attributes for variable */
   (void)nco_inq_var(in_id,var_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,&nbr_att);
 
-  /* Get the ID of the record dimension, if any */
+  /* Get record dimension ID, if any */
   (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
 
-  /* Print the header for variable */
+  /* Print header for variable */
   (void)fprintf(stdout,"%s: # dim. = %i, %s, # att. = %i, ID = %i\n",var_nm,nbr_dim,nco_typ_sng(var_typ),nbr_att,var_id);
 
   if(nbr_dim > 0){
@@ -232,7 +234,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     /* Is dimension a coordinate, i.e., stored as a variable? */
     rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
     if(rcd == NC_NOERR){
-      /* Find out what type of variable the coordinate is */
+      /* Find out which type of variable the coordinate is */
       (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
       (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
     }else{
@@ -243,7 +245,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     
   } /* end loop over dim */
   
-  /* Find the total size of variable array */
+  /* Find total size of variable array */
   if(nbr_dim>0){
     long var_sz=1L;
     char sz_sng[100];
@@ -257,10 +259,12 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     } /* end loop over dim */
     (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
-    /* NB: netCDF inquire function only works on netCDF4 files
-       NCO stub works on netCDF3 and netCDF4 files */
+    /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
+       NCO stubs perform no-ops on netCDF3 files */
+    rcd=nco_inq_var_chunking(in_id,var_id,&srg_typ,cnk_sz);
+    if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s written with chunk size = %d\n",var_nm,cnk_sz[0]);
     rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
-    if(deflate) (void)fprintf(stdout,"%s is compressed (Lempel-Ziv %s shuffling) on disk at level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
+    if(deflate) (void)fprintf(stdout,"%s stored compressed (Lempel-Ziv %s shuffling) at level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
     (void)fprintf(stdout,"%s memory size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     long var_sz=1L;
