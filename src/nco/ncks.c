@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.227 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.228 2009-05-02 22:44:32 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.227 2009-05-02 22:22:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.227 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.228 2009-05-02 22:44:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.228 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -280,13 +280,13 @@ main(int argc,char **argv)
 	/* Replace commas with hashes when within braces */
 	cnk_lst_in=nco_lst_prs_2D(optarg_lcl,",",&cnk_nbr);
 	optarg_lcl=(char *)nco_free(optarg_lcl);
-	cnk_sz=(int *)nco_malloc(cnk_nbr*sizeof(int));
+	cnk_sz=(size_t *)nco_malloc(cnk_nbr*sizeof(size_t));
 	/* fxm: use strtol() instead? */
-	for(idx=0;idx<cnk_nbr;idx++) sscanf(cnk_lst_in[idx],"%d",cnk_sz+idx);
+	for(idx=0;idx<cnk_nbr;idx++) sscanf(cnk_lst_in[idx],"%zu",cnk_sz+idx);
 	if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
 	if(dbg_lvl >= nco_dbg_scl){
 	  (void)fprintf(stderr,"idx cnk_sz:\n");
-	  for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %d\n",idx,cnk_sz[idx]);
+	  for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %lu\n",idx,(unsigned long)cnk_sz[idx]);
 	} /* endif dbg */
       } /* endif cnk */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
@@ -665,7 +665,7 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cnk_sz != NULL) cnk_sz=(int *)nco_free(cnk_sz);
+    if(cnk_sz != NULL) cnk_sz=(size_t *)nco_free(cnk_sz);
     if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
     if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
