@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.68 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.69 2009-05-03 23:59:32 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -541,7 +541,7 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
   return min_val;
 } /* end nco_msa_min_idx() */
 
- void
+void
 nco_msa_var_get    /* [fnc] Get var data from disk taking accound of multihyperslabs */
 (const int in_id,  /* I [id] netCDF input file ID */
  var_sct *var_in,
@@ -551,7 +551,7 @@ nco_msa_var_get    /* [fnc] Get var data from disk taking accound of multihypers
 int idx;
 int jdx;
 int nbr_dim;
-int typ_tmp;
+nc_type typ_tmp;
 void *void_ptr;
 lmt_all_sct **lmt_mult;
 lmt_sct **lmt;
@@ -583,7 +583,6 @@ lmt_sct **lmt;
     } /* end loop over jdx */
   } /* end idx */
   
-  
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   typ_tmp=var_in->type;
@@ -591,15 +590,13 @@ lmt_sct **lmt;
   void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var_in);
   
   var_in->type=typ_tmp;
-
   var_in->val.vp=void_ptr;
 
   (void)nco_free(lmt_mult);
   (void)nco_free(lmt);
 
 do_unpck:
-/*******************************************************************************/
- /* following code copied from nco_var_get() */
+  /* Following code copied from nco_var_get() */
 
   if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
   /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
@@ -608,7 +605,7 @@ do_unpck:
   var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
-     fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
+     fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
   (void)nco_pck_dsk_inq(in_id,var_in);
   
   /* Packing/Unpacking */
@@ -619,11 +616,6 @@ do_unpck:
        20050629: Making this region multi-threaded causes no problems */
     if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
   } /* endif arithmetic operator */
-
-/*******************************************************************************/
-
-
-
 
   return;
 } /* end nco_msa_var_get */
