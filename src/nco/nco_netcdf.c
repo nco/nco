@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.106 2009-05-03 07:54:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.107 2009-05-03 18:09:48 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -679,11 +679,13 @@ int nco_def_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
  const int var_id, /* [ID] Variable ID */
  const int srg_typ, /* [enm] Storage type */
- size_t * const cnk_sz) /* [nbr] Chunk sizes */
+ const size_t * const cnk_sz) /* [nbr] Chunk sizes */
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
-  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,cnk_sz);
+  /* NB: weak netCDF4 prototype---ask Unidata to strengthen? */
+  /*  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,cnk_sz);*/
+  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,(size_t *)cnk_sz);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_chunking()");
   return rcd;
 } /* end nco_def_var_chunking() */
@@ -899,7 +901,12 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   case NC_UINT: rcd=NCO_PUT_VAR1_UINT(nc_id,var_id,(const size_t *)srt,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VAR1_INT64(nc_id,var_id,(const size_t *)srt,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VAR1_UINT64(nc_id,var_id,(const size_t *)srt,(const nco_uint64 *)vp); break;
+    /* Next line produces GCC warning:
+       attention : passing argument 4 of ‘nc_put_var1_string’ from incompatible pointer type */
   case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const nco_string *)vp); break;
+    /* Next line produces GCC warning:
+       attention : le transtypage annule des qualificateurs du type pointeur ciblé */
+    /*  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const char **)vp); break;*/
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */

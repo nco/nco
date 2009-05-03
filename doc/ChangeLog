@@ -1,3 +1,8 @@
+2009-05-03  Charlie Zender  <zender@uci.edu>
+
+	* Tweak NCO wrappers to isolate all weak prototype compiler
+	warnings (caused by netCDF4 prototypes) in nco_netcdf.[ch] 
+
 2009-05-02  Charlie Zender  <zender@uci.edu>
 
 	* Verify cnk_sz stubs pass all regression tests
