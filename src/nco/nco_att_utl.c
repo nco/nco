@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.94 2009-05-03 23:40:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.95 2009-05-03 23:47:15 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -648,12 +648,12 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       case 'c':	aed_lst[idx].type=(nc_type)NC_CHAR; break;
       case 'b':	aed_lst[idx].type=(nc_type)NC_BYTE; break;
       default: 
-	if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=NC_UBYTE; 
-	else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=NC_USHORT; 
-	else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=NC_UINT; 
-	else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=NC_INT64; 
-	else if(!strcasecmp(arg_lst[3],"ull") || !strcasecmp(arg_lst[3],"uint64")) aed_lst[idx].type=NC_UINT64; 
-	else if(!strcasecmp(arg_lst[3],"sng")) aed_lst[idx].type=NC_STRING; 
+	if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=(nc_type)NC_UBYTE; 
+	else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=(nc_type)NC_USHORT; 
+	else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=(nc_type)NC_UINT; 
+	else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=(nc_type)NC_INT64; 
+	else if(!strcasecmp(arg_lst[3],"ull") || !strcasecmp(arg_lst[3],"uint64")) aed_lst[idx].type=(nc_type)NC_UINT64; 
+	else if(!strcasecmp(arg_lst[3],"sng")) aed_lst[idx].type=(nc_type)NC_STRING; 
 	else{
 	  (void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
 	  (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, 'l' = `i' = integer, `b' = byte",prg_nm_get());
