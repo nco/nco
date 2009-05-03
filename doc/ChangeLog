@@ -1,5 +1,7 @@
 2009-05-03  Charlie Zender  <zender@uci.edu>
 
+	* Link to libnsl.a only for Solaris and HPUX
+
 	* Tweak NCO wrappers to isolate all weak prototype compiler
 	warnings (caused by netCDF4 prototypes) in nco_netcdf.[ch] 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.228 2009-05-02 22:44:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.229 2009-05-03 22:36:52 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.228 2009-05-02 22:44:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.228 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.229 2009-05-03 22:36:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.229 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -550,8 +550,8 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-    if(cnk_sz != NULL && fl_out_fmt != NC_NETCDF4){
-      (void)fprintf(stderr,"%s: INFO Output file format is %s so chunking request must be ignored\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+    if(cnk_sz != NULL && fl_out_fmt != NC_FORMAT_NETCDF4){
+      (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request must be ignored\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
     } /* endif netCDF4 */
 
     /* Open output file */
