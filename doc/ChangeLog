@@ -1,6 +1,6 @@
 2009-05-02  Charlie Zender  <zender@uci.edu>
 
-	* Verify cnk_sz mods have not changed regression tests
+	* Verify cnk_sz stubs pass all regression tests
 
 	* Allow DAP_NETCDF with ENABLE_NETCDF4 in Makefile's
 

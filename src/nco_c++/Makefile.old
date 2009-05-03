@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.82 2009-04-19 23:17:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.83 2009-05-03 08:23:57 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -13,7 +13,8 @@
 # scp ~/nco/src/nco_c++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco_c++
 
 # Usage:
-# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # neige, virga
+# cd ~/nco/src/nco_c++;make -f Makefile.old DAP_NETCDF=Y NETCDF4=Y OMP=Y dpn_cln cln all # neige
+# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # givre, virga
 # cd ~/nco/src/nco_c++;SZ_LIB=/sopt/lib make -f Makefile.old NETCDF4=N OMP=Y SZ=Y dpn_cln cln all # greenplanet
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=N dpn_cln cln all # ashes, elnino
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # esmf, sand
@@ -310,7 +311,7 @@ endif
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
  NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
- NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz
+ NC_LIBS := -lnetcdf ${NC_LIBS} -lhdf5_hl -lhdf5 -lz
 ifeq (${SZ},Y)
 ifndef SZ_LIB
  SZ_LIB := /usr/lib # Directory containing libsz.a
