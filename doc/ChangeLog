@@ -1,5 +1,10 @@
 2009-05-02  Charlie Zender  <zender@uci.edu>
 
+	* Add cnk_sz to var_sct, dmn_sct, var_dfl_set(), nco_var_free(),
+	and nco_var_dpl()
+
+	* Add chunking section to manual
+
 	* Change cnk_sz from int * to size_t *
 
 	* Include newer nco++ files in "make tags"

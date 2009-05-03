@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.322 2009-04-30 17:45:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.323 2009-05-03 06:11:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.8 are ready. 
 
@@ -24,7 +24,9 @@ B. Improve ./configure ability to find and work with GSL
 
 C. ncks has new -f option (thanks to Denis Nadeau) fxm
 
-D. ncks has new chunk option (thanks to Denis Nadeau) fxm
+D. NCO (when enabled with netCDF4) supports new chunk_size option:
+   ncks --cnk_sz 1024,1024,1024 in.nc out.nc
+   http://nco.sf.net/nco.html#chunking
 
 C. ncks --secret prints hidden/unsupported options
 

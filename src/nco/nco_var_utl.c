@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.133 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.134 2009-05-03 06:11:51 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -584,6 +584,10 @@ nco_var_dpl /* [fnc] Duplicate input variable */
     var_cpy->dmn_id=(int *)nco_malloc(var_cpy->nbr_dim*sizeof(int));
     (void)memcpy((void *)(var_cpy->dmn_id),(void *)(var->dmn_id),var_cpy->nbr_dim*sizeof(var->dmn_id[0]));
   } /* end if */
+  if(var->cnk_sz != NULL){
+    var_cpy->cnk_sz=(size_t *)nco_malloc(var_cpy->nbr_dim*sizeof(size_t));
+    (void)memcpy((void *)(var_cpy->cnk_sz),(void *)(var->cnk_sz),var_cpy->nbr_dim*sizeof(var->cnk_sz[0]));
+  } /* end if */
   if(var->cnt != NULL){
     var_cpy->cnt=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_cpy->cnt),(void *)(var->cnt),var_cpy->nbr_dim*sizeof(var->cnt[0]));
@@ -722,6 +726,7 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->tally=(long *)nco_free(var->tally);
   var->dmn_id=(int *)nco_free(var->dmn_id);
+  var->cnk_sz=(size_t *)nco_free(var->cnk_sz);
   var->dim=(dmn_sct **)nco_free(var->dim);
   var->srt=(long *)nco_free(var->srt);
   var->end=(long *)nco_free(var->end);
@@ -786,6 +791,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->nbr_att=-1;
   var->dim=(dmn_sct **)NULL;
   var->dmn_id=(int *)NULL;
+  var->cnk_sz=(size_t *)NULL;
   var->cnt=(long *)NULL;
   var->srt=(long *)NULL;
   var->end=(long *)NULL;

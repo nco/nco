@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.534 2009-05-02 20:44:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.535 2009-05-03 06:11:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1000,8 +1000,16 @@ copies and prints them, @command{ncra} averages them, and
 @command{ncap2} processes algebraic scripts with them.
 @command{ncks} prints compression information, if any, to screen.
 
+@cindex deflation
+@acronym{NCO} version 3.9.1 (June, 2007) added support for netCDF4 
+Lempel-Ziv deflation.
 Lempel-Ziv deflation is a lossless compression technique.
 See @ref{Deflation} for more details.
+
+@cindex chunking
+@acronym{NCO} version 3.9.9 (June, 2009) added support for netCDF4
+chunking. 
+See @ref{Chunking} for more details.
 
 @cindex @acronym{HDF5}
 @cindex @code{-4}
@@ -2029,6 +2037,7 @@ feature is automatic and cannot be controlled by the user.
 * Auxiliary Coordinates::       
 * UDUnits Support::             
 * Missing Values::              
+* Chunking::                    
 * Deflation::                   
 * Packed data::                 
 * Operation Types::             
@@ -4092,7 +4101,7 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html
-@node Missing Values, Deflation, UDUnits Support, Common features
+@node Missing Values, Chunking, UDUnits Support, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
@@ -4255,6 +4264,31 @@ important information from being lost.
 @end enumerate
 
 @html
+<a name="chunking"></a> <!-- http://nco.sf.net/nco.html#chunking -->
+<a name="cnk"></a> <!-- http://nco.sf.net/nco.html#cnk -->
+<a name="cnk_sz"></a> <!-- http://nco.sf.net/nco.html#cnk_sz -->
+<a name="chunk_size"></a> <!-- http://nco.sf.net/nco.html#chunk_size -->
+@end html
+@node Chunking, Deflation, Missing Values, Common features
+@section Chunking
+@cindex @code{--cnk_sz}
+@cindex @code{--chunk_size}
+@cindex chunking
+@cartouche
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Short options: none@*
+Long options: @samp{--cnk_sz}, @samp{--chunk_size}@*  
+@end cartouche
+
+All @acronym{NCO} operators that define variables support 
+the netCDF4 feature of specifying the @var{chunk_size} for storing
+variables.
+Activate chunking with the @code{--cnk_sze @var{cnk_sz}} option
+(or with the same argument to the @samp{--chunk_size} options).
+
+@html
 <a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
 <a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
 <a name="lz"></a> <!-- http://nco.sf.net/nco.html#lz -->
@@ -4262,7 +4296,7 @@ important information from being lost.
 <a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
 <a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
 @end html
-@node Deflation, Packed data, Missing Values, Common features
+@node Deflation, Packed data, Chunking, Common features
 @section Deflation
 @cindex @code{-L}
 @cindex @code{--deflate}
