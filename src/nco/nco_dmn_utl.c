@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.31 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.32 2009-05-03 07:54:43 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -98,6 +98,7 @@ nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
     (void)nco_inq_vartype(dmn->nc_id,dmn->cid,&dmn->type);
   } /* end if */
   
+  dmn->cnk_sz=0L;
   dmn->cnt=dmn->sz;
   dmn->srt=0L;
   dmn->end=dmn->sz-1L;

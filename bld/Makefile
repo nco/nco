@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.499 2009-05-02 20:18:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.500 2009-05-03 07:54:43 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -51,7 +51,8 @@
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
-# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # givre, glace, neige, virga
+# cd ${HOME}/nco/bld;make OMP=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # neige
+# cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # givre, glace, virga
 # cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
@@ -301,7 +302,7 @@ endif
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
  NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
- NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz
+ NC_LIBS := -lnetcdf ${NC_LIBS} -lhdf5_hl -lhdf5 -lz
 ifeq (${SZ},Y)
 ifndef SZ_LIB
  SZ_LIB := /usr/lib # Directory containing libsz.a

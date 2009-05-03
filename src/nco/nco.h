@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.134 2009-05-03 06:11:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.135 2009-05-03 07:54:43 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -475,6 +475,7 @@ extern "C" {
   } dmn_sct; /* end dmn_sct_tag */
   
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
+     Fill actual value of var_sct_structure in var_sct structure in nco_var_fll()
      free() each pointer member of var_sct structure in nco_var_free()
      deep-copy each pointer member of var_sct structure in nco_var_dpl() */
   /* Variable structure */

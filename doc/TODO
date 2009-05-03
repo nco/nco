@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1045 2009-04-20 04:43:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1046 2009-05-03 07:54:43 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -669,8 +669,8 @@ nco964. nco: fsync()?
 nco965. nco: dap in libnetcdf.a
 nco966. ncap2 failure on silt (and only silt!:
         ncap2 -O -v -S /home/scapps/qscat/scripts/wnd_pfl/ncap2_wblpwr_truncated.nco /home/scapps/qscat/scripts/wnd_pfl/test.nc ~/out.nc
-nco968. 
-
+nco968. ncbo -t 1 -D 5 -O --op_typ='-' -v mss_val_scl -p ~/nco/data in.nc in.nc ~/foo.nc
+nco969. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

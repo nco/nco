@@ -1,5 +1,9 @@
 2009-05-02  Charlie Zender  <zender@uci.edu>
 
+	* Verify cnk_sz mods have not changed regression tests
+
+	* Allow DAP_NETCDF with ENABLE_NETCDF4 in Makefile's
+
 	* Add cnk_sz to var_sct, dmn_sct, var_dfl_set(), nco_var_free(),
 	and nco_var_dpl()
 

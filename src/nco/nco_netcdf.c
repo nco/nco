@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.105 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.106 2009-05-03 07:54:43 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -679,7 +679,7 @@ int nco_def_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
  const int var_id, /* [ID] Variable ID */
  const int srg_typ, /* [enm] Storage type */
- const size_t * const cnk_sz) /* [nbr] Chunk sizes */
+ size_t * const cnk_sz) /* [nbr] Chunk sizes */
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
@@ -728,7 +728,7 @@ int nco_inq_var_chunking
     rcd=nc_inq_var_chunking(nc_id,var_id,srg_typ,cnk_sz);
   }else{ /* !netCDF4 */
     *srg_typ=NC_CONTIGUOUS;
-    *cnk_sz=NULL;
+    *cnk_sz=(size_t)NULL;
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_chunking()");
   return rcd;
@@ -1148,7 +1148,7 @@ nco_inq_attlen_flg(const int nc_id,const int var_id,const char * const att_nm,lo
   int rcd;
   rcd=nc_inq_attlen(nc_id,var_id,att_nm,(size_t *)att_sz);
   if(rcd == NC_ENOTATT) return rcd;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attlen()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_attlen */
 
