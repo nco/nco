@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.93 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.94 2009-05-03 23:40:35 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -640,13 +640,13 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       /* Set type of current aed structure */
       /* Convert single letter code to type enum */
       switch(*(arg_lst[3])){
-      case 'f':	aed_lst[idx].type=NC_FLOAT; break;
-      case 'd':	aed_lst[idx].type=NC_DOUBLE; break;
+      case 'f':	aed_lst[idx].type=(nc_type)NC_FLOAT; break;
+      case 'd':	aed_lst[idx].type=(nc_type)NC_DOUBLE; break;
       case 'l':	
-      case 'i':	aed_lst[idx].type=NC_INT; break;
-      case 's':	aed_lst[idx].type=NC_SHORT; break;
-      case 'c':	aed_lst[idx].type=NC_CHAR; break;
-      case 'b':	aed_lst[idx].type=NC_BYTE; break;
+      case 'i':	aed_lst[idx].type=(nc_type)NC_INT; break;
+      case 's':	aed_lst[idx].type=(nc_type)NC_SHORT; break;
+      case 'c':	aed_lst[idx].type=(nc_type)NC_CHAR; break;
+      case 'b':	aed_lst[idx].type=(nc_type)NC_BYTE; break;
       default: 
 	if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=NC_UBYTE; 
 	else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=NC_USHORT; 
