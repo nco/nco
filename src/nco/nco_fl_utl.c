@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.110 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.111 2009-05-04 00:18:15 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1094,6 +1094,14 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   pid_t pid; /* Process ID */
 
   struct stat stat_sct;
+
+  /* Make sure output is possible */
+#ifndef ENABLE_NETCDF4
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC){
+    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support.\nHINT: Rebuild NCO with netCDF4 enabled.\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /*  */
+#endif /* ENABLE_NETCDF4 */
 
   /* Set default clobber mode (clobber) then modify for specified file format */
   nccreate_mode=NC_CLOBBER; /* [enm] Mode flag for nco_create() call */
