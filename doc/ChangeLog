@@ -1,3 +1,15 @@
+2009-05-04  Charlie Zender  <zender@uci.edu>
+
+	* Change usage of netcdf4.nc
+
+	* Verify that netCDF4 problems in netcdf4.nco as of 20080512 have 
+	been fixed (by updating to snapshot netCDF4) as of 20090504.
+	Only remaining problem is that NCO silently succeeds on overflows.
+
+	* Better warnings/info when DAP attempts fall-through to wget
+
+	* Re-work logic for DAP attempts to fall-through to wget
+
 2009-05-03  Charlie Zender  <zender@uci.edu>
 
 	* Some chunking parameters work, some cause "Bad chunk sizes" errors
@@ -18,7 +30,7 @@
 	* Allow DAP_NETCDF with ENABLE_NETCDF4 in Makefile's
 
 	* Add cnk_sz to var_sct, dmn_sct, var_dfl_set(), nco_var_free(),
-	and nco_var_dpl()
+	  and nco_var_dpl()
 
 	* Add chunking section to manual
 

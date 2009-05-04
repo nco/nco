@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.112 2009-05-04 00:18:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.113 2009-05-04 22:11:47 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -410,6 +410,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
+    /* Filename starts with "http://": Try DAP first (if available), then wget. */
+
+#ifdef ENABLE_DAP
     /* Filename has http:// prefix so try DAP access to unadulterated filename */
     int in_id; /* [id] Temporary input file ID */
 
@@ -432,21 +435,28 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* Close file to prevent accumulating dangling open files on DAP server */
       rcd=nco_close(in_id);
 
-      /* Great! DAP worked and operator supports DAP so file has earned DAP identification */
+      /* Great! DAP worked so file has earned DAP identification */
       DAP_URL=True; 
 
       /* Set rcd=0 to agree with successful stat() so rest of function treats file as local
 	 (DAP treats HTTP protocol files as local files) */
       rcd=0;
 
-    }else{ /* DAP access to http:// file failed */
+    }else{ /* DAP-access failed */
+      (void)fprintf(stderr,"%s: INFO DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
+    } /* DAP-access failed */
+
+#else /* !ENABLE_DAP */
+    (void)fprintf(stderr,"%s: INFO Access to %s may (because filename starts with \"http://\") require DAP, but NCO was not enabled with DAP. Instead NCO will try to search for the file locally, and then will try wget.\n",prg_nm_get(),fl_nm_lcl); 
+    (void)fprintf(stderr,"%s: HINT: Obtain or build DAP-enabled NCO, e.g., with configure --enable-dap-netcdf ...\n",prg_nm_get());
+#endif /* !ENABLE_DAP */
+
+    if(DAP_URL == False){ /* DAP access to http:// file failed */
       /* Attempt to retrieve URLs directly when DAP access fails. Tests:
 	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
 	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP */
-
-      (void)fprintf(stderr,"%s: INFO DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
       
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
@@ -727,6 +737,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(rmt_cmd == NULL){
       if(HTTP_URL){
 	rmt_cmd=&http;
+	(void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will likely fail if the file is truly behind a DAP server. Unfortunately, even a failed wget attempt creates a rather long pathname in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",prg_nm_get());
       } /* end if HTTP */
     } /* end if rmt_cmd */
 
@@ -1098,9 +1109,9 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* Make sure output is possible */
 #ifndef ENABLE_NETCDF4
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support.\nHINT: Rebuild NCO with netCDF4 enabled.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support.\nHINT: Obtain or build netCDF4-enabled NCO, e.g., with configure --enable_netcdf4 ...\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
-  } /*  */
+  } /* netCDF4 */
 #endif /* ENABLE_NETCDF4 */
 
   /* Set default clobber mode (clobber) then modify for specified file format */

@@ -1,10 +1,11 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.4 2008-05-12 21:14:29 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.5 2009-05-04 22:11:47 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 
 /* Usage: 
-   ncap2 -O -v -S ~/nco/data/netcdf4.nco ~/nco/data/in_4.nc ~/foo.nc
-   ncks ~/foo.nc | /bin/more
+   ncap2 -4 -O -v -S ~/nco/data/netcdf4.nco ~/nco/data/in.nc ~/nco/data/netcdf4.nc
+   ncks ~/nco/data/netcdf4.nc | /bin/more
+   scp ~/nco/data/netcdf4.nc dust.ess.uci.edu:/var/www/html/nco
 */
 
 // First make sure netCDF3 commands work 
@@ -15,19 +16,26 @@ var_short=1s;
 var_byte=1b;
 var_char[char_dmn_lng04]="Hell";
 // Following lines _require_ netCDF4:
-//var_ubyte=1ub; // NB: fxm TODO nco852 UBYTE currently broken
+var_ubyte=1ub;
 var_ushort=1us;
 var_uint=1u;
 var_int64=1ll;
 var_uint64=1ull;
 // Test arithmetic ranges
-var_ushort_ngt=-var_ushort; // 20080512: = 65535
-var_ushort_ngt_2=-1us; // 20080512: = 65535
-var_ushort_ttl=var_short+var_short;
-var_uint64_sum_int64_int64=var_int64+var_int64;
-var_uint64_1=var_uint64_2=9223372036854775807ull;
-var_uint64_ttl=var_uint64_1+var_uint64_2; // 20080512: = 9223372036854775807ull Fails!
-var_uint64_prd=2ull*9223372036854775807ull; // 20080512: = 9223372036854775807ull Fails
-var_uint64_dff=9223372036854775807ull-1ull; // 20080512: = 9223372036854775806ull Works
-var_uint64_max=18446744073709551615ull; // 20080512: Fails
+var_short_max=32767s;
+var_short_ttl=var_short+var_short;
+var_short_ttl_max=var_short_max+var_short_max; // 20090504: -2 overflow OK
+var_ushort_ngt=-var_ushort; // 20080512: = 65535 overflow OK
+var_ushort_ngt_2=-1us; // 20080512: = 65535 overflow OK
+var_ushort_max=65535us;
+var_ushort_ttl=var_ushort+var_ushort;
+var_ushort_ttl_max=var_ushort_max+var_ushort_max; // 20090504: 65534 overflow OK
+var_int64_ttl=var_int64+var_int64;
+var_int64_max=9223372036854775807ll;
+var_int64_ttl_max=var_int64_max+var_int64_max; // 20090504: -2 overflow OK
+var_uint64_max=18446744073709551615ull;
+var_uint64_ttl=0ull+var_int64+var_int64;
+var_uint64_ttl_max=var_uint64_max+var_uint64_max; // 20090504: 18446744073709551614ull overflow OK?
+var_uint64_prd=2*9223372036854775807ull;
+var_uint64_dff=var_uint64_max-1;
 

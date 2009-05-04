@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1046 2009-05-03 07:54:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1047 2009-05-04 22:11:47 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -666,11 +666,19 @@ nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attri
 nco954. ncinsert functionality request posted to help forum 20081116
 nco960. Warn when attempted hyperslab on 2-D (or more) coordinates, e.g., https://sourceforge.net/forum/message.php?msg_id=6282324
 nco964. nco: fsync()?
-nco965. nco: dap in libnetcdf.a
 nco966. ncap2 failure on silt (and only silt!:
         ncap2 -O -v -S /home/scapps/qscat/scripts/wnd_pfl/ncap2_wblpwr_truncated.nco /home/scapps/qscat/scripts/wnd_pfl/test.nc ~/out.nc
 nco968. ncbo -t 1 -D 5 -O --op_typ='-' -v mss_val_scl -p ~/nco/data in.nc in.nc ~/foo.nc
-nco969. 
+nco969. nco: do not automatically try wget when DAP access fails ?
+nco970. nco: do not create really long paths with (especially failed) wget attempts
+nco971. wget: both following commands create and write mutilated directory
+	cd ~;ncks -M -R -p http://sand.ess.uci.edu/nco in.nc
+	cd ~;ncks -M -R http://sand.ess.uci.edu/nco/in.nc
+	ls -lR ~/nco/in.n
+	ncks: INFO Retrieved files will be stored in directory ./nco/in.n
+	stores correctly in local directory but also creates ./nco/in.n
+	/bin/rm -r ~/nco/in.n ~/nco/in.nc
+nco972. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

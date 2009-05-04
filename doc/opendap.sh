@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.13 2009-05-03 08:23:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.14 2009-05-04 22:11:47 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -29,7 +29,7 @@
 
 # Example DAP-enabled commands:
 # ncks -M http://dust.ess.uci.edu/nco in.nc # fails
-# ncks -M -p http://dust.ess.uci.edu/nco/in.nc # fails
+# ncks -M -p http://dust.ess.uci.edu/nco in.nc # fails
 # ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 # ncra -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 # ncwa -O -C -D 3 -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
