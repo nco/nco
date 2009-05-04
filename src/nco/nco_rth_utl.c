@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.34 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.35 2009-05-04 00:04:37 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -30,7 +30,7 @@ nco_rth_prc_rnk /* [fnc] Rank precision of arithmetic type */
   } /* end switch */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
-  return 0;
+  return (nco_rth_prc_rnk_enm)0;
 } /* end nco_rth_prc_rnk() */
 
 void 
