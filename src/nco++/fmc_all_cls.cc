@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.14 2009-05-02 20:44:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.15 2009-05-05 16:16:54 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -41,8 +41,8 @@
     // no arguments - bomb out
     if(!expr && nbr_fargs==0){    
         std::string serr;
-	serr="Function "+sfnm + " has been called without an argument";               
-        err_prn(fnc_nm,serr);
+	serr="Function has been called without an argument";               
+        err_prn(sfnm,serr);
     }
 
     if(expr) 
@@ -85,7 +85,7 @@
             var_sct *var=NULL_CEWI;
             var_sct *var1=NULL_CEWI;
            
-	    std::string styp;
+	    std::string susg;
 	    std::string sfnm=fmc_obj.fnm();
 
             RefAST aRef;
@@ -100,7 +100,6 @@
 
             fdx=fmc_obj.fdx();
  
-    	    styp=(expr ? "method":"function");
  
             // Put args into vector 
             if(expr)
@@ -114,8 +113,10 @@
       
             nbr_args=vtr_args.size();  
 
+            susg="usage: var_out="+sfnm+"(var_in,$dim1,$dim2...$dimn)";
+
             if(nbr_args==0)
-              err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+              err_prn(sfnm, " Function has been called with no arguments\n"+susg); 
 
 
             var1=walker.out(vtr_args[0]);
@@ -144,8 +145,8 @@
                   // ignore expr type argument
                   default:
                        std::string serr;
-                       serr="Argument \""+aRef->getText()+"\" to " + styp+": "+sfnm+" is not a dimension"; 
-                       wrn_prn(fnc_nm,serr);
+                       serr="Argument "+nbr2sng(idx)+ " is not a dimension"; 
+                       wrn_prn(sfnm,serr);
                        break;
                 } // end switch
 
@@ -502,31 +503,45 @@
   const std::string fnc_nm("bsc_cls::fnd");
 
     int fdx=fmc_obj.fdx();   //index
-    int nbr_fargs;
-    prs_cls* prs_arg=walker.prs_arg;
+    int nbr_args;
     var_sct *var=NULL_CEWI;
     var_sct *var1=NULL_CEWI;
+    prs_cls* prs_arg=walker.prs_arg;
+
     RefAST tr;
     vtl_typ lcl_typ;
 
+    std::string susg; 
     std::string sfnm =fmc_obj.fnm(); //method name
+    std::vector<RefAST> vtr_args;
 
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren();
 
-    // no arguments - bomb out
-    if(!expr && nbr_fargs==0){    
-        std::string serr;
-	serr="Function "+sfnm + " has been called without an argument";               
-        err_prn(fnc_nm,serr);
-    }
-    
-      
+    susg="usage: property="+sfnm+"( var_nm | att_nm | var_exp )";
+
 
     if(expr)
-      tr=expr;
-    else
-      tr=fargs->getFirstChild(); 
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+
+
+    // no arguments - bomb out
+    if(nbr_args==0){    
+        std::string serr;
+	serr="Function has been called with no argument\n"+susg;               
+        err_prn(sfnm,serr);
+	// more than one arg -- only print message once 
+    } else if(nbr_args >1 && !prs_arg->ntl_scn)
+        wrn_prn(sfnm,"Function has been called with more than one argument");
+           
+
+    tr=vtr_args[0];  
 
 
     lcl_typ=expr_typ(tr);          
@@ -649,33 +664,44 @@
   var_sct * mth_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("mth_cls::fnd");
     int fdx;
-    int nbr_fargs;
+    int nbr_args;
     var_sct *var1;
     var_sct *var;   
     fdx=fmc_obj.fdx(); 
-    std::string styp;
-
+    std::string susg;
     std::string sfnm =fmc_obj.fnm(); 
+   
+    RefAST tr;
+    std::vector<RefAST> vtr_args;    
+    // de-reference
+    prs_cls* prs_arg=walker.prs_arg;
 
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren();
-    
-    styp=(expr ? "method":"function");
+    susg="usage: var_out="+sfnm+"(var_exp)";
+
 
     if(expr)
-      nbr_fargs++;
+      vtr_args.push_back(expr);
 
-   
-    if(nbr_fargs >1) 
-      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
-  
-    if(nbr_fargs<1)
-      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
-     
-    if(expr) 
-      var1=walker.out(expr);
-    else
-      var1=walker.out(fargs->getFirstChild());   
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+
+
+    // no arguments - bomb out
+    if(nbr_args==0){    
+        std::string serr;
+	serr="Function has been called with no argument\n"+susg;               
+        err_prn(sfnm,serr);
+	// more than one arg -- only print message once 
+    } else if(nbr_args >1 && !prs_arg->ntl_scn)
+        wrn_prn(sfnm,"Function has been called with more than one argument");
+           
+    var1=walker.out(vtr_args[0]);   
+
 
     var=ncap_var_fnc(var1, sym_vtr[fdx]._fnc_dbl,sym_vtr[fdx]._fnc_flt);
 
@@ -700,19 +726,19 @@
     int fdx=fmc_obj.fdx();   //index
     int nbr_args=0;
 
-    prs_cls* prs_arg=walker.prs_arg;
     var_sct *var=NULL_CEWI;
     var_sct *var1=NULL_CEWI;
     var_sct *var2=NULL_CEWI;
-    std::string styp;
-    RefAST tr;
- 
-    std::vector<RefAST> vtr_args; 
 
-
+    std::string susg;
     std::string sfnm =fmc_obj.fnm(); //method name
 
-    styp=(expr ? "method":"function");
+    RefAST tr;
+    std::vector<RefAST> vtr_args; 
+    prs_cls* prs_arg=walker.prs_arg;
+
+
+    susg="usage: var_out="+sfnm+"(var_exp,var_exp)"; 
 
     if(expr)
       vtr_args.push_back(expr);
@@ -725,12 +751,16 @@
       
      nbr_args=vtr_args.size();  
       
-     if(nbr_args >2) 
-       wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
-  
-     if(nbr_args<2)
-       err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
     
+
+    // no arguments - bomb out
+    if(nbr_args<2){    
+        std::string serr;
+	serr="Function has been called with less than two argument\n"+susg;               
+        err_prn(sfnm,serr);
+	// more than one arg -- only print message once 
+    } else if(nbr_args >2 && !prs_arg->ntl_scn)
+        wrn_prn(sfnm,"Function has been called with more than two arguments");
       
      var1=walker.out(vtr_args[0]);
      //
@@ -814,7 +844,6 @@
 
 	    sfnm =fmc_obj.fnm(); //method name
 
-    	    styp=(expr ? "method":"function");
 
             if(expr)
               vtr_args.push_back(expr);
@@ -828,7 +857,7 @@
             nbr_args=vtr_args.size();  
 
             if(nbr_args==0)
-              err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+              err_prn(sfnm,"Function has been called with no arguments"); 
 
             var_in=walker.out(vtr_args[0]);
 
@@ -843,8 +872,9 @@
                      break;    
                     // ignore expr type arguments
                 default:
-                     serr="Argument \""+vtr_args[idx]->getText()+"\" to"+sfnm +" is not a dimension";      
-                     wrn_prn(fnc_nm,serr);
+		  // warn only on final scan
+		  if(!prs_arg->ntl_scn)    
+		       wrn_prn(sfnm,"Argument "+nbr2sng(idx) +" is not a dimension");
                      break;
               } // end switch
             } // end for
@@ -860,19 +890,19 @@
             if(fdx==PPERMUTE){
 
               if((size_t)dmn_vtr.size() < str_vtr.size())
-	        wrn_prn(fnc_nm, "Unrecognized dimension arguments in" +sfnm);
+	        wrn_prn(sfnm, "Unrecognized dimension arguments");
 
 	      if(dmn_vtr.size() < nbr_dim ) {
                 ostringstream os; 
-	        os<<"You have only specified "<< dmn_vtr.size()<< " dimension  args " << "in "+sfnm+". You need to specify  "<< nbr_dim<<". All of the variables dimensions must be specfifed in the arguments."; 
-              err_prn(fnc_nm,os.str());
+	        os<<"You have only specified "<< dmn_vtr.size()<< " dimension  args. You need to specify  "<< nbr_dim<<". All of the variable's dimensions must be arguments"; 
+              err_prn(sfnm,os.str());
                 }
 
               // Check location of record dimension
               for(idx=0 ; idx<nbr_dim ; idx++)
 		if( idx>0 && dmn_vtr[idx]->is_rec_dmn){
                   ostringstream os; 
-		  os<<"You must specify the record dimension "<< dmn_vtr[idx]->nm <<" as the first dimension in the list." << sfnm; 
+		  os<<"The record dimension \""<< dmn_vtr[idx]->nm <<"\" must be the first dimension in the list."; 
                   err_prn(fnc_nm,os.str());  
 	        }
 
@@ -959,40 +989,43 @@
   var_sct *msk_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("msk_cls::fnd");
     int fdx=fmc_obj.fdx();   //index
-    int nbr_fargs;
+    int nbr_args;
     prs_cls* prs_arg=walker.prs_arg;
     var_sct *var=NULL_CEWI;
     var_sct *var_msk=NULL_CEWI;
-    std::string styp;
+
     RefAST tr;
 
     std::string sfnm =fmc_obj.fnm(); //method name
+    std::vector<RefAST> vtr_args; 
+    NcapVector<dmn_sct*> dmn_vtr;
 
-    styp=(expr ? "method":"function");
 
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren();
-   
     if(expr)
-      nbr_fargs++;
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+       do  
+         vtr_args.push_back(tr);
+       while(tr=tr->getNextSibling());    
+    } 
+      
+    nbr_args=vtr_args.size();  
+
 
    
-    if(nbr_fargs >2) 
-      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
-  
-    if(nbr_fargs<2)
-      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
+
+    if(nbr_args<2)
+      err_prn(sfnm, "Function has been called with less than two arguments"); 
+
+
+    if(nbr_args >2 && !prs_arg->ntl_scn) 
+      wrn_prn(sfnm," Function has been called with more than two arguments"); 
     
-     
+ 
+    var=walker.out(vtr_args[0]);
+    var_msk=walker.out(vtr_args[1]);
 
-    if(expr){ 
-      var=walker.out(expr);
-      var_msk=walker.out(fargs->getFirstChild());
-    }else{
-      var=walker.out(fargs->getFirstChild());   
-      var_msk=walker.out(fargs->getFirstChild()->getNextSibling());
-
-    }
 
 
     // Deal with initial scan
@@ -1015,9 +1048,9 @@
 
     if( fdx==PMASK_CLIP && var->sz%var_msk->sz !=0 ) {
       std::ostringstream os;
-      os<< styp+" \""+sfnm+"\" cannot clip var  ";
+      os<< " Function cannot clip var  ";
       os<< var->nm <<" as size(" <<var->sz<<") is not divisible by mask var "<<var_msk->nm <<" size("<< var_msk->sz <<")"; 
-      err_prn(fnc_nm,os.str()); 
+      err_prn(sfnm,os.str()); 
     }
 
     switch(fdx) {
@@ -1090,22 +1123,22 @@
       cp_out=(char*)(var_out->val.vp);
       
       for(idx=0 ; idx<msk_sz ;idx++){
-        // index not out of bounds bomb out
+        // index out of bounds bomb out
 
         if(prs_arg->FORTRAN_IDX_CNV) {
 
           if( lp[idx]<1L || lp[idx] > var_sz){
             std::ostringstream os;
-            os<< styp+" \""+sfnm+"\" reporting that fortran index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 1"<<"-"<<var_sz; 
-            err_prn(fnc_nm,os.str());         
+            os<<" Function reporting that fortran index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 1"<<"-"<<var_sz; 
+            err_prn(sfnm,os.str());         
           }
 	  --lp[idx];
         }else{
          
           if( lp[idx]<0L || lp[idx] >= var_sz){
             std::ostringstream os;
-            os<< styp+" \""+sfnm+"\" reporting that index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 0"<<"-"<<var_sz-1; 
-            err_prn(fnc_nm,os.str());         
+            os<<"Function reporting that index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 0"<<"-"<<var_sz-1; 
+            err_prn(sfnm,os.str());         
 
           }
         }
@@ -1144,7 +1177,7 @@
 
   var_sct *pck_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("pck_cls::fnd");
-    int nbr_fargs; 
+    int nbr_args; 
     int fdx=fmc_obj.fdx();   //index
     prs_cls *prs_arg=walker.prs_arg;    
     var_sct *var_in=NULL_CEWI;
@@ -1152,29 +1185,38 @@
     nc_type typ;
     nco_bool PCK_VAR_WITH_NEW_PCK_ATT;
     
+    std::string susg;
     std::string serr; 
-    std::string sfnm;
+    std::string sfnm=fmc_obj.fnm();
     RefAST tr;
-  
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren(); 
-  
-    sfnm= (expr ? " method ": " function ") + fmc_obj.fnm(); 
+    std::vector<RefAST> vtr_args; 
 
-    // no arguments - bomb out
-    if(!expr && nbr_fargs==0){    
-	serr=sfnm + " has been called without an argument";               
-        err_prn(fnc_nm,serr);
-    }
+    susg="usage: var_out="+sfnm+"(var_in)";
 
-   
 
     if(expr)
-      tr=expr;
-    else 
-      tr=fargs->getFirstChild();
+      vtr_args.push_back(expr);
 
-    var_in=walker.out(tr);
+    if(tr=fargs->getFirstChild()) {
+       do  
+         vtr_args.push_back(tr);
+       while(tr=tr->getNextSibling());    
+    } 
+      
+    nbr_args=vtr_args.size();  
+
+
+    if(nbr_args==0)
+      err_prn(sfnm,"Function has been called with no argument\n"+susg);
+      
+
+
+    if(nbr_args>1 && !prs_arg->ntl_scn)
+      wrn_prn(sfnm,"Function has been called with more than one argument");
+
+
+    var_in=walker.out(vtr_args[0]); 
+
 
      switch(fdx) {
 	case PPACK:
@@ -1294,11 +1336,13 @@
 
            
     if( fdx== PDSORT) {
-      if(nbr_args<2 && expr)
-        err_prn(sfnm,"method requires one argument"); 
+      susg="usage: var_out="+sfnm+"(var_exp,&var_map)\n";  
+      if(nbr_args<2 )
+        err_prn(sfnm,"Function requires two arguments\n"+susg); 
 
-      if(nbr_args<2 && !expr)
-        err_prn(sfnm,"function requires two arguments"); 
+      // only warn on final scan 
+      if(nbr_args>2 && !prs_arg->ntl_scn)
+        err_prn(sfnm,"Function has more than two arguments"); 
 
       var1=walker.out(vtr_args[0]);
       var2=walker.out(vtr_args[1]);
@@ -1315,7 +1359,7 @@
         
       susg="usage: var_out=sort(var_exp,&var_map)\n";  
       if(nbr_args==0)
-        err_prn(sfnm,styp+" has been called with no arguments"); 
+        err_prn(sfnm,"Function has been called with no arguments"); 
          
       var1=walker.out(vtr_args[0]);
        
@@ -1471,27 +1515,45 @@
   } 
   var_sct * unr_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("unr_cls::fnd");
-    int nbr_fargs;
-    int fdx=fmc_obj.fdx();
-    var_sct *var1; 
-    std::string sfnm =fmc_obj.fnm(); //method name
-    prs_cls *prs_arg=walker.prs_arg;    
+    int fdx;
+    int nbr_args;
+    var_sct *var1;
+    var_sct *var;   
+    fdx=fmc_obj.fdx(); 
+    std::string susg;
+    std::string sfnm =fmc_obj.fnm(); 
+    RefAST tr;
+    std::vector<RefAST> vtr_args;    
+    // de-reference
+    prs_cls* prs_arg=walker.prs_arg;
+
+    susg="usage: var_out="+sfnm+"(var_exp)";
 
 
-    //n.b fargs is an imaginary node -and is ALWAYS present
-    nbr_fargs=fargs->getNumberOfChildren();
-    
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+
+
     // no arguments - bomb out
-    if(!expr && nbr_fargs==0){    
+    if(nbr_args==0){    
         std::string serr;
-	serr="Function "+sfnm + " has been called without an argument";               
-        err_prn(fnc_nm,serr);
-    }
+	serr="Function has been called with no argument\n"+susg;               
+        err_prn(sfnm,serr);
+	// more than one arg -- only print message once 
+    } else if(nbr_args >1 && !prs_arg->ntl_scn)
+        wrn_prn(sfnm,"Function has been called with more than one argument");
+           
 
-    if(expr) 
-      var1=walker.out(expr);
-    else
-      var1=walker.out(fargs->getFirstChild());   
+    var1=walker.out(vtr_args[0]);   
+
 
 
     if(prs_arg->ntl_scn)
@@ -1516,7 +1578,6 @@
 
 
 
-
 //Array Functions /***********************************/ 
   arr_cls::arr_cls(bool flg_dbg){
     //Populate only on  constructor call
@@ -1536,7 +1597,7 @@
   var_sct *var2=NULL_CEWI;
   var_sct *var_ret;
            
-  std::string styp;
+  std::string susg;
   std::string sfnm=fmc_obj.fnm();
 
   RefAST tr;
@@ -1547,8 +1608,6 @@
 
   fdx=fmc_obj.fdx();
  
-  styp=(expr ? "method":"function");
-
 
   if(expr)
       vtr_args.push_back(expr);
@@ -1561,12 +1620,18 @@
       
   nbr_args=vtr_args.size();  
 
+  susg="usage: var_out="+sfnm+"(start_exp,inc_exp,$dim)"; 
 
-  if(nbr_args >3) 
-      wrn_prn(sfnm,"Has been called with more than three arguments"); 
   
   if(nbr_args<3)
-      err_prn(sfnm,"Has been called with less than three arguments"); 
+      err_prn(sfnm,"Function has been called with less than three arguments\n"+susg); 
+
+
+
+  if(nbr_args >3 &&!prs_arg->ntl_scn) 
+      wrn_prn(sfnm,"Function been called with more than three arguments"); 
+
+
    
   
   var1=walker.out(vtr_args[0]);  
@@ -1582,7 +1647,7 @@
 
   /* third argument must be a single dimension */
   if(vtr_args[2]->getType() != DIM_ID ) 
-    err_prn(sfnm,"Third argument must be a dimension"); 
+    err_prn(sfnm,"Third argument must be a dimension\n"+susg); 
 
   // cast a var from using the dim arg
   {
