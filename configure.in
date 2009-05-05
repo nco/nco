@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.298 2009-05-05 16:23:54 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.299 2009-05-05 18:03:52 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -37,7 +37,7 @@
 # AC_ARG_ENABLE(foo,...) Create configure option --enable-foo
 # AC_ARG_VAR Add token TKN to environment variables ingested by configure
 # AC_CHECK_FUNC Find fnc_nm() in libXXX.a, define ${flg} accordingly
-# AC_CHECK_HEADER Find libXXX.a and add to linkage in order
+# AC_CHECK_HEADER Find XXX.h and define HAVE_XXX_H
 # AC_CHECK_LIB Find libXXX.a, prepend -lXXX to LIBS, define HAVE_LIBXXX
 # AC_CHECK_PROG Find whether prg_nm is on ${PATH}, define ${flg} accordingly
 # AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
@@ -300,93 +300,64 @@ fi
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 
+# User-specified netCDF locations, if any, take precedence
+if test "${NETCDF_ROOT}" != ''; then
+    if test -d "${NETCDF_ROOT}"; then
+	CPPFLAGS="-I${NETCDF_ROOT}/include ${CPPFLAGS}";
+	LDFLAGS="-L${NETCDF_ROOT}/lib ${LDFLAGS}";
+    else
+	echo "WARNING: NETCDF_ROOT location \"${NETCDF_ROOT}\" does not exist!"
+    fi
+fi # !NETCDF_ROOT
+if test "${NETCDF_LIB}"; then
+    if test -d "${NETCDF_LIB}"; then
+	LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
+    else
+	echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
+    fi
+fi # !NETCDF_LIB
+if test "${NETCDF_INC}"; then
+    if test -d "${NETCDF_INC}"; then
+	CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
+    else
+	echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
+    fi
+fi # !NETCDF_INC
+
+# NCO no longer supports netCDF2
+AC_CHECK_HEADERS([netcdf.h])
+AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
+
+# fxm: move this to be first? before DAP?
 echo "#################################"
-echo "#  Testing for HDF5 support     #"
+echo "#  Test for netCDF4 support     #"
 echo "#################################"
-AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features [[default=no]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
+AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
 if test "${enable_netcdf4}" = 'yes'; then
+# Assume HDF5 libraries are in standard places, let user override
+    AC_ARG_VAR([HDF5_LIB_DIR],Location of HDF5 libraries (compile-time))
+    if test "${HDF5_LIB_DIR}"; then
+	LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
+    fi
     if test "${NETCDF4_ROOT}" != ''; then
 	if test -d "${NETCDF4_ROOT}"; then
 	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
 	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
-	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap_opendap}" = 'no'); then
-# Check libnetcdf for netCDF4 function
-		AC_CHECK_LIB([netcdf],[nc4_enddef_netcdf4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
-	    fi
 	else
 	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
 	    enable_netcdf4='no'
 	fi
     else
 	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
-	echo "Must set both to enable netCDF4. Will try to configure netCDF4 anyway...";
-	AC_CHECK_LIB([netcdf],[nc4_enddef_netcdf4_file],,[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
+	echo "Assuming netCDF4 is on standard path...";
     fi
+# Check libnetcdf for netCDF4 function
+    AC_CHECK_LIB([netcdf],[nc4_enddef_netcdf4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
 fi
-
-echo "#############################################"
-echo "# Testing for netCDF4 support               #"
-echo "#############################################"
-echo "DEBUG: LIBS = ${LIBS}"
-# Check for HDF5 libraries unless told otherwise
-# HDF5 libraries may be in standard places but netCDF4 libnetcdf must be
-# in NETCDF4_ROOT to avoid conflicting with netCDF3 libnetcdf
-# Is this redundant if previous netCDF4 AC_CHECK_LIB succeeded?
-if (test "${enable_netcdf4}" = 'yes'); then
-# Assume HDF5 libraries are in standard places, let user override
-    AC_ARG_VAR([HDF5_LIB_DIR],Location of HDF5 libraries (compile-time))
-# Add ${HDF5_LIB_DIR} to search path if present
-    if test "${HDF5_LIB_DIR}"; then
-	LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
-    fi
-    
-# If using netCDF4, require HDF5 libraries before nc_open() test
-    AC_CHECK_LIB([hdf5],[H5Fcreate],[nco_have_hdf5='yes'],enable_netcdf4='no')
-    if test "${nco_have_hdf5}" = 'yes'; then
-	AC_CHECK_LIB([hdf5_hl],[H5LT_find_attribute],nco_have_hdf5_hl=yes,enable_netcdf4=no)
-	if test "${nco_have_hdf5_hl}" = 'yes'; then
-	    AC_CHECK_LIB([z],[gzopen],nco_have_libz=yes,enable_netcdf4=no)
-	    if test "${nco_have_libz}" = 'yes'; then
-		AC_DEFINE(ENABLE_NETCDF4,1,netCDF4 support enabled)
-# Include HDF5 libraries in LIBS
-		LIBS="-lhdf5_hl -lhdf5 -lz ${LIBS}"
-	    fi # End test for libz
-	fi # End test for libhdf5_hl
-    fi # End test for libhdf5
-    if test "${enable_netcdf4}" != 'yes'; then
-	AC_MSG_WARN([netCDF4 support disabled (missing HDF5 libraries)])
-    fi # End test for HDF5 libs
-
-elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap_opendap}" = 'no'); then
-# Try next stanza iff enable-netcdf4=no
-# Look for real netCDF library iff enable_dap_opendap=no jhrg 05/26/05
-# However: If libnetcdf4 installed instead of libnetcdf3x, 
-# must link with HDF5 libraries to compile correctly.
-# User-specified netCDF locations, if any, take precedence
-    if test "${NETCDF_LIB}"; then
-	if test -d "${NETCDF_LIB}"; then
-	    LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
-	else
-	    echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
-	fi
-    fi # !NETCDF_LIB
-    if test "${NETCDF_INC}"; then
-	if test -d "${NETCDF_INC}"; then
-	    CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
-	else
-	    echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
-	fi
-    fi # !NETCDF_INC
-fi # !enable_netCDF4
-
-# At this point we either want netCDF4 and have HDF5 or have used DAP's libnetcdf
-# or do not have HDF5 and do not want netCDF4 (aka just want netCDF3)
-AC_CHECK_HEADERS([netcdf.h])
-# NCO no longer supports netCDF2
-AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
+echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 
 if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 # Nothing fancy requested, so verify regular old libnetCDF3 works
@@ -401,7 +372,7 @@ if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 		echo "Great! This build will support some netCDF4 features."
 	    fi
 	    ],[
-# Linking failed, so add 64-bit compiler flags and try again
+# Linking failed so add 64-bit compiler flags and try again
 	    AC_MSG_NOTICE([Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags...])
 	    
 	    case ${host} in
@@ -444,8 +415,7 @@ if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
     )
 # End Mandatory Link Test with libnetcdf.a
 fi # enable_netCDF3
-
-echo "DEBUG: After enable_dap_opendap section LIBS = ${LIBS}"
+echo "DEBUG: After netCDF3 section LIBS = ${LIBS}"
 
 ##################################################
 # Check libraries, add to link path if found
@@ -464,7 +434,6 @@ AC_CHECK_LIB([thread],[main])
 AC_CHECK_LIB([nco],[nco_open],[enable_libnco=yes],,)
 AM_CONDITIONAL(NCO_NEED_GETOPT_LONG,test "${nco_need_getopt_long}" = 'yes')
 # Architecture-dependent library checks
-# fxm this currently breaks
 case ${host} in
     hppa*-hp-hpux* | sparc-sun-solaris2* ) 
 	AC_CHECK_LIB([nsl],[main]) ;;

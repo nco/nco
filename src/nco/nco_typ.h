@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.22 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.23 2009-05-05 18:03:52 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -73,8 +73,9 @@ C code." */
 #define NC_FILL_UBYTE   (255)
 #define NC_FILL_USHORT  (65535)
 #define NC_FILL_UINT    (4294967295U)
-#define NC_FILL_INT64   ((long long)-9223372036854775808)
-#define NC_FILL_UINT64  ((unsigned long long)18446744073709551615)
+/* NB: These fill values are one shy of min(int64) and max(uint64) */
+#define NC_FILL_INT64   ((long long)-9223372036854775806LL)
+#define NC_FILL_UINT64  ((unsigned long long)18446744073709551614ULL)
 #define NC_FILL_STRING  ""
 #endif /* !ENABLE_NETCDF4 */
 

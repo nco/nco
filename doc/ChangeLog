@@ -1,5 +1,11 @@
 2009-05-05  Charlie Zender  <zender@uci.edu>
 
+	* Need test for whether installed netCDF is version 3 or 4
+
+	* Re-do netCDF4 configure: Remove redundants tests, new features:
+	enable-netcdf4 is default true
+	disable-netcdf4 should work when only netCDF4 installed?
+
 	* Configure allows --enable-shared with netCDF4-enabled NCO
 
 2009-05-05  Henry Butowsky  <henryb@hush.com> 

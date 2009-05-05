@@ -1641,7 +1641,7 @@ Optional Features:
                           [default=no]
   --enable-dap-opendap    Build DAP-enabled NCO with OPeNDAP-provided DAP
                           [default=yes]
-  --enable-netcdf4        Enable netCDF Version 4 features [default=no]
+  --enable-netcdf4        Enable netCDF Version 4 features [default=yes]
   --enable-ncoxx          Build libnco++ and ncap2 (same as enable-ncap2)
                           [default=yes]
   --enable-ncap2          Build ncap2 and libnco++ (same as enable-ncoxx)
@@ -19366,461 +19366,31 @@ fi
 
 
 
-echo "#################################"
-echo "#  Testing for HDF5 support     #"
-echo "#################################"
-# Check whether --enable-netcdf4 was given.
-if test "${enable_netcdf4+set}" = set; then
-  enableval=$enable_netcdf4; enable_netcdf4=${enableval}
-else
-  enable_netcdf4=no
-fi
-
-
-# Test if user set NETCDF4_ROOT and it exists
-if test "${enable_netcdf4}" = 'yes'; then
-    if test "${NETCDF4_ROOT}" != ''; then
-	if test -d "${NETCDF4_ROOT}"; then
-	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
-	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
-	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
-	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap_opendap}" = 'no'); then
-# Check libnetcdf for netCDF4 function
-		{ $as_echo "$as_me:$LINENO: checking for nc4_enddef_netcdf4_file in -lnetcdf" >&5
-$as_echo_n "checking for nc4_enddef_netcdf4_file in -lnetcdf... " >&6; }
-if test "${ac_cv_lib_netcdf_nc4_enddef_netcdf4_file+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char nc4_enddef_netcdf4_file ();
-int
-main ()
-{
-return nc4_enddef_netcdf4_file ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&5
-$as_echo "$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&6; }
-if test "x$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" = x""yes; then
-  LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}"
-cat >>confdefs.h <<\_ACEOF
-#define ENABLE_NETCDF4 1
-_ACEOF
-
-else
-  enable_netcdf4=no
-fi
-
-	    fi
-	else
-	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
-	    enable_netcdf4='no'
-	fi
-    else
-	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
-	echo "Must set both to enable netCDF4. Will try to configure netCDF4 anyway...";
-
-{ $as_echo "$as_me:$LINENO: checking for nc4_enddef_netcdf4_file in -lnetcdf" >&5
-$as_echo_n "checking for nc4_enddef_netcdf4_file in -lnetcdf... " >&6; }
-if test "${ac_cv_lib_netcdf_nc4_enddef_netcdf4_file+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char nc4_enddef_netcdf4_file ();
-int
-main ()
-{
-return nc4_enddef_netcdf4_file ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&5
-$as_echo "$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&6; }
-if test "x$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" = x""yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBNETCDF 1
-_ACEOF
-
-  LIBS="-lnetcdf $LIBS"
-
-else
-  enable_netcdf4=no
-fi
-
-    fi
-fi
-
-echo "#############################################"
-echo "# Testing for netCDF4 support               #"
-echo "#############################################"
-echo "DEBUG: LIBS = ${LIBS}"
-# Check for HDF5 libraries unless told otherwise
-# HDF5 libraries may be in standard places but netCDF4 libnetcdf must be
-# in NETCDF4_ROOT to avoid conflicting with netCDF3 libnetcdf
-# Is this redundant if previous netCDF4 AC_CHECK_LIB succeeded?
-if (test "${enable_netcdf4}" = 'yes'); then
-# Assume HDF5 libraries are in standard places, let user override
-
-# Add ${HDF5_LIB_DIR} to search path if present
-    if test "${HDF5_LIB_DIR}"; then
-	LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
-    fi
-
-# If using netCDF4, require HDF5 libraries before nc_open() test
-    { $as_echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
-$as_echo_n "checking for H5Fcreate in -lhdf5... " >&6; }
-if test "${ac_cv_lib_hdf5_H5Fcreate+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lhdf5  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char H5Fcreate ();
-int
-main ()
-{
-return H5Fcreate ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_hdf5_H5Fcreate=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_hdf5_H5Fcreate=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_hdf5_H5Fcreate" >&5
-$as_echo "$ac_cv_lib_hdf5_H5Fcreate" >&6; }
-if test "x$ac_cv_lib_hdf5_H5Fcreate" = x""yes; then
-  nco_have_hdf5='yes'
-else
-  enable_netcdf4='no'
-fi
-
-    if test "${nco_have_hdf5}" = 'yes'; then
-	{ $as_echo "$as_me:$LINENO: checking for H5LT_find_attribute in -lhdf5_hl" >&5
-$as_echo_n "checking for H5LT_find_attribute in -lhdf5_hl... " >&6; }
-if test "${ac_cv_lib_hdf5_hl_H5LT_find_attribute+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lhdf5_hl  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char H5LT_find_attribute ();
-int
-main ()
-{
-return H5LT_find_attribute ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_hdf5_hl_H5LT_find_attribute=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_hdf5_hl_H5LT_find_attribute=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_hdf5_hl_H5LT_find_attribute" >&5
-$as_echo "$ac_cv_lib_hdf5_hl_H5LT_find_attribute" >&6; }
-if test "x$ac_cv_lib_hdf5_hl_H5LT_find_attribute" = x""yes; then
-  nco_have_hdf5_hl=yes
-else
-  enable_netcdf4=no
-fi
-
-	if test "${nco_have_hdf5_hl}" = 'yes'; then
-	    { $as_echo "$as_me:$LINENO: checking for gzopen in -lz" >&5
-$as_echo_n "checking for gzopen in -lz... " >&6; }
-if test "${ac_cv_lib_z_gzopen+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gzopen ();
-int
-main ()
-{
-return gzopen ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_z_gzopen=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_z_gzopen=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_z_gzopen" >&5
-$as_echo "$ac_cv_lib_z_gzopen" >&6; }
-if test "x$ac_cv_lib_z_gzopen" = x""yes; then
-  nco_have_libz=yes
-else
-  enable_netcdf4=no
-fi
-
-	    if test "${nco_have_libz}" = 'yes'; then
-
-cat >>confdefs.h <<\_ACEOF
-#define ENABLE_NETCDF4 1
-_ACEOF
-
-# Include HDF5 libraries in LIBS
-		LIBS="-lhdf5_hl -lhdf5 -lz ${LIBS}"
-	    fi # End test for libz
-	fi # End test for libhdf5_hl
-    fi # End test for libhdf5
-    if test "${enable_netcdf4}" != 'yes'; then
-	{ $as_echo "$as_me:$LINENO: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&5
-$as_echo "$as_me: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&2;}
-    fi # End test for HDF5 libs
-
-elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap_opendap}" = 'no'); then
-# Try next stanza iff enable-netcdf4=no
-# Look for real netCDF library iff enable_dap_opendap=no jhrg 05/26/05
-# However: If libnetcdf4 installed instead of libnetcdf3x,
-# must link with HDF5 libraries to compile correctly.
 # User-specified netCDF locations, if any, take precedence
-    if test "${NETCDF_LIB}"; then
-	if test -d "${NETCDF_LIB}"; then
-	    LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
-	else
-	    echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
-	fi
-    fi # !NETCDF_LIB
-    if test "${NETCDF_INC}"; then
-	if test -d "${NETCDF_INC}"; then
-	    CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
-	else
-	    echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
-	fi
-    fi # !NETCDF_INC
-fi # !enable_netCDF4
+if test "${NETCDF_ROOT}" != ''; then
+    if test -d "${NETCDF_ROOT}"; then
+	CPPFLAGS="-I${NETCDF_ROOT}/include ${CPPFLAGS}";
+	LDFLAGS="-L${NETCDF_ROOT}/lib ${LDFLAGS}";
+    else
+	echo "WARNING: NETCDF_ROOT location \"${NETCDF_ROOT}\" does not exist!"
+    fi
+fi # !NETCDF_ROOT
+if test "${NETCDF_LIB}"; then
+    if test -d "${NETCDF_LIB}"; then
+	LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
+    else
+	echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
+    fi
+fi # !NETCDF_LIB
+if test "${NETCDF_INC}"; then
+    if test -d "${NETCDF_INC}"; then
+	CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
+    else
+	echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
+    fi
+fi # !NETCDF_INC
 
-# At this point we either want netCDF4 and have HDF5 or have used DAP's libnetcdf
-# or do not have HDF5 and do not want netCDF4 (aka just want netCDF3)
+# NCO no longer supports netCDF2
 
 for ac_header in netcdf.h
 do
@@ -19972,12 +19542,122 @@ fi
 
 done
 
-# NCO no longer supports netCDF2
 
 cat >>confdefs.h <<\_ACEOF
 #define NO_NETCDF_2 1
 _ACEOF
 
+
+# fxm: move this to be first? before DAP?
+echo "#################################"
+echo "#  Test for netCDF4 support     #"
+echo "#################################"
+# Check whether --enable-netcdf4 was given.
+if test "${enable_netcdf4+set}" = set; then
+  enableval=$enable_netcdf4; enable_netcdf4=${enableval}
+else
+  enable_netcdf4=no
+fi
+
+
+# Test if user set NETCDF4_ROOT and it exists
+if test "${enable_netcdf4}" = 'yes'; then
+# Assume HDF5 libraries are in standard places, let user override
+
+    if test "${HDF5_LIB_DIR}"; then
+	LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
+    fi
+    if test "${NETCDF4_ROOT}" != ''; then
+	if test -d "${NETCDF4_ROOT}"; then
+	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
+	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
+	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
+	else
+	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
+	    enable_netcdf4='no'
+	fi
+    else
+	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
+	echo "Assuming netCDF4 is on standard path...";
+    fi
+# Check libnetcdf for netCDF4 function
+    { $as_echo "$as_me:$LINENO: checking for nc4_enddef_netcdf4_file in -lnetcdf" >&5
+$as_echo_n "checking for nc4_enddef_netcdf4_file in -lnetcdf... " >&6; }
+if test "${ac_cv_lib_netcdf_nc4_enddef_netcdf4_file+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char nc4_enddef_netcdf4_file ();
+int
+main ()
+{
+return nc4_enddef_netcdf4_file ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 $as_test_x conftest$ac_exeext
+       }; then
+  ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_netcdf_nc4_enddef_netcdf4_file=no
+fi
+
+rm -rf conftest.dSYM
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&5
+$as_echo "$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" >&6; }
+if test "x$ac_cv_lib_netcdf_nc4_enddef_netcdf4_file" = x""yes; then
+  LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}"
+cat >>confdefs.h <<\_ACEOF
+#define ENABLE_NETCDF4 1
+_ACEOF
+
+else
+  enable_netcdf4=no
+fi
+
+fi
+echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 
 if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 # Nothing fancy requested, so verify regular old libnetCDF3 works
@@ -20062,7 +19742,7 @@ $as_echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a wi
 
 else
 
-# Linking failed, so add 64-bit compiler flags and try again
+# Linking failed so add 64-bit compiler flags and try again
 	    { $as_echo "$as_me:$LINENO: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&5
 $as_echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&6;}
 
@@ -20181,8 +19861,7 @@ fi
 
 # End Mandatory Link Test with libnetcdf.a
 fi # enable_netCDF3
-
-echo "DEBUG: After enable_dap_opendap section LIBS = ${LIBS}"
+echo "DEBUG: After netCDF3 section LIBS = ${LIBS}"
 
 ##################################################
 # Check libraries, add to link path if found
@@ -20872,7 +20551,6 @@ else
 fi
 
 # Architecture-dependent library checks
-# fxm this currently breaks
 case ${host} in
     hppa*-hp-hpux* | sparc-sun-solaris2* )
 
