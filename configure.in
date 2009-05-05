@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.296 2009-05-05 05:44:32 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.297 2009-05-05 05:48:11 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -466,6 +466,7 @@ AC_CHECK_LIB([thread],[main])
 AC_CHECK_LIB([nco],[nco_open],[enable_libnco=yes],,)
 AM_CONDITIONAL(NCO_NEED_GETOPT_LONG,test "${nco_need_getopt_long}" = 'yes')
 # Architecture-dependent library checks
+# fxm this currently breaks
 case ${host} in
     hppa*-hp-hpux* | sparc-sun-solaris2* ) AC_CHECK_LIB([nsl],[main]) ; ;;
 esac
