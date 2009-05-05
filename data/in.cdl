@@ -1,6 +1,13 @@
 // Purpose: CDL file to generate netCDF test file for NCO
 
 // Usage:
+// netCDF4: ncgen arguments depend on version:
+// "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
+// "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
+// /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc in.cdl
+// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in.cdl
+
+// netCDF3:
 // ncgen -b -o in.nc in.cdl
 // ncgen -b -o ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.cdl
 // scp ~/nco/data/in.cdl esmf.ess.uci.edu:nco/data
@@ -42,7 +49,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.108 2009-04-29 20:49:23 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.109 2009-05-05 01:05:09 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";

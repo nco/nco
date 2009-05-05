@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.323 2009-05-03 06:11:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.324 2009-05-05 01:05:12 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.8 are ready. 
 
@@ -6,32 +6,29 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This version extends the GSL-library functions supported to
-include all GSL random number generator (_rnd) and distribution
-function (_cdf and _pdf) routines in GSL Chapters 17 and 19.
+include the GSL statistics routines in GSL Chapter 20.
 A list of ncap2 GSL functions added since 3.9.7 is below.
 
 http://nco.sf.net/nco.html#gsl
 
-Work on 3.9.9 is underway. Areas of improvement include
-netCDF4 chunking support, better UDUnits2 time support, and
-GSL statistics functions support.
+Work on 4.0.0 is underway. Areas of improvement include
+more flexible netCDF4 chunking support, better UDUnits2 time support, 
+and GSL interpolation and fitting.
 
-A. See the NCO logo candidate submitted by Tony Freeman?
-   What do you think? Should it replace the mandleblob?
-   http://nco.sf.net/logo_pch.png
+"New stuff" details:
 
-B. Improve ./configure ability to find and work with GSL   
-
-C. ncks has new -f option (thanks to Denis Nadeau) fxm
-
-D. NCO (when enabled with netCDF4) supports new chunk_size option:
+A. NCO (when enabled with netCDF4) supports new chunk_size option:
    ncks --cnk_sz 1024,1024,1024 in.nc out.nc
    http://nco.sf.net/nco.html#chunking
+
+B. ncks has new -f option (thanks to Denis Nadeau) fxm
 
 C. ncks --secret prints hidden/unsupported options
 
 J. GSL random number and distribution functions
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var=gsl_ran_gaussian(sigma).sort();nbr_neg=(var<0).total();print(var);print(nbr_neg)' ~/nco/data/in.nc ~/foo.nc
+
+"Sticky" reminders:
 
 K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages:
    http://nco.sf.net#debian
@@ -39,7 +36,7 @@ K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages:
 L. Pre-built Fedora and CentOS RPMs:
    http://nco.sf.net#rpm
 
-M. Find/add NCO tips and tricks on the NCO Wiki (thanks to Tom Roche):
+M. Find/add NCO tips and tricks on the NCO Wiki:
 
    http://nco.wiki.sourceforge.net
 
@@ -50,161 +47,25 @@ N. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
 
    SWAMP can work command-line operator analysis scripts besides NCO. 
    If you must transfer lots of data from a server to your client
-   before you analyze it, then SWAMP may speed things up. 
-   Try SWAMP give us your feedback.
+   before you analyze it, then SWAMP will likely speed things up. 
 
-O. Reminder: NCO support for netCDF4 features is tracked at
+O. NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
-   NCO currently supports netCDF4 atomic data types and compression.
-   NCO 3.9.8 with netCDF4 support should work with HDF5 1.8.1
-   and netCDF4 final and newer.
+   NCO supports netCDF4 atomic data types, compression, and chunking.
+   NCO 3.9.8 with was built and tested with HDF5 1.8.2-post6 and with
+   netCDF4 4.1-beta1-snapshot2009050200.   
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
+P. Did you see the NCO logo candidate submitted by Tony Freeman?
+   What do you think? Should it replace the mandleblob?
+   http://nco.sf.net/logo_pch.png
+
 Enjoy,
 Charlie
  
-GSL functions added to ncap2 in 3.9.8: ncap2 -f | grep gsl_[cdf,ran,rng]*
-gsl_cdf_beta_P()           
-gsl_cdf_beta_Pinv()        
-gsl_cdf_beta_Q()           
-gsl_cdf_beta_Qinv()        
-gsl_cdf_cauchy_P()         
-gsl_cdf_cauchy_Pinv()      
-gsl_cdf_cauchy_Q()         
-gsl_cdf_cauchy_Qinv()      
-gsl_cdf_chisq_P()          
-gsl_cdf_chisq_Pinv()       
-gsl_cdf_chisq_Q()          
-gsl_cdf_chisq_Qinv()       
-gsl_cdf_exponential_P()    
-gsl_cdf_exponential_Pinv() 
-gsl_cdf_exponential_Q()    
-gsl_cdf_exponential_Qinv() 
-gsl_cdf_exppow_P()         
-gsl_cdf_exppow_Q()         
-gsl_cdf_fdist_P()          
-gsl_cdf_fdist_Pinv()       
-gsl_cdf_fdist_Q()          
-gsl_cdf_fdist_Qinv()       
-gsl_cdf_flat_P()           
-gsl_cdf_flat_Pinv()        
-gsl_cdf_flat_Q()           
-gsl_cdf_flat_Qinv()        
-gsl_cdf_gamma_P()          
-gsl_cdf_gamma_Pinv()       
-gsl_cdf_gamma_Q()          
-gsl_cdf_gamma_Qinv()       
-gsl_cdf_gaussian_P()       
-gsl_cdf_gaussian_Pinv()    
-gsl_cdf_gaussian_Q()       
-gsl_cdf_gaussian_Qinv()    
-gsl_cdf_gumbel1_P()        
-gsl_cdf_gumbel1_Pinv()     
-gsl_cdf_gumbel1_Q()        
-gsl_cdf_gumbel1_Qinv()     
-gsl_cdf_gumbel2_P()        
-gsl_cdf_gumbel2_Pinv()     
-gsl_cdf_gumbel2_Q()        
-gsl_cdf_gumbel2_Qinv()     
-gsl_cdf_laplace_P()        
-gsl_cdf_laplace_Pinv()     
-gsl_cdf_laplace_Q()        
-gsl_cdf_laplace_Qinv()     
-gsl_cdf_logistic_P()       
-gsl_cdf_logistic_Pinv()    
-gsl_cdf_logistic_Q()       
-gsl_cdf_logistic_Qinv()    
-gsl_cdf_lognormal_P()      
-gsl_cdf_lognormal_Pinv()   
-gsl_cdf_lognormal_Q()      
-gsl_cdf_lognormal_Qinv()   
-gsl_cdf_pareto_P()         
-gsl_cdf_pareto_Pinv()      
-gsl_cdf_pareto_Q()         
-gsl_cdf_pareto_Qinv()      
-gsl_cdf_rayleigh_P()       
-gsl_cdf_rayleigh_Pinv()    
-gsl_cdf_rayleigh_Q()       
-gsl_cdf_rayleigh_Qinv()    
-gsl_cdf_tdist_P()          
-gsl_cdf_tdist_Pinv()       
-gsl_cdf_tdist_Q()          
-gsl_cdf_tdist_Qinv()       
-gsl_cdf_ugaussian_P()      
-gsl_cdf_ugaussian_Pinv()   
-gsl_cdf_ugaussian_Q()      
-gsl_cdf_ugaussian_Qinv()   
-gsl_cdf_weibull_P()        
-gsl_cdf_weibull_Pinv()     
-gsl_cdf_weibull_Q()        
-gsl_cdf_weibull_Qinv()     
-gsl_ran_bernoulli()        
-gsl_ran_beta()             
-gsl_ran_beta_pdf()         
-gsl_ran_bivariate_gaussian_pdf()
-gsl_ran_cauchy()                
-gsl_ran_cauchy_pdf()            
-gsl_ran_chisq()                 
-gsl_ran_chisq_pdf()             
-gsl_ran_erlang()                
-gsl_ran_erlang_pdf()            
-gsl_ran_exponential()           
-gsl_ran_exponential_pdf()       
-gsl_ran_exppow()                
-gsl_ran_exppow_pdf()            
-gsl_ran_fdist()                 
-gsl_ran_fdist_pdf()             
-gsl_ran_flat()                  
-gsl_ran_flat_pdf()              
-gsl_ran_gamma()                 
-gsl_ran_gamma_knuth()           
-gsl_ran_gamma_mt()              
-gsl_ran_gamma_pdf()             
-gsl_ran_gaussian()              
-gsl_ran_gaussian_pdf()          
-gsl_ran_gaussian_ratio_method() 
-gsl_ran_gaussian_tail()         
-gsl_ran_gaussian_tail_pdf()     
-gsl_ran_gaussian_ziggurat()     
-gsl_ran_geometric()             
-gsl_ran_gumbel1()               
-gsl_ran_gumbel1_pdf()           
-gsl_ran_gumbel2()               
-gsl_ran_gumbel2_pdf()           
-gsl_ran_landau()                
-gsl_ran_landau_pdf()            
-gsl_ran_laplace()               
-gsl_ran_laplace_pdf()           
-gsl_ran_levy()                  
-gsl_ran_levy_skew()             
-gsl_ran_logistic()              
-gsl_ran_logistic_pdf()          
-gsl_ran_lognormal()             
-gsl_ran_lognormal_pdf()         
-gsl_ran_pareto()                
-gsl_ran_pareto_pdf()            
-gsl_ran_rayleigh()              
-gsl_ran_rayleigh_pdf()          
-gsl_ran_rayleigh_tail()         
-gsl_ran_rayleigh_tail_pdf()     
-gsl_ran_tdist()                 
-gsl_ran_tdist_pdf()             
-gsl_ran_ugaussian()             
-gsl_ran_ugaussian_pdf()         
-gsl_ran_ugaussian_ratio_method()
-gsl_ran_ugaussian_tail()        
-gsl_ran_ugaussian_tail_pdf()    
-gsl_ran_weibull()               
-gsl_ran_weibull_pdf()           
-gsl_rng_get()                   
-gsl_rng_max()                   
-gsl_rng_min()                   
-gsl_rng_name()                  
-gsl_rng_uniform()               
-gsl_rng_uniform_int()           
-gsl_rng_uniform_pos()           
+GSL functions added to ncap2 in 3.9.9: ncap2 -f | grep gsl_[stats]*

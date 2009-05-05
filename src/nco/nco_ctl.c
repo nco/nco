@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.241 2009-05-02 20:18:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.242 2009-05-05 01:05:12 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -731,7 +731,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Susan Boyle. Bridge of Sighs, by Richard Russo\n";
+  return "Chunky Monkey. See I Love You, Man with Paul Rudd. Read Bridge of Sighs, by Richard Russo.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -911,7 +911,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");
   if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I, --wgt_msk_crd_var\tDo not weight or mask coordinate variables\n");
 #ifdef ENABLE_NETCDF4
-  if(strstr(opt_sng,"-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate\tLempel-Ziv deflation (lvl=0..9) for netCDF4 output\n");
+  if(strstr(opt_sng,"-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate lvl\tLempel-Ziv deflation (lvl=0..9) for netCDF4 output\n");
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
@@ -974,7 +974,7 @@ nco_usg_prn(void)
   }else{
     if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"in.nc [...]\t\tInput file names\n"); else (void)fprintf(stdout,"in.nc\t\t\tInput file name\n");
   } /* endif in.nc */
-  if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"[out.nc]\t\tOutput file name (or use -o switch)\n");
+  if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"out.nc\t\t\tOutput file name (or use -o switch)\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
   /* Free the space holding option string */

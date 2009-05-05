@@ -1,14 +1,13 @@
 2009-05-04  Charlie Zender  <zender@uci.edu>
 
-	* Change usage of netcdf4.nc
+	* Create/diagnose more complete netcdf4.nc files from netcdf4.nco
 
 	* Verify that netCDF4 problems in netcdf4.nco as of 20080512 have 
 	been fixed (by updating to snapshot netCDF4) as of 20090504.
-	Only remaining problem is that NCO silently succeeds on overflows.
+	One remaining problem is that NCO silently succeeds on overflows.
+	Should it?
 
-	* Better warnings/info when DAP attempts fall-through to wget
-
-	* Re-work logic for DAP attempts to fall-through to wget
+	* Improve logic/warnings/info for DAP-wget fall-throughs
 
 2009-05-03  Charlie Zender  <zender@uci.edu>
 
