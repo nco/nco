@@ -1,6 +1,7 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.6 2009-05-05 18:25:32 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.7 2009-05-05 22:17:26 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
+// Stress-test netCDF4 atomic types and features
 
 /* Usage: 
    ncap2 -4 -O -v -S ~/nco/data/netcdf4.nco ~/nco/data/in.nc ~/nco/data/netcdf4.nc
@@ -14,14 +15,15 @@ var_float=1.0f;
 var_int=1;
 var_short=1s;
 var_byte=1b;
-var_char[char_dmn_lng04]="Hell";
+var_char[char_dmn_lng04]="Hell"; // Array of NC_CHAR
 // Following lines _require_ netCDF4:
 var_ubyte=1ub;
 var_ushort=1us;
 var_uint=1u;
 var_int64=1ll;
 var_uint64=1ull;
-var_string="Hell\n"; // fxm fails to instantiate NC_STRING
+var_string="Hell"s; // Single NC_STRING
+var_string_arr[char_dmn_lng04]="Hello, World!"s,"Same to you.\nPunctuation may be in strings"s,"Ça va bien?\nForeign characters, too."s,"Oui, c'est trés bien\nEven their lengths may differ"s; // Array of NC_STRING
 // Test arithmetic ranges
 var_short_max=32767s;
 var_short_ttl=var_short+var_short;
