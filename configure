@@ -20875,9 +20875,7 @@ fi
 
 # Architecture-dependent library checks
 case ${host} in
-    hppa*-hp-hpux* )
-    sparc-sun-solaris2* )
-
+    hppa*-hp-hpux* | sparc-sun-solaris2* )
 { $as_echo "$as_me:$LINENO: checking for main in -lnsl" >&5
 $as_echo_n "checking for main in -lnsl... " >&6; }
 if test "${ac_cv_lib_nsl_main+set}" = set; then
@@ -20945,7 +20943,7 @@ _ACEOF
   LIBS="-lnsl $LIBS"
 
 fi
-;;
+ ; ;;
 esac
 # End OS-specific libraries
 
