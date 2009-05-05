@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.5 2009-05-04 22:11:47 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.6 2009-05-05 18:25:32 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 
@@ -21,6 +21,7 @@ var_ushort=1us;
 var_uint=1u;
 var_int64=1ll;
 var_uint64=1ull;
+var_string="Hell\n"; // fxm fails to instantiate NC_STRING
 // Test arithmetic ranges
 var_short_max=32767s;
 var_short_ttl=var_short+var_short;
