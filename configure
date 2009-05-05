@@ -19386,8 +19386,6 @@ if test "${enable_netcdf4}" = 'yes'; then
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap_opendap}" = 'no'); then
 # Check libnetcdf for netCDF4 function
-# fxm: netCDF4 alpha10 barfs with shared libs, check after final release
-		enable_shared='no'
 		{ $as_echo "$as_me:$LINENO: checking for nc4_enddef_netcdf4_file in -lnetcdf" >&5
 $as_echo_n "checking for nc4_enddef_netcdf4_file in -lnetcdf... " >&6; }
 if test "${ac_cv_lib_netcdf_nc4_enddef_netcdf4_file+set}" = set; then
@@ -20874,8 +20872,10 @@ else
 fi
 
 # Architecture-dependent library checks
+# fxm this currently breaks
 case ${host} in
     hppa*-hp-hpux* | sparc-sun-solaris2* )
+
 { $as_echo "$as_me:$LINENO: checking for main in -lnsl" >&5
 $as_echo_n "checking for main in -lnsl... " >&6; }
 if test "${ac_cv_lib_nsl_main+set}" = set; then
@@ -20943,10 +20943,9 @@ _ACEOF
   LIBS="-lnsl $LIBS"
 
 fi
- ; ;;
+ ;;
 esac
 # End OS-specific libraries
-
 
 # NCO_CHECK_FUNC, defined in acinclude.m4, defines HAVE_XXX = 0
 # _and_ NEED_XXX = 1 when function xxx() is not found

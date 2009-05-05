@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.297 2009-05-05 05:48:11 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.298 2009-05-05 16:23:54 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -314,8 +314,6 @@ if test "${enable_netcdf4}" = 'yes'; then
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap_opendap}" = 'no'); then
 # Check libnetcdf for netCDF4 function
-# fxm: netCDF4 alpha10 barfs with shared libs, check after final release
-		enable_shared='no'
 		AC_CHECK_LIB([netcdf],[nc4_enddef_netcdf4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
 	    fi
 	else
@@ -468,10 +466,10 @@ AM_CONDITIONAL(NCO_NEED_GETOPT_LONG,test "${nco_need_getopt_long}" = 'yes')
 # Architecture-dependent library checks
 # fxm this currently breaks
 case ${host} in
-    hppa*-hp-hpux* | sparc-sun-solaris2* ) AC_CHECK_LIB([nsl],[main]) ; ;;
+    hppa*-hp-hpux* | sparc-sun-solaris2* ) 
+	AC_CHECK_LIB([nsl],[main]) ;;
 esac
 # End OS-specific libraries
-
 
 # NCO_CHECK_FUNC, defined in acinclude.m4, defines HAVE_XXX = 0
 # _and_ NEED_XXX = 1 when function xxx() is not found

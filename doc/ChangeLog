@@ -1,5 +1,10 @@
+2009-05-05  Charlie Zender  <zender@uci.edu>
+
+	* Configure allows --enable-shared with netCDF4-enabled NCO
+
 2009-05-05  Henry Butowsky  <henryb@hush.com> 
-	* tidy up of user error messages in fmc_all_cls.cc
+
+	* Tidy up user error messages in fmc_all_cls.cc
 
 2009-05-04  Charlie Zender  <zender@uci.edu>
 
