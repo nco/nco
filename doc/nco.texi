@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.536 2009-05-05 01:30:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.537 2009-05-05 05:34:31 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4287,6 +4287,16 @@ the netCDF4 feature of specifying the @var{chunk_size} for storing
 variables.
 Activate chunking with the @code{--cnk_sze @var{cnk_sz}} option
 (or with the same argument to the @samp{--chunk_size} options).
+
+Dataset chunking issues are described 
+@uref{http://www.hdfgroup.org/HDF5/doc/H5.user/Chunking.html,here}.
+
+@example
+# Yields "HDF error":
+ncks -D 5 -O -4 -v PS --cnk_sz 8,8,8,8,8 ~/nco/data/in.nc ~/foo.nc
+# Works
+ncks -D 5 -O -4 -v DSTMPC --cnk_sz 64,64,64,64,64 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+@end example
 
 @html
 <a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
