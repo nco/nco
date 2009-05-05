@@ -1,3 +1,6 @@
+2009-05-05  Henry Butowsky  <henryb@hush.com> 
+	* tidy up of user error messages in fmc_all_cls.cc
+
 2009-05-04  Charlie Zender  <zender@uci.edu>
 
 	* Changes since nco-3_9_8: chunking infrastructure
