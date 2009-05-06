@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.160 2009-05-01 10:20:22 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.161 2009-05-06 15:17:36 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -282,7 +282,8 @@ primary_exp
     | UINT
     | INT64
     | UINT64
-    | NSTRING    
+    | NSTRING
+    | N4STRING    
     | DIM_ID_SIZE
     | LPAREN! expr RPAREN!  
     | FUNC^ func_arg
@@ -595,8 +596,10 @@ DIM_MTD_ID
 
 NSTRING
   options{paraphrase="a string";} 
-  : '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
-   ;
+  : '"'! ( ~('"'|'\n'))* '"'! 
+        {$setType(NSTRING);}
+       ('s'! {$setType(N4STRING);} )? 
+   ;   
 
 
 INCLUDE
@@ -2240,6 +2243,41 @@ out returns [var_sct *var]
             tsng=(char*)nco_free(tsng);      
         }
 
+
+    |   str1:N4STRING
+        {
+            char *tsng;
+            int chr_len;
+
+            chr_len=strlen(tsng)+1;
+            tsng=strdup(str1->getText().c_str());
+            (void)sng_ascii_trn(tsng);            
+            var=(var_sct *)nco_malloc(sizeof(var_sct));
+            /* Set defaults */
+            (void)var_dfl_set(var); 
+            /* Overwrite with attribute expression information */
+            var->nm=strdup("~zz@string");
+            var->nbr_dim=0;
+            var->sz=1;
+
+            var->type=NC_STRING;
+            if(!prs_arg->ntl_scn){
+             // nb sngp is type char** a ragged array of chars
+             // each string terminated by a (char*)NULL  
+             var->val.vp=(void*)nco_malloc(nco_typ_lng(NC_STRING));
+             (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
+             *var->val.sngp=(char*)nco_malloc(chr_len*nco_typ_lng(NC_CHAR));  
+                
+             strcpy(*var->val.sngp,tsng);  
+             (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
+               
+
+            }
+            tsng=(char*)nco_free(tsng);      
+        }
+
+
+
         // Naked numbers: Cast is not applied to these numbers
     |   val_float:FLOAT        
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),(nc_type)NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(val_float->getText().c_str(),(char **)NULL)));} // end FLOAT
@@ -2428,16 +2466,65 @@ var=NULL_CEWI;
          var_ret->nm=strdup("~zz@value_list");
          var_ret->nbr_dim=0;
          var_ret->sz=nbr_lst;
-         var_ret->type=type;
+         var_ret->type=(type==NC_CHAR? NC_STRING:type);
 
          tsz=nco_typ_lng(type);
          var_ret->val.vp=(void*)nco_malloc(nbr_lst*tsz);
-           
-         for(idx=0;idx <nbr_lst ; idx++){
-          cp=(char*)(var_ret->val.vp)+ (ptrdiff_t)(idx*tsz);
-          memcpy(cp,exp_vtr[idx]->val.vp,tsz);
-         }    
+ 
+
+         if(type==NC_STRING || type==NC_CHAR){
+           int str_len; 
+           char *tmp_cp;
+           var_sct *var_in;
+             
+           nco_string *cp;    
+
+           (void)cast_void_nctype((nc_type)NC_STRING,&var_ret->val);
+           cp=var_ret->val.sngp; 
+
+           for(idx=0 ; idx<nbr_lst;idx++){
+             // dereference 
+             var_in=exp_vtr[idx];
+             if(var_in->type==NC_CHAR){    
+               cp[idx]=(char*)nco_malloc((var_in->sz+1)*nco_typ_lng(NC_CHAR));
+               strncpy(cp[idx],(char*)var_in->val.vp,var_in->sz);
+               // add null
+               *(cp[idx] +ptrdiff_t(var_in->sz))= '\0';    
+             } 
+
+             if(var_in->type==NC_STRING){    
+                (void)cast_void_nctype((nc_type)NC_STRING,&var_in->val);
+                 tmp_cp=var_in->val.sngp[0]; 
+
+
+               str_len =strlen(tmp_cp);   
+               str_len++;
+               cp[idx]=(char*)nco_malloc(str_len*nco_typ_lng(NC_CHAR));
+               strcpy(cp[idx],tmp_cp);
+               // cast pointer back
+               (void)cast_nctype_void((nc_type)NC_STRING,&var_in->val);
+
+
+             } 
+
+
+                         
+           } // end loop      
+
+          (void)cast_nctype_void((nc_type)NC_STRING,&var_ret->val);
+       
+
+
+             
+         // regular numbers
+         }else { 
+          
+           for(idx=0;idx <nbr_lst ; idx++){
+             cp=(char*)(var_ret->val.vp)+ (ptrdiff_t)(idx*tsz);
+             memcpy(cp,exp_vtr[idx]->val.vp,tsz);
+           }    
          
+        }
          // Free vector        
         end_val: for(idx=0 ; idx < nbr_lst ; idx++)
            (void)nco_var_free(exp_vtr[idx]);    
@@ -2621,7 +2708,7 @@ var=NULL_CEWI;
 
 
           if(prs_arg->ntl_scn){
-            // check limit only contain numbers or dim_id.size()
+            // check limit only contains numbers or dim_id.size()
             std::vector<std::string> str_vtr;
             (void)ncap_mpi_get_id(lRef,str_vtr);
             if(str_vtr.size()>0){
@@ -2685,12 +2772,10 @@ var=NULL_CEWI;
               }
                   
              goto end1;
-
            }           
 
 
-           /**** From here on we are dealing with a final scan -- prs_arg->ntl_scn == true **/
-
+           /**** From here on we are dealing with a final scan  ****/
             
            // copy lmt_sct to dmn_sct;
            for(idx=0 ;idx <nbr_dmn ; idx++){
@@ -2708,13 +2793,13 @@ var=NULL_CEWI;
                dmn_nw->end=lmt_vtr[idx]->end;  
               dmn_nw->srd=lmt_vtr[idx]->srd;  
               dmn_vtr.push_back(dmn_nw);
-           }
+            }
 
           Nvar=prs_arg->var_vtr.find(var_nm);
           if(Nvar && Nvar->flg_mem)
-             bram=true;
+            bram=true;
           else
-             bram=false;
+            bram=false;
  
  
           // Ram variable -do an in memory get  
@@ -2726,8 +2811,6 @@ var=NULL_CEWI;
           // regular variable
           }else{
  
-
-
             // variable in output 
            if(Nvar) {
 #ifdef _OPENMP
@@ -2762,7 +2845,8 @@ var=NULL_CEWI;
 
 
            // if variable is scalar re-organize in a new var 
-           // loose extraneous material
+           // loose extraneous material so it looks like a
+           // plain scalar variable
            if(var->sz ==1) {
               
              var1=ncap_sclr_var_mk(var_nm,var->type,true);
@@ -2788,19 +2872,18 @@ var=NULL_CEWI;
 
               var1->nm=strdup(var_nm.c_str());
               var1=nco_var_cnf_typ(var_rhs->type,var1);
-              nco_mss_val_cp(var_rhs,var);
 
-              // swap values about in var1 & var 
-              var1->val.vp=var->val.vp;
-
-              // free var  
-              var->val.vp=(void*)NULL;       
-              (void)nco_var_free(var);    
-                
               // copy missing value if any from var_rhs to var
               nco_mss_val_cp(var_rhs,var1);
                 
+              // swap values about in var1 & var 
+              var1->val.vp=var->val.vp;
 
+              var->val.vp=(void*)NULL;       
+
+              // free var  
+              (void)nco_var_free(var);    
+                
               /* Casting a hyperslab --this makes my brain  hurt!!! */
               if(bcst)
                 var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
