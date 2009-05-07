@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.162 2009-05-07 07:52:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.163 2009-05-07 13:36:01 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2262,13 +2262,14 @@ out returns [var_sct *var]
 
             var->type=(nc_type)NC_STRING;
             if(!prs_arg->ntl_scn){
+
              // nb sngp is type char** a ragged array of chars
              // each string terminated by a (char*)NULL  
              var->val.vp=(void*)nco_malloc(nco_typ_lng((nc_type)NC_STRING));
              (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
-             *var->val.sngp=(char*)nco_malloc(chr_len*nco_typ_lng(NC_CHAR));  
-                
-             strcpy(*var->val.sngp,tsng);  
+
+             var->val.sngp[0]=strdup(tsng);   
+
              (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
                
 
@@ -2493,21 +2494,11 @@ var=NULL_CEWI;
              } 
 
              if(var_in->type==NC_STRING){    
-                (void)cast_void_nctype((nc_type)NC_STRING,&var_in->val);
-                 tmp_cp=var_in->val.sngp[0]; 
-
-
-               str_len =strlen(tmp_cp);   
-               str_len++;
-               cp[idx]=(char*)nco_malloc(str_len*nco_typ_lng(NC_CHAR));
-               strcpy(cp[idx],tmp_cp);
+               (void)cast_void_nctype((nc_type)NC_STRING,&var_in->val);
+               cp[idx]=strdup(var_in->val.sngp[0]); 
                // cast pointer back
                (void)cast_nctype_void((nc_type)NC_STRING,&var_in->val);
-
-
              } 
-
-
                          
            } // end loop      
 
@@ -2829,6 +2820,21 @@ var=NULL_CEWI;
 
             // Now get data from disk - use nco_var_get() 
             (void)nco_var_get(fl_id,var); 
+
+            // debug NC_STRING
+            /*
+            if(var->type==(nc_type)NC_STRING){
+             (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
+
+             std::cout<<"Debug in var_lmt sz="<<var->sz<<std::endl;
+             
+             for(idx=0 ;idx<var->sz; idx++)
+              std::cout<<var->val.sngp[idx]<<std::endl;
+             
+             (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
+             std::cout<<"End Debug in var_lmt\n";
+            } 
+            */
 
            } // end if(nbram)
            
