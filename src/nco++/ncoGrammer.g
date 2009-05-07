@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.161 2009-05-06 15:17:36 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.162 2009-05-07 07:52:00 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2260,11 +2260,11 @@ out returns [var_sct *var]
             var->nbr_dim=0;
             var->sz=1;
 
-            var->type=NC_STRING;
+            var->type=(nc_type)NC_STRING;
             if(!prs_arg->ntl_scn){
              // nb sngp is type char** a ragged array of chars
              // each string terminated by a (char*)NULL  
-             var->val.vp=(void*)nco_malloc(nco_typ_lng(NC_STRING));
+             var->val.vp=(void*)nco_malloc(nco_typ_lng((nc_type)NC_STRING));
              (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
              *var->val.sngp=(char*)nco_malloc(chr_len*nco_typ_lng(NC_CHAR));  
                 
@@ -2466,7 +2466,7 @@ var=NULL_CEWI;
          var_ret->nm=strdup("~zz@value_list");
          var_ret->nbr_dim=0;
          var_ret->sz=nbr_lst;
-         var_ret->type=(type==NC_CHAR? NC_STRING:type);
+         var_ret->type=(type==NC_CHAR? (nc_type)NC_STRING:type);
 
          tsz=nco_typ_lng(type);
          var_ret->val.vp=(void*)nco_malloc(nbr_lst*tsz);
