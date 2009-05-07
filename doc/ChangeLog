@@ -1,5 +1,7 @@
 2009-05-07  Charlie Zender  <zender@uci.edu>
 
+	* Add autogen.sh from Magnus Hagdorn
+
 	* Patch configure.in for antlr detection and netcdf.h (Magnus Hagdorn)
 
 	* Clean up NC_STRING handling and add printed ncks info.

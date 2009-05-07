@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.37 2009-04-21 20:17:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.38 2009-05-07 21:37:48 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -11,6 +11,7 @@ COPYING		NCO Software License: GPL3
 INSTALL		Boilerplate instructions for ./configure
 acinclude.m4	NCO M4 macro definitions used by aclocal to generate aclocal.m4
 aclocal.m4	M4 macros generated from acinclude.m4 by aclocal
+autogen.sh	Gather all autotools necessary to run autoconf
 config.h.in(v)	Template header file generated from configure.in by autoheader
 config.h	NCO header file generated from configure.in by autoconf
 config.guess(v)
