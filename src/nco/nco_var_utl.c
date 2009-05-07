@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.137 2009-05-07 13:34:55 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.138 2009-05-07 21:26:14 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -550,46 +550,48 @@ nco_var_dpl /* [fnc] Duplicate input variable */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: nco_malloc() and return duplicate of input var_sct
-     Duplicate is deep copy of original so original may always be free()'d */
+     Duplicate is deep-copy of original so original may always be free()'d */
 
   const char fnc_nm[]="nco_var_dpl()"; /* [sng] Function name */
   var_sct *var_cpy;
 
   var_cpy=(var_sct *)nco_malloc(sizeof(var_sct));
 
-  /* Shallow copy structure */
+  /* Shallow-copy structure itself */
   (void)memcpy((void *)var_cpy,(const void *)var,sizeof(var_sct));
 
   /* Make sure var_free() frees names when variable is destructed */
   if(var->nm != NULL) var_cpy->nm=(char *)strdup(var->nm);
 
-  /* Deep copy dyamically allocated arrays currently defined in original */
+  /* Deep-copy dyamically allocated arrays from original to copy */
   if(var->val.vp != NULL){
-    var_cpy->val.vp=(void *)nco_malloc_dbg(var_cpy->sz*nco_typ_lng(var_cpy->type),"Unable to malloc() value buffer in variable deep copy",fnc_nm);
+    var_cpy->val.vp=(void *)nco_malloc_dbg(var_cpy->sz*nco_typ_lng(var_cpy->type),"Unable to malloc() value buffer in variable deep-copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->val.vp),(void *)(var->val.vp),var_cpy->sz*nco_typ_lng(var_cpy->type));
-   
-    // need to deep copy strings in var->val.sngp -these are a ragged array of chars
-    if(var->type ==(nc_type)NC_STRING){
+    /* Deep-copy string data, if any */
+    if(var->type == (nc_type)NC_STRING){
+      ptr_unn val_in;
+      ptr_unn val_out;
       long idx;
       long sz;
-      
       sz=var->sz;  
-      (void)cast_void_nctype((nc_type)NC_STRING,&var->val); 
-      (void)cast_void_nctype((nc_type)NC_STRING,&var_cpy->val); 
-      for(idx=0 ; idx< sz ; idx++)
-	var_cpy->val.sngp[idx]=strdup(var->val.sngp[idx]);      
-     
-      (void)cast_nctype_void((nc_type)NC_STRING,&var->val);   
-      (void)cast_nctype_void((nc_type)NC_STRING,&var_cpy->val);   
-    }
-    
-  } /* end if */
+      val_in=var->val;
+      val_out=var_cpy->val;
+      /* Typecast pointer to values before access 
+	 Use local copies of pointer unions to maintain const-ness of var */
+      (void)cast_void_nctype((nc_type)NC_STRING,&val_in); 
+      (void)cast_void_nctype((nc_type)NC_STRING,&val_out); 
+      for(idx=0;idx<sz;idx++) val_out.sngp[idx]=(char *)strdup(val_in.sngp[idx]);
+      /* NB: we operated on local copies of val_in and val_out
+	 Neither is used again in this routine
+	 Therefore not necessary to un-typecast pointer unions */
+    } /* endif type */
+  } /* end if val */
   if(var->mss_val.vp != NULL){
     var_cpy->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_cpy->type));
     (void)memcpy((void *)(var_cpy->mss_val.vp),(void *)(var->mss_val.vp),nco_typ_lng(var_cpy->type));
   } /* end if */
   if(var->tally != NULL){
-    var_cpy->tally=(long *)nco_malloc_dbg(var_cpy->sz*sizeof(long),"Unable to malloc() tally buffer in variable deep copy",fnc_nm);
+    var_cpy->tally=(long *)nco_malloc_dbg(var_cpy->sz*sizeof(long),"Unable to malloc() tally buffer in variable deep-copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->tally),(void *)(var->tally),var_cpy->sz*sizeof(long));
   } /* end if */
   if(var->dim != NULL){
@@ -737,15 +739,8 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with a dynamically allocated variable structure */
 
-  /* nb var->val.sngp is pointer to ragged array of chars
-     each string needs to be individually free'd */
-  if(var->type == (nc_type)NC_STRING && var->val.vp !=(void*)NULL){
-    nco_sng_lst_free( (char**)var->val.vp,var->sz);
-    var->val.vp=(void*)NULL;
-  }
-  else    
-    var->val.vp=nco_free(var->val.vp);
-
+  /* String values must be deep-free'd, everything else is a flat buffer */
+  if(var->type == (nc_type)NC_STRING && var->val.vp != (void *)NULL) var->val.vp=(void *)nco_sng_lst_free((char **)var->val.vp,var->sz); else var->val.vp=nco_free(var->val.vp);
   var->nm=(char *)nco_free(var->nm);
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->tally=(long *)nco_free(var->tally);

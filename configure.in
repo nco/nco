@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.299 2009-05-05 18:03:52 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.300 2009-05-07 21:26:14 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -325,7 +325,7 @@ if test "${NETCDF_INC}"; then
 fi # !NETCDF_INC
 
 # NCO no longer supports netCDF2
-AC_CHECK_HEADERS([netcdf.h])
+AC_CHECK_HEADERS([netcdf.h],[],[AC_MSG_FAILURE([cannot find netCDF header])])
 AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
 
 # fxm: move this to be first? before DAP?
@@ -506,12 +506,8 @@ if test "${enable_ncoxx}" != 'no'; then
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
-    AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no,${PATH})
-    if test "${HAVE_ANTLR}" = 'no'; then
-# Check for antlr executable installed as antlr (antlr ~= java antlr.Tool)
-	AC_CHECK_PROG(HAVE_ANTLR,antlr,yes,no,${PATH})
-    fi
-    if test "${HAVE_ANTLR}" = 'yes'; then
+    AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],[],[],${PATH})
+    if test "x${HAVE_ANTLR}" = 'xyes'; then
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
 # AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
 	AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)

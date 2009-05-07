@@ -1,3 +1,9 @@
+2009-05-07  Charlie Zender  <zender@uci.edu>
+
+	* Patch configure.in for antlr detection and netcdf.h (Magnus Hagdorn)
+
+	* Clean up NC_STRING handling and add printed ncks info.
+
 2009-05-05  Charlie Zender  <zender@uci.edu>
 
 	* Need test for whether installed netCDF is version 3 or 4

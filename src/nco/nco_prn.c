@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.52 2009-05-02 22:44:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.53 2009-05-07 21:26:14 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -266,12 +266,13 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s written with chunk size = %zu\n",var_nm,cnk_sz[0]);
     rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
     if(deflate) (void)fprintf(stdout,"%s stored compressed (Lempel-Ziv %s shuffling) at level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
-    (void)fprintf(stdout,"%s memory size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
+    (void)fprintf(stdout,"%s RAM size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%lu = %lu bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
+    (void)fprintf(stdout,"%s RAM size is %ld*nco_typ_lng(%s) = %ld*%lu = %lu bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   } /* end if variable is scalar */
+  if((nc_type)var_typ == NC_STRING) (void)fprintf(stdout,"%s RAM size above is space required for pointers only, full size of strings is unknown until data are read\n",var_nm);
   (void)fflush(stdout);
   
   /* Free space allocated for dimension information */
