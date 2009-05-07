@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.128 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.129 2009-05-07 13:36:51 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -129,23 +129,47 @@ ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
   long  var_typ_sz;  
   void* vp;
   char *cp;
-  
-  if(var->sz == 1L && nw_sz >1){
+  char **sng_cp;
     
-    var_typ_sz=nco_typ_lng(var->type);
-    vp=(void*)nco_malloc(nw_sz*var_typ_sz);
+  if(var->sz > 1L || nw_sz <1)
+    return false; 
+    
+  var_typ_sz=nco_typ_lng(var->type);
+
+
+  // handle NC_STRING -special case 
+  // nb var->val.sngp is a ragged array of chars    
+  if(var->type == (nc_type)NC_STRING) {
+    sng_cp=(char**)nco_malloc(nw_sz*var_typ_sz);    
+
+    (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
+
+    for(idx=0 ; idx <nw_sz; idx++)
+      sng_cp[idx]=strdup(var->val.sngp[0]);    
+
+    nco_free(var->val.sngp[0]);  
+    (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
+    
+    vp=(void*)sng_cp;
+
+  }else{
+    vp=(void*)nco_malloc(nw_sz*var_typ_sz);    
+
     for(idx=0 ; idx < nw_sz ;idx++){
       cp=(char*)vp + (ptrdiff_t)(idx*var_typ_sz);
       memcpy(cp,var->val.vp ,var_typ_sz);
     }
-    
-    var->val.vp=(void*)nco_free(var->val.vp);
-    var->sz=nw_sz;
-    var->val.vp=vp;
-    return true;
-  }
   
-  return false; 
+  }
+
+  
+  var->val.vp=(void*)nco_free(var->val.vp);
+  var->sz=nw_sz;
+  var->val.vp=vp;
+  return true;
+
+  
+
   
 } /* end ncap_att_stretch */
 
