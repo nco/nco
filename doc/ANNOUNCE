@@ -1,19 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.325 2009-05-05 01:30:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.326 2009-05-08 19:54:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version extends the GSL-library functions supported to
-include the GSL statistics routines in GSL Chapter 20.
-A list of ncap2 GSL functions added since 3.9.7 is below.
+This version offers three new significant features:
+GSL statistics routines, netCDF4 chunksize support (can 
+increase speed of large file reads and writes), and netCDF4 
+string support. 
 
-http://nco.sf.net/nco.html#gsl
-
-Work on 4.0.0 is underway. Areas of improvement include
-more flexible netCDF4 chunking support, better UDUnits2 time support, 
-and GSL interpolation and fitting.
+Work on NCO 4.0.0 is underway. Areas of improvement include
+more flexible netCDF4 chunking support, better UDUnits2 time support,   
+and GSL interpolation and fitting functions.
 
 "New stuff" details:
 
@@ -21,12 +20,19 @@ A. NCO (when enabled with netCDF4) supports new chunk_size option:
    ncks --cnk_sz 1024,1024,1024 in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
-B. ncks has new -f option (thanks to Denis Nadeau) fxm
+B. ncap2 supports the GSL (Chapter 20) statistics routines, e.g.,
+   ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
+   A list of ncap2 functions added since 3.9.8 is below
+   http://nco.sf.net/nco.html#gsl
 
-C. ncks --secret prints hidden/unsupported options
+C. NCO (when enabled with netCDF4) supports NC_STRING atomic type.
+   NCO has long-supported the other netCDF4 atomic types. 
+   NCO now manipulates (ragged arrays of) strings, e.g., 
+   ncap2 -4 -O -v -s 'name[lat]={"US"s,"Them"s};' in.nc out.nc
+   netCDF4 strings are placed in double quotes with a trailing "s".
+   http://nco.sf.net/nco.html#nco4
 
-J. GSL random number and distribution functions
-   ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var=gsl_ran_gaussian(sigma).sort();nbr_neg=(var<0).total();print(var);print(nbr_neg)' ~/nco/data/in.nc ~/foo.nc
+D. ncks --secret prints hidden/unsupported options
 
 "Sticky" reminders:
 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.532 2009-05-01 00:35:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.533 2009-05-08 19:54:11 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -109,7 +109,7 @@ Have a better one? Send it in!<br>
 
 
 <ul>
-<li>Late Spring, 2009: NCO 3.9.9 (netCDF4 chunksize support) (TBD)</li>
+<li>Late Spring, 2009: NCO 3.9.9 (chunksize, NC_STRING) (TBD)</li>
 
 <li>April&nbsp;29, 2009: NCO 3.9.8 (GSL RNG/PDF functions)</li>
 
@@ -508,7 +508,7 @@ You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
 <li><b>NCO/SDO 3.9.9</b>: (<i>In progress</i>) 
-<tt>ncks</tt> options: <tt>--chunksize</tt>, <tt>--fixed</tt>;
+netCDF4 chunksize and <tt>NC_STRING</tt> support; 
 GSL statistics functions;
 <li><b>NCO/SDO 3.9.8</b>: 
 <tt>ncap2</tt> supports <tt>sort()</tt>, <tt>array()</tt>;
