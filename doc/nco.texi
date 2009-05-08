@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.538 2009-05-05 05:38:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.539 2009-05-08 20:24:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.9
 @set copyright-years 1995--2009
 @set update-year 2009
-@set update-date 4 May 2009
+@set update-date 8 May 2009
 @set update-month May 2009
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -4282,14 +4282,77 @@ Short options: none@*
 Long options: @samp{--cnk_sz}, @samp{--chunk_size}@*  
 @end cartouche
 
-All @acronym{NCO} operators that define variables support 
-the netCDF4 feature of specifying the @var{chunk_size} for storing
-variables.
-Activate chunking with the @code{--cnk_sze @var{cnk_sz}} option
-(or with the same argument to the @samp{--chunk_size} options).
-
-Dataset chunking issues are described 
+All netCDF4-enabled @acronym{NCO} operators that define variables 
+support @var{chunk_size} specifications.
+Chunking can significantly accelerate or degrade read/write access
+to large datasets.
+Dataset chunking issues are described in detail
 @uref{http://www.hdfgroup.org/HDF5/doc/H5.user/Chunking.html,here}.
+Specify @acronym{NCO} chunking parameters with the 
+@code{--cnk_sze @var{cnk_sz}} option (or with the same argument to the
+@samp{--chunk_size} options). 
+
+@cindex chunking policy
+@cindex chunking map
+@cindex chunksize
+The @acronym{NCO} chunking implementation is designed to be flexible. 
+Users control three aspects of the chunking implementation.
+These are known as the @dfn{chunking policy}, @dfn{chunking map},
+and @dfn{chunksize}. 
+The first two are high-level mechanisms that apply to an entire file,
+while the third allows per-dimension specification of parameters.
+@cindex hyperslab
+@findex ncpdq
+@cindex packing
+The implementation is a hybrid of the @command{ncpdq} packing policies  
+(@pxref{ncpdq netCDF Permute Dimensions Quickly}), and the hyperslab
+specifications (@pxref{Hyperslabs}).
+Each aspect is intended to have a sensible default, so that most users
+will only need to set one switch to obtain sensible chunking.
+Power users can tune the three switches in tandem to obtain optimal
+performance. 
+
+fxm 
+1. A few user-selectable, preset chunking policies (cnk_plc)
+   Policies specify which variables to chunk, but not how
+   they are chunked. Policies could include: 
+   plc_all: Chunk all variables; 
+   plc_nil: Chunk no variables (default);
+   plc_g2d: Chunk all variables with >= two dimensions;
+   plc_g3d: Chunk all variables with >= three dimensions;
+   plc_dmn_spc: Chunk only variables which contain a dimension whose 
+       	        chunk_size was explicitly specified with --cnk_sz; 
+2. A few user-selectable, preset chunking maps (cnk_map)
+   Maps determine which chunksize to use for each dimension in
+   a variable that will be chunked. Maps could include:
+   map_dmn: chunksize equals dimension size (default)
+   map_dmn_rcd_one: chunksize equals dimension size except for
+   		    record dimension for which chunksize is one
+   map_scl: chunksize equals scalar size specified (e.g., 64)
+3. User-specifiable per-dimension (not per variable) chunksizes 
+   These override specific chunksizes determined by maps above.
+   Format and processing similar to hyperslab limits, e.g.,
+   --cnk_sz dmn_nm,cnk_sz : --chk_sz lat,64 --chk_sz lon,128
+
+During input list processing the policies and maps are combined
+and applied to every variable and used to fill the (new) cnk_sz
+scalar in each dmn_sct and the cnk_sz array in each var_sct.
+Call nco_var_def_chunking() per-variable when cnk_sz != NULL.
+
+The set of policies and maps above does, I think, address the cases
+Denis raises with multiple grids per file, and with multi-dimensional  
+specifications. 
+
+So, currently the chunksize implementation is braindead and only 
+accepts (and does not always work with) arguments like
+
+ncks -O -4 --cnk_sz 8,16,4,1,8 in.nc out.nc
+
+When the policy/map infrastructure is implemented, a complicated
+chunking command might look like, e.g., 
+
+ncks -O -4 --chk_plc=plc_g2d --chk_map=map_dmn_xcp_rcd \
+     --chk_sz lat,64 --chk_sz lon,128 in.nc out.nc
 
 @example
 # Yields "HDF error":
@@ -9713,7 +9776,7 @@ lon(3)=180 lev(1)=100 lat(1)=-90 three_dmn_var(3)=2
 Printing a hyperslab does not affect the variable or dimension indices
 since these indices are relative to the full variable (as stored in the
 input file), and the input file has not changed.
-However, if the hypserslab is saved to an output file and those values
+However, if the hyperslab is saved to an output file and those values
 are printed, the indices will change:
 @c fxm: replace with new MSA output style
 @example
