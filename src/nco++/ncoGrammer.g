@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.163 2009-05-07 13:36:01 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.164 2009-05-11 09:54:14 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -303,10 +303,15 @@ class ncoLexer extends Lexer;
 
 
 options {
-    k = 4;
+    k = 4; 
+
+
+
     defaultErrorHandler=false;
     filter=BLASTOUT;
     testLiterals=false;
+    charVocabulary = '\u0000'..'\u00FF';
+
 }
 
 
@@ -2820,21 +2825,8 @@ var=NULL_CEWI;
 
             // Now get data from disk - use nco_var_get() 
             (void)nco_var_get(fl_id,var); 
+ 
 
-            // debug NC_STRING
-            /*
-            if(var->type==(nc_type)NC_STRING){
-             (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
-
-             std::cout<<"Debug in var_lmt sz="<<var->sz<<std::endl;
-             
-             for(idx=0 ;idx<var->sz; idx++)
-              std::cout<<var->val.sngp[idx]<<std::endl;
-             
-             (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
-             std::cout<<"End Debug in var_lmt\n";
-            } 
-            */
 
            } // end if(nbram)
            
