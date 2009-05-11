@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.15 2009-05-05 16:16:54 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.16 2009-05-11 11:31:41 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1336,7 +1336,7 @@
 
            
     if( fdx== PDSORT) {
-      susg="usage: var_out="+sfnm+"(var_exp,&var_map)\n";  
+      susg="usage: var_out="+sfnm+"(var_exp,var_map)\n";  
       if(nbr_args<2 )
         err_prn(sfnm,"Function requires two arguments\n"+susg); 
 
