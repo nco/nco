@@ -36,6 +36,7 @@
 // int: 1 (no decimal point)
 // float: 1.f (decimal point is required, f is required to distinguish from double)
 // double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
+// 
 
 // NCL usage:
 // id_in=addfile("/home/zender/nco/data/in.nc","r")
@@ -49,7 +50,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.109 2009-05-05 01:05:09 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.110 2009-05-12 00:33:52 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1047 2009-05-04 22:11:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1048 2009-05-12 00:33:53 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -659,7 +659,6 @@ nco941. ncra (now? when was regression?) tries to average NC_CHAR record variabl
 nco943. Add regression test for 
 	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
 nco945. ncra problem with netcdf4 record mean of packed double with double missing values
-nco947. Try DAP from netCDF4 daily snapshots
 nco949. Make --no-clobber option for all operators
 nco950. Add --secret option to print secret/unsupported options
 nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attributes of variable lists, rather than all-or-nothing selections
@@ -678,7 +677,9 @@ nco971. wget: both following commands create and write mutilated directory
 	ncks: INFO Retrieved files will be stored in directory ./nco/in.n
 	stores correctly in local directory but also creates ./nco/in.n
 	/bin/rm -r ~/nco/in.n ~/nco/in.nc
-nco972. 
+nco972. NC_STRINGs support: ncatted, nco_put_var_mem/nco_get_var_mem instead of memcpy, sort, ncatted
+nco973. ncks: allow for printing "units" attributes stored as NC_STRINGs
+nco974. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

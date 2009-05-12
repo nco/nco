@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.9 2009-05-11 09:46:21 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.10 2009-05-12 00:33:53 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 // Stress-test netCDF4 atomic types and features
@@ -9,7 +9,13 @@
    scp ~/nco/data/netcdf4.nc dust.ess.uci.edu:/var/www/html/nco
 */
 
-// First make sure netCDF3 commands work 
+global@Conventions_NC_CHAR = "CF-1.0"; // NC_CHAR
+global@Conventions_NC_STRING = "CF-1.0"s; // NC_STRING
+var_foo=1.0; 
+var_foo@units="meters"s; // NC_STRING
+var_foo@units2="meters"; // NC_CHAR
+
+// Make sure netCDF3 commands work 
 var_double=1.0;
 var_float=1.0f;
 var_int=1;
