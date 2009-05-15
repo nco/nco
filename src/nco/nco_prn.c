@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.53 2009-05-07 21:26:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.54 2009-05-15 23:58:36 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -64,16 +64,16 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
     (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(att[idx].type));
     switch(att[idx].type){
     case NC_FLOAT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.fp[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_DOUBLE:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.dp[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_SHORT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sp[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_INT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.lp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.lp[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_CHAR:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++){
@@ -89,19 +89,19 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ubp[att_lmn]);
       break;
     case NC_USHORT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.usp[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_UINT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.uip[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_INT64:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.i64p[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_UINT64:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ui64p[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_STRING:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sngp[att_lmn],(att_lmn != att_sz-1L) ? dlm_sng : "");
       break;
     default: nco_dfl_case_nc_type_err();
       break;
