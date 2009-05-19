@@ -1,3 +1,7 @@
+2009-05-19  Henry Butowsky  <henryb@hush.com> 
+
+	*  commited the first cut of gsl staistical functions
+
 2009-05-08  Charlie Zender  <zender@uci.edu>
 
 	* Begin chunking documentation in nco.texi
