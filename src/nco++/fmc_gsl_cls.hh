@@ -7,7 +7,7 @@
 #ifndef FMC_GSL_CLS_HH // Contents have not yet been inserted in current source file  
 #define FMC_GSL_CLS_HH
 
-#ifdef HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H   
 #include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
@@ -32,6 +32,8 @@
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_randist.h>
 
+#include <gsl/gsl_statistics.h>
+
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
@@ -52,6 +54,10 @@
 
 #define HANDLE_ARGS bool&is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker 
 
+// macro to a function that converts an array of f_unn to a vector of f_unn
+// used in constructor args to gpr_cls
+#define ARR2VTR(arr_nm) gpr_cls::hlp_arr2vtr((arr_nm), sizeof((arr_nm))/sizeof(f_unn))
+
 // Global variable initialized in ncap2.cc
 extern int ncap_gsl_mode_prec; /* Precision for GSL functions with mode_t argument (Airy, hypergeometric) */ 
 
@@ -65,9 +71,15 @@ enum { P1DBL,   P2DBL,   P3DBL,   P4DBL,
 
 // Classify Bessel/Legendre methods in array function function hnd_fnc_iidpd()
 enum { PBESSEL, PLEGEND };
+
+// Classify some of the stats methods --fxm: all type args need to be included
+enum { PS_MAX, PS_MIN, PS_MAX_IDX , PS_MIN_IDX };
+
+
 // Union class to hold GSL function pointers
 union f_unn{
  public:
+   int (*av)(void);
    int (*ai)(int, gsl_sf_result*);
    int (*au)(unsigned int, gsl_sf_result*);
 
@@ -115,7 +127,35 @@ union f_unn{
    double (*cru)(const gsl_rng*,unsigned);
    double (*cruu)(const gsl_rng*,unsigned,unsigned);
    double (*cruuu)(const gsl_rng*,unsigned,unsigned,unsigned);
-   
+  
+  //gsl_statistics function prototypes
+
+   double (*cscpss)(const char* ,size_t,size_t);
+   double (*csspss)(const short* ,size_t,size_t);
+   double (*csipss)(const int* ,size_t,size_t);
+   double (*csfpss)(const float* ,size_t,size_t);
+   double (*csdpss)(const double*,size_t,size_t);
+   double (*csucpss)(const unsigned char* ,size_t,size_t);
+   double (*csuspss)(const unsigned short* ,size_t,size_t);
+   double (*csuipss)(const unsigned int* ,size_t,size_t);
+   double (*cslpss)(const long* ,size_t,size_t);   
+   double (*csulpss)(const unsigned long* ,size_t,size_t);   
+
+
+   double (*cscpssd)(const char* ,size_t,size_t,double);
+   double (*csspssd)(const short* ,size_t,size_t,double);
+   double (*csipssd)(const int* ,size_t,size_t,double);
+   double (*csfpssd)(const float* ,size_t,size_t,double);
+   double (*csdpssd)(const double*,size_t,size_t,double);
+   double (*csucpssd)(const unsigned char* ,size_t,size_t,double);
+   double (*csuspssd)(const unsigned short* ,size_t,size_t,double);
+   double (*csuipssd)(const unsigned int* ,size_t,size_t,double);
+   double (*cslpssd)(const long* ,size_t,size_t,double);   
+   double (*csulpssd)(const unsigned long* ,size_t,size_t,double);   
+
+
+
+
    unsigned int (*dru)(const gsl_rng*,unsigned);
    unsigned int (*druu)(const gsl_rng*,unsigned,unsigned);
    unsigned int (*druuu)(const gsl_rng*,unsigned,unsigned,unsigned);
@@ -130,7 +170,11 @@ union f_unn{
 
    double (*cid)(int,double);
 
+
+
+
   //Return type int
+  f_unn(   int (*a)(void) )                           { av=a; }
   f_unn(   int (*a)( int,gsl_sf_result*) )            { ai=a; }
   f_unn(   int (*a)( unsigned int,gsl_sf_result*) )   { au=a; }
 
@@ -175,6 +219,31 @@ union f_unn{
   f_unn(   double (*c)(const gsl_rng*, double,double,double,double,double) ) { crddddd=c; }
   f_unn(   double (*c)(const gsl_rng*,unsigned)     )                 { cru=c; }
 
+  
+  //gsl_statistics function prototypes
+  f_unn(double (*c)(const unsigned char* ,size_t,size_t))            {csucpss=c;}
+  f_unn(double (*c)(const char* ,size_t,size_t))                     {cscpss=c;}
+  f_unn(double (*c)(const short* ,size_t,size_t))                    {csspss=c;}
+  f_unn(double (*c)(const int* ,size_t,size_t))                      {csipss=c;}
+  f_unn(double (*c)(const float* , size_t,size_t)  )                 {csfpss=c;}
+  f_unn(double (*c)(const double*, size_t,size_t) )                  {csdpss=c;}
+  f_unn(double (*c)(const unsigned short* ,size_t,size_t))           {csuspss=c;} 
+  f_unn(double (*c)(const unsigned int* ,size_t,size_t))             {csuipss=c;} 
+  f_unn(double (*c)(const long* ,size_t,size_t))                     {cslpss=c;}      
+  f_unn(double (*c)(const unsigned long* ,size_t,size_t))            {csulpss=c;}  
+
+  f_unn(double (*c)(const unsigned char* ,size_t,size_t,double))            {csucpssd=c;}
+  f_unn(double (*c)(const char* ,size_t,size_t,double))                     {cscpssd=c;}
+  f_unn(double (*c)(const short* ,size_t,size_t,double))                    {csspssd=c;}
+  f_unn(double (*c)(const int* ,size_t,size_t,double))                      {csipssd=c;}
+  f_unn(double (*c)(const float* , size_t,size_t,double)  )                 {csfpssd=c;}
+  f_unn(double (*c)(const double*, size_t,size_t,double) )                  {csdpssd=c;}
+  f_unn(double (*c)(const unsigned short* ,size_t,size_t,double))           {csuspssd=c;} 
+  f_unn(double (*c)(const unsigned int* ,size_t,size_t,double))             {csuipssd=c;} 
+  f_unn(double (*c)(const long* ,size_t,size_t,double))                     {cslpssd=c;}      
+  f_unn(double (*c)(const unsigned long* ,size_t,size_t,double))            {csulpssd=c;}  
+
+  
   // return type unsigned int
   f_unn(unsigned int (*d)(const gsl_rng*, unsigned) )                   { dru=d; }
   f_unn(unsigned int (*d)(const gsl_rng*, unsigned,unsigned) )          { druu=d; }
@@ -188,35 +257,83 @@ union f_unn{
 
 };
 
+
+// dummy function
+int ncap_void(void);
+
+
 // Class to hold GSL function name, function pointers, function handler
 class gpr_cls { 
  private:
   std::string _fnm;
-  f_unn _pfptr_e;
+
+ // for regular constructors this holds only one gsl function pointer
+  std::vector<f_unn> _in_f_unn_vtr; 
   nc_type _type;  
 public:
   var_sct* (*_hnd_fnc)(HANDLE_ARGS);
 
-  gpr_cls(std::string ifnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS) ):_pfptr_e(pfptr_e){
+  gpr_cls(std::string ifnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS) ){
     _fnm=ifnm;
+    _in_f_unn_vtr.push_back(pfptr_e);
     _hnd_fnc=hnd_fnc;
     _type=NC_NAT;
-  } 
 
-  gpr_cls(const char *const pfnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS)  ): _pfptr_e(pfptr_e) {
+  } 
+  
+  gpr_cls(const char *const pfnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS) ) {
     _fnm= static_cast<std::string>(pfnm);
+    _in_f_unn_vtr.push_back(pfptr_e);
     _hnd_fnc=hnd_fnc;
     _type=NC_NAT; 
+
   }
 
-  gpr_cls(const char *const pfnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS), int type_in  ):_pfptr_e(pfptr_e){
+  gpr_cls(const char *const pfnm, f_unn pfptr_e,var_sct* (*hnd_fnc)(HANDLE_ARGS), int type_in){
     _fnm= static_cast<std::string>(pfnm);
+    _in_f_unn_vtr.push_back(pfptr_e);
     _hnd_fnc=hnd_fnc;
     _type=(nc_type)type_in;
+
   }
 
+  // Constructor with vector of gsl func args
+  gpr_cls(const char *const pfnm, std::vector<f_unn> in_f_unn_vtr, var_sct* (*hnd_fnc)(HANDLE_ARGS) ) {
+    _fnm= static_cast<std::string>(pfnm);
+    _in_f_unn_vtr=in_f_unn_vtr;
+    _hnd_fnc=hnd_fnc;
+    _type=NC_NAT; 
+
+  }
+
+  // Constructor with vector of gsl func args
+  gpr_cls(const char *const pfnm, std::vector<f_unn> in_f_unn_vtr, var_sct* (*hnd_fnc)(HANDLE_ARGS), int type_in ){
+    _fnm= static_cast<std::string>(pfnm);
+    _in_f_unn_vtr=in_f_unn_vtr;
+    _hnd_fnc=hnd_fnc;
+    _type=(nc_type)type_in;
+
+  }
+  
+  // helper method used in constructor args to convert an array of f_unn to a vector
+  // we can call it within constructor args as it is a static method
+  static std::vector<f_unn> hlp_arr2vtr( f_unn *arr_nm,unsigned sz){
+    std::vector<f_unn> in_f_unn_vtr;
+    for(unsigned idx=0 ; idx<sz; idx++)
+      in_f_unn_vtr.push_back(arr_nm[idx]);
+
+    return in_f_unn_vtr;
+  }
+  
+
   std::string fnm() { return _fnm;} 
-  f_unn g_args()    { return _pfptr_e; }     
+  
+  // maintain compatibility with older code  
+  f_unn g_args(void)    { return _in_f_unn_vtr[0]; }
+
+  // For functions that have multiple gsl function prototypes  
+  f_unn g_args(int idx) { return _in_f_unn_vtr[idx]; }     
+
   nc_type type(){ return _type;}
 }; 
 
@@ -231,6 +348,7 @@ public:
   void gsl_ini_sf(void);
   void gsl_ini_cdf(void);
   void gsl_ini_ran(void);
+  void gsl_ini_stats(void);
 
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 static  var_sct *hnd_fnc_x(HANDLE_ARGS);
@@ -249,6 +367,11 @@ static  var_sct *hnd_fnc_ru(HANDLE_ARGS);
 static  var_sct *hnd_fnc_udrx(HANDLE_ARGS);
 static  var_sct *hnd_fnc_uerx(HANDLE_ARGS);
 static  var_sct *hnd_fnc_udrdu(HANDLE_ARGS); // explict handler
+
+// The following functions handle gsl_statistical functions
+static  var_sct *hnd_fnc_stat1(HANDLE_ARGS);
+static  var_sct *hnd_fnc_stat2(HANDLE_ARGS);
+static  var_sct *hnd_fnc_stat3(HANDLE_ARGS);
 };
 
 
@@ -264,6 +387,25 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
+
+
+
+//GSL STATISTICS 2  /****************************************/
+// gsl statistic functions for floating points only
+class gsl_stt2_cls: public vtl_cls {
+private:
+  enum { PWMEAN,    PWVAR,    PWSD,   PWVAR_MEAN,
+         PWSD_MEAN, PWABSDEV, PWSKEW, PWKURTOSIS,
+         PWVAR_M,   PWSD_M,   PWABSDEV_M, PWSKEW_M_SD,
+         PWKURTOSIS_M_SD
+       };
+   bool _flg_dbg;
+public:
+  gsl_stt2_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+
+};
+
 
 
 
