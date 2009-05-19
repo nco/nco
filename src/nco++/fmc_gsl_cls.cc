@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.32 2009-05-02 20:18:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.33 2009-05-19 16:03:32 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -12,12 +12,21 @@
 
 #ifdef ENABLE_GSL
 
+
+
+// dummy function -used to fill out arg list
+int  ncap_void(void){
+  return 10;
+}
+
+
+
 gsl_cls::gsl_cls(bool flg_dbg){
     // populate gpr_vtr
   gsl_ini_sf();    // Special Functions 
   gsl_ini_cdf();   // Cumulative distribution Functions
   gsl_ini_ran();   // Random Number Generator functions
-    
+  gsl_ini_stats();  // Statistics  
   // Copy into fmc_cls vector  
   for(unsigned idx=0;idx<gpr_vtr.size();idx++) 
    fmc_vtr.push_back(fmc_cls(gpr_vtr[idx].fnm(),this,idx));
@@ -617,6 +626,135 @@ void gsl_cls::gsl_ini_ran(void){
 
 } // gsl_ini_ran()
 
+
+// GSL Statistical Functions
+void gsl_cls::gsl_ini_stats(void){
+
+  // order of gsl functions very important there are 10 types 
+  // The native gsl types in order are
+  // char/short/int/float/double/uchar/ushort/uint/ulong/long
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_mean), f_unn(gsl_stats_short_mean), f_unn(gsl_stats_int_mean), f_unn(gsl_stats_float_mean), 
+                    f_unn(gsl_stats_mean), f_unn(gsl_stats_uchar_mean), f_unn(gsl_stats_ushort_mean), f_unn(gsl_stats_uint_mean),
+                    f_unn(gsl_stats_long_mean),f_unn(gsl_stats_ulong_mean) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_mean",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_variance), f_unn(gsl_stats_short_variance), f_unn(gsl_stats_int_variance), f_unn(gsl_stats_float_variance), f_unn(gsl_stats_variance), f_unn(gsl_stats_uchar_variance), f_unn(gsl_stats_ushort_variance), f_unn(gsl_stats_uint_variance),
+                    f_unn(gsl_stats_long_variance),f_unn(gsl_stats_ulong_variance) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_variance",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_sd), f_unn(gsl_stats_short_sd), f_unn(gsl_stats_int_sd), f_unn(gsl_stats_float_sd), 
+                    f_unn(gsl_stats_sd), f_unn(gsl_stats_uchar_sd), f_unn(gsl_stats_ushort_sd), f_unn(gsl_stats_uint_sd),
+                    f_unn(gsl_stats_long_sd),f_unn(gsl_stats_ulong_sd) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_sd",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_variance_with_fixed_mean), f_unn(gsl_stats_short_variance_with_fixed_mean), f_unn(gsl_stats_int_variance_with_fixed_mean), f_unn(gsl_stats_float_variance_with_fixed_mean), f_unn(gsl_stats_variance_with_fixed_mean), f_unn(gsl_stats_uchar_variance_with_fixed_mean), f_unn(gsl_stats_ushort_variance_with_fixed_mean), f_unn(gsl_stats_uint_variance_with_fixed_mean),
+                    f_unn(gsl_stats_long_variance_with_fixed_mean),f_unn(gsl_stats_ulong_variance_with_fixed_mean) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_variance_with_fixed_mean",ARR2VTR(lcl_arr),hnd_fnc_stat2));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_sd_with_fixed_mean), f_unn(gsl_stats_short_sd_with_fixed_mean), f_unn(gsl_stats_int_sd_with_fixed_mean), f_unn(gsl_stats_float_sd_with_fixed_mean), f_unn(gsl_stats_sd_with_fixed_mean), f_unn(gsl_stats_uchar_sd_with_fixed_mean), f_unn(gsl_stats_ushort_sd_with_fixed_mean), f_unn(gsl_stats_uint_sd_with_fixed_mean),
+                    f_unn(gsl_stats_long_sd_with_fixed_mean),f_unn(gsl_stats_ulong_sd_with_fixed_mean) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_sd_with_fixed_mean",ARR2VTR(lcl_arr),hnd_fnc_stat2));
+
+  }
+
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_absdev), f_unn(gsl_stats_short_absdev), f_unn(gsl_stats_int_absdev), f_unn(gsl_stats_float_absdev), f_unn(gsl_stats_absdev), f_unn(gsl_stats_uchar_absdev), f_unn(gsl_stats_ushort_absdev), f_unn(gsl_stats_uint_absdev), f_unn(gsl_stats_long_absdev),f_unn(gsl_stats_ulong_absdev) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_absdev",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_skew), f_unn(gsl_stats_short_skew), f_unn(gsl_stats_int_skew), f_unn(gsl_stats_float_skew), 
+                    f_unn(gsl_stats_skew), f_unn(gsl_stats_uchar_skew), f_unn(gsl_stats_ushort_skew), f_unn(gsl_stats_uint_skew),
+                    f_unn(gsl_stats_long_skew),f_unn(gsl_stats_ulong_skew) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_skew",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_kurtosis), f_unn(gsl_stats_short_kurtosis), f_unn(gsl_stats_int_kurtosis), f_unn(gsl_stats_float_kurtosis), 
+                    f_unn(gsl_stats_kurtosis), f_unn(gsl_stats_uchar_kurtosis), f_unn(gsl_stats_ushort_kurtosis), f_unn(gsl_stats_uint_kurtosis),
+                    f_unn(gsl_stats_long_kurtosis),f_unn(gsl_stats_ulong_kurtosis) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_kurtosis",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_lag1_autocorrelation), f_unn(gsl_stats_short_lag1_autocorrelation), f_unn(gsl_stats_int_lag1_autocorrelation), f_unn(gsl_stats_float_lag1_autocorrelation), f_unn(gsl_stats_lag1_autocorrelation), f_unn(gsl_stats_uchar_lag1_autocorrelation), f_unn(gsl_stats_ushort_lag1_autocorrelation), f_unn(gsl_stats_uint_lag1_autocorrelation), f_unn(gsl_stats_long_lag1_autocorrelation),f_unn(gsl_stats_ulong_lag1_autocorrelation) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_lag1_autocorrelation",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_variance_m), f_unn(gsl_stats_short_variance_m), f_unn(gsl_stats_int_variance_m), f_unn(gsl_stats_float_variance_m), f_unn(gsl_stats_variance_m), f_unn(gsl_stats_uchar_variance_m), f_unn(gsl_stats_ushort_variance_m), f_unn(gsl_stats_uint_variance_m),
+                    f_unn(gsl_stats_long_variance_m),f_unn(gsl_stats_ulong_variance_m) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_variance_m",ARR2VTR(lcl_arr),hnd_fnc_stat2));
+
+  }
+
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_sd_m), f_unn(gsl_stats_short_sd_m), f_unn(gsl_stats_int_sd_m), f_unn(gsl_stats_float_sd_m), 
+                    f_unn(gsl_stats_sd_m), f_unn(gsl_stats_uchar_sd_m), f_unn(gsl_stats_ushort_sd_m), f_unn(gsl_stats_uint_sd_m),
+                    f_unn(gsl_stats_long_sd_m),f_unn(gsl_stats_ulong_sd_m) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_sd_m",ARR2VTR(lcl_arr),hnd_fnc_stat2));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_absdev_m), f_unn(gsl_stats_short_absdev_m), f_unn(gsl_stats_int_absdev_m), f_unn(gsl_stats_float_absdev_m), 
+                    f_unn(gsl_stats_absdev_m), f_unn(gsl_stats_uchar_absdev_m), f_unn(gsl_stats_ushort_absdev_m), f_unn(gsl_stats_uint_absdev_m),
+                    f_unn(gsl_stats_long_absdev_m),f_unn(gsl_stats_ulong_absdev_m) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_absdev_m",ARR2VTR(lcl_arr),hnd_fnc_stat2));
+
+  }
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_lag1_autocorrelation_m), f_unn(gsl_stats_short_lag1_autocorrelation_m), f_unn(gsl_stats_int_lag1_autocorrelation_m), f_unn(gsl_stats_float_lag1_autocorrelation_m), f_unn(gsl_stats_lag1_autocorrelation_m), f_unn(gsl_stats_uchar_lag1_autocorrelation_m), f_unn(gsl_stats_ushort_lag1_autocorrelation_m), f_unn(gsl_stats_uint_lag1_autocorrelation_m), f_unn(gsl_stats_long_lag1_autocorrelation_m),f_unn(gsl_stats_ulong_lag1_autocorrelation_m) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_lag1_autocorrelation_m",ARR2VTR(lcl_arr),hnd_fnc_stat2));
+
+  }
+
+
+  gpr_vtr.push_back(gpr_cls("gsl_stats_max",f_unn(ncap_void),hnd_fnc_stat3,PS_MAX));
+  gpr_vtr.push_back(gpr_cls("gsl_stats_min",f_unn(ncap_void),hnd_fnc_stat3,PS_MIN));
+  gpr_vtr.push_back(gpr_cls("gsl_stats_max_index",f_unn(ncap_void),hnd_fnc_stat3,PS_MAX_IDX));
+  gpr_vtr.push_back(gpr_cls("gsl_stats_min_index",f_unn(ncap_void),hnd_fnc_stat3,PS_MIN_IDX));
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_median_from_sorted_data), f_unn(gsl_stats_short_median_from_sorted_data), f_unn(gsl_stats_int_median_from_sorted_data), f_unn(gsl_stats_float_median_from_sorted_data), f_unn(gsl_stats_median_from_sorted_data), f_unn(gsl_stats_uchar_median_from_sorted_data), f_unn(gsl_stats_ushort_median_from_sorted_data), f_unn(gsl_stats_uint_median_from_sorted_data), f_unn(gsl_stats_long_median_from_sorted_data),f_unn(gsl_stats_ulong_median_from_sorted_data) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_median_from_sorted_data",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+
+    
+{ f_unn lcl_arr[]={ f_unn(gsl_stats_char_quantile_from_sorted_data), f_unn(gsl_stats_short_quantile_from_sorted_data), f_unn(gsl_stats_int_quantile_from_sorted_data), f_unn(gsl_stats_float_quantile_from_sorted_data), f_unn(gsl_stats_quantile_from_sorted_data), f_unn(gsl_stats_uchar_quantile_from_sorted_data), f_unn(gsl_stats_ushort_quantile_from_sorted_data), f_unn(gsl_stats_uint_quantile_from_sorted_data), f_unn(gsl_stats_long_quantile_from_sorted_data),f_unn(gsl_stats_ulong_quantile_from_sorted_data) };   
+  gpr_vtr.push_back(gpr_cls("gsl_stats_quantile_from_sorted_data",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+
+  }
+
+
+
+
+
+} // end gsl_ini_stats
 
 var_sct * gsl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gsl_cls::fnd");
@@ -2779,8 +2917,513 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   return var;
 } // end hnd_fnc_uerx
 
+     
+var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_stat1");
+  int idx;
+  int args_nbr;
+  nc_type type;
+  std::string susg;
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var1=NULL_CEWI;
+  var_sct *var2=NULL_CEWI;
+  double r_val;
+   
+    
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  type=gpr_obj.type();  
+  
+  args_nbr=args_vtr.size();
+  
+  susg=susg="usage: double_val="+sfnm+"(var_data, data_stride?)";
+
+  if(args_nbr <1){
+    err_prn(sfnm,"Function requires at least one argument.\n"+susg  ); 
+  }
+   
+  var1=walker.out(args_vtr[0]);
+  if(args_nbr>1)
+    var2=walker.out(args_vtr[1]);  
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+    
+    nco_var_free(var1);
+
+    if(args_nbr>1)
+      nco_var_free(var2);  
+
+    return ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat1"),(nc_type)NC_DOUBLE,false);   
+  }
+
+  // do the heavy lifting 
+  {
+    size_t sz; 
+    size_t d_srd=1L;  // data stride set to default 
+    
+    // first arg the data 
+    
+   // 1rd arg the data
+   (void)cast_void_nctype(var1->type,&(var1->val));  
+   
+
+   // 2th arg data stride
+   if(var2 !=(var_sct*)NULL){
+     var2=nco_var_cnf_typ((nc_type)NC_INT,var2);
+     (void)cast_void_nctype((nc_type)NC_INT,&(var2->val));  
+     d_srd=(size_t) var2->val.lp[0];       
+     (void)cast_nctype_void((nc_type)NC_INT,&(var2->val));
+
+     // free var2 no longer needed
+     var2=nco_var_free(var2);   
+   }
+
+   //final arg
+   sz=var1->sz;
+   
+   // remember we are dealing with g_args() -- an array of function pointers here
+   // the order of gsl function pointers is significant -it is
+  // char/short/int/float/double/uchar/ushort/uint/ulong/long
+   switch(var1->type){
+     case NC_FLOAT:  r_val=gpr_obj.g_args(3).csfpss( var1->val.fp,d_srd,sz);break;
+     case NC_DOUBLE: r_val=gpr_obj.g_args(4).csdpss( var1->val.dp,d_srd,sz);break;
+
+     case NC_INT:    // NC_INT rpresented as int in nco
+                     #if NC_INT==NCO_TYP_INT
+                       r_val=gpr_obj.g_args(2).csipss(var1->val.lp,d_srd,sz);
+                     // NC_INT rpresented as long  in nco
+		     #else
+                       r_val=gpr_obj.g_args(8).cslpss(var1->val.lp,d_srd,sz);
+                     #endif
+                     break;
+
+     case NC_SHORT:  r_val=gpr_obj.g_args(1).csspss( var1->val.sp,d_srd,sz);break;
+     case NC_CHAR:   r_val=gpr_obj.g_args(0).cscpss((const char*)var1->val.cp,d_srd,sz);break;
+     case NC_BYTE:   r_val=gpr_obj.g_args(0).cscpss((const char*)var1->val.bp,d_srd,sz);break;
+       
+#ifdef ENABLE_NETCDF4
+     case NC_UBYTE:  r_val=gpr_obj.g_args(5).csucpss((const unsigned char*)var1->val.ubp,d_srd,sz);break;
+     case NC_USHORT: r_val=gpr_obj.g_args(6).csuspss( var1->val.usp,d_srd,sz);break;
+     case NC_UINT:   r_val=gpr_obj.g_args(7).csuipss(var1->val.uip,d_srd,sz);break;
+
+     case NC_INT64:  
+                     if( sizeof(long)!=sizeof(long long) )
+		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
+                      
+                      r_val=gpr_obj.g_args(8).cslpss((const long*)var1->val.i64p,d_srd,sz);
+                      break;
+     case NC_UINT64: 
+                     if( sizeof(unsigned long)!=sizeof(unsigned long long) )
+		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
+
+                      r_val=gpr_obj.g_args(9).csulpss((const unsigned long*)var1->val.ui64p,d_srd,sz);
+                     break;
+
+     case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;
+     
+   } // end switch  
+
+   (void)cast_nctype_void(var1->type,&(var1->val));
+
+  } // end heavy lifting
+ 
+ var1=nco_var_free(var1);
 
 
+ return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
+}
+
+
+var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_stat2");
+  int idx;
+  int args_nbr;
+  nc_type type;
+  std::string susg;
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var_arr[3];
+  double r_val;
+   
+    
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  type=gpr_obj.type();  
+  
+  args_nbr=args_vtr.size();
+  
+  susg=susg="usage: double_val="+sfnm+"(var_data, data_stride,double_val)";
+
+  if(args_nbr <3){
+    err_prn(sfnm,"Function requires three arguments.\n"+susg  ); 
+  }
+   
+
+  for(idx=0;idx<3;idx++)
+    var_arr[idx]=walker.out(args_vtr[idx]);
+
+
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+   
+    for(idx=0;idx<3;idx++)
+      var_arr[idx]=nco_var_free(var_arr[idx]);
+    
+    return ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat1"),(nc_type)NC_DOUBLE,false);   
+  }
+
+  // do the heavy lifting 
+  {
+    double dmean; 
+    size_t sz; 
+    size_t d_srd=1L;  // data stride set to default 
+    
+    // first arg the data 
+    
+   // 1rd arg the data
+   (void)cast_void_nctype(var_arr[0]->type,&(var_arr[0]->val));  
+   
+
+   // 2th arg data stride
+     var_arr[1]=nco_var_cnf_typ(NC_INT,var_arr[1]);
+     (void)cast_void_nctype(NC_INT,&(var_arr[1]->val));  
+     d_srd=(size_t) var_arr[1]->val.lp[0];       
+     (void)cast_nctype_void(NC_INT,&(var_arr[1]->val));
+
+
+   // 3rd arg the mean
+     var_arr[2]=nco_var_cnf_typ(NC_DOUBLE,var_arr[2]);
+     (void)cast_void_nctype(NC_DOUBLE,&(var_arr[2]->val));  
+     dmean=(size_t) var_arr[2]->val.dp[0];       
+     (void)cast_nctype_void(NC_DOUBLE,&(var_arr[2]->val));
+
+
+
+   //final arg
+   sz=var_arr[0]->sz;
+   
+   // remember we are dealing with g_args() -- an array of function pointers here
+   // the order of gsl function pointers is significant -it is
+  // char/short/int/float/double/uchar/ushort/uint/ulong/long
+   switch(var_arr[0]->type){
+     case NC_FLOAT:  r_val=gpr_obj.g_args(3).csfpssd( var_arr[0]->val.fp,d_srd,sz,dmean);break;
+     case NC_DOUBLE: r_val=gpr_obj.g_args(4).csdpssd( var_arr[0]->val.dp,d_srd,sz,dmean);break;
+
+     case NC_INT:    // NC_INT rpresented as int in nco
+                     #if NC_INT==NCO_TYP_INT
+                       r_val=gpr_obj.g_args(2).csipssd(var_arr[0]->val.lp,d_srd,sz,dmean);
+                     // NC_INT rpresented as long  in nco
+		     #else
+                       r_val=gpr_obj.g_args(8).cslpssd(var_arr[0]->val.lp,d_srd,sz,dmean);
+                     #endif
+                     break;
+
+     case NC_SHORT:  r_val=gpr_obj.g_args(1).csspssd( var_arr[0]->val.sp,d_srd,sz,dmean);break;
+     case NC_CHAR:   r_val=gpr_obj.g_args(0).cscpssd((const char*)var_arr[0]->val.cp,d_srd,sz,dmean);break;
+     case NC_BYTE:   r_val=gpr_obj.g_args(0).cscpssd((const char*)var_arr[0]->val.bp,d_srd,sz,dmean);break;
+       
+#ifdef ENABLE_NETCDF4
+     case NC_UBYTE:  r_val=gpr_obj.g_args(5).csucpssd((const unsigned char*)var_arr[0]->val.ubp,d_srd,sz,dmean);break;
+     case NC_USHORT: r_val=gpr_obj.g_args(6).csuspssd( var_arr[0]->val.usp,d_srd,sz,dmean);break;
+     case NC_UINT:   r_val=gpr_obj.g_args(7).csuipssd(var_arr[0]->val.uip,d_srd,sz,dmean);break;
+
+     case NC_INT64:  
+                     if( sizeof(long)!=sizeof(long long) )
+		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
+                      
+                      r_val=gpr_obj.g_args(8).cslpssd((const long*)var_arr[0]->val.i64p,d_srd,sz,dmean);
+                      break;
+     case NC_UINT64: 
+                     if( sizeof(unsigned long)!=sizeof(unsigned long long) )
+		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
+
+                      r_val=gpr_obj.g_args(9).csulpssd((const unsigned long*)var_arr[0]->val.ui64p,d_srd,sz,dmean);
+                     break;
+
+     case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;
+     
+   } // end switch  
+
+   (void)cast_nctype_void(var_arr[0]->type,&(var_arr[0]->val));
+
+  } // end heavy lifting
+ 
+  
+  // free vars 
+  for(idx=0;idx<3;idx++)
+    var_arr[idx]=nco_var_free(var_arr[idx]);
+   
+
+ return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
+}
+
+
+     
+var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_stat3");
+  int idx;
+  int fdx=gpr_obj.type(); // very important
+  int args_nbr;
+  nc_type type;
+  std::string susg;
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var1=NULL_CEWI;
+  var_sct *var2=NULL_CEWI;
+  var_sct *var_ret=NULL_CEWI;
+
+   
+    
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  type=gpr_obj.type();  
+  
+  args_nbr=args_vtr.size();
+  
+  susg=susg="usage: out_val="+sfnm+"(var_data, data_stride?)";
+
+  if(args_nbr <1){
+    err_prn(sfnm,"Function requires at least one argument.\n"+susg  ); 
+  }
+   
+  var1=walker.out(args_vtr[0]);
+  if(args_nbr>1)
+    var2=walker.out(args_vtr[1]);  
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+    
+    if(args_nbr>1)
+      nco_var_free(var2);  
+
+    if(var1->undefined)
+      return var1;  
+    
+    if(fdx ==PS_MIN_IDX ||fdx==PS_MAX_IDX) 
+      var_ret=ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat1"),NC_INT,false);   
+
+    if(fdx==PS_MIN || fdx==PS_MAX) 
+      var_ret=ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat1"),(nc_type)var1->type,false);   
+         
+    nco_var_free(var1);   
+    return var_ret;
+  }
+
+
+
+  if(var1->type==(nc_type)NC_INT64 && sizeof(long)!=sizeof(long long) )
+    err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
+
+  if(var1->type==(nc_type)NC_UINT64 && sizeof(unsigned long)!=sizeof(unsigned long long) )
+    err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
+
+
+
+  // do the heavy lifting 
+  {
+    size_t sz; 
+    size_t d_srd=1L;  // data stride set to default 
+    
+    // first arg the data 
+    
+   // 1rd arg the data
+   (void)cast_void_nctype(var1->type,&(var1->val));  
+   
+
+   // 2th arg data stride
+   if(var2 !=(var_sct*)NULL){
+     var2=nco_var_cnf_typ((nc_type)NC_INT,var2);
+     (void)cast_void_nctype((nc_type)NC_INT,&(var2->val));  
+     d_srd=(size_t) var2->val.lp[0];       
+     (void)cast_nctype_void((nc_type)NC_INT,&(var2->val));
+
+     // free var2 no longer needed
+     var2=nco_var_free(var2);   
+   }
+
+   //final arg
+   sz=var1->sz;
+
+   switch(fdx){
+
+    
+   case PS_MAX_IDX:{
+     nco_int r_val; 
+     switch(var1->type){
+       case NC_FLOAT:  r_val=gsl_stats_float_max_index( var1->val.fp,d_srd,sz);break;
+       case NC_DOUBLE: r_val=gsl_stats_max_index( var1->val.dp,d_srd,sz);break;
+
+       case NC_INT:    // NC_INT rpresented as int in nco
+                       #if NC_INT==NCO_TYP_INT
+                         r_val=gsl_stats_int_max_index(var1->val.lp,d_srd,sz);
+                       // NC_INT rpresented as long  in nco
+		       #else
+                         r_val=gsl_stats_long_max_index(var1->val.lp,d_srd,sz);
+                       #endif
+                       break;
+
+       case NC_SHORT:  r_val=gsl_stats_short_max_index( var1->val.sp,d_srd,sz);break;
+       case NC_CHAR:   r_val=gsl_stats_char_max_index((const char*)var1->val.cp,d_srd,sz);break;
+       case NC_BYTE:   r_val=gsl_stats_char_max_index((const char*)var1->val.bp,d_srd,sz);break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  r_val=gsl_stats_uchar_max_index((const unsigned char*)var1->val.ubp,d_srd,sz);break;
+       case NC_USHORT: r_val=gsl_stats_ushort_max_index( var1->val.usp,d_srd,sz);break;
+       case NC_UINT:   r_val=gsl_stats_uint_max_index(var1->val.uip,d_srd,sz);break;
+       case NC_INT64:  r_val=gsl_stats_long_max_index((const long*)var1->val.i64p,d_srd,sz); break;
+       case NC_UINT64:  r_val=gsl_stats_ulong_max_index((const unsigned long*)var1->val.ui64p,d_srd,sz); break;
+       case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;    
+    } 
+    var_ret=ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt3_function"),r_val);    
+   } break;  
+   
+    
+   case PS_MIN_IDX:{
+     nco_int r_val; 
+     switch(var1->type){
+       case NC_FLOAT:  r_val=gsl_stats_float_min_index( var1->val.fp,d_srd,sz);break;
+       case NC_DOUBLE: r_val=gsl_stats_min_index( var1->val.dp,d_srd,sz);break;
+
+       case NC_INT:    // NC_INT rpresented as int in nco
+                       #if NC_INT==NCO_TYP_INT
+                         r_val=gsl_stats_int_min_index(var1->val.lp,d_srd,sz);
+                       // NC_INT rpresented as long  in nco
+		       #else
+                         r_val=gsl_stats_long_min_index(var1->val.lp,d_srd,sz);
+                       #endif
+                       break;
+
+       case NC_SHORT:  r_val=gsl_stats_short_min_index( var1->val.sp,d_srd,sz);break;
+       case NC_CHAR:   r_val=gsl_stats_char_min_index((const char*)var1->val.cp,d_srd,sz);break;
+       case NC_BYTE:   r_val=gsl_stats_char_min_index((const char*)var1->val.bp,d_srd,sz);break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  r_val=gsl_stats_uchar_min_index((const unsigned char*)var1->val.ubp,d_srd,sz);break;
+       case NC_USHORT: r_val=gsl_stats_ushort_min_index( var1->val.usp,d_srd,sz);break;
+       case NC_UINT:   r_val=gsl_stats_uint_min_index(var1->val.uip,d_srd,sz);break;
+       case NC_INT64:  r_val=gsl_stats_long_min_index((const long*)var1->val.i64p,d_srd,sz); break;
+       case NC_UINT64:  r_val=gsl_stats_ulong_min_index((const unsigned long*)var1->val.ui64p,d_srd,sz); break;
+       case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;    
+     } 
+    var_ret=ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt3_function"),r_val);    
+   } break;  
+   
+    
+   case PS_MIN:{
+
+     switch(var1->type){
+       case NC_FLOAT:  
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(float)gsl_stats_float_min( var1->val.fp,d_srd,sz)); break;
+       case NC_DOUBLE: 
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(double)gsl_stats_min( var1->val.dp,d_srd,sz));break;
+
+       case NC_INT:  
+             // NC_INT rpresented as int in nco
+            #if NC_INT==NCO_TYP_INT
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int)gsl_stats_int_min(var1->val.lp,d_srd,sz));
+            // NC_INT rpresented as long  in nco
+	    #else
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int)gsl_stats_long_min(var1->val.lp,d_srd,sz));
+            #endif
+            break;
+
+       case NC_SHORT:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_short)gsl_stats_short_min( var1->val.sp,d_srd,sz));break;
+       case NC_CHAR:   
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_char)gsl_stats_char_min((const char*)var1->val.cp,d_srd,sz));break;
+       case NC_BYTE:   
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_byte)gsl_stats_char_min((const char*)var1->val.bp,d_srd,sz));break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_ubyte)gsl_stats_uchar_min((const unsigned char*)var1->val.ubp,d_srd,sz));break;
+       case NC_USHORT: 
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_ushort)gsl_stats_ushort_min( var1->val.usp,d_srd,sz));
+            break;
+       case NC_UINT:   
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_uint)gsl_stats_uint_min(var1->val.uip,d_srd,sz));
+           break;
+       case NC_INT64:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int64)gsl_stats_long_min((const long*)var1->val.i64p,d_srd,sz));
+           break;
+       case NC_UINT64:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_uint64)gsl_stats_ulong_min((const unsigned long*)var1->val.ui64p,d_srd,sz)); break;
+
+       case NC_STRING: break;
+#endif /* !ENABLE_NETCDF4 */
+		    
+     default: nco_dfl_case_nc_type_err(); break;    
+     } 
+
+   } break;  
+  
+ 
+   case PS_MAX:{
+
+     switch(var1->type){
+       case NC_FLOAT:  
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(float)gsl_stats_float_max( var1->val.fp,d_srd,sz)); break;
+       case NC_DOUBLE: 
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(double)gsl_stats_max( var1->val.dp,d_srd,sz));break;
+
+       case NC_INT:  
+             // NC_INT rpresented as int in nco
+            #if NC_INT==NCO_TYP_INT
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int)gsl_stats_int_max(var1->val.lp,d_srd,sz));
+            // NC_INT rpresented as long  in nco
+	    #else
+               var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int)gsl_stats_long_max(var1->val.lp,d_srd,sz));
+            #endif
+            break;
+
+       case NC_SHORT:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_short)gsl_stats_short_max( var1->val.sp,d_srd,sz));break;
+       case NC_CHAR:   
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_char)gsl_stats_char_max((const char*)var1->val.cp,d_srd,sz));break;
+       case NC_BYTE:   
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_byte)gsl_stats_char_max((const char*)var1->val.bp,d_srd,sz));break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_ubyte)gsl_stats_uchar_max((const unsigned char*)var1->val.ubp,d_srd,sz));break;
+       case NC_USHORT: 
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_ushort)gsl_stats_ushort_max( var1->val.usp,d_srd,sz));
+            break;
+       case NC_UINT:   
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_uint)gsl_stats_uint_max(var1->val.uip,d_srd,sz));
+           break;
+       case NC_INT64:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int64)gsl_stats_long_max((const long*)var1->val.i64p,d_srd,sz));
+           break;
+       case NC_UINT64:  
+              var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_uint64)gsl_stats_ulong_max((const unsigned long*)var1->val.ui64p,d_srd,sz)); break;
+       case NC_STRING: break;
+#endif /* !ENABLE_NETCDF4 */
+		    
+     default: nco_dfl_case_nc_type_err(); break;    
+     } 
+
+   } break;  
+  
+
+     
+
+
+  } // end big switch
+
+
+  } // end heavy lifting
+
+ (void)cast_nctype_void(var1->type,&(var1->val)); 
+ var1=nco_var_free(var1);
+
+
+ return var_ret;
+}
 
 
 
@@ -2884,18 +3527,331 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 
 
 
+//GSL STATISTICS 2  /****************************************/
+// gsl statistic functions for floating points only
+  gsl_stt2_cls::gsl_stt2_cls(bool  flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wmean",this,(int)PWMEAN));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wvariance",this,(int)PWVAR));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wsd",this,(int)PWSD));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wvariance_with_fixed_mean",this,(int)PWVAR_MEAN));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wsd_with_fixed_mean",this,(int)PWSD_MEAN));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wabsdev",this,(int)PWABSDEV));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wskew",this,(int)PWSKEW));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wkurtosis",this,(int)PWKURTOSIS));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wvariance_m",this,(int)PWVAR_M));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wsd_m",this,(int)PWSD_M));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wabsdev_m",this,(int)PWABSDEV_M));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wskew_m_sd",this,(int)PWSKEW_M_SD));
+     fmc_vtr.push_back( fmc_cls("gsl_stats_wkurtosis_m_sd",this,(int)PWKURTOSIS_M_SD));
+
+    }
+  }
+
+
+
+  var_sct *gsl_stt2_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl_stt2_cls::fnd");
+    int idx;
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_args;
+    int in_nbr_args;
+    double r_val;
+    var_sct *var;
+    prs_cls* prs_arg=walker.prs_arg;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+    RefAST tr;
+    std::vector<RefAST> vtr_args; 
+    var_sct **var_arr;
+    var_sct ***var_arr_ptr;
+
+
+    nbr_args=0;
+
+
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+     nbr_args=vtr_args.size();  
+  
+     switch(fdx){
+     
+      case PWMEAN:
+      case PWVAR:
+      case PWSD:
+      case PWABSDEV:
+      case PWSKEW:
+      case PWKURTOSIS:
+        susg="usage: double_val="+sfnm+"(var_weight, weight_stride, var_data, data_stride)";
+	in_nbr_args=4;
+        break;
+
+      case PWVAR_MEAN:
+      case PWSD_MEAN:
+      case PWVAR_M:
+      case PWSD_M:
+      case PWABSDEV_M:
+        susg="usage: double_val="+sfnm+"(var_weight, weight_stride, var_data, data_stride,double_mean)";
+        in_nbr_args=5;
+        break; 
+      case PWSKEW_M_SD:
+      case PWKURTOSIS_M_SD:
+        susg="usage: double_val="+sfnm+"(var_weight, weight_stride, var_data, data_stride, double_mean, double_sd)";
+        in_nbr_args=6; 
+        break;
+     }
+
+     if(nbr_args < in_nbr_args) 
+       err_prn(sfnm,"Function requires "+nbr2sng(in_nbr_args)+" arguments . You have only supplied "+nbr2sng(nbr_args)+ ".\n"+susg);
+     else
+       nbr_args=in_nbr_args;   
+        
+
+
+  // init once we now num of args
+  var_arr=(var_sct**)nco_malloc(sizeof(var_sct*)*nbr_args);
+  
+  
+ // evaluate args for side effects
+  for(idx=0;idx<nbr_args;idx++)
+    var_arr[idx]=walker.out(vtr_args[idx]);
+   
+
+  
+  // deal with intial scan
+  if(prs_arg->ntl_scn){
+    for(idx=0 ; idx<nbr_args ; idx++)
+      var_arr[idx]=nco_var_free(var_arr[idx]);
+   
+    var_arr=(var_sct**)nco_free(var_arr); 
+    // return an empty double 
+    return ncap_sclr_var_mk(static_cast< std::string>("~gsl_stt2_function"),(nc_type)NC_DOUBLE,false);  
+
+  }
+
+ //input args:  (weight_var weight_stride data_var data_stride wmean? wsd ? )
+  
+ // check weight type and data type 
+ 
+ if(var_arr[0]->type != var_arr[2]->type || var_arr[2]->type != NC_FLOAT && var_arr[2]->type != NC_DOUBLE  ){   
+   ostringstream os;  
+   os<<"The data type and the weight type most both be NC_FLOAT or NC_DOUBLE. In your arguments the data is type "<<nco_typ_sng(var_arr[2]->type)<< " and the weight is type "<<nco_typ_sng(var_arr[0]->type);
+
+   err_prn(sfnm,os.str());  
+      
+ }
+
+
+ // make weight and data conform
+ ncap_var_att_cnf(var_arr[2],var_arr[0]);
+    
+ {
+   bool tflg;
+
+   size_t w_srd;  // weight stride
+   size_t d_srd;  // data stride 
+   size_t sz;     // array size   
+
+   double dmean=0.0;
+   double dsd=0.0;
+
+   
+   
+   // de-reference -save typing  type is double or float
+   tflg=( var_arr[0]->type==NC_DOUBLE ? true:false);
+
+   // 1st arg --the weight
+   (void)cast_void_nctype(var_arr[0]->type,&(var_arr[0]->val));  
+
+   // 2nd arg weight stride
+   var_arr[1]=nco_var_cnf_typ((nc_type)NC_INT64,var_arr[1]);
+   (void)cast_void_nctype((nc_type)NC_INT64,&(var_arr[1]->val));  
+   w_srd=(size_t) var_arr[1]->val.i64p[0];       
+   (void)cast_nctype_void((nc_type)NC_INT64,&(var_arr[1]->val));
+
+   // 3rd arg the data
+   (void)cast_void_nctype(var_arr[2]->type,&(var_arr[2]->val));  
+  
+   // 4th arg data stride
+   var_arr[3]=nco_var_cnf_typ((nc_type)NC_INT64,var_arr[3]);
+   (void)cast_void_nctype((nc_type)NC_INT64,&(var_arr[3]->val));  
+   d_srd=(size_t) var_arr[3]->val.i64p[0];       
+   (void)cast_nctype_void((nc_type)NC_INT64,&(var_arr[3]->val));
+
+
+   // 5th arg the mean if needed
+   if(nbr_args >4){   
+     var_arr[4]=nco_var_cnf_typ(NC_DOUBLE,var_arr[4]);
+     (void)cast_void_nctype(NC_DOUBLE,&(var_arr[4]->val));  
+     dmean=var_arr[4]->val.dp[0];       
+     (void)cast_nctype_void(NC_DOUBLE,&(var_arr[4]->val));
+   }
+
+
+   // 6th arg the sd if needed
+   if(nbr_args >5){   
+     var_arr[5]=nco_var_cnf_typ(NC_DOUBLE,var_arr[5]);
+     (void)cast_void_nctype(NC_DOUBLE,&(var_arr[5]->val));  
+     dsd=var_arr[5]->val.dp[0];       
+     (void)cast_nctype_void(NC_DOUBLE,&(var_arr[5]->val));
+   }
+
+   // size arg the size - NOT supplied by the user
+   sz=(size_t)var_arr[0]->sz;
+
+
+   // the big switch
+     switch(fdx){
+     
+      /********************** user args=4 ********************************************************/    
+     case PWMEAN:{ 
+       if(tflg) 
+	 r_val=gsl_stats_wmean(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz);
+       else
+         r_val=gsl_stats_float_wmean(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz);              
+                
+       } break;  
+
+     case PWVAR:{
+       if(tflg) 
+	 r_val=gsl_stats_wvariance(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz);
+       else
+         r_val=gsl_stats_float_wvariance(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz);              
+                
+       } break;  
+
+     case PWSD: {
+       if(tflg) 
+	 r_val=gsl_stats_wsd(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz);
+       else
+         r_val=gsl_stats_float_wsd(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz);              
+                
+       } break;  
+
+
+     case PWABSDEV: {
+       if(tflg) 
+	 r_val=gsl_stats_wabsdev(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz);
+       else
+         r_val=gsl_stats_float_wabsdev(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz);              
+                
+       } break;  
+
+     case PWSKEW: {
+       if(tflg) 
+	 r_val=gsl_stats_wskew(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz);
+       else
+         r_val=gsl_stats_float_wskew(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz);              
+                
+       } break;  
+
+     case PWKURTOSIS: {
+       if(tflg) 
+	 r_val=gsl_stats_wkurtosis(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz);
+       else
+         r_val=gsl_stats_float_wkurtosis(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz);              
+                
+       } break;  
+
+      /********************** user args=5 ********************************************************/    
+     case PWVAR_MEAN: {
+       if(tflg) 
+	 r_val=gsl_stats_wvariance_with_fixed_mean(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz,dmean);
+       else
+         r_val=gsl_stats_float_wvariance_with_fixed_mean(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz,dmean);              
+                
+       } break;  
+
+     case PWSD_MEAN: {
+       if(tflg) 
+	 r_val=gsl_stats_wsd_with_fixed_mean(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz,dmean);
+       else
+         r_val=gsl_stats_float_wsd_with_fixed_mean(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz,dmean);              
+                
+       } break;  
+
+     case PWVAR_M: {
+       if(tflg) 
+	 r_val=gsl_stats_wvariance_m(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz,dmean);
+       else
+         r_val=gsl_stats_float_wvariance_m(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz,dmean);              
+                
+       } break;  
+
+
+     case PWSD_M: {
+
+       if(tflg) 
+	 r_val=gsl_stats_wsd_m(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz,dmean);
+       else
+         r_val=gsl_stats_float_wsd_m(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz,dmean);              
+                
+       } break;  
+
+
+
+     case PWABSDEV_M:{
+       if(tflg) 
+	 r_val=gsl_stats_wabsdev_m(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz,dmean);
+       else
+         r_val=gsl_stats_float_wabsdev_m(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz,dmean);              
+                
+       } break;  
+
+
+     /********************** user args=6 ********************************************************/    
+     case PWSKEW_M_SD:{
+       if(tflg) 
+	 r_val=gsl_stats_wskew_m_sd(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz,dmean,dsd);
+       else
+         r_val=gsl_stats_float_wskew_m_sd(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz,dmean,dsd);              
+                
+       } break;  
+
+
+     case PWKURTOSIS_M_SD:{
+       if(tflg) 
+	 r_val=gsl_stats_wkurtosis_m_sd(var_arr[0]->val.dp,w_srd, var_arr[2]->val.dp,d_srd,sz,dmean,dsd);
+       else
+         r_val=gsl_stats_float_wkurtosis_m_sd(var_arr[0]->val.fp,w_srd, var_arr[2]->val.fp,d_srd,sz,dmean,dsd);              
+                
+       } break;  
+
+     
+
+     } // end switch
+
+
+
+     // cast pointer back to void
+   (void)cast_nctype_void(var_arr[0]->type,&(var_arr[0]->val)); 
+   (void)cast_nctype_void(var_arr[2]->type,&(var_arr[2]->val)); 
+
+ } // end inner block
+
+    
+
+
+    for(idx=0 ; idx<nbr_args ; idx++)
+      var_arr[idx]=nco_var_free(var_arr[idx]);
+   
+    var_arr=(var_sct**)nco_free(var_arr); 
 
 
 
 
+    return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
 
-
-
-
-
-
-
-
+}
 
 
 #else // !ENABLE_GSL
