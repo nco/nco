@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.97 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.98 2009-05-19 16:02:18 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.97 2009-05-02 22:22:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.98 2009-05-19 16:02:18 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -412,9 +412,8 @@ main(int argc,char **argv)
     } /* end else */
   } /* end if */    
   
-  
   /* create function/method vector */
-  
+
   // Conversion functions
   cnv_cls cnv_obj(true);
   // Aggregate functions
@@ -455,14 +454,18 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&unr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&arr_obj);
   
+
   // GSL functions
 #ifdef ENABLE_GSL
   char *str_ptr;
   
   gsl_cls gsl_obj(true); 
   gsl2_cls gsl2_obj(true); 
+  gsl_stt2_cls gsl_stt2_obj(true);
+ 
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl2_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&gsl_stt2_obj);
   
   /* Set GSL error handler */
   gsl_set_error_handler_off(); 
@@ -847,6 +850,7 @@ main(int argc,char **argv)
     }  
     
     /* Clear vectors */
+    
     fmc_vtr.clear();
     cnv_obj.fmc_vtr.clear();
     agg_obj.fmc_vtr.clear();
@@ -857,7 +861,8 @@ main(int argc,char **argv)
     pdq_obj.fmc_vtr.clear();
     msk_obj.fmc_vtr.clear();
     pck_obj.fmc_vtr.clear();     
-    
+
+
     /* Free variable lists */
     if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
     if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
