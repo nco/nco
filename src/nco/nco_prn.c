@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.54 2009-05-15 23:58:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.55 2009-05-21 15:38:08 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -83,7 +83,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
       } /* end loop over element */
       break;
     case NC_BYTE:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.bp[att_lmn]);
+      /*      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.bp[att_lmn]);*/
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++){
+	(void)fprintf(stdout,att_sng,((signed char *)att[idx].val.bp)[att_lmn]);
+      }
       break;
     case NC_UBYTE:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ubp[att_lmn]);
@@ -134,10 +137,11 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   static const char fmt_NC_SHORT[]="%hi";
   static const char fmt_NC_CHAR[]="%c";
   /* Formats useful in printing byte data as decimal notation */
-  static const char fmt_NC_BYTE[]="%i";
-  /* static const char fmt_NC_BYTE[]="%c"; */
+  /*  static const char fmt_NC_BYTE[]="%i";*/
+  /*  static const char fmt_NC_BYTE[]="%c"; */
+  static const char fmt_NC_BYTE[]="%d";
   /* NB: %hhi is GNU extension, not ANSI standard */
-  /* static const char fmt_NC_BYTE[]="%hhi";*/ /* Takes signed char as arg and prints 0..255 (unfortunately) */
+  /* static const char fmt_NC_BYTE[]="%hhi"; *//* Takes signed char as arg and prints 0..255 (unfortunately) */
   /* static const char fmt_NC_BYTE[]="%hhu";*/ /* Takes unsigned char as arg and prints 0..255 */
 
   static const char fmt_NC_UBYTE[]="%hhu"; /*  */

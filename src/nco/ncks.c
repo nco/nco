@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.230 2009-05-05 01:05:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.231 2009-05-21 15:38:08 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -108,6 +108,7 @@ main(int argc,char **argv)
   char **var_lst_in=NULL;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
+  char *cnk_arg[NC_MAX_DIMS];
   char *dlm_sng=NULL;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_in=NULL;
@@ -119,8 +120,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.230 2009-05-05 01:05:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.230 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.231 2009-05-21 15:38:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.231 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -157,6 +158,7 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
     
+  /*  cnk_sct **cnk=NULL_CEWI;*/
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
@@ -275,6 +277,10 @@ main(int argc,char **argv)
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"cnk_sz") || !strcmp(opt_crr,"chunk_size")){
+	/* Copy limit argument for later processing */
+	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
+	cnk_nbr++;
+
 	optarg_lcl=(char *)strdup(optarg);
 	(void)nco_lst_comma2hash(optarg_lcl);
 	/* Replace commas with hashes when within braces */
@@ -448,6 +454,9 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
+  /* Make uniform list of user-specified chunksizes */
+  /*  cnk=nco_cnk_prs(cnk_nbr,cnk_arg);*/
+
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   

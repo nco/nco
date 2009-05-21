@@ -1,6 +1,10 @@
+2009-05-17  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_cnk.[ch] for chunking functions
+
 2009-05-19  Henry Butowsky  <henryb@hush.com> 
 
-	*  commited the first cut of gsl staistical functions
+	* Committed the first cut of gsl statistical functions
 
 2009-05-08  Charlie Zender  <zender@uci.edu>
 

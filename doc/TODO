@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1049 2009-05-15 23:58:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1050 2009-05-21 15:38:08 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -680,6 +680,7 @@ nco971. wget: both following commands create and write mutilated directory
 nco972. NC_STRINGs support: ncatted, nco_put_var_mem/nco_get_var_mem instead of memcpy, sort, ncatted
 nco973. ncks: allow for printing "units" attributes stored as NC_STRINGs
 nco974. ncks: segfault when printing following file
+	possibly bad format string for NC_BYTE near nco_prn.c:141
 // /usr/local/bin/ncgen -k netCDF-4 -b -o ~/foo.nc ~/foo.cdl
 // /usr/local/bin/ncdump ~/foo.nc
 netcdf foo {
