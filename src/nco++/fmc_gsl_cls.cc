@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.33 2009-05-19 16:03:32 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.34 2009-05-21 15:29:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -3097,7 +3097,7 @@ var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
    // 3rd arg the mean
      var_arr[2]=nco_var_cnf_typ(NC_DOUBLE,var_arr[2]);
      (void)cast_void_nctype(NC_DOUBLE,&(var_arr[2]->val));  
-     dmean=(size_t) var_arr[2]->val.dp[0];       
+     dmean=var_arr[2]->val.dp[0];       
      (void)cast_nctype_void(NC_DOUBLE,&(var_arr[2]->val));
 
 
@@ -3673,19 +3673,19 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
    (void)cast_void_nctype(var_arr[0]->type,&(var_arr[0]->val));  
 
    // 2nd arg weight stride
-   var_arr[1]=nco_var_cnf_typ((nc_type)NC_INT64,var_arr[1]);
-   (void)cast_void_nctype((nc_type)NC_INT64,&(var_arr[1]->val));  
-   w_srd=(size_t) var_arr[1]->val.i64p[0];       
-   (void)cast_nctype_void((nc_type)NC_INT64,&(var_arr[1]->val));
+   var_arr[1]=nco_var_cnf_typ(NC_INT,var_arr[1]);
+   (void)cast_void_nctype(NC_INT,&(var_arr[1]->val));  
+   w_srd=(size_t) var_arr[1]->val.lp[0];       
+   (void)cast_nctype_void(NC_INT,&(var_arr[1]->val));
 
    // 3rd arg the data
    (void)cast_void_nctype(var_arr[2]->type,&(var_arr[2]->val));  
   
    // 4th arg data stride
-   var_arr[3]=nco_var_cnf_typ((nc_type)NC_INT64,var_arr[3]);
-   (void)cast_void_nctype((nc_type)NC_INT64,&(var_arr[3]->val));  
-   d_srd=(size_t) var_arr[3]->val.i64p[0];       
-   (void)cast_nctype_void((nc_type)NC_INT64,&(var_arr[3]->val));
+   var_arr[3]=nco_var_cnf_typ(NC_INT,var_arr[3]);
+   (void)cast_void_nctype(NC_INT,&(var_arr[3]->val));  
+   d_srd=(size_t) var_arr[3]->val.lp[0];       
+   (void)cast_nctype_void(NC_INT,&(var_arr[3]->val));
 
 
    // 5th arg the mean if needed
