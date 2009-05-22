@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.539 2009-05-08 20:24:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.540 2009-05-22 21:49:31 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4388,17 +4388,19 @@ Long options: @samp{--dfl_lvl}, @samp{--deflate}@*
 All @acronym{NCO} operators that define variables support 
 the netCDF4 feature of storing variables compressed with Lempel-Ziv
 deflation. 
+The Lempel-Ziv algorithm is a lossless data compression technique.
 Activate this deflation with the @code{-L @var{dfl_lvl}} short option
 (or with the same argument to the @samp{--dfl_lvl} or @samp{--deflate} 
 long options).
-Deflation uses lossless techniques to compress data.
 Specify the deflation level @var{dfl_lvl} on a scale from 
 no deflation (@var{dfl_lvl = 0}) to maximum deflation 
 (@var{dfl_lvl = 9}).
+Minimal deflation (@var{dfl_lvl = 1}) achieves considerable storage
+compression with little time penalty.
 Higher deflation levels require more time for compression.
 File sizes resulting from minimal (@var{dfl_lvl = 1}) and maximal   
 (@var{dfl_lvl = 9}) deflation levels typically differ by a few
-percent. 
+percent in size. 
 
 To compress an entire file using deflation, use
 @example
