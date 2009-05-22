@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.5 2009-02-10 11:14:50 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.6 2009-05-22 15:19:47 hmb Exp $ -*-C++-*-
 
 // Purpose: Script to test gsl special functions
 
@@ -363,6 +363,137 @@ nbr_err_ttl=0;
 
 
 }
+
+// Check gsl_stats and gsl_ran functions
+{
+  nbr_err=0;
+  defdim("f_size",1000);
+
+  // fill with doubles
+  f1[f_size]=3.0;
+
+  // random num generator
+  f2=gsl_ran_gaussian(f1);
+
+  //compare nco average with gsl average
+  if( abs(f2.avg()- f2.gsl_stats_mean()) >0.01){  
+       print("ERROR: f2:mean functions\n");
+     nbr_err++;	
+  }
+
+
+  //compare sd with sd input in ran generator
+  if( abs(f2.gsl_stats_sd()-3.0) >0.5){  
+       print("ERROR: f2:sd functions\n");
+     nbr_err++;	
+  }
+
+
+  //compare nco min with gsl min
+  if( abs(f2.min()- f2.gsl_stats_min()) >0.01){  
+       print("ERROR: f2:min functions\n");
+     nbr_err++;	
+  }
+
+
+  //compare nco max with gsl max
+  if( abs(f2.max()- f2.gsl_stats_max()) >0.01){  
+       print("ERROR: f2:max functions\n");
+     nbr_err++;	
+  }
+
+  // compare absdev and absdev_m
+  if( abs(f2.gsl_stats_absdev()- f2.gsl_stats_absdev_m(1,f2.gsl_stats_mean())) >0.01){  
+       print("ERROR: f2:absdev functions\n");
+     nbr_err++;	
+  }
+
+
+
+  // repeat exercise with integers
+  f3[f_size]=100;
+  // create array of random numbers less than 100
+  f4=gsl_rng_uniform_int(f3);
+
+
+  //compare nco average with gsl average
+  if( abs(f4.avg()- f4.gsl_stats_mean()) >1){  
+       print("ERROR: f4:mean functions\n");
+     nbr_err++;	
+  }
+  
+  //compare nco min with gsl min
+  if( abs(f4.min()- f4.gsl_stats_min()) >0.01){  
+       print("ERROR: f4:min functions\n");
+     nbr_err++;	
+  }
+
+
+  //compare nco max with gsl max
+  if( abs(f4.max()- f4.gsl_stats_max()) >0.01){  
+       print("ERROR: f4:max functions\n");
+     nbr_err++;	
+  }
+
+  // check variance and variance_m
+  if( abs(  gsl_stats_variance(f4) - gsl_stats_variance_m(f4,1,gsl_stats_mean(f4)))>0.01){
+      print("ERROR: f4:gsl variance functions\n");
+      nbr_err++;	
+  }
+
+
+  // check sd and sd_m
+  if( abs(  gsl_stats_sd(f4) - gsl_stats_sd_m(f4,1,gsl_stats_mean(f4)))>0.01){
+      print("ERROR: f4:gsl variance functions\n");
+      nbr_err++;	
+  }
+
+
+f5[f_size]=2.0;
+
+f6=gsl_ran_exponential(f5).sort();
+
+
+   // check weighted functions
+  if( abs( gsl_stats_wmean(1.0d,1,f2,1)- gsl_stats_mean(f2)) >0.01){  
+       print("ERROR: f6: weighted mean function\n");
+     nbr_err++;	
+  }
+
+
+   // check weighted functions
+  if( abs( gsl_stats_wmean(0.5d,1,f6,1)- gsl_stats_mean(f6)) >0.01){  
+       print("ERROR: f6: weighted mean2 function\n");
+     nbr_err++;	
+  }
+
+
+
+
+  print("RESULTS block f: Num errors="); print(nbr_err,"%d");
+  //nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+}
+
+
+
+
+// Cumulative distribution functions
+{
+  g1=gsl_cdf_ugaussian_P(three_dmn_var_dbl/10);
+  g2=gsl_cdf_gaussian_P(three_dmn_var_dbl/20,2.0);
+  g3=gsl_cdf_gamma_P(time,1.0,2.0);
+  
+
+
+  print("RESULTS block g: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+}
+
+
 
 
 // Results summany
