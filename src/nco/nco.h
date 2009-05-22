@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.135 2009-05-03 07:54:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.136 2009-05-22 16:22:51 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -39,7 +39,6 @@
 #endif /* !__cplusplus */
 
 #ifdef __cplusplus
-
 /* Use C-bindings so C++-compiled and C-compiled libraries are compatible */
 extern "C" {
 #endif /* !__cplusplus */

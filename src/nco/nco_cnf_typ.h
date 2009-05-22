@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.28 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.29 2009-05-22 16:22:51 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -84,6 +84,10 @@ nc_type /* O [enm] Highest precision of arguments */
 ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
 (var_sct ** const var, /* I/O [sct] Variable */
  scv_sct * const scv); /* I/O [sct] Scalar value */
+
+nco_bool /* O [flg] Input is signed type */
+nco_typ_sgn /* [fnc] Identify signed types */
+(nc_type typ_in); /* I [enm] Type to check for signedness */
 
 #ifdef __cplusplus
 } /* end extern "C" */

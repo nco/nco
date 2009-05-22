@@ -1,3 +1,7 @@
+2009-05-22  Charlie Zender  <zender@uci.edu>
+
+	* nco_typ_sgn() infrastructure
+
 2009-05-17  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_cnk.[ch] for chunking functions

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.49 2009-05-22 13:54:55 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.50 2009-05-22 16:22:51 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -910,37 +910,34 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
   return True;
 } /* end nco_scv_cnf_typ */
 
-
-bool    /* O [flg] Return True if type is signed ,else False */
-nco_typ_sgn(nc_type typ_in)
+nco_bool /* O [flg] Input is signed type */
+nco_typ_sgn /* [fnc] Identify signed types */
+(nc_type typ_in) /* I [enm] Type to check for signedness */
 {
-bool b_ret;
+  nco_bool flg_sgn=True; /* CEWI */
 
   switch(typ_in){
-    case NC_FLOAT: 
-    case NC_DOUBLE: 
-    case NC_INT64: 
-    case NC_INT: 
-    case NC_SHORT: 
-    case NC_BYTE: 
-    case NC_CHAR: 
-    case NC_NAT: 
-    case NC_STRING: 
-      b_ret=True;
-      break;       
-
-    case NC_UBYTE: 
-    case NC_USHORT:
-    case NC_UINT:
-    case NC_UINT64:
-      b_ret=False;
-      break;
+  case NC_FLOAT: 
+  case NC_DOUBLE: 
+  case NC_INT64: 
+  case NC_INT: 
+  case NC_SHORT: 
+  case NC_BYTE: 
+  case NC_CHAR: 
+  case NC_NAT: 
+  case NC_STRING: 
+    flg_sgn=True;
+    break;       
+  case NC_UBYTE: 
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_UINT64:
+    flg_sgn=False;
+    break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
-  return b_ret;
-
-} /* end nco_typ_sign */
+  return flg_sgn;
+} /* end nco_typ_sgn */
 
 nc_type /* O [enm] Highest precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */
@@ -948,7 +945,7 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
  var_sct *var_2) /* I/O [sct] Variable */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
-  /* Purpose: Perform intelligent type conversion with the netcdf3/4 types 
+  /* Purpose: Perform intelligent type conversion with the netCDF3/4 types 
      The logic is as follows
      1) If one type is double then other is converted to double .. end
      2) if one type float then other converted to float         .. end
@@ -972,11 +969,10 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
         NC_INT, NC_USHORT -> result NC_INT
         NC_SHORT, NC_UINT -> result NC_UINT  
         NC_INT64, NC_UINT -> result NC_INT64
-        NC_INT64,NC_UINT64  -> result NC_UINT64
-   */
+        NC_INT64,NC_UINT64  -> result NC_UINT64 */
  
- bool v1s;
-  bool v2s;
+  nco_bool v1s;
+  nco_bool v2s;
   nc_type typ_1;
   nc_type typ_2;
 
@@ -987,14 +983,12 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
   if(typ_1 == typ_2)
     return typ_1;
 
-
   /* deal with NC_DOUBLE */
   if(typ_1 == NC_DOUBLE || typ_2 == NC_DOUBLE ){
     var_1=nco_var_cnf_typ(NC_DOUBLE,var_1);
     var_2=nco_var_cnf_typ(NC_DOUBLE,var_2);
     return NC_DOUBLE;
   }
-
 
   /* deal with NC_FLOAT */
   if(typ_1 == NC_FLOAT || typ_2 ==NC_FLOAT ){
@@ -1016,10 +1010,9 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
 
     return typ_1;
   }
-
-  /* from here on one is unsigned the other signed */
+  /* From here on one is unsigned the other signed */
   
-  /* swap vars about so  var_1 is signed, var_2 unsigned */
+  /* Swap vars about so var_1 is signed, var_2 unsigned */
   if(v1s == False && v2s == True){
     var_sct *var_tmp;
     var_tmp=var_1;var_1=var_2;var_2=var_tmp;
@@ -1030,37 +1023,32 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
   }
 
   switch(typ_1){
-
-    case NC_BYTE: 
-    case NC_CHAR:
+  case NC_BYTE: 
+  case NC_CHAR:
+    var_1=nco_var_cnf_typ(typ_2,var_1); 
+    break;
+  case NC_SHORT: 
+    if( typ_2 < NC_USHORT )  
+      var_2=nco_var_cnf_typ(typ_1,var_2);
+    else   
       var_1=nco_var_cnf_typ(typ_2,var_1); 
-      break;
-    case NC_SHORT: 
-      if( typ_2 < NC_USHORT )  
-        var_2=nco_var_cnf_typ(typ_1,var_2);
-      else   
-        var_1=nco_var_cnf_typ(typ_2,var_1); 
-      break;
-    case NC_INT:
-      if( typ_2 < NC_UINT )  
-        var_2=nco_var_cnf_typ(typ_1,var_2);
-      else   
-        var_1=nco_var_cnf_typ(typ_2,var_1); 
-      break;
-    case NC_INT64:
-      if( typ_2 < NC_UINT64 )  
-        var_2=nco_var_cnf_typ(typ_1,var_2);
-      else   
-        var_1=nco_var_cnf_typ(typ_2,var_1); 
-      break; 
+    break;
+  case NC_INT:
+    if( typ_2 < NC_UINT )  
+      var_2=nco_var_cnf_typ(typ_1,var_2);
+    else   
+      var_1=nco_var_cnf_typ(typ_2,var_1); 
+    break;
+  case NC_INT64:
+    if( typ_2 < NC_UINT64 )  
+      var_2=nco_var_cnf_typ(typ_1,var_2);
+    else   
+      var_1=nco_var_cnf_typ(typ_2,var_1); 
+    break; 
+  default: nco_dfl_case_nc_type_err(); break;
     
-   default: nco_dfl_case_nc_type_err(); break;
-
   } /* end switch */
-
-  
   return typ_1;
-
 } /* end ncap_var_retype */
 
 nc_type /* O [enm] Highest precision of arguments */
@@ -1088,7 +1076,7 @@ ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
 {
   /* fxm: TODO nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum */
   /* Purpose: If types of variable and scalar value differ, convert argument with 
-     lower precision to type of argument with higher precision.
+     lower precision to higher precision type.
      Otherwise do nothing. 
      fxm: Assumes nc_type increases monotonically with precision */
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1051 2009-05-22 00:31:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1052 2009-05-22 16:22:50 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -346,7 +346,7 @@ nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' autom
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco612. ncks ncdump-like features for netcdf4 files structures
-nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
+nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco624. Document MPI in users guide/manual
 nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_att_cat()?
