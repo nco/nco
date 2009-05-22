@@ -1,5 +1,7 @@
 2009-05-22  Charlie Zender  <zender@uci.edu>
 
+	* bin_cnt.nco documentation
+
 	* nco_typ_sgn() infrastructure
 
 2009-05-17  Charlie Zender  <zender@uci.edu>

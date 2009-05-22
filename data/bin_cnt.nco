@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.12 2007-08-29 20:45:45 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.13 2009-05-22 17:22:41 zender Exp $ -*-C++-*-
 
 // Purpose: Compute wind speed PDFs from annual input files
 
@@ -8,11 +8,20 @@
    ncks -v 'bin.?' ~/foo.nc | /bin/more
 */
 
-flg_tst=1s; // [flg] Test mode
-flg_prd=0s; // [flg] Production mode
+/* By default, ncap2 stores all declared variables to disk
+   This slows things down _especially in loops_ where, e.g.,
+   counters and left-hand-side variables change (and thus must be
+   re-written to disk) every iteration.
+   Avoid this by using "RAM variables" created with the star "*" prefix
+   RAM variables are held completely in RAM: no slow disk access!
+   Explicitly output any RAM variables you want to save at the end */
+
+// Declare various flags as RAM variable or they will clutter output file
+*flg_tst=1s; // [flg] Test mode
+*flg_prd=0s; // [flg] Production mode
 
 // Run in test or production mode?
-flg_typ=flg_tst; // [enm] Run type
+*flg_typ=flg_prd; // [enm] Run type
 
 if(flg_typ==flg_tst) bin_nbr=3; else bin_nbr=40;
 defdim("bin",bin_nbr); // [nbr] Bin dimension
@@ -22,16 +31,16 @@ wnd_grd[bin_grd]=0.0f;
 // Set bin boundaries
 if(flg_typ==flg_tst){
   wnd_grd={0,  1,  2,  3};
-}else if(flg_typ==flg_prd){
+ }else if(flg_typ==flg_prd){
   wnd_grd={0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
 	   13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
 	   25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
 	   37, 38, 39, 40};
-} // !flg_typ
+ } // !flg_typ
 wnd_min[bin]=wnd_grd(0:bin_nbr-1); // [m s-1] Minimum speed
 wnd_max[bin]=wnd_grd(1:bin_nbr); // [m s-1] Maximum speed
 
-// Initialize loop variables as RAM variables  
+// Initialize loop variables as RAM variables 
 *bin_cnt[lat,lon,bin]=0s; // [nbr] Wind speeds in bin
 *bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
 
@@ -41,9 +50,16 @@ set_miss(bin_cnt,wnd_spd@_FillValue);
 for(*bin_idx=0;bin_idx<bin_nbr;bin_idx++){
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
-} // end loop over bins
+ } // end loop over bins
 
 ram_write(bin_cnt);
-// Only want bin_flg and bin_idx if debugging
-ram_delete(bin_flg);
-ram_delete(bin_idx);
+if(flg_typ==flg_tst){
+  // Want bin_flg and bin_idx only if debugging
+  ram_write(bin_flg);
+  ram_write(bin_idx);
+ }else{
+  // Deleting RAM variables conserves memory in long scripts
+  // It is not required
+  ram_delete(bin_flg);
+  ram_delete(bin_idx);
+ } // end if dbg
