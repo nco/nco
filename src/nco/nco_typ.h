@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.23 2009-05-05 18:03:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.24 2009-05-22 00:31:58 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -27,8 +27,8 @@
    NCO uses types nco_byte, nco_char, and nco_int to handle netCDF internal
    types NC_BYTE, NC_CHAR, and NC_INT, respectively
    Most routines need access to opaque type definitions, so nco.h is appropriate 
-   However, in future it may be wiser to put opaque types in, e.g., nco_typ.h 
-   so that certain files, e.g., nco_netcdf.c, do not depend on rest of nco.h */
+   However, isolating opaque types definitions in nco_typ.h ensures that 
+   wrappers (e.g., nco_netcdf.[ch]) need not depend on nco.h. */
 
 /* byte, char, and int/long types are the most confusing part of netCDF:
    
@@ -39,14 +39,16 @@ byte: 8-bit signed or unsigned integers
 unsigned (0 to 255). However, when reading byte data to be converted into other 
 numeric types, it is interpreted as signed."
 
-NCO treats NC_BYTE as C-type "signed char".
-NCO treats NC_CHAR as C-type "char".
-C-Type "char" equals C-type "unsigned char" on most compilers/OSs
-NCO uses an opaque type nco_char to ease code portability 
+By default (and subject to modification by manipulating the tokens below), 
+  NCO treats NC_BYTE as C-type "signed char".
+  NCO treats NC_CHAR as C-type "char".
+  C-Type "char" equals C-type "unsigned char" on most compilers/OSs
+  NCO uses an opaque type nco_char to ease code portability 
 
-NCO reads/writes NC_BYTE using nc_put/get_var*_schar() functions
-NCO reads/writes NC_CHAR using nc_put/get_var*_text() functions
-NCO does not use nc_put/get_var*_uchar() functions for anything
+Therefore, by default,
+  NCO reads/writes NC_BYTE using nc_put/get_var*_schar() functions
+  NCO reads/writes NC_CHAR using nc_put/get_var*_text() functions
+  NCO does not use nc_put/get_var*_uchar() functions for anything
 
 netCDF manual p. 102:
 "The byte type differs from the char type in that it is intended for eight-bit data 
@@ -57,7 +59,8 @@ C code." */
 /* NCO_TYP_IO_FNC_MRG(x,y) function generates appropriate netCDF-layer I/O function 
    call for given I/O operation (x) and (possibly opaque) type (y)
    fxm TODO nco549: Automagically generate function names when called with, e g., 
-   NCO_TYP_IO_FNC_MRG(nc_get_var1,NCO_TYP_BYTE_IO_SFX) */
+   NCO_TYP_IO_FNC_MRG(nc_get_var1,NCO_TYP_BYTE_IO_SFX)
+   Unfortunately this pre-precessor macro has never worked... */
 #define NCO_TYP_IO_FNC_MRG(x,y) x##y
 
   /* Define compatibility tokens when user does not have netCDF4 */

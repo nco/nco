@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1050 2009-05-21 15:38:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1051 2009-05-22 00:31:57 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -688,7 +688,9 @@ variables:
 	:att3 = 'C','F','-','1','.','0';
 data:
 }
-nco975. 
+nco975. add NCO global attribute to output files like
+       :CDO = "netCDF Operators version 1.1.1 (http://nco.sf.net)" ;
+nco976. 
 
 ************************************************************************
 End ncoXXX TODOs

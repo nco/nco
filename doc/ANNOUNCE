@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.326 2009-05-08 19:54:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.327 2009-05-22 00:31:57 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -74,4 +74,36 @@ P. Did you see the NCO logo candidate submitted by Tony Freeman?
 Enjoy,
 Charlie
  
-GSL functions added to ncap2 in 3.9.9: ncap2 -f | grep gsl_[stats]*
+GSL functions added to ncap2 in 3.9.9: ncap2 -f | grep gsl_stats
+gsl_stats_absdev()
+gsl_stats_absdev_m()
+gsl_stats_kurtosis()
+gsl_stats_lag1_autocorrelation()
+gsl_stats_lag1_autocorrelation_m()
+gsl_stats_max()
+gsl_stats_max_index()
+gsl_stats_mean()
+gsl_stats_median_from_sorted_data()
+gsl_stats_min()
+gsl_stats_min_index()
+gsl_stats_quantile_from_sorted_data()
+gsl_stats_sd()
+gsl_stats_sd_m()
+gsl_stats_sd_with_fixed_mean()
+gsl_stats_skew()
+gsl_stats_variance()
+gsl_stats_variance_m()
+gsl_stats_variance_with_fixed_mean()
+gsl_stats_wabsdev()
+gsl_stats_wabsdev_m()
+gsl_stats_wkurtosis()
+gsl_stats_wkurtosis_m_sd()
+gsl_stats_wmean()
+gsl_stats_wsd()
+gsl_stats_wsd_m()
+gsl_stats_wsd_with_fixed_mean()
+gsl_stats_wskew()
+gsl_stats_wskew_m_sd()
+gsl_stats_wvariance()
+gsl_stats_wvariance_m()
+gsl_stats_wvariance_with_fixed_mean()
