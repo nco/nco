@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.68 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.69 2009-05-23 00:04:41 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -866,7 +866,6 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   if(lmt_nbr > 0) lmt=(lmt_sct **)nco_malloc(lmt_nbr*sizeof(lmt_sct *));
   for(idx=0;idx<lmt_nbr;idx++){
     /* Process hyperslab specifications as normal text list */
-    /* fxm: probably need to free arg_lst sometime... */
     arg_lst=nco_lst_prs_2D(lmt_arg[idx],dlm_sng,&arg_nbr);
     
     /* Check syntax */
@@ -883,7 +882,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     } /* end if */
     
     /* Initialize structure */
-    /* lmt strings which are not explicitly set by user remain NULL, i.e., 
+    /* lmt strings that are not explicitly set by user remain NULL, i.e., 
        specifying default setting will appear as if nothing at all was set.
        Hopefully, in routines that follow, branch followed when dimension has
        all default settings specified (e.g.,"-d foo,,,,") yields same answer

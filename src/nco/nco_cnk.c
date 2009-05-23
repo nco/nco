@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.1 2009-05-22 00:34:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.2 2009-05-23 00:04:41 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -75,6 +75,100 @@ nco_dfl_case_cnk_plc_err(void) /* [fnc] Print error and exit for illegal switch(
   (void)fprintf(stdout,"%s: ERROR switch(cnk_plc) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(cnk_plc) statements are fully enumerated. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_cnk_plc_err() */
+
+cnk_sct ** /* O [sct] Structure list with user-specified chunking information */
+nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements */
+(const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
+ CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg)) /* I [sng] List of user-specified chunksizes */
+{
+  /* Purpose: Determine name and chunksize elements from user arguments
+     Routine merely evaluates syntax of input expressions and does not 
+     attempt to validate dimensions or chunksizes against input file.
+     Routine based on nco_lmt_prs() */
+  
+  /* Valid syntax adheres to nm,cnk_sz */
+  
+  void nco_usg_prn(void);
+  
+  char **arg_lst;
+  
+  const char dlm_sng[]=",";
+  
+  cnk_sct **cnk=NULL_CEWI;
+  
+  int idx;
+  int arg_nbr;
+  
+  if(cnk_nbr > 0) cnk=(cnk_sct **)nco_malloc(cnk_nbr*sizeof(cnk_sct *));
+  for(idx=0;idx<cnk_nbr;idx++){
+    /* Process chunksize specifications as normal text list */
+    /* fxm: probably need to free arg_lst sometime... */
+    arg_lst=nco_lst_prs_2D(cnk_arg[idx],dlm_sng,&arg_nbr);
+    
+    /* Check syntax */
+    if(
+       arg_nbr < 2 || /* Need more than just dimension name */
+       arg_nbr > 2 || /* Too much information */
+       arg_lst[0] == NULL || /* Dimension name not specified */
+       False){
+      (void)fprintf(stdout,"%s: ERROR in chunksize specification for dimension %s\n%s: HINT Conform request to chunksize documentation at http://nco.sf.net/nco.html#cnk\n",prg_nm_get(),cnk_arg[idx],prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    
+    /* Initialize structure */
+    /* cnk strings that are not explicitly set by user remain NULL, i.e., 
+       specifying default setting will appear as if nothing at all was set.
+       Hopefully, in routines that follow, branch followed when dimension has
+       all default settings specified (e.g.,"-d foo,,,,") yields same answer
+       as branch for which no hyperslab along that dimension was set. */
+    cnk[idx]=(cnk_sct *)nco_malloc(sizeof(cnk_sct));
+    cnk[idx]->nm=NULL;
+    cnk[idx]->is_usr_spc_cnk=True; /* True if any part of limit is user-specified, else False */
+    
+    /* Fill in structure */
+    cnk[idx]->nm=arg_lst[0];
+    cnk[idx]->sz=strtoul(arg_lst[1],(char **)NULL,10);
+    
+    /* Free current pointer array to strings
+       Strings themselves are untouched and will be free()'d with chunk structures 
+       in nco_cnk_lst_free() */
+    arg_lst=(char **)nco_free(arg_lst);
+  } /* end loop over cnk structure list */
+  
+  return cnk;
+} /* end nco_cnk_prs() */
+
+cnk_sct ** /* O [sct] Pointer to free'd structure list */
+nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
+(cnk_sct **cnk_lst, /* I/O [sct] Chunking structure list to free */
+ const int cnk_nbr) /* I [nbr] Number of chunking structures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated chunking structure list */
+  int idx;
+
+  for(idx=0;idx<cnk_nbr;idx++){
+    cnk_lst[idx]=nco_cnk_free(cnk_lst[idx]);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  cnk_lst=(cnk_sct **)nco_free(cnk_lst);
+
+  return cnk_lst;
+} /* end nco_cnk_lst_free() */
+
+cnk_sct * /* O [sct] Pointer to free'd chunking structure */
+nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
+(cnk_sct *cnk) /* I/O [sct] Chunking structure to free */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with a dynamically allocated chunking structure */
+  cnk->nm=(char *)nco_free(cnk->nm);
+  /* Free structure pointer last */
+  cnk=(cnk_sct *)nco_free(cnk);
+
+  return NULL;
+} /* end nco_cnk_free() */
 
 #if 0
 nco_bool /* O [flg] NCO will attempt to chunk variable */

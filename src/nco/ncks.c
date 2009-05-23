@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.231 2009-05-21 15:38:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.232 2009-05-23 00:04:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -102,7 +102,6 @@ main(int argc,char **argv)
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
-  char **cnk_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL;
@@ -120,8 +119,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.231 2009-05-21 15:38:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.231 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.232 2009-05-23 00:04:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.232 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -134,8 +133,6 @@ main(int argc,char **argv)
   extern int optind;
   
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
-
-  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
@@ -158,13 +155,15 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
     
-  /*  cnk_sct **cnk=NULL_CEWI;*/
+  cnk_sct **cnk=NULL_CEWI;
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
+  size_t *cnk_sz_ptr=NULL; /* [nbr] Chunk size dummy pointer fxm */
+  size_t cnk_sz=0UL; /* [nbr] Chunk size */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   static struct option opt_lng[]=
@@ -193,8 +192,8 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
-      {"cnk_sz",required_argument,0,0}, /* [nbr] Chunk sizes */
-      {"chunk_size",required_argument,0,0}, /* [nbr] Chunk sizes */
+      {"cnk_sz",required_argument,0,0}, /* [nbr] Chunk size */
+      {"chunk_size",required_argument,0,0}, /* [nbr] Chunk size */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
@@ -276,24 +275,13 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
-      if(!strcmp(opt_crr,"cnk_sz") || !strcmp(opt_crr,"chunk_size")){
+      if(!strcmp(opt_crr,"cnk") || !strcmp(opt_crr,"chunk")){
 	/* Copy limit argument for later processing */
 	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
 	cnk_nbr++;
-
-	optarg_lcl=(char *)strdup(optarg);
-	(void)nco_lst_comma2hash(optarg_lcl);
-	/* Replace commas with hashes when within braces */
-	cnk_lst_in=nco_lst_prs_2D(optarg_lcl,",",&cnk_nbr);
-	optarg_lcl=(char *)nco_free(optarg_lcl);
-	cnk_sz=(size_t *)nco_malloc(cnk_nbr*sizeof(size_t));
-	/* fxm: use strtol() instead? */
-	for(idx=0;idx<cnk_nbr;idx++) sscanf(cnk_lst_in[idx],"%zu",cnk_sz+idx);
-	if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
-	if(dbg_lvl >= nco_dbg_scl){
-	  (void)fprintf(stderr,"idx cnk_sz:\n");
-	  for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %lu\n",idx,(unsigned long)cnk_sz[idx]);
-	} /* endif dbg */
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_sz") || !strcmp(opt_crr,"chunk_size")){
+	cnk_sz=strtoul(optarg,(char **)NULL,10);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
@@ -455,7 +443,7 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Make uniform list of user-specified chunksizes */
-  /*  cnk=nco_cnk_prs(cnk_nbr,cnk_arg);*/
+  cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
@@ -503,6 +491,15 @@ main(int argc,char **argv)
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
     
   /* We now have final list of variables to extract. Phew. */
+
+  /* Chunking */
+  if(cnk_nbr >0){
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
+    if(dbg_lvl >= nco_dbg_scl){
+      (void)fprintf(stderr,"idx cnk_sz:\n");
+      for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %lu\n",idx,(unsigned long)cnk[idx]->sz);
+    } /* endif dbg */
+  } /* endif cnk */
 
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
@@ -559,7 +556,7 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-    if(cnk_sz != NULL && fl_out_fmt != NC_FORMAT_NETCDF4){
+    if(cnk_nbr > 0 && fl_out_fmt != NC_FORMAT_NETCDF4){
       (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will fail\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
     } /* endif netCDF4 */
 
@@ -575,7 +572,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,cnk_sz,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,cnk_sz,dfl_lvl);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,cnk_sz_ptr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,cnk_sz_ptr,dfl_lvl);
       /* Copy variable's attributes */
       if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */
@@ -662,32 +659,32 @@ main(int argc,char **argv)
     /* ncks-specific memory */
     if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
 
-    /* free lmt[] nb is now referenced within lmt_all_lst[idx]  */
-    for(idx=0; idx<nbr_dmn_fl;idx++)
-      for(jdx=0 ; jdx< lmt_all_lst[idx]->lmt_dmn_nbr ;jdx++)
-         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-     
-    lmt=(lmt_sct**)nco_free(lmt); 
+    /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
+    for(idx=0;idx<nbr_dmn_fl;idx++)
+      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 
+    lmt=(lmt_sct**)nco_free(lmt); 
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cnk_sz != NULL) cnk_sz=(size_t *)nco_free(cnk_sz);
     if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
     if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
     if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
     if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     /* Free lists of strings */
-    if(cnk_lst_in != NULL) cnk_lst_in=nco_sng_lst_free(cnk_lst_in,cnk_nbr); 
     if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    /* Free chunking information */
+    for(idx=0;idx<lmt_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     
     /* NB: lmt[idx] was free()'d earlier
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */

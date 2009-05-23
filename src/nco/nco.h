@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.136 2009-05-22 16:22:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.137 2009-05-23 00:04:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -453,6 +453,16 @@ extern "C" {
     ptr_unn val;
   } att_sct;
   
+  /* Chunking structure */
+  typedef struct{ /* cnk_sct */
+    char *nm; /* [sng] Dimension name */
+    size_t sz; /* [nbr] Chunk size */
+    nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
+  } cnk_sct;
+  
+  /* Fill actual value of dmn_sct structure in in nco_dmn_fll()
+     free() each pointer member of dmn_sct structure in nco_dmn_free()
+     deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
   /* Dimension structure */
   typedef struct dmn_sct_tag{ /* dmn_sct */
     char *nm; /* [sng] Dimension name */
@@ -474,7 +484,7 @@ extern "C" {
   } dmn_sct; /* end dmn_sct_tag */
   
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
-     Fill actual value of var_sct_structure in var_sct structure in nco_var_fll()
+     Fill actual value of var_sct structure in nco_var_fll()
      free() each pointer member of var_sct structure in nco_var_free()
      deep-copy each pointer member of var_sct structure in nco_var_dpl() */
   /* Variable structure */

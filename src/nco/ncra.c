@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.235 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.236 2009-05-23 00:04:41 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.235 2009-05-02 22:22:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.235 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.236 2009-05-23 00:04:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.236 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -497,17 +497,18 @@ main(int argc,char **argv)
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
     /* Merge limit from lmt_all_lst into dmn_out  */ 
-    for(jdx=0;jdx<nbr_dmn_fl;jdx++)
-       if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
-         dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
-         dmn_out[idx]->srt=0L;
-         dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1L;
-         dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
-         dmn_out[idx]->srd=1L;
-         break;
-       }
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
+      if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
+	dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
+	dmn_out[idx]->srt=0L;
+	dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1L;
+	dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
+	dmn_out[idx]->srd=1L;
+	break;
+      }
+    }
   }
-
+  
   /* Create stand-alone limit structure just for record dimension */
   if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
     if(prg == ncra || prg == ncrcat){
@@ -518,29 +519,29 @@ main(int argc,char **argv)
   }else{ /* Record dimension exists */
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
   } /* endif */
-
+  
   if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-    for(idx=0;idx<nbr_dmn_fl;idx++)
+    for(idx=0;idx<nbr_dmn_fl;idx++){
       if(!strcmp(lmt_rec->nm,lmt_all_lst[idx]->dmn_nm)){
         lmt_all_rec=lmt_all_lst[idx];
 	/* Can only have one record limit */
         if(lmt_all_rec->lmt_dmn_nbr >1 ){
-	(void)fprintf(stdout,"%s: Although this program allows multiple hyperslab limits for a single dimension, it allows only one unwrapped limit for the record dimension \"%s\". You have specified %i.\n",prg_nm_get(),lmt_all_rec->dmn_nm,lmt_all_rec->lmt_dmn_nbr);
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-
+	  (void)fprintf(stdout,"%s: Although this program allows multiple hyperslab limits for a single dimension, it allows only one unwrapped limit for the record dimension \"%s\". You have specified %i.\n",prg_nm_get(),lmt_all_rec->dmn_nm,lmt_all_rec->lmt_dmn_nbr);
+	  nco_exit(EXIT_FAILURE);
+	} /* end if */
         if(prg==ncra || prg==ncrcat) {
-           /* Change record dim in lmt_ls_all so that cnt=1 */   
-           lmt_all_lst[idx]->dmn_cnt=1L;
-           lmt_all_lst[idx]->lmt_dmn[0]->srt=0L;
-           lmt_all_lst[idx]->lmt_dmn[0]->end=0L;           
-           lmt_all_lst[idx]->lmt_dmn[0]->cnt=1L;                   
-           lmt_all_lst[idx]->lmt_dmn[0]->srd=1L;
-         }
-         break;
-       }
+	  /* Change record dim in lmt_ls_all so that cnt=1 */   
+	  lmt_all_lst[idx]->dmn_cnt=1L;
+	  lmt_all_lst[idx]->lmt_dmn[0]->srt=0L;
+	  lmt_all_lst[idx]->lmt_dmn[0]->end=0L;           
+	  lmt_all_lst[idx]->lmt_dmn[0]->cnt=1L;                   
+	  lmt_all_lst[idx]->lmt_dmn[0]->srd=1L;
+	}
+	break;
+      }
+    }
   }
-
+  
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);
   /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */

@@ -1,5 +1,7 @@
 2009-05-22  Charlie Zender  <zender@uci.edu>
 
+	* Adapt chunksize infrastructure from limit parsing
+
 	* bin_cnt.nco documentation
 
 	* nco_typ_sgn() infrastructure

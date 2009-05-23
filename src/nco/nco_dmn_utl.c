@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.32 2009-05-03 07:54:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.33 2009-05-23 00:04:41 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -119,6 +119,29 @@ nco_dmn_free /* [fnc] Free all memory associated with dimension structure */
 
   return NULL;
 } /* end nco_dmn_free() */
+
+void
+nco_dmn_cnk_mrg /* [fnc] Merge chunking information into dimension structures */
+(dmn_sct ** const dmn, /* I [sct] Dimension structures to modify */
+ const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr) /* I [nbr] Number of dimensions with user-specified chunking */
+{
+  /* Purpose: Merge chunking information into dimension structures */
+  int idx;
+  int cnk_idx;
+
+  for(idx=0;idx<nbr_dmn;idx++){
+    /* Does this dimension have user-specified chunking? */
+    for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
+      /* Match on name not ID so nco_dmn_cnk_mrg() works on any input file */
+      if(!strcmp(cnk[cnk_idx]->nm,dmn[idx]->nm)){
+	dmn[idx]->cnk_sz=cnk[cnk_idx]->sz;
+	break;
+      } /* end if */
+    } /* end loop over cnk_idx */
+  } /* end loop over dmn */
+} /* end nco_dmn_cnk_mrg() */
 
 void
 nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures */

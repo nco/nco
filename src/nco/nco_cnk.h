@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.1 2009-05-22 00:34:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.2 2009-05-23 00:04:41 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -21,6 +21,8 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_lst_utl.h" /* List utilities */
+#include "nco_mmr.h" /* Memory management */
 
 /* Chunking policies: 
    Handle each chunking policy in nco_cnk_mtd(), nco_cnk_val(), nco_var_dfn(), and end of ncpdq */
@@ -57,6 +59,20 @@ nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */
 const char * /* O [sng] Chunking policy string */
 nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
 (const int nco_cnk_plc); /* I [enm] Chunking policy */
+
+cnk_sct ** /* O [sct] Structure list with user-specified chunking information */
+nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements */
+(const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
+ CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg)); /* I [sng] List of user-specified chunksizes */
+
+cnk_sct ** /* O [sct] Pointer to free'd structure list */
+nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
+(cnk_sct **cnk_lst, /* I/O [sct] Chunking structure list to free */
+ const int cnk_nbr); /* I [nbr] Number of chunking structures in list */
+
+cnk_sct * /* O [sct] Pointer to free'd chunking structure */
+nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
+(cnk_sct *cnk); /* I/O [sct] Chunking structure to free */
 
 #if 0 
 nco_bool /* O [flg] NCO will attempt to chunk variable */
