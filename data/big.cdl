@@ -1,22 +1,22 @@
-// Purpose: CDL file to generate large netCDF file for testing Large File Support (LFS)
+// Purpose: CDL to generate large netCDF file for testing Large File Support (LFS)
 
 // Usage:
 // Create big.nc from big.cdl on a beefy 64-bit computer
-// The file creation command will fail on all systems with insufficient RAM
+// The file creation command fails on systems with insufficient RAM :)
 // Transfer big.nc to a 32-bit system as an LFS testfile
 
 // ncgen -b -o big.nc big.cdl
 // ncgen -b -o ~/nco/data/big.nc ~/nco/data/big.cdl
 // scp ~/nco/data/big.cdl esmf.ess.uci.edu:nco/data
-// scp ~/nco/data/big.cdl sand.ess.uci.edu:nco/data
+// scp ~/nco/data/big.cdl dust.ess.uci.edu:nco/data
 
 // Test 64-bit netCDF/NCO capabilities
 // 32-bit machines do not work with files exceeding ~2 GB unless LFS enabled
 // One billion floats are nco_typ_lng(NC_FLOAT)*10^9 = sizeof(float)*10^9 = 4*10^9 B = 4 GB
 
 // Create 4 GB file with one variable 
-// Expect this to fail on "small RAM" (< ~4 GB) machines:
-// ncap -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0f" -s "wvl_1e1[wvl_1e1]=1.0f" -s "wvl_1e2[wvl_1e2]=1.0f" -s "wvl_1e3[wvl_1e3]=1.0f" -s "wvl_1e4[wvl_1e4]=1.0f" -s "wvl_1e5[wvl_1e5]=1.0f" -s "wvl_1e6[wvl_1e6]=1.0f" -s "wvl_1e7[wvl_1e7]=1.0f" -s "wvl_1e8[wvl_1e8]=1.0f" -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ${DATA}/tmp/big.nc
+// Expect failure on "small RAM" (< ~4 GB) machines:
+// ncap2 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0f" -s "wvl_1e1[wvl_1e1]=1.0f" -s "wvl_1e2[wvl_1e2]=1.0f" -s "wvl_1e3[wvl_1e3]=1.0f" -s "wvl_1e4[wvl_1e4]=1.0f" -s "wvl_1e5[wvl_1e5]=1.0f" -s "wvl_1e6[wvl_1e6]=1.0f" -s "wvl_1e7[wvl_1e7]=1.0f" -s "wvl_1e8[wvl_1e8]=1.0f" -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ${DATA}/tmp/big.nc
 // ls -l ${DATA}/tmp/big.nc
 
 // On small-RAM machines, create 4 GB file with multiple variables instead

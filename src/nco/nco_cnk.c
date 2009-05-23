@@ -1,10 +1,16 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.2 2009-05-23 00:04:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.3 2009-05-23 00:19:07 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
 /* Copyright (C) 1995--2009 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
+
+/* Usage:
+   ncks -O -4 --cnk_sz=8 ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 --cnk_sz=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+   ncks -O -4 --cnk lat,64 --cnk lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
+   ncks -O -4 --cnk_plc=plc_g2d --cnk_map=map_dmn_rcd_one --cnk_sz lat,64 --cnk_sz lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
 
 #include "nco_cnk.h" /* Chunking */
 
