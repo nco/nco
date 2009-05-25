@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.2 2009-05-23 00:04:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.3 2009-05-25 18:12:45 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -73,6 +73,25 @@ nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
 cnk_sct * /* O [sct] Pointer to free'd chunking structure */
 nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
 (cnk_sct *cnk); /* I/O [sct] Chunking structure to free */
+
+size_t * /* O [nbr] Chunksize array for variable */
+nco_cnk_sz_get /* [fnc] Determine chunksize array */
+(const int out_id, /* I [id] netCDF output file ID */
+ const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+ const char * const var_nm, /* I [sng] Variable name */
+ const int cnk_map, /* I [enm] Chunking map */
+ const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr); /* I [nbr] Number of dimensions with user-specified chunking */
+
+int /* O [enm] Chunking map */
+nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
+(const char *nco_cnk_map_sng); /* [sng] User-specified chunking map */
+
+int /* O [enm] Chunking policy */
+nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
+(const char *nco_cnk_plc_sng); /* [sng] User-specified chunking policy */
 
 #if 0 
 nco_bool /* O [flg] NCO will attempt to chunk variable */

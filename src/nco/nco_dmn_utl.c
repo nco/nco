@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.33 2009-05-23 00:04:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.34 2009-05-25 18:12:45 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -128,15 +128,15 @@ nco_dmn_cnk_mrg /* [fnc] Merge chunking information into dimension structures */
  const int cnk_nbr) /* I [nbr] Number of dimensions with user-specified chunking */
 {
   /* Purpose: Merge chunking information into dimension structures */
-  int idx;
+  int dmn_idx;
   int cnk_idx;
 
-  for(idx=0;idx<nbr_dmn;idx++){
+  for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
     /* Does this dimension have user-specified chunking? */
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
       /* Match on name not ID so nco_dmn_cnk_mrg() works on any input file */
-      if(!strcmp(cnk[cnk_idx]->nm,dmn[idx]->nm)){
-	dmn[idx]->cnk_sz=cnk[cnk_idx]->sz;
+      if(!strcmp(cnk[cnk_idx]->nm,dmn[dmn_idx]->nm)){
+	dmn[dmn_idx]->cnk_sz=cnk[cnk_idx]->sz;
 	break;
       } /* end if */
     } /* end loop over cnk_idx */
@@ -152,19 +152,19 @@ nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension struct
 {
   /* Purpose: Merge limit structure information into dimension structures */
 
-  int idx;
+  int dmn_idx;
   int lmt_idx;
 
-  for(idx=0;idx<nbr_dmn;idx++){
+  for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
     /* Does this dimension have user-specified limits? */
     for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
       /* 20050707: Match on name not ID so nco_dmn_lmt_mrg() works with single
 	 limit list applied to any input file */
-      if(!strcmp(lmt[lmt_idx]->nm,dmn[idx]->nm)){
-	dmn[idx]->cnt=lmt[lmt_idx]->cnt;
-	dmn[idx]->srt=lmt[lmt_idx]->srt;
-	dmn[idx]->end=lmt[lmt_idx]->end;
-	dmn[idx]->srd=lmt[lmt_idx]->srd;
+      if(!strcmp(lmt[lmt_idx]->nm,dmn[dmn_idx]->nm)){
+	dmn[dmn_idx]->cnt=lmt[lmt_idx]->cnt;
+	dmn[dmn_idx]->srt=lmt[lmt_idx]->srt;
+	dmn[dmn_idx]->end=lmt[lmt_idx]->end;
+	dmn[dmn_idx]->srd=lmt[lmt_idx]->srd;
 	break;
       } /* end if */
     } /* end loop over lmt_idx */

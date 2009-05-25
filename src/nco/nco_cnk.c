@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.3 2009-05-23 00:19:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.4 2009-05-25 18:12:45 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -7,10 +7,10 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Usage:
-   ncks -O -4 --cnk_sz=8 ~/nco/data/in.nc ~/foo.nc
-   ncks -O -4 --cnk_sz=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
-   ncks -O -4 --cnk lat,64 --cnk lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
-   ncks -O -4 --cnk_plc=plc_g2d --cnk_map=map_dmn_rcd_one --cnk_sz lat,64 --cnk_sz lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
+   ncks -O -4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+   ncks -O -4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
+   ncks -O -4 --cnk_plc=plc_g2d --cnk_map=map_dmn_rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
 
 #include "nco_cnk.h" /* Chunking */
 
@@ -176,6 +176,89 @@ nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
   return NULL;
 } /* end nco_cnk_free() */
 
+size_t * /* O [nbr] Chunksize array for variable */
+nco_cnk_sz_get /* [fnc] Determine chunksize array */
+(const int out_id, /* I [id] netCDF output file ID */
+ const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+ const char * const var_nm, /* I [sng] Variable name */
+ const int cnk_map, /* I [enm] Chunking map */
+ const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr) /* I [nbr] Number of dimensions with user-specified chunking */
+
+{
+  /* Purpose: Use chunking map and policy to determine chunksize list */
+  size_t *cnk_sz; /* [nbr] Chunksize list */
+  int dmn_nbr; /* [nbr] Number of dimensions in variable */
+  
+  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));
+  
+  return cnk_sz;
+} /* end nco_cnk_sz_get() */
+
+int /* O [enm] Chunking map */
+nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
+(const char *nco_cnk_map_sng) /* [sng] User-specified chunking map */
+{
+  /* Purpose: Process ncpdq '-P' command line argument
+     Convert user-specified string to chunking map
+     Return nco_cnk_map_nil by default */
+  const char fnc_nm[]="nco_cnk_map_get()"; /* [sng] Function name */
+  char *prg_nm; /* [sng] Program name */
+  prg_nm=prg_nm_get(); /* [sng] Program name */
+
+  if(nco_cnk_map_sng == NULL){ 
+    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified chunking map string %s\n",prg_nm,fnc_nm,nco_cnk_map_sng);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+
+  if(!strcmp(nco_cnk_map_sng,"nil")) return nco_cnk_map_nil;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_nil")) return nco_cnk_map_nil;
+  if(!strcmp(nco_cnk_map_sng,"dmn")) return nco_cnk_map_dmn;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_dmn")) return nco_cnk_map_dmn;
+  if(!strcmp(nco_cnk_map_sng,"rcd_one")) return nco_cnk_map_rcd_one;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_rcd_one")) return nco_cnk_map_rcd_one;
+  if(!strcmp(nco_cnk_map_sng,"scl")) return nco_cnk_map_scl;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_scl")) return nco_cnk_map_scl;
+
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking policy %s\n",prg_nm_get(),fnc_nm,nco_cnk_map_sng);
+  nco_exit(EXIT_FAILURE);
+  return nco_cnk_map_nil; /* Statement should not be reached */
+} /* end nco_cnk_map_get() */
+
+int /* O [enm] Chunking policy */
+nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
+(const char *nco_cnk_plc_sng) /* [sng] User-specified chunking policy */
+{
+  /* Purpose: Process ncpdq '-P' command line argument
+     Convert user-specified string to chunking operation type 
+     Return nco_cnk_plc_nil by default */
+  const char fnc_nm[]="nco_cnk_plc_get()"; /* [sng] Function name */
+  char *prg_nm; /* [sng] Program name */
+  prg_nm=prg_nm_get(); /* [sng] Program name */
+
+  if(nco_cnk_plc_sng == NULL){
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking policy. Defaulting to chunking policy \"g2d\".\n",prg_nm,fnc_nm,prg_nm);
+    return nco_cnk_plc_g2d;
+  } /* endif */
+
+  if(!strcmp(nco_cnk_plc_sng,"nil")) return nco_cnk_plc_nil;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_nil")) return nco_cnk_plc_nil;
+  if(!strcmp(nco_cnk_plc_sng,"all")) return nco_cnk_plc_all;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_all")) return nco_cnk_plc_all;
+  if(!strcmp(nco_cnk_plc_sng,"g2d")) return nco_cnk_plc_g2d;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_g2d")) return nco_cnk_plc_g2d;
+  if(!strcmp(nco_cnk_plc_sng,"g3d")) return nco_cnk_plc_g3d;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_g3d")) return nco_cnk_plc_g3d;
+  if(!strcmp(nco_cnk_plc_sng,"uck")) return nco_cnk_plc_uck;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_uck")) return nco_cnk_plc_uck;
+
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking policy %s\n",prg_nm_get(),fnc_nm,nco_cnk_plc_sng);
+  nco_exit(EXIT_FAILURE);
+  return nco_cnk_plc_nil; /* Statement should not be reached */
+} /* end nco_cnk_plc_get() */
+
 #if 0
 nco_bool /* O [flg] NCO will attempt to chunk variable */
 nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
@@ -215,79 +298,6 @@ nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
   return False;
 } /* end nco_is_chunkable() */
 
-int /* O [enm] Chunking map */
-nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
-(const char *nco_cnk_map_sng) /* [sng] User-specified chunking map */
-{
-  /* Purpose: Process ncpdq '-P' command line argument
-     Convert user-specified string to chunking map
-     Return nco_cnk_map_nil by default */
-  const char fnc_nm[]="nco_cnk_map_get()"; /* [sng] Function name */
-  char *prg_nm; /* [sng] Program name */
-  prg_nm=prg_nm_get(); /* [sng] Program name */
-
-  if(nco_cnk_map_sng == NULL){ 
-    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified chunking map string %s\n",prg_nm,fnc_nm,nco_cnk_map_sng);
-    nco_exit(EXIT_FAILURE);
-  } /* endif */
-
-  if(!strcmp(nco_cnk_map_sng,"hgh_sht")) return nco_cnk_map_hgh_sht;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_hgh_sht")) return nco_cnk_map_hgh_sht;
-  if(!strcmp(nco_cnk_map_sng,"hgh_chr")) return nco_cnk_map_hgh_chr;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_hgh_chr")) return nco_cnk_map_hgh_chr;
-  if(!strcmp(nco_cnk_map_sng,"hgh_byt")) return nco_cnk_map_hgh_byt;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_hgh_byt")) return nco_cnk_map_hgh_byt;
-  if(!strcmp(nco_cnk_map_sng,"nxt_lsr")) return nco_cnk_map_nxt_lsr;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_nxt_lsr")) return nco_cnk_map_nxt_lsr;
-  if(!strcmp(nco_cnk_map_sng,"flt_sht")) return nco_cnk_map_flt_sht;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_flt_sht")) return nco_cnk_map_flt_sht;
-  if(!strcmp(nco_cnk_map_sng,"flt_chr")) return nco_cnk_map_flt_chr;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_flt_chr")) return nco_cnk_map_flt_chr;
-  if(!strcmp(nco_cnk_map_sng,"flt_byt")) return nco_cnk_map_flt_byt;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_flt_byt")) return nco_cnk_map_flt_byt;
-
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking policy %s\n",prg_nm_get(),fnc_nm,nco_cnk_map_sng);
-  nco_exit(EXIT_FAILURE);
-  return nco_cnk_map_nil; /* Statement should not be reached */
-} /* end nco_cnk_map_get() */
-
-int /* O [enm] Chunking policy */
-nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
-(const char *nco_cnk_plc_sng) /* [sng] User-specified chunking policy */
-{
-  /* Purpose: Process ncpdq '-P' command line argument
-     Convert user-specified string to chunking operation type 
-     Return nco_cnk_plc_nil by default */
-  const char fnc_nm[]="nco_cnk_plc_get()"; /* [sng] Function name */
-  char *prg_nm; /* [sng] Program name */
-  prg_nm=prg_nm_get(); /* [sng] Program name */
-
-  if(nco_cnk_plc_sng == NULL){
-    if(strstr(prg_nm,"ncpdq")){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking or dimension permutation options. Defaulting to chunking policy \"all_new\".\n",prg_nm,fnc_nm,prg_nm);
-      return nco_cnk_plc_all_new_att;
-    } /* endif */
-    if(strstr(prg_nm,"ncchunk")) return nco_cnk_plc_all_new_att;
-    if(strstr(prg_nm,"ncunchunk")) return nco_cnk_plc_uck;
-    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified chunking string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,fnc_nm,prg_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* endif */
-
-  if(!strcmp(nco_cnk_plc_sng,"all_xst")) return nco_cnk_plc_all_xst_att;
-  if(!strcmp(nco_cnk_plc_sng,"cnk_all_xst_att")) return nco_cnk_plc_all_xst_att;
-  if(!strcmp(nco_cnk_plc_sng,"all_new")) return nco_cnk_plc_all_new_att;
-  if(!strcmp(nco_cnk_plc_sng,"cnk_all_new_att")) return nco_cnk_plc_all_new_att;
-  if(!strcmp(nco_cnk_plc_sng,"xst_new")) return nco_cnk_plc_xst_new_att;
-  if(!strcmp(nco_cnk_plc_sng,"cnk_xst_new_att")) return nco_cnk_plc_xst_new_att;
-  if(!strcmp(nco_cnk_plc_sng,"uck")) return nco_cnk_plc_uck;
-  if(!strcmp(nco_cnk_plc_sng,"unchunk")) return nco_cnk_plc_uck;
-  if(!strcmp(nco_cnk_plc_sng,"cnk_uck")) return nco_cnk_plc_uck;
-
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking policy %s\n",prg_nm_get(),fnc_nm,nco_cnk_plc_sng);
-  nco_exit(EXIT_FAILURE);
-  return nco_cnk_plc_nil; /* Statement should not be reached */
-} /* end nco_cnk_plc_get() */
-
 nco_bool /* O [flg] Chunking policy allows chunking nc_typ_in */
 nco_cnk_plc_typ_get /* [fnc] Determine type, if any, to chunk input type to */
 (const int nco_cnk_map,  /* I [enm] Chunking map */
@@ -314,7 +324,7 @@ nco_cnk_plc_typ_get /* [fnc] Determine type, if any, to chunk input type to */
   switch(nco_cnk_map){ 
   case nco_cnk_map_nil:
     nc_typ_cnk_out_tmp=nc_typ_in; nco_cnk_plc_alw=False; break;
-  case nco_cnk_map_hgh_sht:
+  case nco_cnk_map_nil:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -333,7 +343,7 @@ nco_cnk_plc_typ_get /* [fnc] Determine type, if any, to chunk input type to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_cnk_map_hgh_chr:
+  case nco_cnk_map_dmn:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -352,7 +362,7 @@ nco_cnk_plc_typ_get /* [fnc] Determine type, if any, to chunk input type to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_cnk_map_hgh_byt:
+  case nco_cnk_map_rcd_one:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -371,66 +381,7 @@ nco_cnk_plc_typ_get /* [fnc] Determine type, if any, to chunk input type to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_cnk_map_nxt_lsr:
-    switch(nc_typ_in){ 
-    case NC_DOUBLE: 
-    case NC_INT64: 
-    case NC_UINT64: 
-      nc_typ_cnk_out_tmp=NC_INT; nco_cnk_plc_alw=True; break; 
-    case NC_FLOAT: 
-    case NC_INT: 
-    case NC_UINT: 
-      nc_typ_cnk_out_tmp=NC_SHORT; nco_cnk_plc_alw=True; break;
-    case NC_SHORT: 
-    case NC_USHORT: 
-      nc_typ_cnk_out_tmp=NC_BYTE; nco_cnk_plc_alw=True; break;
-    case NC_BYTE: 
-    case NC_UBYTE: 
-    case NC_CHAR: 
-    case NC_STRING: 
-      nc_typ_cnk_out_tmp=nc_typ_in; nco_cnk_plc_alw=False; break;
-    default: nco_dfl_case_nc_type_err(); break;
-    } /* end nc_type switch */ 
-    break;
-  case nco_cnk_map_flt_sht:
-    switch(nc_typ_in){ 
-    case NC_DOUBLE: 
-    case NC_FLOAT: 
-      nc_typ_cnk_out_tmp=NC_SHORT; nco_cnk_plc_alw=True; break;
-    case NC_INT64: 
-    case NC_UINT64: 
-    case NC_INT: 
-    case NC_UINT: 
-    case NC_SHORT: 
-    case NC_USHORT: 
-    case NC_BYTE: 
-    case NC_UBYTE: 
-    case NC_CHAR: 
-    case NC_STRING: 
-      nc_typ_cnk_out_tmp=nc_typ_in; nco_cnk_plc_alw=False; break;
-    default: nco_dfl_case_nc_type_err(); break;
-    } /* end nc_type switch */ 
-    break;
-  case nco_cnk_map_flt_chr:
-    switch(nc_typ_in){ 
-    case NC_DOUBLE: 
-    case NC_FLOAT: 
-      nc_typ_cnk_out_tmp=NC_CHAR; nco_cnk_plc_alw=True; break;
-    case NC_INT64: 
-    case NC_UINT64: 
-    case NC_INT: 
-    case NC_UINT: 
-    case NC_SHORT: 
-    case NC_USHORT: 
-    case NC_BYTE: 
-    case NC_UBYTE: 
-    case NC_CHAR: 
-    case NC_STRING: 
-      nc_typ_cnk_out_tmp=nc_typ_in; nco_cnk_plc_alw=False; break;
-    default: nco_dfl_case_nc_type_err(); break;
-    } /* end nc_type switch */ 
-    break;
-  case nco_cnk_map_flt_byt:
+  case nco_cnk_map_scl:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -496,7 +447,7 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
   var->typ_uck=var->type; /* [enm] Type of variable when unchunked (expanded) (in memory) */
 
   /* Vet scale_factor */
-  rcd=nco_inq_att_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
+  rcd=nco_inq_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
   if(rcd != NC_ENOTATT){
     if(scl_fct_typ == NC_BYTE || scl_fct_typ == NC_CHAR){
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING nco_cnk_dsk_inq() reports scale_factor for %s is NC_BYTE or NC_CHAR. Will not attempt to unchunk using scale_factor.\n",prg_nm_get(),var->nm); 
@@ -511,7 +462,7 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
   } /* endif */
 
   /* Vet add_offset */
-  rcd=nco_inq_att_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
+  rcd=nco_inq_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
   if(rcd != NC_ENOTATT){
     if(add_fst_typ == NC_BYTE || add_fst_typ == NC_CHAR){
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING nco_cnk_dsk_inq() reports add_offset for %s is NC_BYTE or NC_CHAR. Will not attempt to unchunk using add_offset.\n",prg_nm_get(),var->nm); 
@@ -540,7 +491,7 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
     var->typ_uck=(var->has_scl_fct) ? scl_fct_typ : add_fst_typ; /* [enm] Type of variable when unchunked (expanded) (in memory) */
     if(nco_is_rth_opr(prg_get()) && dbg_lvl_get() >= nco_dbg_var){
       (void)fprintf(stdout,"%s: CHUNKING Variable %s is type %s chunked into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_uck),nco_typ_sng(var->typ_dsk));
-      (void)fprintf(stdout,"%s: DEBUG Chunked variables processed by all arithmetic operators are unchunked automatically, and then stored unchunked in the output file. If you wish to rechunk them in the output file, use, e.g., ncap -O -s \"foo=chunk(foo);\" out.nc out.nc. If you wish to chunk all variables in a file, use, e.g., ncpdq -P all_new in.nc out.nc.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: DEBUG Chunked variables processed by all arithmetic operators are unchunked automatically, and then stored unchunked in the output file. If you wish to rechunk them in the output file, use, e.g., ncap -O -s \"foo=chunk(foo);\" out.nc out.nc. If you wish to chunk all variables in a file, use, e.g., ncpdq -P all in.nc out.nc.\n",prg_nm_get());
     } /* endif print chunking information */
   }else{
     /* Variable is not chunked since neither scale factor nor add_offset exist
@@ -565,7 +516,7 @@ nco_cnk_mtd /* [fnc] Alter metadata according to chunking specification */
   nc_type nc_typ_cnk_out; /* [enm] Type to chunk to */
   
   switch(nco_cnk_plc){
-  case nco_cnk_plc_all_xst_att:
+  case nco_cnk_plc_nil:
     /* If variable is already chunked do nothing otherwise chunk to default type */
     if(var_in->cnk_ram){
       if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s keeping existing chunking parameters and type (%s) for %s\n",prg_nm_get(),fnc_nm,nco_typ_sng(var_in->type),var_in->nm);
@@ -573,7 +524,7 @@ nco_cnk_mtd /* [fnc] Alter metadata according to chunking specification */
       goto var_uck_try_to_cnk;
     } /* endif */
     break;
-  case nco_cnk_plc_xst_new_att:
+  case nco_cnk_plc_g2d:
     /* If variable is already chunked then re-chunk otherwise do nothing */
     if(var_in->cnk_ram){
       goto var_cnk_try_to_rpk;
@@ -582,7 +533,7 @@ nco_cnk_mtd /* [fnc] Alter metadata according to chunking specification */
       if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s leaving variable %s of type %s as unchunked\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_uck));
     } /* endelse */
     break;
-  case nco_cnk_plc_all_new_att:
+  case nco_cnk_plc_all:
     if(var_in->cnk_ram){
       goto var_cnk_try_to_rpk;
     }else{
@@ -637,7 +588,7 @@ nco_cnk_val /* [fnc] Chunk variable according to chunking specification */
 {
   /* Purpose: Alter metadata according to chunking specification */
   const char fnc_nm[]="nco_cnk_val()"; /* [sng] Function name */
-  nco_bool CNK_VAR_WITH_NEW_CNK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
+  nco_bool CNK_VAR_WITH_NEW_CNK=False; /* [flg] Insert new scale_factor and add_offset into lists */
   nc_type typ_out; /* [enm] Type in output file */
   
   /* typ_out contains type of variable defined in output file
@@ -647,7 +598,7 @@ nco_cnk_val /* [fnc] Chunk variable according to chunking specification */
   typ_out=var_out->type; /* [enm] Type in output file */
   
   switch(nco_cnk_plc){
-  case nco_cnk_plc_all_xst_att:
+  case nco_cnk_plc_nil:
     /* nco_var_cnk() expects to alter var_out->type itself, if necessary */
     var_out->type=var_in->typ_dsk;
     if(var_in->cnk_ram){
@@ -660,7 +611,7 @@ nco_cnk_val /* [fnc] Chunk variable according to chunking specification */
       goto var_uck_try_to_cnk; /* end goto */
     } /* endif input variable was not chunked */
     break;
-  case nco_cnk_plc_xst_new_att:
+  case nco_cnk_plc_g2d:
     if(var_in->cnk_ram){
       nco_var_uck_swp(var_in,var_out);
       goto var_uck_try_to_cnk;
@@ -669,7 +620,7 @@ nco_cnk_val /* [fnc] Chunk variable according to chunking specification */
       var_in->val.vp=NULL; 
     } /* endif */
     break;
-  case nco_cnk_plc_all_new_att:
+  case nco_cnk_plc_all:
     if(var_in->cnk_ram){
       /* Variable is already chunked---unchunk it before re-chunking it */
       nco_var_uck_swp(var_in,var_out);
@@ -688,13 +639,13 @@ nco_cnk_val /* [fnc] Chunk variable according to chunking specification */
   } /* end case */
 
   /* Ensure code goes to final block before falling through to next goto */
-  goto put_new_cnk_att_in_lst;
+  goto put_new_cnk_in_lst;
 
  var_uck_try_to_cnk: /* end goto */
   /* Variable is not yet chunked---try to chunk it */
   if(nco_cnk_plc_typ_get(nco_cnk_map,var_out->type,(nc_type *)NULL)){
     if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: INFO %s chunking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_uck),nco_typ_sng(typ_out));
-    var_out=nco_var_cnk(var_out,typ_out,&CNK_VAR_WITH_NEW_CNK_ATT);
+    var_out=nco_var_cnk(var_out,typ_out,&CNK_VAR_WITH_NEW_CNK);
   }else{
     if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s chunking policy %s with chunking map %s does not allow chunking variable %s of type %s, skipping...\n",prg_nm_get(),fnc_nm,nco_cnk_plc_sng_get(nco_cnk_plc),nco_cnk_map_sng_get(nco_cnk_map),var_in->nm,nco_typ_sng(var_out->typ_uck));
   } /* !nco_cnk_plc_alw */ 
@@ -704,13 +655,13 @@ nco_cnk_val /* [fnc] Chunk variable according to chunking specification */
      This reduces peak memory consumption by ~50%, but is dangerous */
   var_in->val.vp=NULL; 
   /* Ensure code goes to final block before falling through to next goto */
-  goto put_new_cnk_att_in_lst;
+  goto put_new_cnk_in_lst;
   
- put_new_cnk_att_in_lst: /* end goto */
+ put_new_cnk_in_lst: /* end goto */
   /* Fill attribute edit structures
      Use values directly from variable structures rather than copying
      Attribute structure dynamic memory will be free()'d in nco_var_free() call */
-  if(CNK_VAR_WITH_NEW_CNK_ATT){
+  if(CNK_VAR_WITH_NEW_CNK){
     aed_lst_add_fst->var_nm=aed_lst_scl_fct->var_nm=var_out->nm;
     aed_lst_add_fst->id=aed_lst_scl_fct->id=var_out->id;
     aed_lst_add_fst->sz=aed_lst_scl_fct->sz=1L;
@@ -738,14 +689,14 @@ nco_put_var_cnk /* [fnc] Chunk variable in memory and write chunking attributes 
      ncpdq breaks up writing chunked variables into multiple tasks, i.e.,
      ncpdq separates variable value writes from chunking attribute value writes.
      This routine is intended to write a chunked variable in one routine */
-  nco_bool CNK_VAR_WITH_NEW_CNK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
+  nco_bool CNK_VAR_WITH_NEW_CNK=False; /* [flg] Insert new scale_factor and add_offset into lists */
   
   switch(nco_cnk_plc){
-  case nco_cnk_plc_all_xst_att:
+  case nco_cnk_plc_nil:
     break;
-  case nco_cnk_plc_xst_new_att:
+  case nco_cnk_plc_g2d:
     break;
-  case nco_cnk_plc_all_new_att:
+  case nco_cnk_plc_all:
     break;
   case nco_cnk_plc_uck:
     break;
@@ -754,15 +705,15 @@ nco_put_var_cnk /* [fnc] Chunk variable in memory and write chunking attributes 
   } /* end switch */
 
   /* Chunk variable */
-  if(var->xrf->cnk_dsk && !var->xrf->cnk_ram) var=nco_var_cnk(var,var->typ_cnk,&CNK_VAR_WITH_NEW_CNK_ATT);
+  if(var->xrf->cnk_dsk && !var->xrf->cnk_ram) var=nco_var_cnk(var,var->typ_cnk,&CNK_VAR_WITH_NEW_CNK);
 
   /* Write/overwrite scale_factor and add_offset attributes */
   if(var->cnk_ram){ /* [flg] Variable is chunked in memory */
     if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
-      (void)nco_put_att(out_id,var->id,"scale_factor",var->typ_uck,1,var->scl_fct.vp);
+      (void)nco_put(out_id,var->id,"scale_factor",var->typ_uck,1,var->scl_fct.vp);
     } /* endif has_scl_fct */
     if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
-      (void)nco_put_att(out_id,var->id,"add_offset",var->typ_uck,1,var->add_fst.vp);
+      (void)nco_put(out_id,var->id,"add_offset",var->typ_uck,1,var->add_fst.vp);
     } /* endif has_add_fst */
   } /* endif cnk_ram */
   
@@ -774,7 +725,7 @@ var_sct * /* O [sct] Chunked variable */
 nco_var_cnk /* [fnc] Chunk variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be chunked */
  const nc_type nc_typ_cnk, /* I [enm] Type of variable when chunked (on disk). This should be same as typ_dsk except in cases where variable is chunked in input file and unchunked in output file. */
- nco_bool *CNK_VAR_WITH_NEW_CNK_ATT) /* O [flg] Routine generated new scale_factor/add_offset */
+ nco_bool *CNK_VAR_WITH_NEW_CNK) /* O [flg] Routine generated new scale_factor/add_offset */
 {
   /* Purpose: Chunk variable 
      Routine is inverse of nco_var_uck(): nco_var_cnk[nco_var_uck(var)]=var 
@@ -790,7 +741,7 @@ nco_var_cnk /* [fnc] Chunk variable in memory */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
 
   /* Set flag true once new scale_factor/add_offset generated */
-  *CNK_VAR_WITH_NEW_CNK_ATT=False;
+  *CNK_VAR_WITH_NEW_CNK=False;
 
   /* Return if variable in memory is currently chunked and should not be re-chunked */
   if(var->cnk_ram) return var;
@@ -1039,7 +990,7 @@ nco_var_cnk /* [fnc] Chunk variable in memory */
     (void)fprintf(stderr,"%s: ERROR Reached end of %s without chunking variable\n",prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   }else{
-    *CNK_VAR_WITH_NEW_CNK_ATT=True; /* O [flg] Routine generated new scale_factor/add_offset */
+    *CNK_VAR_WITH_NEW_CNK=True; /* O [flg] Routine generated new scale_factor/add_offset */
   } /* endif */
 
   /* Tell the world we chunked the variable
@@ -1090,7 +1041,7 @@ nco_var_uck /* [fnc] Unchunk variable in memory */
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
     scv_sct scl_fct_scv;
     var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->typ_uck));
-    (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_uck);
+    (void)nco_get(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_uck);
     scl_fct_scv=ptr_unn_2_scv(var->typ_uck,var->scl_fct);
     /* Convert var to type of scale_factor for expansion */
     var=nco_var_cnf_typ(scl_fct_scv.type,var);
@@ -1102,7 +1053,7 @@ nco_var_uck /* [fnc] Unchunk variable in memory */
     scv_sct add_fst_scv;
     var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->typ_uck));
     /* fxm TODO nco638 */
-    (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_uck);
+    (void)nco_get(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_uck);
     add_fst_scv=ptr_unn_2_scv(var->typ_uck,var->add_fst);
     /* Convert var to type of scale_factor for expansion */
     var=nco_var_cnf_typ(add_fst_scv.type,var);

@@ -1,4 +1,10 @@
+2009-05-25  Charlie Zender  <zender@uci.edu>
+
+	* Harmless nco_cnk_sz_get() implemented for ncks
+
 2009-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Comment lmt_all_lst handling
 
 	* Adapt chunksize infrastructure from limit parsing
 

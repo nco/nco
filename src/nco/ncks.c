@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.232 2009-05-23 00:04:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.233 2009-05-25 18:12:45 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.232 2009-05-23 00:04:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.232 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.233 2009-05-25 18:12:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.233 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -162,8 +162,7 @@ main(int argc,char **argv)
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
-  size_t *cnk_sz_ptr=NULL; /* [nbr] Chunk size dummy pointer fxm */
-  size_t cnk_sz=0UL; /* [nbr] Chunk size */
+  size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   static struct option opt_lng[]=
@@ -192,8 +191,10 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
-      {"cnk_sz",required_argument,0,0}, /* [nbr] Chunk size */
-      {"chunk_size",required_argument,0,0}, /* [nbr] Chunk size */
+      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
@@ -275,13 +276,13 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
-      if(!strcmp(opt_crr,"cnk") || !strcmp(opt_crr,"chunk")){
+      if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
 	/* Copy limit argument for later processing */
 	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
 	cnk_nbr++;
       } /* endif cnk */
-      if(!strcmp(opt_crr,"cnk_sz") || !strcmp(opt_crr,"chunk_size")){
-	cnk_sz=strtoul(optarg,(char **)NULL,10);
+      if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
+	cnk_sz_scl=strtoul(optarg,(char **)NULL,10);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
@@ -307,7 +308,7 @@ main(int argc,char **argv)
 	PRN_DMN_VAR_NM=False;
       } /* endif "no_clb" */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nChunk sizes\t\t--cnk_sz, --chunk_size\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nVersion\t\t\t--vrs, --version\n\n");
+	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nChunk sizes\t\t--cnk_sz_scl, --chunk_size\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -556,7 +557,7 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-    if(cnk_nbr > 0 && fl_out_fmt != NC_FORMAT_NETCDF4){
+    if((cnk_sz_scl != 0UL || cnk_nbr > 0) && fl_out_fmt != NC_FORMAT_NETCDF4){
       (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will fail\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
     } /* endif netCDF4 */
 
@@ -571,6 +572,13 @@ main(int argc,char **argv)
     
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
+      size_t *cnk_sz_ptr=NULL; /* [nbr] Chunk size dummy pointer fxm */
+      int nco_cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
+      int nco_cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
+
+      /* Assemble chunksize list, if any */
+      if(cnk_nbr > 0 || cnk_sz_scl != 0UL) cnk_sz_ptr=nco_cnk_sz_get(out_id,rec_dmn_id,xtr_lst[idx].nm,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,cnk_sz_ptr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,cnk_sz_ptr,dfl_lvl);
       /* Copy variable's attributes */
