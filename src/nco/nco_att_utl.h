@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.30 2009-05-25 18:48:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.31 2009-05-25 20:48:59 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -32,6 +32,7 @@
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
+#include "nco_scm.h" /* Software configuration management */
 #include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
@@ -90,8 +91,7 @@ nco_thr_att_cat /* [fnc] Add threading global attribute */
 
 void 
 nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
-(const int out_id, /* I [id] netCDF output-file ID */
- char * vrs_sng); /* I/O [sng] NCO version (destroyed on output) */
+(const int out_id); /* I [id] netCDF output-file ID */
 
 #ifdef __cplusplus
 } /* end extern "C" */

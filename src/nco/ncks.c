@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.233 2009-05-25 18:12:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.234 2009-05-25 20:48:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -116,11 +116,13 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *nco_cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
+  char *nco_cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.233 2009-05-25 18:12:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.233 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.234 2009-05-25 20:48:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.234 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -150,6 +152,8 @@ main(int argc,char **argv)
   int nbr_dmn_fl;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
+  int nco_cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
+  int nco_cnk_plc=nco_cnk_plc_g2d; /* [enm] Chunking policy */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
@@ -191,6 +195,10 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
+      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
       {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
@@ -283,6 +291,16 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
 	cnk_sz_scl=strtoul(optarg,(char **)NULL,10);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
+	/* Chunking map */
+	nco_cnk_map_sng=(char *)strdup(optarg);
+	nco_cnk_map=nco_cnk_map_get(nco_cnk_map_sng);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
+	/* Chunking policy */
+	nco_cnk_plc_sng=(char *)strdup(optarg);
+	nco_cnk_plc=nco_cnk_plc_get(nco_cnk_plc_sng);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
@@ -493,15 +511,6 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
 
-  /* Chunking */
-  if(cnk_nbr >0){
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
-    if(dbg_lvl >= nco_dbg_scl){
-      (void)fprintf(stderr,"idx cnk_sz:\n");
-      for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %lu\n",idx,(unsigned long)cnk[idx]->sz);
-    } /* endif dbg */
-  } /* endif cnk */
-
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
@@ -559,6 +568,12 @@ main(int argc,char **argv)
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
     if((cnk_sz_scl != 0UL || cnk_nbr > 0) && fl_out_fmt != NC_FORMAT_NETCDF4){
       (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will fail\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+      /* Chunking */
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
+      if(dbg_lvl >= nco_dbg_scl){
+	(void)fprintf(stderr,"idx cnk_sz:\n");
+	for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %lu\n",idx,(unsigned long)cnk[idx]->sz);
+      } /* endif dbg */
     } /* endif netCDF4 */
 
     /* Open output file */
@@ -569,15 +584,14 @@ main(int argc,char **argv)
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    if(True) (void)nco_vrs_att_cat(out_id);
     
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
       size_t *cnk_sz_ptr=NULL; /* [nbr] Chunk size dummy pointer fxm */
-      int nco_cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
-      int nco_cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
 
       /* Assemble chunksize list, if any */
-      if(cnk_nbr > 0 || cnk_sz_scl != 0UL) cnk_sz_ptr=nco_cnk_sz_get(out_id,rec_dmn_id,xtr_lst[idx].nm,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+      if(cnk_nbr > 0 || cnk_sz_scl != 0UL) cnk_sz_ptr=nco_cnk_sz_get(out_id,xtr_lst[idx].nm,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,cnk_sz_ptr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,cnk_sz_ptr,dfl_lvl);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.4 2009-05-25 18:12:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.5 2009-05-25 20:48:59 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -179,7 +179,6 @@ nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
 size_t * /* O [nbr] Chunksize array for variable */
 nco_cnk_sz_get /* [fnc] Determine chunksize array */
 (const int out_id, /* I [id] netCDF output file ID */
- const int rec_dmn_id, /* I [id] Input file record dimension ID  */
  const char * const var_nm, /* I [sng] Variable name */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
@@ -189,8 +188,9 @@ nco_cnk_sz_get /* [fnc] Determine chunksize array */
 
 {
   /* Purpose: Use chunking map and policy to determine chunksize list */
-  size_t *cnk_sz; /* [nbr] Chunksize list */
   int dmn_nbr; /* [nbr] Number of dimensions in variable */
+
+  size_t *cnk_sz; /* [nbr] Chunksize list */
   
   cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));
   
