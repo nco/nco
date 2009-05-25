@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.95 2009-05-03 23:47:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.96 2009-05-25 18:48:10 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -870,6 +870,33 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
 
   return rnm_lst;
 } /* end nco_prs_rnm_lst() */
+
+void 
+nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ char * vrs_sng) /* I/O [sng] NCO version (destroyed on output) */
+{
+  /* Purpose: Write NCO version information to global metadata */
+  aed_sct vrs_sng_aed;
+  char att_nm[]="NCO";
+  ptr_unn att_val;
+  
+  /* Insert thread number into value */
+  att_val.cp=(char *)strdup(vrs_sng);
+  /* Initialize nco_openmp_thread_number attribute edit structure */
+  vrs_sng_aed.att_nm=att_nm;
+  vrs_sng_aed.var_nm=NULL;
+  vrs_sng_aed.id=NC_GLOBAL;
+  vrs_sng_aed.sz=strlen(vrs_sng)+1L;
+  vrs_sng_aed.type=NC_CHAR;
+  /* Insert value into attribute structure */
+  vrs_sng_aed.val=att_val;
+  vrs_sng_aed.mode=aed_overwrite;
+  /* Write nco_openmp_thread_number attribute to disk */
+  (void)nco_aed_prc(out_id,NC_GLOBAL,vrs_sng_aed);
+  vrs_sng=(char *)nco_free(vrs_sng);
+
+} /* end nco_vrs_att_cat() */
 
 void 
 nco_thr_att_cat /* [fnc] Add threading global attribute */

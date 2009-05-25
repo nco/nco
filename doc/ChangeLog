@@ -1,5 +1,7 @@
 2009-05-25  Charlie Zender  <zender@uci.edu>
 
+	* Add nco_vrs_att_cat() for later use
+
 	* Harmless nco_cnk_sz_get() implemented for ncks
 
 2009-05-22  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.29 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.30 2009-05-25 18:48:10 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -87,6 +87,11 @@ void
 nco_thr_att_cat /* [fnc] Add threading global attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const int thr_nbr); /* I [nbr] Thread number */
+
+void 
+nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ char * vrs_sng); /* I/O [sng] NCO version (destroyed on output) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
