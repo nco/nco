@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.69 2009-05-03 23:59:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.70 2009-05-26 18:24:46 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -359,7 +359,6 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
   }
 }
 
-
 void 
 nco_msa_clc_cnt
 (lmt_all_sct *lmt_lst)
@@ -376,21 +375,16 @@ nco_msa_clc_cnt
     return;
   } /* end if */
   
-  
-  
-  /* if slabs remain in usr specified order */
+  /* If slabs remain in user-specified order */
   if(lmt_lst->MSA_USR_RDR){
-    for(idx=0; idx<size; idx++)
-      cnt+=lmt_lst->lmt_dmn[idx]->cnt;
+    for(idx=0;idx<size;idx++) cnt+=lmt_lst->lmt_dmn[idx]->cnt;
     lmt_lst->dmn_cnt=cnt;
   }else{
-    
     indices=(long *)nco_malloc(size*sizeof(long));
     mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
     
     /* Initialize indices with srt */
-    for(idx=0;idx<size;idx++) 
-      indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
+    for(idx=0;idx<size;idx++) indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
     
     while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
       for(idx=0;idx<size;idx++){
@@ -405,9 +399,9 @@ nco_msa_clc_cnt
     
     indices=(long *)nco_free(indices);
     mnm=(nco_bool  *)nco_free(mnm);
-  }/* end else */
+  } /* end else */
   
-  return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
+  return; /* 20050109: return squelches erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
 
 nco_bool
@@ -1239,18 +1233,14 @@ nco_msa_lmt_all_int
     lmt_all_crr->BASIC_DMN=True;
     lmt_all_crr->MSA_USR_RDR=False;    
     
-    
     lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
     /* Dereference */
     lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
     lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
     lmt_rgl->id=idx;
 
-    /* nb this maybe altered in nco_lmt_evl */
-	if(idx==rec_dmn_id)
-      lmt_rgl->is_rec_dmn=True;
-	else
-	  lmt_rgl->is_rec_dmn=False;
+    /* NB: nco_lmt_evl() may alter this */
+    if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
 	  
     lmt_rgl->srt=0L;
     lmt_rgl->end=dmn_sz-1L;
@@ -1283,7 +1273,7 @@ nco_msa_lmt_all_int
     } /* end loop over dimensions */
     /* Dimension in limit not found */
     if(jdx == nbr_dmn_fl){
-      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx]->nm);
+      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n",lmt[idx]->nm);
       nco_exit(EXIT_FAILURE);
     } /* end if err */
   } /* end loop over idx */       
@@ -1294,7 +1284,7 @@ nco_msa_lmt_all_int
     
 	/* nb progs ncra/ncrcat only one limit for the record dimension so skip evaluation*/
 	/* otherwise this messes up multi-file operation */
-	if( lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get()==ncra || prg_get()==ncrcat))
+	if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get()==ncra || prg_get()==ncrcat))
 	  continue;
 	
     /* Split-up wrapped limits */   
@@ -1328,16 +1318,15 @@ nco_msa_lmt_all_int
     bovl=nco_msa_ovl(lmt_all_lst[idx]);  
     if(bovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
     
-    /* Find and store size of output dim */  
+    /* Find and store size of output dimension */  
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
     if(dbg_lvl_get() >1 ) {
       if(bovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
-    }
+    } /* endif */
     
   } /* end idx */    
   
-} /* end nco_msa_lmt_all_int */
-
+} /* end nco_msa_lmt_all_int() */
 
 void
 nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
@@ -1393,7 +1382,6 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
     (void)nco_free(lmt_mult);
     (void)nco_free(lmt);
    } /* end else nbr_dim */
-
       
     /*(void)nco_msa_var_get(in_id,var[idx],lmt_lst,nbr_dmn_fl); */  
   

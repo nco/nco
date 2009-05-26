@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.6 2009-05-26 05:29:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.7 2009-05-26 18:24:46 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -112,7 +112,6 @@ nco_bool /* O [flg] Variable is chunked on disk */
 nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  var_sct *var); /* I/O [sct] Variable */
-  
 #endif /* endif 0 */
 
 #ifdef __cplusplus

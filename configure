@@ -19343,9 +19343,19 @@ ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='no'
 enable_dap='no'
 if (test "x${enable_dap_netcdf}" = 'xyes'); then
     ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='yes'
+
+cat >>confdefs.h <<\_ACEOF
+#define ENABLE_DAP_NETCDF 1
+_ACEOF
+
 fi
 if (test "x${enable_dap_opendap}" = 'xyes'); then
     ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='yes'
+
+cat >>confdefs.h <<\_ACEOF
+#define ENABLE_DAP_NETCDF 1
+_ACEOF
+
 fi
 if test "x${ENABLE_DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
     enable_dap='yes'

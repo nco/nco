@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.7 2009-05-26 05:29:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.8 2009-05-26 18:24:46 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -7,10 +7,11 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Usage:
-   ncks -O -4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
-   ncks -O -4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
-   ncks -O -4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
-   ncks -O -4 --cnk_plc=g2d --cnk_map=rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
+   ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
+   ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
 
 #include "nco_cnk.h" /* Chunking */
 
@@ -202,6 +203,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   int lmt_idx;
   int nbr_dmn_fl; /* [nbr] Number of dimensions in file */
   int rcd_dmn_id;
+  int srg_typ; /* [enm] Storage type */
   int var_idx;
   int var_nbr;
 
@@ -216,6 +218,13 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   if(cnk_nbr > 0 || cnk_sz_scl != 0UL || cnk_map != nco_cnk_map_nil) flg_cnk=True; /* [flg] Chunking requested */
 
   if(!flg_cnk) return;
+
+  /* Does output file support chunking? */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt != NC_FORMAT_NETCDF4){
+    (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will be ignored\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
+    return;
+  } /* endif dbg */
 
   if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
   if(dbg_lvl_get() >= nco_dbg_scl){
@@ -234,25 +243,38 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     nco_exit(EXIT_FAILURE);
   } /* endif cnk_sz_scl */
 
-  /* Does output file support chunking? */
-  (void)nco_inq_format(nc_id,&fl_fmt);
-  if(fl_fmt != NC_FORMAT_NETCDF4){
-    (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will be ignored\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
-    return;
-  } /* endif dbg */
-
   /* Get record dimension ID */
   (void)nco_inq(nc_id,&nbr_dmn_fl,&var_nbr,(int *)NULL,&rcd_dmn_id);
   
   /* NB: Assumes variable IDs range from [0..var_nbr-1] */
   for(var_idx=0;var_idx<var_nbr;var_idx++){
+
+    /* Initialize storage type for this variable */
+    srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
+    cnk_sz=NULL; /* [nbr] Chunksize list */
+
     /* Get type and number of dimensions for variable */
     (void)nco_inq_var(nc_id,var_idx,var_nm,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
     
-    /* Skip rest of loop unless policy applies to this variable */
-    if(dmn_nbr == 0) continue;
-    if(cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) continue;
-    if(cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) continue;
+    if(dmn_nbr == 0) continue; /* Skip chunking calls for scalars */
+
+    /* Explicitly turn off chunking for arrays that are... */
+    if((cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
+       (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
+       (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
+       False){
+      if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s turning off chunking for variable %s\n",prg_nm_get(),fnc_nm,var_nm);
+
+      /* Leave chunking on for coordinates... */
+
+      /* Turn chunking off for this variable */
+      (void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
+      /* Skip to next variable in loop */
+      continue;
+    } /* end if */
+
+    /* Variable will definitely be chunked */
+    srg_typ=NC_CHUNKED; /* [enm] Storage type */
 
     /* Allocate space to hold dimension IDs */
     dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
@@ -264,14 +286,12 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
-      /*      if(cnk_map == nco_cnk_map_scl){*/
-
       /* Get dimension name and size */
       (void)nco_inq_dim(nc_id,dmn_id[dmn_idx],dmn_nm,&dmn_sz);
       
       /* Is this a record dimension? */
       if(dmn_id[dmn_idx] == rcd_dmn_id){
-	/* Does the policy specify record dimension treatment? */
+	/* Does policy specify record dimension treatment? */
 	if(cnk_map == nco_cnk_map_rcd_one){
 	  cnk_sz[dmn_idx]=1UL;
 	  /* Skip to next dimension in loop */
@@ -285,7 +305,9 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 	    break;
 	  } /* end if */
 	} /* end loop over limit */
-	if(dmn_sz == 0L) cnk_sz[dmn_idx]=1UL;
+	if(dmn_sz == 0L){
+	  (void)fprintf(stderr,"%s: ERROR %s reports variable %s has dim_sz == 0L for dimension %s. This should not occur and it will cause chunking to fail...\n",prg_nm_get(),fnc_nm,var_nm,dmn_nm);
+	} /* endif err */
       } /* endif record dimension */
 
       /* Non-record sizes default to cnk_sz_scl or to dimension size */
@@ -319,7 +341,8 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
       } /* end loop over dmn */
     } /* endif dbg */
 
-    if(cnk_sz != NULL) (void)nco_def_var_chunking(nc_id,var_idx,(int)NC_CHUNKED,cnk_sz);
+    /* Turn chunking on for this variable */
+    (void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
     
     /* Free space holding dimension IDs and chunksizes */
     dmn_id=(int *)nco_free(dmn_id);
@@ -398,6 +421,7 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
 } /* end nco_cnk_plc_get() */
 
 #if 0
+/* NB: Following routines are placeholders, currently not used */
 size_t * /* O [nbr] Chunksize array for variable */
 nco_cnk_sz_get /* [fnc] Determine chunksize array */
 (const int nc_id, /* I [id] netCDF file ID */
@@ -470,24 +494,12 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
  var_sct * const var) /* I/O [sct] Variable */
 {
   /* Purpose: Check whether variable is chunked on disk and set variable members 
-     cnk_dsk, has_scl_fct, has_add_fst, and typ_uck accordingly
-     nco_cnk_dsk_inq() should be called early in application, e.g., in nco_var_fll() 
-     Call nco_cnk_dsk_inq() before copying input list to output list 
-     Multi-file operators which handle chunking must call this routine prior
-     to each read of a variable, in case that variable has been unchunked. */
+     cnk_dsk and cnk_sz accordingly
   /* ncea -O -D 3 -v cnk ~/nco/data/in.nc ~/nco/data/foo.nc */
   
-  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-  
   int rcd; /* [rcd] Return success code */
+  int srg_typ; /* [enm] Storage type */
   
-  long add_fst_lng; /* [idx] Number of elements in add_offset attribute */
-  long scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
-
-  nc_type add_fst_typ; /* [idx] Type of add_offset attribute */
-  nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
-
   /* Set some defaults in variable structure for safety in case of early return
      Flags for variables without valid scaling information should appear 
      same as flags for variables with _no_ scaling information
@@ -496,61 +508,9 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
      1. is required by ncra nco_cnv_mss_val_typ() 
      2. depends on var->type and so should not be set in var_dfl_set()
      3. is therefore set to default here */
-  var->typ_uck=var->type; /* [enm] Type of variable when unchunked (expanded) (in memory) */
+  var->cnk_dsk=False; /* [enm] Variable is chunked on disk */
 
-  /* Vet scale_factor */
-  rcd=nco_inq_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
-  if(rcd != NC_ENOTATT){
-    if(scl_fct_typ == NC_BYTE || scl_fct_typ == NC_CHAR){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING nco_cnk_dsk_inq() reports scale_factor for %s is NC_BYTE or NC_CHAR. Will not attempt to unchunk using scale_factor.\n",prg_nm_get(),var->nm); 
-      return False;
-    } /* endif */
-    if(scl_fct_lng != 1){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING nco_cnk_dsk_inq() reports %s has scale_factor of length %li. Will not attempt to unchunk using scale_factor\n",prg_nm_get(),var->nm,scl_fct_lng); 
-      return False;
-    } /* endif */
-    var->has_scl_fct=True; /* [flg] Valid scale_factor attribute exists */
-    var->typ_uck=scl_fct_typ; /* [enm] Type of variable when unchunked (expanded) (in memory) */
-  } /* endif */
-
-  /* Vet add_offset */
-  rcd=nco_inq_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
-  if(rcd != NC_ENOTATT){
-    if(add_fst_typ == NC_BYTE || add_fst_typ == NC_CHAR){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING nco_cnk_dsk_inq() reports add_offset for %s is NC_BYTE or NC_CHAR. Will not attempt to unchunk using add_offset.\n",prg_nm_get(),var->nm); 
-      return False;
-    } /* endif */
-    if(add_fst_lng != 1){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING nco_cnk_dsk_inq() reports %s has add_offset of length %li. Will not attempt to unchunk.\n",prg_nm_get(),var->nm,add_fst_lng); 
-      return False;
-    } /* endif */
-    var->has_add_fst=True; /* [flg] Valid add_offset attribute exists */
-    var->typ_uck=add_fst_typ; /* [enm] Type of variable when unchunked (expanded) (in memory) */
-  } /* endif */
-
-  if(var->has_scl_fct && var->has_add_fst){
-    if(scl_fct_typ != add_fst_typ){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING nco_cnk_dsk_inq() reports type of scale_factor does not equal type of add_offset. Will not attempt to unchunk.\n",prg_nm_get());
-      return False;
-    } /* endif */
-  } /* endif */
-
-  if(var->has_scl_fct || var->has_add_fst){
-    /* Variable is considered chunked iff either or both valid scale_factor or add_offset exist */
-    var->cnk_dsk=True; /* [flg] Variable is chunked on disk */
-    /* If variable is chunked on disk and is in memory then variable is chunked in memory */
-    var->cnk_ram=True; /* [flg] Variable is chunked in memory */
-    var->typ_uck=(var->has_scl_fct) ? scl_fct_typ : add_fst_typ; /* [enm] Type of variable when unchunked (expanded) (in memory) */
-    if(nco_is_rth_opr(prg_get()) && dbg_lvl_get() >= nco_dbg_var){
-      (void)fprintf(stdout,"%s: CHUNKING Variable %s is type %s chunked into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_uck),nco_typ_sng(var->typ_dsk));
-      (void)fprintf(stdout,"%s: DEBUG Chunked variables processed by all arithmetic operators are unchunked automatically, and then stored unchunked in the output file. If you wish to rechunk them in the output file, use, e.g., ncap -O -s \"foo=chunk(foo);\" out.nc out.nc. If you wish to chunk all variables in a file, use, e.g., ncpdq -P all in.nc out.nc.\n",prg_nm_get());
-    } /* endif print chunking information */
-  }else{
-    /* Variable is not chunked since neither scale factor nor add_offset exist
-       Insert hooks which depend on variable not being chunked here
-       Currently this is no-op */
-    ;
-  } /* end else */
+  rcd=nco_inq_var_chunking(nc_id,var->id,&srg_typ,var->cnk_sz);
 
   return var->cnk_dsk; /* [flg] Variable is chunked on disk (valid scale_factor, add_offset, or both attributes exist) */
   

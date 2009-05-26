@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.506 2009-05-22 21:49:29 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.507 2009-05-26 18:24:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -343,6 +343,7 @@ ifndef LINUX_CC
  #LINUX_CC := como --c99
  #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
  #LINUX_CC := insure
+ #LINUX_CC := nvcc
  #LINUX_CC := pathcc -std=c99
  #LINUX_CC := pgcc -c9x
 endif # endif LINUX_CC
@@ -586,10 +587,10 @@ ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
 endif # !(AIX || SGI)
 ifeq (${DAP_NETCDF},Y)
- CPP_TKN_OS += -DENABLE_DAP
+ CPP_TKN_OS += -DENABLE_DAP -DENABLE_DAP_NETCDF
 endif # !DAP_NETCDF
 ifeq (${DAP_OPENDAP},Y)
- CPP_TKN_OS += -DENABLE_DAP
+ CPP_TKN_OS += -DENABLE_DAP -DENABLE_DAP_OPENDAP
 endif # !DAP_OPENDAP
 ifeq (${GSL},Y)
  CPP_TKN_OS += -DENABLE_GSL -DHAVE_GSL_H
@@ -994,6 +995,39 @@ ifeq (${OPTS},X)
  FFLAGS += -g -C -e95
 endif
 endif # endif Intel (Kai) Fortran Compiler
+# NVidia C Compiler
+ifeq (nvcc,$(firstword ${CC}))
+ CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+ CFLAGS := -Wall
+# Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
+ CFLAGS += -Wall
+ifeq (${OMP},Y)
+ OMP_FLG_C := -fopenmp
+ OMP_FLG_F := -fopenmp
+ LDFLAGS += -lgomp -lpthread
+endif # endif OMP
+ifeq (${OPTS},O)
+ CFLAGS += -O -g
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g
+ LDFLAGS += 
+endif
+ifneq (${null},$(findstring AMD64,${PVM_ARCH}))
+ifeq (${ABI},64)
+ CFLAGS += 
+ FFLAGS += 
+ LDFLAGS += 
+endif # endif ABI
+endif # endif LINUXAMD64
+ CXXFLAGS := ${CFLAGS}
+endif # endif NVidia C Compiler
 # Pathscale (QLogic) C Compiler
 ifeq (pathcc,$(firstword ${CC}))
 # pathcc -show-defaults

@@ -2,7 +2,7 @@
 
 	* Per-dimension chunksizes in nco_prn()
 
-	* nco_cnk_sz_set() beta works well
+	* nco_cnk_sz_set() beta works well, still need uck
 
 	* Draft nco_cnk_sz_set() ready for testing
 
