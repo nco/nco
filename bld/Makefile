@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.507 2009-05-26 18:24:46 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.508 2009-05-26 18:40:32 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -449,8 +449,8 @@ MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
 # Directories to search for source files
 MDL_PTH := ./ ${MY_SRC_DIR}
-# Find all C and C++ files in given directory
-FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
+# Find all C, C++, CUDA files in given directory
+FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c ${dir}/*.cu)
 # Assemble source files from all directories
 SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
 # Source file names with directories removed
@@ -520,6 +520,8 @@ MDL_CXX_SRC := $(addprefix ${NCOXX_SRC_DIR}/,libnco++.hh Makefile.am Makefile.ol
 # Redefine default C and C++ pattern rules
 ${MY_OBJ_DIR}/%.o : %.c
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+${MY_OBJ_DIR}/%.o : %.cu
+	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cc
 	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
@@ -563,6 +565,9 @@ ${MY_DPN_DIR}/%.d : %.F
 
 ${MY_DPN_DIR}/%.d : %.c
 #	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+
+${MY_DPN_DIR}/%.d : %.cu
 	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 ${MY_DPN_DIR}/%.d : %.cc
@@ -1479,7 +1484,7 @@ non_ncap: dir lib $(filter-out ncap,${MDL_BIN_TRG}) data
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes that matter
-.SUFFIXES: .cc .c .o .F .d
+.SUFFIXES: .cc .c .cu .o .F .d
 # Delete targets that were not successfully made
 .DELETE_ON_ERROR:
 # Target directories which may not exist
