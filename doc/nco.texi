@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.540 2009-05-22 21:49:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.541 2009-05-26 22:52:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4298,7 +4298,7 @@ Specify @acronym{NCO} chunking parameters with the
 The @acronym{NCO} chunking implementation is designed to be flexible. 
 Users control three aspects of the chunking implementation.
 These are known as the @dfn{chunking policy}, @dfn{chunking map},
-and @dfn{chunksize}. 
+and @dfn{chunksize}.
 The first two are high-level mechanisms that apply to an entire file,
 while the third allows per-dimension specification of parameters.
 @cindex hyperslab
@@ -4312,7 +4312,34 @@ will only need to set one switch to obtain sensible chunking.
 Power users can tune the three switches in tandem to obtain optimal
 performance. 
 
-fxm 
+The user specifies the desired chunking policy with the @samp{-P} switch 
+(or its long option equivalents, @samp{--cnk_plc} and
+@samp{--chunk_policy}) and its @var{cnk_plc} argument.
+Four chunking policies are currently implemented:@*   
+@table @dfn
+@item Chunking All Variables [@emph{default}]
+Definition: Chunk all variables, re-chunk chunked variables@*
+Alternate invocation: @code{ncchunk}@*
+@var{cnk_plc} key values: @samp{all_new}, @samp{cnk_all_new_att}@*
+@item Chunking (and not Re-Chunking) Variables
+Definition: Chunk unchunked variables, copy chunked variables@*
+Alternate invocation: none@*
+@var{cnk_plc} key values: @samp{all_xst}, @samp{cnk_all_xst_att}@*
+@item Re-Chunking Variables
+Definition: Re-chunk chunked variables, copy unchunked variables@*
+Alternate invocation: none@*
+@var{cnk_plc} key values: @samp{xst_new}, @samp{cnk_xst_new_att}@*
+@item Unchunking
+Definition: Unchunk chunked variables, copy unchunked variables@*
+Alternate invocation: @code{ncunchunk}@*
+@var{cnk_plc} key values: @samp{upk}, @samp{unchunk}, @samp{cnk_upk}@*
+@end table
+@noindent
+Equivalent key values are fully interchangeable.
+Multiple equivalent options are provided to satisfy disparate needs
+and tastes of @acronym{NCO} users working with scripts and from the
+command line.
+
 1. A few user-selectable, preset chunking policies (cnk_plc)
    Policies specify which variables to chunk, but not how
    they are chunked. Policies could include: 

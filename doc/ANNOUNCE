@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.327 2009-05-22 00:31:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.328 2009-05-26 22:52:13 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -16,8 +16,9 @@ and GSL interpolation and fitting functions.
 
 "New stuff" details:
 
-A. NCO (when enabled with netCDF4) supports new chunk_size option:
-   ncks --cnk_sz 1024,1024,1024 in.nc out.nc
+A. NCO (when enabled with netCDF4) supports many chunking options:
+   ncks -O -4 --cnk_plc=all in.nc out.nc
+   ncks -O -4 --cnk_dmn lat,64 --cnk_dmn lon,128 in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
 B. ncap2 supports the GSL (Chapter 20) statistics routines, e.g.,
@@ -27,12 +28,12 @@ B. ncap2 supports the GSL (Chapter 20) statistics routines, e.g.,
 
 C. NCO (when enabled with netCDF4) supports NC_STRING atomic type.
    NCO has long-supported the other netCDF4 atomic types. 
-   NCO now manipulates (ragged arrays of) strings, e.g., 
+   An "s" trailing double quotes specifies NC_STRING (not NC_CHAR):
    ncap2 -4 -O -v -s 'name[lat]={"US"s,"Them"s};' in.nc out.nc
-   netCDF4 strings are placed in double quotes with a trailing "s".
+   Ragged arrays of strings are finally here, so use them.
    http://nco.sf.net/nco.html#nco4
 
-D. ncks --secret prints hidden/unsupported options
+E. ncks --secret prints hidden/unsupported options
 
 "Sticky" reminders:
 

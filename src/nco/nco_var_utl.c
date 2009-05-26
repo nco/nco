@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.140 2009-05-26 05:29:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.141 2009-05-26 22:52:13 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -71,15 +71,34 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
       } /* end else */
     } /* end if */
+
   } /* end loop over dim */
   
   /* Define variable in output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
-  
-  /* Set HDF Lempel-Ziv compression level, if requested */
-  if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
-  /* Set chunk sizes, if requested */
-  /*  if(cnk_sz != NULL) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);*/
+
+  /* Deflation */
+  if(nbr_dim > 0){
+    int shuffle; /* [flg] Turn on shuffle filter */
+    int deflate; /* [flg] Turn on deflate filter */
+    int dfl_lvl_in; /* [enm] Deflate level [0..9] */
+    rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
+    /* Copy original deflation settings */
+    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_out_id,deflate,shuffle,dfl_lvl_in);
+    /* Overwrite HDF Lempel-Ziv compression level, if requested */
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+  } /* endif */
+
+  /* Chunking */
+  if(nbr_dim > 0){
+    int srg_typ; /* [enm] Storage type */
+    size_t *cnk_sz; /* [nbr] Chunksize list */
+    cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t));
+    rcd=nco_inq_var_chunking(in_id,var_in_id,&srg_typ,cnk_sz);
+    /* Copy original chunking settings */
+    if(srg_typ == NC_CHUNKED) (void)nco_def_var_chunking(out_id,var_out_id,srg_typ,cnk_sz);
+    cnk_sz=(size_t *)nco_free(cnk_sz);
+  } /* endif */
 
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
@@ -166,10 +185,28 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Define variable in output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
-  /* Set HDF Lempel-Ziv compression level, if requested */
-  if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
-  /* Set chunk sizes, if requested */
-  /*  if(cnk_sz != NULL) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);*/
+  /* Deflation */
+  if(nbr_dim > 0){
+    int shuffle; /* [flg] Turn on shuffle filter */
+    int deflate; /* [flg] Turn on deflate filter */
+    int dfl_lvl_in; /* [enm] Deflate level [0..9] */
+    rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
+    /* Copy original deflation settings */
+    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_out_id,deflate,shuffle,dfl_lvl_in);
+    /* Overwrite HDF Lempel-Ziv compression level, if requested */
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+  } /* endif */
+
+  /* Chunking */
+  if(nbr_dim > 0){
+    int srg_typ; /* [enm] Storage type */
+    size_t *cnk_sz; /* [nbr] Chunksize list */
+    cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t));
+    rcd=nco_inq_var_chunking(in_id,var_in_id,&srg_typ,cnk_sz);
+    /* Copy original chunking settings */
+    if(srg_typ == NC_CHUNKED) (void)nco_def_var_chunking(out_id,var_out_id,srg_typ,cnk_sz);
+    cnk_sz=(size_t *)nco_free(cnk_sz);
+  } /* endif */
 
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);

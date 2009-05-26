@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.7 2009-05-26 18:24:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.8 2009-05-26 22:52:13 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -13,6 +13,7 @@
 #define NCO_CNK_H
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 
 /* 3rd party vendors */
@@ -25,7 +26,7 @@
 #include "nco_mmr.h" /* Memory management */
 
 /* Chunking policies: 
-   Handle each chunking policy in nco_cnk_mtd(), nco_cnk_val(), nco_var_dfn(), and end of ncpdq */
+   Handle each chunking policies in nco_cnk_sz_set() */
 enum nco_cnk_plc{ /* [enm] Chunking policy */
   nco_cnk_plc_nil, /* 0 [enm] Do not think about chunking */
   nco_cnk_plc_all, /* 1 [enm] Chunk all variables */
@@ -39,7 +40,8 @@ enum nco_cnk_map{ /* [enm] Chunking conversion map */
   nco_cnk_map_nil, /* 0 [enm] Do not chunk anything, storage is unchanged */
   nco_cnk_map_dmn, /* 1 [enm] Chunksize equals dimension size */
   nco_cnk_map_rcd_one, /* 2 [enm] Chunksize equals dimension size except record dimension has size one */
-  nco_cnk_map_scl /* 3 [enm] Chunksize equals scalar size specified */
+  nco_cnk_map_scl, /* 3 [enm] Chunksize equals scalar size specified */
+  nco_cnk_map_prd /* 4 [enm] Chunksize product is scalar size specified */
 }; /* end nco_cnk_map enum */
 
 #ifdef __cplusplus
@@ -79,8 +81,8 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 (const int nc_id, /* I [id] netCDF file ID */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
- const int cnk_map, /* I [enm] Chunking map */
- const int cnk_plc, /* I [enm] Chunking policy */
+ int * const cnk_map_ptr, /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr); /* I [nbr] Number of dimensions with user-specified chunking */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.236 2009-05-26 05:29:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.237 2009-05-26 22:52:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -108,6 +108,8 @@ main(int argc,char **argv)
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *cnk_arg[NC_MAX_DIMS];
+  char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
+  char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
   char *dlm_sng=NULL;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_in=NULL;
@@ -116,13 +118,11 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *nco_cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
-  char *nco_cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.236 2009-05-26 05:29:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.236 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.237 2009-05-26 22:52:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.237 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -138,7 +138,9 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
+  int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
+  int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
@@ -152,8 +154,6 @@ main(int argc,char **argv)
   int nbr_dmn_fl;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
-  int nco_cnk_map=nco_cnk_map_rcd_one; /* [enm] Chunking map */
-  int nco_cnk_plc=nco_cnk_plc_g2d; /* [enm] Chunking policy */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
@@ -294,13 +294,13 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
 	/* Chunking map */
-	nco_cnk_map_sng=(char *)strdup(optarg);
-	nco_cnk_map=nco_cnk_map_get(nco_cnk_map_sng);
+	cnk_map_sng=(char *)strdup(optarg);
+	cnk_map=nco_cnk_map_get(cnk_map_sng);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
 	/* Chunking policy */
-	nco_cnk_plc_sng=(char *)strdup(optarg);
-	nco_cnk_plc=nco_cnk_plc_get(nco_cnk_plc_sng);
+	cnk_plc_sng=(char *)strdup(optarg);
+	cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
@@ -586,7 +586,7 @@ main(int argc,char **argv)
       if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */
     /* Set chunksize parameters */
-    (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+    (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -681,6 +681,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cnk_map_sng != NULL) cnk_map_sng=(char *)strdup(cnk_map_sng);
+    if(cnk_plc_sng != NULL) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
     if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
     if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);

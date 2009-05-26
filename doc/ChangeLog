@@ -1,3 +1,9 @@
+2009-05-26  Charlie Zender  <zender@uci.edu>
+
+	* Improve cnk_map/cnk_plc defaults, minimize their main.c footprints
+
+	* ncks copies original deflation and chunking parameters by default
+
 2009-05-25  Charlie Zender  <zender@uci.edu>
 
 	* Per-dimension chunksizes in nco_prn()

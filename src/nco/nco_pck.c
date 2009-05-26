@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.75 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.76 2009-05-26 22:52:13 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -165,7 +165,7 @@ nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
   if(!strcmp(nco_pck_map_sng,"flt_byt")) return nco_pck_map_flt_byt;
   if(!strcmp(nco_pck_map_sng,"pck_map_flt_byt")) return nco_pck_map_flt_byt;
 
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing policy %s\n",prg_nm_get(),fnc_nm,nco_pck_map_sng);
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing map %s\n",prg_nm_get(),fnc_nm,nco_pck_map_sng);
   nco_exit(EXIT_FAILURE);
   return nco_pck_map_nil; /* Statement should not be reached */
 } /* end nco_pck_map_get() */
