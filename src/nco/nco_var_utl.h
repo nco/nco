@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.52 2009-05-03 18:09:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.53 2009-05-26 05:29:04 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -48,7 +48,6 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
    const char * const var_nm, /* I [sng] Input variable name */
-   const size_t * const cnk_sz, /* I [nbr] Chunk sizes */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   int /* O [id] Output file variable ID */
@@ -59,7 +58,6 @@ extern "C" {
    const char * const var_nm, /* I [sng] Input variable name */
    CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
    const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
-   const size_t * const cnk_sz, /* I [nbr] Chunk sizes */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   void

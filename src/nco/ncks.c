@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.235 2009-05-26 00:10:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.236 2009-05-26 05:29:04 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.235 2009-05-26 00:10:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.235 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.236 2009-05-26 05:29:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.236 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -152,7 +152,7 @@ main(int argc,char **argv)
   int nbr_dmn_fl;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
-  int nco_cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
+  int nco_cnk_map=nco_cnk_map_rcd_one; /* [enm] Chunking map */
   int nco_cnk_plc=nco_cnk_plc_g2d; /* [enm] Chunking policy */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -579,15 +579,14 @@ main(int argc,char **argv)
     
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
-      size_t *cnk_sz_ptr=NULL; /* [nbr] Chunk size dummy pointer fxm */
 
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,cnk_sz_ptr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,cnk_sz_ptr,dfl_lvl);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,dfl_lvl);
       /* Copy variable's attributes */
       if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */
     /* Set chunksize parameters */
-    (void)nco_cnk_sz_set(out_id,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+    (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

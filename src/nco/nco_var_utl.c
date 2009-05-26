@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.139 2009-05-26 00:10:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.140 2009-05-26 05:29:04 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -14,7 +14,6 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
  const char * const var_nm, /* I [sng] Input variable name */
- const size_t * const cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -80,7 +79,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   /* Set HDF Lempel-Ziv compression level, if requested */
   if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
   /* Set chunk sizes, if requested */
-  if(cnk_sz != NULL && nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
+  /*  if(cnk_sz != NULL) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);*/
 
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
@@ -97,7 +96,6 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const char * const var_nm, /* I [sng] Input variable name */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
- const size_t * const cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -171,7 +169,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Set HDF Lempel-Ziv compression level, if requested */
   if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
   /* Set chunk sizes, if requested */
-  if(cnk_sz != NULL && nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
+  /*  if(cnk_sz != NULL) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);*/
 
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);

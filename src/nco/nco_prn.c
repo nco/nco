@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.55 2009-05-21 15:38:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.56 2009-05-26 05:29:04 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -228,6 +228,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   
   /* Get dimension IDs */
   (void)nco_inq_vardimid(in_id,var_id,dmn_id);
+  rcd=nco_inq_var_chunking(in_id,var_id,&srg_typ,cnk_sz);
   
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
@@ -239,11 +240,11 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     /* Is dimension a coordinate, i.e., stored as a variable? */
     rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
     if(rcd == NC_NOERR){
-      /* Find out which type of variable the coordinate is */
+      /* Which type of variable is the coordinate? */
       (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
-      (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %li, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
     }else{
-      (void)fprintf(stdout,"%s dimension %i: %s, size = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,dim[idx].id);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,dim[idx].id);
     } /* end else */
     if(dim[idx].id == rec_dmn_id) (void)fprintf(stdout,"(REC)"); 
     (void)fprintf(stdout,"\n"); 
@@ -266,8 +267,6 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     (void)strcat(sz_sng,sng_foo);
     /* NB: netCDF chunking/deflate define/inquire functions only work with netCDF4
        NCO wrappers perform no-ops on netCDF3 files */
-    rcd=nco_inq_var_chunking(in_id,var_id,&srg_typ,cnk_sz);
-    if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s written with chunk size = %zu\n",var_nm,cnk_sz[0]);
     rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
     if(deflate) (void)fprintf(stdout,"%s stored compressed (Lempel-Ziv %s shuffling) at level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
     (void)fprintf(stdout,"%s RAM size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));

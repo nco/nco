@@ -1,5 +1,9 @@
 2009-05-25  Charlie Zender  <zender@uci.edu>
 
+	* Per-dimension chunksizes in nco_prn()
+
+	* nco_cnk_sz_set() beta works well
+
 	* Draft nco_cnk_sz_set() ready for testing
 
 	* Add nco_vrs_att_cat() for later use
