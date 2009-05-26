@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.50 2009-05-22 16:22:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.51 2009-05-26 10:41:24 hmb Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -1002,7 +1002,7 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
 
   /* Both signed or both unsigned */
   /* convert to the highest type */
-  if( (v1s==True && v2s==True) || (v1s==False && v2s==False) ){
+  if( v1s==v2s  ){
     if(typ_1 > typ_2)
       var_2=nco_var_cnf_typ(typ_1,var_2);
      else  
