@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.34 2009-05-21 15:29:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.35 2009-05-26 11:23:37 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -392,10 +392,10 @@ void gsl_cls::gsl_ini_cdf(void){
     gpr_vtr.push_back(gpr_cls("gsl_cdf_exponential_Q",f_unn(gsl_cdf_exponential_Q),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_exponential_Pinv",f_unn(gsl_cdf_exponential_Pinv),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_exponential_Qinv",f_unn(gsl_cdf_exponential_Qinv),hnd_fnc_nd,P2DBLX));
-
+# if NCO_GSL_MINOR_VERSION >= 6
     gpr_vtr.push_back(gpr_cls("gsl_cdf_exppow_P",f_unn(gsl_cdf_exppow_P),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_exppow_Q",f_unn(gsl_cdf_exppow_Q),hnd_fnc_nd,P3DBLX));
-
+# endif
     gpr_vtr.push_back(gpr_cls("gsl_cdf_tdist_P",f_unn(gsl_cdf_tdist_P),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_tdist_Q",f_unn(gsl_cdf_tdist_Q),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_tdist_Pinv",f_unn(gsl_cdf_tdist_Pinv),hnd_fnc_nd,P2DBLX));
@@ -480,7 +480,9 @@ void gsl_cls::gsl_ini_ran(void){
   gpr_vtr.push_back(gpr_cls("gsl_ran_beta_pdf",f_unn(gsl_ran_beta_pdf),hnd_fnc_nd,P3DBLX));
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_binomial",f_unn(gsl_ran_binomial),hnd_fnc_udrdu));
+# if NCO_GSL_MINOR_VERSION >= 7 
   gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_knuth",f_unn(gsl_ran_binomial_knuth),hnd_fnc_udrdu));
+# endif
   gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_tpe",f_unn(gsl_ran_binomial_tpe),hnd_fnc_udrdu));
   gpr_vtr.push_back(gpr_cls("gsl_ran_binomial_pdf",f_unn(gsl_ran_binomial_pdf),hnd_fnc_udu));
  
