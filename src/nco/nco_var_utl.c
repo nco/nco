@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.138 2009-05-07 21:26:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.139 2009-05-26 00:10:51 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -82,7 +82,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   /* Set chunk sizes, if requested */
   if(cnk_sz != NULL && nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
 
-  /* Free the space holding dimension IDs */
+  /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
   dmn_out_id=(int *)nco_free(dmn_out_id);
   
@@ -151,7 +151,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
       if(dmn_in_id[idx] != rec_dmn_id){
 	int lmt_all_idx;
 
-	/* Decide whether this dimension has any user-specified limits */
+	/* Does dimension have any user-specified limits? */
 	for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
 	  if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
 	    dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;

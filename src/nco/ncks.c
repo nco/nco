@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.234 2009-05-25 20:48:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.235 2009-05-26 00:10:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.234 2009-05-25 20:48:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.234 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.235 2009-05-26 00:10:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.235 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -462,7 +462,7 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Make uniform list of user-specified chunksizes */
-  cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
+  if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
@@ -566,15 +566,6 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-    if((cnk_sz_scl != 0UL || cnk_nbr > 0) && fl_out_fmt != NC_FORMAT_NETCDF4){
-      (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will fail\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
-      /* Chunking */
-      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
-      if(dbg_lvl >= nco_dbg_scl){
-	(void)fprintf(stderr,"idx cnk_sz:\n");
-	for(idx=0;idx<cnk_nbr;idx++) (void)fprintf(stderr,"%d %lu\n",idx,(unsigned long)cnk[idx]->sz);
-      } /* endif dbg */
-    } /* endif netCDF4 */
 
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
@@ -590,14 +581,13 @@ main(int argc,char **argv)
       int var_out_id;
       size_t *cnk_sz_ptr=NULL; /* [nbr] Chunk size dummy pointer fxm */
 
-      /* Assemble chunksize list, if any */
-      if(cnk_nbr > 0 || cnk_sz_scl != 0UL) cnk_sz_ptr=nco_cnk_sz_get(out_id,xtr_lst[idx].nm,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
-
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,cnk_sz_ptr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,cnk_sz_ptr,dfl_lvl);
       /* Copy variable's attributes */
       if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */
+    /* Set chunksize parameters */
+    (void)nco_cnk_sz_set(out_id,nco_cnk_map,nco_cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -705,7 +695,7 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     /* Free chunking information */
-    for(idx=0;idx<lmt_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     
     /* NB: lmt[idx] was free()'d earlier

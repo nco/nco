@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.4 2009-05-25 20:48:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.5 2009-05-26 00:10:51 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -74,10 +74,9 @@ cnk_sct * /* O [sct] Pointer to free'd chunking structure */
 nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
 (cnk_sct *cnk); /* I/O [sct] Chunking structure to free */
 
-size_t * /* O [nbr] Chunksize array for variable */
-nco_cnk_sz_get /* [fnc] Determine chunksize array */
-(const int out_id, /* I [id] netCDF output file ID */
- const char * const var_nm, /* I [sng] Variable name */
+void
+nco_cnk_sz_set /* [fnc] Set chunksize parameters */
+(const int nc_id, /* I [id] netCDF file ID */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
@@ -93,65 +92,25 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
 (const char *nco_cnk_plc_sng); /* [sng] User-specified chunking policy */
 
 #if 0 
+size_t * /* O [nbr] Chunksize array for variable */
+nco_cnk_sz_get /* [fnc] Determine chunksize array */
+(const int nc_id, /* I [id] netCDF file ID */
+ const char * const var_nm, /* I [sng] Variable name */
+ const int cnk_map, /* I [enm] Chunking map */
+ const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr); /* I [nbr] Number of dimensions with user-specified chunking */
+
 nco_bool /* O [flg] NCO will attempt to chunk variable */
 nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
 (const nc_type nc_typ_in); /* I [enm] Type of input variable */
 
-nco_bool /* O [flg] Chunking policy allows chunking nc_typ_in */
-nco_cnk_plc_typ_get /* [fnc] Determine type, if any, to chunk input type to */
-(const int nco_cnk_map, /* I [enm] Chunking map */
- const nc_type nc_typ_in, /* I [enm] Type of input variable */
- nc_type *nc_typ_cnk_out); /* O [enm] Type to chunk variable to */
-
-void
-nco_cnk_mtd /* [fnc] Alter metadata according to chunking specification */
-(const var_sct * const var_in, /* I [ptr] Variable in original disk state */
- var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be altered */
- const int nco_cnk_map, /* I [enm] Chunking map */
- const int nco_cnk_plc); /* I [enm] Chunking policy */
-
-void
-nco_cnk_val /* [fnc] Chunk variable according to chunking specification */
-(var_sct * const var_in, /* I [ptr] Variable in original disk state */
- var_sct * var_out, /* I/O [ptr] Variable after chunking/unchunking operation */
- const int nco_cnk_map, /* I [enm] Chunking map */
- const int nco_cnk_plc, /* I [enm] Chunking policy */
- aed_sct * const aed_lst_add_fst, /* O [enm] Attribute edit structure, add_offset */
- aed_sct * const aed_lst_scl_fct); /* O [enm] Attribute edit structure, scale_factor */
-
-int /* O [enm] Chunking map */
-nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
-(const char *nco_cnk_map_sng); /* [sng] User-specified chunking map */
-
-int /* O [enm] Chunking policy */
-nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
-(const char *nco_cnk_plc_sng); /* [sng] User-specified chunking policy */
-  
 nco_bool /* O [flg] Variable is chunked on disk */
 nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  var_sct *var); /* I/O [sct] Variable */
   
-var_sct * /* O [sct] Chunked variable */
-nco_put_var_cnk /* [fnc] Chunk variable in memory and write chunking attributes to disk */
-(const int out_id, /* I [id] netCDF output file ID */
- var_sct *var, /* I/O [sct] Variable to be chunked */
- const int nco_cnk_plc); /* [enm] Chunking operation type */
-
-var_sct * /* O [sct] Chunked variable */
-nco_var_cnk /* [fnc] Chunk variable in memory */
-(var_sct *var, /* I/O [sct] Variable to be chunked */
- const nc_type typ_cnk, /* I [enm] Type of variable when chunked (on disk). This should be same as typ_dsk except in cases where variable is chunked in input file and unchunked in output file. */
- nco_bool *CNK_VAR_WITH_NEW_CNK_ATT); /* O [flg] Routine generated new scale_factor/add_offset */
-
-var_sct * /* O [sct] Unchunked variable */
-nco_var_uck /* [fnc] Unchunk variable in memory */
-(var_sct * const var); /* I/O [sct] Variable to be unchunked */
-
-void
-nco_var_uck_swp /* [fnc] Unchunk var_in into var_out */
-(var_sct * const var_in, /* I/O [sct] Variable to unchunk */
- var_sct * const var_out); /* I/O [sct] Variable to unchunk into */
 #endif /* endif 0 */
 
 #ifdef __cplusplus
