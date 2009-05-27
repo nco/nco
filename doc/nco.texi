@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.543 2009-05-27 00:25:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.544 2009-05-27 05:20:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9657,6 +9657,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-3] [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] 
 [-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] 
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] 
