@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.542 2009-05-27 00:13:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.543 2009-05-27 00:25:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4285,10 +4285,11 @@ Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: none@*
-Long options: @samp{--cnk_dmn}, @samp{--chunk_dimension}, 
-@samp{--cnk_map}, @samp{--chunk_map}, 
-@samp{--cnk_plc}, @samp{--chunk_policy}, 
-@samp{--cnk_scl}, @samp{--chunk_scalar}@*
+Long options: @samp{--cnk_dmn @var{dmn_nm},@var{cnk_sz}},
+@samp{--chunk_dimension @var{dmn_nm},@var{cnk_sz}}@*,
+@samp{--cnk_map @var{cnk_map}}, @samp{--chunk_map @var{cnk_map}},@*
+@samp{--cnk_plc @var{cnk_plc}}, @samp{--chunk_policy @var{cnk_plc}},@*
+@samp{--cnk_scl @var{cnk_sz}}, @samp{--chunk_scalar @var{cnk_sz}}@*
 @end cartouche
 
 All netCDF4-enabled @acronym{NCO} operators that define variables 
@@ -4297,9 +4298,6 @@ Chunking can significantly accelerate or degrade read/write access
 to large datasets.
 Dataset chunking issues are described in detail
 @uref{http://www.hdfgroup.org/HDF5/doc/H5.user/Chunking.html,here}.
-Specify @acronym{NCO} chunking parameters with the 
-@code{--cnk_sz @var{cnk_sz}} option (or with the same argument to the
-@samp{--chunk_size} options). 
 
 @cindex chunking policy
 @cindex chunking map
@@ -4397,7 +4395,6 @@ Four chunking maps are currently implemented:@*
 @cindex @samp{map_prd}
 @cindex @samp{map_rcd_one}
 @table @dfn
-@table @dfn
 @item Chunksize Equals Dimension Size [@emph{default}]
 Definition: Chunksize defaults to dimension size. 
 Explicitly specify chunksizes for particular dimensions with
@@ -4431,8 +4428,9 @@ user-specified per-dimension (but not per-variable) chunksizes that
 override specific chunksizes determined by the maps above. 
 The user specifies the per-dimension chunksizes with the (equivalent) 
 long options @samp{--cnk_dmn} or @samp{--chunk_dimension}).
-The option takes two comma-separated arguments, @var{dmn_nm,cnk_sz},
-which are the dimension name and its chunksize, respectively.
+The option takes two comma-separated arguments,
+@var{dmn_nm},@var{cnk_sz}, which are the dimension name and its
+chunksize, respectively. 
 The @samp{--cnk_dmn} option may be us as many times as necessary.
 
 @html
@@ -4441,10 +4439,10 @@ The @samp{--cnk_dmn} option may be us as many times as necessary.
 @end html
 @example
 ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
+ncks -O -4 -D 4 --cnk_scl=8 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc 
 ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
 
 # Chunk data then unchunk it back to its original state:
 ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
