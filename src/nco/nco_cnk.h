@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.9 2009-05-27 00:13:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.10 2009-05-27 05:31:48 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -40,7 +40,7 @@ enum nco_cnk_plc{ /* [enm] Chunking policy */
 enum nco_cnk_map{ /* [enm] Chunking conversion map */
   nco_cnk_map_nil, /* 0 [enm] Do not chunk anything, storage is unchanged */
   nco_cnk_map_dmn, /* 1 [enm] Chunksize equals dimension size */
-  nco_cnk_map_rcd_one, /* 2 [enm] Chunksize equals dimension size except record dimension has size one */
+  nco_cnk_map_rd1, /* 2 [enm] Chunksize equals dimension size except record dimension has size one */
   nco_cnk_map_scl, /* 3 [enm] Chunksize equals scalar size specified */
   nco_cnk_map_prd /* 4 [enm] Chunksize product is scalar size specified */
 }; /* end nco_cnk_map enum */

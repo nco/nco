@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.544 2009-05-27 05:20:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.545 2009-05-27 05:31:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4293,7 +4293,7 @@ Long options: @samp{--cnk_dmn @var{dmn_nm},@var{cnk_sz}},
 @end cartouche
 
 All netCDF4-enabled @acronym{NCO} operators that define variables 
-support @var{chunk_size} specifications.
+support a plethora of chunksize options.
 Chunking can significantly accelerate or degrade read/write access
 to large datasets.
 Dataset chunking issues are described in detail
@@ -4385,15 +4385,15 @@ Four chunking maps are currently implemented:@*
 @cindex @samp{dmn}
 @cindex @samp{scl}
 @cindex @samp{prd}
-@cindex @samp{rcd_one}
+@cindex @samp{rd1}
 @cindex @samp{cnk_dmn}
 @cindex @samp{cnk_scl}
 @cindex @samp{cnk_prd}
-@cindex @samp{cnk_rcd_one}
+@cindex @samp{cnk_rd1}
 @cindex @samp{map_dmn}
 @cindex @samp{map_scl}
 @cindex @samp{map_prd}
-@cindex @samp{map_rcd_one}
+@cindex @samp{map_rd1}
 @table @dfn
 @item Chunksize Equals Dimension Size [@emph{default}]
 Definition: Chunksize defaults to dimension size. 
@@ -4438,15 +4438,20 @@ The @samp{--cnk_dmn} option may be us as many times as necessary.
 <a name="xmp_chunk"></a> <!-- http://nco.sf.net/nco.html#xmp_chunk -->
 @end html
 @example
+# Debugging
 ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_scl=8 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc 
 ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
 
 # Chunk data then unchunk it back to its original state:
 ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc */
+ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
+
+# Final, cleaner examples for manual
+ncks --cnk_plc=all     in.nc out.nc # Chunk in.nc
+ncks --cnk_plc=unchunk in.nc out.nc # Unchunk in.nc
 @end example
 
 @html

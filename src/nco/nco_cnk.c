@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.10 2009-05-27 00:13:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.11 2009-05-27 05:31:48 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -11,7 +11,7 @@
    ncks -O -4 -D 4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
    ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
-   ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
 
    This couplet chunks data then unchunk it back to its original state:
    ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
@@ -29,8 +29,8 @@ nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */
     return "nil";
   case nco_cnk_map_dmn:
     return "dmn";
-  case nco_cnk_map_rcd_one:
-    return "rcd_one";
+  case nco_cnk_map_rd1:
+    return "rd1";
   case nco_cnk_map_scl:
     return "scl";
   case nco_cnk_map_prd:
@@ -330,11 +330,11 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
       /* Is this a record dimension? */
       if(dmn_id[dmn_idx] == rcd_dmn_id){
 	/* Does policy specify record dimension treatment? */
-	if(cnk_map == nco_cnk_map_rcd_one){
+	if(cnk_map == nco_cnk_map_rd1){
 	  cnk_sz[dmn_idx]=1UL;
 	  /* Skip to next dimension in loop */
 	  continue;
-	} /* !nco_cnk_map_rcd_one */
+	} /* !nco_cnk_map_rd1 */
 	/* Record dimension size in output file is zero until first write
 	   Obtain record dimension size from lmt_all structure */
 	for(lmt_idx=0;lmt_idx<lmt_all_lst_nbr;lmt_idx++){
@@ -403,16 +403,16 @@ nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
   prg_nm=prg_nm_get(); /* [sng] Program name */
 
   if(nco_cnk_map_sng == NULL){
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking map. Defaulting to chunking map \"rcd_one\".\n",prg_nm,fnc_nm,prg_nm);
-    return nco_cnk_map_rcd_one;
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit chunking map. Defaulting to chunking map \"rd1\".\n",prg_nm,fnc_nm,prg_nm);
+    return nco_cnk_map_rd1;
   } /* endif */
 
   if(!strcmp(nco_cnk_map_sng,"nil")) return nco_cnk_map_nil;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_nil")) return nco_cnk_map_nil;
   if(!strcmp(nco_cnk_map_sng,"dmn")) return nco_cnk_map_dmn;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_dmn")) return nco_cnk_map_dmn;
-  if(!strcmp(nco_cnk_map_sng,"rcd_one")) return nco_cnk_map_rcd_one;
-  if(!strcmp(nco_cnk_map_sng,"cnk_map_rcd_one")) return nco_cnk_map_rcd_one;
+  if(!strcmp(nco_cnk_map_sng,"rd1")) return nco_cnk_map_rd1;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_rd1")) return nco_cnk_map_rd1;
   if(!strcmp(nco_cnk_map_sng,"scl")) return nco_cnk_map_scl;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_scl")) return nco_cnk_map_scl;
   if(!strcmp(nco_cnk_map_sng,"prd")) return nco_cnk_map_prd;

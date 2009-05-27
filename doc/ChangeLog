@@ -1,5 +1,7 @@
 2009-05-26  Charlie Zender  <zender@uci.edu>
 
+	* Change rcd_one to rd1
+
 	* Add chunksize usage to ncks in nco_ctl.c, nco.texi, ncks.1
 
 	* Improve cnk_map/cnk_plc defaults, minimize their main.c footprints
