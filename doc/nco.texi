@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.541 2009-05-26 22:52:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.542 2009-05-27 00:13:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4271,15 +4271,24 @@ important information from being lost.
 @end html
 @node Chunking, Deflation, Missing Values, Common features
 @section Chunking
-@cindex @code{--cnk_sz}
-@cindex @code{--chunk_size}
+@cindex @code{--cnk_dmn}
+@cindex @code{--cnk_map}
+@cindex @code{--cnk_plc}
+@cindex @code{--cnk_scl}
+@cindex @code{--chunk_dimension}
+@cindex @code{--chunk_map}
+@cindex @code{--chunk_policy}
+@cindex @code{--chunk_scalar}
 @cindex chunking
 @cartouche
 Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: none@*
-Long options: @samp{--cnk_sz}, @samp{--chunk_size}@*  
+Long options: @samp{--cnk_dmn}, @samp{--chunk_dimension}, 
+@samp{--cnk_map}, @samp{--chunk_map}, 
+@samp{--cnk_plc}, @samp{--chunk_policy}, 
+@samp{--cnk_scl}, @samp{--chunk_scalar}@*
 @end cartouche
 
 All netCDF4-enabled @acronym{NCO} operators that define variables 
@@ -4289,7 +4298,7 @@ to large datasets.
 Dataset chunking issues are described in detail
 @uref{http://www.hdfgroup.org/HDF5/doc/H5.user/Chunking.html,here}.
 Specify @acronym{NCO} chunking parameters with the 
-@code{--cnk_sze @var{cnk_sz}} option (or with the same argument to the
+@code{--cnk_sz @var{cnk_sz}} option (or with the same argument to the
 @samp{--chunk_size} options). 
 
 @cindex chunking policy
@@ -4315,24 +4324,46 @@ performance.
 The user specifies the desired chunking policy with the @samp{-P} switch 
 (or its long option equivalents, @samp{--cnk_plc} and
 @samp{--chunk_policy}) and its @var{cnk_plc} argument.
-Four chunking policies are currently implemented:@*   
+Five chunking policies are currently implemented:@*   
+@cindex @samp{all}
+@cindex @samp{g2d}
+@cindex @samp{g3d}
+@cindex @samp{xpl}
+@cindex @samp{cnk_all}
+@cindex @samp{cnk_g2d}
+@cindex @samp{cnk_g3d}
+@cindex @samp{cnk_xpl}
+@cindex @samp{plc_all}
+@cindex @samp{plc_g2d}
+@cindex @samp{plc_g3d}
+@cindex @samp{plc_xpl}
 @table @dfn
-@item Chunking All Variables [@emph{default}]
-Definition: Chunk all variables, re-chunk chunked variables@*
+@item Chunk All Variables [@emph{default}]
+Definition: Chunk all variables possible@*
 Alternate invocation: @code{ncchunk}@*
-@var{cnk_plc} key values: @samp{all_new}, @samp{cnk_all_new_att}@*
-@item Chunking (and not Re-Chunking) Variables
-Definition: Chunk unchunked variables, copy chunked variables@*
+@var{cnk_plc} key values: @samp{all}, @samp{cnk_all}, @samp{plc_all}@*
+Mnemonic: All@*
+@item Chunk Variables with at least Two Dimensions
+Definition: Chunk all variables possible with at least two dimensions@*
 Alternate invocation: none@*
-@var{cnk_plc} key values: @samp{all_xst}, @samp{cnk_all_xst_att}@*
-@item Re-Chunking Variables
-Definition: Re-chunk chunked variables, copy unchunked variables@*
+@var{cnk_plc} key values: @samp{g2d}, @samp{cnk_g2d}, @samp{plc_g2d}@*
+Mnemonic: @emph{G}reater than or equal to @emph{2} @emph{D}imensions@*
+@item Chunk Variables with at least Three Dimensions
+Definition: Chunk all variables possible with at least three dimensions@*
 Alternate invocation: none@*
-@var{cnk_plc} key values: @samp{xst_new}, @samp{cnk_xst_new_att}@*
+@var{cnk_plc} key values: @samp{g3d}, @samp{cnk_g3d}, @samp{plc_g3d}@*
+Mnemonic: @emph{G}reater than or equal to @emph{3} @emph{D}imensions@*
+@item Chunk Variables Containing Explicitly Chunked Dimensions
+Definition: Chunk all variables possible that contain at least one
+dimension whose chunksize was explicitly set with the @samp{--cnk_dmn} option.
+Alternate invocation: none@*
+@var{cnk_plc} key values: @samp{xpl}, @samp{cnk_xpl}, @samp{plc_xpl}@*
+Mnemonic: E@emph{XPL}icitly specified dimensions@*
 @item Unchunking
-Definition: Unchunk chunked variables, copy unchunked variables@*
+Definition: Unchunk all variables@*
 Alternate invocation: @code{ncunchunk}@*
-@var{cnk_plc} key values: @samp{upk}, @samp{unchunk}, @samp{cnk_upk}@*
+@var{cnk_plc} key values: @samp{uck}, @samp{cnk_uck}, @samp{plc_uck}, @samp{unchunk}@*
+Mnemonic: @emph{U}n@emph{C}hun@emph{K}@*
 @end table
 @noindent
 Equivalent key values are fully interchangeable.
@@ -4340,52 +4371,84 @@ Multiple equivalent options are provided to satisfy disparate needs
 and tastes of @acronym{NCO} users working with scripts and from the
 command line.
 
-1. A few user-selectable, preset chunking policies (cnk_plc)
-   Policies specify which variables to chunk, but not how
-   they are chunked. Policies could include: 
-   plc_all: Chunk all variables; 
-   plc_nil: Chunk no variables (default);
-   plc_g2d: Chunk all variables with >= two dimensions;
-   plc_g3d: Chunk all variables with >= three dimensions;
-   plc_dmn_spc: Chunk only variables which contain a dimension whose 
-       	        chunk_size was explicitly specified with --cnk_sz; 
-2. A few user-selectable, preset chunking maps (cnk_map)
-   Maps determine which chunksize to use for each dimension in
-   a variable that will be chunked. Maps could include:
-   map_dmn: chunksize equals dimension size (default)
-   map_dmn_rcd_one: chunksize equals dimension size except for
-   		    record dimension for which chunksize is one
-   map_scl: chunksize equals scalar size specified (e.g., 64)
-3. User-specifiable per-dimension (not per variable) chunksizes 
-   These override specific chunksizes determined by maps above.
-   Format and processing similar to hyperslab limits, e.g.,
-   --cnk_sz dmn_nm,cnk_sz : --chk_sz lat,64 --chk_sz lon,128
+@cindex chunking map
+@cindex @var{cnk_map}
+@cindex @code{-M @var{cnk_map}}
+@cindex @code{--cnk_map @var{cnk_map}}
+@cindex @code{--map @var{cnk_map}}
+The chunking algorithms must know the chunksizes of each dimension of
+each variable to be chunked.
+The correspondence between the input variable shape and the chunksizes
+is called the @dfn{chunking map}. 
+The user specifies the desired chunking map with the @samp{-M} switch
+(or its long option equivalents, @samp{--cnk_map} and
+@samp{--chunk_map}) and its @var{cnk_map} argument.
+Four chunking maps are currently implemented:@*
+@cindex @samp{dmn}
+@cindex @samp{scl}
+@cindex @samp{prd}
+@cindex @samp{rcd_one}
+@cindex @samp{cnk_dmn}
+@cindex @samp{cnk_scl}
+@cindex @samp{cnk_prd}
+@cindex @samp{cnk_rcd_one}
+@cindex @samp{map_dmn}
+@cindex @samp{map_scl}
+@cindex @samp{map_prd}
+@cindex @samp{map_rcd_one}
+@table @dfn
+@table @dfn
+@item Chunksize Equals Dimension Size [@emph{default}]
+Definition: Chunksize defaults to dimension size. 
+Explicitly specify chunksizes for particular dimensions with
+@samp{--cnk_dmn} option.@*
+@var{cnk_map} key values: @samp{dmn}, @samp{cnk_dmn}, @samp{map_dmn}@*
+Mnemonic: @emph{D}i@emph{M}e@emph{N}sion@*
+@item Chunksize Equals Dimension Size except Record Dimension
+Definition: Chunksize equals dimension size except record dimension has size one.
+Explicitly specify chunksizes for particular dimensions with
+@samp{--cnk_dmn} option.@*
+@var{cnk_map} key values: @samp{rd1}, @samp{cnk_rd1}, @samp{map_rd1}@*
+Mnemonic: @emph{R}ecord @emph{D}imension size @emph{1}@*
+@item Chunksize Equals Scalar Size Specified
+Definition: Chunksize for all dimensions is set with the
+@samp{--cnk_scl} option.@* 
+@var{cnk_map} key values: @samp{xpl}, @samp{cnk_xpl}, @samp{map_xpl}@*
+Mnemonic: E@emph{XPL}icitly specified dimensions@*
+@item Chunksize Product Equals Scalar Size Specified
+Definition: The product of the chunksizes for each variable
+(approximately) equals the size specified with the @samp{--cnk_scl}
+option.
+For a variable of rank @var{R} (i.e., with @var{R} non-degenerate
+dimensions), the chunksize in each non-degenerate dimension is the
+@var{R}th root of @var{cnk_scl}.@*
+@var{cnk_map} key values: @samp{prd}, @samp{cnk_prd}, @samp{map_prd}@*
+Mnemonic: @emph{PR}o@emph{D}uct@*
+@end table
+@noindent
+It is possible to combine the above chunking map algorithms with
+user-specified per-dimension (but not per-variable) chunksizes that
+override specific chunksizes determined by the maps above. 
+The user specifies the per-dimension chunksizes with the (equivalent) 
+long options @samp{--cnk_dmn} or @samp{--chunk_dimension}).
+The option takes two comma-separated arguments, @var{dmn_nm,cnk_sz},
+which are the dimension name and its chunksize, respectively.
+The @samp{--cnk_dmn} option may be us as many times as necessary.
 
-During input list processing the policies and maps are combined
-and applied to every variable and used to fill the (new) cnk_sz
-scalar in each dmn_sct and the cnk_sz array in each var_sct.
-Call nco_var_def_chunking() per-variable when cnk_sz != NULL.
-
-The set of policies and maps above does, I think, address the cases
-Denis raises with multiple grids per file, and with multi-dimensional  
-specifications. 
-
-So, currently the chunksize implementation is braindead and only 
-accepts (and does not always work with) arguments like
-
-ncks -O -4 --cnk_sz 8,16,4,1,8 in.nc out.nc
-
-When the policy/map infrastructure is implemented, a complicated
-chunking command might look like, e.g., 
-
-ncks -O -4 --chk_plc=plc_g2d --chk_map=map_dmn_xcp_rcd \
-     --chk_sz lat,64 --chk_sz lon,128 in.nc out.nc
-
+@html
+<a name="xmp_cnk"></a> <!-- http://nco.sf.net/nco.html#xmp_cnk -->
+<a name="xmp_chunk"></a> <!-- http://nco.sf.net/nco.html#xmp_chunk -->
+@end html
 @example
-# Yields "HDF error":
-ncks -D 5 -O -4 -v PS --cnk_sz 8,8,8,8,8 ~/nco/data/in.nc ~/foo.nc
-# Works
-ncks -D 5 -O -4 -v DSTMPC --cnk_sz 64,64,64,64,64 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
+ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rcd_one --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+
+# Chunk data then unchunk it back to its original state:
+ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc */
 @end example
 
 @html

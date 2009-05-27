@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.243 2009-05-26 18:24:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.244 2009-05-27 00:13:20 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -922,7 +922,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-M")){
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-M, --glb_mtd_spr\tDo not copy global metadata\n");
     if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tToggle printing global metadata\n");
-    if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --map pck_map\tPack map [flt_sht,flt_byt,hgh_sht,hgh_byt,nxt_lsr]\n");
+    if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --pack_map, --map pck_map\tPack map [flt_sht,flt_byt,hgh_sht,hgh_byt,nxt_lsr]\n");
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");
   } /* end if */
   if(strstr(opt_sng,"-m")){

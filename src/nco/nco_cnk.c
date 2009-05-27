@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.9 2009-05-26 22:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.10 2009-05-27 00:13:20 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -55,6 +55,8 @@ nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
     return "g2d";
   case nco_cnk_plc_g3d: 
     return "g3d";
+  case nco_cnk_plc_xpl: 
+    return "xpl";
   case nco_cnk_plc_uck:
     return "uck";
   default: nco_dfl_case_cnk_plc_err(); break;
@@ -236,6 +238,12 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   if(*cnk_plc_ptr == nco_cnk_plc_nil) *cnk_plc_ptr=nco_cnk_plc_get((char *)NULL);
   cnk_map=*cnk_map_ptr;
   cnk_plc=*cnk_plc_ptr;
+
+  /* Bail on unsupported options */
+  if(cnk_plc == nco_cnk_plc_xpl){
+    (void)fprintf(stderr,"%s: ERROR cnk_plc = %s not yet supported\n",prg_nm_get(),nco_cnk_plc_sng_get(cnk_plc));
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
 
   /* Does output file support chunking? */
   (void)nco_inq_format(nc_id,&fl_fmt);
@@ -443,9 +451,13 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
   if(!strcmp(nco_cnk_plc_sng,"g3d")) return nco_cnk_plc_g3d;
   if(!strcmp(nco_cnk_plc_sng,"cnk_g3d")) return nco_cnk_plc_g3d;
   if(!strcmp(nco_cnk_plc_sng,"plc_g3d")) return nco_cnk_plc_g3d;
+  if(!strcmp(nco_cnk_plc_sng,"xpl")) return nco_cnk_plc_xpl;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_xpl")) return nco_cnk_plc_xpl;
+  if(!strcmp(nco_cnk_plc_sng,"plc_xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"uck")) return nco_cnk_plc_uck;
   if(!strcmp(nco_cnk_plc_sng,"cnk_uck")) return nco_cnk_plc_uck;
   if(!strcmp(nco_cnk_plc_sng,"plc_uck")) return nco_cnk_plc_uck;
+  if(!strcmp(nco_cnk_plc_sng,"unchunk")) return nco_cnk_plc_uck;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking policy %s\n",prg_nm_get(),fnc_nm,nco_cnk_plc_sng);
   nco_exit(EXIT_FAILURE);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.8 2009-05-26 22:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.9 2009-05-27 00:13:20 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -32,7 +32,8 @@ enum nco_cnk_plc{ /* [enm] Chunking policy */
   nco_cnk_plc_all, /* 1 [enm] Chunk all variables */
   nco_cnk_plc_g2d, /* 2 [enm] Chunk variables >= two dimensions */
   nco_cnk_plc_g3d, /* 3 [enm] Chunk variables >= three dimensions */
-  nco_cnk_plc_uck /* 4 [enm] Unchunk all chunked variables */
+  nco_cnk_plc_xpl, /* 4 [enm] Chunk variables with explicitly chunked dimensions */
+  nco_cnk_plc_uck /* 5 [enm] Unchunk all chunked variables */
 }; /* end nco_cnk_plc enum */
 
 /* Chunking type maps: */
