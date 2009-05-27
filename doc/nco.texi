@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.545 2009-05-27 05:31:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.546 2009-05-27 05:45:08 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -36,7 +36,7 @@ M-x texinfo-multiple-files-update
 Usage: 
 export TEX='tex --src-specials'
 cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
-hdvips -o nco.ps nco.dvi 
+dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
 makeinfo --no-split --output=nco.info nco.texi 
@@ -978,8 +978,8 @@ website.
 @html
 <a name="nco4"></a> <!-- http://nco.sf.net/nco.html#nco4 -->
 @end html
-@acronym{NCO} version 3.9.0 added support for all netCDF4 atomic data
-types in May, 2007. 
+@acronym{NCO} version 3.9.0 added support for all netCDF4 atomic data 
+types except @code{NC_STRING} in May, 2007. 
 Support for additional netCDF4 features has been incremental.
 We add one netCDF4 feature at a time.
 You must build @acronym{NCO} with netCDF4 to obtain this support.
@@ -993,12 +993,17 @@ The main netCDF4 features that NCO currently supports are the new
 atomic data types and Lempel-Ziv compression.
 The new atomic data types are @code{NC_UBYTE}, @code{NC_USHORT}, 
 @code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}.
-Eight-byte integer support is especially useful improvement from
+Eight-byte integer support is an especially useful improvement from
 netCDF3. 
 All @acronym{NCO} operators support these types, e.g., @command{ncks}
 copies and prints them, @command{ncra} averages them, and
 @command{ncap2} processes algebraic scripts with them.
 @command{ncks} prints compression information, if any, to screen.
+
+@cindex @code{NC_STRING}
+@acronym{NCO} version 3.9.9 (June, 2009) added support for the 
+@code{NC_STRING} netCDF4 atomic data type.
+Ragged arrays of strings are supported.
 
 @cindex deflation
 @acronym{NCO} version 3.9.1 (June, 2007) added support for netCDF4 
@@ -11624,10 +11629,11 @@ The primary contributors to @acronym{NCO} development have been:
 @cindex Charlie Zender
 @item Charlie Zender
 Concept, design and implementation of operators from 1995-2000.
-Since then autotools, bug-squashing, documentation, packing,
+Since then autotools, bug-squashing, chunking, documentation, packing,
 @acronym{NCO} library redesign, @command{ncap2} features, @command{ncbo}, 
 @command{ncpdq}, SMP threading and MPI parallelization, 
-netCDF4 integration, project coordination, and releases. 
+netCDF4 integration, external funding, project management, science
+research, releases.
 @cindex Henry Butowsky
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
@@ -11691,7 +11697,7 @@ Large work-load testing
 @item Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @item Markus Liebig
-Proof read the ncap documentation
+Proof-read the ncap documentation
 @end table
 
 @html

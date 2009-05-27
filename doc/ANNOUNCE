@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.329 2009-05-27 05:20:48 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.330 2009-05-27 05:45:08 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -30,7 +30,7 @@ C. NCO (when enabled with netCDF4) supports NC_STRING atomic type.
    NCO has long-supported the other netCDF4 atomic types. 
    An "s" trailing double quotes specifies NC_STRING (not NC_CHAR):
    ncap2 -4 -O -v -s 'name[lat]={"US"s,"Them"s};' in.nc out.nc
-   Ragged arrays of strings are finally here, so use them.
+   Ragged arrays of strings are finally here! Let's use them.
    http://nco.sf.net/nco.html#nco4
 
 D. Operators add NCO global attribute containing NCO version
@@ -78,9 +78,9 @@ Enjoy,
 Charlie
  
 GSL functions added to ncap2 in 3.9.9: ncap2 -f | grep gsl_stats
-gsl_stats_absdev()
-gsl_stats_absdev_m()
-gsl_stats_kurtosis()
+gsl_stats_absdev()                               
+gsl_stats_absdev_m()                             
+gsl_stats_kurtosis()                             
 gsl_stats_lag1_autocorrelation()
 gsl_stats_lag1_autocorrelation_m()
 gsl_stats_max()
