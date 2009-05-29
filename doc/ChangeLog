@@ -1,3 +1,9 @@
+2009-05-29  Henry Butowsky  <henryb@hush.com> 
+	* Big tidy up of  nco_lmt_udu_cnv() into 3 functions
+	1) for no udunits
+	2) for udunits1
+	3) for udunits2
+
 2009-05-26  Charlie Zender  <zender@uci.edu>
 
 	* Change rcd_one to rd1
