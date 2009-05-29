@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.12 2009-05-29 20:22:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.13 2009-05-29 20:36:32 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -18,7 +18,8 @@
    ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
 
    ncecat testing:
-   ncecat -O -4 -D 4 --cnk_plc=all -p ~/nco/data in.nc in.nc ~/foo.nc */
+   ncecat -O -4 -D 4 --cnk_plc=all -p ~/nco/data in.nc in.nc ~/foo.nc
+   ncecat -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 -p ${DATA}/dstmch90 dstmch90_clm.nc dstmch90_clm.nc ~/foo.nc */
 
 #include "nco_cnk.h" /* Chunking */
 
@@ -261,7 +262,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     nco_exit(EXIT_FAILURE);
   } /* endif cnk_sz_scl */
 
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking\n",prg_nm_get());
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking or unchunking\n",prg_nm_get());
   if(dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stderr,"cnk_plc: %s\n",nco_cnk_plc_sng_get(cnk_plc));
     (void)fprintf(stderr,"cnk_map: %s\n",nco_cnk_map_sng_get(cnk_map));
@@ -292,7 +293,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
        (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
-      if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s turning off chunking for variable %s\n",prg_nm_get(),fnc_nm,var_nm);
+      if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s turning off chunking for %s\n",prg_nm_get(),fnc_nm,var_nm);
 
       /* Leave chunking on for coordinates... */
 

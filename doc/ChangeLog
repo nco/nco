@@ -1,12 +1,16 @@
 2009-05-29  Charlie Zender  <zender@uci.edu>
 
+	* Improve chunking diagnostics when copying files with ncks
+
+	* ncks and ncecat chunksize implementations seem to perform identically
+
 	* Implement new chunksize API into ncecat.c for testing
 
 	* Remove old chunksize API from non-ncks operators
 
 2009-05-29  Henry Butowsky  <henryb@hush.com> 
 
-	* Tidy up nco_lmt_udu_cnv() into 3 functions
+	* Tidy up nco_lmt_udu_cnv() into three functions
 	1) for no udunits
 	2) for udunits1
 	3) for udunits2

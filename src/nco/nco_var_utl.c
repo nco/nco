@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.142 2009-05-29 20:12:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.143 2009-05-29 20:36:32 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -20,6 +20,8 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
      Routine does not take into account any user-specified limits
      It just copies what it finds
      Routine copies_variable by variable, old-style, used only by ncks */
+
+  const char fnc_nm[]="nco_cpy_var_dfn()"; /* [sng] Function name */
 
   int *dmn_in_id;
   int *dmn_out_id;
@@ -96,7 +98,10 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t));
     rcd=nco_inq_var_chunking(in_id,var_in_id,&srg_typ,cnk_sz);
     /* Copy original chunking settings */
-    if(srg_typ == NC_CHUNKED) (void)nco_def_var_chunking(out_id,var_out_id,srg_typ,cnk_sz);
+    if(srg_typ == NC_CHUNKED){
+      if(dbg_lvl_get() >= nco_dbg_var ) (void)fprintf(stdout,"%s: DEBUG %s copying input-to-ouput chunking information for %s\n",prg_nm_get(),fnc_nm,var_nm);
+      (void)nco_def_var_chunking(out_id,var_out_id,srg_typ,cnk_sz);
+    } /* endif */
     cnk_sz=(size_t *)nco_free(cnk_sz);
   } /* endif */
 
@@ -684,7 +689,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
 
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
-  if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
+  if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
 
   /* 20051021: Removed this potentially critical region by parallelizing 
      over in_id's in calling code */
