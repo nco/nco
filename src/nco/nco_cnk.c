@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.11 2009-05-27 05:31:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.12 2009-05-29 20:22:10 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -15,7 +15,10 @@
 
    This couplet chunks data then unchunk it back to its original state:
    ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
-   ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc */
+   ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
+
+   ncecat testing:
+   ncecat -O -4 -D 4 --cnk_plc=all -p ~/nco/data in.nc in.nc ~/foo.nc */
 
 #include "nco_cnk.h" /* Chunking */
 

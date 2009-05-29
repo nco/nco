@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.237 2009-05-26 22:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.238 2009-05-29 20:20:27 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,9 +121,11 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.237 2009-05-26 22:52:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.237 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.238 2009-05-29 20:20:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.238 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
+
+  cnk_sct **cnk=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -159,7 +161,6 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
     
-  cnk_sct **cnk=NULL_CEWI;
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
@@ -695,14 +696,13 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    /* Free chunking information */
-    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
-    
     /* NB: lmt[idx] was free()'d earlier
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
+    /* Free chunking information */
+    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
   } /* !flg_cln */
   
   /* End timer */ 
