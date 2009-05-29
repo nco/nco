@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.70 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.71 2009-05-29 20:12:35 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.70 2009-05-02 22:22:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.70 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.71 2009-05-29 20:12:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.71 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -108,7 +108,6 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;
@@ -565,7 +564,7 @@ main(int argc,char **argv)
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Define variables in output file, copy their attributes */
-    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,cnk_sz,dfl_lvl);
+    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
 #ifdef ENABLE_MPI
   } /* prc_rnk != rnk_mgr */
 #endif /* !ENABLE_MPI */

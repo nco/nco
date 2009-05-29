@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.25 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.26 2009-05-29 20:12:36 zender Exp $ */
 
 /* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 
@@ -75,7 +75,6 @@ void
 nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_int base_time_srt, /* I [s] base_time of first input file */
- const size_t *cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* NB: nco_cnv_arm_time_install() contains OpenMP critical region */
@@ -140,8 +139,6 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 
   /* Set HDF Lempel-Ziv compression level, if requested */
   if(dfl_lvl > 0) (void)nco_def_var_deflate(nc_id,time_id,(int)True,(int)True,dfl_lvl);
-  /* Set chunk sizes, if requested */
-  if(cnk_sz != NULL) (void)nco_def_var_chunking(nc_id,time_id,(int)NC_CHUNKED,cnk_sz);
 
   /* Add attributes for time variable */
   (void)nco_put_att(nc_id,time_id,units_sng,NC_CHAR,(long)(strlen(att_units)+1UL),(const void *)att_units);

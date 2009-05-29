@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.53 2009-05-26 05:29:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.54 2009-05-29 20:12:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -100,7 +100,6 @@ extern "C" {
    const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
    const int nco_pck_map, /* I [enm] Packing map */
    const int nco_pck_plc, /* I [enm] Packing policy */
-   const size_t * const cnk_sz, /* I [nbr] Chunk sizes */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
   
   var_sct * /* O [sct] Copy of input variable */

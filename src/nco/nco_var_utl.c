@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.141 2009-05-26 22:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.142 2009-05-29 20:12:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -887,7 +887,6 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
  const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
  const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_plc, /* I [enm] Packing policy */
- const size_t * const cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Define variables in output file, copy their attributes */
@@ -1004,8 +1003,6 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       
       /* Set HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl > 0 && dmn_nbr > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
-      /* Set chunk sizes, if requested */
-      if(cnk_sz != NULL && dmn_nbr > 0) (void)nco_def_var_chunking(out_id,var[idx]->id,(int)NC_CHUNKED,cnk_sz);
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm

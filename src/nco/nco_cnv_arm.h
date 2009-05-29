@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.22 2009-05-02 22:22:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.23 2009-05-29 20:12:36 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -42,7 +42,6 @@ void
 nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_int base_time_srt, /* I [s] base_time of first input file */
- const size_t *cnk_sz, /* I [nbr] Chunk sizes */
  const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
 nco_int /* O [s] Value of base_time variable */

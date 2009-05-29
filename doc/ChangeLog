@@ -1,5 +1,12 @@
+2009-05-29  Charlie Zender  <zender@uci.edu>
+
+	* Implement new chunksize API into ncecat.c for testing
+
+	* Remove old chunksize API from non-ncks operators
+
 2009-05-29  Henry Butowsky  <henryb@hush.com> 
-	* Big tidy up of  nco_lmt_udu_cnv() into 3 functions
+
+	* Tidy up nco_lmt_udu_cnv() into 3 functions
 	1) for no udunits
 	2) for udunits1
 	3) for udunits2

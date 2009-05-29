@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.150 2009-05-27 00:13:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.151 2009-05-29 20:12:36 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.150 2009-05-27 00:13:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.150 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.151 2009-05-29 20:12:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.151 $";
   const char * const opt_sht_lst="34Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -134,7 +134,6 @@ main(int argc,char **argv)
 
   int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
 
-  size_t *cnk_sz=NULL; /* [nbr] Chunk sizes */
   int *in_id_arr;
 
   int abb_arg_nbr=0;
@@ -787,7 +786,7 @@ main(int argc,char **argv)
   } /* nco_pck_plc == nco_pck_plc_nil */
   
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_map,nco_pck_plc,cnk_sz,dfl_lvl);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_map,nco_pck_plc,dfl_lvl);
   
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
