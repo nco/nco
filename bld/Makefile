@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.508 2009-05-26 18:40:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.509 2009-06-02 18:42:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -51,6 +51,7 @@
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
+# cd ${HOME}/nco/bld;make OMP=Y CUDA=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
 # cd ${HOME}/nco/bld;make OMP=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
 # cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet
@@ -110,6 +111,9 @@ endif # endif ABI
 ifndef ${CCACHE}
  CCACHE := N
 endif # CCACHE
+ifndef ${CUDA}
+ CUDA := N
+endif # CUDA
 ifndef DAP_NETCDF
  DAP_NETCDF := N
 endif # DAP_NETCDF
@@ -521,7 +525,7 @@ MDL_CXX_SRC := $(addprefix ${NCOXX_SRC_DIR}/,libnco++.hh Makefile.am Makefile.ol
 ${MY_OBJ_DIR}/%.o : %.c
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cu
-	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+	nvcc -deviceemu ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cc
 	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
@@ -568,7 +572,7 @@ ${MY_DPN_DIR}/%.d : %.c
 	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 ${MY_DPN_DIR}/%.d : %.cu
-	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+	nvcc -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 ${MY_DPN_DIR}/%.d : %.cc
 # NB: Use ${CXX} rather than ${CPP} on C++ files for now because, e.g., SUNMP cpp does not pre-process .cc files quite correctly
@@ -1000,16 +1004,19 @@ ifeq (${OPTS},X)
  FFLAGS += -g -C -e95
 endif
 endif # endif Intel (Kai) Fortran Compiler
+# cd ~;nvcc -o libcuda_add.a -deviceemu -lib simpleTemplates.cu
+# cd ~;g++ -I/usr/local/cuda/include -c -o test.o test.c
+# cd ~;g++ -o ~/test test.o libcuda_add.a
 # NVidia C Compiler
 ifeq (nvcc,$(firstword ${CC}))
- CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
- CFLAGS := -Wall
-# Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
- CFLAGS += -Wall
+ CPPFLAGS += 
+# -deviceemu: Emulate CUDA CPU
+# -lib: build static libraries
+ CFLAGS := -deviceemu -lib
 ifeq (${OMP},Y)
- OMP_FLG_C := -fopenmp
- OMP_FLG_F := -fopenmp
- LDFLAGS += -lgomp -lpthread
+ OMP_FLG_C := 
+ OMP_FLG_F := 
+ LDFLAGS += 
 endif # endif OMP
 ifeq (${OPTS},O)
  CFLAGS += -O -g
@@ -1394,6 +1401,13 @@ endif # !xl*
 endif # !g++
 endif # !DAP_OPENDAP
 # endif DAP_OPENDAP
+
+# Resolve nvcc CUDA functions
+ifeq (${CUDA},Y)
+ CUDA_FLG_C := 
+ CUDA_FLG_F := 
+ LDFLAGS += -L/usr/local/cuda/lib -lcuda
+endif # endif CUDA
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
