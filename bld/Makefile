@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.509 2009-06-02 18:42:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.510 2009-06-02 18:59:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1406,7 +1406,7 @@ endif # !DAP_OPENDAP
 ifeq (${CUDA},Y)
  CUDA_FLG_C := 
  CUDA_FLG_F := 
- LDFLAGS += -L/usr/local/cuda/lib -lcuda
+ LDFLAGS += -L/usr/local/cuda/lib -lcudart
 endif # endif CUDA
 
 # Internationalize NCO with i18n features
