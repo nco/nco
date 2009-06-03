@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.330 2009-05-27 05:45:08 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.331 2009-06-03 03:11:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -33,7 +33,7 @@ C. NCO (when enabled with netCDF4) supports NC_STRING atomic type.
    Ragged arrays of strings are finally here! Let's use them.
    http://nco.sf.net/nco.html#nco4
 
-D. Operators add NCO global attribute containing NCO version
+D. Operators may add NCO global attribute containing NCO version
 
 E. ncks --secret prints hidden/unsupported options
 
