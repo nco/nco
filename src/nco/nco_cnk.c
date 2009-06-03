@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.13 2009-05-29 20:36:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.14 2009-06-03 00:02:04 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -9,11 +9,12 @@
 /* Usage:
    ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_dmn time,10 ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
    ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
 
-   This couplet chunks data then unchunk it back to its original state:
+   This couplet chunks data then unchunks it back to its original state:
    ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
 
