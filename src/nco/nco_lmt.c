@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.70 2009-05-29 15:10:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.71 2009-06-04 16:44:29 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -959,6 +959,8 @@ float *out_sec)
     } /* end else */
   } /* if arg_lst[2] == NULL */
 
+  arg_lst=nco_sng_lst_free(arg_lst,arg_nbr);
+
   dt[0]=year;
   dt[1]=month;
   dt[2]=day;
@@ -984,13 +986,14 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
  double *lmt_val) /* O [val] Limit coordinate value */ 
 {
   int rcd; /* [enm] Return code */
+  int ut_rcd; /* [enm] UDUnits2 status */
   static const char* att_nm="units";
   char *fl_unt_sng=NULL;  /* [sng] Unit string in file */
   char *usr_unt_sng; /* [sng] User-specified unit string */
   long att_sz; /* [nbr] "units" attribute size */
   nc_type att_typ; /* [enm] Atttribute type, probably NC_CHAR */
-
-  int ut_rcd; /* [enm] UDUnits2 status */
+  double crr_val; 
+   
   cv_converter *ut_cnv; /* UDUnits converter */
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
@@ -1009,6 +1012,7 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   
   /* Does this coordinate have a 'units' attribute on-disk? */
   if(nco_inq_att(nc_id,dmn_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
+   
     /* Allocate memory for attribute */
     fl_unt_sng=(char *)nco_malloc((att_sz+1)*sizeof(char));
     /* Get 'units' attribute */
@@ -1017,71 +1021,80 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   } /* end if 'units' attribute */
   
   /* Convert on-disk 'units' attribute into ut_unit structure */
-  ut_sct_out=ut_get_unit_by_name(ut_sys,fl_unt_sng);
+  ut_sct_out=ut_parse(ut_sys,fl_unt_sng,UT_ASCII); 
   if(ut_sct_out == NULL){ /* Problem with 'units' attribute */
     ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
-    if(ut_rcd == UT_SUCCESS) (void)fprintf(stderr,"ERROR: units attribute %s for dimension ID %d is not listed in UDUnits2 SI system database\n",fl_unt_sng,dmn_id);
     if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: empty attribute or units system for dimension ID %d\n",dmn_id);
+    if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: units  attribute \"%s\" for dimension ID %d has a syntax error\n",fl_unt_sng,dmn_id);
+    if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" for dimension ID %d is not listed in UDUnits2 SI system database\n",fl_unt_sng,dmn_id);
+
     return 1; 
   } /* endif coordinate on disk has no units attribute */
 
-  
-  /* Assume that if unit attribute is 'time since...', then user specified same */
-  /* fxm: UDUnits2 time-handling not implemented yet */  
-  if(False){ }
-    
-  {
-   
-    double crr_val; /* Current value */ 
 
-    /* Parse user-specified unit */
-    usr_unt_sng=strchr(lmt_sng,' ');
-    /* Advance past space delimiter
-       Will not be NULL since nco_lmt_typ() checked for that */
-    usr_unt_sng++;
-    
-    /* Quick return if specified and supplied units are equal */
-    if(strcmp(usr_unt_sng,fl_unt_sng) == 0){
-      *lmt_val=strtod(lmt_sng,&usr_unt_sng); /* Convert to double */
-      ut_free_system(ut_sys);
-      return 0; /* Success */
-    } /* endif */
-    
-    /* Convert user-specified unit into utUnit structure */
-    ut_sct_in=ut_get_unit_by_name(ut_sys,usr_unt_sng);
-    if(ut_sct_in == NULL){ /* Problem with user-specified unit string */
-      ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
-      if(ut_rcd == UT_SUCCESS) (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" is not listed in UDUnits2 SI system database\n",usr_unt_sng);
-      if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: Empty attribute or units system\n");
-      ut_free_system(ut_sys);
-      return 1;
-    } /* endif */
-  
-    /* Get unit transformation information */
 
-    ut_cnv=ut_get_converter(ut_sct_in,ut_sct_out); /* UDUnits converter */
-    ut_free(ut_sct_in);
-    ut_free(ut_sct_out);
-    if(ut_cnv == NULL){
-      ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
-      if(ut_rcd == UT_SUCCESS) (void)fprintf(stderr,"ERROR: Conversion between user specified unit \"%s\" and file units \"%s\" is not possible\n",usr_unt_sng,fl_unt_sng);
-      if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: One of units is NULL\n");
-      if(ut_rcd == UT_NOT_SAME_SYSTEM) (void)fprintf(stderr,"ERROR: Units belong to different systems\n");
-      ut_free_system(ut_sys);
-      return 1; /* Failure */
-    } /* endif */
-    /* Convert to disk-based units */
-    crr_val=strtod(lmt_sng,&usr_unt_sng);
-    crr_val=cv_convert_double(ut_cnv,crr_val);
-    *lmt_val=crr_val;
-    cv_free(ut_cnv);
-    *lmt_val=crr_val;
-    
-  } /* !utIsTime() ... */
-  
+  /* check if disk units is a timestamp if so */
+  if( strstr(fl_unt_sng," from ") || strstr(fl_unt_sng," since ") || strstr(fl_unt_sng," after ") ){
+
+  // prefix output units with s@ so that ut_parse works
+    if(strncmp("s@", lmt_sng,2)){
+      usr_unt_sng=(char*)nco_malloc( (strlen(lmt_sng)+3) *sizeof(char) );
+      strcpy(usr_unt_sng,"s@");
+      strcat(usr_unt_sng,lmt_sng);
+    }else{
+      usr_unt_sng=strdup(lmt_sng);
+    }
+
+
+    crr_val=0.0;
+
+  /* assume we are dealing with regular output units */
+  }else{
+    usr_unt_sng=(char*)nco_calloc( strlen(lmt_sng)+1, sizeof(char));
+    /* number space units */
+    /* this should be gaurranted by calling function */
+    sscanf(lmt_sng,"%lg %s", &crr_val,usr_unt_sng);    
+
+    printf("DEBUG nco_lmt_udu_cnv limit=%.10g units=%s\n",crr_val,usr_unt_sng); 
+  }
+
+
+
+  /* Convert user-specified unit into utUnit structure */
+  ut_sct_in=ut_parse(ut_sys,usr_unt_sng,UT_ASCII); 
+  if(ut_sct_in == NULL){ /* Problem with 'units' attribute */
+    ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
+    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: Empty attribute or units system\n");
+    if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" has a syntax error\n",usr_unt_sng);
+    if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" is not listed in UDUnits2 SI system database\n",usr_unt_sng);
+
+    return 1; 
+  } /* endif */
+
+
+  /* Create a converter */
+  ut_cnv=ut_get_converter(ut_sct_in,ut_sct_out); /* UDUnits converter */
+  if(ut_cnv == NULL){
+    ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
+    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: One of units is NULL\n");
+    if(ut_rcd == UT_NOT_SAME_SYSTEM) (void)fprintf(stderr,"ERROR: Units belong to different unit systems\n");
+    if(ut_rcd == UT_MEANINGLESS) (void)fprintf(stderr,"ERROR: Conversion between user specified unit \"%s\" and file units \"%s\" is  is meaningless\n",usr_unt_sng,fl_unt_sng);
+    return 1; /* Failure */
+  } /* endif */
+
+
+  /* Finally do the conversion  */
+  *lmt_val=cv_convert_double(ut_cnv,crr_val);
+
+  nco_free(usr_unt_sng); 
+  nco_free(fl_unt_sng);  
 
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
-  rcd=(int)(1+0*nc_id+0*dmn_id+0*(*lmt_val)); /* CEWI removes unused parameter warnings */
+  ut_free(ut_sct_in);
+  ut_free(ut_sct_out);
+  cv_free(ut_cnv);
+
+
 
   return 0; /* Successful conversion */
 
