@@ -1,3 +1,12 @@
+2009-06-05  Henry Butowsky  <henryb@hush.com> 
+	* added support in nco_lmt_udu_cnv()-udunits2 for parsing 
+	timestamps in user specified co-ordinate limits
+
+	* added hnd_fnc_stat4() method to gsl_cls. This method handles the
+	gsl functions:
+	gsl_stats_covariance/gsl_stats_correlation
+        gsl_stats_pvariance/gsl_stats_ttest
+
 2009-06-02  Charlie Zender  <zender@uci.edu>
 
 	* Add CUDA options to Makefile
