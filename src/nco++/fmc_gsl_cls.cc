@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.35 2009-05-26 11:23:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.36 2009-06-05 14:17:52 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -753,6 +753,10 @@ void gsl_cls::gsl_ini_stats(void){
   }
 
 
+  gpr_vtr.push_back(gpr_cls("gsl_stats_covariance",f_unn(ncap_void),hnd_fnc_stat4,PS_COV));
+  gpr_vtr.push_back(gpr_cls("gsl_stats_correlation",f_unn(ncap_void),hnd_fnc_stat4,PS_COR));
+  gpr_vtr.push_back(gpr_cls("gsl_stats_pvariance",f_unn(ncap_void),hnd_fnc_stat4,PS_PVAR));
+  gpr_vtr.push_back(gpr_cls("gsl_stats_ttest",f_unn(ncap_void),hnd_fnc_stat4,PS_TTST));
 
 
 
@@ -3427,7 +3431,243 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
  return var_ret;
 }
 
+     
+var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+  const std::string fnc_nm("hnd_fnc_stat4");
+  int idx;
+  int fdx=gpr_obj.type(); // very important
+  int args_nbr;
+  nc_type type;
+  std::string susg;
+  std::string sfnm=gpr_obj.fnm();
+  var_sct *var_arr[4];
+  double r_val;
+   
+    
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;
+  type=gpr_obj.type();  
+  
+  args_nbr=args_vtr.size();
+  
+  susg=susg="usage: double_val="+sfnm+"(var_data1, stride_data1, var_data2, stride_data2)";
 
+  if(args_nbr <4){
+    err_prn(sfnm,"Function requires four arguments.\n"+susg  ); 
+  }
+   
+
+  for(idx=0;idx<4;idx++)
+    var_arr[idx]=walker.out(args_vtr[idx]);
+
+
+  
+  // Deal with initial scan
+  if(prs_arg->ntl_scn){
+   
+    for(idx=0;idx<4;idx++)
+      var_arr[idx]=nco_var_free(var_arr[idx]);
+    
+    return ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat4"),(nc_type)NC_DOUBLE,false);   
+  }
+
+
+  
+ // check weight type and data type 
+ if(var_arr[0]->type != var_arr[2]->type  ){   
+   ostringstream os;  
+   os<<"The data1 type and the data2 type must be the same . In your arguments the data1 is type "<<nco_typ_sng(var_arr[0]->type)<< " and data2 is type "<<nco_typ_sng(var_arr[2]->type);
+   err_prn(sfnm,os.str());  
+ }
+
+
+
+  if(var_arr[0]->type==(nc_type)NC_INT64 && sizeof(long)!=sizeof(long long) )
+    err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
+
+  if(var_arr[0]->type==(nc_type)NC_UINT64 && sizeof(unsigned long)!=sizeof(unsigned long long) )
+    err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
+
+
+
+
+
+ // make weight and data conform only for _covariance and _correlation
+ if(fdx==PS_COV || fdx==PS_COR)
+   ncap_var_att_cnf(var_arr[2],var_arr[0]);
+
+
+ // do heavy lifting
+ { 
+   size_t sz1;
+   size_t sz2;
+   size_t d1_srd;  // stride for data1
+   size_t d2_srd;  // stride for data2
+
+   // 1st arg -- data1
+   (void)cast_void_nctype(var_arr[0]->type,&(var_arr[0]->val));  
+
+   // 2nd arg data1 stride
+   var_arr[1]=nco_var_cnf_typ(NC_INT,var_arr[1]);
+   (void)cast_void_nctype(NC_INT,&(var_arr[1]->val));  
+   d1_srd=(size_t) var_arr[1]->val.lp[0];       
+   (void)cast_nctype_void(NC_INT,&(var_arr[1]->val));
+
+
+   // 3rd arg -- data2
+   (void)cast_void_nctype(var_arr[2]->type,&(var_arr[2]->val));  
+
+   // 4th arg data2 stride
+   var_arr[3]=nco_var_cnf_typ(NC_INT,var_arr[3]);
+   (void)cast_void_nctype(NC_INT,&(var_arr[3]->val));  
+   d2_srd=(size_t) var_arr[3]->val.lp[0];       
+   (void)cast_nctype_void(NC_INT,&(var_arr[3]->val));
+
+   sz1=(size_t)var_arr[0]->sz;
+   sz2=(size_t)var_arr[2]->sz;
+
+   switch(fdx){
+
+    
+   case PS_COV:
+     switch(var_arr[0]->type){
+       case NC_FLOAT:  r_val=gsl_stats_float_covariance( var_arr[0]->val.fp,d1_srd,var_arr[2]->val.fp,d2_srd,sz1 );break;
+       case NC_DOUBLE: r_val=gsl_stats_covariance(var_arr[0]->val.dp,d1_srd,var_arr[2]->val.dp,d2_srd,sz1 );break;
+
+       case NC_INT:    // NC_INT rpresented as int in nco
+                       #if NC_INT==NCO_TYP_INT
+                         r_val=gsl_stats_int_covariance(var_arr[0]->val.lp,d1_srd,var_arr[2]->val.lp,d2_srd,sz1 );break;
+                       // NC_INT rpresented as long  in nco
+		       #else
+                         r_val=gsl_stats_long_covariance(var_arr[0]->val.lp,d1_srd,var_arr[2]->val.lp,d2_srd,sz1 );break;
+                       #endif
+                       break;
+
+       case NC_SHORT:  r_val=gsl_stats_short_covariance( var_arr[0]->val.sp,d1_srd,var_arr[2]->val.sp,d2_srd,sz1 );break;
+       case NC_CHAR:   r_val=gsl_stats_char_covariance((const char*)var_arr[0]->val.cp,d1_srd,(const char*)var_arr[2]->val.cp,d2_srd,sz1 );break;
+       case NC_BYTE:   r_val=gsl_stats_char_covariance((const char*)var_arr[0]->val.bp,d1_srd,(const char*)var_arr[2]->val.bp,d2_srd,sz1 );break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  r_val=gsl_stats_uchar_covariance((const unsigned char*)var_arr[0]->val.ubp,d1_srd,(const unsigned char*)var_arr[2]->val.ubp,d2_srd,sz1 );break;
+       case NC_USHORT: r_val=gsl_stats_ushort_covariance(var_arr[0]->val.usp,d1_srd,var_arr[2]->val.usp,d2_srd,sz1 );break;
+       case NC_UINT:   r_val=gsl_stats_uint_covariance(var_arr[0]->val.uip,d1_srd,var_arr[2]->val.uip,d2_srd,sz1 );break;
+       case NC_INT64:  r_val=gsl_stats_long_covariance((const long*)var_arr[0]->val.i64p,d1_srd,(const long*)var_arr[2]->val.i64p,d2_srd,sz1 );break;
+       case NC_UINT64: r_val=gsl_stats_ulong_covariance((const unsigned long*)var_arr[0]->val.ui64p,d1_srd,(const unsigned long*)var_arr[2]->val.ui64p,d2_srd,sz1);break;
+       case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;    
+     }  break;  
+  
+    
+   case PS_COR:
+     switch(var_arr[0]->type){
+       case NC_FLOAT:  r_val=gsl_stats_float_correlation( var_arr[0]->val.fp,d1_srd,var_arr[2]->val.fp,d2_srd,sz1 );break;
+       case NC_DOUBLE: r_val=gsl_stats_correlation(var_arr[0]->val.dp,d1_srd,var_arr[2]->val.dp,d2_srd,sz1 );break;
+
+       case NC_INT:    // NC_INT rpresented as int in nco
+                       #if NC_INT==NCO_TYP_INT
+                         r_val=gsl_stats_int_correlation(var_arr[0]->val.lp,d1_srd,var_arr[2]->val.lp,d2_srd,sz1 );break;
+                       // NC_INT rpresented as long  in nco
+		       #else
+                         r_val=gsl_stats_long_correlation(var_arr[0]->val.lp,d1_srd,var_arr[2]->val.lp,d2_srd,sz1 );break;
+                       #endif
+                       break;
+
+       case NC_SHORT:  r_val=gsl_stats_short_correlation( var_arr[0]->val.sp,d1_srd,var_arr[2]->val.sp,d2_srd,sz1 );break;
+       case NC_CHAR:   r_val=gsl_stats_char_correlation((const char*)var_arr[0]->val.cp,d1_srd,(const char*)var_arr[2]->val.cp,d2_srd,sz1 );break;
+       case NC_BYTE:   r_val=gsl_stats_char_correlation((const char*)var_arr[0]->val.bp,d1_srd,(const char*)var_arr[2]->val.bp,d2_srd,sz1 );break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  r_val=gsl_stats_uchar_correlation((const unsigned char*)var_arr[0]->val.ubp,d1_srd,(const unsigned char*)var_arr[2]->val.ubp,d2_srd,sz1 );break;
+       case NC_USHORT: r_val=gsl_stats_ushort_correlation(var_arr[0]->val.usp,d1_srd,var_arr[2]->val.usp,d2_srd,sz1 );break;
+       case NC_UINT:   r_val=gsl_stats_uint_correlation(var_arr[0]->val.uip,d1_srd,var_arr[2]->val.uip,d2_srd,sz1 );break;
+       case NC_INT64:  r_val=gsl_stats_long_correlation((const long*)var_arr[0]->val.i64p,d1_srd,(const long*)var_arr[2]->val.i64p,d2_srd,sz1 );break;
+       case NC_UINT64: r_val=gsl_stats_ulong_correlation((const unsigned long*)var_arr[0]->val.ui64p,d1_srd,(const unsigned long*)var_arr[2]->val.ui64p,d2_srd,sz1);break;
+       case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;    
+     }  break;  
+  
+    
+   case PS_PVAR:
+     switch(var_arr[0]->type){
+       case NC_FLOAT:  r_val=gsl_stats_float_pvariance( var_arr[0]->val.fp,d1_srd,sz1,var_arr[2]->val.fp,d2_srd,sz2 );break;
+       case NC_DOUBLE: r_val=gsl_stats_pvariance(var_arr[0]->val.dp,d1_srd,sz1,var_arr[2]->val.dp,d2_srd,sz2 );break;
+
+       case NC_INT:    // NC_INT rpresented as int in nco
+                       #if NC_INT==NCO_TYP_INT
+                         r_val=gsl_stats_int_pvariance(var_arr[0]->val.lp,d1_srd,sz1,var_arr[2]->val.lp,d2_srd,sz2 );break;
+                       // NC_INT rpresented as long  in nco
+		       #else
+                         r_val=gsl_stats_long_pvariance(var_arr[0]->val.lp,d1_srd,sz1,var_arr[2]->val.lp,d2_srd,sz2 );break;
+                       #endif
+                       break;
+
+       case NC_SHORT:  r_val=gsl_stats_short_pvariance( var_arr[0]->val.sp,d1_srd,sz1,var_arr[2]->val.sp,d2_srd,sz2 );break;
+       case NC_CHAR:   r_val=gsl_stats_char_pvariance((const char*)var_arr[0]->val.cp,d1_srd,sz1,(const char*)var_arr[2]->val.cp,d2_srd,sz2 );break;
+       case NC_BYTE:   r_val=gsl_stats_char_pvariance((const char*)var_arr[0]->val.bp,d1_srd,sz1,(const char*)var_arr[2]->val.bp,d2_srd,sz2 );break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  r_val=gsl_stats_uchar_pvariance((const unsigned char*)var_arr[0]->val.ubp,d1_srd,sz1,(const unsigned char*)var_arr[2]->val.ubp,d2_srd,sz2 );break;
+       case NC_USHORT: r_val=gsl_stats_ushort_pvariance(var_arr[0]->val.usp,d1_srd,sz1,var_arr[2]->val.usp,d2_srd,sz2 );break;
+       case NC_UINT:   r_val=gsl_stats_uint_pvariance(var_arr[0]->val.uip,d1_srd,sz1,var_arr[2]->val.uip,d2_srd,sz2 );break;
+       case NC_INT64:  r_val=gsl_stats_long_pvariance((const long*)var_arr[0]->val.i64p,d1_srd,sz1,(const long*)var_arr[2]->val.i64p,d2_srd,sz2 );break;
+       case NC_UINT64: r_val=gsl_stats_ulong_pvariance((const unsigned long*)var_arr[0]->val.ui64p,d1_srd,sz1,(const unsigned long*)var_arr[2]->val.ui64p,d2_srd,sz2);break;
+       case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;    
+     }  break;  
+  
+
+  
+   case PS_TTST:
+     switch(var_arr[0]->type){
+       case NC_FLOAT:  r_val=gsl_stats_float_ttest( var_arr[0]->val.fp,d1_srd,sz1,var_arr[2]->val.fp,d2_srd,sz2 );break;
+       case NC_DOUBLE: r_val=gsl_stats_ttest(var_arr[0]->val.dp,d1_srd,sz1,var_arr[2]->val.dp,d2_srd,sz2 );break;
+
+       case NC_INT:    // NC_INT rpresented as int in nco
+                       #if NC_INT==NCO_TYP_INT
+                         r_val=gsl_stats_int_ttest(var_arr[0]->val.lp,d1_srd,sz1,var_arr[2]->val.lp,d2_srd,sz2 );break;
+                       // NC_INT rpresented as long  in nco
+		       #else
+                         r_val=gsl_stats_long_ttest(var_arr[0]->val.lp,d1_srd,sz1,var_arr[2]->val.lp,d2_srd,sz2 );break;
+                       #endif
+                       break;
+
+       case NC_SHORT:  r_val=gsl_stats_short_ttest( var_arr[0]->val.sp,d1_srd,sz1,var_arr[2]->val.sp,d2_srd,sz2 );break;
+       case NC_CHAR:   r_val=gsl_stats_char_ttest((const char*)var_arr[0]->val.cp,d1_srd,sz1,(const char*)var_arr[2]->val.cp,d2_srd,sz2 );break;
+       case NC_BYTE:   r_val=gsl_stats_char_ttest((const char*)var_arr[0]->val.bp,d1_srd,sz1,(const char*)var_arr[2]->val.bp,d2_srd,sz2 );break;
+#ifdef ENABLE_NETCDF4
+       case NC_UBYTE:  r_val=gsl_stats_uchar_ttest((const unsigned char*)var_arr[0]->val.ubp,d1_srd,sz1,(const unsigned char*)var_arr[2]->val.ubp,d2_srd,sz2 );break;
+       case NC_USHORT: r_val=gsl_stats_ushort_ttest(var_arr[0]->val.usp,d1_srd,sz1,var_arr[2]->val.usp,d2_srd,sz2 );break;
+       case NC_UINT:   r_val=gsl_stats_uint_ttest(var_arr[0]->val.uip,d1_srd,sz1,var_arr[2]->val.uip,d2_srd,sz2 );break;
+       case NC_INT64:  r_val=gsl_stats_long_ttest((const long*)var_arr[0]->val.i64p,d1_srd,sz1,(const long*)var_arr[2]->val.i64p,d2_srd,sz2 );break;
+       case NC_UINT64: r_val=gsl_stats_ulong_ttest((const unsigned long*)var_arr[0]->val.ui64p,d1_srd,sz1,(const unsigned long*)var_arr[2]->val.ui64p,d2_srd,sz2);break;
+       case NC_STRING: break; /* do nothing */
+#endif /* !ENABLE_NETCDF4 */
+     default: nco_dfl_case_nc_type_err(); break;    
+     }  break;  
+  
+
+ 
+   }// end big switch
+
+
+     // cast pointer back to void
+   (void)cast_nctype_void(var_arr[0]->type,&(var_arr[0]->val)); 
+   (void)cast_nctype_void(var_arr[2]->type,&(var_arr[2]->val)); 
+
+
+
+ } 
+ // end heavy lifting
+
+ // free vars
+  for(idx=0 ; idx<4 ; idx++)
+    var_arr[idx]=nco_var_free(var_arr[idx]);
+
+
+  return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
+
+
+}
 
 
 
