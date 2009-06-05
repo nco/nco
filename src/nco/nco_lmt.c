@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.71 2009-06-04 16:44:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.72 2009-06-05 14:16:37 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1054,8 +1054,6 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     /* number space units */
     /* this should be gaurranted by calling function */
     sscanf(lmt_sng,"%lg %s", &crr_val,usr_unt_sng);    
-
-    printf("DEBUG nco_lmt_udu_cnv limit=%.10g units=%s\n",crr_val,usr_unt_sng); 
   }
 
 
