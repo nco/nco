@@ -73,7 +73,7 @@ enum { P1DBL,   P2DBL,   P3DBL,   P4DBL,
 enum { PBESSEL, PLEGEND };
 
 // Classify some of the stats methods --fxm: all type args need to be included
-enum { PS_MAX, PS_MIN, PS_MAX_IDX , PS_MIN_IDX };
+enum { PS_COV,PS_COR, PS_PVAR, PS_TTST, PS_MAX, PS_MIN, PS_MAX_IDX , PS_MIN_IDX };
 
 
 // Union class to hold GSL function pointers
@@ -134,7 +134,7 @@ union f_unn{
    double (*csspss)(const short* ,size_t,size_t);
    double (*csipss)(const int* ,size_t,size_t);
    double (*csfpss)(const float* ,size_t,size_t);
-   double (*csdpss)(const double*,size_t,size_t);
+    double (*csdpss)(const double*,size_t,size_t);
    double (*csucpss)(const unsigned char* ,size_t,size_t);
    double (*csuspss)(const unsigned short* ,size_t,size_t);
    double (*csuipss)(const unsigned int* ,size_t,size_t);
@@ -372,6 +372,7 @@ static  var_sct *hnd_fnc_udrdu(HANDLE_ARGS); // explict handler
 static  var_sct *hnd_fnc_stat1(HANDLE_ARGS);
 static  var_sct *hnd_fnc_stat2(HANDLE_ARGS);
 static  var_sct *hnd_fnc_stat3(HANDLE_ARGS);
+static  var_sct *hnd_fnc_stat4(HANDLE_ARGS);
 };
 
 
@@ -383,7 +384,7 @@ private:
    enum {PGSL_RNG_MIN,PGSL_RNG_MAX,PGSL_RNG_NAME };
    bool _flg_dbg;
 public:
-  gsl2_cls(bool flg_dbg);
+   gsl2_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
