@@ -1,5 +1,8 @@
 2009-06-09  Charlie Zender  <zender@uci.edu>
 
+	* Allow cnk_map=dmn to work with record hyperslabs, e.g.,
+	ncks -O -4 -D 4 --cnk_map=dmn -d time,0,3 ~/nco/data/in.nc ~/foo.nc
+
 	* Improve chunking corner case logic
 
 	* Restore precedence of explicitly specified chunking for record

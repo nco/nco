@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.138 2009-06-09 22:06:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.139 2009-06-09 22:23:46 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -107,7 +107,7 @@ extern "C" {
 #define size_t_CEWI 0UL
   
   /* netcdf.h NC_GLOBAL is, strictly, the variable ID for global attributes
-     NCO_REC_DMN_UNDEFINED is variable ID of record dimension iff record dimension is undefined
+     NCO_REC_DMN_UNDEFINED is dimension ID of record dimension iff record dimension is undefined
      Normally using -1 for this ID is fine, but token makes meaning clearer
      NB: nc_inq() family returns -1 for missing record dimensions */
 #define NCO_REC_DMN_UNDEFINED -1

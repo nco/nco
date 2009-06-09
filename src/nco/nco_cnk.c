@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.15 2009-06-09 22:06:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.16 2009-06-09 22:23:46 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -349,14 +349,12 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
       
       /* Is this a record dimension? */
       if(dmn_id[dmn_idx] == rcd_dmn_id){
-
 	/* Does policy specify record dimension treatment? */
 	if(cnk_map == nco_cnk_map_rd1){
 	  cnk_sz[dmn_idx]=1UL;
 	  /* This may still be over-ridden by explicitly specified chunksize */
 	  goto cnk_xpl_override;
 	} /* !nco_cnk_map_rd1 */
-
 	/* Record dimension size in output file is zero until first write
 	   Obtain record dimension size from lmt_all structure */
 	if(lmt_all_lst[lmt_idx_rec]->BASIC_DMN){
@@ -365,21 +363,29 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 	}else{ /* !BASIC_DMN */
 	  /* ... and when hyperslabbed, use user-specified count */
 	  cnk_sz[dmn_idx]=lmt_all_lst[lmt_idx_rec]->dmn_cnt;
-	} /* endif */
-
+	} /* !BASIC_DMN */
       }else{ /* !record dimension */
+	/* Non-record dimensions not in user-specified chunksize list get default */
+	cnk_sz[dmn_idx]=dmn_sz;
 	if(dmn_sz == 0L){
 	  (void)fprintf(stderr,"%s: ERROR %s reports variable %s has dim_sz == 0L for non-record dimension %s. This should not occur and it will cause chunking to fail...\n",prg_nm_get(),fnc_nm,var_nm,dmn_nm);
 	} /* endif err */
-      } /* end else */
+      } /* !record dimension */
 
-      /* Non-record sizes default to cnk_sz_dfl or to dimension size */
+      /* Propagate scalar chunksize, if specified */
       if(cnk_sz_dfl > 0UL){
-	/* Propagate scalar chunksize, if specified */
-	cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_sz) ? cnk_sz_dfl : (size_t)dmn_sz;
-      }else{
-	/* Dimensions not in user-specified chunksize list get default */
-	cnk_sz[dmn_idx]=dmn_sz;
+	if(dmn_id[dmn_idx] == rcd_dmn_id){
+	if(lmt_all_lst[lmt_idx_rec]->BASIC_DMN){
+	  /* When not hyperslabbed, use input record dimension size ... */
+	  cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)lmt_all_lst[lmt_idx_rec]->dmn_sz_org) ? cnk_sz_dfl : (size_t)lmt_all_lst[lmt_idx_rec]->dmn_sz_org;
+	}else{ /* !BASIC_DMN */
+	  /* ... and when hyperslabbed, use user-specified count */
+	  cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)lmt_all_lst[lmt_idx_rec]->dmn_cnt) ? cnk_sz_dfl : (size_t)lmt_all_lst[lmt_idx_rec]->dmn_cnt;
+	} /* !BASIC_DMN */
+	}else{ /* !rcd_dmn_id */
+	  /* Non-record sizes default to cnk_sz_dfl or to dimension size */
+	  cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_sz) ? cnk_sz_dfl : (size_t)dmn_sz;
+	} /* !rcd_dmn_id */
       } /* !cnk_sz_dfl */
 
       cnk_xpl_override: /* end goto */
