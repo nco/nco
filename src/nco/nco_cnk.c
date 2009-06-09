@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.16 2009-06-09 22:23:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.17 2009-06-09 22:43:55 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -309,10 +309,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
        (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
-      if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s turning off chunking for %s\n",prg_nm_get(),fnc_nm,var_nm);
-
-      /* Leave chunking on for coordinates... */
-
+      if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s turning off chunking for %s\n",prg_nm_get(),fnc_nm,var_nm);
       /* Turn chunking off for this variable */
       (void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
       /* Skip to next variable in loop */
@@ -365,7 +362,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 	  cnk_sz[dmn_idx]=lmt_all_lst[lmt_idx_rec]->dmn_cnt;
 	} /* !BASIC_DMN */
       }else{ /* !record dimension */
-	/* Non-record dimensions not in user-specified chunksize list get default */
+	/* Set non-record dimensions to default, possibly over-ride later */
 	cnk_sz[dmn_idx]=dmn_sz;
 	if(dmn_sz == 0L){
 	  (void)fprintf(stderr,"%s: ERROR %s reports variable %s has dim_sz == 0L for non-record dimension %s. This should not occur and it will cause chunking to fail...\n",prg_nm_get(),fnc_nm,var_nm,dmn_nm);

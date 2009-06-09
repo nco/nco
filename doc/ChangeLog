@@ -1,5 +1,9 @@
 2009-06-09  Charlie Zender  <zender@uci.edu>
 
+	* Chunking works: plc=all for map=rd1,dmn
+	Chunking fails  : plc=g?d for map=rd1,dmn
+	Chunking fails  : plc=uck
+
 	* Allow cnk_map=dmn to work with record hyperslabs, e.g.,
 	ncks -O -4 -D 4 --cnk_map=dmn -d time,0,3 ~/nco/data/in.nc ~/foo.nc
 
