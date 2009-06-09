@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.14 2009-06-03 00:02:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.15 2009-06-09 22:06:46 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -10,6 +10,8 @@
    ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_scl=8 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_dmn time,10 ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_dmn time,10 --cnk_map=dmn ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_map=dmn -d time,0,3 ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc 
    ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
@@ -216,6 +218,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   int dmn_nbr; /* [nbr] Number of dimensions in variable */
   int fl_fmt; /* [enm] Input file format */
   int lmt_idx;
+  int lmt_idx_rec=int_CEWI;
   int nbr_dmn_fl; /* [nbr] Number of dimensions in file */
   int rcd_dmn_id;
   int srg_typ; /* [enm] Storage type */
@@ -277,6 +280,18 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   /* Get record dimension ID */
   (void)nco_inq(nc_id,&nbr_dmn_fl,&var_nbr,(int *)NULL,&rcd_dmn_id);
   
+  /* Find record dimension, if any, in limit structure list first
+     This information may be needed below */
+  if(rcd_dmn_id != NCO_REC_DMN_UNDEFINED){
+    (void)nco_inq_dimname(nc_id,rcd_dmn_id,dmn_nm);
+    for(lmt_idx=0;lmt_idx<lmt_all_lst_nbr;lmt_idx++){
+      if(!strcmp(dmn_nm,lmt_all_lst[lmt_idx]->dmn_nm)){
+	lmt_idx_rec=lmt_idx;
+	break;
+      } /* end if */
+    } /* end loop over limit */
+  } /* endif */
+
   /* NB: Assumes variable IDs range from [0..var_nbr-1] */
   for(var_idx=0;var_idx<var_nbr;var_idx++){
 
@@ -334,24 +349,29 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
       
       /* Is this a record dimension? */
       if(dmn_id[dmn_idx] == rcd_dmn_id){
+
 	/* Does policy specify record dimension treatment? */
 	if(cnk_map == nco_cnk_map_rd1){
 	  cnk_sz[dmn_idx]=1UL;
-	  /* Skip to next dimension in loop */
-	  continue;
+	  /* This may still be over-ridden by explicitly specified chunksize */
+	  goto cnk_xpl_override;
 	} /* !nco_cnk_map_rd1 */
+
 	/* Record dimension size in output file is zero until first write
 	   Obtain record dimension size from lmt_all structure */
-	for(lmt_idx=0;lmt_idx<lmt_all_lst_nbr;lmt_idx++){
-	  if(!strcmp(dmn_nm,lmt_all_lst[lmt_idx]->dmn_nm)){
-	    cnk_sz[dmn_idx]=lmt_all_lst[lmt_idx]->dmn_cnt;
-	    break;
-	  } /* end if */
-	} /* end loop over limit */
+	if(lmt_all_lst[lmt_idx_rec]->BASIC_DMN){
+	  /* When not hyperslabbed, use input record dimension size ... */
+	  cnk_sz[dmn_idx]=lmt_all_lst[lmt_idx_rec]->dmn_sz_org;
+	}else{ /* !BASIC_DMN */
+	  /* ... and when hyperslabbed, use user-specified count */
+	  cnk_sz[dmn_idx]=lmt_all_lst[lmt_idx_rec]->dmn_cnt;
+	} /* endif */
+
+      }else{ /* !record dimension */
 	if(dmn_sz == 0L){
-	  (void)fprintf(stderr,"%s: ERROR %s reports variable %s has dim_sz == 0L for dimension %s. This should not occur and it will cause chunking to fail...\n",prg_nm_get(),fnc_nm,var_nm,dmn_nm);
+	  (void)fprintf(stderr,"%s: ERROR %s reports variable %s has dim_sz == 0L for non-record dimension %s. This should not occur and it will cause chunking to fail...\n",prg_nm_get(),fnc_nm,var_nm,dmn_nm);
 	} /* endif err */
-      } /* endif record dimension */
+      } /* end else */
 
       /* Non-record sizes default to cnk_sz_dfl or to dimension size */
       if(cnk_sz_dfl > 0UL){
@@ -362,15 +382,34 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 	cnk_sz[dmn_idx]=dmn_sz;
       } /* !cnk_sz_dfl */
 
+      cnk_xpl_override: /* end goto */
+
       /* Explicit chunk specifications override all else */
       for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
 	/* Match on name not ID */
 	if(!strcmp(cnk[cnk_idx]->nm,dmn_nm)){
-	  if(cnk[cnk_idx]->sz > (size_t)dmn_sz) (void)fprintf(stderr,"%s: WARNING %s trimming user-specified chunksize = %lu to %s size = %lu\n",prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_nm,dmn_sz);
-	  /* Out-of-bounds sizes would fail in HDF library in nc_enddef(), so trim */
-	  cnk_sz[dmn_idx]=(size_t)dmn_sz;
+	  cnk_sz[dmn_idx]=cnk[cnk_idx]->sz;
+	  if(dmn_id[dmn_idx] == rcd_dmn_id){
+	    if(lmt_all_lst[lmt_idx_rec]->BASIC_DMN){
+	      if(cnk_sz[dmn_idx] > (size_t)lmt_all_lst[lmt_idx_rec]->dmn_sz_org){
+		(void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_nm,lmt_all_lst[lmt_idx_rec]->dmn_sz_org);
+	      } /* endif too big */
+	    }else{ /* !BASIC_DMN */
+	      if(cnk_sz[dmn_idx] > (size_t)lmt_all_lst[lmt_idx_rec]->dmn_cnt){
+		(void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed user-specified record dimension hyperslab size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_nm,lmt_all_lst[lmt_idx_rec]->dmn_cnt);
+	      } /* endif too big */
+	    } /* !BASIC_DMN */
+	  }else{ /* !rcd_dmn_id */
+	    if(cnk_sz[dmn_idx] > (size_t)dmn_sz){
+	      /* dmn_sz of record dimension may (will) be zero in output file
+		 Non-record dimensions, though, must have cnk_sz <= dmn_sz */
+	      (void)fprintf(stderr,"%s: WARNING %s trimming user-specified chunksize = %lu to %s size = %lu\n",prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_nm,dmn_sz);
+	      /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
+	      cnk_sz[dmn_idx]=(size_t)dmn_sz;
+	    } /* endif */
+	  } /* !rcd_dmn_id */
 	  break;
-	} /* end if */
+	} /* cnk_nm != dmn_nm */
       } /* end loop over cnk */
 
     } /* end loop over dmn */
