@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.35 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.36 2009-06-09 16:46:55 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -99,6 +99,12 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
  const int dmn_id, /* I [idx] netCDF dimension ID */
  char *lmt_sng, /* I [ptr] Limit string */
  double *lmt_val); /* O [val] Limit coordinate value */ 
+
+void
+nco_prs_time /* Parse time limits into years, months, day, etc. */
+(const char * const in_sng, /* I [sng] String to parse */
+ int * const dt, /* O [sct] Time decomposed into longs */
+ float * const out_sec); /* O [s] Double precision seconds */
 
 #ifdef __cplusplus
 } /* end extern "C" */

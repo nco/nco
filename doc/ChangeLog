@@ -1,9 +1,9 @@
 2009-06-05  Henry Butowsky  <henryb@hush.com> 
-	* added support in nco_lmt_udu_cnv()-udunits2 for parsing 
+
+	* nco_lmt_udu_cnv() supports UDUnits2 for parsing 
 	timestamps in user specified co-ordinate limits
 
-	* added hnd_fnc_stat4() method to gsl_cls. This method handles the
-	gsl functions:
+	* Added hnd_fnc_stat4() method to gsl_cls to handle
 	gsl_stats_covariance/gsl_stats_correlation
         gsl_stats_pvariance/gsl_stats_ttest
 

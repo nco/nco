@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.331 2009-06-03 03:11:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.332 2009-06-09 16:46:55 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -36,6 +36,10 @@ C. NCO (when enabled with netCDF4) supports NC_STRING atomic type.
 D. Operators may add NCO global attribute containing NCO version
 
 E. ncks --secret prints hidden/unsupported options
+
+F. UDUnits2 support completed. "time since" handled correctly.
+   All future units features will utilize UDUnits2.
+   UDUnits1 support will eventually be deprecated. 
 
 "Sticky" reminders:
 

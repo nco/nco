@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.72 2009-06-05 14:16:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.73 2009-06-09 16:46:55 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -918,21 +918,25 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   
 } /* end nco_lmt_prs() */
 
-
-int 
-nco_prs_time(
-const char* in_sng,  
-int *dt,      
-float *out_sec)
+void
+nco_prs_time /* Parse time limits into years, months, day, etc. */
+(const char * const in_sng, /* I [sng] String to parse */
+ int * const dt, /* O [sct] Time decomposed into longs */
+ float * const out_sec) /* O [s] Double precision seconds */
 {
-   /* Parse limits into years, months, day, etc. */
+  /* Parse limits into years, months, day, etc. */
   char **arg_lst; /* Array of date/time strings after parsing */
   int arg_nbr; /* [nbr] Number of arguments parsed */
   int year,month,day,hour,min;
   double sec;
     
   /* Clear date and time */
-  year=0L; month=0L; day=0L; hour=0L; min=0L; sec=(double)0;
+  year=0L;
+  month=0L;
+  day=0L;
+  hour=0L;
+  min=0L;
+  sec=(double)0;
   /* Break up date string copy delimited by dashes */
   arg_lst=nco_lst_prs_2D(in_sng,"-",&arg_nbr);
   /* Fill in year, month, day */
@@ -968,15 +972,10 @@ float *out_sec)
   dt[4]=min;
   *out_sec=sec;
 
-  return 1;
-
 } /* end nco_prs_time */
 
-
 #ifdef ENABLE_UDUNITS
-
-#ifdef HAVE_UDUNITS2_H
-
+# ifdef HAVE_UDUNITS2_H
 
 int /* [rcd] Successful conversion returns 0 */
 nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
@@ -985,30 +984,27 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
  char *lmt_sng, /* I [ptr] Limit string */
  double *lmt_val) /* O [val] Limit coordinate value */ 
 {
-  int rcd; /* [enm] Return code */
   int ut_rcd; /* [enm] UDUnits2 status */
-  static const char* att_nm="units";
+  static const char *att_nm="units";
   char *fl_unt_sng=NULL;  /* [sng] Unit string in file */
   char *usr_unt_sng; /* [sng] User-specified unit string */
+  double crr_val; 
   long att_sz; /* [nbr] "units" attribute size */
   nc_type att_typ; /* [enm] Atttribute type, probably NC_CHAR */
-  double crr_val; 
    
   cv_converter *ut_cnv; /* UDUnits converter */
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
   ut_unit *ut_sct_out; /* UDUnits structure, output units */
   
-
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   if(dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
     (void)fprintf(stdout,"%s: nco_udu_lmt_cnv() failed to initialize UDUnits2 library\n",prg_nm_get());
-    return 1;
+    return EXIT_FAILURE;
   } /* end if err */ 
-
   
   /* Does this coordinate have a 'units' attribute on-disk? */
   if(nco_inq_att(nc_id,dmn_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
@@ -1028,35 +1024,29 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: units  attribute \"%s\" for dimension ID %d has a syntax error\n",fl_unt_sng,dmn_id);
     if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" for dimension ID %d is not listed in UDUnits2 SI system database\n",fl_unt_sng,dmn_id);
 
-    return 1; 
+    return EXIT_FAILURE; 
   } /* endif coordinate on disk has no units attribute */
 
-
-
-  /* check if disk units is a timestamp if so */
+  /* Check if disk units is a timestamp if so */
   if( strstr(fl_unt_sng," from ") || strstr(fl_unt_sng," since ") || strstr(fl_unt_sng," after ") ){
 
-  // prefix output units with s@ so that ut_parse works
-    if(strncmp("s@", lmt_sng,2)){
-      usr_unt_sng=(char*)nco_malloc( (strlen(lmt_sng)+3) *sizeof(char) );
+    /* Prefix output units with s@ so that ut_parse works */
+    if(strncmp("s@",lmt_sng,2)){
+      usr_unt_sng=(char*)nco_malloc((strlen(lmt_sng)+3UL)*sizeof(char));
       strcpy(usr_unt_sng,"s@");
       strcat(usr_unt_sng,lmt_sng);
     }else{
       usr_unt_sng=strdup(lmt_sng);
     }
-
-
     crr_val=0.0;
 
-  /* assume we are dealing with regular output units */
+  /* Assume we are dealing with regular output units */
   }else{
-    usr_unt_sng=(char*)nco_calloc( strlen(lmt_sng)+1, sizeof(char));
-    /* number space units */
-    /* this should be gaurranted by calling function */
+    usr_unt_sng=(char *)nco_calloc(strlen(lmt_sng)+1UL,sizeof(char));
+    /* Number space units
+       This should be gaurranted by calling function */
     sscanf(lmt_sng,"%lg %s", &crr_val,usr_unt_sng);    
   }
-
-
 
   /* Convert user-specified unit into utUnit structure */
   ut_sct_in=ut_parse(ut_sys,usr_unt_sng,UT_ASCII); 
@@ -1066,9 +1056,8 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" has a syntax error\n",usr_unt_sng);
     if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" is not listed in UDUnits2 SI system database\n",usr_unt_sng);
 
-    return 1; 
+    return EXIT_FAILURE; 
   } /* endif */
-
 
   /* Create a converter */
   ut_cnv=ut_get_converter(ut_sct_in,ut_sct_out); /* UDUnits converter */
@@ -1077,9 +1066,8 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: One of units is NULL\n");
     if(ut_rcd == UT_NOT_SAME_SYSTEM) (void)fprintf(stderr,"ERROR: Units belong to different unit systems\n");
     if(ut_rcd == UT_MEANINGLESS) (void)fprintf(stderr,"ERROR: Conversion between user specified unit \"%s\" and file units \"%s\" is  is meaningless\n",usr_unt_sng,fl_unt_sng);
-    return 1; /* Failure */
+    return EXIT_FAILURE; /* Failure */
   } /* endif */
-
 
   /* Finally do the conversion  */
   *lmt_val=cv_convert_double(ut_cnv,crr_val);
@@ -1092,15 +1080,11 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   ut_free(ut_sct_out);
   cv_free(ut_cnv);
 
-
-
-  return 0; /* Successful conversion */
+  return EXIT_SUCCESS; /* Successful conversion */
 
 }  /* end nco_lmt_udu_cnv() */
 
-
-
-#else /* !HAVE_UDUNITS2_H */
+# else /* !HAVE_UDUNITS2_H */
 
 int /* [rcd] Successful conversion returns 0 */
 nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
@@ -1118,20 +1102,19 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   utUnit udu_sct_in; /* UDUnits structure, input units */
   utUnit udu_sct_out; /* UDUnits structure, output units */
 
-# ifdef UDUNITS_PATH
+#  ifdef UDUNITS_PATH
   /* UDUNITS_PATH macro expands to where autoconf found database file */
   rcd=utInit(UDUNITS_PATH);
-# else /* !UDUNITS_PATH */
+#  else /* !UDUNITS_PATH */
   /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   rcd=utInit("");
-# endif /* !UDUNITS_PATH */
+#  endif /* !UDUNITS_PATH */
 
   if(rcd != 0){
     (void)fprintf(stdout,"%s: nco_udu_lmt_cnv() failed to initialize UDUnits library\n",prg_nm_get());
-    return 1;
+    return EXIT_FAILURE;
   } /* end if err */ 
-
   
   /* Does this coordinate have a 'units' attribute on-disk? */
   if(nco_inq_att(nc_id,dmn_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
@@ -1146,18 +1129,15 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   rcd=utScan(fl_unt_sng,&udu_sct_out); 
   if(rcd == UT_EINVALID){ /* 'units' attribute is absent */
     (void)fprintf(stderr,"ERROR: no units attribute available for dimension %d\n",dmn_id);
-    return 1; 
+    return EXIT_FAILURE; 
   } /* endif coordinate on disk has no units attribute */
   if(rcd == UT_EUNKNOWN || rcd == UT_ESYNTAX){
     (void)fprintf(stderr,"ERROR units attribute \"%s\" (in input file) is not a valid UDUnits string",fl_unt_sng);
     (void)utTerm(); /* Free memory taken by UDUnits library */
-    return 1;
+    return EXIT_FAILURE;
   } /* endif unkown type */
 
-  
-
   if(utIsTime(&udu_sct_out) && utHasOrigin(&udu_sct_out)){
- 
 
     int dt[5]; /* 0-year, 1-month, 2-day, 3-hour, 4-minute */
     double sec;
@@ -1165,7 +1145,6 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
           
     /* Parse limits into years, months, day, etc. */
     (void)nco_prs_time(lmt_sng,dt,&sec);
-    
 
     rcd=utInvCalendar(dt[0],dt[1],dt[2],dt[3],dt[4],sec,&udu_sct_out,crr_val);
     
@@ -1185,21 +1164,21 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     if(strcmp(usr_unt_sng,fl_unt_sng) == 0){
       *lmt_val=strtod(lmt_sng,&usr_unt_sng); /* Convert to double */
       (void)utTerm();
-      return 0; /* Success */
+      return EXIT_SUCCESS; /* Success */
     } /* endif */
 
     rcd=utScan(usr_unt_sng,&udu_sct_in);
     if(rcd == UT_EUNKNOWN){
       (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" is not in UDUnits database.\n",usr_unt_sng);
       (void)utTerm();
-      return 1;
+      return EXIT_FAILURE;
     } /* endif */
 
     rcd=utConvert(&udu_sct_in,&udu_sct_out,&slp,&incpt);
     if(rcd == UT_ECONVERT){
       (void)fprintf(stderr,"ERROR: user specified unit \"%s\" cannot be converted into file units \"%s\"\n",usr_unt_sng,fl_unt_sng);
       (void)utTerm();
-      return 1; /* Failure */
+      return EXIT_FAILURE; /* Failure */
     } /* endif */
     /* Convert to disk-based units */
     crr_val=strtod(lmt_sng,&usr_unt_sng);
@@ -1210,12 +1189,10 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 
   (void)utTerm(); /* Free memory taken by UDUnits library */
 
-  return 0; /* Successful conversion */
+  return EXIT_SUCCESS; /* Successful conversion */
 }  /* end nco_lmt_udu_cnv() */
 
-#endif /*!HAVE_UDUNITS2 */
-
-
+# endif /*!HAVE_UDUNITS2 */
 #else /* !ENABLE_UDUNITS */
 
 int /* [rcd] Successful conversion returns 0 */
@@ -1230,15 +1207,11 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   rcd=(int)(1+0*nc_id+0*dmn_id+0*(*lmt_val)); /* CEWI removes unused parameter warnings */
   (void)fprintf(stdout,"UDUnits limit detected in \"%s\" but UDUnits library is unavailable to perform conversion.\nHINT: Re-compile and re-install NCO with UDUnits enabled. http://nco.sf.net/nco.html#udunits",lmt_sng);
   nco_exit(EXIT_FAILURE);
-  return 1; /* Conversion failed */
+  return EXIT_FAILURE; /* Conversion failed */
 
 }  /* end nco_lmt_udu_cnv() */
 
 #endif /* !ENABLE_UDUNITS */
-
-
-
-
 
 int /* O [enm] Limit type */
 nco_lmt_typ /* [fnc] Determine limit type */

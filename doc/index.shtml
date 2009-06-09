@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.535 2009-05-23 00:04:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.536 2009-06-09 16:46:55 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -498,6 +498,7 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO/SDO 3.9.9</b>: (<i>In progress</i>) 
 netCDF4 chunksize and <tt>NC_STRING</tt> support; 
 GSL statistics functions;
+UDUnits2 <tt>time-since</tt> support;
 <li><b>NCO/SDO 3.9.8</b>: 
 <tt>ncap2</tt> supports <tt>sort()</tt>, <tt>array()</tt>;
 better DAP/libnetcdf and UDUnits2 builds;
