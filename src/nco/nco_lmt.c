@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.74 2009-06-10 15:37:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.75 2009-06-10 23:20:49 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -18,10 +18,7 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   lmt->min_sng=(char *)nco_free(lmt->min_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
-
   lmt->re_bs_sng=(char*)nco_free(lmt->re_bs_sng);   
-  
-
 
   lmt=(lmt_sct *)nco_free(lmt);
 
@@ -390,28 +387,22 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(lmt.lmt_typ == lmt_udu_sng){
       char *fl_udu_sng;
         
-      /* grab units attribute from disk */
+      /* Grab units attribute from disk */
       fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid); 
-      if(!fl_udu_sng) { 
-        (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from  variable \"%s\" \n",prg_nm_get(),dim.nm);
+      if(!fl_udu_sng){ 
+        (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),dim.nm);
         nco_exit(EXIT_FAILURE);
       } /* end if */
 
-
+      /* Initialize now then possibly override by re-basing */
+      lmt.origin=0.0;
 #ifdef ENABLE_UDUNITS
-#ifdef HAVE_UDUNITS2_H
-
-      if( !lmt.re_bs_sng || nco_lmt_clc_org(fl_udu_sng,lmt.re_bs_sng,&lmt.origin) )
-	/* conversion failed so set origin 0.0 */
-	lmt.origin=0.0;
-#else
-	lmt.origin=0.0;
-#endif
-
-#else
-	lmt.origin=0.0;
-#endif
-
+# ifdef HAVE_UDUNITS2_H
+      /* Re-base and reset origin to 0.0 if re-basing fails */
+      if(nco_lmt_clc_org(fl_udu_sng,lmt.re_bs_sng,&lmt.origin)) lmt.origin=0.0;
+# endif /* !HAVE_UDUNITS2_H */
+#endif /* !ENABLE_UDUNITS */
+      
       if(nco_lmt_udu_cnv(dim.cid,fl_udu_sng,lmt.min_sng,&lmt.min_val)) nco_exit(EXIT_FAILURE);
       if(nco_lmt_udu_cnv(dim.cid,fl_udu_sng,lmt.max_sng,&lmt.max_val)) nco_exit(EXIT_FAILURE);
       
@@ -1351,14 +1342,11 @@ nco_lmt_typ /* [fnc] Determine limit type */
 
 } /* end nco_lmt_typ() */
 
-
-
 char *              /* O [ptr] units string */
 nco_lmt_get_udu_att /* Successful conversion returns units attribute other wise null */
 (const int nc_id,   /* I [idx] netCDF file ID */
  const int var_id)  /*  I [idx] ID of variable to read attribute from */
 {
-
  /* grab units attribute from disk */
  const char *att_nm="units"; 
  nc_type att_typ; 
@@ -1374,9 +1362,7 @@ nco_lmt_get_udu_att /* Successful conversion returns units attribute other wise 
      fl_udu_sng[att_sz]='\0';
    }  
  } 
-
  return fl_udu_sng;
-
 }
 
 
