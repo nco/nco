@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.36 2009-06-09 16:46:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.37 2009-06-10 15:36:21 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -95,8 +95,8 @@ nco_lmt_typ /* [fnc] Determine limit type */
 
 int /* [rcd] Successful conversion returns 0 */
 nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
-(const int nc_id, /* I [idx] netCDF file ID */
- const int dmn_id, /* I [idx] netCDF dimension ID */
+(const int dmn_id, /* I [idx] netCDF dimension ID */
+ const char* fl_unt_sng, /* I [ptr] string with disk units attribute */ 
  char *lmt_sng, /* I [ptr] Limit string */
  double *lmt_val); /* O [val] Limit coordinate value */ 
 
@@ -104,7 +104,26 @@ void
 nco_prs_time /* Parse time limits into years, months, day, etc. */
 (const char * const in_sng, /* I [sng] String to parse */
  int * const dt, /* O [sct] Time decomposed into longs */
- float * const out_sec); /* O [s] Double precision seconds */
+ double * const out_sec); /* O [s] Double precision seconds */
+
+
+char *              /* O [ptr] units string */
+nco_lmt_get_udu_att /* Successful conversion returns units attribute other wise null */
+(const int nc_id,   /* I [idx] netCDF file ID */
+ const int var_id);  /*  I [idx] ID of variable to read attribute from */
+
+
+
+#ifdef ENABLE_UDUNITS
+# ifdef HAVE_UDUNITS2_H
+int                 /* [rcd] Successful conversion returns 0 */
+nco_lmt_clc_org(    /* [fnc] Difference between two co-ordinate units */      
+const char* fl_unt_sng, /* I [ptr] units attribute string from disk  */     
+const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
+double *og_val);        /* O [ptr]                                   */
+#endif
+#endif
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
