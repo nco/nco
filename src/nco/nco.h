@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.139 2009-06-09 22:23:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.140 2009-06-10 15:32:46 hmb Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -349,6 +349,8 @@ extern "C" {
     long end; /* Index to end of hyperslab */
     long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
     long srd; /* Stride of hyperslab */
+    double origin;   /* used for ncra,ncrcat to time rebase co-ordinate var */
+    char *re_bs_sng; /* used for ncra,ncrcat to time rebase co-ordinate -holds unit attribue from first file */
   } lmt_sct;
 
   /* Container holding all limit structures indexible by dimension */
