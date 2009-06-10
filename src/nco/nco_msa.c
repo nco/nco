@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.70 2009-05-26 18:24:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.71 2009-06-10 15:34:34 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1249,6 +1249,8 @@ nco_msa_lmt_all_int
     lmt_rgl->min_sng=NULL;
     lmt_rgl->max_sng=NULL;
     lmt_rgl->srd_sng=NULL;
+    lmt_rgl->re_bs_sng=NULL;
+    lmt_rgl->origin=0.0;
     /* A hack so we know structure has been initialized */
     lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
