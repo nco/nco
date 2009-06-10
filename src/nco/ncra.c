@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.238 2009-05-29 20:12:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.239 2009-06-10 15:38:37 hmb Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.238 2009-05-29 20:12:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.238 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.239 2009-06-10 15:38:37 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.239 $";
   const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -517,6 +517,22 @@ main(int argc,char **argv)
     } /* endif */
   }else{ /* Record dimension exists */
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
+
+    /* initialize re_bs_sng used for rebasing co-ordinates */
+    if( prg==ncra || prg==ncrcat){
+      lmt_rec->origin=0.0; 
+      int var_id;
+
+      /* units attribute from co-ordinate var */
+      /* if var not present or no units att present 
+         then re_bs_sng is set to null */  
+      rcd=nco_inq_varid_flg(in_id,lmt_rec->nm,&var_id);
+      if(rcd==NC_NOERR)
+	lmt_rec->re_bs_sng=nco_lmt_get_udu_att(in_id,var_id);
+      else 
+        lmt_rec->re_bs_sng=(char*)NULL;
+    }
+
   } /* endif */
   
   if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
@@ -699,6 +715,22 @@ main(int argc,char **argv)
 	    /* Retrieve variable from disk into memory */
 	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
             (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+
+            /* rebase co-ordinate var if necessary */
+            if(var_prc[idx]->is_crd_var && lmt_rec->origin !=0.0  ){
+              var_sct *var_crd;
+              scv_sct scv;
+
+              /*de-reference */
+              var_crd=var_prc[idx];
+
+              scv.val.d=lmt_rec->origin;              
+              scv.type=NC_DOUBLE;  
+              /* convert scalar to var type */
+	      nco_scv_cnf_typ(var_crd->type,&scv);
+
+	      (void)var_scv_add(var_crd->type,var_crd->sz,var_crd->has_mss_val,var_crd->mss_val,var_crd->val,&scv);
+            }
 	    
 	    if(prg == ncra){
               /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
