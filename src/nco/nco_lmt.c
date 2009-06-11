@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.76 2009-06-11 13:21:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.77 2009-06-11 14:08:24 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1167,8 +1167,13 @@ double *og_val)         /* O difference between two units string */
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
   ut_unit *ut_sct_out; /* UDUnits structure, output units */
-  
 
+
+  /* quick return if units identical */
+  if(!strcmp(fl_unt_sng,fl_bs_sng) ){
+    *og_val=0.0;  
+    return EXIT_SUCCESS;
+  }
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   if(dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
