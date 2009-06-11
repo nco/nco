@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.77 2009-06-11 14:08:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.78 2009-06-11 17:28:32 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -387,33 +387,27 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     dmn_min=dmn_val_dp[min_idx];
     dmn_max=dmn_val_dp[max_idx];
 
-
     lmt.origin=0.0;
 
     /* Grab units attribute from disk */
     fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid); 
 
-    if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng  ){ 
-
+    if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
       /* Re-base and reset origin to 0.0 if re-basing fails */
       if(nco_lmt_clc_org(fl_udu_sng,lmt.re_bs_sng,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
 # endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */
-    } 
-
-
+    } /* endif MFO */
     
     /* Convert UDUnits strings if necessary */
     if(lmt.lmt_typ == lmt_udu_sng){
-
-     
+      
       if(!fl_udu_sng){ 
         (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),dim.nm);
         nco_exit(EXIT_FAILURE);
       } /* end if */
-
       
       if(nco_lmt_udu_cnv(dim.cid,fl_udu_sng,lmt.min_sng,&lmt.min_val)) nco_exit(EXIT_FAILURE);
       if(nco_lmt_udu_cnv(dim.cid,fl_udu_sng,lmt.max_sng,&lmt.max_val)) nco_exit(EXIT_FAILURE);
@@ -1390,27 +1384,27 @@ nco_lmt_typ /* [fnc] Determine limit type */
 
 } /* end nco_lmt_typ() */
 
-char *              /* O [ptr] units string */
-nco_lmt_get_udu_att /* Successful conversion returns units attribute other wise null */
-(const int nc_id,   /* I [idx] netCDF file ID */
- const int var_id)  /*  I [idx] ID of variable to read attribute from */
+char * /* O [sng] Units string */
+nco_lmt_get_udu_att /* Successful conversion returns units attribute otherwise null */
+(const int nc_id, /* I [idx] netCDF file ID */
+ const int var_id) /* I [id] Variable ID whose attribute to read */
 {
- /* grab units attribute from disk */
+ /* Grab units attribute from disk */
  const char *att_nm="units"; 
  nc_type att_typ; 
- size_t att_sz;
+ long att_sz;
  char *fl_udu_sng=NULL_CEWI;
 
  if(nco_inq_att_flg(nc_id,var_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
    /* Allocate memory for attribute */
-   if( att_typ == NC_CHAR) {
-     fl_udu_sng=(char *)nco_malloc((att_sz+1)*sizeof(char));
+   if(att_typ == NC_CHAR){
+     fl_udu_sng=(char *)nco_malloc((att_sz+1UL)*sizeof(char));
      /* Get 'units' attribute */
      (void)nco_get_att(nc_id,var_id,att_nm,fl_udu_sng,att_typ);
      fl_udu_sng[att_sz]='\0';
-   }  
- } 
+   } /* !NC_CHAR */
+ } /* endif */
  return fl_udu_sng;
-}
+} /* end nco_lmt_get_udu_att() */
 
 
