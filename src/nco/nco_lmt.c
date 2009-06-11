@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.75 2009-06-10 23:20:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.76 2009-06-11 13:21:48 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -301,7 +301,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     long min_idx;
     long tmp_idx;
     long dmn_srt=0L;
-    
+
+    char *fl_udu_sng=NULL_CEWI; /* units attribute in co-ordinate var */
+
+     
+
     /* Get variable ID of coordinate */
     rcd=nco_inq_varid(nc_id,lmt.nm,&dim.cid);
     
@@ -382,37 +386,49 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Determine min and max values of entire coordinate */
     dmn_min=dmn_val_dp[min_idx];
     dmn_max=dmn_val_dp[max_idx];
+
+
+    lmt.origin=0.0;
+
+    /* Grab units attribute from disk */
+    fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid); 
+
+    if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng  ){ 
+
+#ifdef ENABLE_UDUNITS
+# ifdef HAVE_UDUNITS2_H
+      /* Re-base and reset origin to 0.0 if re-basing fails */
+      if(nco_lmt_clc_org(fl_udu_sng,lmt.re_bs_sng,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
+# endif /* !HAVE_UDUNITS2_H */
+#endif /* !ENABLE_UDUNITS */
+    } 
+
+
     
     /* Convert UDUnits strings if necessary */
     if(lmt.lmt_typ == lmt_udu_sng){
-      char *fl_udu_sng;
-        
-      /* Grab units attribute from disk */
-      fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid); 
+
+     
       if(!fl_udu_sng){ 
         (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),dim.nm);
         nco_exit(EXIT_FAILURE);
       } /* end if */
 
-      /* Initialize now then possibly override by re-basing */
-      lmt.origin=0.0;
-#ifdef ENABLE_UDUNITS
-# ifdef HAVE_UDUNITS2_H
-      /* Re-base and reset origin to 0.0 if re-basing fails */
-      if(nco_lmt_clc_org(fl_udu_sng,lmt.re_bs_sng,&lmt.origin)) lmt.origin=0.0;
-# endif /* !HAVE_UDUNITS2_H */
-#endif /* !ENABLE_UDUNITS */
       
       if(nco_lmt_udu_cnv(dim.cid,fl_udu_sng,lmt.min_sng,&lmt.min_val)) nco_exit(EXIT_FAILURE);
       if(nco_lmt_udu_cnv(dim.cid,fl_udu_sng,lmt.max_sng,&lmt.max_val)) nco_exit(EXIT_FAILURE);
-      
-
-      nco_free(fl_udu_sng);
  
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
       if(lmt.min_sng == NULL) lmt.min_val=dmn_val_dp[min_idx]; else lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
       if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
+      
+      /* re-base co-rdinates as necessary in multi-file operatators 
+         lmt.origin has been calculated earlier in file */
+      if(rec_dmn_and_mlt_fl_opr){ 
+        lmt.min_val-=lmt.origin;
+        lmt.max_val-=lmt.origin;     
+      }
     }
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
     if(dbg_lvl_get() > nco_dbg_std && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
@@ -533,6 +549,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Un-typecast pointer to values after access */
     (void)cast_nctype_void((nc_type)NC_DOUBLE,&dim.val);
     
+    /* free up string */
+    fl_udu_sng=nco_free(fl_udu_sng);
+  
     /* Free space allocated for dimension */
     dim.val.vp=nco_free(dim.val.vp);
     
@@ -606,6 +625,30 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 No records were skipped in previous files */
       if(cnt_crr == 0L && lmt.rec_skp_nsh_spf == 0L) lmt.rec_skp_vld_prv=0L;
       
+      /* do re-basing stuff again ? */
+      lmt.origin=0.0;
+
+      { /* temporary scope */
+        /* Grab units attribute from disk */
+        char *fl_udu_sng=NULL_CEWI;
+
+        /* Get variable ID of coordinate */
+        rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
+
+        fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid); 
+
+        if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng  ){ 
+
+#ifdef ENABLE_UDUNITS
+# ifdef HAVE_UDUNITS2_H
+        /* Re-base and reset origin to 0.0 if re-basing fails */
+        if(nco_lmt_clc_org(fl_udu_sng,lmt.re_bs_sng,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
+# endif /* !HAVE_UDUNITS2_H */
+#endif /* !ENABLE_UDUNITS */
+        } 
+	nco_free(fl_udu_sng);
+      }
+
       /* This if statement is required to avoid an ugly goto statment */
       if(!flg_no_data){
 	
@@ -1353,7 +1396,7 @@ nco_lmt_get_udu_att /* Successful conversion returns units attribute other wise 
  size_t att_sz;
  char *fl_udu_sng=NULL_CEWI;
 
- if(nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
+ if(nco_inq_att_flg(nc_id,var_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
    /* Allocate memory for attribute */
    if( att_typ == NC_CHAR) {
      fl_udu_sng=(char *)nco_malloc((att_sz+1)*sizeof(char));
