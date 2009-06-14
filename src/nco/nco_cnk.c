@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.17 2009-06-09 22:43:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.18 2009-06-14 20:47:42 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -16,9 +16,10 @@
    ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
    ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc
 
-   This couplet chunks data then unchunks it back to its original state:
-   ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
-   ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
+   ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc # Chunk unchunked data
+   ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc # Unchunk chunked data
+   ncks -O -4 -D 4 --cnk_plc=all ~/foo.nc ~/foo.nc # Chunk chunked data
+   ncks -O -4 -D 4 --cnk_plc=uck ~/nco/data/in.nc ~/foo.nc # Unchunk unchunked data
 
    ncecat testing:
    ncecat -O -4 -D 4 --cnk_plc=all -p ~/nco/data in.nc in.nc ~/foo.nc
@@ -309,9 +310,13 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
        (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
-      if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s turning off chunking for %s\n",prg_nm_get(),fnc_nm,var_nm);
       /* Turn chunking off for this variable */
-      (void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
+      if(nco_cnk_dsk_inq(nc_id,var_idx)){
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
+	(void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
+      }else{ /* !chunked */
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s not unchunking %s because it is not chunked\n",prg_nm_get(),fnc_nm,var_nm);
+      } /* !chunked */
       /* Skip to next variable in loop */
       continue;
     } /* end if */
@@ -511,6 +516,24 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
   return nco_cnk_plc_nil; /* Statement should not be reached */
 } /* end nco_cnk_plc_get() */
 
+nco_bool /* O [flg] Variable is chunked on disk */
+nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
+(const int nc_id, /* I [idx] netCDF file ID */
+ const int var_id) /* I [id] Variable ID */
+{
+  /* Purpose: Check whether variable is chunked on disk and set variable members 
+     cnk_dsk and cnk_sz accordingly */
+  /* ncea -O -D 3 -v cnk ~/nco/data/in.nc ~/nco/data/foo.nc */
+  
+  int rcd; /* [rcd] Return success code */
+  int srg_typ; /* [enm] Storage type */
+  
+  rcd=nco_inq_var_chunking(nc_id,var_id,&srg_typ,(size_t *)NULL);
+
+  if(srg_typ == NC_CONTIGUOUS) return False; else return True;
+  
+} /* end nco_cnk_dsk_inq() */
+
 #if 0
 /* NB: Following routines are placeholders, currently not used */
 size_t * /* O [nbr] Chunksize array for variable */
@@ -578,33 +601,5 @@ nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return False;
 } /* end nco_is_chunkable() */
-
-nco_bool /* O [flg] Variable is chunked on disk */
-nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
-(const int nc_id, /* I [idx] netCDF file ID */
- var_sct * const var) /* I/O [sct] Variable */
-{
-  /* Purpose: Check whether variable is chunked on disk and set variable members 
-     cnk_dsk and cnk_sz accordingly */
-  /* ncea -O -D 3 -v cnk ~/nco/data/in.nc ~/nco/data/foo.nc */
-  
-  int rcd; /* [rcd] Return success code */
-  int srg_typ; /* [enm] Storage type */
-  
-  /* Set some defaults in variable structure for safety in case of early return
-     Flags for variables without valid scaling information should appear 
-     same as flags for variables with _no_ scaling information
-     Set has_scl_fct, has_add_fst in var_dfl_set()
-     typ_uck:
-     1. is required by ncra nco_cnv_mss_val_typ() 
-     2. depends on var->type and so should not be set in var_dfl_set()
-     3. is therefore set to default here */
-  var->cnk_dsk=False; /* [enm] Variable is chunked on disk */
-
-  rcd=nco_inq_var_chunking(nc_id,var->id,&srg_typ,var->cnk_sz);
-
-  return var->cnk_dsk; /* [flg] Variable is chunked on disk (valid scale_factor, add_offset, or both attributes exist) */
-  
-} /* end nco_cnk_dsk_inq() */
 
 #endif /* endif 0 */

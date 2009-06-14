@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.10 2009-05-27 05:31:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.11 2009-06-14 20:47:42 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -96,6 +96,11 @@ int /* O [enm] Chunking policy */
 nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
 (const char *nco_cnk_plc_sng); /* [sng] User-specified chunking policy */
 
+nco_bool /* O [flg] Variable is chunked on disk */
+nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
+(const int nc_id, /* I [idx] netCDF file ID */
+ const int var_id); /* I [id] Variable ID */
+
 #if 0 
 size_t * /* O [nbr] Chunksize array for variable */
 nco_cnk_sz_get /* [fnc] Determine chunksize array */
@@ -110,11 +115,6 @@ nco_cnk_sz_get /* [fnc] Determine chunksize array */
 nco_bool /* O [flg] NCO will attempt to chunk variable */
 nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
 (const nc_type nc_typ_in); /* I [enm] Type of input variable */
-
-nco_bool /* O [flg] Variable is chunked on disk */
-nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
-(const int nc_id, /* I [idx] netCDF file ID */
- var_sct *var); /* I/O [sct] Variable */
 #endif /* endif 0 */
 
 #ifdef __cplusplus

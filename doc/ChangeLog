@@ -1,3 +1,7 @@
+2009-06-14  Charlie Zender  <zender@uci.edu>
+
+	* Only unchunk chunked variables
+
 2009-06-09  Charlie Zender  <zender@uci.edu>
 
 	* Chunking works: plc=all for map=rd1,dmn
