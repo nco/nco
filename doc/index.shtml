@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.536 2009-06-09 16:46:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.537 2009-06-15 16:59:57 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -107,9 +107,10 @@ Have a better one? Send it in!<br>
 <dt><a name="Milestones"></a><a name="milestones"></a></dt>
 <h2>NCO Milestones</h2>
 
-
 <ul>
-<li>2009 Late Spring: NCO 3.9.9 (chunksize, NC_STRING, GSL statistics) (TBD)</li>
+<li>2009 Summer: NCO 4.0.0 (GSL interpolation) (TBD)</li>
+
+<li>2009 Late Spring: NCO 3.9.9 (chunking, NC_STRING, GSL statistics, rebasing) (TBD)</li>
 
 <li>2009 Apr&nbsp;29: NCO 3.9.8 (GSL RNG/PDF functions)</li>
 
@@ -495,10 +496,13 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
+<li><b>NCO/SDO 4.0.0</b>: (<i>Future</i>) 
+GSL interpolation and fitting;
 <li><b>NCO/SDO 3.9.9</b>: (<i>In progress</i>) 
 netCDF4 chunksize and <tt>NC_STRING</tt> support; 
 GSL statistics functions;
 UDUnits2 <tt>time-since</tt> support;
+<tt>ncrcat</tt> re-basing;
 <li><b>NCO/SDO 3.9.8</b>: 
 <tt>ncap2</tt> supports <tt>sort()</tt>, <tt>array()</tt>;
 better DAP/libnetcdf and UDUnits2 builds;

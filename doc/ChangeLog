@@ -1,6 +1,18 @@
+2009-06-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 3.9.9 release procedure:
+	Changes since nco-3_9_8: chunking, NC_STRING, GSL statistics, rebasing
+	cd ~/nco;cvs tag -d nco-3_9_9;cvs tag -d nco-3_9_9-1
+	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
+	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
+
 2009-06-14  Charlie Zender  <zender@uci.edu>
 
 	* Only unchunk chunked variables
+
+2009-06-11  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up re-basing code
 
 2009-06-09  Charlie Zender  <zender@uci.edu>
 
@@ -11,7 +23,7 @@
 	* Allow cnk_map=dmn to work with record hyperslabs, e.g.,
 	ncks -O -4 -D 4 --cnk_map=dmn -d time,0,3 ~/nco/data/in.nc ~/foo.nc
 
-	* Improve chunking corner case logic
+	* Improve chunking corner-case logic
 
 	* Restore precedence of explicitly specified chunking for record
 	dimension over that implicitly specified by chunking map rd1
@@ -93,12 +105,6 @@
 2009-05-08  Charlie Zender  <zender@uci.edu>
 
 	* Begin chunking documentation in nco.texi
-
-	* NCO 3.9.9 release procedure:
-	Changes since nco-3_9_8: chunking infrastructure
-	cd ~/nco;cvs tag -d nco-3_9_9;cvs tag -d nco-3_9_9-1
-	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
-	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
 
 2009-05-07  Charlie Zender  <zender@uci.edu>
 

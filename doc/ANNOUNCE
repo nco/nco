@@ -1,45 +1,60 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.332 2009-06-09 16:46:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.333 2009-06-15 16:59:57 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version offers three new significant features:
+This version offers four new significant features:
 GSL statistics routines, netCDF4 chunksize support (can 
-increase speed of large file reads and writes), and netCDF4 
-string support. 
+increase speed of large file reads and writes), netCDF4 string
+support, and record coordinate "re-basing" (climate model analysts 
+take note!). Short explanations of these appear below.
+This is the most feature-full release in quite some time.
 
 Work on NCO 4.0.0 is underway. Areas of improvement include
-more flexible netCDF4 chunking support, better UDUnits2 time support,   
-and GSL interpolation and fitting functions.
+GSL interpolation and fitting functions.
 
 "New stuff" details:
 
-A. NCO (when enabled with netCDF4) supports many chunking options:
-   ncks -O -4 --cnk_plc=all in.nc out.nc
-   ncks -O -4 --cnk_dmn lat,64 --cnk_dmn lon,128 in.nc out.nc
-   http://nco.sf.net/nco.html#chunking
+A. ncrcat supports "rebasing", a new feature that relies on UDUnits.
+   When concatenating multiple input files whose record dimension
+   uses a units attribute convention like "time-since", and whose 
+   base times vary amongst the files (e.g., "time-since 2001-01-01"
+   in the first file and "time-since 2002-01-01" in the second), 
+   ncrcat now automatically re-bases the record coordinate values
+   so they all refer to the same base time in the output file.
+   This often produces a monotonically increasing record coordinate
+   in the output file. Analysis of climate model output in CMIP3 
+   collection will be easier as a result.
 
 B. ncap2 supports the GSL (Chapter 20) statistics routines, e.g.,
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
-   A list of ncap2 functions added since 3.9.8 is below
+   ncap2 functions added since 3.9.8 are listed below
    http://nco.sf.net/nco.html#gsl
 
-C. NCO (when enabled with netCDF4) supports NC_STRING atomic type.
+C. NCO supports netCDF4 chunking options:
+   These options can improve performance on large datasets.
+   Some of the more advanced chunking options still crash (no data
+   corruption, though), but chunking whole files always works.
+   Large file users: Send us suggestions on useful chunking patterns!
+   ncks -O -4 --cnk_plc=all in.nc out.nc
+   http://nco.sf.net/nco.html#chunking
+
+D. NCO supports the netCDF4 NC_STRING atomic type.
    NCO has long-supported the other netCDF4 atomic types. 
    An "s" trailing double quotes specifies NC_STRING (not NC_CHAR):
    ncap2 -4 -O -v -s 'name[lat]={"US"s,"Them"s};' in.nc out.nc
    Ragged arrays of strings are finally here! Let's use them.
    http://nco.sf.net/nco.html#nco4
 
-D. Operators may add NCO global attribute containing NCO version
-
-E. ncks --secret prints hidden/unsupported options
-
-F. UDUnits2 support completed. "time since" handled correctly.
+E. UDUnits2 support completed. "time since" handled correctly.
    All future units features will utilize UDUnits2.
    UDUnits1 support will eventually be deprecated. 
+
+F. Operators add an NCO global attribute containing NCO version
+
+G. ncks --secret prints hidden/unsupported options
 
 "Sticky" reminders:
 

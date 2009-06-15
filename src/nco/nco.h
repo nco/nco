@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.140 2009-06-10 15:32:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.141 2009-06-15 16:59:57 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -247,8 +247,8 @@ extern "C" {
   
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */
-    nco_dbg_quiet, /* 0 [enm] Quiet all non-error messages. */
-    nco_dbg_std, /* 1 [enm] Standard mode. Minimal, but some, messages. */
+    nco_dbg_quiet, /* 0 [enm] Quiet all non-error messages */
+    nco_dbg_std, /* 1 [enm] Standard mode. Minimal, but some, messages */
     nco_dbg_fl, /* 2 [enm] Filenames */
     nco_dbg_scl, /* 3 [enm] Scalars, other per-file information  */
     nco_dbg_var, /* 4 [enm] Variables, highest level per-file loop information */
