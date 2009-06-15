@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.91 2009-06-15 14:33:38 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.92 2009-06-15 14:35:37 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -840,7 +840,7 @@ sub tst_rgr {
     $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,8.0,9.0  $in_pth/in.nc %tempf_00% %tempf_01% %tempf_02% 2> %tempf_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_02% %tempf_03%";
     $tst_cmd[4] = "time_ttl = 17";
-    $dsc_sng="Concat 1D var across 3 files double limits - requires  udunits2 ";
+    $dsc_sng="Concat 1D var across 3 files double limits - requires udunits2 ";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
@@ -851,7 +851,7 @@ sub tst_rgr {
     $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,11.0,20.0  $in_pth/in.nc %tempf_00% %tempf_01% %tempf_02% 2> %tempf_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_02% %tempf_03%";
     $tst_cmd[4] = "time_ttl = 155";
-    $dsc_sng="Concat 1D var across 3 files double limits2 - requires  udunits2 ";
+    $dsc_sng="Concat 1D var across 3 files double limits2 - requires udunits2 ";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
@@ -861,8 +861,8 @@ sub tst_rgr {
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-04-01 12:09:00 -9:00\"' $in_pth_arg in.nc %tempf_01%";
     $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1964-03-22 12:00','1964-03-25 12:00'   $in_pth/in.nc %tempf_00% %tempf_01% %tempf_02% 2> %tempf_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_02% %tempf_03%";
-    $tst_cmd[4] = "time_ttl = 34";
-    $dsc_sng="Concat 1D var across 3 files time stamp limits2 - requires  udunits2 ";
+    $tst_cmd[4] = "time_ttl = 33";
+    $dsc_sng="Concat 1D var across 3 files time stamp limits2 - requires udunits2 ";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
