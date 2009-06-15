@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.36 2009-06-05 14:17:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.37 2009-06-15 23:19:44 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -752,13 +752,12 @@ void gsl_cls::gsl_ini_stats(void){
 
   }
 
-
   gpr_vtr.push_back(gpr_cls("gsl_stats_covariance",f_unn(ncap_void),hnd_fnc_stat4,PS_COV));
+# if NCO_GSL_MINOR_VERSION >= 10
   gpr_vtr.push_back(gpr_cls("gsl_stats_correlation",f_unn(ncap_void),hnd_fnc_stat4,PS_COR));
+# endif // NCO_GSL_MINOR_VERSION < 10
   gpr_vtr.push_back(gpr_cls("gsl_stats_pvariance",f_unn(ncap_void),hnd_fnc_stat4,PS_PVAR));
   gpr_vtr.push_back(gpr_cls("gsl_stats_ttest",f_unn(ncap_void),hnd_fnc_stat4,PS_TTST));
-
-
 
 } // end gsl_ini_stats
 
@@ -3557,7 +3556,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
      default: nco_dfl_case_nc_type_err(); break;    
      }  break;  
   
-    
+# if NCO_GSL_MINOR_VERSION >= 10
    case PS_COR:
      switch(var_arr[0]->type){
        case NC_FLOAT:  r_val=gsl_stats_float_correlation( var_arr[0]->val.fp,d1_srd,var_arr[2]->val.fp,d2_srd,sz1 );break;
@@ -3585,7 +3584,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 #endif /* !ENABLE_NETCDF4 */
      default: nco_dfl_case_nc_type_err(); break;    
      }  break;  
-  
+# endif // NCO_GSL_MINOR_VERSION < 10
     
    case PS_PVAR:
      switch(var_arr[0]->type){

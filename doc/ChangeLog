@@ -1,5 +1,7 @@
 2009-06-15  Charlie Zender  <zender@uci.edu>
 
+	* Restrict gsl_stats_correlation() to NCO_GSL_MINOR_VERSION >= 10
+
 	* NCO 3.9.9 release procedure:
 	Changes since nco-3_9_8: chunking, NC_STRING, GSL statistics, rebasing
 	cd ~/nco;cvs tag -d nco-3_9_9;cvs tag -d nco-3_9_9-1

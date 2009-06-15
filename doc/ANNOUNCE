@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.333 2009-06-15 16:59:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.334 2009-06-15 23:19:44 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -97,9 +97,11 @@ Enjoy,
 Charlie
  
 GSL functions added to ncap2 in 3.9.9: ncap2 -f | grep gsl_stats
-gsl_stats_absdev()                               
-gsl_stats_absdev_m()                             
-gsl_stats_kurtosis()                             
+gsl_stats_absdev()                                                         
+gsl_stats_absdev_m()                                                       
+gsl_stats_correlation()                                                    
+gsl_stats_covariance()                                                     
+gsl_stats_kurtosis()
 gsl_stats_lag1_autocorrelation()
 gsl_stats_lag1_autocorrelation_m()
 gsl_stats_max()
@@ -108,11 +110,13 @@ gsl_stats_mean()
 gsl_stats_median_from_sorted_data()
 gsl_stats_min()
 gsl_stats_min_index()
+gsl_stats_pvariance()
 gsl_stats_quantile_from_sorted_data()
 gsl_stats_sd()
 gsl_stats_sd_m()
 gsl_stats_sd_with_fixed_mean()
 gsl_stats_skew()
+gsl_stats_ttest()
 gsl_stats_variance()
 gsl_stats_variance_m()
 gsl_stats_variance_with_fixed_mean()
