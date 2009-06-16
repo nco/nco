@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.15 2009-02-18 17:08:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.16 2009-06-16 08:23:58 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -102,8 +102,8 @@ ncap_var_udf
  
 int             
 ncap_att_cpy
-(std::string s_dst,
- std::string s_src,
+(const std::string s_dst,
+ const std::string s_src,
  prs_cls  *prs_arg);
 
 
