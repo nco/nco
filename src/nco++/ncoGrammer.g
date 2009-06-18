@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.164 2009-05-11 09:54:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.165 2009-06-18 13:59:21 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -597,6 +597,7 @@ DIM_MTD_ID
   options{paraphrase="dimension identifier";} 
   : '$'! (DGT)+
    ;            
+
 
 
 NSTRING
@@ -2163,8 +2164,15 @@ out returns [var_sct *var]
         } // end action 
         
      // Variable with argument list 
-    | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID LMT_LIST) {
-            var=var_lmt(vid);
+    | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
+           // see if hyperslab limit is a single value
+           if(lmt->getNumberOfChildren()==1 && 
+              lmt->getFirstChild()->getNumberOfChildren()==1 &&
+              lmt->getFirstChild()->getFirstChild()->getType() != COLON)
+                
+              var=var_lmt_one(vid);
+           else   
+               var=var_lmt(vid);
 
     }
 
@@ -2665,6 +2673,121 @@ var_sct *var_rhs;
 ;
 
 
+//Calculate scalar hyperslab where there is a single limit for a possibly
+// multi-dimensional variable
+var_lmt_one returns [var_sct *var]
+{
+const std::string fnc_nm("var_lmt_one");
+var=NULL_CEWI; 
+var_sct *var_nbr;
+}
+  :#(vid:VAR_ID #(LMT_LIST #(LMT var_nbr=out))) {
+
+            int idx;
+            var_sct *var_rhs;
+            std::string var_nm;
+           
+
+            var_nm=vid->getText(); 
+            var_rhs=prs_arg->ncap_var_init(var_nm,false);            
+         
+            if(var_rhs->undefined){
+              var=ncap_var_udf("~rhs_undefined");       
+              goto end0;  // cannot use return var!!
+            }
+
+
+
+            if(prs_arg->ntl_scn){
+             var=ncap_sclr_var_mk(var_nm,(nc_type)(var_rhs->type),false);
+            }else{
+              bool bram;
+              int fl_id;
+              int nbr_dim=var_rhs->nbr_dim;
+              long srt; 
+              long srt1[nbr_dim];   
+              long sz_dim=1;
+              NcapVar *Nvar;
+
+              // create var with space for value
+              var=ncap_sclr_var_mk(var_nm,(nc_type)(var_rhs->type),true);
+
+              // we have already checked limit is a single value
+              // in the calling action earlier  in the tree parser
+              //var_nbr=out(lmt->getFirstChild());
+
+              var_nbr=nco_var_cnf_typ(NC_INT,var_nbr); 
+              (void)cast_void_nctype(NC_INT,&var_nbr->val);
+              srt=var_nbr->val.lp[0];
+              (void)cast_nctype_void(NC_INT,&var_nbr->val);
+
+
+              // fortran index convention   
+              if(prs_arg->FORTRAN_IDX_CNV)
+                srt--;
+              
+              // do some bounds checking
+              if(srt >= var_rhs->sz || srt<0 )
+               err_prn(fnc_nm,"Limit of "+ nbr2sng(srt) +" for variable \""+ var_nm+"\" with size="+nbr2sng(var_rhs->sz)+" is out of bounds\n"); 
+            
+              // check for RAM variable  
+              Nvar=prs_arg->var_vtr.find(var_nm);
+              if(Nvar && Nvar->flg_mem)
+                bram=true;
+              else
+               bram=false;
+ 
+              if(bram){
+                // deal with RAM variable
+                size_t slb_sz;
+                slb_sz=nco_typ_lng(var_rhs->type);     
+
+                (void)memcpy(var->val.vp,(const char*)Nvar->var->val.vp+(ptrdiff_t)(srt*slb_sz),slb_sz);
+              }else{ 
+
+                // variable in output 
+                if(Nvar) {
+#ifdef _OPENMP
+                  fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
+#else    
+                  fl_id=prs_arg->out_id;  
+#endif      
+                // variable in input         
+                }else{ 
+                  fl_id=prs_arg->in_id;
+                }
+
+
+                // convert srt into multiple indices  
+                for(idx=0;idx<nbr_dim;idx++)
+                  sz_dim*= var_rhs->cnt[idx]; 
+
+                for(idx=0; idx<nbr_dim; idx++){                   
+                   sz_dim/=var_rhs->cnt[idx];
+                   srt1[idx]=srt/sz_dim; 
+                   srt-=srt1[idx]*sz_dim;
+                }
+                (void)nco_get_var1(fl_id,var_rhs->id,srt1,var->val.vp,var_rhs->type);  
+
+               } // end else !bram
+ 
+               // copy missing value if any over             
+               nco_mss_val_cp(var_rhs,var);
+            
+
+            } // end else !prs_arg->ntl_scn 
+             
+
+
+
+end0:       var_nbr=nco_var_free(var_nbr);
+            var_rhs=nco_var_free(var_rhs);   
+             
+}
+
+;
+
+
 //Calculate var with limits
 var_lmt returns [var_sct *var]
 {
@@ -2822,11 +2945,9 @@ var=NULL_CEWI;
             // Fudge -- fill out var again -but using dims defined in dmn_vtr
             // We need data in var so that LHS logic in assign can access var shape 
             var=nco_var_fll(fl_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size()); 
-
+            //var->sz*=2;
             // Now get data from disk - use nco_var_get() 
             (void)nco_var_get(fl_id,var); 
- 
-
 
            } // end if(nbram)
            
@@ -2907,4 +3028,5 @@ var=NULL_CEWI;
           end3: ;
 
     }
+
 ;
