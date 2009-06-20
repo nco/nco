@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.538 2009-06-15 23:19:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.539 2009-06-20 00:31:12 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -110,7 +110,7 @@ Have a better one? Send it in!<br>
 <ul>
 <li>2009 Summer: NCO 4.0.0 (GSL interpolation) (TBD)</li>
 
-<li>2009 Late Spring: NCO 3.9.9 (rebasing, chunking, NC_STRING, GSL statistics) (TBD)</li>
+<li>2009 Late Spring: NCO 3.9.9 (netCDF4 chunking, rebasing) (TBD)</li>
 
 <li>2009 Apr&nbsp;29: NCO 3.9.8 (GSL RNG/PDF functions)</li>
 
@@ -199,7 +199,7 @@ Have a better one? Send it in!<br>
 
 <li>2004 Mar&nbsp;04: Submit NSF <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">proposal</a></li>
 
-<li><a href="./nco_news.shtml">Past NCO News &amp; Announcements</a></li>
+<li><a href="./nco_news.shtml">Ancient NCO News &amp; Announcements</a></li>
 </ul>
 <hr></p>
 
@@ -499,7 +499,7 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO/SDO 4.0.0</b>: (<i>Future</i>) 
 GSL interpolation and fitting;
 <li><b>NCO/SDO 3.9.9</b>: (<i>In progress</i>) 
-netCDF4 chunksize and <tt>NC_STRING</tt> support; 
+netCDF4 chunking and <tt>NC_STRING</tt> support; 
 GSL statistics functions;
 UDUnits2 <tt>time-since</tt> support;
 <tt>ncrcat</tt> re-basing;
