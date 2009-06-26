@@ -8,6 +8,10 @@
 #include <antlr/AST.hpp>
 #include <antlr/AST.hpp>
 
+#ifdef ENABLE_GSL
+#include <gsl/gsl_spline.h>
+#endif
+
 ANTLR_USING_NAMESPACE(antlr);
 
 class NcapVar{
@@ -25,13 +29,18 @@ public:
   bool flg_udf;   // matches var->undefined
 
 
- bool flg_mem;    // true -- then var data is written to memory  
+  bool flg_mem;   // true -- then var data is written to memory  
                   // rather than disk -- At the moment all meta-data
                   // is cached  ? --     
- int flg_stt;      // status flag
-                   // 0 -- var is defined in memory
-                   // 1 -- var is defined in output - but no data written
-                   // 2 -- var is defined & data written
+  int flg_stt;    // status flag
+                  // 0 -- var is defined in memory
+                  // 1 -- var is defined in output - but no data written
+                  // 2 -- var is defined & data written
+
+  bool flg_spl;   // true then var->val.vp is spline data 
+                  // e.g var->val.vp is gsl_spline*
+                  // this needs to be freed up using
+                  // the gsl spline library call   
 
 public:
 
@@ -57,6 +66,7 @@ public:
    flg_udf=Nvar.flg_udf;
    flg_mem=Nvar.flg_mem;   
    flg_stt=Nvar.flg_stt;   
+   flg_spl=Nvar.flg_spl;   
   } 
   
 
@@ -99,7 +109,20 @@ public:
   std::string getFll() {return fll_nm; }
 
   //Destructor
-  ~NcapVar() { if(var !=(var_sct*)NULL) var=nco_var_free(var); }
+  ~NcapVar() { 
+
+#ifdef ENABLE_GSL
+    if(flg_spl && var->val.vp !=(void*)NULL ){ 
+      gsl_spline_free( (gsl_spline*)var->val.vp); 
+      var->val.vp=(void*)NULL;      
+    }
+#endif
+
+
+    if(var !=(var_sct*)NULL) var=nco_var_free(var); 
+
+
+    }
 
 
 };
