@@ -1,3 +1,12 @@
+2009-06-26  Henry Butowsky  <henryb@hush.com> 
+	* added new GSL class - gsl_spl_cls that provides
+	wrappers to the GSL spline interpolation functions
+	* commited code so its possible to do a LHS  hyperslab of a
+	multidimensional variable with a single index .eg
+	the following are equivalent 
+	three_dmn_var_dbl(1,1,2)=10.0
+	three_dmn_var_dbl(14)=10.0 
+           
 2009-06-15  Charlie Zender  <zender@uci.edu>
 
 	* Restrict gsl_stats_correlation() to NCO_GSL_MINOR_VERSION >= 10
