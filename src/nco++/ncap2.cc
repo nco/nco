@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.99 2009-05-29 20:12:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.100 2009-06-26 16:25:55 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.99 2009-05-29 20:12:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.99 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.100 2009-06-26 16:25:55 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.100 $";
   const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -460,10 +460,13 @@ main(int argc,char **argv)
   gsl_cls gsl_obj(true); 
   gsl2_cls gsl2_obj(true); 
   gsl_stt2_cls gsl_stt2_obj(true);
+  gsl_spl_cls gsl_spl_obj(true);
  
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl2_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl_stt2_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&gsl_spl_obj);
+
   
   /* Set GSL error handler */
   gsl_set_error_handler_off(); 
