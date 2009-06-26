@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.165 2009-06-18 13:59:21 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.166 2009-06-26 16:32:12 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1579,13 +1579,24 @@ var=NULL_CEWI;
                var_cst=NULL_CEWI;
                var=NULL_CEWI;
                NcapVar *Nvar; 
-               
-
-
+              
                var_nm=vid->getText();
                
                if(dbg_lvl_get() > 0)
                  dbg_prn(fnc_nm,var_nm+"(limits)");
+
+
+               // check to see if we are dealing with a single
+               // index in limit -- i.e hyperslab a mult-dimensional var
+               // with a single index 
+              
+               if(lmt->getNumberOfChildren()==1 && 
+                  lmt->getFirstChild()->getNumberOfChildren()==1 &&
+                  lmt->getFirstChild()->getFirstChild()->getType() != COLON
+                 ){
+                  var=var_lmt_one_lhs(vid,bram);
+                  goto end0;
+                } 
               
                lmt_Ref=lmt;               
 
@@ -1598,7 +1609,7 @@ var=NULL_CEWI;
                
               // Deal with RAM variables
               if(bram) {
-
+ 
                   
                  if(Nvar && Nvar->flg_stt==1){
                     var_sct *var_ini;
@@ -1750,16 +1761,17 @@ var=NULL_CEWI;
 
               var_rhs=nco_var_free(var_rhs);
               
-              // See If we have to return something
-              if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORET)
-                var=NULL_CEWI;
-              else 
-                var=prs_arg->ncap_var_init(var_nm,true);
-
                
                // Empty and free vector 
               for(idx=0 ; idx < nbr_dmn ; idx++)
                 (void)nco_lmt_free(lmt_vtr[idx]);
+
+              // See If we have to return something
+end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORET)
+                var=NULL_CEWI;
+              else 
+                var=prs_arg->ncap_var_init(var_nm,true);
+               
 
         } // end action
 
@@ -2745,16 +2757,21 @@ var_sct *var_nbr;
                 (void)memcpy(var->val.vp,(const char*)Nvar->var->val.vp+(ptrdiff_t)(srt*slb_sz),slb_sz);
               }else{ 
 
-                // variable in output 
-                if(Nvar) {
+                // variable in output and defined
+                if(Nvar && Nvar->flg_stt==2) {
 #ifdef _OPENMP
                   fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
 #else    
                   fl_id=prs_arg->out_id;  
 #endif      
-                // variable in input         
-                }else{ 
+                // variable output but undefined        
+                }else if(Nvar && Nvar->flg_stt==1) {
                   fl_id=prs_arg->in_id;
+                  (void)nco_inq_varid(fl_id,var_nm.c_str(),&var_rhs->id);
+
+                // variable in input
+                }else{
+                  fl_id=prs_arg->in_id; 
                 }
 
 
@@ -2783,6 +2800,168 @@ var_sct *var_nbr;
 end0:       var_nbr=nco_var_free(var_nbr);
             var_rhs=nco_var_free(var_rhs);   
              
+}
+
+;
+
+
+
+//Calculate scalar LHS hyperslab where there is a single limit for a possibly
+// multi-dimensional variable
+var_lmt_one_lhs[bool bram] returns [var_sct *var]
+{
+const std::string fnc_nm("var_lmt_one_lhs");
+var=NULL_CEWI; 
+var_sct *var_nbr;
+}
+  :#(vid:VAR_ID #(LMT_LIST #(LMT var_nbr=out))) {
+               int idx; 
+               int var_id; 
+               int slb_sz;
+               long srt;
+
+               std::string var_nm;
+
+               var_sct *var_lhs=NULL_CEWI;
+               var_sct *var_rhs=NULL_CEWI;
+               NcapVar *Nvar; 
+
+           
+               var_nm=vid->getText(); 
+
+               if(dbg_lvl_get() > 1)
+                 dbg_prn(fnc_nm,var_nm+"(limit)");
+           
+               Nvar=prs_arg->var_vtr.find(var_nm);
+
+               // calculate single hyperslab limit
+               var_nbr=nco_var_cnf_typ(NC_INT,var_nbr); 
+               (void)cast_void_nctype(NC_INT,&var_nbr->val);
+               srt=var_nbr->val.lp[0];
+               (void)cast_nctype_void(NC_INT,&var_nbr->val);
+ 
+               // fortran index convention   
+               if(prs_arg->FORTRAN_IDX_CNV)
+                srt--;
+
+
+ 
+              // Overwrite bram possibly 
+              if(Nvar) 
+                bram=Nvar->flg_mem;
+             
+               
+              // Deal with RAM variables
+              if(bram){
+               
+                 if(Nvar){
+                   //defined but not-populated 
+                   if(Nvar->flg_stt==1){ 
+                    var_sct *var_ini;
+                    var_ini=prs_arg->ncap_var_init(var_nm,true);       
+                    Nvar->var->val.vp=var_ini->val.vp;
+                    var_ini->val.vp=(void*)NULL;
+                    var_ini=nco_var_free(var_ini);
+                    Nvar->flg_stt=2; 
+                   } 
+                   //defined and populated 
+                   if(Nvar->flg_stt==2)
+                     var_lhs=Nvar->var;                        
+
+                 }else{
+                    var_lhs=prs_arg->ncap_var_init(var_nm,true);       
+                 }
+                  
+              
+                 // do some bounds checking on single limits
+                 if(srt >= var_lhs->sz || srt<0 )
+                   err_prn(fnc_nm,"Limit of "+ nbr2sng(srt) +" for variable \""+ var_nm+"\" with size="+nbr2sng(var_lhs->sz)+" is out of bounds\n"); 
+      
+                 //calculate rhs
+                 var_rhs=out(vid->getNextSibling());   
+
+                 // we are only hyperslabbing a single value 
+                 if(var_rhs->sz !=1)
+                   err_prn(fnc_nm, "Hyperslab for "+var_nm+" - number of elements on LHS(1) doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
+
+
+                 // Convert to LHS type
+                 var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
+               
+                 slb_sz=nco_typ_lng(var_lhs->type);     
+                 (void)memcpy((char*)var_lhs->val.vp+(ptrdiff_t)(srt*slb_sz),var_rhs->val.vp,slb_sz);    
+
+                 if(!Nvar)
+                   (void)prs_arg->ncap_var_write(var_lhs,true); 
+
+
+
+              // deal with regular vars 
+              }else{
+
+                // if var undefined in O or defined but not populated
+                if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
+                  // if var isn't in ouptut then copy it there
+                  var_lhs=prs_arg->ncap_var_init(var_nm,true);
+
+                 // copy atts to output
+                 (void)ncap_att_cpy(var_nm,var_nm,prs_arg);
+                 (void)prs_arg->ncap_var_write(var_lhs,false);
+                }
+ 
+                var_lhs=prs_arg->ncap_var_init(var_nm,false);
+
+              
+                // do some bounds checking on single limits
+                if(srt >= var_lhs->sz || srt<0 )
+                   err_prn(fnc_nm,"Limit of "+ nbr2sng(srt) +" for variable \""+ var_nm+"\" with size="+nbr2sng(var_lhs->sz)+" is out of bounds\n"); 
+
+                // Grab RHS
+                var_rhs=out(vid->getNextSibling());   
+
+                // we are only hyperslabbing a single value 
+                if(var_rhs->sz !=1)
+                  err_prn(fnc_nm, "Hyperslab for "+var_nm+" - number of elements on LHS(1) doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
+
+                // Convert to LHS type
+                var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
+
+                // swap values about
+                var_lhs->val.vp=var_rhs->val.vp; 
+                var_rhs->val.vp=(void*)NULL; 
+
+                // write block
+                { 
+                 int nbr_dim=var_lhs->nbr_dim;
+                 long srt1[nbr_dim];   
+                 long sz_dim=1; 
+
+                 // convert srt into multiple indices  
+                 for(idx=0;idx<nbr_dim;idx++)
+                   sz_dim*= var_lhs->cnt[idx]; 
+
+                 for(idx=0; idx<nbr_dim; idx++){                   
+                   sz_dim/=var_lhs->cnt[idx];
+                   srt1[idx]=srt/sz_dim; 
+                   srt-=srt1[idx]*sz_dim;
+                 }
+
+                
+                 for(idx=0;idx<nbr_dim;idx++){
+                   var_lhs->srt[idx]=srt1[idx]; 
+                   var_lhs->cnt[idx]=1L; 
+                   var_lhs->srd[idx]=1L; 
+                 } /* end loop over idx */
+    
+
+                 // write slab to O contains call to Open MP critical region
+                 //  routine also frees up var_lhs
+                 (void)prs_arg->ncap_var_write_slb(var_lhs);     
+
+                }//end write block 
+            }     
+            end0:  var_rhs=nco_var_free(var_rhs); 
+                   var_nbr=nco_var_free(var_nbr); 
 }
 
 ;
@@ -2963,7 +3142,7 @@ var=NULL_CEWI;
 
 
 
-           // if variable is scalar re-organize in a new var 
+            // if variable is scalar re-organize in a new var 
            // loose extraneous material so it looks like a
            // plain scalar variable
            if(var->sz ==1) {
