@@ -18,6 +18,7 @@
  
     flg_mem=false;
     flg_stt=0;
+    flg_spl=false;
     xpr_typ_rfr=ncap_xpr_null;
     
         
