@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.37 2009-06-15 23:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.38 2009-06-26 16:25:03 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -4093,6 +4093,221 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     return ncap_sclr_var_mk(static_cast<std::string>("~gsl_stt2_function"),r_val);  
 
 }
+
+
+//GSL  /****************************************/
+// gsl spline interpolation 
+  gsl_spl_cls::gsl_spl_cls(bool  flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+     fmc_vtr.push_back( fmc_cls("gsl_interp_linear",this,(int)PLINEAR));
+     fmc_vtr.push_back( fmc_cls("gsl_interp_polynomial",this,(int)PPOLY));
+     fmc_vtr.push_back( fmc_cls("gsl_interp_cspline",this,(int)PCSPLINE));
+     fmc_vtr.push_back( fmc_cls("gsl_interp_cspline_periodic",this,(int)PCSPLINE_PER));
+     fmc_vtr.push_back( fmc_cls("gsl_interp_akima",this,(int)PAKIMA));
+     fmc_vtr.push_back( fmc_cls("gsl_interp_akima_periodic",this,(int)PAKIMA_PER));
+     fmc_vtr.push_back( fmc_cls("gsl_spline_eval",this,(int)PEVAL));
+    }
+  }
+
+
+
+  var_sct *gsl_spl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl_stt2_cls::fnd");
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_args;
+    int in_nbr_args;
+    prs_cls* prs_arg=walker.prs_arg;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+    std::string serr;    
+    RefAST tr;    
+    std::vector<RefAST> vtr_args; 
+
+
+    nbr_args=0;
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    }
+ 
+    nbr_args=vtr_args.size();  
+     
+    switch(fdx){
+      case PLINEAR:
+      case PPOLY:
+      case PCSPLINE:
+      case PCSPLINE_PER:
+      case PAKIMA:
+      case PAKIMA_PER:
+	in_nbr_args=3;
+        susg="usage: status="+sfnm+"(&ram_spline_handle,var_x_vals,var_y_vals)";
+        break;
+      case PEVAL:
+        in_nbr_args=2;
+        susg="usage: var_y_out="+sfnm+"(ram_spline_handle,var_x_vals)";
+        break;
+    }// end switch  
+
+    if(nbr_args<in_nbr_args){   
+      serr="function requires "+ nbr2sng(in_nbr_args)+" arguments. You have only supplied "+nbr2sng(nbr_args)+ " arguments\n"; 
+      err_prn(sfnm,serr+susg);
+    }
+
+    
+     if(fdx==PEVAL){
+       long idx;
+       long sz;     
+       double *dp;
+
+       vtl_typ lcl_typ;
+       var_sct *var_xvl; 
+       std::string serr;
+       std::string var_nm;
+       NcapVar *Nvar;
+       gsl_interp_accel acc;         
+       
+       var_xvl=walker.out(vtr_args[1]);
+      
+       // convert to doubles
+       var_xvl=nco_var_cnf_typ(NC_DOUBLE,var_xvl);   
+       	 
+       lcl_typ=expr_typ(vtr_args[0]);          
+
+       // check that first arg is a RAM VARIABLE IDENTIFIER ONLY   
+       if(lcl_typ !=VVAR ) {
+         serr="The first argument of the function must be a RAM variable identifier only.";
+         err_prn(sfnm,serr);
+       }
+
+
+       if(prs_arg->ntl_scn)
+         return var_xvl;
+
+       var_nm=vtr_args[0]->getText();
+       Nvar=prs_arg->var_vtr.find(var_nm);
+       
+       if(Nvar==NULL)
+         err_prn(sfnm,"Unable to find RAM variable "+var_nm); 
+
+       // check if spline flag not set 
+       if(!Nvar->flg_spl)
+         err_prn(sfnm,"RAM variable "+var_nm+" is not holding a gsl spline interpolation object");   
+
+
+       (void)cast_void_nctype(NC_DOUBLE,&var_xvl->val); 
+       dp=var_xvl->val.dp; 
+       sz=var_xvl->sz;
+
+       for(idx=0 ; idx<sz; idx++)
+	 dp[idx]=gsl_spline_eval( (const gsl_spline*)(Nvar->var->val.vp), dp[idx],&acc);
+
+       (void)cast_nctype_void(NC_DOUBLE,&var_xvl->val);   
+
+       return var_xvl;  
+
+     }else{
+       // assumue from here on that we are dealing with spline initialization 
+       var_sct *var_x;  
+       var_sct *var_y;
+       var_sct *var_ram;
+
+       std::string var_nm;
+       NcapVar *Nvar;       
+       const gsl_interp_type *ts;
+       gsl_spline *spline; 
+
+       switch(fdx){
+         case PLINEAR:
+           ts=gsl_interp_linear;
+           break; 
+         case PPOLY:
+           ts=gsl_interp_polynomial;
+           break; 
+         case PCSPLINE:
+           ts=gsl_interp_cspline;
+           break; 
+         case PCSPLINE_PER:
+           ts=gsl_interp_cspline_periodic;
+           break; 
+         case PAKIMA:
+           ts=gsl_interp_akima;
+           break; 
+         case PAKIMA_PER:   
+           ts=gsl_interp_akima_periodic;
+           break; 
+       } // end switch 
+
+
+       if(vtr_args[0]->getType() != CALL_REF ) 
+         err_prn(sfnm," first argument must be a call by reference ram variable\n");   
+
+       var_nm=vtr_args[0]->getFirstChild()->getText(); 
+       
+
+        
+      var_x=walker.out(vtr_args[1]);
+      var_y=walker.out(vtr_args[2]);
+
+
+      // Initial scan          
+      if(prs_arg->ntl_scn){
+	nco_var_free(var_x);
+	nco_var_free(var_y);
+
+        var_ram=ncap_sclr_var_mk(var_nm,NC_CHAR,false);
+        // below call frees up var_ram
+        prs_arg->ncap_var_write(var_ram,true);     
+ 
+        return ncap_sclr_var_mk("~gsl_spl_cls",NC_INT,false);   
+      } 
+
+
+      var_x=nco_var_cnf_typ(NC_DOUBLE,var_x);    
+      var_y=nco_var_cnf_typ(NC_DOUBLE,var_y);    
+
+      // make variables conform 
+      (void)ncap_var_att_cnf(var_y,var_x);
+
+   
+      Nvar=prs_arg->var_vtr.find(var_nm);  
+      if(!Nvar){
+          var_ram=ncap_sclr_var_mk(var_nm,NC_CHAR,false);
+          Nvar= new NcapVar(var_ram);
+          Nvar->flg_mem=true;  
+          prs_arg->var_vtr.push_ow(Nvar);
+      } 
+      // a bit of a hack ?
+      Nvar->flg_mem=true;
+      Nvar->flg_spl=true;      
+      Nvar->flg_stt=2;
+
+      spline=gsl_spline_alloc(ts,var_x->sz);  
+      gsl_spline_init(spline,var_x->val.dp,var_y->val.dp,var_x->sz);
+
+      (void)cast_void_nctype(NC_CHAR,&Nvar->var->val); 
+      Nvar->var->val.cp=(char*)spline;  
+      (void)cast_nctype_void(NC_CHAR,&Nvar->var->val); 
+
+
+      (void)cast_nctype_void(NC_DOUBLE,&var_x->val);   
+      (void)cast_nctype_void(NC_DOUBLE,&var_y->val); 
+      nco_var_free(var_x);
+      nco_var_free(var_y);
+
+      // return true
+      return ncap_sclr_var_mk("~gsl_spl_cls",1L); 
+
+     } // end else
+
+
+
+}// end gsl_spl_cls::fnd 
 
 
 #else // !ENABLE_GSL
