@@ -33,6 +33,8 @@
 #include <gsl/gsl_randist.h>
 
 #include <gsl/gsl_statistics.h>
+#include <gsl/gsl_spline.h>
+
 
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
@@ -406,6 +408,22 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
+
+
+
+//GSL  /****************************************/
+// gsl spline interpolation 
+class gsl_spl_cls: public vtl_cls {
+private:
+   enum {PLINEAR,PPOLY,PCSPLINE,PCSPLINE_PER,PAKIMA,PAKIMA_PER,PEVAL };
+   bool _flg_dbg;
+public:
+   gsl_spl_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+
+};
+
+
 
 
 
