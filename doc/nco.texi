@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.546 2009-05-27 05:45:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.547 2009-07-07 23:46:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9405,7 +9405,7 @@ and suppose the user wishes to convert @code{time} from a record
 dimension to a non-record dimension.
 This may be useful, for example, when the user has another use for the
 record variable.
-The procedure is to use @command{ncecat} followed by @command{ncwa}
+The procedure is to use @command{ncecat} followed by @command{ncwa}:
 @cindex degenerate dimension
 @example
 ncecat in.nc out.nc # Convert time to non-record dimension
