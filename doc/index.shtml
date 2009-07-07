@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.540 2009-07-07 23:46:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.541 2009-07-07 23:56:39 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -93,11 +93,12 @@ Try to disable Spammers' machines:
 
 <td>
 <img src="logo_pch.png" height=321 width=195 align=right>
-<img src="logo_cog.png" height=180 width=180 align=right>
+<img src="logo_cog.png" height=349 width=227 align=right>
 <img src="nco.png" height=180 width=180 align=right>
-The original NCO logo&hellip;and contenders from Tony Freeman (the
-patch) and Rich Signell (the cog)<br>
-Which do you prefer? The Mandelblob, the patch, or the cog?<br>
+The original NCO logo&hellip;and contenders from 
+Rich Signell (cogs) and
+Tony Freeman (the patch).<br>
+Which do you prefer? The Mandelblob, the patch, or a cog?<br>
 Can you improve these or create a better one? Send it in!<br>
 </td>
 
