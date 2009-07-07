@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.79 2009-06-15 14:32:36 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.80 2009-07-07 23:48:57 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -944,15 +944,14 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     
     if(lmt[idx]->max_sng == NULL) lmt[idx]->is_usr_spc_max=False; else lmt[idx]->is_usr_spc_max=True;
     if(lmt[idx]->min_sng == NULL) lmt[idx]->is_usr_spc_min=False; else lmt[idx]->is_usr_spc_min=True;
-    
 
-    /* initialize types used in re-basing the co-ordinate var */
+    /* Initialize types used to re-base coordinate variables */
     lmt[idx]->origin=0.0;
     lmt[idx]->re_bs_sng=NULL_CEWI;
 
     /* Free current pointer array to strings
-       Strings themselves are untouched and will be free()'d with limit structures 
-       in nco_lmt_lst_free() */
+       Strings themselves are untouched 
+       They will be free()'d with limit structures in nco_lmt_lst_free() */
     arg_lst=(char **)nco_free(arg_lst);
 
   } /* End loop over lmt structure list */

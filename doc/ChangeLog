@@ -1,11 +1,13 @@
+2009-07-07  Charlie Zender  <zender@uci.edu>
+
+	* Added Rich Signell's "cog" logos to homepage and doc directory
+
 2009-06-26  Henry Butowsky  <henryb@hush.com> 
-	* added new GSL class - gsl_spl_cls that provides
-	wrappers to the GSL spline interpolation functions
-	* commited code so its possible to do a LHS  hyperslab of a
-	multidimensional variable with a single index .eg
-	the following are equivalent 
-	three_dmn_var_dbl(1,1,2)=10.0
-	three_dmn_var_dbl(14)=10.0 
+
+	* New GSL class gsl_spl_cls provides GSL spline interpolation wrappers
+
+	* LHS hyperslabs of multidimensional variables with a single index
+	three_dmn_var_dbl(1,1,2)=10.0 is equivalent to three_dmn_var_dbl(14)=10.0 
            
 2009-06-15  Charlie Zender  <zender@uci.edu>
 
