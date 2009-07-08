@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.38 2009-06-26 16:25:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.39 2009-07-08 14:17:34 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -4161,9 +4161,14 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
     
      if(fdx==PEVAL){
+       bool us_mss_val=false; // true if missing value is used in output var
+       bool has_mss_val;
        long idx;
        long sz;     
+       double yval; 
+       double mss_val_dbl;
        double *dp;
+
 
        vtl_typ lcl_typ;
        var_sct *var_xvl; 
@@ -4189,6 +4194,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        if(prs_arg->ntl_scn)
          return var_xvl;
 
+
        var_nm=vtr_args[0]->getText();
        Nvar=prs_arg->var_vtr.find(var_nm);
        
@@ -4204,10 +4210,33 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        dp=var_xvl->val.dp; 
        sz=var_xvl->sz;
 
+      
+       if(var_xvl->has_mss_val){
+	 has_mss_val=true;
+	 (void)cast_void_nctype(NC_DOUBLE,&var_xvl->mss_val);
+	 mss_val_dbl=var_xvl->mss_val.dp[0];    
+	 (void)cast_nctype_void(NC_DOUBLE,&var_xvl->mss_val);
+       }else{
+         has_mss_val=false;
+	 mss_val_dbl=NC_FILL_DOUBLE;
+       }
+ 
        for(idx=0 ; idx<sz; idx++)
-	 dp[idx]=gsl_spline_eval( (const gsl_spline*)(Nvar->var->val.vp), dp[idx],&acc);
+         // nb gsl call return GSL_SUCCESS if no domain error
+	 dp[idx]=(  (gsl_spline_eval_e((const gsl_spline*)(Nvar->var->val.vp), dp[idx],&acc,&yval))? (us_mss_val=true,mss_val_dbl):yval) ;
 
+ 
        (void)cast_nctype_void(NC_DOUBLE,&var_xvl->val);   
+       
+       // Create missing value for var_xvl if it doesn't have one 
+       // and missing value has been used in result;      
+       if(!has_mss_val && us_mss_val){
+         var_xvl->has_mss_val=true;
+         var_xvl->mss_val=nco_mss_val_mk(NC_DOUBLE);
+	 (void)cast_void_nctype(NC_DOUBLE,&var_xvl->mss_val);
+	 var_xvl->mss_val.dp[0]=mss_val_dbl;    
+	(void)cast_nctype_void(NC_DOUBLE,&var_xvl->mss_val);
+       }
 
        return var_xvl;  
 
