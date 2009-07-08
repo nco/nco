@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.166 2009-06-26 16:32:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.167 2009-07-08 14:47:12 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2272,9 +2272,8 @@ out returns [var_sct *var]
     |   str1:N4STRING
         {
             char *tsng;
-            int chr_len;
 
-            chr_len=strlen(tsng)+1;
+
             tsng=strdup(str1->getText().c_str());
             (void)sng_ascii_trn(tsng);            
             var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -2717,7 +2716,7 @@ var_sct *var_nbr;
               int fl_id;
               int nbr_dim=var_rhs->nbr_dim;
               long srt; 
-              long srt1[nbr_dim];   
+              long srt1[NC_MAX_DIMS];   
               long sz_dim=1;
               NcapVar *Nvar;
 
@@ -2933,7 +2932,7 @@ var_sct *var_nbr;
                 // write block
                 { 
                  int nbr_dim=var_lhs->nbr_dim;
-                 long srt1[nbr_dim];   
+                 long srt1[NC_MAX_DIMS];   
                  long sz_dim=1; 
 
                  // convert srt into multiple indices  
