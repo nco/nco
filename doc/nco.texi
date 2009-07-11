@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.547 2009-07-07 23:46:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.548 2009-07-11 00:00:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6580,16 +6580,22 @@ elsewhere
 @subsection Methods and functions
 
 
-Within this document when I refer to a method I mean a method that can also be  a function. If I refer to something as function then this function cannot be a method. The nice thing with methods is that they can be daisy changed together and their synatax is cleaner than functions. The method names are reserved words and CANNOT be used as variable names.
-To see the complete list of methods available on you build use the command @code{ncap2 -f}. 
+The convention within this document is that methods can be used as 
+functions. 
+However, functions are not and cannot be used as methods.
+Methods can be daisy changed together and their synatax is cleaner than
+functions. 
+Method names are reserved words and CANNOT be used as variable names.  
+The command @code{ncap2 -f} shows the complete list of methods available
+on your build. 
 
 @example
 n2=sin(theta) or n2=theta.sin() 
-
 n2=sin(theta)^2 +cos(theta)^2 or  n2=theta.sin().pow(2) + theta.cos()^2
 @end example
 
-The below statement converts three_dmn_var_sht to type double, finds the average, then converts this average back to type short.
+The below statement converts three_dmn_var_sht to type double, finds the
+average, then converts this average back to type short. 
 @example
 three_avg=three_dmn_var_sht.double().avg().short();
 @end example
