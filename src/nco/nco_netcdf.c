@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.109 2009-05-04 00:01:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.110 2009-07-12 22:05:50 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -395,7 +395,7 @@ nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
 } /* end nco_open */
 
 #if 0
-#ifdef ENABLE_NETCDF4
+#ifdef HAVE_NETCDF4_H
 /* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a 
    20051129: nc_*_par() routines require certain netCDF4 configuration options */
 int 
@@ -408,7 +408,7 @@ nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info m
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_open_par */
-#endif /* !ENABLE_NETCDF4 */
+#endif /* !HAVE_NETCDF4_H */
 #endif /* !0 */
 
 #ifdef ENABLE_PNETCDF
@@ -1213,7 +1213,7 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   case NC_CHAR: rcd=NCO_PUT_ATT_CHAR(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_char *)vp); break;
   case NC_BYTE: rcd=NCO_PUT_ATT_BYTE(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_byte *)vp); break;
 #ifdef ENABLE_NETCDF4
-    /* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
+    /* 20051119: netCDF4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
   case NC_UBYTE: rcd=NCO_PUT_ATT_UBYTE(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_ubyte *)vp); break;
   case NC_USHORT: rcd=NCO_PUT_ATT_USHORT(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_ushort *)vp); break;
   case NC_UINT: rcd=NCO_PUT_ATT_UINT(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint *)vp); break;
@@ -1256,14 +1256,14 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 /* End Attribute routines */
 
 /* Begin netCDF4 stubs */
-#ifndef ENABLE_NETCDF4
+#ifndef HAVE_NETCDF4_H
 /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
    NCO stubs perform no-ops on netCDF3 files */
 int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz){return 1;}
 int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t *const cnk_sz){*srg_typ=(size_t)NC_CONTIGUOUS;*cnk_sz=(size_t)NULL;return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){*shuffle=0;*deflate=0;*dfl_lvl=0;return 1;}
-#endif /* ENABLE_NETCDF4 */
+#endif /* HAVE_NETCDF4_H */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
 int NCO_GET_VAR1_USHORT(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *usp){return 1;}
