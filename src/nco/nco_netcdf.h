@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.57 2009-05-03 18:09:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.58 2009-07-12 21:22:24 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -72,10 +72,10 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
 /* End Utility Routines */
 
 #if 0
-#ifdef ENABLE_NETCDF4
+#ifdef HAVE_NETCDF4_H
 /* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a */
 int nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id);
-#endif /* !ENABLE_NETCDF4 */
+#endif /* !HAVE_NETCDF4_H */
 #endif /* !0 */
 #ifdef ENABLE_PNETCDF
 /* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
@@ -161,78 +161,78 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 /* End Attribute routines */
 
 /* Begin netCDF4 stubs */
-#ifndef ENABLE_NETCDF4
+#ifndef HAVE_NETCDF4_H
   /* Stubs so netCDF4 functions work without protection in netCDF3 environments */
   int nc_def_var_chunking(const int nc_id,const int var_id,const int str_typ,const size_t * const cnk_sz);
   int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
   int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
   int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp);
   int NCO_GET_VAR1_USHORT(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *usp);
   int NCO_GET_VAR1_UINT(const int nc_id,const int var_id,const size_t *srt,nco_uint *uip);
   int NCO_GET_VAR1_INT64(const int nc_id,const int var_id,const size_t *srt,nco_int64 *i64p);
   int NCO_GET_VAR1_UINT64(const int nc_id,const int var_id,const size_t *srt,nco_uint64 *ui64p);
   int NCO_GET_VAR1_STRING(const int nc_id,const int var_id,const size_t *srt,nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_PUT_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,const nco_ubyte *ubp);
   int NCO_PUT_VAR1_USHORT(const int nc_id,const int var_id,const size_t *srt,const nco_ushort *usp);
   int NCO_PUT_VAR1_UINT(const int nc_id,const int var_id,const size_t *srt,const nco_uint *uip);
   int NCO_PUT_VAR1_INT64(const int nc_id,const int var_id,const size_t *srt,const nco_int64 *i64p);
   int NCO_PUT_VAR1_UINT64(const int nc_id,const int var_id,const size_t *srt,const nco_uint64 *ui64p);
   int NCO_PUT_VAR1_STRING(const int nc_id,const int var_id,const size_t *srt,const nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_GET_VARA_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_ubyte *ubp);
   int NCO_GET_VARA_USHORT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_ubyte *usp);
   int NCO_GET_VARA_UINT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_uint *uip);
   int NCO_GET_VARA_INT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_int64 *i64p);
   int NCO_GET_VARA_UINT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_uint64 *ui64p);
   int NCO_GET_VARA_STRING(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_PUT_VARA_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const nco_ubyte *ubp);
   int NCO_PUT_VARA_USHORT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const nco_ushort *usp);
   int NCO_PUT_VARA_UINT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const nco_uint *uip);
   int NCO_PUT_VARA_INT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const nco_int64 *i64p);
   int NCO_PUT_VARA_UINT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const nco_uint64 *ui64p);
   int NCO_PUT_VARA_STRING(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_GET_VARS_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,nco_ubyte *ubp);
   int NCO_GET_VARS_USHORT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,nco_ubyte *usp);
   int NCO_GET_VARS_UINT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,nco_uint *uip);
   int NCO_GET_VARS_INT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,nco_int64 *i64p);
   int NCO_GET_VARS_UINT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,nco_uint64 *ui64p);
   int NCO_GET_VARS_STRING(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_PUT_VARS_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const nco_ubyte *ubp);
   int NCO_PUT_VARS_USHORT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd, const nco_ushort *usp);
   int NCO_PUT_VARS_UINT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd, const nco_uint *uip);
   int NCO_PUT_VARS_INT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd, const nco_int64 *i64p);
   int NCO_PUT_VARS_UINT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const nco_uint64 *ui64p);
   int NCO_PUT_VARS_STRING(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_GET_VARM_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,nco_ubyte *ubp);
   int NCO_GET_VARM_USHORT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,nco_ubyte *usp);
   int NCO_GET_VARM_UINT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,nco_uint *uip);
   int NCO_GET_VARM_INT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,nco_int64 *i64p);
   int NCO_GET_VARM_UINT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,nco_uint64 *ui64p);
   int NCO_GET_VARM_STRING(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   int NCO_PUT_VARM_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,const nco_ubyte *ubp);
   int NCO_PUT_VARM_USHORT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,const nco_ushort *usp);
   int NCO_PUT_VARM_UINT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,const nco_uint *uip);
   int NCO_PUT_VARM_INT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,const nco_int64 *i64p);
   int NCO_PUT_VARM_UINT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,const nco_uint64 *ui64p);
   int NCO_PUT_VARM_STRING(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,const ptrdiff_t *srd,const ptrdiff_t *map,const nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   /* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
   int NCO_PUT_ATT_UBYTE(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_ubyte *ubp);
   int NCO_PUT_ATT_USHORT(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_ushort *usp);
@@ -240,8 +240,8 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int NCO_PUT_ATT_INT64(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_int64 *i64p);
   int NCO_PUT_ATT_UINT64(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_uint64 *ui64p);
   int NCO_PUT_ATT_STRING(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
-#ifndef ENABLE_NETCDF4
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
   /* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
   int NCO_GET_ATT_UBYTE(const int nc_id,const int var_id,const char *att_nm,nco_ubyte *ubp);
   int NCO_GET_ATT_USHORT(const int nc_id,const int var_id,const char *att_nm,nco_ubyte *usp);
@@ -249,7 +249,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int NCO_GET_ATT_INT64(const int nc_id,const int var_id,const char *att_nm,nco_int64 *i64p);
   int NCO_GET_ATT_UINT64(const int nc_id,const int var_id,const char *att_nm,nco_uint64 *ui64p);
   int NCO_GET_ATT_STRING(const int nc_id,const int var_id,const char *att_nm,nco_string *sngp);
-#endif /* ENABLE_NETCDF4 */
+#endif /* HAVE_NETCDF4_H */
 /* End netCDF4 stubs */
 
 #ifdef __cplusplus
