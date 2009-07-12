@@ -6,6 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
 	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
 
+	* Fix prototype error for NCO_GET_VAR[1ASM]_USHORT, NCO_GET_ATT_USHORT
+	Buffer had erroneously been set to nco_ubyte in these functions
+
 	* Introduce HAVE_NETCDF4_H to indicated presence of netCDF4
 	headers but not necessarily netCDF4 libraries.
 	Use HAVE_NETCDF4_H instead of ENABLE_NETCDF4 in some checks
