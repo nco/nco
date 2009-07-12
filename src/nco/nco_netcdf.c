@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.111 2009-07-12 22:18:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.112 2009-07-12 23:43:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -903,8 +903,14 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   case NC_INT64: rcd=NCO_PUT_VAR1_INT64(nc_id,var_id,(const size_t *)srt,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VAR1_UINT64(nc_id,var_id,(const size_t *)srt,(const nco_uint64 *)vp); break;
     /* Next line produces GCC warning:
-       attention : passing argument 4 of ‘nc_put_var1_string’ from incompatible pointer type */
-  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const nco_string *)vp); break;
+       attention : passing argument 4 of ‘nc_put_var1_string’ from incompatible pointer type 
+       I think this warning occurs because this routine receives the vp input 
+       as "const void * const vp", a singly indirect pointer, and then
+       casts it to a doubly indirect pointer on output, i.e., to something like
+       "(const char **)vp" or "(const nco_string * const)vp".
+       Is casting a singly-indirect pointer to a doubly-indirect ever allowed? */
+    /*  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const char **)vp); break;*/
+  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const nco_string * const)vp); break;
     /* Next line produces GCC warning:
        attention : le transtypage annule des qualificateurs du type pointeur ciblé */
     /*  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const char **)vp); break;*/
