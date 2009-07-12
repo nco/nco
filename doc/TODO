@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1053 2009-05-25 18:48:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1054 2009-07-12 16:58:49 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -690,8 +690,9 @@ data:
 }
 nco975. add NCO global attribute to output files like
        :CDO = "netCDF Operators version 1.1.1 (http://nco.sf.net)" ;
-nco976. cleanup mess caused by eliminating nco_dmn_lmt_mrg in ncra, ncecat, ncpdq, ncflint (but not (why?) ncap,ncbo,ncwa)!
-nco977. 
+nco976. clean-up mess caused by eliminating nco_dmn_lmt_mrg in ncra, ncecat, ncpdq, ncflint (but not (why?) ncap,ncbo,ncwa)!
+nco977. fix -d syntax spec or nco_lmt_prs() as per https://sourceforge.net/forum/message.php?msg_id=7486118
+nco978. 
 
 ************************************************************************
 End ncoXXX TODOs

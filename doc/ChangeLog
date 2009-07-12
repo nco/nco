@@ -1,3 +1,11 @@
+2009-07-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 3.9.9 release procedure:
+	Changes since nco-3_9_8: chunking, NC_STRING, GSL statistics, rebasing
+	cd ~/nco;cvs tag -d nco-3_9_9;cvs tag -d nco-3_9_9-1
+	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
+	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
+
 2009-07-07  Charlie Zender  <zender@uci.edu>
 
 	* Add Rich Signell's "cog" logos to homepage and doc directory
@@ -12,12 +20,6 @@
 2009-06-15  Charlie Zender  <zender@uci.edu>
 
 	* Restrict gsl_stats_correlation() to NCO_GSL_MINOR_VERSION >= 10
-
-	* NCO 3.9.9 release procedure:
-	Changes since nco-3_9_8: chunking, NC_STRING, GSL statistics, rebasing
-	cd ~/nco;cvs tag -d nco-3_9_9;cvs tag -d nco-3_9_9-1
-	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
-	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
 
 2009-06-14  Charlie Zender  <zender@uci.edu>
 
