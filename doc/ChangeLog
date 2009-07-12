@@ -6,6 +6,12 @@
 	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
 	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
 
+	* 20090712: For unknown reason autobuild sees netCDF4 netcdf.h
+	header when it should not. Moreover, it thinks "const nco_string
+	*sng" conflicts with "const char **sng" in all
+	nc_put_var?_string() and nc_put_att_string() functions. 
+	Implement kludge workaround to latter until former is solved. 
+
 	* Fix prototype error for NCO_GET_VAR[1ASM]_USHORT, NCO_GET_ATT_USHORT
 	Buffer had erroneously been set to nco_ubyte in these functions
 
