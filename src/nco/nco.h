@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.141 2009-06-15 16:59:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.142 2009-07-12 19:42:53 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -176,37 +176,40 @@ extern "C" {
   
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
-  /* Compatibility tokens for when NCO compiled _without_ netCDF4 netcdf.h */
-#ifndef ENABLE_NETCDF4
-/* Single compatibility token new to netCDF4 netcdf.h */
+/* Compatibility tokens for when NCO compiled with older netcdf.h
+   It is hard to track where/when many tokens defined
+   Easiest to individually check for pre-definition of each */
+/* Three compatibility tokens new to netCDF4 netcdf.h: */
+#ifndef NC_NETCDF4
 # define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
+#endif
+#ifndef NC_CHUNKED
+# define NC_CHUNKED (0)
+#endif
+#ifndef NC_CONTIGUOUS
+# define NC_CONTIGUOUS (1)
+#endif
 /* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
    NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */
-# ifndef NC_64BIT_OFFSET
-#  define NC_64BIT_OFFSET (0x0200) /* Use large (64-bit) file offsets */
-# endif
-# ifndef NC_CLASSIC_MODEL
-#  define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
-# endif
-# ifndef NC_FORMAT_CLASSIC
-#  define NC_FORMAT_CLASSIC (1)
-# endif
-# ifndef NC_FORMAT_64BIT
-#  define NC_FORMAT_64BIT   (2)
-# endif
-# ifndef NC_FORMAT_NETCDF4
-#  define NC_FORMAT_NETCDF4 (3)
-# endif
-# ifndef NC_FORMAT_NETCDF4_CLASSIC
-#  define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
-# endif
-# ifndef NC_CHUNKED
-#  define NC_CHUNKED (0)
-# endif
-# ifndef NC_CONTIGUOUS
-#  define NC_CONTIGUOUS (1)
-# endif
-#endif /* !ENABLE_NETCDF4 */
+#ifndef NC_64BIT_OFFSET
+# define NC_64BIT_OFFSET (0x0200) /* Use large (64-bit) file offsets */
+#endif
+#ifndef NC_CLASSIC_MODEL
+# define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
+#endif
+#ifndef NC_FORMAT_CLASSIC
+# define NC_FORMAT_CLASSIC (1)
+#endif
+#ifndef NC_FORMAT_64BIT
+# define NC_FORMAT_64BIT   (2)
+#endif
+#ifndef NC_FORMAT_NETCDF4
+# define NC_FORMAT_NETCDF4 (3)
+#endif
+#ifndef NC_FORMAT_NETCDF4_CLASSIC
+# define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+#endif
+/* Endif older netcdf.h */
 
   /* Define compatibility tokens when user does not have znetCDF */
 #ifndef ENABLE_ZNETCDF

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.24 2009-05-22 00:31:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.25 2009-07-12 19:42:53 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -63,8 +63,8 @@ C code." */
    Unfortunately this pre-precessor macro has never worked... */
 #define NCO_TYP_IO_FNC_MRG(x,y) x##y
 
-  /* Define compatibility tokens when user does not have netCDF4 */
-#ifndef ENABLE_NETCDF4
+/* Define compatibility tokens when user does not have netCDF4 */
+#ifndef HAVE_NETCDF4_H
 /* Datatypes referenced in nco_typ.h, nco_netcdf.c: */
 #define	NC_UBYTE 	7	/* unsigned 1 byte int */
 #define	NC_USHORT 	8	/* unsigned 2-byte int */
@@ -80,7 +80,7 @@ C code." */
 #define NC_FILL_INT64   ((long long)-9223372036854775806LL)
 #define NC_FILL_UINT64  ((unsigned long long)18446744073709551614ULL)
 #define NC_FILL_STRING  ""
-#endif /* !ENABLE_NETCDF4 */
+#endif /* HAVE_NETCDF4_H */
 
 /* C pre-processor compares integers not strings
    Perform comparisons on enumerated integer values corresponding to each type */

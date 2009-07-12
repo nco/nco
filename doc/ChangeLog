@@ -8,10 +8,10 @@
 
 	* Introduce HAVE_NETCDF4_H to indicated presence of netCDF4
 	headers but not necessarily netCDF4 libraries.
-	Use it to replace some checks previously done with ENABLE_NETCDF4.
-	ENABLE_NETCDF4 now refers to presence of netCDF4-enabled library.
-	Thus ENABLE_NETCDF4 implies HAVE_NETCDF4_H.
-	The converse is not true.
+	Use HAVE_NETCDF4_H instead of ENABLE_NETCDF4 in some checks
+	ENABLE_NETCDF4 now refers to presence of netCDF4-enabled library
+	Thus ENABLE_NETCDF4 implies HAVE_NETCDF4_H
+	The converse is not true
 
 	* Clean-up, de-space NCO_rgr.pm
 
