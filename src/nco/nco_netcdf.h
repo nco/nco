@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.61 2009-07-12 23:43:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.62 2009-07-13 00:04:26 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -185,8 +185,8 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   /* 20090712: For unknown reason autobuild sees netcdf4.h header when it should not
      Moreover, it thinks "const nco_string *sng" conflicts with "const char **sng"
      in all nc_put_var?_string() and nc_put_att_string() functions. */
-  int NCO_PUT_VAR1_STRING(const int nc_id,const int var_id,const size_t *srt,const nco_string * const sngp);
-  /*  int NCO_PUT_VAR1_STRING(const int nc_id,const int var_id,const size_t *srt,const char **sngp);*/
+  /*  int NCO_PUT_VAR1_STRING(const int nc_id,const int var_id,const size_t *srt,const nco_string * const sngp);*/
+  int NCO_PUT_VAR1_STRING(const int nc_id,const int var_id,const size_t *srt,const char **sngp);
 #endif /* HAVE_NETCDF4_H */
 #ifndef HAVE_NETCDF4_H
   int NCO_GET_VARA_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_ubyte *ubp);
