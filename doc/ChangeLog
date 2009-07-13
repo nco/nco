@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
 	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
 
+	* Upgrade debhelper compatibility by changing debian/compat from 4 to 5
+
 	* Fix configure.in bug in HAVE_NETCDF4_H test
 
 2009-07-12  Charlie Zender  <zender@uci.edu>
