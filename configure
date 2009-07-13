@@ -19696,7 +19696,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 fi
 rm -f conftest*
 
-if test "x${header_defines_nc_chunked}" = 'yes' ; then
+if test "x${header_defines_nc_chunked}" = 'xyes' ; then
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_NETCDF4_H 1

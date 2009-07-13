@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.63 2009-07-13 00:07:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.64 2009-07-13 18:15:45 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -118,6 +118,7 @@ int nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm);
 
 /* Begin Variable routines (_var) */
 int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id);
+  /* TODO nco  */
 int nco_def_var_chunking(const int nc_id,const int var_id,const int str_typ,const size_t * const cnk_sz);
 int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
 int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att);

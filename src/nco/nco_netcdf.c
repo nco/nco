@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.113 2009-07-13 00:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.114 2009-07-13 18:15:44 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -683,8 +683,15 @@ int nco_def_var_chunking
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
-  /* NB: weak netCDF4 prototype---ask Unidata to strengthen to
-     const size_t * const cnk_sz */
+  /* NB: netCDF4 API changed ~200906 
+     Before that a weak netCDF4 prototype did not make cnk_sz const
+     After I notified them of this they changed prototype to 
+     const size_t * const cnk_sz
+     This API change will cause confusion/differences when compiling
+     NCO with netCDF4 versions pre- and post-200906, e.g., 
+     netcdf-4.1-beta1-snapshot2009050200 has old behavior while
+     netcdf-4.1-beta1-snapshot2009071200 has new behavior.
+     Finding one size fits all method may be difficult! */
   /*  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,cnk_sz);*/
   rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,(size_t *)cnk_sz);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_chunking()");
