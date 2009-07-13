@@ -19681,7 +19681,10 @@ echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
 # The converse is not true
 header_defines_nc_chunked='no'
-cat >conftest.$ac_ext <<_ACEOF
+if test "x${enable_netcdf4}" = 'xyes' ; then
+    header_defines_nc_chunked='yes'
+else
+    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
@@ -19696,6 +19699,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 fi
 rm -f conftest*
 
+fi
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
 
 cat >>confdefs.h <<\_ACEOF
