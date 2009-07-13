@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.334 2009-06-15 23:19:44 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.335 2009-07-13 01:13:48 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -82,8 +82,11 @@ O. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 3.9.9 with was built and tested with HDF5 1.8.2-post6 and with
-   netCDF4 4.1-beta1-snapshot2009050200.   
+   NCO 3.9.9 with was built and tested with HDF5 1.8.3-snap2 and with
+   netCDF4 4.1-beta1-snapshot2009061712.
+   NCO may not build with earlier, but should build with later, netCDF4 releases.
+   This is particularly true with NCO 3.9.9 which takes advantage of
+   an internal change to the netCDF API for nc_def_var_chunking().
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
