@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.128 2009-05-05 01:30:42 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.129 2009-07-13 02:18:40 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -180,7 +180,7 @@ cd ${DATA}
 # dget http://ftp.debian.org/debian/pool/main/n/nco/nco_3.9.0-1.dsc
 # dget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1-1.dsc
 # apt-get source nco # Get package source
-DIST=sid sudo pbuilder build nco_3.9.9-1.dsc > ~/foo.nco.pbuilder
+DIST=sid sudo pbuilder build nco_3.9.9-1.dsc > ~/foo.nco.pbuilder 2>&1
 cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_3.9.9-1_*.changes
 lintian /var/cache/pbuilder/result/nco_3.9.9-1_*.deb
 # NB: Debian versions is a PITA, ensure RPMs build before uploading to Debian
