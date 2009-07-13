@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.114 2009-07-13 18:15:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.115 2009-07-13 20:53:49 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -666,6 +666,16 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
 
 /* Begin Variable routines (_var) */
 int
+nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id)
+{
+  /* Purpose: Wrapper for nc_copy_var() */
+  int rcd;
+  rcd=nc_copy_var(nc_in_id,var_id,nc_out_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_var()");
+  return rcd;
+} /* end nco_copy_var */
+
+int
 nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id)
 {
   /* Purpose: Wrapper for nc_def_var() */
@@ -683,11 +693,11 @@ int nco_def_var_chunking
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
-  /* NB: netCDF4 API changed ~200906 
+  /* NB: 20090713: netCDF4 API for nc_def_var_chunking() changed ~200906 
      Before that a weak netCDF4 prototype did not make cnk_sz const
-     After I notified them of this they changed prototype to 
+     After I notified them of this, Unidata changed prototype to 
      const size_t * const cnk_sz
-     This API change will cause confusion/differences when compiling
+     This API change may cause confusion/differences when compiling
      NCO with netCDF4 versions pre- and post-200906, e.g., 
      netcdf-4.1-beta1-snapshot2009050200 has old behavior while
      netcdf-4.1-beta1-snapshot2009071200 has new behavior.
@@ -851,16 +861,6 @@ nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_var()");
   return rcd;
 } /* end nco_rename_var */
-
-int
-nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id)
-{
-  /* Purpose: Wrapper for nc_copy_var() */
-  int rcd;
-  rcd=nc_copy_var(nc_in_id,var_id,nc_out_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_var()");
-  return rcd;
-} /* end nco_copy_var */
 
 /* End _var */
 
@@ -1272,7 +1272,12 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 #ifndef HAVE_NETCDF4_H
 /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
    NCO stubs perform no-ops on netCDF3 files */
+/* Newer, post-200906 netCDF4 API */
 int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz){return 1;}
+# if 0
+  /* Older, pre-200906 netCDF4 API */
+int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,size_t * const cnk_sz){return 1;}
+# endif /* !0 */
 int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t *const cnk_sz){*srg_typ=(size_t)NC_CONTIGUOUS;*cnk_sz=(size_t)NULL;return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){*shuffle=0;*deflate=0;*dfl_lvl=0;return 1;}

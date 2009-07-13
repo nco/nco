@@ -6,9 +6,11 @@
 	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
 	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
 
+	* Cleanup and annotate nc_def_var_chunking() API problems
+
 	* Fix HAVE_NETCDF4_H test when enable_netcdf4=yes
 
-	* Change erroneous '-1.tar.gz' to '.tar.gz' in name of Debian tgz file
+	* Change Debian tgz file suffix from erroneous '-1.tar.gz' to '.orig.tar.gz' 
 
 	* Upgrade debhelper compatibility by changing debian/compat from 4 to 5
 

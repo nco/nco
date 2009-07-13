@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.64 2009-07-13 18:15:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.65 2009-07-13 20:53:49 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -117,22 +117,21 @@ int nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm);
 /* End Dimension routines */
 
 /* Begin Variable routines (_var) */
+int nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id);
 int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id);
-  /* TODO nco  */
-int nco_def_var_chunking(const int nc_id,const int var_id,const int str_typ,const size_t * const cnk_sz);
+int nco_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz);
 int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
 int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att);
 int nco_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
 int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int * const deflate,int * const dfl_lvl);
+int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
 int nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varname(const int nc_id,const int var_id,char * const var_nm);
-int nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ);
-int nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr);
-int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
 int nco_inq_varnatts(const int nc_id,const int var_id,int * const nbr_att);
+int nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr);
+int nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ);
 int nco_rename_var(const int nc_id,const int var_id,const char * const var_nm);
-int nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id);
 
 /* Start _get _put _var */
 int nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * const vp,const nc_type var_typ);
@@ -164,7 +163,12 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 /* Begin netCDF4 stubs */
 #ifndef HAVE_NETCDF4_H
   /* Stubs so netCDF4 functions work without protection in netCDF3 environments */
-  int nc_def_var_chunking(const int nc_id,const int var_id,const int str_typ,const size_t * const cnk_sz);
+  /* Newer, post-200906 netCDF4 API */
+  int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz);
+# if 0
+  /* Older, pre-200906 netCDF4 API */
+  int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,size_t * const cnk_sz);
+# endif /* !0 */
   int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
   int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
   int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl);

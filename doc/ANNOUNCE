@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.335 2009-07-13 01:13:48 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.336 2009-07-13 20:53:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
@@ -92,9 +92,10 @@ O. NCO support for netCDF4 features is tracked at
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
-P. Did you see the NCO logo candidate submitted by Tony Freeman?
-   What do you think? Should it replace the mandleblob?
+P. Have you seen the NCO logo candidates?
+   What do you think?
    http://nco.sf.net/logo_pch.png
+   http://nco.sf.net/logo_cog.png
 
 Enjoy,
 Charlie

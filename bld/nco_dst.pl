@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.172 2009-07-13 19:18:32 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.173 2009-07-13 20:53:49 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2009-07-13 19:18:32 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.172 2009-07-13 19:18:32 zender Exp $';
-my $CVS_Revision='$Revision: 1.172 $';
+my $CVS_Date='$Date: 2009-07-13 20:53:49 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.173 2009-07-13 20:53:49 zender Exp $';
+my $CVS_Revision='$Revision: 1.173 $';
 my $CVSROOT='zender@nco.cvs.sf.net:/cvsroot/nco'; # CVS repository
 my $DATA=$ENV{'DATA'};
 my $HOME=$ENV{'HOME'};
@@ -211,7 +211,7 @@ $dst_fl_chg=$mdl_sng.'_'.$nco_vrs.'-1_*.changes'; # Debian changes
 $dst_fl_deb=$mdl_sng.'_'.$nco_vrs.'-1_*.deb'; # Debian executables and libraries
 $dst_fl_doc=$mdl_sng.'-doc_'.$nco_vrs.'-1_all.deb'; # Debian documentation (deprecated)
 $dst_fl_dsc=$mdl_sng.'_'.$nco_vrs.'-1.dsc'; # Debian description
-$dst_fl_tgz=$mdl_sng.'_'.$nco_vrs.'.tar.gz'; # Debian tarball
+$dst_fl_tgz=$mdl_sng.'_'.$nco_vrs.'.orig.tar.gz'; # Debian tarball
 
 my $dst_pth_bld=$dst_pth_pfx.'/'.$dst_vrs; # Build directory
 
