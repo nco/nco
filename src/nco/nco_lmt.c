@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.80 2009-07-07 23:48:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.81 2009-07-14 12:31:30 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -302,10 +302,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
   if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
 #ifdef ENABLE_UDUNITS
-# ifdef HAVE_UDUNITS2_H
       /* Re-base and reset origin to 0.0 if re-basing fails */
       if(nco_lmt_clc_org(fl_udu_sng,lmt.re_bs_sng,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
-# endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
@@ -1316,6 +1314,95 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 
 
 
+int                 /* [rcd] Successful conversion returns 0 */
+nco_lmt_clc_org(    /* [fnc] Difference between two co-ordinate units */      
+const char* fl_unt_sng, /* I [ptr] units attribute string from disk  */     
+const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
+double *og_val){        /* O [ptr]                                   */
+
+  int rcd;
+
+  double slp;
+  double incpt;
+
+  utUnit udu_sct_in; /* UDUnits structure, input units */
+  utUnit udu_sct_out; /* UDUnits structure, output units */
+
+# ifdef UDUNITS_PATH
+  /* UDUNITS_PATH macro expands to where autoconf found database file */
+  rcd=utInit(UDUNITS_PATH);
+# else /* !UDUNITS_PATH */
+  /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
+     Otherwise it uses default initial location hardcoded when library was built */
+  rcd=utInit("");
+# endif /* !UDUNITS_PATH */
+
+  if(rcd != 0){
+    (void)fprintf(stdout,"%s: nco_lmt_cls_org() failed to initialize UDUnits library\n",prg_nm_get());
+
+    return EXIT_FAILURE;
+
+  } /* end if err */ 
+
+
+  /* units string to convert from */
+  rcd=utScan(fl_unt_sng,&udu_sct_in); 
+  if(rcd !=0){
+    if(rcd == UT_EINVALID)
+      (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",fl_unt_sng);
+
+    if(rcd == UT_ESYNTAX)
+      (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",fl_unt_sng);
+
+    if(rcd == UT_EUNKNOWN)
+      (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",fl_unt_sng);
+
+    (void)utTerm(); /* Free memory taken by UDUnits library */
+    return EXIT_FAILURE;
+  } /* endif unkown type */
+
+
+  /* units string to convert to */
+  rcd=utScan(fl_bs_sng,&udu_sct_out); 
+  if(rcd !=0){
+    if(rcd == UT_EINVALID)
+      (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",fl_bs_sng);
+
+    if(rcd == UT_ESYNTAX)
+      (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",fl_bs_sng);
+
+    if(rcd == UT_EUNKNOWN)
+      (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",fl_bs_sng);
+
+    (void)utTerm(); /* Free memory taken by UDUnits library */
+    return EXIT_FAILURE;
+  } /* endif unkown type */
+
+
+  rcd=utConvert(&udu_sct_in,&udu_sct_out,&slp,&incpt);
+  if(rcd == UT_ECONVERT){
+    (void)fprintf(stderr,"ERROR: user specified unit \"%s\" cannot be converted to units \"%s\"\n",fl_unt_sng,fl_bs_sng);
+    (void)utTerm();
+    return EXIT_FAILURE;
+  } /* endif */
+
+
+           
+  *og_val=incpt; 
+
+  /* debug stuff */
+  if(dbg_lvl_get() >nco_dbg_std) 
+    fprintf(stderr, "%s : nco_lmt_clc_org: difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fl_unt_sng,fl_bs_sng, *og_val);
+  
+
+  (void)utTerm();
+
+  return EXIT_SUCCESS;   
+
+}
+
+
+
 # endif /*!HAVE_UDUNITS2 */
 #else /* !ENABLE_UDUNITS */
 
@@ -1334,6 +1421,23 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   return EXIT_FAILURE; /* Conversion failed */
 
 }  /* end nco_lmt_udu_cnv() */
+
+
+
+int                      /* O  difference between two co-ordinate units */      
+nco_lmt_clc_org(
+const char* fl_unt_sng, /* I [ptr] units attribute string from disk  */     
+const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
+double *og_val)         /* O difference between two units string */
+{
+  int rcd; /* [enm] Return code */
+
+  (void)fprintf(stdout,"UDUnits limit detected in \"%s\" but UDUnits library is unavailable to perform conversion.\nHINT: Re-compile and re-install NCO with UDUnits enabled. http://nco.sf.net/nco.html#udunits",fl_unt_sng);
+  nco_exit(EXIT_FAILURE);
+  return EXIT_FAILURE; /* Conversion failed */
+} /* end nco_lmt_clc_org() */
+
+
 
 #endif /* !ENABLE_UDUNITS */
 
