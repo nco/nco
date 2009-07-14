@@ -2,7 +2,7 @@ nco (3.9.9-1) unstable; urgency=low
 
   * new upstream version (chunking)
 
- -- Charlie Zender <zender@uci.edu>  Mon, 04 May 2009 18:31:07 -0700
+ -- Charlie Zender <zender@uci.edu>  Sat, 11 Jul 2009 18:31:07 -0700
 
 nco (3.9.8-1) unstable; urgency=low
 
