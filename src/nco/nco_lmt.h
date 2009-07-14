@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.38 2009-06-11 17:28:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.39 2009-07-14 12:30:17 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -111,15 +111,12 @@ nco_prs_time /* Parse time limits into years, months, day, etc. */
  int * const dt, /* O [sct] Time decomposed into longs */
  double * const out_sec); /* O [s] Double precision seconds */
 
-#ifdef ENABLE_UDUNITS
-# ifdef HAVE_UDUNITS2_H
 int                 /* [rcd] Successful conversion returns 0 */
 nco_lmt_clc_org(    /* [fnc] Difference between two co-ordinate units */      
 const char* fl_unt_sng, /* I [ptr] units attribute string from disk  */     
 const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
 double *og_val);        /* O [ptr]                                   */
-# endif /* !HAVE_UDUNITS2_H */
-#endif /* !ENABLE_UDUNITS */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
