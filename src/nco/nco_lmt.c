@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.81 2009-07-14 12:31:30 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.82 2009-07-14 12:39:04 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1328,6 +1328,13 @@ double *og_val){        /* O [ptr]                                   */
   utUnit udu_sct_in; /* UDUnits structure, input units */
   utUnit udu_sct_out; /* UDUnits structure, output units */
 
+
+  /* quick return if units identical */
+  if(!strcmp(fl_unt_sng,fl_bs_sng) ){
+    *og_val=0.0;  
+    return EXIT_SUCCESS;
+  }
+
 # ifdef UDUNITS_PATH
   /* UDUNITS_PATH macro expands to where autoconf found database file */
   rcd=utInit(UDUNITS_PATH);
@@ -1432,6 +1439,7 @@ double *og_val)         /* O difference between two units string */
 {
   int rcd; /* [enm] Return code */
 
+  
   (void)fprintf(stdout,"UDUnits limit detected in \"%s\" but UDUnits library is unavailable to perform conversion.\nHINT: Re-compile and re-install NCO with UDUnits enabled. http://nco.sf.net/nco.html#udunits",fl_unt_sng);
   nco_exit(EXIT_FAILURE);
   return EXIT_FAILURE; /* Conversion failed */
