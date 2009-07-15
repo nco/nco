@@ -9,7 +9,7 @@ are Copyright (C) Brian Mays and were released under the GPL
 (on Debian systems see "/usr/share/common-licenses/GPL").
 
 Beginning March, 2003, Charlie Zender and Rorik Peterson took over 
-NCO Debian package maintenance merged them into the upstream source.
+NCO Debian package maintenance and merged the code back upstream.
 More information at package homepage http://nco.sourceforge.net
 
 On June 15, 2003, Charlie Zender changed the NCO license, except where  

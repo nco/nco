@@ -1,19 +1,22 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.336 2009-07-13 20:53:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.337 2009-07-15 05:39:59 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version offers four new significant features:
-GSL statistics routines, netCDF4 chunksize support (can 
-increase speed of large file reads and writes), netCDF4 string
-support, and record coordinate "re-basing" (climate model analysts 
-take note!). Short explanations of these appear below.
+This version offers six new significant features:
+GSL statistics routines, GSL interpolation routines, netCDF4 chunksize
+support (can increase speed of large file reads and writes), netCDF4
+string support, record coordinate "re-basing" (climate model
+analysts take note!), and one-dimensional offsets in ncap2.
+
+Short explanations of these appear below.
 This is the most feature-full release in quite some time.
 
 Work on NCO 4.0.0 is underway. Areas of improvement include
-GSL interpolation and fitting functions.
+more GSL interpolation and fitting functions, and bilinear
+interpolation.
 
 "New stuff" details:
 
@@ -23,10 +26,10 @@ A. ncrcat supports "rebasing", a new feature that relies on UDUnits.
    base times vary amongst the files (e.g., "time-since 2001-01-01"
    in the first file and "time-since 2002-01-01" in the second), 
    ncrcat now automatically re-bases the record coordinate values
-   so they all refer to the same base time in the output file.
+   in the output file so that they all refer to the same base time.
    This often produces a monotonically increasing record coordinate
-   in the output file. Analysis of climate model output in CMIP3 
-   collection will be easier as a result.
+   in the output file. Analysis of climate model output in CMIP3-
+   type collections will be easier as a result.
 
 B. ncap2 supports the GSL (Chapter 20) statistics routines, e.g.,
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
@@ -35,9 +38,8 @@ B. ncap2 supports the GSL (Chapter 20) statistics routines, e.g.,
 
 C. NCO supports netCDF4 chunking options:
    These options can improve performance on large datasets.
-   Some of the more advanced chunking options still crash (no data
-   corruption, though), but chunking whole files always works.
    Large file users: Send us suggestions on useful chunking patterns!
+   More advanced chunking patterns will be implemented in NCO 4.0.0.
    ncks -O -4 --cnk_plc=all in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
@@ -48,13 +50,22 @@ D. NCO supports the netCDF4 NC_STRING atomic type.
    Ragged arrays of strings are finally here! Let's use them.
    http://nco.sf.net/nco.html#nco4
 
-E. UDUnits2 support completed. "time since" handled correctly.
+E. ncap2 supports GSL (Chapter 27) interpolation routines, e.g., 
+   gsl_interp_cspline(). Also, missing values handling is improved. 
+   http://nco.sf.net/nco.html#gsl
+
+F. ncap2 LHS hyperslabs of multidimensional variables work with a
+   single index corresponding to the 1-D array offset, e.g., 
+   three_dmn_var_dbl(1,1,2)=10.0 is same as three_dmn_var_dbl(14)=10.0 
+   http://nco.sf.net/nco.html#xmp_ncap2
+
+G. UDUnits2 support completed. "time since" handled correctly.
    All future units features will utilize UDUnits2.
    UDUnits1 support will eventually be deprecated. 
 
-F. Operators add an NCO global attribute containing NCO version
+H. Operators add an NCO global attribute containing NCO version
 
-G. ncks --secret prints hidden/unsupported options
+I. ncks --secret prints hidden/unsupported options
 
 "Sticky" reminders:
 
@@ -92,22 +103,30 @@ O. NCO support for netCDF4 features is tracked at
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
-P. Have you seen the NCO logo candidates?
-   What do you think?
+P. Have you seen the NCO logo candidates by Tony Freeman and Rich Signell?
    http://nco.sf.net/logo_pch.png
    http://nco.sf.net/logo_cog.png
+   Tell us what you think...
 
 Enjoy,
 Charlie
  
-GSL functions added to ncap2 in 3.9.9: ncap2 -f | grep gsl_stats
-gsl_stats_absdev()                                                         
-gsl_stats_absdev_m()                                                       
-gsl_stats_correlation()                                                    
-gsl_stats_covariance()                                                     
-gsl_stats_kurtosis()
-gsl_stats_lag1_autocorrelation()
-gsl_stats_lag1_autocorrelation_m()
+GSL functions added to ncap2 in 3.9.9: 
+    ncap2 -f | grep gsl_interp
+    ncap2 -f | grep gsl_stats
+gsl_interp_akima()
+gsl_interp_akima_periodic()
+gsl_interp_cspline()
+gsl_interp_cspline_periodic()
+gsl_interp_linear()
+gsl_interp_polynomial()
+gsl_stats_absdev()                                          
+gsl_stats_absdev_m()                                        
+gsl_stats_correlation()                                     
+gsl_stats_covariance()                                      
+gsl_stats_kurtosis()                                        
+gsl_stats_lag1_autocorrelation()                            
+gsl_stats_lag1_autocorrelation_m()                          
 gsl_stats_max()
 gsl_stats_max_index()
 gsl_stats_mean()

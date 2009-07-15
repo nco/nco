@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.115 2009-07-13 20:53:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.116 2009-07-15 05:39:59 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -913,7 +913,7 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
        attention : passing argument 4 of ‘nc_put_var1_string’ from incompatible pointer type 
        I think this warning occurs because this routine receives the vp input 
        as "const void * const vp", a singly indirect pointer, and then
-       casts it to a doubly indirect pointer on output, i.e., to something like
+       casts vp to a doubly indirect pointer on output, i.e., to something like
        "(const char **)vp" or "(const nco_string * const)vp".
        Is casting a singly-indirect pointer to a doubly-indirect ever allowed? */
     /*  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const char **)vp); break;*/

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.71 2009-06-10 15:34:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.72 2009-07-15 05:39:59 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -9,8 +9,8 @@
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 #include "nco_var_utl.h" /* Variable utilities */
 
-/* fxm: strings statically allocated with NCR_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
-/* Length should be computed at run time but is a pain */
+/* fxm: strings statically allocated with NCR_MAX_LEN_FMT_SNG chars may be susceptible to buffer overflow attacks */
+/* Length should be computed at run time but doing so would be painful */
 #define NCO_MAX_LEN_FMT_SNG 100
 
 void *
