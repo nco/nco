@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1057 2009-07-15 16:52:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1058 2009-07-15 22:32:27 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -694,8 +694,9 @@ nco976. clean-up mess caused by eliminating nco_dmn_lmt_mrg in ncra, ncecat, ncp
 nco977. fix -d syntax spec or nco_lmt_prs() as per https://sourceforge.net/forum/message.php?msg_id=7486118
 nco979. UDUnits1: time zone at end of user-specified limit string is ignored (bad)
         but time zone within units attribute of variable is parsed (good)
-nco980. 
-
+	UDUnits2: handles time zone correctly in both locations (good)
+nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between files like  "hours since 1965-010-01 12:00" and "minutes  since 1968-02-01 12:32"
+nco981. 
 
 ************************************************************************
 End ncoXXX TODOs

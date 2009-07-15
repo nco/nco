@@ -8,8 +8,11 @@
 
 	* Added Benjamin Sittler and John Burkhardt to copyright file
 
-	* Received copyright assignments and removed Henry Butowsky 
+	* Received copyright assignment and removed Henry Butowsky 
 	from copyright headers in nco_msa.c, nco_msa.h
+
+	* Received copyright assignment and removed Karen Schuchardt
+	from copyright headers in nco_aux.c
 
 2009-07-14  Charlie Zender  <zender@uci.edu>
 
