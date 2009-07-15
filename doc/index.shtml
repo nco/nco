@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.542 2009-07-15 05:39:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.543 2009-07-15 23:00:56 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -66,7 +66,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is 3.9.8 last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is 3.9.9 last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 
@@ -111,9 +111,9 @@ Can you improve these or create a better one? Send it in!<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2009 Summer: NCO 4.0.0 (Bilinear interpolation) (TBD)</li>
+<li>2009 Late Summer: NCO 4.0.0 (Bilinear interpolation) (TBD)</li>
 
-<li>2009 Late Spring: NCO 3.9.9 (GSL stats, interp, netCDF4 chunking, rebasing) (TBD)</li>
+<li>2009 Jul&nbsp;15: NCO 3.9.9 (chunking, rebasing, GSL stats/interp)</li>
 
 <li>2009 Apr&nbsp;29: NCO 3.9.8 (GSL RNG/PDF functions)</li>
 
@@ -499,10 +499,12 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Download">with CVS</a>.
 <ul>
-<li><b>NCO/SDO 4.0.0</b>: (<i>Future</i>) 
+<li><b>NCO/SDO 4.0.1</b>: (<i>Future</i>) 
+Spectral toolkit?
+<li><b>NCO/SDO 4.0.0</b>: (<i>In progress</i>) 
 Bilinear interpolation, GSL fitting; 
 Chunking in all operators;
-<li><b>NCO/SDO 3.9.9</b>: (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.9</b>: 
 netCDF4 chunking and <tt>NC_STRING</tt> support; 
 GSL statistics, interpolation functions;
 UDUnits2 <tt>time-since</tt> support;
@@ -650,10 +652,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source and documentation as a compressed tarfile:
 <ul>
 <li>
-<a href="src/nco-3.9.8.tar.gz">nco-3.9.8.tar.gz</a> 
-(<!--#fsize file="src/nco-3.9.8.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-3.9.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-3.9.8.tar.gz"--> 
+<a href="src/nco-3.9.9.tar.gz">nco-3.9.9.tar.gz</a> 
+(<!--#fsize file="src/nco-3.9.9.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-3.9.9.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-3.9.9.tar.gz"--> 
 </li>
 </ul>
 
@@ -674,19 +676,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>3.9.8</tt> (which is
-tagged as <tt>nco-3_9_8</tt> due to CVS rules) into local directory
-<tt>nco-3.9.8</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_8 -d nco-3.9.8 nco</tt></p>
+This command retrieves and places NCO version <tt>3.9.9</tt> (which is
+tagged as <tt>nco-3_9_9</tt> due to CVS rules) into local directory
+<tt>nco-3.9.9</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_9 -d nco-3.9.9 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-3_9_8</tt>) and the development version is that the
+(e.g., <tt>nco-3_9_9</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>3.9.8</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>3.9.9</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -732,19 +734,19 @@ the directory index <a href="src">here</a>.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.9.8</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.9.9</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/jaunty/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 This standard package is, unfortunately, <i>old</i> (version 3.9.0, from about 2005).
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.8-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_3.9.8-1_amd64.deb">nco_3.9.8-1_amd64.deb</a> (<!--#fsize file="src/nco_3.9.8-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.9.8-1_amd64.deb"-->)</li>
-<li><a href="src/nco_3.9.8-1_i386.deb">nco_3.9.8-1_i386.deb</a> (<!--#fsize file="src/nco_3.9.8-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.9.8-1_i386.deb"-->)</li>
-<li><a href="src/nco_3.9.8-1.dsc">nco_3.9.8-1.dsc</a> (<!--#fsize file="src/nco_3.9.8-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_3.9.8-1.dsc"-->)</li>
-<li><a href="src/nco_3.9.8-1_i386.changes">nco_3.9.8-1_i386.changes</a> (<!--#fsize file="src/nco_3.9.8-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_3.9.8-1_i386.changes"-->)</li>
-<li><a href="src/nco_3.9.8.orig.tar.gz">nco_3.9.8.orig.tar.gz</a> (<!--#fsize file="src/nco_3.9.8.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_3.9.8.orig.tar.gz"-->)</li>
-<li><a href="src/nco_3.9.8-1.diff.gz">nco_3.9.8-1.diff.gz</a> (<!--#fsize file="src/nco_3.9.8-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_3.9.8-1_i386.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.9-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_3.9.9-1_amd64.deb">nco_3.9.9-1_amd64.deb</a> (<!--#fsize file="src/nco_3.9.9-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.9.9-1_amd64.deb"-->)</li>
+<li><a href="src/nco_3.9.9-1_i386.deb">nco_3.9.9-1_i386.deb</a> (<!--#fsize file="src/nco_3.9.9-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.9.9-1_i386.deb"-->)</li>
+<li><a href="src/nco_3.9.9-1.dsc">nco_3.9.9-1.dsc</a> (<!--#fsize file="src/nco_3.9.9-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_3.9.9-1.dsc"-->)</li>
+<li><a href="src/nco_3.9.9-1_i386.changes">nco_3.9.9-1_i386.changes</a> (<!--#fsize file="src/nco_3.9.9-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_3.9.9-1_i386.changes"-->)</li>
+<li><a href="src/nco_3.9.9.orig.tar.gz">nco_3.9.9.orig.tar.gz</a> (<!--#fsize file="src/nco_3.9.9.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_3.9.9.orig.tar.gz"-->)</li>
+<li><a href="src/nco_3.9.9-1.diff.gz">nco_3.9.9-1.diff.gz</a> (<!--#fsize file="src/nco_3.9.9-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_3.9.9-1_i386.changes"-->)</li>
 Thanks to Daniel Baumann, Francesco Lovergine, Brian Mays, Rorik
 Peterson, and Matej Vela for packaging NCO for Debian over the years.
 </ul>
@@ -1107,7 +1109,7 @@ No earlier versions of GSL are supported.<br>
 <!-- http://nco.sf.net#bld_DAP -->
 <a name="bld_dap"></a><a name="bld_DAP"></a><a name="bld_DODS"></a><a name="bld_OPeNDAP"></a>
 <li><i>Build Hints with DAP:</i><br>
-NCO versions 3.9.8&mdash; support automatic building and linking
+NCO versions 3.9.9&mdash; support automatic building and linking
 for DAP supplied from <a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/DAP-Support.html">libnetcdf</a> versions&nbsp;4.1-beta1 and beyond<br>
 NCO versions 3.1.3&mdash; support automatic building and linking
 for <a href="http://opendap.org">OPeNDAP</a> versions&nbsp;3.6.x and
@@ -1244,7 +1246,7 @@ The (one-line!) patch to fix this bug in 3.9.5 is
 <ul><b>Platform-specific Run-time Problems:</b>
 <a name="bug_ncap_flt_fnc_aix"></a>
 <li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-<tt>ncap</tt> versions through 3.9.8 have a bug that causes all float-valued
+<tt>ncap</tt> versions through 3.9.9 have a bug that causes all float-valued
 intrinsic math functions to fail under AIX.
 Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
 <tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
