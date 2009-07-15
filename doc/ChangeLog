@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-3.9.9 release"
 	cvs tag -c nco-3_9_9;cvs tag -c nco-3_9_9-1
 
+	* Cleaned up and annotated copyright history in copyright file
+
 	* Added Benjamin Sittler and John Burkhardt to copyright file
 
 	* Received copyright assignment and removed Henry Butowsky 

@@ -1,8 +1,14 @@
 nco (3.9.9-1) unstable; urgency=low
 
-  * new upstream version (chunking)
-
- -- Charlie Zender <zender@uci.edu>  Sat, 11 Jul 2009 18:31:07 -0700
+  * new upstream version (chunking, NC_STRING, GSL stats/interp, rebasing)
+  * debian/control
+    - Standards-Version: 3.8.2
+  * debian/copyright
+    - includes everyone now
+  * debian/compat
+    - change from 4 to 5
+    
+ -- Charlie Zender <zender@uci.edu>  Tue, 14 Jul 2009 18:31:07 -0700
 
 nco (3.9.8-1) unstable; urgency=low
 
