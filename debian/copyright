@@ -17,11 +17,30 @@ explicitly noted otherwise, from GPL to GPL version 2 (not any later version).
 Also at this time the explicit exceptions to the GPL for compatibility with
 the HDF, netCDF, OPeNDAP, and UDUnits licenses were formally introduced.
 
-On July 22, 2007, Charlie Zender changed the NCO license, except where  
+On July 22, 2007, Charlie Zender changed the NCO licenses, except where 
 explicitly noted otherwise, from GPL2 to GPL3 (for code) and from 
-FDL 1.1 (or any later version) to FDL 1.2 (or any later version) for documentation. 
+FDL 1.1 (or any later version) to FDL 1.2 (or any later version) for 
+documentation. 
+
+On January 20, 2009, Charlie Zender changed the NCO license for documentation,  
+except where explicitly noted otherwise, from FDL 1.2 (or any later version) 
+to FDL 1.3 (or any later version).
+
+On July 15, 2009, Charlie Zender added Benjamin Sittler and John Burkhardt
+to this copyright file to reflect their copyrights. Both retain copyright
+to their work and use a BSD-style license (freely redistributle so long as
+copyright notices are maintained).
+
+On July 15, 2009, Charlie Zender received copyright assignments from
+Henry Butowsky and Karen Schuchardt. Their names were removed from the
+copyright statements in the files where they had been listed:
+nco_msa.c, nco_msa.h, and nco_aux.c.
 
 NCO is copyright (C) 1995--2009 Charlie Zender
+Portions of following NCO files copyright by others:
+nco_getopt.c: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
+nco_getopt.h: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
+nco_gmm.c: Copyright (C) 2008 John Burkardt
 
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
