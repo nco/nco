@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.20 2009-07-15 22:32:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.21 2009-07-16 06:56:40 zender Exp $ */
 
 /* Copyright (C) 1995--2009 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -69,7 +69,7 @@ nco_find_lat_lon
 	/* Get units; assume same for both lat and lon */
 	rcd=nco_inq_attlen(nc_id,idx,"units",&lenp);
 	if (rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl: CF convention requires \"latitude\" to have units attribute\n");
-	*units=nco_malloc((lenp+1L)*sizeof(char*));
+	*units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
 	NCO_GET_ATT_CHAR(nc_id,idx,"units",*units);
 	units[lenp]='\0';
 	

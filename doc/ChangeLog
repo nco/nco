@@ -1,12 +1,15 @@
 2009-07-15  Charlie Zender  <zender@uci.edu>
 
+	* Satisfy C++ by making explicit (void *) to (char *) conversions
+	(rather than relying on implicit conversion)
+
 	* NCO 4.0.0 release procedure:
 	Changes since nco-3_9_9: fxm
 	cd ~/nco;cvs tag -d nco-4_0_0;cvs tag -d nco-4_0_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.0 release"
 	cvs tag -c nco-4_0_0;cvs tag -c nco-4_0_0-1
 
-	* Thanks all packagers in nco.texi
+	* Thank all packagers in nco.texi
 
 	* Barry deFreese uploaded 3.9.9 to Debian Sid. Hallelujah!
 
