@@ -1,30 +1,34 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncflint.1,v 1.11 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncflint
+.\" Usage:
+.\" nroff -man ~/nco/man/ncflint.1
 .TH NCFLINT 1
 .SH NAME
 ncflint \- netCDF File Interpolator
 .SH SYNTAX
-ncflint [-3] [-4] [-A] [-C] [-c] [-D 
+ncflint [\-3] [\-4] [\-A] [\-C] [\-c] [\-D 
 .IR dbg ]
-[-d 
+[\-d 
 .IR dim ,[
 .IR "min" ][,[
 .IR max ]]]
-[-F]
-[-h] [-i
-.IR var, val3 ] [-L 
-.IR dfl_lvl ] [-l 
+[\-F]
+[\-h] [\-i
+.IR var, val3 ] [\-L 
+.IR dfl_lvl ] [\-l 
 .IR path ]
-[-O] [-p 
+[\-O] [\-p 
 .IR path ]
-[-R] [-r] [-t
+[\-R] [\-r] [\-t
 .IR thr_nbr ]
-[-v 
+[\-v 
 .IR var [,...]]
-[-w 
+[\-w 
 .IR wgt[,
 .IR wgt2 ]]
-[-X 
+[\-X 
 .IR box ] 
-[-x] 
+[\-x] 
 .I file1 file2 file3
 .SH DESCRIPTION
 .PP
@@ -55,32 +59,32 @@ Here at least
 and, optionally, 
 .IR wgt2, 
 are specified on the command line with the 
-.BR -w 
+.BR \-w 
 (or 
-.BR --weight
+.BR \-\-weight
 or 
-.BR --wgt_var
+.BR \-\-wgt_var
 ) switch.  If only 
 IR wgt1 
 is specified then 
 .IR wgt2 
 is automatically computed as 
-.IR wgt2 = 1 - wgt1.  
+.IR wgt2 = 1 \- wgt1.  
 Note that weights larger than 1 are allowed.  Thus it is
 possible to specify 
 .IR wgt1 = 2 
 and 
-.IR wgt2 = -3.  
+.IR wgt2 = \-3.  
 One can use this functionality to multiply all the values in a given file by a constant.
 .PP
 The second method of using 
 .B ncflint
 is to specify the interpolation option with 
-.BR -i
+.BR \-i
 (or with the 
-.BR --ntp
+.BR \-\-ntp
 or 
-.BR --interpolate
+.BR \-\-interpolate
 long options). This is really the inverse of the first method in the following sense.
 When the user specifies the weights directly, 
 .B ncflint
@@ -109,7 +113,7 @@ Thus, to use the interpolation option, the user specifies
 and 
 .IR val3
 with the 
-.BR -i 
+.BR \-i 
 option.  
 .B ncflint
 will compute 
@@ -125,21 +129,21 @@ represent a single, scalar value.  Thus any dimensions associated with
 must be "degenerate", i.e., of size one.
 .PP
  If neither 
-.BR -i
+.BR \-i
 nor
-.BR -w
+.BR \-w
 is specified on the command line, 
 .B ncflint
 defaults to weighting each input file equally in the output file.  This
 is equivalent to specifying 
-.IR -w 0.5
+.IR \-w 0.5
 or 
-.IR -w 0.5,0.5.  
+.IR \-w 0.5,0.5.  
 Attempting to
 specify both .BR 
-.BR -i 
+.BR \-i 
 and 
-.BR -w
+.BR \-w
 methods in the same command is an error.
 .PP
 .B ncflint
@@ -149,12 +153,8 @@ and
 .BR NC_BYTE.  
 This behavior is hardcoded.
 
-
-
-
-
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncflint.1,v 1.10 2009-01-22 23:07:06 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncflint.1,v 1.11 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

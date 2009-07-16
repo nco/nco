@@ -1,35 +1,39 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.16 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncks
+.\" Usage:
+.\" nroff -man ~/nco/man/ncks.1
 .TH NCKS 1
 .SH NAME
 ncks \- netCDF Kitchen Sink
 .SH SYNTAX
-ncks [-3] [-4] [-A] [-a] [-C] [-c] 
-[--cnk_dmn 
+ncks [\-3] [\-4] [\-A] [\-a] [\-C] [\-c] 
+[\-\-cnk_dmn 
 .IR nm,sz ]
-[--cnk_map 
+[\-\-cnk_map 
 .IR map ]
-[--cnk_plc 
+[\-\-cnk_plc 
 .IR plc ]
-[--cnk_scl 
+[\-\-cnk_scl 
 .IR sz] 
-[-D] [-d 
+[\-D] [\-d 
 .IR dim ,[
 .IR min ][,[
 .IR max ]][,[
 .IR stride ]]]
-[-F] [-H] [-h] [-L 
+[\-F] [\-H] [\-h] [\-L 
 .IR dfl_lvl ] 
-[-l 
+[\-l 
 .IR path ]
-[-M] [-m] [-O] [-p 
+[\-M] [\-m] [\-O] [\-p 
 .IR path ]
-[-q]
-[-R] [-r] [-s 
+[\-q]
+[\-R] [\-r] [\-s 
 .IR format ]
-[-u] [-v 
+[\-u] [\-v 
 .IR var [,...]] 
-[-X 
+[\-X 
 .IR box ] 
-[-x]
+[\-x]
 .I input-file
 [
 .IR output-file ]
@@ -60,20 +64,20 @@ prints data in a tabular format intended to be easy to
 search for the data you want, one datum per screen line, with all
 dimension subscripts and coordinate values (if any) preceding the datum.
 Option 
-.B -s
+.B \-s
 allows the user the format the data using C-style
 format strings.
 .PP
 Options 
-.BR -a ,
-.BR -F ,
-.BR -H ,
-.BR -M ,
-.IR -m ,
-.BR -q ,
-.BR -s ,
+.BR \-a ,
+.BR \-F ,
+.BR \-H ,
+.BR \-M ,
+.IR \-m ,
+.BR \-q ,
+.BR \-s ,
 and 
-.B -u
+.B \-u
 control the formatted appearance of 
 the data.  
 .PP
@@ -86,11 +90,11 @@ coordinates may be specifically included or excluded---all global
 attributes and any attribute associated with an extracted variable will
 be copied to the screen and/or output netCDF file. 
 Options 
-.BR -c ,
-.BR -C ,
-.BR -v ,
+.BR \-c ,
+.BR \-C ,
+.BR \-v ,
 and 
-.B -x
+.B \-x
 control which
 variables are extracted.
 .PP
@@ -100,7 +104,7 @@ In fact
 .B ncks
 implements the nccut specification exactly.
 Option 
-.B -d
+.B \-d
 controls the hyperslab specification.
 .PP
 Input dimensions that are not associated with any output variable will
@@ -211,9 +215,9 @@ For example, batch scripts will fail if
 does not receive
 responses to its queries. 
 Options 
-.B -O
+.B \-O
 and 
-.B -A
+.B \-A
 are available to force overwriting
 existing files and variables, respectively. 
 .PP
@@ -225,23 +229,23 @@ The following list provides a short summary of the features unique to
 .PP
 .PP
 .TP
-.B -a 
+.B \-a 
 Do not alphabetize extracted fields. 
 By default, the specified output variables are extracted, printed, and
 written to disk in alphabetical order.
 This tends to make long output lists easier to search for particular
 variables. 
 Specifying 
-.B -a
+.B \-a
 results in the variables being extracted, printed,
 and written to disk in the order in which they were saved in the input
 file.
 Thus 
-.B -a
+.B \-a
 retains the original ordering of the variables.
 .PP
 .TP
-.B -d 
+.B \-d 
 .IR dim ,[
 .IR "min" ][,[
 .IR max ]][,[
@@ -251,18 +255,18 @@ Add
 argument to hyperslabber. 
 .PP
 .TP
-.B -H 
+.B \-H 
 Print data to screen.
 The default behavior is to print data to screen if no netCDF output
 file is specified. 
 Use 
-.B -H 
+.B \-H 
 to print data to screen if a netCDF output is specified
 (the same behavior applies to 
-.B -m
+.B \-m
 ).
 Unless otherwise specified (with 
-.BR -s ),
+.BR \-s ),
 each element of the data
 hyperslab is printed on a separate line containing the names, indices,
 and, values, if any, of all of the variables dimensions.
@@ -270,13 +274,13 @@ The dimension and variable indices refer to the location of the
 corresponding data element with respect to the variable as stored on
 disk (i.e., not the hyperslab).
 .RS
-% ncks -H -C -v three_dmn_var in.nc
+% ncks \-H \-C \-v three_dmn_var in.nc
 .br
-lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+lat[0]=\-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 .br
-lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+lat[0]=\-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 .br
-lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
+lat[0]=\-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
 .br
 \.\.\.
 .br
@@ -287,17 +291,17 @@ lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
 .RE
 Printing the same variable with the 
-.B -F
+.B \-F
 option shows the same
 variable indexed with Fortran conventions
 .RS
-% ncks -F -H -C -v three_dmn_var in.nc
+% ncks \-F \-H \-C \-v three_dmn_var in.nc
 .br
-lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
+lon(1)=0 lev(1)=100 lat(1)=\-90 three_dmn_var(1)=0 
 .br
-lon(2)=90 lev(1)=100 lat(1)=-90 three_dmn_var(2)=1 
+lon(2)=90 lev(1)=100 lat(1)=\-90 three_dmn_var(2)=1 
 .br
-lon(3)=180 lev(1)=100 lat(1)=-90 three_dmn_var(3)=2 
+lon(3)=180 lev(1)=100 lat(1)=\-90 three_dmn_var(3)=2 
 .br
 ...
 .RE
@@ -307,7 +311,7 @@ input file), and the input file has not changed.
 However, if the hypserslab is saved to an output file and those values
 are printed, the indices will change:
 .RS
-% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
+% ncks \-H \-d lat,90.0 \-d lev,1000.0 \-v three_dmn_var in.nc out.nc
 .br
 lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20 
 .br
@@ -317,7 +321,7 @@ lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22
 .br
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
 .br
-% ncks -H out.nc
+% ncks \-H out.nc
 .br
 lat[0]=90 lev[0]=1000 lon[0]=0 three_dmn_var[0]=20 
 .br
@@ -329,19 +333,19 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 .RE
 .PP
 .TP
-.B -M
+.B \-M
 Print to screen the global metadata describing the file.
 This includes file summary information and global attributes. 
 .PP
 .TP
-.B -m
+.B \-m
 Print variable metadata to screen (similar to 
-.BR "ncdump -h" ).
+.BR "ncdump \-h" ).
 This displays all metadata pertaining to each variable, one variable
 at a time.
 .PP
 .TP
-.B -q 
+.B \-q 
 Toggle printing of dimension indices and coordinate values when printing
 arrays. 
 The name of each variable will appear flush left in the output.
@@ -350,14 +354,14 @@ many variables with different dimensions.
 The mnemonic for this option is "quiet".
 .PP
 .TP
-.B -s 
+.B \-s 
 .I "format"
 String format for text output. Accepts C language escape sequences and
 .B printf()
 formats. 
 .PP
 .TP
-.B -u 
+.B \-u 
 Accompany the printing of a variable's values with its units attribute,
 if it exists.  
 .SH EXAMPLES
@@ -367,7 +371,7 @@ View all data in netCDF
 printed with Fortran indexing
 conventions: 
 .RS
-ncks -H -F in.nc
+ncks \-H \-F in.nc
 .RE
 .PP
 Copy the netCDF file 
@@ -375,7 +379,7 @@ Copy the netCDF file
 to file 
 .BR out.nc .
 .RS
-ncks -O in.nc out.nc
+ncks \-O in.nc out.nc
 .RE
 Now the file 
 .B out.nc
@@ -397,7 +401,7 @@ order.
 Of course the internal storage of variable in a netCDF file should be
 transparent to the user, but there are cases when alphabetizing a file 
 is useful (see description of 
-.B -a
+.B \-a
 switch).
 .PP
 Print variable 
@@ -416,17 +420,17 @@ Finally, print
 .B three_dmn_var
 as a comma-separated list.
 .RS
-% ncks -H -C -v three_dmn_var in.nc
+% ncks \-H \-C \-v three_dmn_var in.nc
 .br
-lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+lat[0]=\-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 .br
-lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+lat[0]=\-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 .br
 ...
 .br
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
 .br
-% ncks -s "%f\\n" -H -C -v three_dmn_var in.nc
+% ncks \-s "%f\\n" \-H \-C \-v three_dmn_var in.nc
 .br
 0.000000
 .br
@@ -436,7 +440,7 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 .br
 23.000000
 .br
-% ncks -s "%+16.10f\\n" -H -C -v three_dmn_var in.nc
+% ncks \-s "%+16.10f\\n" \-H \-C \-v three_dmn_var in.nc
 .br
    +0.0000000000
 .br
@@ -446,7 +450,7 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 .br
   +23.0000000000
 .br
-% ncks -s "%f, " -H -C -v three_dmn_var in.nc
+% ncks \-s "%f, " \-H \-C \-v three_dmn_var in.nc
 .br
 0.000000, 1.000000, ..., 23.000000,
 .RE
@@ -457,14 +461,14 @@ One dimensional arrays of characters stored as netCDF variables are
 automatically printed as strings, whether or not they are
 NUL-terminated, e.g.,
 .RS
-ncks -v fl_nm in.nc
+ncks \-v fl_nm in.nc
 .RE
 The 
 .B %c
 formatting code is useful for printing 
 multidimensional arrays of characters representing fixed length strings
 .RS
-ncks -H -s "%c" -v fl_nm_arr in.nc
+ncks \-H \-s "%c" \-v fl_nm_arr in.nc
 .RE
 Using the 
 .B %s
@@ -479,7 +483,7 @@ coordinates, except variable
 from netCDF 
 .BR in.nc :
 .RS
-ncks -x -v time in.nc out.nc
+ncks \-x \-v time in.nc out.nc
 .RE
 .PP
 Extract variables 
@@ -495,9 +499,9 @@ Otherwise the you will be prompted whether to append to or to
 overwrite 
 .BR out.nc :
 .RS
-ncks -v time,pressure in.nc out.nc
+ncks \-v time,pressure in.nc out.nc
 .br
-ncks -C -v time,pressure in.nc out.nc
+ncks \-C \-v time,pressure in.nc out.nc
 .RE
 The first version of the command creates an 
 .B out.nc
@@ -521,7 +525,7 @@ containing all variables from file
 .BR in.nc .
 Restrict the dimensions of these variables to a hyperslab. 
 Print (with 
-.BR -H )
+.BR \-H )
 the hyperslabs to the screen for good measure.  
 The specified hyperslab is: the sixth value in dimension 
 .BR time ;
@@ -547,7 +551,7 @@ Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a
 decimal point.
 .RS
-ncks -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 -d lev,1000. in.nc out.nc 
+ncks \-H \-d time,5 \-d lat,,0. \-d lon,330., \-d band,.3,.5 \-d lev,1000. in.nc out.nc 
 .RE
 .PP
 Assume the domain of the monotonically increasing longitude coordinate
@@ -567,11 +571,11 @@ the easternmost longitude as
 .IR max ,
 as follows:
 .RS
-ncks -d lon,260.,45. in.nc out.nc
+ncks \-d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.15 2009-05-27 05:20:48 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.16 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

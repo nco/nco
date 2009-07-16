@@ -1,27 +1,31 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncbo.1,v 1.12 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncbo
+.\" Usage:
+.\" nroff -man ~/nco/man/ncbo.1
 .TH NCBO 1
 .SH NAME
 ncbo \- netCDF Binary Operator
 .SH SYNTAX
-ncbo [-3] [-4] [-A] [-C] [-c] [-D 
+ncbo [\-3] [\-4] [\-A] [\-C] [\-c] [\-D 
 .IR dbg ]
-[-d 
+[\-d 
 .IR dim ,[
 .IR "min" ][,[
 .IR "max" ]]]
-[-F]
-[-h] [-L 
+[\-F]
+[\-h] [\-L 
 .IR dfl_lvl ] 
-[-l 
+[\-l 
 .IR path ]
-[-O] [-p 
+[\-O] [\-p 
 .IR path ]
-[-R] [-r] [-t
+[\-R] [\-r] [\-t
 .IR thr_nbr ]
-[-v 
+[\-v 
 .IR var [,...]]
-[-X 
+[\-X 
 .IR box ] 
-[-x] 
+[\-x] 
 .I file_1
 .I file_2
 .I file_3
@@ -182,7 +186,7 @@ with the record dimension
 .RS
 ncra 85_0112.nc 85.nc
 .br
-ncwa -O -a time 85.nc 85.nc
+ncwa \-O \-a time 85.nc 85.nc
 .RE
 The second command, 
 .BR ncwa ,
@@ -203,13 +207,13 @@ A quicker way to accomplish this is to use
 from the
 beginning:  
 .RS
-ncwa -a time 85_0112.nc 85.nc
+ncwa \-a time 85_0112.nc 85.nc
 .RE
 We are now ready to use 
 .B ncbo
 to compute the anomalies for 1985:
 .RS
-ncbo -v T 85_0112.nc 85.nc t_anm_85_0112.nc
+ncbo \-v T 85_0112.nc 85.nc t_anm_85_0112.nc
 .RE
 Each of the 12 records in 
 .B t_anm_85_0112.nc
@@ -242,7 +246,7 @@ Then we use
 to subtract the zonal annual means from the
 monthly gridpoint data:
 .RS
-ncwa -a lon 85.nc xavg_85.nc
+ncwa \-a lon 85.nc xavg_85.nc
 .br
 ncbo 85_0112.nc xavg_85.nc tx_anm_85_0112.nc
 .RE
@@ -272,7 +276,7 @@ First use
 .B ncwa
 to create the file containing the five-year mean:
 .RS
-ncwa -a time 8501_8912.nc 8589.nc
+ncwa \-a time 8501_8912.nc 8589.nc
 .RE
 Next use 
 .B ncbo
@@ -293,7 +297,7 @@ twelve months:
 .RS
 foreach idx (01 02 03 04 05 06 07 08 09 10 11 12) 
 .br
-ncks -F -d time,,,12 t_anm_8501_8912.nc foo.
+ncks \-F \-d time,,,12 t_anm_8501_8912.nc foo.
 .br
 ncra foo. t_anm_8589_.nc
 .br
@@ -306,7 +310,7 @@ understands the
 argument so the two
 commands inside the loop may be combined into the single command 
 .RS
-ncra -F -d time,,,12 t_anm_8501_8912.nc foo.
+ncra \-F \-d time,,,12 t_anm_8501_8912.nc foo.
 .RE
 Finally, use 
 .B ncrcat
@@ -318,7 +322,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncbo.1,v 1.11 2009-01-22 23:07:06 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncbo.1,v 1.12 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

@@ -1,30 +1,34 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.13 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncrcat
+.\" Usage:
+.\" nroff -man ~/nco/man/ncrcat.1
 .TH NCRCAT 1
 .SH NAME
 ncrcat \- netCDF Record Concatenator
 .SH SYNTAX
-ncrcat [-3] [-4] [-A] [-C] [-c] [-D
+ncrcat [\-3] [\-4] [\-A] [\-C] [\-c] [\-D
 .IR dbg ]
-[-d 
+[\-d 
 .IR dim ,[
 .IR "min" ][,[
 .IR max ]][,[
 .IR stride ]]]
-[-F]
-[-h] [-L 
+[\-F]
+[\-h] [\-L 
 .IR dfl_lvl ] 
-[-l 
+[\-l 
 .IR path ]
-[-n
+[\-n
 .IR loop]
-[-O] [-p
+[\-O] [\-p
 .IR path ]
-[-R] [-r] [-t
+[\-R] [\-r] [\-t
 .IR thr_nbr ]
-[-v
+[\-v
 .IR var [,...]]
-[-X 
+[\-X 
 .IR box ] 
-[-x] 
+[\-x] 
 .I input-files
 .I output-file
 .SH DESCRIPTION
@@ -44,7 +48,7 @@ handled correctly.
 supports the 
 .I stride
 argument to the 
-.B -d
+.B \-d
 hyperslab option for the record dimension only, 
 .I stride
 is not
@@ -67,7 +71,7 @@ ncrcat 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
 .br
 ncrcat 8[56789].nc 8589.nc
 .br
-ncrcat -n 5,2,1 85.nc 8589.nc
+ncrcat \-n 5,2,1 85.nc 8589.nc
 .RE
 These three methods produce identical answers.
 .PP
@@ -86,15 +90,15 @@ contains data from March 1986, etc.
 NCO knows how to hyperslab the record dimension across files.
 Thus, to concatenate data from December, 1985--February, 1986:
 .RS
-ncrcat -d time,11,13 85.nc 86.nc 87.nc 8512_8602.nc
+ncrcat \-d time,11,13 85.nc 86.nc 87.nc 8512_8602.nc
 .br
-ncrcat -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
+ncrcat \-F \-d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
 .RE
 The file 
 .B 87.nc
 is superfluous, but does not cause an error.
 The 
-.B -F
+.B \-F
 turns on the Fortran (1-based) indexing convention.
 .PP
 The following uses the 
@@ -102,7 +106,7 @@ The following uses the
 option to concatenate all the March
 temperature data from multiple input files into a single output file
 .RS
-ncrcat -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
+ncrcat \-F \-d time,3,,12 \-v temperature 85.nc 86.nc 87.nc 858687_03.nc
 .RE
 .PP
 Assume the 
@@ -114,11 +118,11 @@ Assuming
 only expands to the five desired files, the following
 concatenates June, 1985--June, 1989: 
 .RS
-ncrcat -d time,6.,54. ??.nc 8506_8906.nc
+ncrcat \-d time,6.,54. ??.nc 8506_8906.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.12 2009-04-29 22:56:38 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.13 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

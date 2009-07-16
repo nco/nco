@@ -1,38 +1,42 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncwa.1,v 1.13 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncwa
+.\" Usage:
+.\" nroff -man ~/nco/man/ncwa.1
 .TH NCWA 1
 .SH NAME
 ncwa \- netCDF Weighted Averager
 .SH SYNTAX
-ncwa [-3] [-4] [-A] [-a 
+ncwa [\-3] [\-4] [\-A] [\-a 
 .IR dim [,...]]
-[-B 
+[\-B 
 .IR mask_cond] 
-[-b] [-C] [-c] [-D
+[\-b] [\-C] [\-c] [\-D
 .IR dbg ]
-[-d 
+[\-d 
 .IR dim ,[
 .IR "min" ][,[
 .IR max ]]]
-[-F]
-[-h] [-I] [-L 
-.IR dfl_lvl ] [-l 
+[\-F]
+[\-h] [\-I] [\-L 
+.IR dfl_lvl ] [\-l 
 .IR path ]
-[-M 
+[\-M 
 .IR val ]
-[-m 
+[\-m 
 .IR mask ]
-[-N] [-O] [-o 
+[\-N] [\-O] [\-o 
 .IR output-file ]
-[-p 
+[\-p 
 .IR path ]
-[-R] [-r] [-T
+[\-R] [\-r] [\-T
 .IR mask_comp ]
-[-t
+[\-t
 .IR thr_nbr ]
-[-v 
+[\-v 
 .IR var [,...]]
-[-w 
+[\-w 
 .IR weight ]
-[-x] [-y 
+[\-x] [\-y 
 .IR op_typ ]
 .I input-file
 .I output-file
@@ -47,12 +51,12 @@ is to arithmetically average every
 numerical variable over all dimensions and produce a scalar result.
 To average variables over only a subset of their dimensions, specify
 these dimensions in a comma-separated list following 
-.BR -a ,
+.BR \-a ,
 e.g.,
-.BR "-a time,lat,lon" .
+.BR "\-a time,lat,lon" .
 As with all arithmetic operators, the operation may be restricted to
 an arbitrary hypserslab by employing the 
-.B -d
+.B \-d
 option
 .B ncwa
 also handles values matching the variable's
@@ -138,8 +142,8 @@ applications it may be preferable not to weight or mask coordinate
 variables just like all other variables.   
 Consider the following arguments to 
 .BR ncwa :
-\(lq-a latitude -w
-lat_wgt -d latitude,0.,90.\(rq where 
+\(lq\-a latitude \-w
+lat_wgt \-d latitude,0.,90.\(rq where 
 .B lat_wgt
 is a weight in the
 .B latitude
@@ -157,7 +161,7 @@ in
 and is not likely to be 45.---the midpoint latitude of
 the hyperslab.
 Option 
-.B -I
+.B \-I
 overrides this default behavior and causes 
 .B ncwa
 not to weight or mask coordinate variables.
@@ -167,16 +171,16 @@ in the
 .I output-file
 to be 45.---which is a somewhat appealing result.
 Thus, 
-.B -I
+.B \-I
 specifies simple arithmetic averages for the coordinate
 variables. 
 In the case of latitude, 
-.B -I
+.B \-I
 specifies that you prefer to archive
 the central latitude of the hyperslab over which variables were averaged 
 rather than the area weighted centroid of the hyperslab.
 Note that the default behavior of (
-.BR -I )
+.BR \-I )
 changed on
 1998/12/01---before this date the default was not to weight or mask
 coordinate variables.
@@ -184,7 +188,7 @@ The mathematical definition of operations involving rank reduction
 is given above.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncwa.1,v 1.12 2009-01-22 23:07:06 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncwa.1,v 1.13 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

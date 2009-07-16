@@ -1,29 +1,33 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncea.1,v 1.12 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncea
+.\" Usage:
+.\" nroff -man ~/nco/man/ncea.1
 .TH NCEA 1
 .SH NAME
 ncea \- netCDF Ensemble Averager
 .SH SYNTAX
-ncea [-3] [-4] [-A] [-C] [-c] [-D 
+ncea [\-3] [\-4] [\-A] [\-C] [\-c] [\-D 
 .IR dbg ]
-[-d 
+[\-d 
 .IR dim ,[
 .IR "min" ][,[
 .IR max ]]]
-[-F]
-[-h] [-L 
+[\-F]
+[\-h] [\-L 
 .IR dfl_lvl ] 
-[-l 
+[\-l 
 .IR path ]
-[-n 
+[\-n 
 .IR loop ]
-[-O] [-p 
+[\-O] [\-p 
 .IR path ]
-[-R] [-r] [-t
+[\-R] [\-r] [\-t
 .IR thr_nbr ]
-[-v 
+[\-v 
 .IR var [,...]]
-[-X 
+[\-X 
 .IR box ] 
-[-x] [-y 
+[\-x] [\-y 
 .IR op_typ ]
 .I input-files
 .I output-file
@@ -90,7 +94,7 @@ ncea 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
 .br
 ncea 85_0[1-5].nc 85.nc
 .br
-ncea -n 5,2,1 85_01.nc 85.nc
+ncea \-n 5,2,1 85_01.nc 85.nc
 .RE
 These three commands produce identical answers.
 The output file, 
@@ -104,7 +108,7 @@ In the previous example, the user could have obtained the ensemble
 average values in a particular spatio-temporal region by adding a 
 hyperslab argument to the command, e.g.,
 .RS
-ncea -d time,0,2 -d lat,-23.5,23.5 85_??.nc 85.nc
+ncea \-d time,0,2 \-d lat,\-23.5,23.5 85_??.nc 85.nc
 .RE
 In this case the output file would contain only three slices of data in
 the 
@@ -115,7 +119,7 @@ input files.
 Additionally, only data inside the tropics is included.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncea.1,v 1.11 2009-01-22 23:07:06 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncea.1,v 1.12 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

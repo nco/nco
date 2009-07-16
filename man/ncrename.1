@@ -1,21 +1,25 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.7 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncrename
+.\" Usage:
+.\" nroff -man ~/nco/man/ncrename.1
 .TH NCRENAME 1
 .SH NAME
 ncrename \- netCDF Renamer
 .SH SYNTAX
-ncrename [-a 
+ncrename [\-a 
 .IR old_name ,
 .IR "new_name" ]
-[-a
-\.\.\.] [-D] 
-[-d 
+[\-a
+\.\.\.] [\-D] 
+[\-d 
 .IR old_name ,
 .IR "new_name" ]
-[-d
-...] [-h] [-l path] [-O] [-p path]
-[-R] [-r] [-v 
+[\-d
+...] [\-h] [\-l path] [\-O] [\-p path]
+[\-R] [\-r] [\-v 
 .IR old_name ,
 .IR "new_name" ]
-[-v
+[\-v
 ...]
 .I input-file
 [
@@ -80,7 +84,7 @@ is shorter than the
 .SH OPTIONS
 .PP
 .TP
-.B -a 
+.B \-a 
 .IR old_name ,
 .I "new_name"
 Attribute renaming. 
@@ -98,7 +102,7 @@ This is considered an oversight and will be addressed in a future
 version of NCO.
 .PP
 .TP
-.B -d 
+.B \-d 
 .IR old_name ,
 .I "new_name"
 Dimension renaming. 
@@ -109,7 +113,7 @@ and
 values. 
 This option may be specified more than once.
 .TP
-.B -v 
+.B \-v 
 .IR old_name ,
 .I "new_name"
 Variable renaming. 
@@ -120,7 +124,7 @@ and
 values. 
 This option may be specified more than once.
 .TP
-.B -i 
+.B \-i 
 Interactive. 
 .B ncrename
 will prompt for confirmation before overwriting an
@@ -146,7 +150,7 @@ abort), but the presence of
 .B t
 is optional:
 .RS
-ncrename -v p,pressure -v .t,temperature in.nc
+ncrename \-v p,pressure \-v .t,temperature in.nc
 .RE
 .B ncrename
 does not automatically attach dimensions to variables of
@@ -155,7 +159,7 @@ If you want to rename a coordinate variable so that it remains a
 coordinate variable, you must separately rename both the dimension and
 the variable: 
 .RS
-ncrename -d lon,longitude -v lon,longitude in.nc
+ncrename \-d lon,longitude \-v lon,longitude in.nc
 .RE
 .PP
 Create netCDF 
@@ -172,11 +176,11 @@ which possess it) and the global attribute
 is changed to
 .BR Congo :
 .RS
-ncrename -a _FillValue,missing_value -a Zaire,Congo in.nc out.nc 
+ncrename \-a _FillValue,missing_value \-a Zaire,Congo in.nc out.nc 
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.6 2009-04-29 22:56:38 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.7 2009-07-16 23:39:35 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
