@@ -8,7 +8,8 @@
 
 	* NCO is once again C++-compliant, compiles fine with g++
 
-	* g++-compiled code fails regressions because of stdout issue...
+	* Explicitly set ddra_info.flg_ddra=False in g++-compiled code
+	since C++ does not allow structure-member initialization
 
 	* Satisfy C++ by making explicit (void *) to (lmt_sct *) conversions
 	(rather than relying on implicit conversion)
