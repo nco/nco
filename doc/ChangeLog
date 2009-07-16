@@ -1,13 +1,22 @@
-2009-07-15  Charlie Zender  <zender@uci.edu>
-
-	* Satisfy C++ by making explicit (void *) to (char *) conversions
-	(rather than relying on implicit conversion)
+2009-07-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.0 release procedure:
 	Changes since nco-3_9_9: fxm
 	cd ~/nco;cvs tag -d nco-4_0_0;cvs tag -d nco-4_0_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.0 release"
 	cvs tag -c nco-4_0_0;cvs tag -c nco-4_0_0-1
+
+	* NCO is once again C++-compliant, compiles fine with g++
+
+	* g++-compiled code fails regressions because of stdout issue...
+
+	* Satisfy C++ by making explicit (void *) to (lmt_sct *) conversions
+	(rather than relying on implicit conversion)
+
+	* Satisfy C++ by making explicit (void *) to (char *) conversions
+	(rather than relying on implicit conversion)
+
+2009-07-15  Charlie Zender  <zender@uci.edu>
 
 	* Thank all packagers in nco.texi
 

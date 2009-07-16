@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.21 2009-07-16 06:56:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.22 2009-07-16 07:22:10 zender Exp $ */
 
 /* Copyright (C) 1995--2009 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -133,8 +133,8 @@ nco_aux_evl
      Uses lat/lon centers rather than cell_bounds to detect matches
      Code assumes units must be degrees if they are not radians */
   
-  char *units=0;            /* nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
-  char buf[100];            /* buffer for making user-assigned limit names */
+  char *units=0; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
+  char buf[100]; /* buffer for making user-assigned limit names */
   char dmnname[NC_MAX_NAME+1];
   char latvar[NC_MAX_NAME+1];
   char lonvar[NC_MAX_NAME+1];
@@ -169,7 +169,7 @@ nco_aux_evl
   void *lonvp;                /* lon coordinate array; float or double only */
   
   /* Obtain lat/lon variable names */
-  if(!nco_find_lat_lon(in_id, latvar, lonvar, &units, &latid, &lonid, &coordtype)){
+  if(!nco_find_lat_lon(in_id,latvar,lonvar,&units,&latid,&lonid,&coordtype)){
     nco_err_exit(-1,"nco_aux_evl: Unable to indentify lat/lon auxillary coordinate variables.");
   } /* end nco_find_lat_lon fails */
   
@@ -219,8 +219,8 @@ nco_aux_evl
   
   for(curit=0;curit<aux_nbr;curit++){
     /* Parse into lllong,lllat,urlon,urlon, accounting for units */
-    nco_aux_prs(aux_arg[curit],units, &lllon, &lllat, &urlon, &urlat);
-    /* printf("Box is %f %f %f %f\n",lllon, lllat, urlon, urlat); */
+    nco_aux_prs(aux_arg[curit],units,&lllon,&lllat,&urlon,&urlat);
+    /* printf("Box is %f %f %f %f\n",lllon,lllat,urlon,urlat); */
     
     mincell=-1;
     consec=0;
@@ -257,26 +257,25 @@ nco_aux_evl
     } /* end loop over cells */
     
   } /* end loop over user supplied -X options */
-  
-  if (units != 0) units=nco_free(units);
+
+  /* fxm: this is weird */
+  if (units != 0) units=(char *)nco_free(units);
   latvp=nco_free(latvp);
   lonvp=nco_free(lonvp);
   
-  /*
-    printf ("returning structure %d\n",*lmt_nbr);
+  /* printf ("returning structure %d\n",*lmt_nbr);
     for (curit=0; curit<(*lmt_nbr); curit++)
-    printf("LIMIT %ld %ld \n",lmts[curit]->min_idx,lmts[curit]->max_idx);
-  */
+    printf("LIMIT %ld %ld \n",lmts[curit]->min_idx,lmts[curit]->max_idx); */
   return lmts;
 } /* nco_aux_evl */
 
 void 
 nco_aux_prs
-(const char *args, 
+(const char *args,
  const char *units,
- float *lllon, 
- float *lllat, 
- float *urlon, 
+ float *lllon,
+ float *lllat,
+ float *urlon,
  float *urlat)
 {
   /* Purpose: Parse command-line arguments of the form:
@@ -288,13 +287,13 @@ nco_aux_prs
   
   sscanf(args,"%f,%f,%f,%f",lllon,urlon,lllat,urlat);
   token=strtok(tmpargs,", ");
-  if (token) sscanf(token,"%f",lllon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",lllon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
   token=strtok(NULL,", ");
-  if (token) sscanf(token,"%f",urlon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",urlon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
   token=strtok(NULL,", ");
-  if (token) sscanf(token,"%f",lllat); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",lllat); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
   token=strtok(NULL,", ");
-  if (token) sscanf(token,"%f",urlat); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",urlat); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
   
   free(tmpargs);
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.239 2009-06-03 03:11:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.240 2009-07-16 07:22:10 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.239 2009-06-03 03:11:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.239 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.240 2009-07-16 07:22:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.240 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -480,7 +480,7 @@ main(int argc,char **argv)
      int aux_idx_nbr;
      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
      if(aux_idx_nbr > 0){
-        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
         int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
         int aux_idx=0;
         for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.117 2009-07-16 06:56:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.118 2009-07-16 07:22:10 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -916,11 +916,18 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
        casts vp to a doubly indirect pointer on output, i.e., to something like
        "(const char **)vp" or "(const nco_string * const)vp".
        Is casting a singly-indirect pointer to a doubly-indirect ever allowed? */
-    /*  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const char **)vp); break;*/
-  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const nco_string * const)vp); break;
-    /* Next line produces GCC warning:
+    /* Of the following three options we must pick one
+       None is completely satisfactory with gcc
+       Choose solution that allows trouble-free g++ compilation */
+    /* Next line produces gcc and g++ warning:
        attention : le transtypage annule des qualificateurs du type pointeur ciblé */
-    /*  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const char **)vp); break;*/
+  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const char **)vp); break;
+    /* Next line produces g++ warning:
+       erreur: invalid conversion from ‘char* const* const’ to ‘const char** */
+    /* case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const nco_string * const)vp); break;*/
+    /* Next line produces g++ warning:
+        erreur: invalid conversion from ‘char* const*’ to ‘const char** */
+    /*  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const nco_string *)vp); break;*/
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -972,7 +979,7 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_PUT_VARA_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VARA_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VARA_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint64 *)vp); break;
-  case NC_STRING: rcd=NCO_PUT_VARA_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_string *)vp); break;
+  case NC_STRING: rcd=NCO_PUT_VARA_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const char **)vp); break;
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -1024,7 +1031,7 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_PUT_VARS_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VARS_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VARS_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_uint64 *)vp); break;
-  case NC_STRING: rcd=NCO_PUT_VARS_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_string *)vp); break;
+  case NC_STRING: rcd=NCO_PUT_VARS_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const char **)vp); break;
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -1077,7 +1084,7 @@ nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_PUT_VARM_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VARM_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VARM_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_uint64 *)vp); break;
-  case NC_STRING: rcd=NCO_PUT_VARM_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_string *)vp); break;
+  case NC_STRING: rcd=NCO_PUT_VARM_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const char **)vp); break;
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -1232,7 +1239,7 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   case NC_UINT: rcd=NCO_PUT_ATT_UINT(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_ATT_INT64(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_ATT_UINT64(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint64 *)vp); break;
-  case NC_STRING: rcd=NCO_PUT_ATT_STRING(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_string *)vp); break;
+  case NC_STRING: rcd=NCO_PUT_ATT_STRING(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const char **)vp); break;
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */

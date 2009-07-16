@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.142 2009-05-29 20:12:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.143 2009-07-16 07:22:10 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.142 2009-05-29 20:12:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.142 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.143 2009-07-16 07:22:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.143 $";
   const char * const opt_sht_lst="34ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -418,7 +418,7 @@ main(int argc,char **argv)
      int aux_idx_nbr;
      aux=nco_aux_evl(in_id_1,aux_nbr,aux_arg,&aux_idx_nbr);
      if(aux_idx_nbr > 0){
-        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
         int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
         int aux_idx=0;
         for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
