@@ -6,16 +6,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.0 release"
 	cvs tag -c nco-4_0_0;cvs tag -c nco-4_0_0-1
 
-	* NCO is once again C++-compliant, compiles fine with g++
+	* NCO is once again C++-compliant, compiles/runs/tests fine with g++
 
 	* Explicitly set ddra_info.flg_ddra=False in g++-compiled code
 	since C++ does not allow structure-member initialization
 
-	* Satisfy C++ by making explicit (void *) to (lmt_sct *) conversions
-	(rather than relying on implicit conversion)
-
-	* Satisfy C++ by making explicit (void *) to (char *) conversions
-	(rather than relying on implicit conversion)
+	* Satisfy C++ by explicitly casting (void *) to (lmt_sct *) and to
+	(char *) (rather than relying on implicit conversion)
 
 2009-07-15  Charlie Zender  <zender@uci.edu>
 
