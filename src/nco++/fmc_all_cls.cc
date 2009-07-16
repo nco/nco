@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.16 2009-05-11 11:31:41 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.17 2009-07-16 14:47:28 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1380,8 +1380,8 @@
              
       case PSORT:
 	   if(var2==NULL){
-	     var1=ncap_var_var_op(var1,(var_sct*)NULL,VSORT);  
-             break;   
+	       var1=ncap_var_var_op(var1,(var_sct*)NULL,VSORT);  
+               break;   
            }
 
            // convert map to type int
@@ -1426,7 +1426,7 @@
 	        (void)ncap_sort_and_map<nco_ubyte>(var1,var2);    
                 break;  
              case NC_CHAR: 
-	        (void)ncap_sort_and_map<char>(var1,var2);    
+	        (void)ncap_sort_and_map<nco_char>(var1,var2);    
                 break;  
              case NC_STRING: break; /* Do nothing */
              
@@ -1743,4 +1743,224 @@
 
 
 
+//Bilinear  Interpolation Functions /****************************************/
+  bil_cls::bil_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("ncap_bilinear_inter",this,PBIL_A)); 
 
+    }		      
+  } 
+  var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("bil_cls::fnd");
+  int fdx;
+  int nbr_args;
+  int in_nbr_args;
+  int idx;
+  int nbr_dim;
+  var_sct *var_arr[6];
+  var_sct *var_ret;
+
+  nc_type in_typ;           
+  std::string susg;
+  std::string sfnm=fmc_obj.fnm();
+
+  RefAST tr;
+  std::vector<RefAST> vtr_args; 
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;            
+  vtl_typ lcl_typ;
+
+  fdx=fmc_obj.fdx();
+ 
+
+  if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+  nbr_args=vtr_args.size();  
+
+  susg="usage: var_out="+sfnm+"(x_var,y_var,data_var,x1_var,y1_var,data_out_var)"; 
+
+  
+  if(nbr_args<6)
+      err_prn(sfnm,"Function has been called with less than six arguments\n"+susg); 
+
+
+
+  if(nbr_args >6 &&!prs_arg->ntl_scn) 
+      wrn_prn(sfnm,"Function been called with more than six arguments"); 
+
+
+  in_nbr_args=6;
+  
+  for(idx=0 ; idx<in_nbr_args; idx++)
+    var_arr[idx]=walker.out(vtr_args[idx]);
+
+
+  if(prs_arg->ntl_scn){
+    // convert data_out_var to same type as data_var
+    var_arr[5]=nco_var_cnf_typ(var_arr[2]->type,var_arr[5]);
+
+    for(idx=0 ; idx<in_nbr_args-1; idx++)
+      nco_var_free(var_arr[idx]);
+   
+    return var_arr[5]; 
+
+}
+  // recall input arguments in order
+  /*
+  0 - input X   co-ordinate var
+  1 - input Y   co-ordinate var
+  2 - input data
+  3 - output X  co-ordinate var
+  4 - output Y  co-ordinate var
+  5 - output data var
+  */
+
+  //save input type 
+  in_typ=var_arr[2]->type;    
+
+  // convert all args to type double and then cast
+  for(idx=0 ; idx<in_nbr_args; idx++){
+    var_arr[idx]=nco_var_cnf_typ(NC_DOUBLE,var_arr[idx]);
+    (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->val);
+  }
+
+  // Sanity check for input/output data
+  if( var_arr[0]->sz *var_arr[1]->sz != var_arr[2]->sz)
+    err_prn(sfnm,"Dimension size mismatch with input variables\n"); 
+
+  if( var_arr[3]->sz *var_arr[4]->sz != var_arr[5]->sz)
+    err_prn(sfnm,"Dimension size mismatch with output variables\n"); 
+
+  
+  //start heavy lifting
+  {
+   long x_sz; // size of X dim in OUTPUT  
+   long y_sz;  // size of Y dim in OUTPUT  
+   long jdx;
+   long kdx;
+
+   // dereference
+   var_sct *v_xin; // X INPUT co-ordinate
+   var_sct *v_yin; // Y INPUT co-ordinate
+
+   x_sz=var_arr[3]->sz;
+   y_sz=var_arr[4]->sz;
+
+   v_xin=var_arr[0];   
+   v_yin=var_arr[1];   
+   
+
+   for(jdx=0 ; jdx<y_sz;jdx++){
+     long y_min; // min value in Y input co-ord
+     long y_max; // max value in Y input co-ord
+     // find range in input Y 
+     y_min=(long)(lower_bound(v_yin->val.dp, v_yin->val.dp+v_yin->sz, var_arr[4]->val.dp[jdx])-v_yin->val.dp);
+
+     // do some bounds checking      
+     if(y_min==v_yin->sz || y_min==0L && var_arr[4]->val.dp[jdx]< v_yin->val.dp[0] )   
+       err_prn(sfnm, "Bounding error with Y output co-ordinate variable");   
+
+     // not an exact match 
+     if(var_arr[4]->val.dp[jdx]< v_yin->val.dp[y_min]) 
+       y_max=y_min--;
+     else
+     // exact match 
+       y_max=y_min; 
+
+
+          
+     for(kdx=0;kdx<x_sz;kdx++){
+       long x_min; // min value in X input co-ord
+       long x_max; // max value in X input co-ord
+       double Q[2][2]; 
+       double d_int1; // intermediate values
+       double d_int2; // intermediate values
+       double rslt;
+       // find range in input X 
+       x_min=(long)(lower_bound(v_xin->val.dp, v_xin->val.dp+v_xin->sz, var_arr[3]->val.dp[kdx])-v_xin->val.dp);     
+
+       // do some bounds checking      
+       if(x_min==v_xin->sz || x_min==0L && var_arr[3]->val.dp[kdx]< v_xin->val.dp[0] )   
+         err_prn(sfnm, "Bounding error with X output co-ordinate variable");   
+
+       // not an exact match
+       if( var_arr[3]->val.dp[kdx] < v_xin->val.dp[x_min])
+         x_max=x_min--;
+       // an exact match
+       else
+         x_max=x_min;
+         
+       
+       Q[0][0]=var_arr[2]->val.dp[x_min*v_yin->sz+y_min];       
+       Q[1][0]=var_arr[2]->val.dp[x_max*v_yin->sz+y_min];
+       Q[0][1]=var_arr[2]->val.dp[x_min*v_yin->sz+y_max];          
+       Q[1][1]=var_arr[2]->val.dp[x_max*v_yin->sz+y_max];        
+
+
+         
+       if(x_min==x_max && y_min==y_max)
+	 rslt=Q[0][0];       
+       else if( y_min==y_max) 
+         rslt=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],var_arr[3]->val.dp[kdx],Q[0][0],Q[1][0]);                            
+       else if( x_min==x_max) 
+         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],var_arr[4]->val.dp[jdx],Q[0][0],Q[1][1]);               
+       else{
+         d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],var_arr[3]->val.dp[kdx],Q[0][0],Q[1][0]);               
+         d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],var_arr[3]->val.dp[kdx],Q[0][1],Q[1][1]);         
+         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],var_arr[4]->val.dp[jdx],d_int1,d_int2);               
+       }
+       var_arr[5]->val.dp[kdx*var_arr[4]->sz+jdx]=rslt;
+
+
+     }//end for kx
+ 
+   }// end for jdx 
+
+  }// end heavy lifting 
+
+
+  // cast back to void
+  for(idx=0 ; idx<in_nbr_args; idx++)
+    (void)cast_nctype_void(NC_DOUBLE,&var_arr[idx]->val);
+  
+  // free up vars except for last one which contains the results
+  for(idx=0 ; idx<in_nbr_args-1; idx++)
+    (void)nco_var_free(var_arr[idx]);
+
+  // convert to input type
+  var_arr[5]=nco_var_cnf_typ(in_typ,var_arr[5]);
+
+  return var_arr[5];   
+
+
+
+  }
+ 
+//Linear interpolation formula
+double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
+  const double  _delta=1e-20;
+  double n1,n2,d1;
+
+
+  if( Q0==Q1 || fabs(d1=x2-x1)<_delta || fabs(n1=x-x1)<_delta )
+    return Q0; 
+  
+  if( fabs(n2=x2-x) <_delta)
+    return Q1;  
+ 
+  return (n2*Q0+n1*Q1)/d1;
+  
+
+}
+
+
+
+ 
