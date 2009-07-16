@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.543 2009-07-15 23:00:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.544 2009-07-16 02:45:55 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -747,8 +747,9 @@ This standard package is, unfortunately, <i>old</i> (version 3.9.0, from about 2
 <li><a href="src/nco_3.9.9-1_i386.changes">nco_3.9.9-1_i386.changes</a> (<!--#fsize file="src/nco_3.9.9-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_3.9.9-1_i386.changes"-->)</li>
 <li><a href="src/nco_3.9.9.orig.tar.gz">nco_3.9.9.orig.tar.gz</a> (<!--#fsize file="src/nco_3.9.9.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_3.9.9.orig.tar.gz"-->)</li>
 <li><a href="src/nco_3.9.9-1.diff.gz">nco_3.9.9-1.diff.gz</a> (<!--#fsize file="src/nco_3.9.9-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_3.9.9-1_i386.changes"-->)</li>
-Thanks to Daniel Baumann, Francesco Lovergine, Brian Mays, Rorik
-Peterson, and Matej Vela for packaging NCO for Debian over the years.
+Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
+Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
+NCO for Debian over the years. 
 </ul>
 
 <a name="redhat"></a><a name="rhl"></a><a name="rpm"></a> <!-- http://nco.sf.net#redhat --> <!-- http://nco.sf.net#rhl --> <!-- http://nco.sf.net#rpm -->

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.550 2009-07-16 02:30:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.551 2009-07-16 02:45:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11653,9 +11653,9 @@ Various hacks.
 @command{ncap2} language.
 @cindex Rorik Peterson
 @item Rorik Peterson
-Autotool build support. 
+Original autotool build support. 
 Long command-line options.
-UDUnits support.
+Original UDUnits support.
 Debianization.
 Numerous bug-fixes.
 @cindex Daniel Wang
@@ -11668,7 +11668,7 @@ Benchmarking.
 OPeNDAP configuration.
 @cindex Brian Mays
 @item Brian Mays
-Packaging for Debian GNU/Linux, @command{nroff} man pages.
+Original packaging for Debian GNU/Linux, @command{nroff} man pages.
 @cindex George Shapovalov
 @item George Shapovalov
 Packaging for Gentoo GNU/Linux.
@@ -11702,9 +11702,30 @@ Large work-load testing
 @cindex Remik Ziemlinski
 @item Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Remik Ziemlinski
 Excellent bug reports and feature requests.
+@cindex Markus Liebig
 @item Markus Liebig
 Proof-read the ncap documentation
+@cindex Daniel Baumann
+@cindex Barry deFreese
+@cindex Francesco Lovergine
+@cindex Matej Vela
+@item Daniel Baumann, Barry deFreese, Francesco Lovergine, Matej Vela
+Debian packaging
+@cindex Patrice Dumas
+@cindex Ed Hill
+@cindex Orion Powlawski
+@item Patrice Dumas, Ed Hill, Orion Poplawski
+RedHat packaging
+@cindex George Shapavalov
+@cindex Patrick Kursawe
+@item George Shapavalov, Patrick Kursawe
+Gentoo packaging
+@cindex Alexander Hansen
+@cindex Takeshi Enomoto
+@item Takeshi Enomoto, Alexander Hansen
+MacIntosh packaging
 @end table
+Please let me know if your name was omitted!
 
 @html
 <a name="prp"></a> <!-- http://nco.sf.net/nco.html#prp -->
