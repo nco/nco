@@ -1,75 +1,44 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.337 2009-07-15 05:39:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.338 2009-07-16 02:30:05 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.9 are ready. 
+The netCDF operators NCO version 4.0.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version offers six new significant features:
-GSL statistics routines, GSL interpolation routines, netCDF4 chunksize
-support (can increase speed of large file reads and writes), netCDF4
-string support, record coordinate "re-basing" (climate model
-analysts take note!), and one-dimensional offsets in ncap2.
+This version offers significant new features:
+Chunking on all operators, GSL fitting, bilinear interpolation.
 
 Short explanations of these appear below.
-This is the most feature-full release in quite some time.
 
-Work on NCO 4.0.0 is underway. Areas of improvement include
-more GSL interpolation and fitting functions, and bilinear
-interpolation.
+Work on NCO 4.0.1 is underway. Areas of improvement include
+
+Spectral transforms.
 
 "New stuff" details:
 
-A. ncrcat supports "rebasing", a new feature that relies on UDUnits.
-   When concatenating multiple input files whose record dimension
-   uses a units attribute convention like "time-since", and whose 
-   base times vary amongst the files (e.g., "time-since 2001-01-01"
-   in the first file and "time-since 2002-01-01" in the second), 
-   ncrcat now automatically re-bases the record coordinate values
-   in the output file so that they all refer to the same base time.
-   This often produces a monotonically increasing record coordinate
-   in the output file. Analysis of climate model output in CMIP3-
-   type collections will be easier as a result.
-
-B. ncap2 supports the GSL (Chapter 20) statistics routines, e.g.,
+B. ncap2 supports the GSL (Chapter 2) fitting routines, e.g., fxm
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
-   ncap2 functions added since 3.9.8 are listed below
+   ncap2 functions added since 3.9.9 are listed below
    http://nco.sf.net/nco.html#gsl
 
-C. NCO supports netCDF4 chunking options:
+C. All NCO operators supports netCDF4 chunking options:
    These options can improve performance on large datasets.
    Large file users: Send us suggestions on useful chunking patterns!
-   More advanced chunking patterns will be implemented in NCO 4.0.0.
+   More usefule chunking patterns will be implemented in NCO 4.0.1.
    ncks -O -4 --cnk_plc=all in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
-D. NCO supports the netCDF4 NC_STRING atomic type.
-   NCO has long-supported the other netCDF4 atomic types. 
+D. NCO improves support for the netCDF4 NC_STRING atomic type.
    An "s" trailing double quotes specifies NC_STRING (not NC_CHAR):
    ncap2 -4 -O -v -s 'name[lat]={"US"s,"Them"s};' in.nc out.nc
    Ragged arrays of strings are finally here! Let's use them.
    http://nco.sf.net/nco.html#nco4
 
-E. ncap2 supports GSL (Chapter 27) interpolation routines, e.g., 
-   gsl_interp_cspline(). Also, missing values handling is improved. 
-   http://nco.sf.net/nco.html#gsl
-
-F. ncap2 LHS hyperslabs of multidimensional variables work with a
-   single index corresponding to the 1-D array offset, e.g., 
-   three_dmn_var_dbl(1,1,2)=10.0 is same as three_dmn_var_dbl(14)=10.0 
-   http://nco.sf.net/nco.html#xmp_ncap2
-
-G. UDUnits2 support completed. "time since" handled correctly.
-   All future units features will utilize UDUnits2.
-   UDUnits1 support will eventually be deprecated. 
-
-H. Operators add an NCO global attribute containing NCO version
-
-I. ncks --secret prints hidden/unsupported options
+G. UDUnits2 support for mismatched units...fxm
 
 "Sticky" reminders:
 
-K. Pre-built, up-to-date Debian Sid & Ubuntu Intrepid packages:
+K. Pre-built, up-to-date Debian Sid & Ubuntu Jaunty/Karmic packages:
    http://nco.sf.net#debian
 
 L. Pre-built Fedora and CentOS RPMs:
@@ -93,11 +62,12 @@ O. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 3.9.9 with was built and tested with HDF5 1.8.3-snap2 and with
+   NCO 4.0.0 with was built and tested with HDF5 1.8.3-snap2 and with
    netCDF4 4.1-beta1-snapshot2009061712.
    NCO may not build with earlier, but should build with later, netCDF4 releases.
-   This is particularly true with NCO 3.9.9 which takes advantage of
-   an internal change to the netCDF API for nc_def_var_chunking().
+   This is particularly true since NCO 4.0.0 takes advantage of
+   an internal change to the netCDF API in June 2007 for
+   nc_def_var_chunking(). 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
@@ -111,48 +81,8 @@ P. Have you seen the NCO logo candidates by Tony Freeman and Rich Signell?
 Enjoy,
 Charlie
  
-GSL functions added to ncap2 in 3.9.9: 
+GSL functions added to ncap2 in 4.0.0: 
     ncap2 -f | grep gsl_interp
     ncap2 -f | grep gsl_stats
 gsl_interp_akima()
-gsl_interp_akima_periodic()
-gsl_interp_cspline()
-gsl_interp_cspline_periodic()
-gsl_interp_linear()
-gsl_interp_polynomial()
-gsl_stats_absdev()                                          
-gsl_stats_absdev_m()                                        
-gsl_stats_correlation()                                     
-gsl_stats_covariance()                                      
-gsl_stats_kurtosis()                                        
-gsl_stats_lag1_autocorrelation()                            
-gsl_stats_lag1_autocorrelation_m()                          
-gsl_stats_max()
-gsl_stats_max_index()
-gsl_stats_mean()
-gsl_stats_median_from_sorted_data()
-gsl_stats_min()
-gsl_stats_min_index()
-gsl_stats_pvariance()
-gsl_stats_quantile_from_sorted_data()
-gsl_stats_sd()
-gsl_stats_sd_m()
-gsl_stats_sd_with_fixed_mean()
-gsl_stats_skew()
-gsl_stats_ttest()
-gsl_stats_variance()
-gsl_stats_variance_m()
-gsl_stats_variance_with_fixed_mean()
-gsl_stats_wabsdev()
-gsl_stats_wabsdev_m()
-gsl_stats_wkurtosis()
-gsl_stats_wkurtosis_m_sd()
-gsl_stats_wmean()
-gsl_stats_wsd()
-gsl_stats_wsd_m()
-gsl_stats_wsd_with_fixed_mean()
-gsl_stats_wskew()
-gsl_stats_wskew_m_sd()
-gsl_stats_wvariance()
-gsl_stats_wvariance_m()
-gsl_stats_wvariance_with_fixed_mean()
+fxm
