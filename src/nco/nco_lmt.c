@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.82 2009-07-14 12:39:04 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.83 2009-07-17 01:56:21 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1416,7 +1416,7 @@ double *og_val){        /* O [ptr]                                   */
 int /* [rcd] Successful conversion returns 0 */
 nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 (const int dmn_id, /* I [idx] netCDF dimension ID */
- const char* fl_unt_sng, /* string with disk units attribute */
+ const char *fl_unt_sng, /* string with disk units attribute */
  char *lmt_sng, /* I [ptr] Limit string */
  double *lmt_val) /* O [val] Limit coordinate value */ 
 {
@@ -1429,23 +1429,16 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 
 }  /* end nco_lmt_udu_cnv() */
 
-
-
 int                      /* O  difference between two co-ordinate units */      
 nco_lmt_clc_org(
 const char* fl_unt_sng, /* I [ptr] units attribute string from disk  */     
 const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
 double *og_val)         /* O difference between two units string */
 {
-  int rcd; /* [enm] Return code */
-
-  
   (void)fprintf(stdout,"UDUnits limit detected in \"%s\" but UDUnits library is unavailable to perform conversion.\nHINT: Re-compile and re-install NCO with UDUnits enabled. http://nco.sf.net/nco.html#udunits",fl_unt_sng);
   nco_exit(EXIT_FAILURE);
   return EXIT_FAILURE; /* Conversion failed */
 } /* end nco_lmt_clc_org() */
-
-
 
 #endif /* !ENABLE_UDUNITS */
 
