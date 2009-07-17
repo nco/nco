@@ -1,5 +1,9 @@
 2009-07-16  Charlie Zender  <zender@uci.edu>
 
+	* Examined Debian build logs and cleaned up minor problems
+
+	* Correct ROFF hypens to minuses, and format ellipsis in man pages
+
 	* NCO 4.0.0 release procedure:
 	Changes since nco-3_9_9: fxm
 	cd ~/nco;cvs tag -d nco-4_0_0;cvs tag -d nco-4_0_0-1

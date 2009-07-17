@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.545 2009-07-16 02:58:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.546 2009-07-17 05:04:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -970,7 +970,7 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations) 
 before building NCO.
 If possible build these all with the same compiler (and switches).
-NCO is mostly written in&nbsp;C99, and although you <i>can</i> mix and
+NCO is mostly written in&nbsp;C99, and although you <i>may</i> mix and
 match compilers, this is often difficult in practice and is not recommended.
 The exception is <tt>ncap2</tt> which is written in&nbsp;C++.
 ANTLR, OPeNDAP, and NCO must be built with the same C++ compiler
@@ -1046,10 +1046,10 @@ and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to
 <!-- http://nco.sf.net#bld_c99 -->
 <a name="bld_c99"></a>
 <li><i>C99-compliance &amp; old compilers:</i>
-NCO versions &ge;&nbsp;2.9.8 requires compilers which
+NCO versions &ge;&nbsp;2.9.8 require the compiler to
 support the 1999 ISO C-Standard called&nbsp;C99.
-Currently, the only C99 feature NCO takes advantage of is restricted
-pointers. 
+NCO takes advantage of two C99 features, restricted pointers and
+designated initializers.
 To build NCO versions &ge;&nbsp;2.9.8 without a C99-compliant
 compiler, simply undefine the <tt>restrict</tt> type qualifier 
 before compiling NCO.
