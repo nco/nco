@@ -1,5 +1,10 @@
 2009-07-16  Charlie Zender  <zender@uci.edu>
 
+	* Replace ellipsis ("\.\.\.") to better ROFF ellipsis ("\ .\|.\|.\ ")
+	Found this hack by examining /usr/share/man/man1/nroff.1.gz
+
+	* Convert ROFF hyphens ("-") to ROFF minuses ("\-")
+
 	* Examined Debian build logs and cleaned up minor problems
 
 	* Correct ROFF hypens to minuses, and format ellipsis in man pages

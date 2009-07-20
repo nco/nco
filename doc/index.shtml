@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.546 2009-07-17 05:04:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.547 2009-07-20 15:59:31 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -78,13 +78,14 @@ Try to disable Spammers' machines:
 <li><a href="#prp_sei">NCO&rarr;SDO Project</a></li>
 <li><a href="#Publications">Publications</a></li>
 <li><a href="#Version">Version Summary</a></li>
-<li><a href="#Download">Download Now!</a></li>
+<li><a href="#Binaries">Binaries</a></li>
 <li><a href="#RTFM">Documentation</a></li>
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
+<li><a href="#Source">Source Code</a></li>
+<li><a href="#bld">Building from Source</a></li>
 <li><a href="#NCAR">UCI and NCAR users</a></li>
 <li><a href="#BM">Benchmarks</a></li>
-<li><a href="#bld">Building from Source</a></li>
 <li><a href="#bug">Known Problems</a></li>
 <li><a href="#People">People</a></li>
 <li><a href="#Contact">Contact us</a></li>
@@ -497,7 +498,7 @@ Releases receive unique CVS tags and their tarballs are stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
 <a href="http://dust.ess.uci.edu/nco/src">here</a> on my server.
 You can also retrieve the source of tagged versions directly
-<a name="#Download">with CVS</a>.
+<a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO/SDO 4.0.1</b>: (<i>Future</i>) 
 Spectral toolkit?
@@ -641,77 +642,12 @@ Improve IRIX&nbsp;6.5 support;
 <li><b>NCO 1.1.47</b>: <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier specifications of input files</li> 
 </ul>
 <hr></p>
+<!-- End http://nco.sf.net#vrs -->
 
-<!-- http://nco.sf.net#dwn -->
-<dt><a name="Download"></a><a name="dwn"></a></dt>
-<h2>Download NCO Source and Binaries</h2>
+<!-- http://nco.sf.net#bnr -->
+<dt><a name="Binaries"></a><a name="bnr"></a></dt>
+<h2>Get NCO Binary Executables</h2>
 
-<a name="src"></a>
-<h3>NCO Source Code</h3>
-The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS</a>.
-The second best way is to download the source and documentation as a compressed tarfile:
-<ul>
-<li>
-<a href="src/nco-3.9.9.tar.gz">nco-3.9.9.tar.gz</a> 
-(<!--#fsize file="src/nco-3.9.9.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-3.9.9.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-3.9.9.tar.gz"--> 
-</li>
-</ul>
-
-<p>NCO's browsable
-<a href="http://nco.cvs.sf.net/nco/nco">CVS Repository</a> 
-contains up-to-the-minute sources and is the easiest way to stay
-synchronized with NCO features.
-Retrieving NCO requires some familiarity with GNU development tools,
-especially <a href="http://www.cvshome.org">CVS</a> and 
-<a href="http://www.gnu.org/software/make/make.html">Make</a>.
-
-Sourceforge provides 
-<a href="http://sf.net/cvs/?group_id=3331">generic instructions</a> 
-for accessing their CVS servers.
-First log into the NCO CVS server:
-<p><tt>cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login</tt></p>
-Hit <tt>return</tt> when asked for the CVS password.
-This login procedure is only required the first time you access the CVS server.
-Then you may retrieve any NCO distribution you wish.
-Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>3.9.9</tt> (which is
-tagged as <tt>nco-3_9_9</tt> due to CVS rules) into local directory
-<tt>nco-3.9.9</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_9 -d nco-3.9.9 nco</tt></p>
-This command retrieves the current (&ldquo;bleeding edge&rdquo;)
-development version of NCO into a local directory named <tt>nco</tt>:
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
-Track changes to the development version using
-<p><tt>cd nco;cvs update -kk</tt></p>
-One difference between running a "tagged" release 
-(e.g., <tt>nco-3_9_9</tt>) and the development version is that the
-tagged release operators will print a valid version number (e.g.,
-<tt>3.9.9</tt>) when asked to do so with the <tt>-r</tt> flag
-(e.g., <tt>ncks -r</tt>).
-The development version simply places today's date in place of the
-version.
-Once the autotools builds are working more robustly, the confusion
-over versions should largely disappear.
-
-<a name="doxy"></a>
-<h3>Developer NCO Source Documentation</h3>
-<p>Automated source documentation, created by the
- <a href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a> tool is available.  
-Some developers find this documentation helpful, as it can clarify code and data 
-relationships in the code.</p>
-<ul>
-<li><a href="http://sand.ess.uci.edu/nco/doxygen/main/files.html">
-Source documentation for NCO and NetCDF4(alpha13)</a></li>
-</ul>
-<p>Please be aware that the documentation may be slightly inaccurate and 
-infrequently updated. Comments and suggestions are certainly welcomed on the 
- <a href="http://sf.net/forum/forum.php?forum_id=9829">forums</a>.
-</p>
-
-<a name="bnr"></a>
-<h3>NCO Binaries and OS-specific Packages</h3>
 <p>NCO developers are too short-handed to provide pre-built binary
 executables for all platforms.
 Our source tarballs are always up-to-date, and work on our
@@ -739,7 +675,9 @@ the directory index <a href="src">here</a>.
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/jaunty/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
-This standard package is, unfortunately, <i>old</i> (version 3.9.0, from about 2005).
+This standard package is, unfortunately, <i>old</i> (version 3.9.0,
+from about 2005) unless you have a very <i>new</i> flavor of Debian
+(i.e., Sid or Karmic) that supplies the latest numbered NCO release.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.9-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_3.9.9-1_amd64.deb">nco_3.9.9-1_amd64.deb</a> (<!--#fsize file="src/nco_3.9.9-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.9.9-1_amd64.deb"-->)</li>
 <li><a href="src/nco_3.9.9-1_i386.deb">nco_3.9.9-1_i386.deb</a> (<!--#fsize file="src/nco_3.9.9-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.9.9-1_i386.deb"-->)</li>
@@ -792,7 +730,7 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
   for NCO 3.9.6. Maintained by Takeshi Enomoto.</li>
 </ul>
 <hr></p>
-<!-- End http://nco.sf.net#Download -->
+<!-- End http://nco.sf.net#bnr -->
 
 <!-- http://nco.sf.net#RTFM -->
 <dt><a name="RTFM"></a></dt>
@@ -899,60 +837,74 @@ fixes we currently have in mind for NCO.</li>
 <hr></p>
 <!-- End http://nco.sf.net#README -->
 
-<!-- http://nco.sf.net#HPCC -->
-<!-- http://nco.sf.net#NCAR -->
-<dt><a name="NCAR"></a></dt>
-<h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
-<p>Users at UC Irvine and NCAR <i>may</i> find pre-built,
-<i>almost</i> up-to-date NCO executables in the following locations.
-These executables are <i>unsupported</i> and are almost
-<i>guaranteed</i> to hail from different NCO versions and thus to
-behave slightly differently.
-(They are built from the main trunk, not a tagged version).
-Users at NCAR should try the <i>supported</i> executables in
-<tt>/usr/local/bin</tt> first. 
+<!-- http://nco.sf.net#src -->
+<dt><a name="Source"></a><a name="src"></a></dt>
+<h2>Get NCO Source Code</h2>
+
+The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS</a>.
+The second best way is to download the source and documentation as a compressed tarfile:
 <ul>
-<li>CGD network (Solaris 2.x): <tt>/home/zender/bin/SUNMP</tt></li>
-<li>ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
-<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUXAMD64</tt></li>
-<li>SCD <tt>bluefire.ucar.edu</tt> (AIX 5.3): <tt>~zender/bin/AIX</tt></li>
+<li>
+<a href="src/nco-3.9.9.tar.gz">nco-3.9.9.tar.gz</a> 
+(<!--#fsize file="src/nco-3.9.9.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-3.9.9.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-3.9.9.tar.gz"--> 
+</li>
+</ul>
+
+<p>NCO's browsable
+<a href="http://nco.cvs.sf.net/nco/nco">CVS Repository</a> 
+contains up-to-the-minute sources and is the easiest way to stay
+synchronized with NCO features.
+Retrieving NCO requires some familiarity with GNU development tools,
+especially <a href="http://www.cvshome.org">CVS</a> and 
+<a href="http://www.gnu.org/software/make/make.html">Make</a>.
+
+Sourceforge provides 
+<a href="http://sf.net/cvs/?group_id=3331">generic instructions</a> 
+for accessing their CVS servers.
+First log into the NCO CVS server:
+<p><tt>cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login</tt></p>
+Hit <tt>return</tt> when asked for the CVS password.
+This login procedure is only required the first time you access the CVS server.
+Then you may retrieve any NCO distribution you wish.
+Usually you wish to retrieve a recent tagged (i.e., released) version.
+This command retrieves and places NCO version <tt>3.9.9</tt> (which is
+tagged as <tt>nco-3_9_9</tt> due to CVS rules) into local directory
+<tt>nco-3.9.9</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_9 -d nco-3.9.9 nco</tt></p>
+This command retrieves the current (&ldquo;bleeding edge&rdquo;)
+development version of NCO into a local directory named <tt>nco</tt>:
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
+Track changes to the development version using
+<p><tt>cd nco;cvs update -kk</tt></p>
+One difference between running a "tagged" release 
+(e.g., <tt>nco-3_9_9</tt>) and the development version is that the
+tagged release operators will print a valid version number (e.g.,
+<tt>3.9.9</tt>) when asked to do so with the <tt>-r</tt> flag
+(e.g., <tt>ncks -r</tt>).
+The development version simply places today's date in place of the
+version.
+Once the autotools builds are working more robustly, the confusion
+over versions should largely disappear.
+
+<a name="doxy"></a>
+<h3>Developer NCO Source Documentation</h3>
+<p>Automated source documentation, created by the
+ <a href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a> tool is available.  
+Some developers find this documentation helpful, as it can clarify code and data 
+relationships in the code.</p>
+<ul>
+<li><a href="http://sand.ess.uci.edu/nco/doxygen/main/files.html">
+Source documentation for NCO and NetCDF4(alpha13)</a></li>
+</ul>
+<p>Please be aware that the documentation may be slightly inaccurate and 
+infrequently updated. Comments and suggestions are certainly welcomed on the 
+ <a href="http://sf.net/forum/forum.php?forum_id=9829">forums</a>.
+</p>
 </ul>
 <hr></p>
-<!-- End http://nco.sf.net#NCAR -->
-
-<!-- http://nco.sf.net#BM -->
-<dt><a name="BM"></dt>
-<h2>Benchmarks</h2>
-<p>
-We are benchmarking NCO in SMP (e.g., AIX) and MPI (e.g., Linux) environments.
-The full NCO Benchmarks (in PDF form) are available 
-<a href="http://dust.ess.uci.edu/nco/bm/index.html">here</a>.
-Please send us your suggestions for improved configurations.
-The NCO distribution includes all the custom benchmarking software,
-and is designed to allow you to contribute your own benchmarks.
-<a href="http://nco.sf.net#Contact">Contact us</a> if you're interested.</p>
-
-Current tests include data stored locally and across OPeNDAP servers.   
-We will benchmark NCO with new features (e.g., netCDF4) and hardware
-(e.g., parallel filesystems) as time permits.</p>
-
-<p>
-There are two parallel versions of NCO&mdash;one uses
-<a href="http://www.openmp.org/drupal/">OpenMP</a> on SMP (including
-hyperthreaded) machines and the other uses the 
-<a href="http://www-unix.mcs.anl.gov/mpi/">Message Passing Interface (MPI)</a>
-on distributed architectures.
-OpenMP requires a compiler that supports it.
-Commercial compilers which we have used include those from 
-<a href="http://www.ibm.com/developerWorks/toolbox/download.html/">IBM</a>
-and the <a href="http://www.pgroup.com/">Portland Group</a>.
-<a href="http://www.intel.com/cd/software/products/asmo-na/eng/compilers/index.htm">Intel's Linux compiler</a> is free (beer).
-The MPI operators will run with most MPI implementations, including LAM, MPICH, and MPICH2.
-LAM installs easily with our own testing environment (latest Ubuntu).
-</p>
-<hr>
-<!-- End http://nco.sf.net#BM -->
+<!-- End http://nco.sf.net#src -->
 
 <!-- http://nco.sf.net#bld -->
 <dt><a name="Rqr"></a><a name="rqr"></a></dt> <!-- http://nco.sf.net#rqr -->
@@ -1221,6 +1173,61 @@ for more details.
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#bld -->
+
+<!-- http://nco.sf.net#HPCC -->
+<!-- http://nco.sf.net#NCAR -->
+<dt><a name="NCAR"></a></dt>
+<h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
+<p>Users at UC Irvine and NCAR <i>may</i> find pre-built,
+<i>almost</i> up-to-date NCO executables in the following locations.
+These executables are <i>unsupported</i> and are almost
+<i>guaranteed</i> to hail from different NCO versions and thus to
+behave slightly differently.
+(They are built from the main trunk, not a tagged version).
+Users at NCAR should try the <i>supported</i> executables in
+<tt>/usr/local/bin</tt> first. 
+<ul>
+<li>CGD network (Solaris 2.x): <tt>/home/zender/bin/SUNMP</tt></li>
+<li>ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
+<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUXAMD64</tt></li>
+<li>SCD <tt>bluefire.ucar.edu</tt> (AIX 5.3): <tt>~zender/bin/AIX</tt></li>
+</ul>
+<hr></p>
+<!-- End http://nco.sf.net#NCAR -->
+
+<!-- http://nco.sf.net#BM -->
+<dt><a name="BM"></dt>
+<h2>Benchmarks</h2>
+<p>
+We are benchmarking NCO in SMP (e.g., AIX) and MPI (e.g., Linux) environments.
+The full NCO Benchmarks (in PDF form) are available 
+<a href="http://dust.ess.uci.edu/nco/bm/index.html">here</a>.
+Please send us your suggestions for improved configurations.
+The NCO distribution includes all the custom benchmarking software,
+and is designed to allow you to contribute your own benchmarks.
+<a href="http://nco.sf.net#Contact">Contact us</a> if you're interested.</p>
+
+Current tests include data stored locally and across OPeNDAP servers.   
+We will benchmark NCO with new features (e.g., netCDF4) and hardware
+(e.g., parallel filesystems) as time permits.</p>
+
+<p>
+There are two parallel versions of NCO&mdash;one uses
+<a href="http://www.openmp.org/drupal/">OpenMP</a> on SMP (including
+hyperthreaded) machines and the other uses the 
+<a href="http://www-unix.mcs.anl.gov/mpi/">Message Passing Interface (MPI)</a>
+on distributed architectures.
+OpenMP requires a compiler that supports it.
+Commercial compilers which we have used include those from 
+<a href="http://www.ibm.com/developerWorks/toolbox/download.html/">IBM</a>
+and the <a href="http://www.pgroup.com/">Portland Group</a>.
+<a href="http://www.intel.com/cd/software/products/asmo-na/eng/compilers/index.htm">Intel's Linux compiler</a> is free (beer).
+The MPI operators will run with most MPI implementations, including LAM, MPICH, and MPICH2.
+LAM installs easily with our own testing environment (latest Ubuntu).
+</p>
+<hr>
+<!-- End http://nco.sf.net#BM -->
 
 <!-- http://nco.sf.net#bug -->
 <dt><a name="bug"></a></dt> <!-- http://nco.sf.net#bug -->

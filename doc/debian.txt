@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.133 2009-07-16 02:30:05 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.134 2009-07-20 15:58:33 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -161,6 +161,7 @@ export NETCDF_INC='/usr/include';export NETCDF_LIB='/usr/lib';export LD_LIBRARY_
 cd ${DATA}/nco-4.0.0;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
 sudo dpkg --remove nco
 sudo dpkg --install ${DATA}/nco_4.0.0-1_*.deb
+# http://lintian.debian.org/full/zender@uci.edu.html
 lintian ${DATA}/nco_4.0.0-1_*.deb
 ls -l ${DATA}/nco_4.0.0*
 m ~/foo.nco
