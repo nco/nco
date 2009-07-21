@@ -221,11 +221,12 @@ public:
 //Bilinear  Interpolation Functions /****************************************/
 class bil_cls: public vtl_cls {
 private:
-   enum {PBIL_A };
+   enum {PBIL_ALL,PBIL_COO };
    bool _flg_dbg;
 public:
   bil_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+  void clc_bil_fnc(var_sct *v_xin, var_sct *v_yin, var_sct *v_din, var_sct *v_xout, var_sct *v_yout, var_sct *v_dout,std::string sfnm);
   double clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1);
 
 };
