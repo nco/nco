@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.18 2009-07-21 15:06:26 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.19 2009-07-22 10:16:54 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1747,13 +1747,15 @@
   bil_cls::bil_cls(bool flg_dbg){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
-          fmc_vtr.push_back( fmc_cls("ncap_bilinear_inter",this,PBIL_ALL)); 
-          fmc_vtr.push_back( fmc_cls("ncap_bilinear_inter_coords",this,PBIL_COO)); 
+          fmc_vtr.push_back( fmc_cls("ncap_bilinear_interp",this,PBIL_NON)); 
+          fmc_vtr.push_back( fmc_cls("ncap_bilinear_interp_all",this,PBIL_ALL)); 
+          fmc_vtr.push_back( fmc_cls("ncap_bilinear_interp_co1",this,PBIL_CO1)); 
+          fmc_vtr.push_back( fmc_cls("ncap_bilinear_interp_co2",this,PBIL_CO2)); 
 
     }		      
   } 
   var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
-  const std::string fnc_nm("bil_cls::fnd");
+   const std::string fnc_nm("bil_cls::fnd");
   bool b_rev_y;
   bool b_rev_x;
   int fdx;
@@ -1794,10 +1796,19 @@
            in_nbr_args=6;  
            susg="usage: var_out="+sfnm+"(x_var,y_var,data_var,x1_var,y1_var,data_out_var)"; 
            break;
-    case PBIL_COO:
+    case PBIL_NON:
            in_nbr_args=2; 
            susg="usage: var_out="+sfnm+"(data_var_in,var_data_out)"; 
            break;
+    case PBIL_CO1:
+           in_nbr_args=4;  
+           susg="usage: var_out="+sfnm+"(x_var,y_var,data_var,data_out_var)"; 
+           break;
+    case PBIL_CO2:
+           in_nbr_args=4;  
+           susg="usage: var_out="+sfnm+"(data_var,x1_var,y1_var,data_out_var)"; 
+           break;
+
   } // end switch
 
 
@@ -1816,7 +1827,7 @@
       var_arr[idx]=walker.out(vtr_args[idx]);
 
 
-    if(fdx==PBIL_COO){
+    if(fdx==PBIL_NON){
 
       // recall input arguments in order
       // 0 - input data
@@ -1893,6 +1904,134 @@
       return var_arr[1];        
         
     }
+
+
+    if(fdx==PBIL_CO1){
+
+      // recall input arguments in order
+      // 0 - input X   co-ordinate var
+      // 1 - input Y   co-ordinate var
+      // 2 - input data
+      // 3 - output data
+      // 4 - output X  co-ordinate var
+      // 5 - output Y  co-ordinate var
+
+      in_typ=var_arr[2]->type;    
+
+      if(prs_arg->ntl_scn){
+	// convert output var to input var type
+        var_arr[3]=nco_var_cnf_typ(in_typ,var_arr[3]);
+        nco_var_free(var_arr[0]);
+        nco_var_free(var_arr[1]);
+        nco_var_free(var_arr[2]);
+        return var_arr[3];
+      }
+  
+      // rest of code is afinal scan 
+
+      if(var_arr[3]->nbr_dim < 2)
+        err_prn(sfnm,"Output data variable "+std::string(var_arr[3]->nm) + " must have at least two dimensions ");
+  
+      
+      // get output co-ordinate vars
+      var_arr[4]=prs_arg->ncap_var_init(std::string(var_arr[3]->dim[0]->nm),true); 
+      var_arr[5]=prs_arg->ncap_var_init(std::string(var_arr[3]->dim[1]->nm),true); 
+   
+      /* 
+      if(var_arr[4] ==(var_sct*)NULL_CEWI)
+        err_prn(sfnm,"Unable to find co-ordinate var "+ std::string(var_arr[3]->dim[0]->nm));    
+
+      if(var_arr[5] ==(var_sct*)NULL_CEWI)
+        err_prn(sfnm,"Unable to find co-ordinate var "+ std::string(var_arr[3]->dim[1]->nm));    
+
+      */
+
+      // convert all args to type double and then cast
+      for(idx=0 ; idx<6; idx++){
+        var_arr[idx]=nco_var_cnf_typ(NC_DOUBLE,var_arr[idx]);
+        (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->val);
+       }
+
+      // call generic function
+      (void)clc_bil_fnc(var_arr[0],var_arr[1],var_arr[2],var_arr[4],var_arr[5],var_arr[3],sfnm);
+
+      // cast back to void and free
+      for(idx=0 ; idx<6; idx++){
+       (void)cast_nctype_void(NC_DOUBLE,&var_arr[idx]->val);
+        if(idx !=3)
+          (void)nco_var_free(var_arr[idx]);
+      }
+      // convert output data type to input data type
+      var_arr[3]=nco_var_cnf_typ(in_typ,var_arr[3]);
+
+      return var_arr[3];        
+        
+    }
+
+
+    if(fdx==PBIL_CO2){
+
+      // recall input arguments in order
+      // 0 - input data 
+      // 1 - output X  co-ordinate var
+      // 2 - output Y  co-ordinate var
+      // 3 - output data
+      // 4 - input X  co-ordinate var        
+      // 5 - input Y  co-ordinate var        
+
+      in_typ=var_arr[0]->type;    
+
+      if(prs_arg->ntl_scn){
+	// convert output var to input var type
+        var_arr[3]=nco_var_cnf_typ(in_typ,var_arr[3]);
+        nco_var_free(var_arr[0]);
+        nco_var_free(var_arr[1]);
+        nco_var_free(var_arr[2]);
+        return var_arr[3];
+      }
+  
+      // rest of code is a final scan 
+
+      if(var_arr[0]->nbr_dim < 2)
+        err_prn(sfnm,"Input data variable "+std::string(var_arr[0]->nm) + " must have at least two dimensions ");
+  
+      
+      // get input co-ordinate vars
+      var_arr[4]=prs_arg->ncap_var_init(std::string(var_arr[0]->dim[0]->nm),true); 
+      var_arr[5]=prs_arg->ncap_var_init(std::string(var_arr[0]->dim[1]->nm),true); 
+   
+      /* 
+      if(var_arr[4] ==(var_sct*)NULL_CEWI)
+        err_prn(sfnm,"Unable to find co-ordinate var "+ std::string(var_arr[0]->dim[0]->nm));    
+
+      if(var_arr[5] ==(var_sct*)NULL_CEWI)
+        err_prn(sfnm,"Unable to find co-ordinate var "+ std::string(var_arr[0]->dim[1]->nm));    
+
+      */
+
+      // convert all args to type double and then cast
+      for(idx=0 ; idx<6; idx++){
+        var_arr[idx]=nco_var_cnf_typ(NC_DOUBLE,var_arr[idx]);
+        (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->val);
+       }
+
+      // call generic function
+      (void)clc_bil_fnc(var_arr[4],var_arr[5],var_arr[0],var_arr[1],var_arr[2],var_arr[3],sfnm);
+
+      // cast back to void and free
+      for(idx=0 ; idx<6; idx++){
+       (void)cast_nctype_void(NC_DOUBLE,&var_arr[idx]->val);
+        if(idx !=3)
+          (void)nco_var_free(var_arr[idx]);
+      }
+      // convert output data type to input data type
+      var_arr[3]=nco_var_cnf_typ(in_typ,var_arr[3]);
+
+      return var_arr[3];        
+        
+    }
+
+
 
 
     if(fdx==PBIL_ALL){
