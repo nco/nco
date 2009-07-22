@@ -221,7 +221,7 @@ public:
 //Bilinear  Interpolation Functions /****************************************/
 class bil_cls: public vtl_cls {
 private:
-   enum {PBIL_ALL,PBIL_COO };
+  enum {PBIL_ALL,PBIL_NON,PBIL_CO1,PBIL_CO2 };
    bool _flg_dbg;
 public:
   bil_cls(bool flg_dbg);
