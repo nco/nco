@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.167 2009-07-08 14:47:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.168 2009-07-22 10:26:17 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2959,7 +2959,7 @@ var_sct *var_nbr;
 
                 }//end write block 
             }     
-            end0:  var_rhs=nco_var_free(var_rhs); 
+                   var_rhs=nco_var_free(var_rhs); 
                    var_nbr=nco_var_free(var_nbr); 
 }
 
@@ -3192,7 +3192,7 @@ var=NULL_CEWI;
 
           
           //free vectors
-          end0: ;
+
           for(idx=0 ; idx < nbr_dmn ; idx++)
             (void)nco_dmn_free(dmn_vtr[idx]);
 
@@ -3203,8 +3203,6 @@ var=NULL_CEWI;
           
           end2: var_rhs=nco_var_free(var_rhs); 
     
-          end3: ;
-
     }
 
 ;
