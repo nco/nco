@@ -1,6 +1,11 @@
+2009-07-23  Charlie Zender  <zender@uci.edu>
+
+	* Remove NULL-dereferencing, segfault-causing problem in nco_netcdf.c
+
 2009-07-21  Henry Butowsky  <henryb@hush.com> 
-	* Added first cut of bil_cls - two functions that do 
-	bilnear interpolation of gridded(2D) data
+
+	* Add first cut of bil_cls - functions for bilinear interpolation
+	of gridded 2D data
 
 2009-07-16  Charlie Zender  <zender@uci.edu>
 

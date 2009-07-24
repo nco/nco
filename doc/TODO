@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1059 2009-07-24 00:25:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1060 2009-07-24 02:49:47 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -696,11 +696,8 @@ nco979. UDUnits1: time zone at end of user-specified limit string is ignored (ba
         but time zone within units attribute of variable is parsed (good)
 	UDUnits2: handles time zone correctly in both locations (good)
 nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between files like  "hours since 1965-010-01 12:00" and "minutes  since 1968-02-01 12:32"
-nco981. zender@esmf04m:~/nco$ ncks -D 5 -m /data/scapps/cam_eul_dom_T85_npdf/cam_eul_dom_T85_npdf.cam2.h1.2003-01-31-36000.nc
-ncks: CONVENTION File "Conventions" attribute is "CF-1.0"
-ncks: INFO NCO has a unified (though incomplete) treatment of many related (official and unoffical) conventions such as CCM, CCSM, and CF. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named "date"or "gw". For a full list of exceptions, see the manual http://nco.sf.net/nco.html#CF
-P0: # dim. = 0, NC_DOUBLE, # att. = 2, ID = 0
-Segmentation fault
+nco981. cd ~/nco/data;ncks -m in.nc
+	Segmentation fault
 nco982. 
 
 ************************************************************************

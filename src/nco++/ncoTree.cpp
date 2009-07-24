@@ -3961,7 +3961,7 @@ var_sct * ncoTree::var_lmt_one_lhs(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 			
 			}//end write block 
 			}     
-			end0:  var_rhs=nco_var_free(var_rhs); 
+			var_rhs=nco_var_free(var_rhs); 
 			var_nbr=nco_var_free(var_nbr); 
 			
 #line 3968 "ncoTree.cpp"
@@ -4226,7 +4226,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			
 			//free vectors
-			end0: ;
+			
 			for(idx=0 ; idx < nbr_dmn ; idx++)
 			(void)nco_dmn_free(dmn_vtr[idx]);
 			
@@ -4237,10 +4237,8 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			end2: var_rhs=nco_var_free(var_rhs); 
 			
-			end3: ;
 			
-			
-#line 4244 "ncoTree.cpp"
+#line 4242 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
