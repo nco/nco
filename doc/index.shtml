@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.547 2009-07-20 15:59:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.548 2009-07-24 00:25:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -710,9 +710,9 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <a name="gnt"></a>
 <h3><a href="http://www.gentoo.org">Gentoo</a> GNU/Linux</h3>
 <ul>
-<a href="http://packages.gentoo.org/packages/?category=sci-misc;name=nco">Gentoo GNU/Linux homepage for NCO</a>.
+<a href="http://gentoo-portage.com/sci-misc/nco">Gentoo GNU/Linux homepage for NCO</a>.
 <a href="http://www.gentoo.org/doc/en/portage-manual.xml">Portage packages</a> by George Shapavalov and Patrick Kursawe:
-<li><a href="http://packages.gentoo.org/ebuilds/?nco-3.2.0">nco-3.2.0</a>: Latest(?) Gentoo package</li>
+<li><a href="http://gentoo-portage.com/sci-misc/nco">nco-3.9.4</a>: Latest(?) Gentoo package</li>
 </ul>
 
 <a name="mac"></a> <!-- http://nco.sf.net#mac -->
@@ -724,10 +724,10 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <a name="fink"></a> <!-- http://nco.sf.net#fink -->
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
-<li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.2. Maintained by Alexander Hansen.</li> 
+<li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.5. Maintained by Alexander Hansen.</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>:
  <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>
-  for NCO 3.9.6. Maintained by Takeshi Enomoto.</li>
+  for NCO 3.9.9. Maintained by Takeshi Enomoto.</li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#bnr -->
