@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.18 2009-06-14 20:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.19 2009-07-24 20:26:33 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -298,7 +298,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 
     /* Initialize storage type for this variable */
     srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
-    cnk_sz=NULL; /* [nbr] Chunksize list */
+    cnk_sz=(size_t *)NULL; /* [nbr] Chunksize list */
 
     /* Get type and number of dimensions for variable */
     (void)nco_inq_var(nc_id,var_idx,var_nm,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
@@ -310,7 +310,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
        (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
-      /* Turn chunking off for this variable */
+     /* Turn off chunking for this variable */
       if(nco_cnk_dsk_inq(nc_id,var_idx)){
 	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
 	(void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);

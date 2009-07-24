@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.97 2009-05-25 20:48:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.98 2009-07-24 20:26:33 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -886,7 +886,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   vrs_sng=vrs_cvs;
 
   /* Insert thread number into value */
-  att_val.cp=(char *)strdup(vrs_sng);
+  att_val.cp=vrs_sng;
   /* Initialize nco_openmp_thread_number attribute edit structure */
   vrs_sng_aed.att_nm=att_nm;
   vrs_sng_aed.var_nm=NULL;

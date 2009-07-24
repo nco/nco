@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.548 2009-07-24 00:25:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.549 2009-07-24 20:26:32 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -83,8 +83,8 @@ Try to disable Spammers' machines:
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#Source">Source Code</a></li>
-<li><a href="#bld">Building from Source</a></li>
-<li><a href="#NCAR">UCI and NCAR users</a></li>
+<li><a href="#bld">Compiling</a></li>
+<li><a href="#NCAR">UCI and NCAR</a></li>
 <li><a href="#BM">Benchmarks</a></li>
 <li><a href="#bug">Known Problems</a></li>
 <li><a href="#People">People</a></li>
@@ -735,12 +735,12 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <!-- http://nco.sf.net#RTFM -->
 <dt><a name="RTFM"></a></dt>
 <h2>Documentation and User's Guide</h2> 
-<p>View the NCO User's Guide in any of these formats:
+<p>The NCO User's Guide is available for reading in these formats:
 <ul>
 <li><a href="./nco.dvi">DVI</a> Device Independent (<tt>kdvi</tt>, <tt>xdvi</tt>)</li>
 <li><a href="./nco.html">HTML</a> Hypertext (any browser)</li>
 <li><a href="./nco.info">Info</a> GNU Info (<tt>M-x Info</tt>, <tt>emacs</tt>)</li>
-<li><a href="./nco.pdf">PDF</a> Portable Document Format (<tt>acroread</tt>, <tt>evince</tt>, <tt>kpdf</tt>, <tt>xpdf</tt>)</li>
+<li><a href="./nco.pdf">PDF</a> Portable Document Format (<tt>acroread</tt>, <tt>evince</tt>, <tt>kpdf</tt>, <tt>okular</tt>, <tt>xpdf</tt>)</li>
 <li><a href="./nco.ps">Postscript</a> Printing (<tt>ghostview</tt>, <tt>kghostview</tt>)</li>
 <li><a href="./nco.texi">TeXInfo</a> Documentation Source code (<tt>emacs</tt>)</h2></li>
 <li><a href="./nco.txt">Text</a> Plain text (<tt>more</tt>)</h2></li>
@@ -817,7 +817,7 @@ Subscribe to the
 <a href="http://lists.sf.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
 mailing list. 
 This list is for NCO-related announcements, not for questions.
-<tt>nco-announce</tt> is very low volume, averaging one message every few months.</li>
+<tt>nco-announce</tt> is very low volume&mdash;one message every few months.</li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#FAQ -->
@@ -827,12 +827,9 @@ This list is for NCO-related announcements, not for questions.
 <h2>README/ChangeLog/TODO</h2>
 <p>Files containing useful information about the current NCO distribution:
 <ul>
-<li><a href="./README"><tt>README</tt></a> Platforms and software requirements
-for a successful NCO installation</li>
-<li><a href="./ChangeLog"><tt>ChangeLog</tt></a> Up-to-date history of
-NCO changes</li>
-<li><a href="./TODO"><tt>TODO</tt></a> An unordered list describing the features and
-fixes we currently have in mind for NCO.</li> 
+<li><a href="./README"><tt>README</tt></a> Platforms and software required by NCO</li>
+<li><a href="./ChangeLog"><tt>ChangeLog</tt></a> History of NCO changes</li>
+<li><a href="./TODO"><tt>TODO</tt></a> An unordered list of features and fixes we plan for NCO</li> 
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#README -->
@@ -842,7 +839,7 @@ fixes we currently have in mind for NCO.</li>
 <h2>Get NCO Source Code</h2>
 
 The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS</a>.
-The second best way is to download the source and documentation as a compressed tarfile:
+The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
 <a href="src/nco-3.9.9.tar.gz">nco-3.9.9.tar.gz</a> 
@@ -909,12 +906,13 @@ infrequently updated. Comments and suggestions are certainly welcomed on the
 <!-- http://nco.sf.net#bld -->
 <dt><a name="Rqr"></a><a name="rqr"></a></dt> <!-- http://nco.sf.net#rqr -->
 <dt><a name="bld"></a></dt> <!-- http://nco.sf.net#bld -->
-<h2>Build-from-Source Requirements</h2>
+<dt><a name="cmp"></a></dt> <!-- http://nco.sf.net#cmp -->
+<h2>Compilation Requirements</h2>
 
 <ul><b>Best Practices:</b>
 
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
-<li>Install
+The recommended first steps to build (i.e., compile, for the most part) NCO from source code are to install
 <a href="http://www.antlr.org">ANTLR 2.7.x</a> (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
@@ -1178,7 +1176,7 @@ for more details.
 <!-- http://nco.sf.net#NCAR -->
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
-<p>Users at UC Irvine and NCAR <i>may</i> find pre-built,
+<p>UC Irvine and NCAR users <i>may</i> find pre-built,
 <i>almost</i> up-to-date NCO executables in the following locations.
 These executables are <i>unsupported</i> and are almost
 <i>guaranteed</i> to hail from different NCO versions and thus to

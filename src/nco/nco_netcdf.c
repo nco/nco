@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.119 2009-07-24 02:49:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.120 2009-07-24 20:26:33 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -747,6 +747,7 @@ int nco_inq_var_chunking
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     rcd=nc_inq_var_chunking(nc_id,var_id,srg_typ,cnk_sz);
   }else{ /* !netCDF4 */
+    /* Defensive programming */
     *srg_typ=NC_CONTIGUOUS;
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_chunking()");

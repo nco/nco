@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1060 2009-07-24 02:49:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1061 2009-07-24 20:26:32 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -696,10 +696,12 @@ nco979. UDUnits1: time zone at end of user-specified limit string is ignored (ba
         but time zone within units attribute of variable is parsed (good)
 	UDUnits2: handles time zone correctly in both locations (good)
 nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between files like  "hours since 1965-010-01 12:00" and "minutes  since 1968-02-01 12:32"
-nco981. cd ~/nco/data;ncks -m in.nc
-	Segmentation fault
-nco982. 
-
+nco982. valuable chunking clue? fails to unchunk record variables that are already unchunked
+	ncks -O -4 -D 4 -v time --cnk_plc=uck ~/nco/data/in.nc ~/foo.nc
+	symptoms are that near line 314 of nco_cnk.c, nco_cnk_dsk_inq()
+	tell us that time is chunked (it is not) and that cnk_sz is not NULL (it is)
+	it only makes these mistakes for record variables
+nco983. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
