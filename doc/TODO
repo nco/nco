@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1061 2009-07-24 20:26:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1062 2009-07-25 05:45:13 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -345,7 +345,7 @@ nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
 nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
-nco612. ncks ncdump-like features for netcdf4 files structures
+nco612. ncks ncdump-like features for netCDF4 files structures
 nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco624. Document MPI in users guide/manual
@@ -384,7 +384,7 @@ nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
-nco658. netcdf4 regression in ncrename test #1: Regression re-verified 20060924, 20070831, 20080220, 20080512 PBN4
+nco658. netCDF4 regression in ncrename test #1: Regression re-verified 20060924, 20070831, 20080220, 20080512 PBN4
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
         ncrename -O -d lat_T42,lat -v lat_T42,lat ~/foo.nc
@@ -888,7 +888,7 @@ ncap30. Allow -S to specify multiple input scripts to be sequentially parsed
 ncap31. Put globals fl_spt_crr,ncl_dpt_crr,ln_nbr_crr in prs_arg or remove fl_spt from it
 ncap32. Need filename expander and $NCO_DATA_PATH handling so #include's may be generic
 ncap34. Make parse errors always print current line to terminal rather than silently failing
-ncap36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
+ncap36. cygwin builds of ncap.l and netCDF fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
 ncap37. Implement float function definitions in nco_rth_flt.c as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?) using AC_C_INLINE
 ncap38. Finish dimension-reducing operations (min/max/avg)
 ncap41. Make ncap function prototypes consistent with rest of NCO (ncap.h mainly)
@@ -922,8 +922,9 @@ ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
 ncap79. make abs() synonym for fabs() and pow() and ** synonyms for ^
-ncap80. ncap2+ openmp + netcdf4 - script only works with threads>1 if there are no atts in input file
-ncap81  the script 'defdim("a",3);defdim("b",4);a[$a,$b]=10;' works on netcdf3 not netcdf4. this is a known bug with NETCDF4
+ncap80. ncap2+openmp+netCDF4 - script only works with threads>1 if there are no atts in input file
+ncap81  the script 'defdim("a",3);defdim("b",4);a[$a,$b]=10;' works on netCDF3 not netCDF4. Known bug with netCDF4. (Why? what causes it?) 
+ncap82. 
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************

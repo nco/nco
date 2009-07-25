@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.514 2009-07-16 06:56:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.515 2009-07-25 05:45:13 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -882,7 +882,7 @@ ifeq (gcc,$(firstword ${CC}))
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
- CFLAGS += -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
+ CFLAGS += -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g
 # Compilation flags recommended by GSL that I like and use:
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
 # -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
@@ -901,7 +901,7 @@ ifeq (gcc,$(firstword ${CC}))
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
 # -pg: Enable profiling, generate gmon.out output files (also needed by linker)
-# -O4: Turn on optimization so uninitialized variables are flagged
+# -O4: Turn on optimization so uninitialized variables are flagged. Downside: optimizes-out many symblols useful for debugging
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
 # --no-alias? -fstrict-aliasing
@@ -918,7 +918,7 @@ ifeq (${OMP},Y)
  LDFLAGS += -lgomp -lpthread
 endif # endif OMP
 ifeq (${OPTS},O)
- CFLAGS += -O -g ${GCC_RCH_ARG}
+ CFLAGS += -O4 -g ${GCC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g -Wno-switch
@@ -933,7 +933,7 @@ ifeq (${OPTS},X)
 # -Wformat-security : Warn about misuse of format strings
 # -Wl,-z,relro : Read-only relocation table area in final ELF
  CPPFLAGS += -D_FORTIFY_SOURCE=2
- CFLAGS += -fstack-protector -Wformat-security -Wl,-z,relro
+ CFLAGS += -g -fstack-protector -Wformat-security -Wl,-z,relro
 # 20090715: -Werror triggers known nc_put_var?_string() and nco_def_var_chunking() errors
 # CFLAGS += -g -O -pg -fno-inline -Werror
  CFLAGS += -g -O -pg -fno-inline
