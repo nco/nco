@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.134 2009-07-20 15:58:33 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.135 2009-07-26 18:09:58 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -100,6 +100,11 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvs commit -m "Preparing nco-4.0.0 release";cvs tag -c nco-4_0_0
    ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_0_0
+
+7. Ubuntu PPA
+https://help.launchpad.net/Packaging/PPA
+dput NCO nco_4.0.0-2~ppa1_source.changes
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com
 
 # Location of build diagnostics for mentors to help 
 http://dust.ess.uci.edu/nco/src/nco_4.0.0-1.dpkg-buildpackage.txt
