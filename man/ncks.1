@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.18 2009-07-26 18:55:50 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.19 2009-07-26 20:41:18 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncks
 .\" Usage:
 .\" nroff -man ~/nco/man/ncks.1
@@ -426,7 +426,7 @@ lat[0]=\-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0
 .br
 lat[0]=\-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 .br
-...
+\ .\|.\|.\ 
 .br
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
 .br
@@ -436,7 +436,7 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 .br
 1.000000
 .br
-...
+\ .\|.\|.\ 
 .br
 23.000000
 .br
@@ -446,13 +446,13 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 .br
    +1.0000000000
 .br
-...
+\ .\|.\|.\ 
 .br
   +23.0000000000
 .br
 % ncks \-s "%f, " \-H \-C \-v three_dmn_var in.nc
 .br
-0.000000, 1.000000, ..., 23.000000,
+0.000000, 1.000000, \ .\|.\|.\ , 23.000000,
 .RE
 The second and third options are useful when pasting data into text
 files like reports or papers.  
@@ -575,7 +575,7 @@ ncks \-d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.18 2009-07-26 18:55:50 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.19 2009-07-26 20:41:18 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
