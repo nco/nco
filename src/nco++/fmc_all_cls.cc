@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.20 2009-07-24 14:56:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.21 2009-07-28 10:45:48 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1747,10 +1747,7 @@
   bil_cls::bil_cls(bool flg_dbg){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
-          fmc_vtr.push_back( fmc_cls("ncap_bilinear_interp_tmp",this,PBIL_NON)); 
           fmc_vtr.push_back( fmc_cls("bilinear_interp",this,PBIL_ALL)); 
-          fmc_vtr.push_back( fmc_cls("ncap_bilinear_interp_co1",this,PBIL_CO1)); 
-          fmc_vtr.push_back( fmc_cls("ncap_bilinear_interp_co2",this,PBIL_CO2)); 
 
     }		      
   } 
@@ -1795,7 +1792,7 @@
     // only one method at the moment
     case PBIL_ALL:
            in_nbr_args=nbr_args;  
-           susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_ou?, Y_out?, X_in?, Y_in?)"; 
+           susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_out?, Y_out?, X_in?, Y_in?)"; 
            break;
 
 
@@ -1815,7 +1812,7 @@
     // process input args 
     for(idx=0 ; idx<in_nbr_args; idx++)
       var_arr[idx]=walker.out(vtr_args[idx]);
-
+ 
     in_typ=var_arr[0]->type;    
 
 
