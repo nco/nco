@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.549 2009-07-24 20:26:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.550 2009-08-05 14:48:16 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1234,27 +1234,21 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 
 Problems with recent releases:
 
-<ul><b>Generic Run-time Problems:</b>
-<!-- http://nco.sf.net#bug_thr_msa -->
-<a name="bug_thr_msa"></a>
-<li><i>Threading problems with MSA:</i>
-NCO version 3.9.5 has a nasty bug that causes threaded arithmetic
-operators, e.g., <tt>ncea</tt> to produce incorrect results under some
-conditions. 
-The problem may occur whenever OpenMP is enabled and the operators 
-run on a multi-core CPU with more than one thread.
-These incorrect answers, if generated, are relatively easy to notice.
-The number of threads used to generate a file is, by default, recorded
-in the global attribute <tt>nco_openmp_thread_number</tt> which may
-be examined with <tt>ncks -M foo.nc | grep nco_openmp_thread_number</tt>.
-The only action that will correct a file that you think (or know)
-contains corrupted data because of this NCO bug is to re-process the
-file with a non-buggy NCO version.
-<i>Version&nbsp;3.9.5 is buggy and should be upgraded ASAP</i>.
-Be careful with data processed using this NCO version on multi-core CPUs.
-The (one-line!) patch to fix this bug in 3.9.5 is 
-<a href="https://sourceforge.net/forum/message.php?msg_id=6217274">here</a>.
+<ul><b>Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncks_m -->
+<a name="bug_ncks_m"></a>
+<li><i>Core dump with <tt>ncks</tt>:</i>
+Printing variables to screen with <tt>ncks</tt> triggers
+a segfault in NCO 3.9.9.
+Because 4.0.0 is a long way off, users may want to apply the one-line 
+patch themselves to 3.9.9.
+Removing this line
+&ldquo;<tt>*cnk_sz=(size_t)NULL;</tt>&rdquo;
+&mdash;near line&nbsp;751 of <tt>nco/src/nco/nco_netcdf.c</tt>&mdash;
+should fix the problem.
+This patch has also been committed to the main trunk.
 </li>
+
 </ul>
 
 <ul><b>Platform-specific Run-time Problems:</b>
@@ -1289,6 +1283,27 @@ Bug-fixes:
 Problems with older releases:
 
 <ul><b>Generic Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_thr_msa -->
+<a name="bug_thr_msa"></a>
+<li><i>Threading problems with MSA:</i>
+NCO version 3.9.5 has a nasty bug that causes threaded arithmetic
+operators, e.g., <tt>ncea</tt> to produce incorrect results under some
+conditions. 
+The problem may occur whenever OpenMP is enabled and the operators 
+run on a multi-core CPU with more than one thread.
+These incorrect answers, if generated, are relatively easy to notice.
+The number of threads used to generate a file is, by default, recorded
+in the global attribute <tt>nco_openmp_thread_number</tt> which may
+be examined with <tt>ncks -M foo.nc | grep nco_openmp_thread_number</tt>.
+The only action that will correct a file that you think (or know)
+contains corrupted data because of this NCO bug is to re-process the
+file with a non-buggy NCO version.
+<i>Version&nbsp;3.9.5 is buggy and should be upgraded ASAP</i>.
+Be careful with data processed using this NCO version on multi-core CPUs.
+The (one-line!) patch to fix this bug in 3.9.5 is 
+<a href="https://sourceforge.net/forum/message.php?msg_id=6217274">here</a>.
+</li>
+
 <!-- http://nco.sf.net#bug_idx_hyp -->
 <a name="bug_idx_hyp"></a>
 <li><i>Index-based hyperslab problems:</i>
