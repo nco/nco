@@ -1,5 +1,7 @@
 2009-08-07  Charlie Zender  <zender@uci.edu>
 
+	* Chunking passes all regression tests and makes sense at last
+
 	* Ensure that record, compressed, and checksummed variables are
 	chunked, stay chunked, and are not subject to unchunking attempts. 
 	Passes regression tests.  

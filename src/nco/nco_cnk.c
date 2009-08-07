@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.21 2009-08-07 23:11:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.22 2009-08-07 23:38:42 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -234,6 +234,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   nco_bool is_rec_var; /* [flg] Record variable */
   nco_bool is_chk_var; /* [flg] Checksum variable */
   nco_bool is_cmp_var; /* [flg] Compressed variable */
+  nco_bool is_chunked; /* [flg] Chunked variable */
   nco_bool must_be_chunked; /* [flg] Variable must be chunked */
 
   nc_type var_typ_dsk;
@@ -308,6 +309,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     is_rec_var=False; /* [flg] Record variable */
     is_chk_var=False; /* [flg] Checksum variable */
     is_cmp_var=False; /* [flg] Compressed variable */
+    is_chunked=False; /* [flg] Chunked variable */
 
     /* Get type and number of dimensions for variable */
     (void)nco_inq_var(nc_id,var_idx,var_nm,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
@@ -337,7 +339,10 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     if(chk_typ != NC_NOCHECKSUM) is_chk_var=True;
 
     /* Must variable be chunked? */
-    if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=False; else must_be_chunked=True;
+    if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=True; else must_be_chunked=False;
+
+    /* Is variable currently chunked? */
+    is_chunked=nco_cnk_dsk_inq(nc_id,var_idx);
 
     /* Explicitly turn off chunking for arrays that are... */
     if((cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
@@ -345,9 +350,9 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
       /* If variable is chunked */
-      if(nco_cnk_dsk_inq(nc_id,var_idx)){
+      if(is_chunked){
 	if(must_be_chunked){
-	  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s not unchunking %s because it must be chunked, i.e., is record, compressed, or checksummed variable\n",prg_nm_get(),fnc_nm,var_nm);
+	  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %s must be chunked (record, compressed, or checksummed variable)\n",prg_nm_get(),fnc_nm,var_nm);
 	}else{
 	  /* Turn off chunking for this variable */
 	  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
@@ -364,6 +369,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 
     /* Variable will definitely be chunked */
     srg_typ=NC_CHUNKED; /* [enm] Storage type */
+    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %schunking %s\n",prg_nm_get(),fnc_nm,(is_chunked ? "re-" : "" ),var_nm);
 
     /* Allocate space to hold chunksizes */
     cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));
@@ -557,8 +563,7 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  const int var_id) /* I [id] Variable ID */
 {
-  /* Purpose: Check whether variable is chunked on disk and set variable members 
-     cnk_dsk and cnk_sz accordingly */
+  /* Purpose: Check whether variable is chunked on disk */
   /* ncea -O -D 3 -v cnk ~/nco/data/in.nc ~/nco/data/foo.nc */
   
   int rcd; /* [rcd] Return success code */
