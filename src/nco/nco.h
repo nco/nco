@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.142 2009-07-12 19:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.143 2009-08-07 22:49:56 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -189,6 +189,13 @@ extern "C" {
 #ifndef NC_CONTIGUOUS
 # define NC_CONTIGUOUS (1)
 #endif
+#ifndef NC_NOCHECKSUM
+# define NC_NOCHECKSUM 0
+#endif
+#ifndef NC_FLETCHER32
+# define NC_FLETCHER32 1
+#endif
+
 /* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
    NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */
 #ifndef NC_64BIT_OFFSET

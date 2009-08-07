@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.19 2009-07-24 20:26:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.20 2009-08-07 22:49:56 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -216,6 +216,8 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   int dmn_idx;
   int cnk_map; /* [enm] Chunking map */
   int cnk_plc; /* [enm] Chunking policy */
+  int chk_typ; /* [enm] Checksum type */
+  int deflate; /* [enm] Deflate filter is on */
   int dmn_nbr; /* [nbr] Number of dimensions in variable */
   int fl_fmt; /* [enm] Input file format */
   int lmt_idx;
@@ -229,6 +231,10 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   long dmn_sz;
 
   nco_bool flg_cnk=False; /* [flg] Chunking requested */
+  nco_bool is_rec_var; /* [flg] Record variable */
+  nco_bool is_chk_var; /* [flg] Checksum variable */
+  nco_bool is_cmp_var; /* [flg] Compressed variable */
+  nco_bool is_chunkable; /* [flg] Variable may be chunked */
 
   nc_type var_typ_dsk;
   
@@ -291,7 +297,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 	break;
       } /* end if */
     } /* end loop over limit */
-  } /* endif */
+  } /* NCO_REC_DMN_UNDEFINED */
 
   /* NB: Assumes variable IDs range from [0..var_nbr-1] */
   for(var_idx=0;var_idx<var_nbr;var_idx++){
@@ -299,18 +305,46 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     /* Initialize storage type for this variable */
     srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
     cnk_sz=(size_t *)NULL; /* [nbr] Chunksize list */
+    is_rec_var=False; /* [flg] Record variable */
+    is_chk_var=False; /* [flg] Checksum variable */
+    is_cmp_var=False; /* [flg] Compressed variable */
 
     /* Get type and number of dimensions for variable */
     (void)nco_inq_var(nc_id,var_idx,var_nm,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
     
     if(dmn_nbr == 0) continue; /* Skip chunking calls for scalars */
 
+    /* Allocate space to hold dimension IDs */
+    dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+    /* Get dimension IDs */
+    (void)nco_inq_vardimid(nc_id,var_idx,dmn_id);
+    
+    /* Is this a record variable? */
+    if(rcd_dmn_id != NCO_REC_DMN_UNDEFINED){
+      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	/* Is this the record dimension? */
+	if(dmn_id[dmn_idx] == rcd_dmn_id) break; /* ...then search no further */
+      } /* end loop over dmn */
+      if(dmn_idx < dmn_nbr) is_rec_var=True; /* [flg] Record variable */
+    } /* NCO_REC_DMN_UNDEFINED */
+
+    /* Is variable compressed? */
+    (void)nco_inq_var_deflate(nc_id,var_idx,NULL,&deflate,NULL);
+    if(deflate) is_cmp_var=True; 
+    
+    /* Is variable checksummed? */
+    (void)nco_inq_var_fletcher32(nc_id,var_idx,&chk_typ);
+    if(chk_typ != NC_NOCHECKSUM) is_chk_var=True;
+
+    /* Is variable chunkable? */
+    if(is_rec_var || is_chk_var || is_cmp_var) is_chunkable=False; else is_chunkable=True;
+
     /* Explicitly turn off chunking for arrays that are... */
     if((cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
        (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
-     /* Turn off chunking for this variable */
+      /* Turn off chunking for this variable */
       if(nco_cnk_dsk_inq(nc_id,var_idx)){
 	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
 	(void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
@@ -324,13 +358,8 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     /* Variable will definitely be chunked */
     srg_typ=NC_CHUNKED; /* [enm] Storage type */
 
-    /* Allocate space to hold dimension IDs */
-    dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
     /* Allocate space to hold chunksizes */
     cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));
-    
-    /* Get dimension IDs */
-    (void)nco_inq_vardimid(nc_id,var_idx,dmn_id);
     
     /* Default "equal" chunksize for each dimension */
     cnk_sz_dfl=cnk_sz_scl;
@@ -349,7 +378,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
       /* Get dimension name and size */
       (void)nco_inq_dim(nc_id,dmn_id[dmn_idx],dmn_nm,&dmn_sz);
       
-      /* Is this a record dimension? */
+      /* Is this the record dimension? */
       if(dmn_id[dmn_idx] == rcd_dmn_id){
 	/* Does policy specify record dimension treatment? */
 	if(cnk_map == nco_cnk_map_rd1){

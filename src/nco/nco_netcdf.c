@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.120 2009-07-24 20:26:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.121 2009-08-07 22:49:56 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -771,13 +771,34 @@ nco_inq_var_deflate
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     rcd=nc_inq_var_deflate(nc_id,var_id,shuffle,deflate,dfl_lvl);
   }else{ /* !netCDF4 */
-    *shuffle=0;
-    *deflate=0;
-    *dfl_lvl=0;
+    if(shuffle) *shuffle=0;
+    if(deflate) *deflate=0;
+    if(dfl_lvl) *dfl_lvl=0;
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_deflate()");
   return rcd;
-} /* end nco_inq_var_deflate */
+} /* end nco_inq_var_deflate() */
+
+int
+nco_inq_var_fletcher32
+(const int nc_id, /* I [ID] netCDF ID */
+ const int var_id, /* I [ID] Variable ID */
+ int * const chk_typ) /* O [enm] Checksum type */
+{
+  /* Purpose: Wrapper for nc_inq_var_fletcher32() */
+  /* NB: netCDF fletcher32 inquire function only works on netCDF4 files
+     NCO wrapper works on netCDF3 and netCDF4 files */
+  int rcd;
+  int fl_fmt; /* [enm] Input file format */
+  rcd=nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    rcd=nc_inq_var_fletcher32(nc_id,var_id,chk_typ);
+  }else{ /* !netCDF4 */
+    if(chk_typ) *chk_typ=NC_NOCHECKSUM;
+  } /* !netCDF4 */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fletcher32()");
+  return rcd;
+} /* end nco_inq_var_fletcher32() */
 
 int
 nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
@@ -1287,7 +1308,8 @@ int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,size_
 # endif /* !0 */
 int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t *const cnk_sz){*srg_typ=(size_t)NC_CONTIGUOUS;*cnk_sz=(size_t)NULL;return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
-int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){*shuffle=0;*deflate=0;*dfl_lvl=0;return 1;}
+int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=0;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
+int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){if(chk_typ) *chk_typ=NC_NOCHECKSUM;return 1;}
 #endif /* HAVE_NETCDF4_H */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
