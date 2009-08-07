@@ -1,5 +1,9 @@
 2009-08-07  Charlie Zender  <zender@uci.edu>
 
+	* Ensure that record, compressed, and checksummed variables are
+	chunked, stay chunked, and are not subject to unchunking attempts. 
+	Passes regression tests.  
+
 	* Only fill in shuffle, deflate, dfl_lvl when pointers are
 	non-NULL in netCDF3 nco_inq_var_deflate()
 

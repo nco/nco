@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.20 2009-08-07 22:49:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.21 2009-08-07 23:11:35 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -234,7 +234,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   nco_bool is_rec_var; /* [flg] Record variable */
   nco_bool is_chk_var; /* [flg] Checksum variable */
   nco_bool is_cmp_var; /* [flg] Compressed variable */
-  nco_bool is_chunkable; /* [flg] Variable may be chunked */
+  nco_bool must_be_chunked; /* [flg] Variable must be chunked */
 
   nc_type var_typ_dsk;
   
@@ -336,21 +336,28 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     (void)nco_inq_var_fletcher32(nc_id,var_idx,&chk_typ);
     if(chk_typ != NC_NOCHECKSUM) is_chk_var=True;
 
-    /* Is variable chunkable? */
-    if(is_rec_var || is_chk_var || is_cmp_var) is_chunkable=False; else is_chunkable=True;
+    /* Must variable be chunked? */
+    if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=False; else must_be_chunked=True;
 
     /* Explicitly turn off chunking for arrays that are... */
     if((cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
        (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
        False){
-      /* Turn off chunking for this variable */
+      /* If variable is chunked */
       if(nco_cnk_dsk_inq(nc_id,var_idx)){
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
-	(void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
+	if(must_be_chunked){
+	  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s not unchunking %s because it must be chunked, i.e., is record, compressed, or checksummed variable\n",prg_nm_get(),fnc_nm,var_nm);
+	}else{
+	  /* Turn off chunking for this variable */
+	  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
+	  (void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
+	} /* !must_be_chunked */
       }else{ /* !chunked */
 	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s not unchunking %s because it is not chunked\n",prg_nm_get(),fnc_nm,var_nm);
       } /* !chunked */
+      /* Free space holding dimension IDs before skipping to next variable */
+      dmn_id=(int *)nco_free(dmn_id);
       /* Skip to next variable in loop */
       continue;
     } /* end if */
