@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1062 2009-07-25 05:45:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1063 2009-08-08 00:22:54 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -679,28 +679,14 @@ nco971. wget: both following commands create and write mutilated directory
 	/bin/rm -r ~/nco/in.n ~/nco/in.nc
 nco972. NC_STRINGs support: ncatted, nco_put_var_mem/nco_get_var_mem instead of memcpy, sort, ncatted
 nco973. ncks: allow for printing "units" attributes stored as NC_STRINGs
-nco974. ncks: segfault when printing following file
-	possibly bad format string for NC_BYTE near nco_prn.c:141
-// /usr/local/bin/ncgen -k netCDF-4 -b -o ~/foo.nc ~/foo.cdl
-// /usr/local/bin/ncdump ~/foo.nc
-netcdf foo {
-variables:
-	:att3 = 'C','F','-','1','.','0';
-data:
-}
 nco975. add NCO global attribute to output files like
-       :CDO = "netCDF Operators version 1.1.1 (http://nco.sf.net)" ;
+       :NCO = "netCDF Operators version 1.1.1 (http://nco.sf.net)" ;
 nco976. clean-up mess caused by eliminating nco_dmn_lmt_mrg in ncra, ncecat, ncpdq, ncflint (but not (why?) ncap,ncbo,ncwa)!
 nco977. fix -d syntax spec or nco_lmt_prs() as per https://sourceforge.net/forum/message.php?msg_id=7486118
 nco979. UDUnits1: time zone at end of user-specified limit string is ignored (bad)
         but time zone within units attribute of variable is parsed (good)
 	UDUnits2: handles time zone correctly in both locations (good)
 nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between files like  "hours since 1965-010-01 12:00" and "minutes  since 1968-02-01 12:32"
-nco982. valuable chunking clue? fails to unchunk record variables that are already unchunked
-	ncks -O -4 -D 4 -v time --cnk_plc=uck ~/nco/data/in.nc ~/foo.nc
-	symptoms are that near line 314 of nco_cnk.c, nco_cnk_dsk_inq()
-	tell us that time is chunked (it is not) and that cnk_sz is not NULL (it is)
-	it only makes these mistakes for record variables
 nco983. 
 ************************************************************************
 End ncoXXX TODOs

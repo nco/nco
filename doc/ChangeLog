@@ -16,7 +16,7 @@
 	* More man page tweaks for ellipses
 
 	* NCO 4.0.0 release procedure:
-	Changes since nco-3_9_9: bilinear interpolation
+	Changes since nco-3_9_9: bilinear, fitting, chunking
 	cd ~/nco;cvs tag -d nco-4_0_0;cvs tag -d nco-4_0_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.0 release"
 	cvs tag -c nco-4_0_0;cvs tag -c nco-4_0_0-1
