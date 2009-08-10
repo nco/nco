@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.121 2009-08-07 22:49:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.122 2009-08-10 22:32:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -54,6 +54,9 @@
 #endif
 #ifndef NC_CONTIGUOUS
 # define NC_CONTIGUOUS (1)
+#endif
+#ifndef NC_NOCHECKSUM
+# define NC_NOCHECKSUM 0
 #endif
 
 /* Utility routines not defined by netCDF library, but useful in working with it */

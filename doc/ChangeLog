@@ -1,3 +1,9 @@
+2009-08-10  Charlie Zender  <zender@neige>
+
+	* Define chunking compatibility tokens in nco_netcdf.c
+
+	* Verify WIN32 build on neige
+
 2009-08-07  Charlie Zender  <zender@uci.edu>
 
 	* Chunking passes all regression tests and makes sense at last
