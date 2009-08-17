@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.84 2009-08-17 16:21:21 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.85 2009-08-17 16:41:02 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1463,8 +1463,6 @@ nco_lmt_typ /* [fnc] Determine limit type */
     int y,m,d;
     if( sscanf(sng,"%d-%d-%d",&y,&m,&d)==3 ) 
       return lmt_udu_sng;
-    else     
-      return lmt_crd_val;
   }  
   /* Default: Limit is dimension index */
   return lmt_dmn_idx;
