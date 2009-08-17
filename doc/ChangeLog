@@ -1,6 +1,6 @@
 2009-08-17  Henry Butowsky  <henryb@hush.com> 
 	* mods to nco_lmt_typ() so that a plain date of 
-	the form "%d-%d-%d" is recognized as a vaid uduints
+	the form "%d-%d-%d" is recognized as a valid udunits
 	string
 
 2009-08-10  Charlie Zender  <zender@neige>
