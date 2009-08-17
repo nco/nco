@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.83 2009-07-17 01:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.84 2009-08-17 16:21:21 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1458,9 +1458,14 @@ nco_lmt_typ /* [fnc] Determine limit type */
      strchr(sng,'D') || strchr(sng,'d')) /* Double */
     /* Limit is "simple" (non-UDUnits) coordinate value */
     return lmt_crd_val;
-  if(strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng))
-    /* Non-leading dash indicates dates  */
-    return lmt_crd_val;
+  if(strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng)){
+    /* check for a date like string */   
+    int y,m,d;
+    if( sscanf(sng,"%d-%d-%d",&y,&m,&d)==3 ) 
+      return lmt_udu_sng;
+    else     
+      return lmt_crd_val;
+  }  
   /* Default: Limit is dimension index */
   return lmt_dmn_idx;
 
