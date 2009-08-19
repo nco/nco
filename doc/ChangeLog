@@ -1,3 +1,7 @@
+2009-08-19  Henry Butowsky  <henryb@hush.com> 
+	* Added first cut of gsl least squares fitting to 
+	fmc_gsl_cls
+
 2009-08-17  Henry Butowsky  <henryb@hush.com> 
 	* mods to nco_lmt_typ() so that a plain date of 
 	the form "%d-%d-%d" is recognized as a valid udunits
