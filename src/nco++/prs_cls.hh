@@ -80,9 +80,11 @@ class fmc_cls;
    }
 
    // = operator
-   prs_cls& operator= (const prs_cls &prs_cpy) {
+   prs_cls& operator= (const prs_cls &prs_cpy)  {
+
 
      
+      
      *this=prs_cpy;
      return *this;  
      
@@ -90,22 +92,22 @@ class fmc_cls;
      // check for self-assignment    
      if( &prs_cpy == this) 
        return *this;
-     
+      
      
   
-     dmn_in_vtr=prs_cpy.dmn_in_vtr;
+     fmc_vtr=prs_cpy.fmc_vtr;      
      dmn_out_vtr=prs_cpy.dmn_out_vtr;  
      fmc_vtr=prs_cpy.fmc_vtr;      
      var_vtr=prs_cpy.var_vtr;            
      int_vtr=prs_cpy.int_vtr;       
-
+       
      */
-     
-
+       
      fl_in=prs_cpy.fl_in;
      in_id=prs_cpy.in_id;
      fl_out=prs_cpy.fl_out;
      out_id=prs_cpy.out_id;         
+     r_out_id=prs_cpy.r_out_id;     
 
      ntl_scn=prs_cpy.ntl_scn;
      FORTRAN_IDX_CNV=prs_cpy.FORTRAN_IDX_CNV;
@@ -123,6 +125,13 @@ var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
 const std::string &snm,    /* I [sng] variable name constant */
 bool bfll);                /* if true fill var with data */ 
+
+
+int                        /* O [flg] non-zero if var is in Input or Ouptut or int_vtr*/
+ncap_var_init_chk(         
+const std::string &snm     /* I [sng] variable name constant */
+);                       
+
 
 int                        /* O  [bool] bool - true if sucessful */
 ncap_var_write             /*    [fnc] Write var to output file prs_arg->fl_out */ 

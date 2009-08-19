@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.14 2009-05-02 20:44:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.15 2009-08-19 12:43:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -55,7 +55,7 @@ bool bfll){
 
   
   // INITIAL SCAN
-  if(ntl_scn){
+    if(ntl_scn){
     // check int vtr
     Nvar=int_vtr.find(var_nm);
     // check var_vtr (output)  
@@ -188,8 +188,8 @@ bool bfll){
       dmn_tp_out.push_back(dmn_fd);
         
     } // end idx
-    // no longer needed
 
+    // no longer needed
     (void)nco_free(dim_id);
 
     // define new dims in output if necessary  
@@ -240,6 +240,45 @@ bool bfll){
   return var;
 
 }            
+
+
+int 
+prs_cls::ncap_var_init_chk(
+const std::string &var_nm){
+int rcd;  
+int var_id;
+NcapVar *Nvar;
+
+
+   // check output
+   Nvar=var_vtr.find(var_nm);
+   if(Nvar)
+     return 1;
+  
+  // initial scan
+   if(ntl_scn){
+     // check int vtr
+     Nvar=int_vtr.find(var_nm);
+     if(Nvar)
+       return 1;
+   }   
+
+
+   // Check output file for ID 
+  rcd=nco_inq_varid_flg(out_id,var_nm.c_str(),&var_id);
+  if(rcd == NC_NOERR)
+    return 1;
+
+
+   // Check input file for ID 
+  rcd=nco_inq_varid_flg(in_id,var_nm.c_str(),&var_id);
+  if(rcd == NC_NOERR)
+    return 1;
+
+  // var not in Input or Output or int_vtr
+  return 0;
+
+}
 
 
 int 
