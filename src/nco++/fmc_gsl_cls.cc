@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.39 2009-07-08 14:17:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.40 2009-08-19 12:46:01 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -4337,6 +4337,528 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 
 }// end gsl_spl_cls::fnd 
+
+
+
+//GSL  /****************************************/
+// gsl Least Squares Fitting
+  gsl_fit_cls::gsl_fit_cls(bool  flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+     fmc_vtr.push_back( fmc_cls("gsl_fit_linear",this,(int)PLIN));
+     fmc_vtr.push_back( fmc_cls("gsl_fit_wlinear",this,(int)PWLIN));
+     fmc_vtr.push_back( fmc_cls("gsl_fit_linear_est",this,(int)PLIN_EST));
+     fmc_vtr.push_back( fmc_cls("gsl_fit_mul",this,(int)PMUL));
+     fmc_vtr.push_back( fmc_cls("gsl_fit_wmul",this,(int)PWMUL));
+     fmc_vtr.push_back( fmc_cls("gsl_fit_mul_est",this,(int)PMUL_EST));
+    }
+  }
+
+
+  var_sct *gsl_fit_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl_fit_cls::fnd");
+    bool is_mtd;
+    int fdx=fmc_obj.fdx();   //index
+    RefAST tr;    
+    std::vector<RefAST> vtr_args; 
+       
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    }
+ 
+
+    is_mtd=(expr ? true: false);
+
+    switch(fdx){
+      case PLIN:
+      case PWLIN:
+      case PMUL:
+      case PWMUL:
+        return fit_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+        break;
+      case PLIN_EST:
+      case PMUL_EST:
+        return fit_est_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+        break;
+    }
+
+
+
+} // end gsl_fit_cls::fnd 
+
+
+var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl_fit_cls::fit_fnd");
+    int idx;
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_args;    // actual nunber of args
+    int in_nbr_args; // target number of args
+    int in_val_nbr_args; // number of expressions
+    int ret; 
+    prs_cls* prs_arg=walker.prs_arg;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+    std::string serr;    
+    vtl_typ lcl_typ;
+    
+    var_sct *var_in[12];  
+       
+ 
+    nbr_args=vtr_args.size();  
+
+    switch(fdx){
+      case PLIN:
+	in_nbr_args=10;
+        in_val_nbr_args=4;
+        susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,&co,&c1,&cov00,&cov01,&cov11,&sumsq)";
+	break;   
+      case PWLIN:
+	in_nbr_args=12;
+        in_val_nbr_args=6;
+        susg="usage: status="+sfnm+"(data_x,stride_x,weight,stride_w,data_y,stride_y,&co,&c1,&cov00,&cov01,&cov11,&chisq)";
+	break; 
+      case PMUL:
+	in_nbr_args=7;
+        in_val_nbr_args=4;
+        susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,&c1,&cov11,&sumsq)";
+	break;   
+      case PWMUL:
+	in_nbr_args=9;
+        in_val_nbr_args=6;
+        susg="usage: status="+sfnm+"(data_x,weight,stride_wstride_x,data_y,stride_y,&c1,&cov11,&sumsq)";
+	break;   
+	break;
+    }   
+
+
+    if(nbr_args<in_nbr_args){   
+      serr="function requires "+ nbr2sng(in_nbr_args)+" arguments. You have only supplied "+nbr2sng(nbr_args)+ " arguments\n"; 
+      err_prn(sfnm,serr+susg);
+    }
+    
+    for(idx=0; idx<in_nbr_args  ; idx++){
+
+       lcl_typ=expr_typ(vtr_args[idx]);  
+
+       // deal with regular arguments 
+       if(idx<in_val_nbr_args){ 
+
+	 if(lcl_typ == VCALL_REF || lcl_typ == VDIM ){
+           serr="function requires that " + nbr2sng(idx)+ " argument be a variable name or an expression";
+           err_prn(sfnm,serr+susg);
+         }
+                 
+         var_in[idx] = walker.out(vtr_args[idx]); 
+       
+
+       // deal with call-by-ref variables       
+       }else{
+
+         var_sct *var_tmp;
+	 std::string var_nm;
+         NcapVar  *Nvar;
+
+         var_nm=vtr_args[idx]->getFirstChild()->getText();
+
+	 if(lcl_typ != VCALL_REF) {
+           serr="function requires that " + nbr2sng(idx)+ " argument be a call by reference variable";
+           err_prn(sfnm,serr+susg);
+         }
+
+         // initial scan
+         if(prs_arg->ntl_scn){
+
+           if(prs_arg->ncap_var_init_chk(var_nm))
+             var_tmp=prs_arg->ncap_var_init(var_nm,false);  
+           else
+	     var_tmp=ncap_sclr_var_mk(var_nm,NC_DOUBLE,false);
+           
+	 // final scan
+	 }else{
+	    // we have a problem here - its possible that in the inital scan
+            // that some of the call-by-ref variables have been defined but 
+            // not populated. Cannot use ncap_var_init() as this will attempt
+            // to read var from input as it is unpopulated 
+           Nvar=prs_arg->var_vtr.find(var_nm);
+
+           if(Nvar && Nvar->flg_stt==1){
+	     var_tmp=Nvar->cpyVarNoData();
+             // malloc space for var
+             var_tmp->val.vp=nco_malloc(var_tmp->sz * nco_typ_lng(var_tmp->type));   
+           }    
+           else if(prs_arg->ncap_var_init_chk(var_nm))
+             var_tmp=prs_arg->ncap_var_init(var_nm,true);    
+           else   
+	     var_tmp=ncap_sclr_var_mk(var_nm,NC_DOUBLE,1.0);
+
+	 } //end final scan
+
+         // convert to type double
+         if(!var_tmp->undefined)
+           var_tmp=nco_var_cnf_typ(NC_DOUBLE,var_tmp);
+
+         var_in[idx]=var_tmp;
+           
+       } //end call-by-ref vars
+        
+
+    } // end for  
+
+
+    // inital scan --free up  vars and return 
+    if(prs_arg->ntl_scn){
+      for(idx=0 ; idx<in_nbr_args ;idx++)
+        if(idx<in_val_nbr_args) 
+	  var_in[idx]=nco_var_free(var_in[idx]);
+        else
+          // write newly defined call by ref args
+          // nb this call frees up var_in[idx] 
+          prs_arg->ncap_var_write(var_in[idx],false);
+            
+      return ncap_sclr_var_mk("~gsl_fit_cls",NC_INT,false);   
+    }
+
+    // big switch 
+    switch(fdx){
+
+    case PLIN:{
+      // recall aguments in order in var_in
+      /* 
+      0  x_in
+      1  x stride
+      2  y_in
+      3  y stride
+      4  c0
+      5  c1
+      6  c00 
+      7  c01
+      8  c11
+      9  sumsq       
+      */
+      // convert x,y to type double
+      var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
+      var_in[2]=nco_var_cnf_typ(NC_DOUBLE,var_in[2]);
+    
+      // make x,y  conform 
+      (void)ncap_var_att_cnf(var_in[2],var_in[0]);
+              
+      // convert strides to NC_INT
+      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
+
+      //cast pointers from void 
+      for(idx=0 ; idx< in_nbr_args ;idx++)
+        (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
+
+      // make the call -- 
+      ret=gsl_fit_linear(var_in[0]->val.dp,var_in[1]->val.lp[0],
+                         var_in[2]->val.dp,var_in[3]->val.lp[0],     
+                         var_in[0]->sz,
+                         var_in[4]->val.dp, var_in[5]->val.dp,
+                         var_in[6]->val.dp, var_in[7]->val.dp,
+                         var_in[8]->val.dp, var_in[9]->val.dp);
+        
+      // free up or save values 
+
+
+      } break;   
+
+      case PWLIN:{
+      // recall arguments in order in var_in
+      /* 
+      0  x_in
+      1  x stride
+      2  weight
+      3  weight stride 
+      4  y_in
+      5  y stride
+      6  c0
+      7  c1
+      8  c00 
+      9  c01
+      10 c11
+      11 chisq       
+      */
+      // convert x,w,y to type double
+      var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
+      var_in[2]=nco_var_cnf_typ(NC_DOUBLE,var_in[2]);
+      var_in[4]=nco_var_cnf_typ(NC_DOUBLE,var_in[4]);
+    
+      // make x,w,y all conform 
+      { var_sct **var_arr[3];
+        var_arr[0]=&var_in[0];    
+        var_arr[1]=&var_in[2];    
+        var_arr[2]=&var_in[4];    
+	(void)ncap_var_att_arr_cnf(false,var_arr,3);
+      }        
+      // convert strides to NC_INT
+      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
+      var_in[5]=nco_var_cnf_typ(NC_INT,var_in[5]);   
+
+      //cast pointers from void 
+      for(idx=0 ; idx< in_nbr_args ;idx++)
+        (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
+
+      // make the call -- 
+      ret=gsl_fit_wlinear(var_in[0]->val.dp,var_in[1]->val.lp[0],
+                          var_in[2]->val.dp,var_in[3]->val.lp[0],     
+                          var_in[4]->val.dp,var_in[5]->val.lp[0],     
+                          var_in[0]->sz,
+                          var_in[6]->val.dp, var_in[7]->val.dp,
+                          var_in[8]->val.dp, var_in[9]->val.dp,
+                          var_in[10]->val.dp,var_in[11]->val.dp);
+        
+    
+      } break; 
+
+      case PMUL:{
+      // recall arguments in order in var_in
+      /* 
+      0  x_in
+      1  x stride
+      2  y_in
+      3  y stride
+      4  c1
+      5  cov11
+      6  sumsq 
+      */
+      // convert x,y to type double
+      var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
+      var_in[2]=nco_var_cnf_typ(NC_DOUBLE,var_in[2]);
+    
+      // make x,y  conform 
+      (void)ncap_var_att_cnf(var_in[2],var_in[0]);
+              
+      // convert strides to NC_INT
+      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
+
+      //cast pointers from void 
+      for(idx=0 ; idx< in_nbr_args ;idx++)
+        (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
+
+      // make the call -- 
+      ret=gsl_fit_mul(var_in[0]->val.dp,var_in[1]->val.lp[0],
+                      var_in[2]->val.dp,var_in[3]->val.lp[0],     
+                      var_in[0]->sz,
+                      var_in[4]->val.dp, var_in[5]->val.dp,
+                      var_in[6]->val.dp);        
+
+
+      } break;
+
+      case PWMUL:{
+      // recall arguments in order in var_in
+      /* 
+      0  x_in
+      1  x stride
+      2  weight
+      3  weight stride 
+      4  y_in
+      5  y stride
+      6  c1
+      7  cov11
+      8  sumsq       
+      */
+      // convert x,w,y to type double
+      var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
+      var_in[2]=nco_var_cnf_typ(NC_DOUBLE,var_in[2]);
+      var_in[4]=nco_var_cnf_typ(NC_DOUBLE,var_in[4]);
+    
+      // make x,w,y all conform 
+      { var_sct **var_arr[3];
+        var_arr[0]=&var_in[0];    
+        var_arr[1]=&var_in[2];    
+        var_arr[2]=&var_in[4];    
+	(void)ncap_var_att_arr_cnf(false,var_arr,3);
+      }        
+      // convert strides to NC_INT
+      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
+      var_in[5]=nco_var_cnf_typ(NC_INT,var_in[5]);   
+
+      //cast pointers from void 
+      for(idx=0 ; idx< in_nbr_args ;idx++)
+        (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
+
+      // make the call -- 
+      ret=gsl_fit_wmul(var_in[0]->val.dp,var_in[1]->val.lp[0],
+                          var_in[2]->val.dp,var_in[3]->val.lp[0],     
+                          var_in[4]->val.dp,var_in[5]->val.lp[0],     
+                          var_in[0]->sz,
+                          var_in[6]->val.dp, var_in[7]->val.dp,
+                          var_in[8]->val.dp);
+
+        
+    
+      } break;
+
+
+
+    } // end big switch   
+
+
+    for(idx=0 ; idx< in_nbr_args ;idx++){
+      //cast pointers to void
+      (void)cast_nctype_void(var_in[idx]->type,&var_in[idx]->val);
+      if(idx<in_val_nbr_args)
+        nco_var_free(var_in[idx]);
+      else
+        // nb this write call also frees up pointer  
+        prs_arg->ncap_var_write(var_in[idx],false);
+    }
+    // return status flag
+    return ncap_sclr_var_mk("~gsl_fit_cls",(nco_int)ret);   
+
+
+} // end gsl_fit_cls::fit_fnd 
+
+
+var_sct *gsl_fit_cls::fit_est_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl_fit_cls::fit_est_fnd");
+    bool has_mss_val; 
+    int idx;
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_args;    // actual nunber of args
+    int in_nbr_args; // target number of args
+    int in_val_nbr_args; // number of expressions
+    double mss_val_dbl;
+
+    prs_cls* prs_arg=walker.prs_arg;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+    std::string serr;    
+    
+    var_sct *var_in[12];  
+    var_sct *var_out; 
+       
+ 
+    nbr_args=vtr_args.size();  
+
+    switch(fdx){
+      case PLIN_EST:
+	in_nbr_args=6;
+        in_val_nbr_args=4;
+        susg="usage: status="+sfnm+"(data_x,c0,c1,cov00,cov01,cov11)";
+	break;   
+      case PMUL_EST:
+	in_nbr_args=3;
+        in_val_nbr_args=1;
+        susg="usage: status="+sfnm+"(data_x,c1,cov11)";
+	break; 
+
+    }   
+
+
+    if(nbr_args<in_nbr_args){   
+      serr="function requires "+ nbr2sng(in_nbr_args)+" arguments. You have only supplied "+nbr2sng(nbr_args)+ " arguments\n"; 
+      err_prn(sfnm,serr+susg);
+    }
+    
+    for(idx=0 ; idx<in_nbr_args ;idx++){
+      var_in[idx]=walker.out(vtr_args[idx]);
+      if(!var_in[idx]->undefined)
+	var_in[idx]=nco_var_cnf_typ(NC_DOUBLE,var_in[idx]);
+    }
+
+
+    if(prs_arg->ntl_scn){
+      for(idx=1; idx<in_nbr_args; idx++)
+	nco_var_free(var_in[idx]);
+      return var_in[0]; 
+    }
+
+    var_out=nco_var_dpl(var_in[0]);
+
+    // input args now type double -cast them
+    for(idx=0 ; idx<in_nbr_args ; idx++)
+      (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);       
+
+    (void)cast_void_nctype(var_out->type,&var_out->val);       
+
+    has_mss_val=false;
+    if(var_out->has_mss_val){
+      has_mss_val=true;
+      (void)cast_void_nctype(NC_DOUBLE,&var_out->mss_val);
+      mss_val_dbl=var_out->mss_val.dp[0];    
+      (void)cast_nctype_void(NC_DOUBLE,&var_out->mss_val);
+    }    
+
+
+    switch(fdx){
+
+      case PLIN_EST: {
+        long jdx;
+        long sz;
+        double y_err;
+               
+        sz=var_out->sz;
+        
+        if(has_mss_val){   
+          for(jdx=0 ; jdx<sz;jdx++) 
+            if(var_out->val.dp[jdx] != mss_val_dbl) 
+              gsl_fit_linear_est(var_in[0]->val.dp[jdx],
+                                 var_in[1]->val.dp[0], var_in[2]->val.dp[0],   
+                                 var_in[3]->val.dp[0], var_in[4]->val.dp[0],   
+                                 var_in[5]->val.dp[0], &var_out->val.dp[jdx], &y_err);
+        }else{
+          for(jdx=0 ; jdx<sz;jdx++) 
+              gsl_fit_linear_est(var_in[0]->val.dp[jdx],
+                                 var_in[1]->val.dp[0], var_in[2]->val.dp[0],   
+                                 var_in[3]->val.dp[0], var_in[4]->val.dp[0],   
+                                 var_in[5]->val.dp[0], &var_out->val.dp[jdx], &y_err);
+        }                     
+        
+        } break; 
+
+      case PMUL_EST: {
+        long jdx;
+        long sz;
+        double y_err;
+               
+        sz=var_out->sz;
+ 
+
+        if(has_mss_val){   
+          for(jdx=0 ; jdx<sz;jdx++) 
+            if(var_out->val.dp[jdx] != mss_val_dbl) 
+              gsl_fit_mul_est(var_in[0]->val.dp[jdx], var_in[1]->val.dp[0], 
+                              var_in[2]->val.dp[0], &var_out->val.dp[jdx], &y_err);
+        }else{
+          for(jdx=0 ; jdx<sz;jdx++) 
+              gsl_fit_mul_est(var_in[0]->val.dp[jdx], var_in[1]->val.dp[0], 
+                              var_in[2]->val.dp[0], &var_out->val.dp[jdx], &y_err);
+        }                     
+        
+
+         } break;        
+       
+    } // end big switch
+
+
+    // free up args
+    for(idx=0 ; idx<in_nbr_args ; idx++){
+      (void)cast_nctype_void(var_in[idx]->type,&var_in[idx]->val);       
+      nco_var_free(var_in[idx]);
+    }   
+
+
+    (void)cast_nctype_void(var_out->type,&var_out->val);       
+    
+    return var_out;  
+
+
+
+} // end gsl_fit_cls::fit_est_fnd 
+
+
 
 
 #else // !ENABLE_GSL
