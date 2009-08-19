@@ -34,7 +34,7 @@
 
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_spline.h>
-
+#include <gsl/gsl_fit.h>
 
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
@@ -421,6 +421,21 @@ public:
    gsl_spl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
+};
+
+
+
+//GSL  /****************************************/
+// gsl Least Square Fitting 
+class gsl_fit_cls: public vtl_cls {
+private:
+   enum { PLIN,PWLIN,PLIN_EST,PMUL,PWMUL,PMUL_EST };
+   bool _flg_dbg;
+public:
+   gsl_fit_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *fit_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
+  var_sct *fit_est_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
 };
 
 
