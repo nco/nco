@@ -1,3 +1,7 @@
+2009-08-21  Henry Butowsky  <henryb@hush.com> 
+	* fixed errors with spline interpolation with
+	gsl-1.12 -- big tidy up of gsl_spl_cls()
+
 2009-08-19  Henry Butowsky  <henryb@hush.com> 
 	* Added first cut of gsl least squares fitting to 
 	fmc_gsl_cls
