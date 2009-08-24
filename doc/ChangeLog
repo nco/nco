@@ -1,4 +1,8 @@
 2009-08-21  Henry Butowsky  <henryb@hush.com> 
+	* big tidy up of srt_cls --nb functions for
+	sorting vars
+
+2009-08-21  Henry Butowsky  <henryb@hush.com> 
 	* fixed errors with spline interpolation with
 	gsl-1.12 -- big tidy up of gsl_spl_cls()
 
