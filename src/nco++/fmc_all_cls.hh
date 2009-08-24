@@ -21,7 +21,7 @@
 
 #include "sym_cls.hh" // holder for float/double math function pointers
 #include "map_srt_tmp.hh" // template -used in srt_cls
-
+#include <assert.h>
 
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
@@ -186,6 +186,8 @@ private:
 public:
   srt_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
+  var_sct *mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
 
 };
 
