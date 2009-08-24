@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.21 2009-07-28 10:45:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.22 2009-08-24 14:37:22 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1304,9 +1304,46 @@
 			     		      
     }
   }
+
+
+  var_sct *srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("gsl_fit_cls::fnd");
+    bool is_mtd;
+    int fdx=fmc_obj.fdx();   //index
+    RefAST tr;    
+    std::vector<RefAST> vtr_args; 
+       
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    }
+ 
+
+    is_mtd=(expr ? true: false);
+
+    switch(fdx){
+      case PSORT:
+        return srt_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+        break;
+      case PDSORT:
+        return mst_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+        break;
+    }
+
+
+
+} // end gsl_fit_cls::fnd 
+
+
+
   
-  var_sct * srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
-  const std::string fnc_nm("srt_cls::fnd");
+var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("srt_cls::srt_fnd");
     int nbr_args;
     int fdx=fmc_obj.fdx();
     var_sct *var1=NULL_CEWI;
@@ -1316,57 +1353,26 @@
     std::string var_nm;
     std::string susg;
     prs_cls *prs_arg=walker.prs_arg;    
-    RefAST tr;
-    std::vector<RefAST> vtr_args; 
-
-    styp=(expr ? "method":"function");
-
-    if(expr)
-      vtr_args.push_back(expr);
-
-    if(tr=fargs->getFirstChild()) {
-      do  
-        vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
-    } 
-      
-    nbr_args=vtr_args.size();  
 
 
+    nbr_args=args_vtr.size();  
 
-           
-    if( fdx== PDSORT) {
-      susg="usage: var_out="+sfnm+"(var_exp,var_map)\n";  
-      if(nbr_args<2 )
-        err_prn(sfnm,"Function requires two arguments\n"+susg); 
+    susg="usage: var_out="+sfnm+"(var_exp,&var_map)\n";  
 
-      // only warn on final scan 
-      if(nbr_args>2 && !prs_arg->ntl_scn)
-        err_prn(sfnm,"Function has more than two arguments"); 
 
-      var1=walker.out(vtr_args[0]);
-      var2=walker.out(vtr_args[1]);
-      var2=nco_var_cnf_typ(NC_INT, var2);
-      
-      if(prs_arg->ntl_scn){
-        var2=nco_var_free(var2);
-        return var1;    
-      }
-    }   
-    
+    if(nbr_args==0)
+       err_prn(sfnm,"Function has been called with no arguments"); 
+
        
     if(fdx==PSORT) {
         
-      susg="usage: var_out=sort(var_exp,&var_map)\n";  
-      if(nbr_args==0)
-        err_prn(sfnm,"Function has been called with no arguments"); 
          
-      var1=walker.out(vtr_args[0]);
+      var1=walker.out(args_vtr[0]);
        
       if(nbr_args>1){
-       if(vtr_args[1]->getType() != CALL_REF ) 
+       if(args_vtr[1]->getType() != CALL_REF ) 
          err_prn(sfnm," second argument must be a call by reference variable\n"+susg);   
-       var_nm=vtr_args[1]->getFirstChild()->getText(); 
+       var_nm=args_vtr[1]->getFirstChild()->getText(); 
        var2=prs_arg->ncap_var_init(var_nm,true); 
       }
       if(prs_arg->ntl_scn){
@@ -1439,6 +1445,64 @@
            break; 
 
 
+
+
+
+    }
+
+
+    return var1;
+
+
+} // end srt_cls::srt_fnd()
+
+
+  
+var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("srt_cls::mst_fnd");
+    int nbr_args;
+    int fdx=fmc_obj.fdx();
+    var_sct *var1=NULL_CEWI;
+    var_sct *var2=NULL_CEWI;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+
+    prs_cls *prs_arg=walker.prs_arg;    
+
+           
+    nbr_args=args_vtr.size();
+
+    susg="usage: var_out="+sfnm+"(var_exp,var_map)\n";  
+
+
+    if(nbr_args<2 )
+       err_prn(sfnm,"Function requires two arguments\n"+susg); 
+
+
+    // only warn on final scan 
+    if(nbr_args>2 && !prs_arg->ntl_scn)
+      err_prn(sfnm,"Function has more than two arguments"); 
+
+
+    var1=walker.out(args_vtr[0]);
+    var2=walker.out(args_vtr[1]);
+    var2=nco_var_cnf_typ(NC_INT, var2);
+
+
+
+
+    if( fdx== PDSORT) {
+      
+      if(prs_arg->ntl_scn){
+        var2=nco_var_free(var2);
+        return var1;    
+      }
+    }   
+    
+   
+    switch(fdx) {
+      
+
       case PDSORT:{
           char *cp_in;
           char *cp_out;
@@ -1499,7 +1563,9 @@
     return var1;
 
 
-  }  
+} // end srt_cls::mst_fnd()  
+
+
 
 
 
@@ -1523,7 +1589,7 @@
     std::string susg;
     std::string sfnm =fmc_obj.fnm(); 
     RefAST tr;
-    std::vector<RefAST> vtr_args;    
+    std::vector<RefAST> args_vtr;    
     // de-reference
     prs_cls* prs_arg=walker.prs_arg;
 
@@ -1531,15 +1597,15 @@
 
 
     if(expr)
-      vtr_args.push_back(expr);
+      args_vtr.push_back(expr);
 
     if(tr=fargs->getFirstChild()) {
       do  
-	vtr_args.push_back(tr);
+	args_vtr.push_back(tr);
       while(tr=tr->getNextSibling());    
     } 
       
-     nbr_args=vtr_args.size();  
+     nbr_args=args_vtr.size();  
 
 
     // no arguments - bomb out
@@ -1552,7 +1618,7 @@
         wrn_prn(sfnm,"Function has been called with more than one argument");
            
 
-    var1=walker.out(vtr_args[0]);   
+    var1=walker.out(args_vtr[0]);   
 
 
 
@@ -1601,7 +1667,7 @@
   std::string sfnm=fmc_obj.fnm();
 
   RefAST tr;
-  std::vector<RefAST> vtr_args; 
+  std::vector<RefAST> args_vtr; 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;            
   vtl_typ lcl_typ;
@@ -1610,15 +1676,15 @@
  
 
   if(expr)
-      vtr_args.push_back(expr);
+      args_vtr.push_back(expr);
 
     if(tr=fargs->getFirstChild()) {
       do  
-	vtr_args.push_back(tr);
+	args_vtr.push_back(tr);
       while(tr=tr->getNextSibling());    
     } 
       
-  nbr_args=vtr_args.size();  
+  nbr_args=args_vtr.size();  
 
   susg="usage: var_out="+sfnm+"(start_exp,inc_exp,$dim)"; 
 
@@ -1634,8 +1700,8 @@
 
    
   
-  var1=walker.out(vtr_args[0]);  
-  var2=walker.out(vtr_args[1]);  
+  var1=walker.out(args_vtr[0]);  
+  var2=walker.out(args_vtr[1]);  
 
   
   if(prs_arg->ntl_scn && var1->undefined ){
@@ -1646,13 +1712,13 @@
           
 
   /* third argument must be a single dimension */
-  if(vtr_args[2]->getType() != DIM_ID ) 
+  if(args_vtr[2]->getType() != DIM_ID ) 
     err_prn(sfnm,"Third argument must be a dimension\n"+susg); 
 
   // cast a var from using the dim arg
   {
    std::vector<std::string> cst_vtr;              
-   cst_vtr.push_back(vtr_args[2]->getText());
+   cst_vtr.push_back(args_vtr[2]->getText());
      
    var_ret=ncap_cst_mk(cst_vtr,prs_arg);
    
