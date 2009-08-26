@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.85 2009-08-17 16:41:02 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.86 2009-08-26 14:33:33 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1211,6 +1211,7 @@ double *og_val)         /* O difference between two units string */
 
 # else /* !HAVE_UDUNITS2_H */
 
+
 int /* [rcd] Successful conversion returns 0 */
 nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 (const int dmn_id, /* I [idx] netCDF dimension ID */
@@ -1220,6 +1221,9 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 {
   int rcd;
   char *usr_unt_sng; /* [sng] User-specified unit string */
+  double slp;
+  double incpt;
+  double crr_val;
 
   utUnit udu_sct_in; /* UDUnits structure, input units */
   utUnit udu_sct_out; /* UDUnits structure, output units */
@@ -1254,60 +1258,59 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 
   
 
-  if(utIsTime(&udu_sct_out) && utHasOrigin(&udu_sct_out)){
- 
 
-    int dt[5]; /* 0-year, 1-month, 2-day, 3-hour, 4-minute */
-    double sec;
-    double *crr_val=lmt_val; /* Pointer to set min/max value */
-          
-    /* Parse limits into years, months, day, etc. */
-    (void)nco_prs_time(lmt_sng,dt,&sec);
-    
+  /* check if disk units is a timestamp if so */
+  if( strstr(fl_unt_sng," from ") || strstr(fl_unt_sng," since ") || strstr(fl_unt_sng," after ") ){
 
-    rcd=utInvCalendar(dt[0],dt[1],dt[2],dt[3],dt[4],sec,&udu_sct_out,crr_val);
-    
-  }else{ /* if utIsTime() && utHasOrigin */
+  // prefix output units with s@ so that ut_parse works
+    if(strncmp("s@", lmt_sng,2)){
+      usr_unt_sng=(char*)nco_malloc( (strlen(lmt_sng)+3) *sizeof(char) );
+      strcpy(usr_unt_sng,"s@");
+      strcat(usr_unt_sng,lmt_sng);
+    }else{
+      usr_unt_sng=strdup(lmt_sng);
+    }
 
-    double slp; /* Slope */
-    double incpt; /* Intercept */
-    double crr_val; /* Current value */ 
+    crr_val=0.0;
 
-    /* Parse user-specified unit */
-    usr_unt_sng=strchr(lmt_sng,' ');
-    /* Advance past space delimiter
-       Will not be NULL since nco_lmt_typ() checked for that */
-    usr_unt_sng++;
-    
-    /* Quick return if specified and supplied units are equal */
-    if(strcmp(usr_unt_sng,fl_unt_sng) == 0){
-      *lmt_val=strtod(lmt_sng,&usr_unt_sng); /* Convert to double */
-      (void)utTerm();
-      return EXIT_SUCCESS;
-    } /* endif */
+  /* assume we are dealing with regular output units */
+  }else{
+    usr_unt_sng=(char*)nco_calloc( strlen(lmt_sng)+1, sizeof(char));
+    /* number space units */
+    /* this should be gaurranted by calling function */
+    sscanf(lmt_sng,"%lg %s", &crr_val,usr_unt_sng);    
+  }
 
-    rcd=utScan(usr_unt_sng,&udu_sct_in);
-    if(rcd == UT_EUNKNOWN){
-      (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" is not in UDUnits database.\n",usr_unt_sng);
-      (void)utTerm();
-      return EXIT_FAILURE;
-    } /* endif */
 
-    rcd=utConvert(&udu_sct_in,&udu_sct_out,&slp,&incpt);
-    if(rcd == UT_ECONVERT){
-      (void)fprintf(stderr,"ERROR: user specified unit \"%s\" cannot be converted into file units \"%s\"\n",usr_unt_sng,fl_unt_sng);
-      (void)utTerm();
+  /* units string to convert to */
+  rcd=utScan(usr_unt_sng,&udu_sct_in); 
+  if(rcd !=0){
+    if(rcd == UT_EINVALID)
+      (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",usr_unt_sng);
 
-      return EXIT_FAILURE;
-    } /* endif */
-    /* Convert to disk-based units */
-    crr_val=strtod(lmt_sng,&usr_unt_sng);
-    crr_val=slp*crr_val+incpt;
-    *lmt_val=crr_val;
-    
-  } /* !utIsTime() ... */
+    if(rcd == UT_ESYNTAX)
+      (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",usr_unt_sng);
+
+    if(rcd == UT_EUNKNOWN)
+      (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",usr_unt_sng);
+
+    (void)utTerm(); /* Free memory taken by UDUnits library */
+    return EXIT_FAILURE;
+  } /* endif unkown type */
+
+
+  rcd=utConvert(&udu_sct_in,&udu_sct_out,&slp,&incpt);
+   if(rcd == UT_ECONVERT){
+     (void)fprintf(stderr,"ERROR: user specified unit \"%s\" cannot be converted into file units \"%s\"\n",usr_unt_sng,fl_unt_sng);
+     (void)utTerm();
+     return EXIT_FAILURE;
+  }
+
+  *lmt_val=slp*crr_val+incpt;;
 
   (void)utTerm(); /* Free memory taken by UDUnits library */
+
+  (void)nco_free(usr_unt_sng);
 
   return EXIT_SUCCESS; /* Successful conversion */
 }  /* end nco_lmt_udu_cnv() */
