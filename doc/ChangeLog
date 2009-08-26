@@ -1,3 +1,8 @@
+2009-08-26  Henry Butowsky  <henryb@hush.com> 
+	* Changes to nco_lmt_udu_cnv() udunits1 code branch
+	Bare date is now parsed by utScan() instead of being manually
+	parsed
+
 2009-08-21  Henry Butowsky  <henryb@hush.com> 
 	* big tidy up of srt_cls --nb functions for
 	sorting vars
