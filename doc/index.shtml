@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.551 2009-08-25 20:26:05 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.552 2009-08-28 20:36:54 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -7,8 +7,8 @@ http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
-scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png dust.ess.uci.edu:/var/www/html/nco
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
+scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png dust.ess.uci.edu:/var/www/html/nco
 scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:/var/www/html/nco/src
 -->
@@ -94,16 +94,20 @@ Try to disable Spammers' machines:
 
 <td>
 <img src="nco.png" height=180 width=180 align=top>
+<img src="logo_pch.png" height=321 width=195 align=top>
 <img src="logo_cog.png" height=349 width=227 align=top>
 <img src="logo_cog_nmr.png" height=100 width=251 align=top>
-<img src="logo_pch.png" height=321 width=195 align=top>
+<img src="logo_srl.png" height=92 width=250 align=top>
 <p>
-The original NCO logo&hellip;and contenders from 
+The original NCO logo&hellip;and (in order of date received) 
+contenders from 
+Tony Freeman (patch), 
 Rich Signell (cogs),
 Rob Hetland (numeric cog), and
-Tony Freeman (the patch).<br>
-Which do you prefer? The Mandelblob, the patch, or a cog?<br>
-Can you improve these or create a better one? Send it in!<br>
+Andrea Cimatoribus (spiral).<br>
+Which do you prefer? The Mandelblob, the patch, a cog, the spiral?<br>
+Can you improve these or create a better one? Send it in!
+Keep the size &lt;250&times;250 pixels.<br>
 </td>
 
 </table>

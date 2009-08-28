@@ -1,24 +1,33 @@
+2009-08-28  Charlie Zender  <zender@uci.edu>
+
+	* Add spiral logo by Andrea Cimatoribus to bakeoff
+
 2009-08-26  Henry Butowsky  <henryb@hush.com> 
 	* Changes to nco_lmt_udu_cnv() udunits1 code branch
 	Bare date is now parsed by utScan() instead of being manually
 	parsed
 
-2009-08-21  Henry Butowsky  <henryb@hush.com> 
-	* big tidy up of srt_cls --nb functions for
-	sorting vars
+2009-08-25  Charlie Zender  <zender@uci.edu>
+
+	* Add numeric cog logo by Rob Hetland to the bakeoff
 
 2009-08-21  Henry Butowsky  <henryb@hush.com> 
-	* fixed errors with spline interpolation with
-	gsl-1.12 -- big tidy up of gsl_spl_cls()
+	* Tidy-up of srt_cls---functions for sorting vars
+
+2009-08-21  Henry Butowsky  <henryb@hush.com> 
+
+	* Fix spline interpolation with	gsl-1.12
+
+	* Tidy-up gsl_spl_cls()
 
 2009-08-19  Henry Butowsky  <henryb@hush.com> 
-	* Added first cut of gsl least squares fitting to 
-	fmc_gsl_cls
+
+	* Add first cut of GSL least squares fitting to fmc_gsl_cls
 
 2009-08-17  Henry Butowsky  <henryb@hush.com> 
-	* mods to nco_lmt_typ() so that a plain date of 
-	the form "%d-%d-%d" is recognized as a valid udunits
-	string
+
+	* Modify nco_lmt_typ() so plain date of form "%d-%d-%d" is
+	recognized as a valid UDUnits string
 
 2009-08-10  Charlie Zender  <zender@neige>
 
