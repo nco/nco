@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.516 2009-08-31 16:11:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.517 2009-08-31 16:22:12 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -302,6 +302,7 @@ endif
 ifndef HDF5_LIB
  HDF5_LIB := ${HDF5_ROOT}/lib # Directory containing libhdf5.a
 endif
+# fxm: This is a temporary hack: Machines with MPI_ROOT set are assumed to have parallel filesystems for NCO builds
 ifdef MPI_ROOT
  HDF5_INC += -I${MPI_ROOT}/include # Directory containing mpi.h
  HDF5_LIB += ${MPI_ROOT}/lib # Directory containing libmpi.a
