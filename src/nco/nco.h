@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.143 2009-08-07 22:49:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.144 2009-09-11 15:28:32 hmb Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -361,6 +361,7 @@ extern "C" {
     long srd; /* Stride of hyperslab */
     double origin;   /* used for ncra,ncrcat to time rebase co-ordinate var */
     char *re_bs_sng; /* used for ncra,ncrcat to time rebase co-ordinate -holds unit attribue from first file */
+    int lmt_cal; /* used for ncra,ncrcat to store an enum of the calendar type attribute */
   } lmt_sct;
 
   /* Container holding all limit structures indexible by dimension */
