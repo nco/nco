@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.39 2009-07-14 12:30:17 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.40 2009-09-11 15:32:29 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -41,6 +41,8 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
 
+#include "nco_cal.h" /* Multi-Calendar functions */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -65,7 +67,8 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
 char * /* O [sng] Units string */
 nco_lmt_get_udu_att /* Successful conversion returns units attribute otherwise null */
 (const int nc_id, /* I [idx] netCDF file ID */
- const int var_id); /* I [id] Variable ID whose attribute to read */
+ const int var_id,
+ const char *att_nm); /* I [id] Variable ID whose attribute to read */
 
 lmt_sct ** /* O [sct] Pointer to free'd structure list */
 nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
@@ -97,25 +100,6 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
 int /* O [enm] Limit type */
 nco_lmt_typ /* [fnc] Determine limit type */
 (char *sng);/* I [ptr] Pointer to limit string */
-
-int /* [rcd] Successful conversion returns 0 */
-nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
-(const int dmn_id, /* I [idx] netCDF dimension ID */
- const char* fl_unt_sng, /* I [ptr] string with disk units attribute */ 
- char *lmt_sng, /* I [ptr] Limit string */
- double *lmt_val); /* O [val] Limit coordinate value */ 
-
-void
-nco_prs_time /* Parse time limits into years, months, day, etc. */
-(const char * const in_sng, /* I [sng] String to parse */
- int * const dt, /* O [sct] Time decomposed into longs */
- double * const out_sec); /* O [s] Double precision seconds */
-
-int                 /* [rcd] Successful conversion returns 0 */
-nco_lmt_clc_org(    /* [fnc] Difference between two co-ordinate units */      
-const char* fl_unt_sng, /* I [ptr] units attribute string from disk  */     
-const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-double *og_val);        /* O [ptr]                                   */
 
 
 #ifdef __cplusplus
