@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.517 2009-08-31 16:22:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.518 2009-09-16 00:10:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -54,7 +54,7 @@
 # cd ${HOME}/nco/bld;make OMP=Y CUDA=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
 # cd ${HOME}/nco/bld;make OMP=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
-# cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet
+# cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib LINUX_CC=mpicc UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # pbs
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNCO_GSL_MINOR_VERSION=4' allinone;cd - # esmf
