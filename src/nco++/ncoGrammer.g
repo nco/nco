@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.168 2009-07-22 10:26:17 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.169 2009-09-18 15:21:23 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -3187,14 +3187,35 @@ var=NULL_CEWI;
 
               var=var1;
                 
-           }
+           }else{
+
+           /* A sophisticated hack var->dim currently contains 
+              the local dims from dmn_vtr . We cannot leave them in 
+              place as they will never be freed up, and if the var is 
+              copied then complications will result. 
+              So we replace them with the regular dims in
+              prs_arg->dmn_out_vtr.
+
+              Currently only one function explicitly references these dims
+              This is the agg_cls::fnd -- The  Aggregate Functions
+              
+              Unpredicable behaviour will result when this hyperslabbed var 
+              is passed to other functions
+               
+               
+           */                      
+             for(idx=0 ; idx<nbr_dmn; idx++)
+                 var->dim[idx]=prs_arg->dmn_out_vtr.find(dmn_vtr[idx]->nm);  
+            
+           }  
 
 
-          
           //free vectors
 
           for(idx=0 ; idx < nbr_dmn ; idx++)
-            (void)nco_dmn_free(dmn_vtr[idx]);
+             (void)nco_dmn_free(dmn_vtr[idx]); 
+               ;
+            
 
           end1: ;
           for(idx=0 ; idx < nbr_dmn ; idx++)
