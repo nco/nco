@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.22 2009-08-24 14:37:22 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.23 2009-09-18 15:22:40 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -82,6 +82,7 @@
             int idx;
             int nbr_dim;
             dmn_sct **dim;
+            dmn_sct **dim_nw=NULL_CEWI;  
             var_sct *var=NULL_CEWI;
             var_sct *var1=NULL_CEWI;
            
@@ -155,6 +156,7 @@
              if(vtr_args.size() >0) 
                dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
 
+             
             
             // Initial scan 
             if(prs_arg->ntl_scn){
@@ -183,6 +185,37 @@
                 var1=nco_var_free(var1);
                 return var;
             } // end Initial scan
+
+
+            // deal with a hyperslab 
+            if(var1->has_dpl_dmn){   
+                
+              // can only process an irregular hyperslab if avergaing over all dimensions 
+              // else bomb out 
+              
+              if(dmn_vtr.size() >0)
+                err_prn(sfnm, "Cant deal with Irregular hyperslab\n");
+	     
+              // create local copy of dims - The dim list created by var_lmt only
+              // contains the regular dims from output. The srt/cnt/srd/end has been
+              // lost. So this hack recreates the dims with this information.
+              // since var1->dim isn't freed up when the var is freed up 
+              // these dims are freed up separatly. The new dims are not propagated
+              // into var as var is always scalar --see code above 
+      
+              dim_nw=(dmn_sct**)nco_malloc(var1->nbr_dim*sizeof(dmn_sct*));
+
+	      for(idx=0 ; idx<var1->nbr_dim; idx++){ 
+                dim_nw[idx]=nco_dmn_dpl(var1->dim[idx]);   
+                dim_nw[idx]->srt=var1->srt[idx];
+                dim_nw[idx]->end=var1->end[idx];
+                dim_nw[idx]->cnt=var1->cnt[idx];
+                dim_nw[idx]->srd=var1->srd[idx];
+                   
+	        var1->dim[idx]=dim_nw[idx]; 
+              }
+
+            }  
             
             if(dmn_vtr.size() >0){
                 dim=&dmn_vtr[0];
@@ -250,6 +283,14 @@
                 } 
                 // var1 is freed in nco_var_avg()
             }
+
+            // free local dim list if necessary
+            if(dim_nw){
+	      for(idx=0; idx<nbr_dim;idx++)
+		dim_nw[idx]=nco_dmn_free(dim_nw[idx]);
+              nco_free(dim_nw);
+            }  		 
+               
             return var;                
 	    }     
             
