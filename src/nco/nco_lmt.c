@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.87 2009-09-11 15:31:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.88 2009-09-21 12:49:35 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -299,31 +299,34 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   lmt.origin=0.0;
   /* Get variable ID of coordinate */
   rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
-  if(rcd==NC_NOERR)
+  if(rcd==NC_NOERR){
+    char *cal_sng=NULL_CEWI;
+ 
     fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"units"); /* units attribute of co-ordinate var */
+    cal_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* calendar attribute */
 
-  if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
+    if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
     if(nco_cal_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cal,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
  
-  /* for ncra, ncrcat the "calendar" attribute has been read in main() */
-  /* doing this to avoid multiple reads of the calendar att in multifile
-     operations */
-  if(!rec_dmn_and_mlt_fl_opr){
-    char*cal_sng; 
 
-    cal_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar");
-    if(cal_sng){
-      lmt.lmt_cal=nco_cal_get_cal_typ(cal_sng); 
-      cal_sng=nco_free(cal_sng);
-    }else{
-      lmt.lmt_cal=cal_void;
+    /* for ncra, ncrcat the "calendar" attribute has been read in main() 
+        avoid multiple reads of the calendar att in multifile
+     operations */
+    if(!rec_dmn_and_mlt_fl_opr){
+      if(cal_sng)
+        lmt.lmt_cal=nco_cal_get_cal_typ(cal_sng); 
+       else
+        lmt.lmt_cal=cal_void;
     }  
-  }      
-      
+    if(cal_sng)
+      cal_sng=nco_free(cal_sng);
+   
+  } /* end rcd */
+    
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
     double *dmn_val_dp;
     
