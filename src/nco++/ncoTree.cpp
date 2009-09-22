@@ -4221,14 +4221,35 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			var=var1;
 			
-			}
+			}else{
 			
+			/* A sophisticated hack var->dim currently contains 
+			the local dims from dmn_vtr . We cannot leave them in 
+			place as they will never be freed up, and if the var is 
+			copied then complications will result. 
+			So we replace them with the regular dims in
+			prs_arg->dmn_out_vtr.
+			
+			Currently only one function explicitly references these dims
+			This is the agg_cls::fnd -- The  Aggregate Functions
+			
+			Unpredicable behaviour will result when this hyperslabbed var 
+			is passed to other functions
+			
+			
+			*/                      
+			for(idx=0 ; idx<nbr_dmn; idx++)
+			var->dim[idx]=prs_arg->dmn_out_vtr.find(dmn_vtr[idx]->nm);  
+			
+			}  
 			
 			
 			//free vectors
 			
 			for(idx=0 ; idx < nbr_dmn ; idx++)
-			(void)nco_dmn_free(dmn_vtr[idx]);
+			(void)nco_dmn_free(dmn_vtr[idx]); 
+			;
+			
 			
 			end1: ;
 			for(idx=0 ; idx < nbr_dmn ; idx++)
@@ -4238,7 +4259,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			end2: var_rhs=nco_var_free(var_rhs); 
 			
 			
-#line 4242 "ncoTree.cpp"
+#line 4263 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {

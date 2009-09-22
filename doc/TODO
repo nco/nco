@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1063 2009-08-08 00:22:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1064 2009-09-22 04:27:28 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -530,7 +530,6 @@ nco817. Document how to work with 1D/2D coordinate grids
 	ncks -H -v '.?_[0-9]D.?' ~/nco/data/in.nc
 nco821. ncrename netCDF4 regression
 	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncks
-	ncks -h -O -C --fl_fmt=netcdf4 -v lat ~/nco/data/in.nc ~/foo.nc
 	ncks -O -C --fl_fmt=classic -v lat ~/nco/data/in.nc ~/foo.nc
 	ncrename -O -D 1 -d lat,new_lat -v lat,new_lat ~/foo.nc # works
 	ncks -O -C --fl_fmt=netcdf4 -v lat ~/nco/data/in.nc ~/foo.nc

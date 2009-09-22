@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.122 2009-08-10 22:32:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.123 2009-09-22 04:27:28 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -704,7 +704,7 @@ int nco_def_var_chunking
      NCO with netCDF4 versions pre- and post-200906, e.g., 
      netcdf-4.1-beta1-snapshot2009050200 has old behavior while
      netcdf-4.1-beta1-snapshot2009071200 has new behavior.
-     Finding one size fits all method may be difficult! */
+     Finding one-size-fits-all method is difficult! */
   /*  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,cnk_sz);*/
   rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,(size_t *)cnk_sz);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_chunking()");
