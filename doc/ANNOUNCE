@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.339 2009-09-22 04:37:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.340 2009-09-22 04:45:29 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.0 are ready. 
 
@@ -34,7 +34,16 @@ D. NCO improves support for the netCDF4 NC_STRING atomic type.
    Ragged arrays of strings are finally here! Let's use them.
    http://nco.sf.net/nco.html#nco4
 
-G. Support CF calendar attribute for calendar= 360_days, 365_days
+E. Dimension-reduction to scalars works with irregular hyperslabs.
+   Commands that now work include
+   scalar=avg(three_dmn_var_dbl(0:1,:,0:3));
+   scalar=total(three_dmn_var_dbl(0:1,:,0:3)); 
+   Formerly these required multiple steps to ensure that the
+   intermediate dimension sizes used in the hyperslabs were present 
+   on disk. 
+
+G. Support CF "calendar" attribute = no_leap, 360_day, 365_day.
+   Now time-based hyperslabs understand common model calendars!
 
 "Sticky" reminders:
 

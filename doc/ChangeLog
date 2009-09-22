@@ -1,3 +1,7 @@
+2009-09-21  Charlie Zender  <zender@uci.edu>
+
+	* Implement Intel mpicc/mpiCC compilers on greenplanet with lustre
+
 2009-09-11  Henry Butowsky  <henryb@hush.com> 
 
 	* Committed first cut of nco_cal.{c,h}

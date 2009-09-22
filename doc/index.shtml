@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.552 2009-08-28 20:36:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.553 2009-09-22 04:45:29 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -119,7 +119,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2009 Late Summer: NCO 4.0.0 (Bilinear interpolation) (TBD)</li>
+<li>2009 Late Summer: NCO 4.0.0 (Bilinear interpolation, calendar attribute) (TBD)</li>
 
 <li>2009 Jul&nbsp;15: NCO 3.9.9 (chunking, rebasing, GSL stats/interp)</li>
 
@@ -512,6 +512,7 @@ Spectral toolkit?
 <li><b>NCO/SDO 4.0.0</b>: (<i>In progress</i>) 
 Bilinear interpolation, GSL fitting; 
 Chunking in all operators;
+CF calendar attribute;
 <li><b>NCO/SDO 3.9.9</b>: 
 netCDF4 chunking and <tt>NC_STRING</tt> support; 
 GSL statistics, interpolation functions;
