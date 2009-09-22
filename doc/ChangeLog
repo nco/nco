@@ -1,12 +1,13 @@
 2009-09-11  Henry Butowsky  <henryb@hush.com> 
-	* commited first cut of nco_cal.{c,h}
-	*These are calendar functions for hyperslabbing coordinate vars
-	with the the cf attribute "calendar". Currently supported
-	are "360_day","no_leap","365_day" -- If any other atts are specified then
-        hyperslab date evaluation defaults to "standard" which is the 
-	udunits1/2 calendar functionality
-        It is important to note that regardless of the chosen calendar type 
-	all date strings are parsed by udunits1/2
+
+	* Committed first cut of nco_cal.{c,h}
+
+	* These are calendar functions for hyperslabbing coordinate
+	variables with CF attribute "calendar". Currently supported
+	are "360_day","no_leap","365_day". Other values for date
+	evaluation default to "standard", the  	UDUnits1/2 calendar
+	functionality. NB: regardless of the chosen calendar type all date
+	strings are parsed by UDUnits1/2 
 	
 2009-08-28  Charlie Zender  <zender@uci.edu>
 

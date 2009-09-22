@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.551 2009-07-16 02:45:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.552 2009-09-22 04:37:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -437,7 +437,7 @@ Irvine, California@*
 
 @sp 2
 @acronym{NCO} has been generously supported from 2004--2008 by US 
-National Science Foundation (@acronym{NSF})grant 
+National Science Foundation (@acronym{NSF}) grant 
 @uref{http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203,IIS-0431203}. 
 This support allowed me to maintain and extend core @acronym{NCO} code,
 and others to advance @acronym{NCO} in new directions: 
@@ -3901,8 +3901,10 @@ lon_gds attribute 2: units, size = 6 NC_CHAR, value = degree
 @end example
 In this example @code{lat_gds} and @code{lon_gds} represent the 
 latitude or longitude, respectively, of cell-based variables.
-These coordinates (must) have the same dimension (@code{gds_crd}, in
-this case) as the cell-based variables.
+These coordinates (must) have the same single dimension (@code{gds_crd},
+in this case) as the cell-based variables.
+And the coordinates must be one-dimensional---multidimensional
+coordinates will not work.
 
 This infrastructure allows @acronym{NCO} to identify, interpret, and
 process (e.g., hyperslab) the variables on cell-based grids as easily
@@ -11596,8 +11598,7 @@ where @math{@var{thr_min} <= @var{msk_var} <= @var{thr_max}}.
 @chapter Contributing
 @cindex contributing
 We welcome contributions from anyone.
-The @acronym{NCO} project homepage at
-@uref{https://sf.net/projects/nco}
+The project homepage at @uref{https://sf.net/projects/nco}
 contains more information on how to contribute. 
 
 @cindex PayPal
