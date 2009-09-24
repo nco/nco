@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.552 2009-09-22 04:37:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.553 2009-09-24 15:40:19 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4087,6 +4087,34 @@ non-leading character position (a dash in a leading character position
 is a negative sign). 
 @acronym{NCO} assumes that a non-leading dash in a limit string
 indicates that a UDUnits date conversion is requested.
+
+@noindent
+As of @acronym{NCO 4.0.0} some of calendar attributes as specified by  the CF conventions are supported. The unsupported types default to mixed Gregorian/Julian as defined by UDUunits.
+@table @asis
+@item @strong{Supported types:  } 
+ "365_day"/"no_leap", "360_day", "gregorian", "standard" 
+@item  @strong{Unsupported types:} 
+"366_day"/"all_leap","proleptic_gregorian","julian","none" 
+@end table
+
+@noindent An Example: Consider the following netcdf variable
+
+@example
+variables:
+  double lon_cal(lon_cal) ;
+    lon_cal:long_name = "lon_cal" ;
+    lon_cal:units = "days since 1964-2-28 0:0:0" ;
+    lon_cal:calendar = "365_day" ;
+data:
+  lon_cal = 1,2,3,4,5,6,7,8,9,10;
+
+So the command 
+"ncks -v lon_cal -d lon_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' in.nc out.nc"
+Results in the hyperslab lon_cal=1,2,3,4   
+
+
+@end example 
+
 
 @cindex MKS units
 @cindex God
