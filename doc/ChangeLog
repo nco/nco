@@ -1,3 +1,6 @@
+2009-09-24  Henry Butowsky  <henryb@hush.com> 
+	* added to manual a sub-section on calendar CF support in the
+	udunits node
 2009-09-21  Charlie Zender  <zender@uci.edu>
 
 	* Implement Intel mpicc/mpiCC compilers on greenplanet with lustre
