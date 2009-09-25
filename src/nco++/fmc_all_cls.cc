@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.23 2009-09-18 15:22:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.24 2009-09-25 13:21:30 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -81,6 +81,7 @@
             int nbr_args;
             int idx;
             int nbr_dim;
+            int avg_nbr_dim; 
             dmn_sct **dim;
             dmn_sct **dim_nw=NULL_CEWI;  
             var_sct *var=NULL_CEWI;
@@ -121,6 +122,7 @@
 
 
             var1=walker.out(vtr_args[0]);
+            nbr_dim=var1->nbr_dim;  
 
             // Process function arguments if any exist !! 
             for(idx=1; idx<nbr_args; idx++){  
@@ -153,15 +155,15 @@
 
              } // end for 
 
-             if(vtr_args.size() >0) 
+	    // Important to note that dmn_vtr contains dim pointers
+            // picked up from var1->dim so there is no need to free them 
+             if(vtr_args.size() >1) 
                dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
 
              
             
             // Initial scan 
             if(prs_arg->ntl_scn){
-                nbr_dim=var1->nbr_dim;
-                
                 if(var1->undefined)
                 var=ncap_var_udf("~dot_methods");  
                 // deal with average over all dims or scalar var
@@ -186,26 +188,32 @@
                 return var;
             } // end Initial scan
 
+            
+            // from here on dealing with a final scan  
+
 
             // deal with a hyperslab 
+            // Code only reaches here on a final scan as
+            // as an irregular hyperslab is flagged as var1->undefined==True on
+            // initial scan  
             if(var1->has_dpl_dmn){   
                 
               // can only process an irregular hyperslab if avergaing over all dimensions 
               // else bomb out 
               
-              if(dmn_vtr.size() >0)
-                err_prn(sfnm, "Cant deal with Irregular hyperslab\n");
+              if(dmn_vtr.size() !=0 && dmn_vtr.size() != nbr_dim  )
+                err_prn(sfnm, "This method can only work with a hyperslab if it being applied to all dimensions\nIf you wish to apply it over some of the dimensions then cast the variable first\n");
 	     
               // create local copy of dims - The dim list created by var_lmt only
               // contains the regular dims from output. The srt/cnt/srd/end has been
               // lost. So this hack recreates the dims with this information.
               // since var1->dim isn't freed up when the var is freed up 
-              // these dims are freed up separatly. The new dims are not propagated
+              // these dims are freed up seperatly. The new dims are not propagated
               // into var as var is always scalar --see code above 
       
-              dim_nw=(dmn_sct**)nco_malloc(var1->nbr_dim*sizeof(dmn_sct*));
+              dim_nw=(dmn_sct**)nco_malloc(nbr_dim*sizeof(dmn_sct*));
 
-	      for(idx=0 ; idx<var1->nbr_dim; idx++){ 
+	      for(idx=0 ; idx<nbr_dim; idx++){ 
                 dim_nw[idx]=nco_dmn_dpl(var1->dim[idx]);   
                 dim_nw[idx]->srt=var1->srt[idx];
                 dim_nw[idx]->end=var1->end[idx];
@@ -217,43 +225,42 @@
 
             }  
             
-            if(dmn_vtr.size() >0){
+            if(dmn_vtr.size() >0 && dmn_vtr.size()<nbr_dim ){
                 dim=&dmn_vtr[0];
-                nbr_dim=dmn_vtr.size();                           
-            } else {
+                avg_nbr_dim=dmn_vtr.size();
+	    // average over all dims                           
+            }else{
                 dim=var1->dim;
-                nbr_dim=var1->nbr_dim; 
+                avg_nbr_dim=nbr_dim; 
             }    
             
-            // Final scan
-            if(!prs_arg->ntl_scn){
-                
-                switch(fdx){
+            // do the heavy lifting
+            switch(fdx){
                     
                 case PAVG:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_avg,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_avg,False,&ddra_info);
                     // Use tally to normalize
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                     break;
                     
                 case PAVGSQR:
                     var1=ncap_var_var_op(var1, NULL_CEWI,VSQR2);
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_avgsqr,False,&ddra_info);
                     // Normalize
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                     break;
                     
                 case PMAX:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_max,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_max,False,&ddra_info);
                     break;
                     
                 case PMIN:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_min,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_min,False,&ddra_info);
                     break; 
                     
                 case PRMS:
                     var1=ncap_var_var_op(var1, NULL_CEWI,VSQR2);
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_rms,False,&ddra_info);
                     // Normalize
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                     // Take root
@@ -262,7 +269,7 @@
                     
                 case PRMSSDN:
                     var1=ncap_var_var_op(var1, NULL_CEWI,VSQR2);
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_rmssdn,False,&ddra_info);
                     // Normalize
                     (void)nco_var_nrm_sdn(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                     // Take root
@@ -270,7 +277,7 @@
                     break;
                     
                 case PSQRAVG:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_sqravg,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_sqravg,False,&ddra_info);
                     // Normalize 
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                     // Square mean
@@ -278,11 +285,12 @@
                     break;
                     
                 case PTTL:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_ttl,False,&ddra_info);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_ttl,False,&ddra_info);
                     break;
-                } 
-                // var1 is freed in nco_var_avg()
-            }
+
+            } // end switch
+             // var1 is freed/destroyed in nco_var_avg()
+
 
             // free local dim list if necessary
             if(dim_nw){
@@ -292,7 +300,8 @@
             }  		 
                
             return var;                
-	    }     
+
+  } // end agg_cls::fnd     
             
 	    
 
