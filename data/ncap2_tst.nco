@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.18 2009-05-01 10:19:11 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.19 2009-09-25 15:30:07 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -476,7 +476,7 @@ nbr_err_ttl=0;
         print("ERROR: i2: hyperslab normalization test \n");
         nbr_err++;
   }
-      
+ 
   if( i4.min()!=9 || i4.max()!=16 ){
         print("ERROR: i3: hyperslab normalization test \n");
         nbr_err++;
@@ -660,6 +660,66 @@ nbr_err_ttl=0;
 
 }
 
+
+// Check irregular hyperslabs on RHS
+{
+
+  m1=three_dmn_var_int(:,0,0:1).max(); //74
+  m2=three_dmn_var_int(:,0,0:1).min(); //1
+
+  m3=three_dmn_var_int(0:1,0,0:1).total(); //22
+
+  m4=three_dmn_var_dbl;
+
+  m4(:,0,0:1)=4*three_dmn_var_int(:,0,0:1);
+
+
+  // hyperslab with an attribute on RHS
+  m5=three_dmn_var_dbl;
+  m5@tst1=three_dmn_var_int(:,0,0:1);
+ 
+  m5(:,0,0:1)=m5@tst1;
+
+
+  if( m1 != 74L ){
+        print("ERROR: m1: Irregular hyperslab test \n");
+        nbr_err++;
+  }
+ 
+
+  if( m2 != 1L ){
+        print("ERROR: m2: Irregular hyperslab test \n");
+        nbr_err++;
+  }
+
+
+  if( m3 != 22L ){
+        print("ERROR: m3: Irregular hyperslab test \n");
+        nbr_err++;
+  }
+ 
+
+
+  if( fabs(m4.total() -4141.0d)>0.01d ){
+        print("ERROR: m4: Irregular hyperslab test \n");
+        nbr_err++;
+  }
+
+
+  if( fabs(m5.total() -2710.0d)>0.01d ){
+        print("ERROR: m5: Irregular hyperslab test \n");
+        nbr_err++;
+  }
+
+  
+
+
+  print("RESULTS block m: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+
+}
 
 
 // Results summany
