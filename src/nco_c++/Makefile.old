@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.84 2009-05-04 22:11:48 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.85 2009-09-26 18:06:28 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -308,10 +308,18 @@ endif
 ifndef HDF5_LIB
  HDF5_LIB := ${HDF5_ROOT}/lib # Directory containing libhdf5.a
 endif
+# fxm: Temporary kludge: Machines with MPI_ROOT set are assumed to have parallel filesystems for NCO builds
+ifdef MPI_ROOT
+ HDF5_INC += -I${MPI_ROOT}/include # Directory containing mpi.h
+ HDF5_LIB += ${MPI_ROOT}/lib64 # Directory containing libmpi.a
+endif # !MPI_ROOT
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
- NC_LDFLAGS := -L${NETCDF_LIB} -L${HDF5_LIB}
+ NC_LDFLAGS := -L${NETCDF_LIB} $(addprefix -L,${HDF5_LIB})
  NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz ${NC_LIBS}
+ifdef MPI_ROOT
+ NC_LIBS += -lmpi
+endif # !MPI_ROOT
 ifeq (${SZ},Y)
 ifndef SZ_LIB
  SZ_LIB := /usr/lib # Directory containing libsz.a

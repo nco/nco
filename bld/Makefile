@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.522 2009-09-26 18:02:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.523 2009-09-26 18:06:28 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1880,6 +1880,7 @@ dbg:
 	@printf "MPICXX = ${MPICXX}\n"
 	@printf "MPI_PRC = ${MPI_PRC}\n"
 	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
+	@printf "MPI_ROOT = ${MPI_ROOT}\n"
 	@printf "MY_BIN_DIR = ${MY_BIN_DIR}\n"
 	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
 	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
