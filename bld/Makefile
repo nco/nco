@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.521 2009-09-22 04:31:35 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.522 2009-09-26 18:02:23 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -311,6 +311,9 @@ endif # !MPI_ROOT
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
  NC_LDFLAGS := -L${NETCDF_LIB} $(addprefix -L,${HDF5_LIB})
  NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz ${NC_LIBS}
+ifdef MPI_ROOT
+ NC_LIBS += -lmpi
+endif # !MPI_ROOT
 ifeq (${SZ},Y)
 ifndef SZ_LIB
  SZ_LIB := /usr/lib # Directory containing libsz.a

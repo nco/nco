@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.553 2009-09-22 04:45:29 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.554 2009-09-26 18:02:23 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1442,8 +1442,10 @@ Version&nbsp;2.8.7 fixes this problem.
 <li>
 <a name="zender"></a><a name="Zender"></a> <!-- http://nco.sf.net#zender -->
 <a href="http://www.ess.uci.edu/~zender">Charlie Zender</a>, 
-Associate Professor of <a href="http://www.ess.uci.edu">Earth System Science</a> and
-Director, <a href="http://www.ess.uci.edu/esmf">UCI Earth System Modeling Facility</a>.
+Associate Professor of Earth System Science
+(<a href="http://www.ess.uci.edu">ESS</a>) and
+Director, UCI Earth System Modeling Facility
+(<a href="http://www.ess.uci.edu/esmf">ESMF</a>).
 <i>Role</i>: Project PI.
 <i>Contributions</i>: NCO core library, porting, release manager
 <i>Current Research</i>: 
@@ -1458,9 +1460,10 @@ netCDF4/HDF5 parallel filesystem features.
 <li>
 <a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
 <a href="http://spds.ece.uci.edu/~sjenks">Steve Jenks</a>,
-Assistant Professor of 
-<a href="http://www.eecs.uci.edu">Electrical Engineering and Computer Science </a> and
-Director, <a href="http://spds.ece.uci.edu">Scalable Parallel and Distributed Systems Lab</a>.
+Assistant Professor of Electrical Engineering and Computer Science
+(<a href="http://www.eecs.uci.edu">EECS</a>) and 
+Director, Scalable Parallel and Distributed Systems 
+(<a href="http://spds.ece.uci.edu">SPDS</a>) lab.
 <i>Roles</i>: Collaborator. Thesis advisor.
 <i>Current Research</i>: 
 1.&nbsp;Consulting on SWAMP design and implementation.
@@ -1468,21 +1471,9 @@ Director, <a href="http://spds.ece.uci.edu">Scalable Parallel and Distributed Sy
 </li>
 
 <li>
-<a name="papadopoulos"></a><a name="Papadopoulos"></a> <!-- http://nco.sf.net#papadopoulos -->
-<a href="http://users.sdsc.edu/~phil/homepage.html">Phil Papadopoulos</a>,
-Program Director, Grid and Cluster Computing, 
-<a href="http://sdsc.ucsd.edu">SDSC</a>, and
-Adjunct Associate Professor of 
-<a href="http://www.cse.ucsd.edu">Computer Science</a>, UCSD.
-<i>Role</i>: Co-PI.
-1.&nbsp;Coordinates UCSD-end of NCO/SDO benchmark machines.
-<i>Other Interests</i>: NPACI Rocks
-</li>
-
-<li>
 <a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
 <a href="http://dust.ess.uci.edu/~wangd">Daniel Wang</a>:
-Ph.D. Candidate (and now Doctor!), Electrical Engineering and Computer Science
+Former EECS Ph.D. student with Jenks and Zender, now at SLAC.
 <i>Role</i>: Architect distributed data reduction and analysis
 solutions for geoscience workflows
 <i>Current Research</i>: 
