@@ -665,8 +665,6 @@ double *og_val){        /* O [ptr]                                   */
   
   usr_unt_sng=(char*)nco_free(usr_unt_sng);
   return rcd;  
-    
-  
 
 } /* end nco_cal_clc_org */
 
