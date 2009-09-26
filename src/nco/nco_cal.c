@@ -1,12 +1,9 @@
 
 /* Purpose: Multi-calendar functions */
 
-/* Copyright (C) 1995--2009 Charlie Zender
+/* Copyright (C) 2009--2009 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
-
-
-
 
 /* array to hold calendar type units */
 /* format -  year,month,day,hour,min,sec,origin,offset */   
@@ -17,8 +14,6 @@ double DATA_365[8]={ 31536000,2628000,86400,3600.0,60.0,1,0.0,0.0 };
 int DAYS360[12]={30,30,30,30,30,30,30,30,30,30,30,30 };    
 int DAYS365[12]={31,28,31,30,31,30,31,31,30,31,30,31 };    
 int DAYS366[12]={31,29,31,30,31,30,31,31,30,31,30,31 };    
-
-
 
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
@@ -419,7 +414,7 @@ char *lcl_sng;
 cal_typ ret_typ;
 
  if(!ud_sng)
-   return cal_void;
+   return (int)cal_void;
  
   lcl_sng=strdup(ud_sng);
   
