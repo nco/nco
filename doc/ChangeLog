@@ -1,6 +1,14 @@
+2009-09-26  Charlie Zender  <zender@uci.edu>
+
+	* Add CNK option to Makefile to set HAVE_NEW_CHUNKING_API to
+	handle netCDF 4.0.x vs. netCDF 4.1+ chunking API differences 
+
+	* Fix library flags for parallel HDF/netCDF4
+
 2009-09-24  Henry Butowsky  <henryb@hush.com> 
-	* added to manual a sub-section on calendar CF support in the
-	udunits node
+
+	* Add manual sub-section on calendar CF support in UDUnits node
+	
 2009-09-21  Charlie Zender  <zender@uci.edu>
 
 	* Implement Intel mpicc/mpiCC compilers on greenplanet with lustre

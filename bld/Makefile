@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.523 2009-09-26 18:06:28 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.524 2009-09-26 18:23:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -54,7 +54,7 @@
 # cd ${HOME}/nco/bld;make OMP=Y CUDA=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
 # cd ${HOME}/nco/bld;make OMP=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
-# cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet
+# cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # pbs
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNCO_GSL_MINOR_VERSION=4' allinone;cd - # esmf
@@ -111,6 +111,10 @@ endif # endif ABI
 ifndef ${CCACHE}
  CCACHE := N
 endif # CCACHE
+ifndef CNK
+# Use newer netCDF4.1 chunking API
+ CNK := Y
+endif # endif CNK
 ifndef ${CUDA}
  CUDA := N
 endif # CUDA
@@ -603,6 +607,9 @@ endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
 endif # !(AIX || SGI)
+ifeq (${CNK},Y)
+ CPP_TKN_OS += -DHAVE_NEW_CHUNKING_API
+endif # !CNK
 ifeq (${DAP_NETCDF},Y)
  CPP_TKN_OS += -DENABLE_DAP -DENABLE_DAP_NETCDF
 endif # !DAP_NETCDF
@@ -1535,7 +1542,7 @@ allinone: all nco_c++ nco++
 nco_c++: 
 	-cd ../src/nco_c++; ${MAKE} -f Makefile.old DBG=${DBG} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} lib dat all
 nco++: 
-	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP_NETCDF=${DAP_NETCDF} DAP_OPENDAP=${DAP_OPENDAP} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} UDUNITS2=${UDUNITS2} lib all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old CNK=${CNK} DAP_NETCDF=${DAP_NETCDF} DAP_OPENDAP=${DAP_OPENDAP} DBG=${DBG} GSL=${GSL} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} SZ=${SZ} UDUNITS2=${UDUNITS2} lib all
 # Targets in bin
 mpi:   mpi_nco
 mpinco:   mpi_nco
@@ -1838,6 +1845,7 @@ dbg:
 	@printf "CC = ${CC}\n"
 	@printf "CCACHE = ${CCACHE}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
+	@printf "CNK = ${CNK}\n"
 	@printf "CPP = ${CPP}\n"
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"
 	@printf "CPP_PTH = ${CPP_PTH}\n"
