@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.20 2009-09-25 15:46:58 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.21 2009-09-28 13:38:34 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -685,6 +685,12 @@ nbr_err_ttl=0;
   *m6a=three_dmn_var_int;
   m6(:,0,0:1)=4*m6a(:,0,0:1);    
 
+  // hyperslab a RAM var
+  *m7=three_dmn_var_int;
+  m8=m7(0:1,0,0:1).total(); //22 
+  
+  ram_delete(m7); 
+   
   ram_delete(m6a);
 
   if( m1 != 74L ){
@@ -724,6 +730,12 @@ nbr_err_ttl=0;
         nbr_err++;
   }
   
+
+  if( m8 != 22L ){
+        print("ERROR: m8: Irregular hyperslab test RAM var\n");
+        nbr_err++;
+  }
+
 
 
   print("RESULTS block m: Num errors="); print(nbr_err,"%d");
