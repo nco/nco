@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.40 2009-09-11 15:32:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.41 2009-09-28 12:03:11 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -25,13 +25,6 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-#ifdef ENABLE_UDUNITS
-# ifdef HAVE_UDUNITS2_H
-#  include <udunits2.h> /* Unidata units library */
-# else
-#  include <udunits.h> /* Unidata units library */
-# endif /* !HAVE_UDUNITS2_H */
-#endif /* !ENABLE_UDUNITS */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
@@ -40,8 +33,7 @@
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
-
-#include "nco_cal.h" /* Multi-Calendar functions */
+#include "nco_cln_utl.h" /* Multi-Calendar functions */
 
 #ifdef __cplusplus
 extern "C" {
