@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.19 2009-09-28 12:05:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.20 2009-09-28 12:25:14 hmb Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -120,18 +120,19 @@ nco_cln_pop_val(     /* [fnc] Calculate value in cal_sct */
 tm_cal_sct *cal_sct);/* I/O [ptr] structure */
 
 
-double nco_cln_rel_val( /* O [dbl] relative time */
+double               /* O [dbl] relative time */
+nco_cln_rel_val(     /* [fnc] */   
 double offset,          /* I [dbl] time in base units */
 cal_typ lmt_cal,        /* I [enum] Calendar type */ 
 tm_typ bs_tm_typ);      /* I [enum] Time units */
 
 
-int                 /* O [rflg] SUCCESS/FAILURE 0 */
+int                 /* O [flg] SUCCESS/FAILURE 0 */
 nco_cln_clc_tm(    /* [fnc] Difference between two co-ordinate units */      
 const char* fl_unt_sng, /* I [ptr] user units attribute string   */     
 const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
 cal_typ lmt_cal,        /* [enum] Calendar type of coordinate var */ 
-double *og_val);        /* O [ptr]                                   */
+double *og_val);        /* O [ptr] time diff in units based on fl_bs_sng */                                   */
 
 
 
