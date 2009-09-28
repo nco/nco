@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.20 2009-09-28 12:25:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.21 2009-09-28 13:18:02 hmb Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -132,7 +132,7 @@ nco_cln_clc_tm(    /* [fnc] Difference between two co-ordinate units */
 const char* fl_unt_sng, /* I [ptr] user units attribute string   */     
 const char* fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
 cal_typ lmt_cal,        /* [enum] Calendar type of coordinate var */ 
-double *og_val);        /* O [ptr] time diff in units based on fl_bs_sng */                                   */
+double *og_val);        /* O [ptr] time diff in units based on fl_bs_sng */ 
 
 
 
