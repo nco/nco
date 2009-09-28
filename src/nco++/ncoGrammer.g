@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.169 2009-09-18 15:21:23 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.170 2009-09-28 13:39:57 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -3104,7 +3104,15 @@ var=NULL_CEWI;
             var=prs_arg->ncap_var_init(var_nm,true);                         
             //Do an in memory get 
             (void)nco_get_var_mem(var,dmn_vtr);
-
+            // put values from dmn_vtr back into var
+            // nb above call has already calculated correct value for
+            // var->sz;
+            for(idx=0;idx<nbr_dmn ;idx++){
+                var->srt[idx]=dmn_vtr[idx]->srt;
+                var->end[idx]=dmn_vtr[idx]->end;
+                var->cnt[idx]=dmn_vtr[idx]->cnt;
+                var->srd[idx]=dmn_vtr[idx]->srd;
+            }
           // regular variable
           }else{
  
@@ -3141,6 +3149,7 @@ var=NULL_CEWI;
 
 
 
+
             // if variable is scalar re-organize in a new var 
            // loose extraneous material so it looks like a
            // plain scalar variable
@@ -3157,6 +3166,9 @@ var=NULL_CEWI;
              var=nco_var_free(var);
 
              var=var1;
+
+
+
               
             // if hyperslab -nomalizable 
             // nb the returned var is just like a regular var 
@@ -3189,7 +3201,7 @@ var=NULL_CEWI;
                 
            }else{
 
-           /* A sophisticated hack var->dim currently contains 
+           /* A sophisticated hack, var->dim currently contains 
               the local dims from dmn_vtr . We cannot leave them in 
               place as they will never be freed up, and if the var is 
               copied then complications will result. 
@@ -3202,12 +3214,13 @@ var=NULL_CEWI;
               Unpredicable behaviour will result when this hyperslabbed var 
               is passed to other functions
                
-               
            */                      
-             for(idx=0 ; idx<nbr_dmn; idx++)
-                 var->dim[idx]=prs_arg->dmn_out_vtr.find(dmn_vtr[idx]->nm);  
-            
-           }  
+           for(idx=0 ; idx<nbr_dmn; idx++)
+              var->dim[idx]=prs_arg->dmn_out_vtr.find(dmn_vtr[idx]->nm);  
+
+           }   
+           
+
 
 
           //free vectors
