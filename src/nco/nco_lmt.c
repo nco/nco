@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.88 2009-09-21 12:49:35 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.89 2009-09-28 12:04:31 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -7,8 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_lmt.h" /* Hyperslab limits */
-
-#include "nco_cal.c" /* Temorary include -to moved to libnco.h at some point */
 
 lmt_sct * /* O [sct] Pointer to free'd structure */
 nco_lmt_free /* [fnc] Free memory associated with limit structure */
@@ -308,7 +306,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-    if(nco_cal_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cal,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
+    if(nco_cln_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cal,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
  
@@ -318,7 +316,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      operations */
     if(!rec_dmn_and_mlt_fl_opr){
       if(cal_sng)
-        lmt.lmt_cal=nco_cal_get_cal_typ(cal_sng); 
+        lmt.lmt_cal=nco_cln_get_cal_typ(cal_sng); 
        else
         lmt.lmt_cal=cal_void;
     }  
@@ -428,8 +426,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         nco_exit(EXIT_FAILURE);
       } /* end if */
       
-      if(nco_cal_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
-      if(nco_cal_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
+      if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
+      if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
  
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
