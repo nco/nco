@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.18 2009-09-28 12:07:22 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.19 2009-09-28 13:15:45 hmb Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -150,7 +150,6 @@ double crr_val,
 double *og_val)         /* O difference between two units string */
 {
   int ut_rcd; /* [enm] UDUnits2 status */
-  double in_val=0.0;
       
   cv_converter *ut_cnv; /* UDUnits converter */
   ut_system *ut_sys;
@@ -239,7 +238,6 @@ tm_cal_sct *tm_in){ /*  O [sct] struct to be populated   */
   char buf[200];
   char *bptr;
     
-  cv_converter *ut_cnv; /* UDUnits converter */
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
 
@@ -762,7 +760,6 @@ double *og_val){        /* O [ptr]                                   */
   
   char *usr_unt_sng;   
   double crr_val;
-  double incpt;
 
 
   
