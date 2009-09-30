@@ -4138,7 +4138,15 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			var=prs_arg->ncap_var_init(var_nm,true);                         
 			//Do an in memory get 
 			(void)nco_get_var_mem(var,dmn_vtr);
-			
+			// put values from dmn_vtr back into var
+			// nb above call has already calculated correct value for
+			// var->sz;
+			for(idx=0;idx<nbr_dmn ;idx++){
+			var->srt[idx]=dmn_vtr[idx]->srt;
+			var->end[idx]=dmn_vtr[idx]->end;
+			var->cnt[idx]=dmn_vtr[idx]->cnt;
+			var->srd[idx]=dmn_vtr[idx]->srd;
+			}
 			// regular variable
 			}else{
 			
@@ -4175,6 +4183,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			
 			
+			
 			// if variable is scalar re-organize in a new var 
 			// loose extraneous material so it looks like a
 			// plain scalar variable
@@ -4191,6 +4200,9 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			var=nco_var_free(var);
 			
 			var=var1;
+			
+			
+			
 			
 			// if hyperslab -nomalizable 
 			// nb the returned var is just like a regular var 
@@ -4223,7 +4235,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			}else{
 			
-			/* A sophisticated hack var->dim currently contains 
+			/* A sophisticated hack, var->dim currently contains 
 			the local dims from dmn_vtr . We cannot leave them in 
 			place as they will never be freed up, and if the var is 
 			copied then complications will result. 
@@ -4236,12 +4248,13 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			Unpredicable behaviour will result when this hyperslabbed var 
 			is passed to other functions
 			
-			
 			*/                      
 			for(idx=0 ; idx<nbr_dmn; idx++)
 			var->dim[idx]=prs_arg->dmn_out_vtr.find(dmn_vtr[idx]->nm);  
 			
-			}  
+			}   
+			
+			
 			
 			
 			//free vectors
@@ -4259,7 +4272,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			end2: var_rhs=nco_var_free(var_rhs); 
 			
 			
-#line 4263 "ncoTree.cpp"
+#line 4276 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.15 2009-08-19 12:43:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.16 2009-09-30 22:04:01 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -337,9 +337,6 @@ int bret;
 
 } // end ncap_var_write_wrp()
 
-
-
-
 int 
 prs_cls::ncap_var_write_omp(
 var_sct *var,
@@ -505,9 +502,7 @@ bool bram){
 	  err_prn(fnc_nm, "Attempt to go into netcdf define mode while in OPENMP parallel mode");
       
 #endif
-
-
-     (void)nco_redef(out_id);
+	(void)nco_redef(out_id);
 
   /* Define variable */   
   if(!bdef){
@@ -515,7 +510,8 @@ bool bram){
     /* Set HDF Lempel-Ziv compression level, if requested */
     if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
     /* Set chunk sizes, if requested */
-    if(cnk_sz != NULL && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
+    // fxm: must first allow cnk_sz specification in ncap2.cc main()
+    //    if(cnk_sz != NULL && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
   } // bdef
   /* Put missing value 
   if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
@@ -574,7 +570,6 @@ bool bram){
  
  }
 
-
 void prs_cls::ncap_def_ntl_scn(void)
 {
   int idx;
@@ -607,7 +602,8 @@ void prs_cls::ncap_def_ntl_scn(void)
 	/* Set HDF Lempel-Ziv compression level, if requested */
 	if(dfl_lvl > 0 && var1->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
 	/* Set chunk sizes, if requested */
-	if(cnk_sz != NULL && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,cnk_sz);
+	// fxm: must first allow cnk_sz specification in ncap2.cc main()
+	//	if(cnk_sz != NULL && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,cnk_sz);
 	Nvar->var->id=var_id;
 	Nvar->var->nc_id=out_id;
 	Nvar->flg_stt=1;
