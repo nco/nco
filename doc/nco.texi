@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.553 2009-09-24 15:40:19 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.554 2009-10-06 00:33:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11749,6 +11749,9 @@ RedHat packaging
 @cindex Patrick Kursawe
 @item George Shapavalov, Patrick Kursawe
 Gentoo packaging
+@cindex Filipe Fernandes
+@item Filipe Fernandes
+OpenSuse packaging
 @cindex Alexander Hansen
 @cindex Takeshi Enomoto
 @item Takeshi Enomoto, Alexander Hansen
@@ -11817,7 +11820,7 @@ Comments on the proposals and letters of support are also very welcome.
 @chapter CCSM Example
 @cindex CCSM
 
-This chapter presents an in depth example of using @acronym{NCO} to
+This chapter illustrates how to use @acronym{NCO} to
 process and analyze the results of a @acronym{CCSM} climate simulation.
 @example
 ************************************************************************

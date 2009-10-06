@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.341 2009-09-22 05:07:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.342 2009-10-06 00:33:09 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.0 are ready. 
 
@@ -45,6 +45,9 @@ E. Dimension-reduction to scalars works with irregular hyperslabs.
 G. Support CF "calendar" attribute = no_leap, 360_day, 365_day.
    Now time-based hyperslabs understand common model calendars!
    This greatly eases analyzing datasets such as the CMIP3/AR4 GCMs
+
+H. OpenSuse packages are now available (Filipe Fernandes)
+   http://download.opensuse.org/repositories/home:/ocefpaf/openSUSE_11.1
 
 "Sticky" reminders:
 
