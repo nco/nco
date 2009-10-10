@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.554 2009-10-06 00:33:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.555 2009-10-10 10:35:49 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5739,8 +5739,10 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Where statement::             
 * Loops::                       
 * Include files::               
-* Irregular grids::             
-* GSL special functions::       
+* Irregular grids::
+* bilinear interpolation::             
+* GSL special functions::
+* GSL interpolation::       
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity ::  
@@ -6991,7 +6993,7 @@ e=2.71828;
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
-@node Irregular grids, GSL special functions, Include files, ncap2 netCDF Arithmetic Processor
+@node Irregular grids, bilinear interpolation, Include files, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
@@ -7119,10 +7121,91 @@ Irregular regions are the union of arrays lat/lon_min/max's.
 The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
+
+
+@html
+<a name="bil_int"></a> <!-- http://nco.sf.net/nco.html#bil_int -->
+@end html
+@node bilinear interpolation, GSL special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
+@subsection bilinear interpolation
+@noindent As of version 4.0.0 @acronym{NCO} has internal routines to perform bilinear interpolation on gridded data sets.@* @* 
+@noindent In mathematics, bilinear interpolation is an extension of linear interpolation for interpolating functions of two variables on a regular grid. The idea is to perform linear interpolation first in one direction, and then again in the other direction. @* @*
+
+@noindent Suppose we have an irregular grid of data @code{temperature[lat,lon]}, with co-ordinate vars @code{lat[lat], lon[lon]}. And we wish to find the temperature at an arbitary point [X,Y]  within the grid. If we can locate lat_min,lat_max and lon_min,lon_max such that  @code{lat_min <= X <= lat_max} and @code{lon_min <=Y <=lon_max} then we can interpolate in two dimensions to find the temperature at [X,Y]. @* @*     
+
+@noindent the general form of the ncap interpolation function is as follows:-
+
+@noindent @code{var_out=bilinear_interp(grid_in, grid_out, grid_out_x, grid_out_y, grid_in_x, grid_in_y) } @* 
+
+@table @code
+@item grid_in
+Input function data. Usually a 2D variable. It must be of size @code{grid_in_x.size()*grid_in_y*size()}       
+@item grid_out
+This variable is the shape of var_out. Usually a 2D variable. It must be of size @code{grid_out_x.size()*grid_out_y*size()}@item grid_out_x
+X output values 
+@item grid_out_y
+Y output values 
+@item grid_in_x
+X input values values. Must be montonic (increasing or decreasing).
+@item grid_in_y
+Y input values values. Must be montonic (increasing or decreasing).
+@end table
+
+@noindent Prior to calculations all arguments are converted to type @code{NC_DOUBLE}. After calculations @code{var_out} is converted to the input type of @code{grid_in}. @*
+
+Suppose the first part of an ncap2 script is:
+@example
+
+/****************************************/ 
+defdim("X",4);
+defdim("Y",5);
+
+//Temperature
+T_in[$X,$Y]=
+ @{100, 200, 300, 400, 500,
+  101, 202, 303, 404, 505,
+  102, 204, 306, 408, 510,
+  103, 206, 309, 412, 515.0 @};
+
+//Co-ordinate Vars
+x_in[$X]=@{ 0.0,1.0,2.0,3.01 @};
+y_in[$Y]=@{ 1.0,2.0,3,4,5 @};
+/***************************************/ 
+
+@end example
+Now we interpolate with the following variables:
+@example
+/***************************************/ 
+defdim("Xn",3);
+defdim("Yn",4); 
+T_out[$Xn,$Yn]=0.0;
+x_out[$Xn]=@{0.0,0.02,3.01 @};
+y_out[$Yn]=@{1.1,2.0,3,4 @};
+
+var_out=bilinear_interp(T_in,T_out,x_out,y_out,x_in,y_in);
+print(var_out);
+// 110, 200, 300, 400,
+// 110.022, 200.04, 300.06, 400.08,
+// 113.3, 206, 309, 412 ;
+/***************************************/ 
+
+@end example 
+
+Its possible to use the call to interpolate a single point:
+
+@example
+/***************************************/ 
+var_out=bilinear_interp(T_in,0.0,3.0,4.99,x_in,y_in);
+print(var_out);
+// 513.920594059406
+/***************************************/ 
+
+@end example
+
 @html
 <a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
 @end html
-@node GSL special functions, Examples ncap2, Irregular grids, ncap2 netCDF Arithmetic Processor
+@node GSL special functions, GSL interpolation, bilinear interpolation, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} special functions
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
@@ -7533,9 +7616,61 @@ print(status);
 
 
 @html
+<a name="gsl_int"></a> <!-- http://nco.sf.net/nco.html#gsl_int -->
+@end html
+@node GSL interpolation, Examples ncap2, GSL special functions, ncap2 netCDF Arithmetic Processor
+@subsection @acronym{GSL} interpolation
+@cindex @acronym{GSL}
+@noindent As of version 3.9.9 (released July, 2009), @acronym{NCO} has wrappers to the GSL interpolation functions.
+
+@noindent  Given a set of data points (x1,y1)...(xn, yn) the GSL functions computes a continuous interpolating function @acronym{Y(x)} such that @acronym{Y(xi) = yi}. The interpolation is piecewise smooth, and its behavior at the end-points is determined by the type of interpolation used. For more information consult the GSL manual. 
+
+@noindent Interpolation with @command{ncap2} is a two stage process. In the first stage, a ram variable is created from the chosen interpolating function and the data set. This ram variable holds in memory a GSL interpolation object. In the second stage, points along the interpolating function are calculated. If you have a very large data set or are interpolating many sets then consider deleting the ram variable when it is redundant. Use the command @command{ram_delete(var_nm)}.   
+
+@noindent A simple example
+
+@example
+x_in[$lon]=@{1.0,2.0,3.0,4.0@};
+y_in[$lon]=@{1.1,1.2,1.5,1.8@};
+
+// Ram variable is declared and defined here 
+gsl_interp_cspline(&ram_sp,x_in,y_in);
+
+x_out[$lon_grd]=@{1.1,2.0,3.0,3.1,3.99@};
+
+y_out=gsl_spline_eval(ram_sp,x_out);
+y2=gsl_spline_eval(ram_sp,1.3);
+y3=gsl_spline_eval(ram_sp,0.0);
+ram_delete(ram_sp);
+
+print(y_out);   // 1.10472, 1.2, 1.4, 1.42658, 1.69680002 
+print(y2);      // 1.12454 
+print(y3);      // '_' 
+
+@end example
+
+@noindent Note in the above example y3 is set to 'missing value' because 0.0 isn't within the input X range.  
+
+
+@strong{ GSL Interpolation Types } @*
+@noindent All the interpolation functions have been implemented. These are: @*
+gsl_interp_linear() @* gsl_interp_polynomial() @* gsl_interp_cspline()@*
+gsl_interp_cspline_periodic()@* gsl_interp_akima() @* gsl_interp_akima_periodic() @*
+
+@* @*
+@strong{ Evaluation of Interpolating Types } @*
+@noindent @strong{Implemented} @*
+gsl_spline_eval() @*
+@noindent @strong{Unimplemented} @*
+gsl_spline_deriv() @*
+gsl_spline_deriv2() @*
+gsl_spline_integ() @*
+
+
+@html
 <a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
 @end html
-@node Examples ncap2, Intrinsic mathematical methods, GSL special functions, ncap2 netCDF Arithmetic Processor
+@node Examples ncap2, Intrinsic mathematical methods, GSL interpolation, ncap2 netCDF Arithmetic Processor
 @subsection Examples ncap2
 
 See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
