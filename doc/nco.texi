@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.555 2009-10-10 10:35:49 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.556 2009-10-11 18:45:40 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5739,6 +5739,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Where statement::             
 * Loops::                       
 * Include files::               
+* sort methods::
 * Irregular grids::
 * bilinear interpolation::             
 * GSL special functions::
@@ -6972,7 +6973,7 @@ print("Total of odd elements ");print(sum);print("\n");
 @html
 <a name="ncap_inc"></a> <!-- http://nco.sf.net/nco.html#ncap_inc -->
 @end html
-@node Include files, Irregular grids, Loops, ncap2 netCDF Arithmetic Processor
+@node Include files, sort methods, Loops, ncap2 netCDF Arithmetic Processor
 @subsection Include files
 @cindex include ncap
 The synatax of an include file is:
@@ -6988,12 +6989,74 @@ The synatax of an include file is:
 e=2.71828;
 @end example
 
+
+
+@html
+<a name="ncap_srt"></a> <!-- http://nco.sf.net/nco.html#ncap_srt -->
+@end html
+@node sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
+@subsection sort methods
+In @acronym{ncap} there are two ways to sort. The first is a regular sort. This sorts ALL the elements of a variable or attribute without regard to any dimensions. The second method applies a sort map to a variable. To apply this sort map the size of the variable must be exactly divisible by the size of the sort map. The method @code{sort(var_in,&var_map) } is overloaded. The second optional argument is a call_by_ref variable which will hold the sort map.
+
+@example
+a1[$time]=@{10,2,3,4,6,5,7,3,4,1@};
+a1_sort=sort(a1);
+print(a1_sort);
+// 1, 2, 3, 3, 4, 4, 5, 6, 7, 10 ;
+
+a2[$lon]=@{2,1,4,3@};
+a2_sort=sort(a2,&a2_map);
+print(a2);
+// 1, 2, 3, 4
+print(a2_map);
+// 1, 0, 3, 2 ;
+@end example  
+
+If the map variable doesn't exist prior to the sort call, then it will be created with the same shape as the input variable and be of type @code{NC_INT}. If the map variable already exists, then the only restriction is that it be of at least the same size as the input variable. To apply a map use @code{ dsort(var_in,var_map)}.
+
+@example
+defdim("nlat",5);
+
+a3[$lon]=@{2,5,3,7@};
+a4[$nlat,$lon]=@{
+ 1, 2, 3, 4, 
+ 5, 6, 7, 8,
+ 9,10,11,12,
+ 13,14,15,16,
+ 17,18,19,20@};
+
+a3_sort=sort(a3,&a3_map);
+
+print(a3_map);
+// 0, 2, 1, 3 ;
+
+a5_sort=dsort(a5,a3_map);
+print(a5_sort);
+//  1, 3, 2, 4,
+//  5, 7, 6, 8,
+//  9,11,10,12,
+//  13,15,14,16,
+//  17,19,18,20 ;
+
+a3_map2[$nlat]=@{4,3,0,2,1 @};
+
+a5_sort2=dsort(a5,a3_map2);
+print(a5_sort2);
+// 3, 5, 4, 2, 1
+// 8, 10, 9,7, 6, 
+// 13,15,14,12,11, 
+// 18,20,19,17,16
+@end example
+ 
+As in the above example you a free to create your own mask. If you wish to sort in decending order then use the @code{reverse()} method after the sort. 
+
+
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
-@node Irregular grids, bilinear interpolation, Include files, ncap2 netCDF Arithmetic Processor
+@node Irregular grids, bilinear interpolation, sort methods, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
