@@ -1,3 +1,7 @@
+2009-10-13  Henry Butowsky  <henryb@hush.com> 
+	* added secret flag tst_udunits option to ncks. 
+	usage: --tst_udunits,'units_in','units_out','calendar type'?
+        
 2009-09-26  Charlie Zender  <zender@uci.edu>
 
 	* Add CNK option to Makefile to set HAVE_NEW_CHUNKING_API to
