@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.241 2009-07-16 07:31:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.242 2009-10-13 16:11:20 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.241 2009-07-16 07:31:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.241 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.242 2009-10-13 16:11:20 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.242 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -209,6 +209,7 @@ main(int argc,char **argv)
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
+      {"tst_udunits",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -327,8 +328,23 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")){
 	PRN_DMN_VAR_NM=False;
       } /* endif "no_clb" */
+      if(!strcmp(opt_crr,"tst_udunits")){ 
+	char *cp;
+        char **args;
+        double crr_val;
+
+        cp=strdup(optarg); 
+        args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
+        
+        nco_cln_clc_org(args[0],args[1],(lmt_nbr>2 ? nco_cln_get_cal_typ(args[2]):cal_void) ,&crr_val);        
+        (void)fprintf(stdout,"units in=%s units out=%s difference=%f\n",args[0],args[1],crr_val);
+
+        nco_free(cp);
+        nco_exit(EXIT_SUCCESS);
+
+      } /* endif "tst_udunits" */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nVersion\t\t\t--vrs, --version\n\n");
+	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nTest udunits\t\t--tst_udunits,'units_in','units_out','cal_sng'? \nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
