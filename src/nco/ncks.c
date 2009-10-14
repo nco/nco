@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.242 2009-10-13 16:11:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.243 2009-10-14 10:43:31 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.242 2009-10-13 16:11:20 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.242 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.243 2009-10-14 10:43:31 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.243 $";
   const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -332,7 +332,12 @@ main(int argc,char **argv)
 	char *cp;
         char **args;
         double crr_val;
-
+       
+        #ifndef ENABLE_UDUNITS
+        (void)fprintf(stdout,"%s: To use this option nco must be built with udunits support\n",prg_nm_get());
+        nco_exit(EXIT_SUCCESS);
+        #endif 
+               
         cp=strdup(optarg); 
         args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
         
