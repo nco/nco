@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.25 2009-10-15 17:26:55 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.26 2009-10-15 20:04:32 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1425,9 +1425,9 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
         if(args_vtr[1]->getType() != CALL_REF ) 
           err_prn(sfnm," second argument must be a call by reference variable\n"+susg);   
 
-        var_nm=args_vtr[1]->getFirstChild()->getText(); 
-        bdef=prs_arg->ncap_var_init_chk(var_nm);
-        Nvar=prs_arg->var_vtr.find(var_nm);  
+          var_nm=args_vtr[1]->getFirstChild()->getText(); 
+          bdef=prs_arg->ncap_var_init_chk(var_nm);
+          Nvar=prs_arg->var_vtr.find(var_nm);  
            
         /*This horrible line below:
           Initial scan -- prs_arg->ntl_scn=True 
@@ -1443,26 +1443,23 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           variable 
 	 */
 
-        if(bdef && prs_arg->ntl_scn || bdef && !prs_arg->ntl_scn && Nvar->flg_stt==2 ){
-          var2=prs_arg->ncap_var_init(var_nm,true);  
-      }else{
-	 var2=nco_var_dpl(var1);
-         var2=nco_var_cnf_typ(NC_INT,var2);
-         nco_free(var2->nm);
-         var2->nm=strdup(var_nm.c_str());
-      }    
+          if(bdef && prs_arg->ntl_scn || bdef && !prs_arg->ntl_scn && Nvar->flg_stt==2 ){
+            var2=prs_arg->ncap_var_init(var_nm,true);  
+         }else{
+	    var2=nco_var_dpl(var1);
+            var2=nco_var_cnf_typ(NC_INT,var2);
+            nco_free(var2->nm);
+            var2->nm=strdup(var_nm.c_str());
+        }    
 
-      
-      
-
-      if(prs_arg->ntl_scn){
-	if(var2) 
+        if(prs_arg->ntl_scn)
           prs_arg->ncap_var_write(var2,false);
-        return var1;
+
       }
+        if(prs_arg->ntl_scn) 
+          return var1;
+       
     }
-
-
 
     switch(fdx) {
              
