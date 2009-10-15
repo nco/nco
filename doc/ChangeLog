@@ -1,3 +1,6 @@
+2009-10-15  Henry Butowsky  <henryb@hush.com> 
+	* tidy up of sort methods srt_cls
+
 2009-10-13  Henry Butowsky  <henryb@hush.com> 
 	* added secret flag tst_udunits option to ncks. 
 	usage: --tst_udunits,'units_in','units_out','calendar type'?
