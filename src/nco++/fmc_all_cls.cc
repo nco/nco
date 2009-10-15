@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.24 2009-09-25 13:21:30 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.25 2009-10-15 17:26:55 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1420,17 +1420,49 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       var1=walker.out(args_vtr[0]);
        
       if(nbr_args>1){
-       if(args_vtr[1]->getType() != CALL_REF ) 
-         err_prn(sfnm," second argument must be a call by reference variable\n"+susg);   
-       var_nm=args_vtr[1]->getFirstChild()->getText(); 
-       var2=prs_arg->ncap_var_init(var_nm,true); 
-      }
+        bool bdef;
+        NcapVar *Nvar;
+        if(args_vtr[1]->getType() != CALL_REF ) 
+          err_prn(sfnm," second argument must be a call by reference variable\n"+susg);   
+
+        var_nm=args_vtr[1]->getFirstChild()->getText(); 
+        bdef=prs_arg->ncap_var_init_chk(var_nm);
+        Nvar=prs_arg->var_vtr.find(var_nm);  
+           
+        /*This horrible line below:
+          Initial scan -- prs_arg->ntl_scn=True 
+          If variable has been already been defined:
+          Then read it.
+
+          Final scan -- prs_arg->ntl_scn=False
+	  We have the situation where call by-ref variable has been defined in the 
+          first pass, but not populated i.e Nvar->flg_stt==1. So we create the variable 
+          from var1.
+          Also covered is the situation where the call_by_ref variable has been defined 
+          and populated earlier in the script i.e Nvar->flg_stt==2. So we simly read in this 
+          variable 
+	 */
+
+        if(bdef && prs_arg->ntl_scn || bdef && !prs_arg->ntl_scn && Nvar->flg_stt==2 ){
+          var2=prs_arg->ncap_var_init(var_nm,true);  
+      }else{
+	 var2=nco_var_dpl(var1);
+         var2=nco_var_cnf_typ(NC_INT,var2);
+         nco_free(var2->nm);
+         var2->nm=strdup(var_nm.c_str());
+      }    
+
+      
+      
+
       if(prs_arg->ntl_scn){
 	if(var2) 
           prs_arg->ncap_var_write(var2,false);
         return var1;
-      } 
+      }
     }
+
+
 
     switch(fdx) {
              
@@ -1502,7 +1534,7 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
     return var1;
-
+    
 
 } // end srt_cls::srt_fnd()
 
