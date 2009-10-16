@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.26 2009-10-15 20:04:32 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.27 2009-10-16 14:59:03 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1447,7 +1447,8 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
             var2=prs_arg->ncap_var_init(var_nm,true);  
          }else{
 	    var2=nco_var_dpl(var1);
-            var2=nco_var_cnf_typ(NC_INT,var2);
+            if(!var2->undefined) 
+              var2=nco_var_cnf_typ(NC_INT,var2);
             nco_free(var2->nm);
             var2->nm=strdup(var_nm.c_str());
         }    
