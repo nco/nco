@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.21 2009-09-28 13:38:34 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.22 2009-10-16 14:58:05 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -744,6 +744,58 @@ nbr_err_ttl=0;
 
 
 }
+
+// Check sorting functions
+// at present only two sort functions 
+// sort(var_exp,&sort_map?)
+// dsort(var_exp, sort_map)
+{
+  // check basic sort
+  n1[lat,lon]={ 200L,100,3,8,-10,-5,0,-9L};
+  n1_st=n1.sort();
+  
+  // create a map from first row of elements
+  sort(n1(0,:),&n1_map);
+
+  n2[lat,lon]={-1.0,0.0,2.0,3.0,10.0,20.0,30.0,40.0};
+
+  n2=dsort(n2,n1_map);
+
+  // create map larger variable
+  n3=dsort(three_dmn_var_dbl,n1_map);
+
+  if( n1.min() != n1_st(0,0) || n1.max()!=n1_st(7)){
+        print("ERROR: n1: Basic sort test\n");
+        nbr_err++;
+
+  }
+     
+  *n_tmp[lon]={3,2,0,1L};
+  if( n1_map !=n_tmp ){
+        print("ERROR: n2: Create mapping sort test\n");
+        nbr_err++;
+
+  }
+  ram_delete(n_tmp);
+
+  if( n2(0,0)!=2.0 || n2(1,3)!=10.0 ){
+        print("ERROR: n3: Apply mapping sort test\n");
+        nbr_err++;
+  }
+
+  if(n3(9,1,0)!=79.0 || n3(9,1,3)!=77.0 ){
+        print("ERROR: n4: Apply mapping sort test\n");
+        nbr_err++;
+  }
+
+  print("RESULTS block n: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+
+
+}
+
 
 
 // Results summany
