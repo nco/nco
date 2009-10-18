@@ -1,10 +1,16 @@
 2009-10-15  Henry Butowsky  <henryb@hush.com> 
-	* tidy up of sort methods srt_cls
+
+	* Tidy-up sort methods srt_cls
 
 2009-10-13  Henry Butowsky  <henryb@hush.com> 
-	* added secret flag tst_udunits option to ncks. 
+
+	* Add secret flag tst_udunits option to ncks. 
 	usage: --tst_udunits,'units_in','units_out','calendar type'?
         
+2009-09-30  Charlie Zender  <zender@uci.edu>
+
+	* Remove attempt to set chunking in ncap2 writes
+
 2009-09-26  Charlie Zender  <zender@uci.edu>
 
 	* Add CNK option to Makefile to set HAVE_NEW_CHUNKING_API to
