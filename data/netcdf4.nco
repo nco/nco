@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.10 2009-05-12 00:33:53 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.11 2009-10-21 04:13:21 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 // Stress-test netCDF4 atomic types and features
@@ -19,6 +19,7 @@ var_foo@units2="meters"; // NC_CHAR
 var_double=1.0;
 var_float=1.0f;
 var_int=1;
+var_int_max=2147483647;
 var_short=1s;
 var_byte=1b;
 var_char[char_dmn_lng04]="Hell"; // Array of NC_CHAR
