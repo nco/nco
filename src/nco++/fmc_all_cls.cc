@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.27 2009-10-16 14:59:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.28 2009-10-21 12:24:39 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1894,11 +1894,13 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("bilinear_interp",this,PBIL_ALL)); 
+          fmc_vtr.push_back( fmc_cls("bilinear_interp_wrap",this,PBIL_ALL_WRP)); 
 
     }		      
   } 
   var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
    const std::string fnc_nm("bil_cls::fnd");
+  bool bwrp;  //if tue then wrap X and Y coo-ordinates in grid
   bool b_rev_y;
   bool b_rev_x;
   int fdx;
@@ -1935,10 +1937,17 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   nbr_args=vtr_args.size();  
 
   switch(fdx){
-    // only one method at the moment
+
     case PBIL_ALL:
            in_nbr_args=nbr_args;  
            susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_out?, Y_out?, X_in?, Y_in?)"; 
+           bwrp=false;
+           break;
+
+    case PBIL_ALL_WRP: 
+           in_nbr_args=nbr_args;  
+           susg="usage: var_out="+sfnm+"(Data_in, Data_out, X_out?, Y_out?, X_in?, Y_in?)"; 
+           bwrp=true;
            break;
 
 
@@ -1974,7 +1983,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
 
-    if(fdx==PBIL_ALL){
+    if(fdx==PBIL_ALL || fdx==PBIL_ALL_WRP){
       // recall input arguments in order
       // 0 - input data
       // 1 - output data
@@ -2017,7 +2026,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       }
 
       // call generic function
-      (void)clc_bil_fnc(var_arr[4],var_arr[5],var_arr[0],var_arr[2],var_arr[3],var_arr[1],sfnm);
+      (void)clc_bil_fnc(var_arr[4],var_arr[5],var_arr[0],var_arr[2],var_arr[3],var_arr[1],bwrp,sfnm);
 
       // cast back to void and free
       for(idx=0 ; idx<6; idx++){
@@ -2039,7 +2048,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 // Generic function for biliner interpolation
 // function assumes all arguments are of type double and that
 // v_xin & v_yin are montonic(increasing or decreasing with respect to var->sz
-void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct *v_xout,var_sct *v_yout, var_sct *v_dout,std::string sfnm){
+void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct *v_xout,var_sct *v_yout, var_sct *v_dout,bool bwrp,std::string sfnm){
    bool b_rev_x; // flg v_xin montonic( increasing - false dcreasing true ) 
    bool b_rev_y; // flg v_yin montonic( increasing - false dcreasing true ) 
    long x_sz;    // size of X dim in OUTPUT  
@@ -2074,6 +2083,11 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
    x_sz=v_xout->sz;
    y_sz=v_yout->sz;
 
+            
+   // deal with regular unwrapped grid
+   if(!bwrp){ 
+
+
    for(jdx=0 ; jdx<y_sz;jdx++){
      long y_min; // min value in Y input co-ord
      long y_max; // max value in Y input co-ord
@@ -2102,8 +2116,7 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
        y_min_org=y_min;
        y_max_org=y_max;
      }  
-            
-      
+
      for(kdx=0;kdx<x_sz;kdx++){
        long x_min; // min value in X input co-ord
        long x_max; // max value in X input co-ord
@@ -2156,6 +2169,108 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
      }//end for kdx
  
    }// end for jdx 
+
+   // deal with wrapped co-ordinates
+   }else{      
+
+   for(jdx=0 ; jdx<y_sz;jdx++){
+     long y_min; // min value in Y input co-ord
+     long y_max; // max value in Y input co-ord
+     long y_min_org;
+     long y_max_org;
+
+     // find range in input Y 
+     y_min=(long)(lower_bound(v_yin->val.dp, v_yin->val.dp+v_yin->sz, v_yout->val.dp[jdx])-v_yin->val.dp);
+
+
+     // do some bounds checking      
+     if(y_min==v_yin->sz || y_min==0L && v_yout->val.dp[jdx]< v_yin->val.dp[0] )   
+       err_prn(sfnm, "Bounding error with Y output co-ordinate variable");   
+
+     // not an exact match 
+     if(v_yout->val.dp[jdx]< v_yin->val.dp[y_min])
+       y_max=y_min--;
+     else
+     // exact match 
+       y_max=y_min; 
+      
+     // Y co-ordinate reversed ?  
+     if(b_rev_y){      
+       y_min_org=v_yin->sz-y_min-1;
+       y_max_org=v_yin->sz-y_max-1;
+     }else{
+       y_min_org=y_min;
+       y_max_org=y_max;
+     }  
+            
+      
+     for(kdx=0;kdx<x_sz;kdx++){
+       long x_min; // min value in X input co-ord
+       long x_max; // max value in X input co-ord
+       double Q[2][2]; 
+       double rslt;
+       double x_min_dbl; // min co-ord value;
+       double x_max_dbl; // max co-ord value;
+       
+       // find range in input X 
+       x_min=(long)(lower_bound(v_xin->val.dp, v_xin->val.dp+v_xin->sz, v_xout->val.dp[kdx])-v_xin->val.dp);     
+
+
+      // point off RHS of grid  
+      if(x_min==v_xin->sz){ 
+        x_min--; x_max=0;
+        x_min_dbl=v_xin->val.dp[x_min]; 
+        x_max_dbl=v_xin->val.dp[x_max]+360.0; 
+      // exact match  
+      } else if(v_xout->val.dp[kdx]==v_xin->val.dp[x_min]){
+        x_max=x_min; 
+        x_min_dbl=x_max_dbl=v_xin->val.dp[x_min]; 
+      // point off LHS side of grid
+      } else if( x_min==0){
+        x_min=v_xin->sz-1;x_max=0;
+        x_min_dbl=v_xin->val.dp[x_min]-360.0; 
+        x_max_dbl=v_xin->val.dp[x_max]; 
+      // regular point in grid  
+      }else{
+        x_max=x_min--;
+        x_min_dbl=v_xin->val.dp[x_min]; 
+        x_max_dbl=v_xin->val.dp[x_max]; 
+      } 
+     
+
+       Q[0][0]=v_din->val.dp[x_min*v_yin->sz+y_min_org];       
+       Q[1][0]=v_din->val.dp[x_max*v_yin->sz+y_min_org];
+       Q[0][1]=v_din->val.dp[x_min*v_yin->sz+y_max_org];          
+       Q[1][1]=v_din->val.dp[x_max*v_yin->sz+y_max_org];        
+       
+       // printf("Q[0][0]=%f Q[1][0]=%f  Q[0][1]=%f Q[1][1]=%f \n",Q[0][0],Q[1][0],Q[0][1],Q[1][1]);
+
+
+         
+       if(x_min==x_max && y_min==y_max)
+	 rslt=Q[0][0];       
+       else if( y_min==y_max) {
+         rslt=clc_lin_ipl(x_min_dbl,x_max_dbl,v_xout->val.dp[kdx],Q[0][0],Q[1][0]);                            
+
+       }
+       else if( x_min==x_max) 
+         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],Q[0][0],Q[1][1]);               
+       else{
+         double d_int1;
+         double d_int2;
+
+         d_int1=clc_lin_ipl(x_min_dbl,x_max_dbl,v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
+         d_int2=clc_lin_ipl(x_min_dbl,x_max_dbl,v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
+         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],d_int1,d_int2);               
+       }
+       v_dout->val.dp[kdx*v_yout->sz+jdx]=rslt;
+
+
+     }//end for kdx
+ 
+   }// end for jdx 
+
+   }// end else wrapped co-ordinates
 
 } // end clc_bil_fnc 
 
