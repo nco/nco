@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.29 2009-10-22 11:08:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.30 2009-10-22 11:22:18 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2099,7 +2099,7 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
 
      // do some bounds checking      
      if(y_min==v_yin->sz || y_min==0L && v_yout->val.dp[jdx]< v_yin->val.dp[0] )   
-       err_prn(sfnm, "Bounding error with Y output co-ordinate variable");   
+         err_prn(sfnm, "Bounding error with \""+string(v_yout->nm)+"\" output co-ordinate variable");   
 
      // not an exact match 
      if(v_yout->val.dp[jdx]< v_yin->val.dp[y_min])
@@ -2129,7 +2129,7 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
 
        // do some bounds checking      
        if(x_min==v_xin->sz || x_min==0L && v_xout->val.dp[kdx]< v_xin->val.dp[0] )   
-         err_prn(sfnm, "Bounding error with X output co-ordinate variable");   
+         err_prn(sfnm, "Bounding error with \""+string(v_xout->nm)+"\" output co-ordinate variable");   
 
        // not an exact match
        if( v_xout->val.dp[kdx] < v_xin->val.dp[x_min])
@@ -2219,7 +2219,7 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
 
        // do some bounds checking      
        if(x_min==v_xin->sz || x_min==0L && v_xout->val.dp[kdx]< v_xin->val.dp[0] )   
-         err_prn(sfnm, "Bounding error with X output co-ordinate variable");   
+         err_prn(sfnm, "Bounding error with \""+string(v_xout->nm)+"\" output co-ordinate variable");   
 
        // not an exact match
        if( v_xout->val.dp[kdx] < v_xin->val.dp[x_min])
