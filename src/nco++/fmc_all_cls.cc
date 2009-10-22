@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.28 2009-10-21 12:24:39 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.29 2009-10-22 11:08:46 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2173,95 +2173,85 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
    // deal with wrapped co-ordinates
    }else{      
 
+
    for(jdx=0 ; jdx<y_sz;jdx++){
      long y_min; // min value in Y input co-ord
      long y_max; // max value in Y input co-ord
-     long y_min_org;
-     long y_max_org;
+     double y_min_dbl;
+     double y_max_dbl;  
 
      // find range in input Y 
      y_min=(long)(lower_bound(v_yin->val.dp, v_yin->val.dp+v_yin->sz, v_yout->val.dp[jdx])-v_yin->val.dp);
 
 
-     // do some bounds checking      
-     if(y_min==v_yin->sz || y_min==0L && v_yout->val.dp[jdx]< v_yin->val.dp[0] )   
-       err_prn(sfnm, "Bounding error with Y output co-ordinate variable");   
+      // point off RHS of grid  
+      if(y_min==v_yin->sz){ 
+        y_min--; y_max=0;
+        y_min_dbl=v_yin->val.dp[y_min]; 
+        y_max_dbl=v_yin->val.dp[y_max]+360.0; 
+      // exact match  
+      } else if(v_yout->val.dp[jdx]==v_yin->val.dp[y_min]){
+        y_max=y_min; 
+        y_min_dbl=y_max_dbl=v_yin->val.dp[y_min]; 
+      // point off LHS side of grid
+      } else if( y_min==0){
+        y_min=v_yin->sz-1;y_max=0;
+        y_min_dbl=v_yin->val.dp[y_min]-360.0; 
+        y_max_dbl=v_yin->val.dp[y_max]; 
+      // regular point in grid  
+      }else{
+        y_max=y_min--;
+        y_min_dbl=v_yin->val.dp[y_min]; 
+        y_max_dbl=v_yin->val.dp[y_max]; 
+      } 
 
-     // not an exact match 
-     if(v_yout->val.dp[jdx]< v_yin->val.dp[y_min])
-       y_max=y_min--;
-     else
-     // exact match 
-       y_max=y_min; 
-      
-     // Y co-ordinate reversed ?  
-     if(b_rev_y){      
-       y_min_org=v_yin->sz-y_min-1;
-       y_max_org=v_yin->sz-y_max-1;
-     }else{
-       y_min_org=y_min;
-       y_max_org=y_max;
-     }  
-            
-      
+
+
      for(kdx=0;kdx<x_sz;kdx++){
        long x_min; // min value in X input co-ord
        long x_max; // max value in X input co-ord
        double Q[2][2]; 
+       double d_int1; // intermediate values
+       double d_int2; // intermediate values
        double rslt;
-       double x_min_dbl; // min co-ord value;
-       double x_max_dbl; // max co-ord value;
-       
        // find range in input X 
        x_min=(long)(lower_bound(v_xin->val.dp, v_xin->val.dp+v_xin->sz, v_xout->val.dp[kdx])-v_xin->val.dp);     
 
+       // do some bounds checking      
+       if(x_min==v_xin->sz || x_min==0L && v_xout->val.dp[kdx]< v_xin->val.dp[0] )   
+         err_prn(sfnm, "Bounding error with X output co-ordinate variable");   
 
-      // point off RHS of grid  
-      if(x_min==v_xin->sz){ 
-        x_min--; x_max=0;
-        x_min_dbl=v_xin->val.dp[x_min]; 
-        x_max_dbl=v_xin->val.dp[x_max]+360.0; 
-      // exact match  
-      } else if(v_xout->val.dp[kdx]==v_xin->val.dp[x_min]){
-        x_max=x_min; 
-        x_min_dbl=x_max_dbl=v_xin->val.dp[x_min]; 
-      // point off LHS side of grid
-      } else if( x_min==0){
-        x_min=v_xin->sz-1;x_max=0;
-        x_min_dbl=v_xin->val.dp[x_min]-360.0; 
-        x_max_dbl=v_xin->val.dp[x_max]; 
-      // regular point in grid  
-      }else{
-        x_max=x_min--;
-        x_min_dbl=v_xin->val.dp[x_min]; 
-        x_max_dbl=v_xin->val.dp[x_max]; 
-      } 
-     
+       // not an exact match
+       if( v_xout->val.dp[kdx] < v_xin->val.dp[x_min])
+         x_max=x_min--;
+       // an exact match
+       else
+         x_max=x_min;
 
-       Q[0][0]=v_din->val.dp[x_min*v_yin->sz+y_min_org];       
-       Q[1][0]=v_din->val.dp[x_max*v_yin->sz+y_min_org];
-       Q[0][1]=v_din->val.dp[x_min*v_yin->sz+y_max_org];          
-       Q[1][1]=v_din->val.dp[x_max*v_yin->sz+y_max_org];        
-       
-       // printf("Q[0][0]=%f Q[1][0]=%f  Q[0][1]=%f Q[1][1]=%f \n",Q[0][0],Q[1][0],Q[0][1],Q[1][1]);
-
+       // X co-ordinate reversed
+       if(b_rev_x){    
+         Q[0][0]=v_din->val.dp[(v_xin->sz-x_min-1)*v_yin->sz+y_min];       
+         Q[1][0]=v_din->val.dp[(v_xin->sz-x_max-1)*v_yin->sz+y_min];
+         Q[0][1]=v_din->val.dp[(v_xin->sz-x_min-1)*v_yin->sz+y_max];          
+         Q[1][1]=v_din->val.dp[(v_xin->sz-x_max-1)*v_yin->sz+y_max];        
+       }else{ 
+         Q[0][0]=v_din->val.dp[x_min*v_yin->sz+y_min];       
+         Q[1][0]=v_din->val.dp[x_max*v_yin->sz+y_min];
+         Q[0][1]=v_din->val.dp[x_min*v_yin->sz+y_max];          
+         Q[1][1]=v_din->val.dp[x_max*v_yin->sz+y_max];        
+       }
 
          
        if(x_min==x_max && y_min==y_max)
 	 rslt=Q[0][0];       
-       else if( y_min==y_max) {
-         rslt=clc_lin_ipl(x_min_dbl,x_max_dbl,v_xout->val.dp[kdx],Q[0][0],Q[1][0]);                            
-
-       }
+       else if( y_min==y_max) 
+         rslt=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);                            
        else if( x_min==x_max) 
-         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],Q[0][0],Q[1][1]);               
+         rslt=clc_lin_ipl(y_min_dbl,y_max_dbl,v_yout->val.dp[jdx],Q[0][0],Q[1][1]);               
        else{
-         double d_int1;
-         double d_int2;
-
-         d_int1=clc_lin_ipl(x_min_dbl,x_max_dbl,v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
-         d_int2=clc_lin_ipl(x_min_dbl,x_max_dbl,v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
-         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],d_int1,d_int2);               
+         d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
+         d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
+         rslt=clc_lin_ipl(y_min_dbl,y_max_dbl,v_yout->val.dp[jdx],d_int1,d_int2);               
        }
        v_dout->val.dp[kdx*v_yout->sz+jdx]=rslt;
 
@@ -2269,6 +2259,8 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
      }//end for kdx
  
    }// end for jdx 
+
+
 
    }// end else wrapped co-ordinates
 
