@@ -6,7 +6,7 @@
 template<class T>
 class map_srt{
     public:
-     long _imp;
+     nco_int _imp;
      T _V;
 
      //Use for sorting
@@ -22,7 +22,7 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
             
   long idx;  
   long sz=var->sz;
-  long *lp;
+  nco_int *lp;
   T  *tp;
   map_srt<T> *mp;
 
