@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.41 2009-08-21 11:39:17 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.42 2009-10-26 11:52:30 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -827,7 +827,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       bool has_mss_val;
       int sz=var->sz;
       double mss_val_dbl=0.0; 
-      long *lp;
+      nco_int *lp;
       double *dp;
       
       var_sct *var_out;
@@ -882,7 +882,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       bool has_mss_val;
       int sz=var->sz;
       double mss_val_dbl=0; 
-      long *lp;
+      nco_int *lp;
       double *dp;
       
       var_sct *var_out;
@@ -1036,7 +1036,7 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     bool has_mss_val=false;
     int sz;
     int mss_val_lp; 
-    long *lp1; 
+    nco_int *lp1; 
     double *dp2;
     
     double mss_val_dbl;
@@ -1840,7 +1840,7 @@ var_sct *gsl_cls::hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     bool has_mss_val=false;
     int sz;
     double *dp;
-    long *lp[2]; 
+    nco_int *lp[2]; 
     double mss_val_dbl;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
     
@@ -1942,7 +1942,7 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     bool has_mss_val=false;
     int sz;
     double *dp[2];
-    long *lp; 
+    nco_int *lp; 
     double mss_val_dbl;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
 
@@ -2995,7 +2995,7 @@ var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
      case NC_DOUBLE: r_val=gpr_obj.g_args(4).csdpss( var1->val.dp,d_srd,sz);break;
 
      case NC_INT:    // NC_INT rpresented as int in nco
-                     #if NC_INT==NCO_TYP_INT
+                     #if NCO_INT==NCO_TYP_INT
                        r_val=gpr_obj.g_args(2).csipss(var1->val.lp,d_srd,sz);
                      // NC_INT rpresented as long  in nco
 		     #else
@@ -3118,7 +3118,7 @@ var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
      case NC_DOUBLE: r_val=gpr_obj.g_args(4).csdpssd( var_arr[0]->val.dp,d_srd,sz,dmean);break;
 
      case NC_INT:    // NC_INT rpresented as int in nco
-                     #if NC_INT==NCO_TYP_INT
+                     #if NCO_INT==NCO_TYP_INT
                        r_val=gpr_obj.g_args(2).csipssd(var_arr[0]->val.lp,d_srd,sz,dmean);
                      // NC_INT rpresented as long  in nco
 		     #else
@@ -3263,7 +3263,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        case NC_DOUBLE: r_val=gsl_stats_max_index( var1->val.dp,d_srd,sz);break;
 
        case NC_INT:    // NC_INT rpresented as int in nco
-                       #if NC_INT==NCO_TYP_INT
+                       #if NCO_INT==NCO_TYP_INT
                          r_val=gsl_stats_int_max_index(var1->val.lp,d_srd,sz);
                        // NC_INT rpresented as long  in nco
 		       #else
@@ -3295,7 +3295,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        case NC_DOUBLE: r_val=gsl_stats_min_index( var1->val.dp,d_srd,sz);break;
 
        case NC_INT:    // NC_INT rpresented as int in nco
-                       #if NC_INT==NCO_TYP_INT
+                       #if NCO_INT==NCO_TYP_INT
                          r_val=gsl_stats_int_min_index(var1->val.lp,d_srd,sz);
                        // NC_INT rpresented as long  in nco
 		       #else
@@ -3330,7 +3330,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
        case NC_INT:  
              // NC_INT rpresented as int in nco
-            #if NC_INT==NCO_TYP_INT
+            #if NCO_INT==NCO_TYP_INT
                var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int)gsl_stats_int_min(var1->val.lp,d_srd,sz));
             // NC_INT rpresented as long  in nco
 	    #else
@@ -3378,7 +3378,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
        case NC_INT:  
              // NC_INT rpresented as int in nco
-            #if NC_INT==NCO_TYP_INT
+            #if NCO_INT==NCO_TYP_INT
                var_ret=ncap_sclr_var_mk("~gsl_stat3",(nco_int)gsl_stats_int_max(var1->val.lp,d_srd,sz));
             // NC_INT rpresented as long  in nco
 	    #else
@@ -3534,7 +3534,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        case NC_DOUBLE: r_val=gsl_stats_covariance(var_arr[0]->val.dp,d1_srd,var_arr[2]->val.dp,d2_srd,sz1 );break;
 
        case NC_INT:    // NC_INT rpresented as int in nco
-                       #if NC_INT==NCO_TYP_INT
+                       #if NCO_INT==NCO_TYP_INT
                          r_val=gsl_stats_int_covariance(var_arr[0]->val.lp,d1_srd,var_arr[2]->val.lp,d2_srd,sz1 );break;
                        // NC_INT rpresented as long  in nco
 		       #else
@@ -3563,7 +3563,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        case NC_DOUBLE: r_val=gsl_stats_correlation(var_arr[0]->val.dp,d1_srd,var_arr[2]->val.dp,d2_srd,sz1 );break;
 
        case NC_INT:    // NC_INT rpresented as int in nco
-                       #if NC_INT==NCO_TYP_INT
+                       #if NCO_INT==NCO_TYP_INT
                          r_val=gsl_stats_int_correlation(var_arr[0]->val.lp,d1_srd,var_arr[2]->val.lp,d2_srd,sz1 );break;
                        // NC_INT rpresented as long  in nco
 		       #else
@@ -3592,7 +3592,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        case NC_DOUBLE: r_val=gsl_stats_pvariance(var_arr[0]->val.dp,d1_srd,sz1,var_arr[2]->val.dp,d2_srd,sz2 );break;
 
        case NC_INT:    // NC_INT rpresented as int in nco
-                       #if NC_INT==NCO_TYP_INT
+                       #if NCO_INT==NCO_TYP_INT
                          r_val=gsl_stats_int_pvariance(var_arr[0]->val.lp,d1_srd,sz1,var_arr[2]->val.lp,d2_srd,sz2 );break;
                        // NC_INT rpresented as long  in nco
 		       #else
@@ -3622,7 +3622,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
        case NC_DOUBLE: r_val=gsl_stats_ttest(var_arr[0]->val.dp,d1_srd,sz1,var_arr[2]->val.dp,d2_srd,sz2 );break;
 
        case NC_INT:    // NC_INT rpresented as int in nco
-                       #if NC_INT==NCO_TYP_INT
+                       #if NCO_INT==NCO_TYP_INT
                          r_val=gsl_stats_int_ttest(var_arr[0]->val.lp,d1_srd,sz1,var_arr[2]->val.lp,d2_srd,sz2 );break;
                        // NC_INT rpresented as long  in nco
 		       #else
@@ -4369,7 +4369,7 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
 
 
       // return true
-      return ncap_sclr_var_mk("~gsl_spl_cls",1L); 
+      return ncap_sclr_var_mk("~gsl_spl_cls",(nco_int)1); 
 
 
 } // end gsl_spl_cls::spl_fnd 
