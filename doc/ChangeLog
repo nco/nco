@@ -1,3 +1,11 @@
+2009-10-21  Henry Butowsky  <henryb@hush.com> 
+	* important code changes so that ncap2 compiles
+	with NCO_INT==NCO_TYP_INT. Affected code:
+	fmc_all_cls.cc --msk_cls, srt_cls in 
+	fmc_gsl_cls.cc
+	map_srt_tmp.hh 
+	ncoGrammar.g 
+	
 2009-10-15  Henry Butowsky  <henryb@hush.com> 
 
 	* Tidy-up sort methods srt_cls
