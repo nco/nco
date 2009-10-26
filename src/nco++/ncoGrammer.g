@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.170 2009-09-28 13:39:57 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.171 2009-10-26 11:50:30 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2171,7 +2171,7 @@ out returns [var_sct *var]
                 if( dmn_fd==NULL_CEWI ){
                     err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
                 }
-                var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),dmn_fd->sz);
+                var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nco_int)dmn_fd->sz);
             } // end else 
         } // end action 
         
