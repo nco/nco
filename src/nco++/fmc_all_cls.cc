@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.30 2009-10-22 11:22:18 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.31 2009-10-26 11:33:08 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1151,7 +1151,7 @@
       char *cp_in;
       char *cp_out;
       long idx;
-      long *lp;
+      nco_int *lp;
       long var_sz;
       long msk_sz;
       size_t slb_sz;
@@ -1591,7 +1591,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           long sz; 
           long sz_idx;
           long slb_sz;
-          long *lp_mp; 
+          nco_int *lp_mp; 
           var_sct *var_out;
 
           var_out=nco_var_dpl(var1); 
