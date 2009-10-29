@@ -1,10 +1,8 @@
 2009-10-21  Henry Butowsky  <henryb@hush.com> 
-	* important code changes so that ncap2 compiles
-	with NCO_INT==NCO_TYP_INT. Affected code:
-	fmc_all_cls.cc --msk_cls, srt_cls in 
-	fmc_gsl_cls.cc
-	map_srt_tmp.hh 
-	ncoGrammar.g 
+
+	* Ensure ncap2 compiles	with NCO_INT==NCO_TYP_INT. Affects
+	fmc_all_cls.cc msk_cls srt_cls fmc_gsl_cls.cc, map_srt_tmp.hh,
+	ncoGrammar.g   
 	
 2009-10-15  Henry Butowsky  <henryb@hush.com> 
 
@@ -13,7 +11,7 @@
 2009-10-13  Henry Butowsky  <henryb@hush.com> 
 
 	* Add secret flag tst_udunits option to ncks. 
-	usage: --tst_udunits,'units_in','units_out','calendar type'?
+	Usage: --tst_udunits,'units_in','units_out','calendar type'
         
 2009-09-30  Charlie Zender  <zender@uci.edu>
 

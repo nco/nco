@@ -1433,7 +1433,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				if( dmn_fd==NULL_CEWI ){
 				err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
 				}
-				var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),dmn_fd->sz);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nco_int)dmn_fd->sz);
 				} // end else 
 				
 #line 1440 "ncoTree.cpp"

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.554 2009-09-26 18:02:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.555 2009-10-29 20:57:37 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -397,13 +397,12 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <li><!-- WZJ083 --> <a name="WZJ083"></a> <!--http://www.ess.uci.edu/~zender#WZJ083 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008), Compiling the uncompilable: A&nbsp;case for shell script compilation, <i>Submitted to ACM Trans. Softw. Engin. Method.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.pdf">PDF</a> (&copy;&nbsp;2008 by Springer-Verlag)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ083.pdf">PDF</a> (&copy;&nbsp;2008 by ACM)</a></li>
 
 <li><!-- WZJ091 --> <a name="WZJ091"></a> <!--http://www.ess.uci.edu/~zender#WZJ091 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2008),
-  Efficient Clustered Remote Data Analysis Workflows using SWAMP, <i>In Press in Earth Sci. Inform.</i>.
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2009), Efficient Clustered Server-side Data Analysis Workflows using SWAMP, <i>Earth Sci. Inform.</i>, <b>2</b>(3), 141&ndash;155, doi:10.1007/s12145-009-0021-z.
 <a href="http://dust.ess.uci.edu/ppr/ppr_WZJ091.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ091.pdf">PDF</a> (&copy;&nbsp;2009 by ACM)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ091.pdf">PDF</a> (&copy;&nbsp;2009 by ESI)</a></li>
 
 <li><!-- WZJ081 --> <a name="WZJ081"></a> <!--http://www.ess.uci.edu/~zender#WZJ081 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks: Cluster Workflow Execution of Retargeted Data Analysis Scripts, in <i>Cluster Computing and the Grid, 2008. CCGRID&nbsp;'08. 8th&nbsp;IEEE International Symposium on</i>. Lyons, France, 19&nbsp;22 May, 2008. IEEE Computer Society, 449&ndash;458, doi:10.1109/CCGRID.2008.69.

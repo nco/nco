@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.556 2009-10-11 18:45:40 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.557 2009-10-29 20:57:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11751,8 +11751,8 @@ $ORO < 0.5$
 @var{ORO} < 0.5
 @clear flg
 @end ifset
-@footnote{@code{ORO} stands for @dfn{Orography} in some climate models.  
-@math{@var{ORO} < 0.5} selects ocean-covered gridpoints.}: 
+@footnote{@code{ORO} stands for @dfn{Orography} in some climate models
+and in those models @math{@var{ORO} < 0.5} selects ocean gridpoints.}: 
 @example
 ncwa -B 'ORO < 0.5'      -w gw -a lat,lon in.nc out.nc
 ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon in.nc out.nc
