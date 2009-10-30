@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.71 2009-05-29 20:12:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.72 2009-10-30 00:55:07 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -92,9 +92,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.71 2009-05-29 20:12:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.71 $";
-  const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.72 2009-10-30 00:55:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;
   dmn_sct **dim;
@@ -276,6 +276,9 @@ main(int argc,char **argv)
       break;
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
+    case '6': /* Request netCDF3 64-bit offset output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

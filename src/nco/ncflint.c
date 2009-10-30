@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.167 2009-07-16 07:31:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.168 2009-10-30 00:55:07 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -103,9 +103,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.167 2009-07-16 07:31:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.167 $";
-  const char * const opt_sht_lst="34ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.168 2009-10-30 00:55:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.168 $";
+  const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -279,6 +279,9 @@ main(int argc,char **argv)
       break;
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
+    case '6': /* Request netCDF3 64-bit offset output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

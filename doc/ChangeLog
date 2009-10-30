@@ -1,3 +1,7 @@
+2009-10-29  Charlie Zender  <zender@uci.edu>
+
+	* Add short option -6, and better document -6, --64, --64bit options
+
 2009-10-21  Henry Butowsky  <henryb@hush.com> 
 
 	* Ensure ncap2 compiles	with NCO_INT==NCO_TYP_INT. Affects

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.243 2009-10-14 10:43:31 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.244 2009-10-30 00:55:07 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,9 +121,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.243 2009-10-14 10:43:31 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.243 $";
-  const char * const opt_sht_lst="34aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.244 2009-10-30 00:55:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.244 $";
+  const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -367,11 +367,14 @@ main(int argc,char **argv)
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
-    case 'a': /* Toggle ALPHABETIZE_OUTPUT */
-      ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
+    case '6': /* Request netCDF3 64-bit offset output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
+      break;
+    case 'a': /* Toggle ALPHABETIZE_OUTPUT */
+      ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
       break;
     case 'B': /* Set NCO_BNR_WRT */
       NCO_BNR_WRT=True;

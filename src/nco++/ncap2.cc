@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.102 2009-08-19 12:41:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.103 2009-10-30 00:55:07 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -136,9 +136,9 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.102 2009-08-19 12:41:24 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.102 $";
-  const char * const opt_sht_lst="34ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.103 2009-10-30 00:55:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct *dmn_new;
@@ -300,6 +300,9 @@ main(int argc,char **argv)
       break;
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
+    case '6': /* Request netCDF3 64-bit offset output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

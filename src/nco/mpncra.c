@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.93 2009-05-29 20:12:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.94 2009-10-30 00:55:07 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,9 +145,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.93 2009-05-29 20:12:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.93 $";
-  const char * const opt_sht_lst="34ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.94 2009-10-30 00:55:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.94 $";
+  const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -339,6 +339,9 @@ main(int argc,char **argv)
       break;
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
+    case '6': /* Request netCDF3 64-bit offset output storage format */
+      fl_out_fmt=NC_FORMAT_64BIT;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

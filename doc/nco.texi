@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.557 2009-10-29 20:57:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.558 2009-10-30 00:55:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5680,7 +5680,7 @@ in-depth examples of @command{ncap2} solutions to complex problems.
 @noindent
 SYNTAX
 @example
-ncap2 [-3] [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] [-F] [-f] [-L @var{dfl_lvl}] 
+ncap2 [-3] [-4] [-6] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] [-F] [-f] [-L @var{dfl_lvl}] 
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
 @var{input-file} [@var{output-file}]  
@@ -9017,7 +9017,7 @@ omitted in batch scripts.
 @noindent
 SYNTAX
 @example 
-ncbo [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
+ncbo [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h]
 [-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
@@ -9356,7 +9356,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 SYNTAX
 @example
-ncea [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
+ncea [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
@@ -9485,7 +9485,7 @@ Additionally, only data inside the tropics is included.
 @noindent
 SYNTAX
 @example
-ncecat [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
+ncecat [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M] [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -9665,7 +9665,7 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncflint [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
+ncflint [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
@@ -9900,7 +9900,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-3] [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
+ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] 
 [-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] 
@@ -10429,7 +10429,7 @@ For more details @xref{Wrapped Coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-3] [-4] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+ncpdq [-3] [-4] [-6] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-X ...] [-x]
@@ -10918,7 +10918,7 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
+ncra [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
@@ -11029,7 +11029,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncrcat [-3] [-4] [-A] [-C] [-c] [-D @var{dbg}] 
+ncrcat [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -11328,7 +11328,7 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 @noindent
 SYNTAX
 @example
-ncwa [-3] [-4] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c] [-D @var{dbg}] 
+ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-I] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{mask_comp}]
