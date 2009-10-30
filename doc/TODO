@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1065 2009-10-30 00:55:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1066 2009-10-30 01:38:20 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -83,7 +83,7 @@ nco115. SIGFPE when sum of denominator in ncwa (i.e., sum of weight) is zero
 nco127. Make mss: signal retrieval from NCAR mass store
 nco143. Add -W or -q switch to turn off squelch most warning messages in ncra, ncrcat (especially warnings about non-monotonicity)
 nco144. Add option(s) to select all N-D variables where N=0,1,2...
-nco145. Talk to Brian and implement latest netCDF and CF conventions, e.g., time_op
+nco145. Implement later netCDF and CF conventions, e.g., time_op in ncra
 nco146. Allow proxies for coordinate variables so that, e.g., hyperslabs
         may be specified for "date" even though "time" is the coordinate. 
         Proxies must be one dimensional and monotonic, of course.
@@ -122,7 +122,6 @@ nco192. ncdiff will sometimes subtract files of incommensurate sizes without com
         This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
         Former case should print warning, latter case should exit with error
 nco193. Convert dimension sizes from type "long int" to type "size_t"?
-nco195. Itanium builds!
 nco199. Internationalize (i18n) NCO with gettext()
 nco203. Perform benchmarking tests to quantify arithmetic performance improvements, I/O bottlenecks, etc.
 nco209. Add rules to automagically make MANIFEST and update Sourceforge download area
@@ -176,7 +175,7 @@ nco315. GNUC non-ANSI rank reduction methods in nco_var_avg.c fail on large file
 nco316. Change offending nco_malloc() to nco_malloc_flg() calls for #315
 nco317. Understand stack memory problem. ulimits? compiler switches?
 nco318. Solve stack memory problem and benchmark vs. ANSI code branch
-nco320. How to do TeX-like hyphens in TeXInfo?
+nco320. LaTeX-like hyphens in TeXInfo?
 nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
 nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
 nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
