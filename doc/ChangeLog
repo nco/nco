@@ -1,3 +1,11 @@
+2009-10-30  Charlie Zender  <zender@uci.edu>
+
+	* #define NCO_INT NCO_TYP_INT instead of NCO_TYP_LONG
+	Longs are 8-bytes on 64-bit systems, and NCO_INTs are always 4 bytes.
+	Stuffing the 4 bytes into 8 bytes of RAM is harmless locally, and
+	ensures the NCO code is robust in other ways. 
+	However, it also seems to confuse/break DAP-handling of ints.
+	
 2009-10-29  Charlie Zender  <zender@uci.edu>
 
 	* Add short option -6, and better document -6, --64, --64bit options
