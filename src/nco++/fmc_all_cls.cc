@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.31 2009-10-26 11:33:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.32 2009-10-30 11:31:45 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2217,16 +2217,22 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
        // find range in input X 
        x_min=(long)(lower_bound(v_xin->val.dp, v_xin->val.dp+v_xin->sz, v_xout->val.dp[kdx])-v_xin->val.dp);     
 
-       // do some bounds checking      
-       if(x_min==v_xin->sz || x_min==0L && v_xout->val.dp[kdx]< v_xin->val.dp[0] )   
-         err_prn(sfnm, "Bounding error with \""+string(v_xout->nm)+"\" output co-ordinate variable");   
 
-       // not an exact match
-       if( v_xout->val.dp[kdx] < v_xin->val.dp[x_min])
-         x_max=x_min--;
-       // an exact match
-       else
-         x_max=x_min;
+      // point off RHS of grid  
+      if(x_min==v_xin->sz){ 
+        x_min--; x_max=x_min-1;
+       // exact match  
+      } else if(v_xout->val.dp[kdx]==v_xin->val.dp[x_min]){
+        x_max=x_min; 
+      // point off LHS side of grid
+      } else if( x_min==0){
+          x_max=1;
+      // regular point in grid  
+      }else{
+        x_max=x_min--;
+      }  
+
+
 
        // X co-ordinate reversed
        if(b_rev_x){    
