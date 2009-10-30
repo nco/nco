@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.555 2009-10-29 20:57:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.556 2009-10-30 18:38:00 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -937,7 +937,7 @@ ANTLR&nbsp;3.x C++ interface is incomplete.
 
 It is possible and often preferable to install most of the
 pre-requisite and optional software from pre-compiled packages on
-modern Debian- and RPM-based systems with (Debian) 
+modern Debian- and RPM-based systems with (Debian/Ubuntu) 
 <tt>
 <dt>sudo aptitude install antlr # ANTLR</dt>
 <dt>sudo aptitude install libcurl3-dev libxml2-dev # DAP-prereqs</dt>
