@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.43 2009-10-30 01:38:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.44 2009-10-31 06:01:05 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -54,7 +54,8 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
     if(CNV_CCM_CCSM_CF && dbg_lvl_get() > 0){
       (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",prg_nm_get(),cnv_sng,att_val);
       if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
-      if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO NCO has a unified (though incomplete) treatment of many related (official and unoffical) conventions including the older CCM and CCSM and newer CF conventions. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",prg_nm_get());
+      /* Only warn in arithmetic operators where conventions change behavior */
+      if(dbg_lvl_get() > 1 && nco_is_rth_opr(prg_get())) (void)fprintf(stderr,"%s: INFO NCO has a unified (though incomplete) treatment of many related (official and unoffical) conventions including the older CCM and CCSM and newer CF conventions. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",prg_nm_get());
     } /* endif dbg */
     att_val=(char *)nco_free(att_val);
   } /* endif */
