@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.556 2009-10-30 18:38:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.557 2009-10-31 05:27:11 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -139,7 +139,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 
 <li>2008 May&nbsp;11: NCO 3.9.5</li>
 
-<li>2008 Apr&nbsp;28: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf">overview</a> paper in EMS</li>
+<li>2008 Apr&nbsp;28: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview</a> paper in EMS</li>
 
 <li>2008 Mar&nbsp;04: NCO 3.9.4</li>
 
@@ -147,7 +147,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 
 <li>2007 Dec&nbsp;07: NCO 3.9.3 (SWAMP!)</li>
 
-<li>2007 Dec&nbsp;04: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf">scaling paper</a> in IJHPCA</li>
+<li>2007 Dec&nbsp;04: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">scaling paper</a> in IJHPCA</li>
 
 <li>2007 Aug&nbsp;29: NCO 3.9.2 (<tt>_FillValue</tt>s)</li>
 
@@ -412,8 +412,8 @@ Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks: Cluster Workflow Exec
 <li><!-- Zen08 --> <a name="Zen08"></a> <!--http://www.ess.uci.edu/~zender#Zen08 -->
 Zender, C.&nbsp;S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), <i>Environ. Modell. Softw.</i>, <b>23</b>(10), 1338&ndash;1342, doi:10.1016/j.envsoft.2008.03.004.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">PDF (CSZ)</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf">PDF (EMS)</a> (&copy;&nbsp;2008 by Elsevier Ltd.)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08_csz.pdf">PDF (CSZ)</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">PDF (EMS)</a> (&copy;&nbsp;2008 by Elsevier Ltd.)</a></li>
 
 <li> <!-- WZJ074 --> <a name="WZJ074"></a> <!--http://www.ess.uci.edu/~zender#WZJ074 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender and S.&nbsp;F. Jenks (2007): <i>A System for Scripted Data Analysis at Remote Data Centers</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 10&ndash;14, 2007. <i>Eos Trans. AGU</i>, <b>88</b>(52), Fall Meet. Suppl., Abstract IN11B-0469.
@@ -438,8 +438,8 @@ Paris, France, May 2&ndash;4, 2007.
 <li><!-- ZeM07 --> <a name="ZeM07"></a> <!--http://www.ess.uci.edu/~zender#ZeM07 -->
 Zender, C.&nbsp;S., and H.&nbsp;J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, <i>Int.&nbsp;J.&nbsp;High Perform. Comput. Appl, <b>21</b>(4), 485&ndash;498, doi:10.1177/1094342007083802</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">PDF (CSZ)</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf">PDF (IJHPCA) (&copy;&nbsp;2007 by SAGE Publications)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_csz.pdf">PDF (CSZ)</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">PDF (IJHPCA) (&copy;&nbsp;2007 by SAGE Publications)</a></li>
 
 <li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
