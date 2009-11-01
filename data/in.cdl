@@ -7,6 +7,10 @@
 // /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc in.cdl
 // /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in.cdl
 
+// URL: 
+// http://dust.ess.uci.edu/nco/in.nc
+// http://dust.ess.uci.edu/nco/in_4.nc
+
 // netCDF3:
 // ncgen -b -o in.nc in.cdl
 // ncgen -b -o ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.cdl
@@ -50,7 +54,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.111 2009-09-11 15:43:40 hmb Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.112 2009-11-01 17:23:33 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";

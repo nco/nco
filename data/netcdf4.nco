@@ -1,13 +1,15 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.11 2009-10-21 04:13:21 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.12 2009-11-01 17:23:33 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 // Stress-test netCDF4 atomic types and features
 
+/* URL: 
+   http://dust.ess.uci.edu/nco/netcdf4.nc */
+
 /* Usage: 
    ncap2 -4 -O -v -S ~/nco/data/netcdf4.nco ~/nco/data/in.nc ~/nco/data/netcdf4.nc
    ncks ~/nco/data/netcdf4.nc | /bin/more
-   scp ~/nco/data/netcdf4.nc dust.ess.uci.edu:/var/www/html/nco
-*/
+   scp ~/nco/data/netcdf4.nc dust.ess.uci.edu:/var/www/html/nco */
 
 global@Conventions_NC_CHAR = "CF-1.0"; // NC_CHAR
 global@Conventions_NC_STRING = "CF-1.0"s; // NC_STRING
