@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1066 2009-10-30 01:38:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1067 2009-11-05 22:35:24 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -741,7 +741,6 @@ Status 20050920:
    ashes: Ubuntu, x86, LAM-MPI, gcc-4.0
    elnino: Libranet, x86, MPICH2, icc-9.0
    sand: Ubuntu, dual x86_64, LAM-MPI, gcc-4.0
-   soot: Fedora Core 3, dual x86, LAM-MPI, icc-8.0
 
 0. MPI with valgrind example
    mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
@@ -769,7 +768,6 @@ Begin OPeNDAP section
 ************************************************************************
 OPeNDAP: Archive of quickie DAP tests:
 ncks -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
-ncks -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
 ncks -p https://srb.npaci.edu/mysrb331all.shtml/home/zender.uci-esmf/zender/nco/data -l . in.nc
 http://sasa.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html
 http://orion.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html

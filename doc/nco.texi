@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.558 2009-10-30 00:55:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.559 2009-11-05 22:35:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12210,8 +12210,6 @@ OPeNDAP server examples:
 
 UCI DAP servers:
 ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
-ncrcat -O -C -D 3 -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
-  -l /tmp in.nc in.nc ~/foo.nc 
 ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
   -l /tmp in.nc in.nc ~/foo.nc
 
