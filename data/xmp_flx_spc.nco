@@ -1,0 +1,15 @@
+// -*-C-mode-*-
+
+/* Demonstrate processing of spectral/broadband flux data on non-linear wavelength grid
+   Input data use naming conventions from SWNB2 radiative transfer model */
+
+// ncap2 -O -v -S ~/nco/data/xmp_flx_spc.nco -p ${DATA}/icr swnb_sas_Smm_clr_csza1.0.nc ~/foo.nc
+
+dmn_sz_gcnet=915;
+defdim("gcnet",dmn_sz_gcnet);
+flx_spc_dwn_gcnet[gcnet]=flx_spc_dwn_snw(708:1622);
+flx_spc_upw_gcnet[gcnet]=alb_spc_snw(708:1622)*flx_spc_dwn_snw(708:1622);
+flx_bb_dwn_snw_gcnet=flx_spc_dwn_gcnet.total();
+flx_bb_upw_snw_gcnet=flx_spc_upw_gcnet.total();
+alb_bb_snw_gcnet=flx_bb_upw_snw_gcnet/(flx_bb_dwn_snw_gcnet+1.0e-36);
+
