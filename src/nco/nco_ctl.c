@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.252 2009-10-30 00:55:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.253 2009-11-07 22:54:55 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -573,6 +573,44 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
   } /* end switch */
   return False;
 } /* end nco_is_rth_opr() */
+
+nco_bool /* [flg] Program does arithmetic and preserves rank */
+nco_is_rnk_prs_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? */
+(const int prg_id) /* [enm] Program ID */
+{
+  /* Purpose: Is program rank-preserving arithmetic operator?
+     For purposes of this function, arithmetic operators change values
+     Concatenators (ncrcat, ncecat) are not arithmetic because they just glue data
+     Permutor (ncpdq) is not arithmetic because it just re-arranges values
+     Packer (ncpdq) is not arithmetic because it re-represents values
+     Attributors (ncrename, ncatted) are not arithmetic because they change metadata, not data
+     One use of nco_is_rnk_prs_rth_opr() is to tell which operators should
+     not process multidimensional coordinate values.
+     For example, we want ncwa to act of coordinates that are reduced 
+     But we do not want ncea, ncbo, or ncflint, for example, to load and process
+     single or multi-dimensional coordinate variables.
+     They are best treated as "fixed" variables to be copied directly from the input to the output file. */ 
+  switch(prg_id){
+  case ncap: 
+  case ncbo:
+  case ncea:
+  case ncflint:
+  case ncra:
+    return True;
+    break;
+  case ncatted: 
+  case ncecat: 
+  case ncks: 
+  case ncpdq: 
+  case ncrcat: 
+  case ncrename: 
+  case ncwa:
+    return False;
+    break;
+  default: nco_dfl_case_prg_id_err(); break;
+  } /* end switch */
+  return False;
+} /* end nco_is_rnk_prs_rth_opr() */
 
 void
 nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */

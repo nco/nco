@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.32 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.33 2009-11-07 22:54:55 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -51,6 +51,10 @@ nco_exit_gracefully(void); /* [fnc] Clean up timers, file descriptors, memory, t
 
 nco_bool /* [flg] Program does arithmetic */
 nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
+(const int prg_id); /* [enm] Program ID */
+
+nco_bool /* [flg] Program does arithmetic and preserves rank */
+nco_is_rnk_prs_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? */
 (const int prg_id); /* [enm] Program ID */
 
 nco_bool /* [flg] Program is multi-file operator */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.83 2009-04-19 23:17:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.84 2009-11-07 22:54:55 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -721,7 +721,30 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if(CNV_CCM_CCSM_CF){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
       /* NB: all !strcmp()'s except "msk_" which uses strstr() */
-      if(prg_id == ncbo && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
+      if(nco_is_rnk_prs_rth_opr(prg_id) && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
+      /* Known "multi-dimensional coordinates" in CCSM-like model output:
+	 lat, lon, lev are normally 1-D coordinates
+	 Known exceptions:
+	 lat and lon are "2-D coordinates" in NARCCAP output
+	 NARCCAP specifies lat and lon in "coordinates" attribute of 2-D fields
+	 latixy and longxy are "2-D coordinates" in CLM output
+	 CLM does not specify latixy and longxy in "coordinates" attribute of any fields
+	 NARCCAP output gives all "coordinate-like" fields an "axis" attribute
+	 This includes time, which both ncra and ncwa _should_ process
+	 CLM does not give an "axis" attribute to any fields
+	 One method of chasing down all "coordinate-like" fields is to look
+	 for the field name in the "coordinates" attribute of any variable.
+	 However, this will miss the case when no variables use an N-D 
+	 coordinate-like variable as a coordinate.
+	 "coordinate-like" variables that should be "fixed", and not
+	 differenced, interpolated, or ensemble-averaged, include those 
+	 satisfying these conditions:
+	 0. Traditional coordinate (1-D variable same name as its dimension)
+	 1. Present in a "coordinates" attribute
+	 2. Contain an "axis" attribute (except "time")
+	 3. Found in empirical list of variables
+	 Following list implements #3 for common CCSM-like files: */
+      if(nco_is_rnk_prs_rth_opr(prg_id) && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
     } /* end if CNV_CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */

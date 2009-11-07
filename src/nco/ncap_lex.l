@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.69 2009-01-21 00:15:38 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.70 2009-11-07 22:54:55 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -353,7 +353,10 @@ XPN [eE][+-]?[0-9]+
   /* int */
   nco_int int_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int %s\n",yytext); 
-  if(sscanf((char *)yytext,"%li",&int_tkn) != 1){
+  /* NB: Format depends on opaque type of nco_int
+     Until 200911, nco_int was C-type long, and now nco_int is C-type int
+     if(sscanf((char *)yytext,"%li",&int_tkn) != 1){ */
+  if(sscanf((char *)yytext,"%i",&int_tkn) != 1){
     sprintf(ncap_err_sng,"Bad int constant: %s",(char *)yytext);
     yyerror(prs_arg,ncap_err_sng);
   } /* endif err */

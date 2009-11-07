@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.559 2009-11-05 22:35:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.560 2009-11-07 22:54:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4071,7 +4071,7 @@ The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits}
 package documentation describes the supported formats of time
 dimensions. 
 Among the metadata conventions which adhere to these formats are the  
-@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html, 
+@uref{http://cf-pcmdi.llnl.gov, 
 Climate and Forecast (CF) Conventions} and the 
 @uref{http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html,
 Cooperative Ocean/Atmosphere Research Data Service (COARDS) Conventions}.

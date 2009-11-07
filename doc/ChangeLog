@@ -1,3 +1,13 @@
+2009-11-07  Charlie Zender  <zender@uci.edu>
+
+	* Change sprintf() and scanf() formatting for nco_int from long to int
+
+	* Implement empirical list of N-D coordinate "fixed" variables:
+	lat, lon, lev, longxy, latixy
+
+	* Change fixed variable exclusion condition from is_ncbo to
+	is_rnk_prs_rth_opr()
+
 2009-10-30  Charlie Zender  <zender@uci.edu>
 
 	* #define NCO_INT NCO_TYP_INT instead of NCO_TYP_LONG
