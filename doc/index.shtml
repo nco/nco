@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.557 2009-10-31 05:27:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.558 2009-11-07 22:59:56 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -512,6 +512,7 @@ Spectral toolkit?
 Bilinear interpolation, GSL fitting; 
 Chunking in all operators;
 CF calendar attribute;
+N-D coordinate exceptions;
 <li><b>NCO/SDO 3.9.9</b>: 
 netCDF4 chunking and <tt>NC_STRING</tt> support; 
 GSL statistics, interpolation functions;

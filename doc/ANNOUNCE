@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.342 2009-10-06 00:33:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.343 2009-11-07 22:59:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.0 are ready. 
 
@@ -15,6 +15,12 @@ Work on NCO 4.0.1 is underway. Areas of improvement include
 Spectral transforms.
 
 "New stuff" details:
+
+A. NCO recognizes more variables that are coordinate variables
+   or multi-dimensional coordinate variables and does not attempt
+   to arithmetically process (e.g., difference) these in most
+   situations. This allows more convenient manipulation of, e.g.,
+   CLM and NARCCAP files.
 
 B. ncap2 supports the GSL (Chapter 2) fitting routines, e.g., fxm
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
