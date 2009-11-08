@@ -1,5 +1,8 @@
 2009-11-07  Charlie Zender  <zender@uci.edu>
 
+	* Add nco_is_spc_in_crd_att() to test whether variable is
+	specified in "coordinates" attribute
+
 	* Change sprintf() and scanf() formatting for nco_int from long to int
 
 	* Implement empirical list of N-D coordinate "fixed" variables:

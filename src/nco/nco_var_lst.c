@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.84 2009-11-07 22:54:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.85 2009-11-08 06:48:17 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -242,6 +242,65 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   return xtr_lst;
 } /* end nco_var_lst_xcl() */
 
+nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
+nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int var_id) /* I [id] Variable ID */
+{
+  /* Purpose: Is variable specified in a "coordinates" attribute?
+     If so, it may be a "multi-dimensional coordinate" that should
+     undergo special treatment by arithmetic operators. */
+  nco_bool IS_SPC_IN_CRD_ATT=False; /* [flg] Variable is listed in a "coordinates" attribute  */
+
+  const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  const char fnc_nm[]="nco_is_spc_in_crd_att()"; /* [sng] Function name */
+  char **crd_lst; /* [sng] 1D array of list elements */
+  char *att_val;
+  char att_nm[NC_MAX_NAME];
+  char var_nm[NC_MAX_NAME];
+  int idx_att;
+  int idx_crd;
+  int nbr_att;
+  int nbr_crd; /* [nbr] Number of coordinates specified in "coordinates" attribute */
+  int rcd;
+  long att_sz;
+  nc_type att_typ;
+  
+  /* Find number of attributes */
+  rcd=nco_inq_varnatts(nc_id,var_id,&nbr_att);
+  for(idx_att=0;idx_att<nbr_att;idx_att++){
+    rcd+=nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+    /* Is attribute part of CF convention? */
+    if(!strcmp(att_nm,"coordinates")){
+      /* Yes, get list of specified attributes */
+      rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+      if(att_typ != NC_CHAR){
+	rcd=nco_inq_varname(nc_id,var_id,var_nm);
+	(void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+	return IS_SPC_IN_CRD_ATT;
+      } /* end if */
+      att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+      if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+      /* NUL-terminate attribute */
+      att_val[att_sz]='\0';
+      /* Split list into separate coordinate names
+	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+      crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
+      /* ...for each coordinate in "coordinates" attribute... */
+      for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
+	/* Does variable match name specified in coordinate list? */
+	if(!strcmp(var_nm,crd_lst[idx_crd])) break;
+      } /* end loop over coordinates in list */
+      if(idx_crd!=nbr_crd) IS_SPC_IN_CRD_ATT=True;
+      /* Free allocated memory */
+      att_val=(char *)nco_free(att_val);
+      crd_lst=nco_sng_lst_free(crd_lst,nbr_crd);
+    } /* !coordinates */
+  } /* end loop over attributes */
+
+  return IS_SPC_IN_CRD_ATT; /* [flg] Variable is listed in a "coordinates" attribute  */
+} /* end nco_is_spc_in_crd_att() */
+
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
@@ -286,7 +345,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
   } /* end loop over idx */
   
   /* Detect and apply coordinates specified by CF convention
-     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#grid_ex2 */
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */
   if(CNV_CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
@@ -745,6 +804,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	 3. Found in empirical list of variables
 	 Following list implements #3 for common CCSM-like files: */
       if(nco_is_rnk_prs_rth_opr(prg_id) && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
+      if(nco_is_rnk_prs_rth_opr(prg_id) && nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id)) var_op_typ[idx]=fix;
     } /* end if CNV_CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */
