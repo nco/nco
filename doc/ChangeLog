@@ -1,5 +1,7 @@
 2009-11-07  Charlie Zender  <zender@uci.edu>
 
+	* Verify nco_is_spc_in_crd_att() implementation on NARCCAP file
+
 	* Add nco_is_spc_in_crd_att() to test whether variable is
 	specified in "coordinates" attribute
 
