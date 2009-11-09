@@ -331,10 +331,10 @@ public:
   std::string fnm() { return _fnm;} 
   
   // maintain compatibility with older code  
-  f_unn g_args(void)    { return _in_f_unn_vtr[0]; }
+  //f_unn g_args(void)    { return _in_f_unn_vtr[0]; }
 
   // For functions that have multiple gsl function prototypes  
-  f_unn g_args(int idx) { return _in_f_unn_vtr[idx]; }     
+  f_unn g_args(int idx=0) { return _in_f_unn_vtr[idx]; }     
 
   nc_type type(){ return _type;}
 }; 
