@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.6 2009-05-22 15:19:47 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.7 2009-11-09 14:36:56 hmb Exp $ -*-C++-*-
 
 // Purpose: Script to test gsl special functions
 
@@ -403,7 +403,7 @@ nbr_err_ttl=0;
   }
 
   // compare absdev and absdev_m
-  if( abs(f2.gsl_stats_absdev()- f2.gsl_stats_absdev_m(1,f2.gsl_stats_mean())) >0.01){  
+  if( abs(f2.gsl_stats_absdev()- f2.gsl_stats_absdev_m(1,f2.size(),f2.gsl_stats_mean())) >0.01){  
        print("ERROR: f2:absdev functions\n");
      nbr_err++;	
   }
@@ -436,33 +436,33 @@ nbr_err_ttl=0;
   }
 
   // check variance and variance_m
-  if( abs(  gsl_stats_variance(f4) - gsl_stats_variance_m(f4,1,gsl_stats_mean(f4)))>0.01){
+  if( abs(  gsl_stats_variance(f4) - gsl_stats_variance_m(f4,1,f4.size(),gsl_stats_mean(f4)))>0.01){
       print("ERROR: f4:gsl variance functions\n");
       nbr_err++;	
   }
 
 
   // check sd and sd_m
-  if( abs(  gsl_stats_sd(f4) - gsl_stats_sd_m(f4,1,gsl_stats_mean(f4)))>0.01){
+  if( abs(  gsl_stats_sd(f4) - gsl_stats_sd_m(f4,1,f4.size(),gsl_stats_mean(f4)))>0.01){
       print("ERROR: f4:gsl variance functions\n");
       nbr_err++;	
   }
 
 
-f5[f_size]=2.0;
+  f5[f_size]=2.0;
 
-f6=gsl_ran_exponential(f5).sort();
+  f6=gsl_ran_exponential(f5).sort();
 
 
    // check weighted functions
-  if( abs( gsl_stats_wmean(1.0d,1,f2,1)- gsl_stats_mean(f2)) >0.01){  
+ if( abs( gsl_stats_wmean(1.0d,1,f2,1,f2.size())- gsl_stats_mean(f2)) >0.01){  
        print("ERROR: f6: weighted mean function\n");
      nbr_err++;	
   }
 
 
    // check weighted functions
-  if( abs( gsl_stats_wmean(0.5d,1,f6,1)- gsl_stats_mean(f6)) >0.01){  
+ if( abs( gsl_stats_wmean(0.5d,1,f6,1,f6.size())- gsl_stats_mean(f6)) >0.01){  
        print("ERROR: f6: weighted mean2 function\n");
      nbr_err++;	
   }
