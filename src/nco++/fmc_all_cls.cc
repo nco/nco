@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.33 2009-11-09 16:17:01 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.34 2009-11-09 16:39:09 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -556,14 +556,29 @@
     int nbr_args;
     var_sct *var=NULL_CEWI;
     var_sct *var1=NULL_CEWI;
+    nc_type mp_typ=NC_INT;
     prs_cls* prs_arg=walker.prs_arg;
-
+      
     RefAST tr;
     vtl_typ lcl_typ;
 
     std::string susg; 
     std::string sfnm =fmc_obj.fnm(); //method name
     std::vector<RefAST> vtr_args;
+
+
+#ifdef ENABLE_NETCDF4
+  { /* scope for fl_fmt temporary */
+    int fl_fmt; 
+    (void)nco_inq_format(walker.prs_arg->out_id,&fl_fmt);
+    if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC)
+      mp_typ=NC_UINT64;
+    else    
+      mp_typ=NC_INT;   
+  } /* end scope */
+
+#endif 
+
 
 
     susg="usage: property="+sfnm+"( var_nm | att_nm | var_exp )";
@@ -620,7 +635,10 @@
 
       switch(fdx){ 
            case PSIZE:
-             var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)var1->sz);
+             if(mp_typ==NC_UINT64) 
+               var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_uint64)var1->sz);
+             else 
+               var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)var1->sz);
              break;
            case PTYPE:
              var=ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)var1->type);
