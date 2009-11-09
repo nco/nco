@@ -6,7 +6,7 @@
 template<class T>
 class map_srt{
     public:
-     nco_int _imp;
+     long _imp;
      T _V;
 
      //Use for sorting
@@ -22,16 +22,11 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
             
   long idx;  
   long sz=var->sz;
-  nco_int *lp;
   T  *tp;
   map_srt<T> *mp;
 
   tp=(T*)var->val.vp;  
   mp=new map_srt<T>[sz];          
-
-  // var_mp will hold the mapping
-  (void)cast_void_nctype(NC_INT,&var_mp->val);
-  lp=var_mp->val.lp;          
 
   // initalize array
   for(idx=0 ; idx<sz; idx++){
@@ -42,16 +37,36 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
   // sort array
   std::sort(mp,mp+sz);  
 
-  for(idx=0 ; idx<sz; idx++){
-    // nb reverse the map
-    lp[ mp[idx]._imp] =idx;
-    tp[idx]=mp[idx]._V;
+  // Currently only two types for the mapping
+  if(var_mp->type==NC_INT){
+    // var_mp will hold the mapping
+    (void)cast_void_nctype(NC_INT,&var_mp->val);
+
+    for(idx=0 ; idx<sz; idx++){
+      // nb reverse the map
+      var_mp->val.lp[ mp[idx]._imp] =idx;
+      tp[idx]=mp[idx]._V;
+    }
+    (void)cast_nctype_void(NC_INT,&var_mp->val); 
+          
+  }else if(var_mp->type==NC_UINT64){
+    // var_mp will hold the mapping
+    (void)cast_void_nctype(NC_UINT64,&var_mp->val);
+
+    for(idx=0 ; idx<sz; idx++){
+      // nb reverse the map
+      var_mp->val.ui64p[ mp[idx]._imp] =idx;
+      tp[idx]=mp[idx]._V;
+    }
+    (void)cast_nctype_void(NC_UINT64,&var_mp->val); 
   }
-              
+
+
+            
   // delete array
   delete []mp;
 
-  (void)cast_nctype_void(NC_INT,&var_mp->val);           
+
 
   return ;
 
