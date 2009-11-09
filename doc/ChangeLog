@@ -1,3 +1,11 @@
+2009-11-09  Henry Butowsky  <henryb@hush.com> 
+	* mods to 'dsort(var,&var_mp)'
+	if output file is netcdf4 then the created map is of type NC_UINT64 
+	else it is of type NC_INT
+
+	* Completly refactored all gsl_stats code -hnd_fnc_stat? So that
+	the 'size_t n' argument is user input to functions
+
 2009-11-07  Charlie Zender  <zender@uci.edu>
 
 	* Verify nco_is_spc_in_crd_att() implementation on NARCCAP file
