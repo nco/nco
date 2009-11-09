@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.32 2009-10-30 11:31:45 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.33 2009-11-09 16:17:01 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1398,6 +1398,7 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     int fdx=fmc_obj.fdx();
     var_sct *var1=NULL_CEWI;
     var_sct *var2=NULL_CEWI;
+    nc_type mp_typ; // used to hold the mapping type either NC_INT or NC_UINT64 
     std::string sfnm =fmc_obj.fnm(); //method name
     std::string styp;
     std::string var_nm;
@@ -1408,6 +1409,20 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     nbr_args=args_vtr.size();  
 
     susg="usage: var_out="+sfnm+"(var_exp,&var_map)\n";  
+
+    mp_typ=NC_INT;
+
+#ifdef ENABLE_NETCDF4
+  { /* scope for fl_fmt temporary */
+    int fl_fmt; 
+    (void)nco_inq_format(walker.prs_arg->out_id,&fl_fmt);
+    if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC)
+      mp_typ=NC_UINT64;
+    else    
+      mp_typ=NC_INT;   
+  } /* end scope */
+
+#endif 
 
 
     if(nbr_args==0)
@@ -1448,7 +1463,7 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
          }else{
 	    var2=nco_var_dpl(var1);
             if(!var2->undefined) 
-              var2=nco_var_cnf_typ(NC_INT,var2);
+              var2=nco_var_cnf_typ(mp_typ,var2);
             nco_free(var2->nm);
             var2->nm=strdup(var_nm.c_str());
         }    
@@ -1470,8 +1485,8 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
                break;   
            }
 
-           // convert map to type int
-           var2=nco_var_cnf_typ(NC_INT, var2);  
+           // convert map 
+           var2=nco_var_cnf_typ(mp_typ, var2);  
 
            // check if map is large enough  
            if( var2->sz < var1->sz) {
@@ -1566,7 +1581,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
     var1=walker.out(args_vtr[0]);
     var2=walker.out(args_vtr[1]);
-    var2=nco_var_cnf_typ(NC_INT, var2);
+    var2=nco_var_cnf_typ(NC_UINT64, var2);
 
 
 
@@ -1591,7 +1606,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           long sz; 
           long sz_idx;
           long slb_sz;
-          nco_int *lp_mp; 
+          nco_uint64 *lp_mp; 
           var_sct *var_out;
 
           var_out=nco_var_dpl(var1); 
@@ -1612,7 +1627,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
           // var2 contains the mapping
           (void)cast_void_nctype(NC_INT,&var2->val);
-          lp_mp=var2->val.lp; 
+          lp_mp=var2->val.ui64p; 
          
           for(idx=0; idx<sz_idx; idx++){ 
             cp_out=(char*)var_out->val.vp+ (ptrdiff_t)idx*sz*slb_sz;              
@@ -1627,7 +1642,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           
          
           var1=nco_var_free(var1);
-          (void)cast_nctype_void(NC_INT,&var2->val);
+          (void)cast_nctype_void(NC_UINT64,&var2->val);
           var2=nco_var_free(var2);
              
           var1=var_out;
