@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.143 2009-05-29 20:36:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.144 2009-11-13 15:51:18 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1324,3 +1324,34 @@ nco_var_srd_srt_set /* [fnc] Assign zero-start and unity-stride vectors to varia
   } /* end loop over variables */
   
 } /* end nco_var_srd_srt_set() */
+
+
+  
+void
+nco_var_dmn_refresh /* [fnc] Refresh var hyperslab info with var->dim[] info */
+(var_sct ** const var, /* I [sct] Variables to refresh */
+ const int nbr_var) /* I [nbr] Number of structures in variable structure list */
+{
+  int idx;
+  int jdx;
+  for(idx=0;idx<nbr_var;idx++){
+    long sz;
+    long sz_rec;
+    sz=1;
+    sz_rec=1;
+    var_sct *var_tmp;
+    var_tmp=var[idx];
+    
+    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
+      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
+      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
+      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
+      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
+      sz*=var_tmp->dim[jdx]->cnt;
+      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
+    }
+     var_tmp->sz=sz; 
+     var_tmp->sz_rec=sz_rec;
+  } 
+
+}  /* end nco_var_dmn_refresh() */
