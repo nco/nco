@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.154 2009-10-30 00:55:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.155 2009-11-13 15:55:32 hmb Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.154 2009-10-30 00:55:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.154 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.155 2009-11-13 15:55:32 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.155 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -463,26 +463,16 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
-  
-  /* Merge hyperslab limit information into dimension structures */
-  /* if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr); */
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
-    /* Merge limit from lmt_all_lst into dmn_out  */ 
-    for(jdx=0; jdx<nbr_dmn_fl; jdx++)
-       if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
-         dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
-         dmn_out[idx]->srt=0;
-         dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1;
-         dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
-         dmn_out[idx]->srd=1L;
-         break;
-       }
+    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   }
+
+  /* Merge hyperslab limit information into dimension structures */
+  if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
 
   
   /* No re-order dimensions specified implies packing request */
@@ -564,28 +554,8 @@ main(int argc,char **argv)
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
   
-    /* Refresh var_out with dim_out data */
-  for(idx=0;idx<nbr_xtr;idx++){
-    long sz;
-    long sz_rec;
-    sz=1;
-    sz_rec=1;
-    var_sct *var_tmp;
-    var_tmp=var_out[idx];
-    
-    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
-      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
-      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
-      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
-      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
-      sz*=var_tmp->dim[jdx]->cnt;
-      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
-     }/* end loop over jdx */
-     var_tmp->sz=sz; 
-     var_tmp->sz_rec=sz_rec;
-  } /* end loop over idx */
-
-
+  /* Refresh var_out with dim_out data */
+  (void)nco_var_dmn_refresh(var_out,nbr_xtr);
 
   
   
