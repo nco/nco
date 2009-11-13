@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.27 2009-05-23 00:04:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.28 2009-11-13 15:52:44 hmb Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -67,6 +67,15 @@ nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension struct
  const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
  CST_X_PTR_CST_PTR_CST_Y(lmt_sct,lmt), /* I [sct] Dimension limit information */
  const int lmt_nbr); /* I [nbr] Number of dimensions with user-specified limits */
+
+
+void
+nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension structures */
+(dmn_sct ** const dmn, /* I [sct] Dimension structures to modify */
+ const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Dimension limit information */
+ const int lmt_nbr); /* I [nbr] Number of dimensions with user-specified limits */
+
 
 dmn_sct ** /* O [sct] Pointer to free'd structure list */
 nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list */

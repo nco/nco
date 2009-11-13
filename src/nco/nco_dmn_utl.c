@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.34 2009-05-25 18:12:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.35 2009-11-13 15:54:03 hmb Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -170,6 +170,37 @@ nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension struct
     } /* end loop over lmt_idx */
   } /* end loop over dmn */
 } /* end nco_dmn_lmt_mrg() */
+
+
+void
+nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension structures */
+(dmn_sct ** const dmn, /* I [sct] Dimension structures to modify */
+ const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Dimension limit information */
+ const int lmt_nbr) /* I [nbr] Number of dimensions with user-specified limits */
+{
+  /* Purpose: Merge limit structure information into dimension structures */
+
+  int dmn_idx;
+  int lmt_idx;
+
+  for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
+    /* Does this dimension have user-specified limits? */
+    for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+      /* 20050707: Match on name not ID so nco_dmn_lmt_mrg() works with single
+	 limit list applied to any input file */
+      if(!strcmp(lmt_all_lst[lmt_idx]->dmn_nm,dmn[dmn_idx]->nm)){
+	dmn[dmn_idx]->cnt=lmt_all_lst[lmt_idx]->dmn_cnt;
+	dmn[dmn_idx]->srt=0;
+	dmn[dmn_idx]->end=lmt_all_lst[lmt_idx]->dmn_cnt-1;
+	dmn[dmn_idx]->srd=1L;
+	break;
+      } /* end if */
+    } /* end loop over lmt_idx */
+  } /* end loop over dmn */
+} /* end nco_dmn_lmt_all_mrg() */
+
+
 
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
 nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input variable list */
