@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.145 2009-10-30 00:55:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.146 2009-11-16 14:23:44 hmb Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.145 2009-10-30 00:55:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.145 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.146 2009-11-16 14:23:44 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.146 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -486,53 +486,22 @@ main(int argc,char **argv)
   /* Dimension lists no longer needed */
   dmn_lst_1=nco_nm_id_lst_free(dmn_lst_1,nbr_dmn_xtr_1);
   dmn_lst_2=nco_nm_id_lst_free(dmn_lst_2,nbr_dmn_xtr_2);
-  
-  /* Merge hyperslab limit information into dimension structures */
-  /* 
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim_1,nbr_dmn_xtr_1,lmt,lmt_nbr);
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim_2,nbr_dmn_xtr_2,lmt,lmt_nbr);
-  */
-  
-  /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
-  for(idx=0 ; idx<nbr_dmn_xtr_2 ; idx++ ){
-    for(jdx=0 ; jdx<nbr_dmn_xtr_1 ; jdx++) 
-       if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm))
-	     break;
-		 		
-	if(jdx==nbr_dmn_xtr_1) {	 	   
-     (void)fprintf(fp_stdout,"%s: ERROR dim \"%s\" in second file %s - not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
-       nco_exit(EXIT_FAILURE);
-    }  
-	
-	if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
-	   if(dim_1[jdx]->is_rec_dmn)    
-	     (void)fprintf(fp_stdout,"%s: ERROR record dimension mismatch : record dim file in %s is %li : record dim file in %s is %li\n",prg_nm,fl_in_1,dim_1[jdx]->cnt, fl_in_2,dim_2[idx]->cnt);     
-	   else	      
-		 (void)fprintf(fp_stdout,"%s: ERROR dimension mismatch :  dim \"%s\" in file %s is %li : in file  %s it is %li\n",prg_nm,dim_1[jdx]->nm, fl_in_1,dim_1[jdx]->cnt, fl_in_2,dim_2[idx]->cnt);
-		nco_exit(EXIT_FAILURE); 
-	}	
-				
 
-  } /* end for idx */	
+
+  /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
+  (void)nco_dmn_sct_cmp(dim_1,nbr_dmn_xtr_1,dim_2,nbr_dmn_xtr_2,fl_in_1,fl_in_2);    
 	  
-                                         		 		 
-				         
+
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
   for(idx=0  ; idx<nbr_dmn_xtr_1 ; idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim_1[idx]);
-    (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]); 
-    /* Merge limit from lmt_all_lst into dmn_out  */ 
-    for(jdx=0; jdx<nbr_dmn_fl_1; jdx++)
-       if(!strcmp(dmn_out[idx]->nm, lmt_all_lst[jdx]->dmn_nm)){
-         dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
-         dmn_out[idx]->srt=0;
-         dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1;
-         dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
-         dmn_out[idx]->srd=1L;
-         break;
-       }
+    (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]);
   }
+
+  /* Merge hyperslab limit information into dimension structures */
+  if(nbr_dmn_fl_1 > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr_1,lmt_all_lst,nbr_dmn_fl_1); 
+
 
   if(dbg_lvl >= nco_dbg_sbr){
     for(idx=0;idx<nbr_xtr_1;idx++) (void)fprintf(stderr,"xtr_lst_1[%d].nm = %s, .id= %d\n",idx,xtr_lst_1[idx].nm,xtr_lst_1[idx].id);
@@ -562,59 +531,30 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
   } /* endif */
 
+
   /* Refresh var_out with dim_out data */
-  for(idx=0;idx<nbr_xtr_1;idx++){
-    long sz;
-    long sz_rec;
-    sz=1;
-    sz_rec=1;
-    var_sct *var_tmp;
-    var_tmp=var_out[idx];
-    
-    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
-      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
-      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
-      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
-      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
-      sz*=var_tmp->dim[jdx]->cnt;
-      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
-     }/* end loop over jdx */
-     var_tmp->sz=sz; 
-     var_tmp->sz_rec=sz_rec;
-  } /* end loop over idx */
+  (void)nco_var_dmn_refresh(var_out,nbr_xtr_1);
 
-  /* Refresh var_2 with dim_out data */  
-  for(idx=0;idx<nbr_xtr_2;idx++){
-    long sz;
-    long sz_rec;
-    sz=1;
-    sz_rec=1;
-    var_sct *var_tmp;
-    var_tmp=var_2[idx];
-	
-    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
-	  for(kdx=0 ; kdx<nbr_dmn_fl_1;kdx++)
-		if(!strcmp(var_tmp->dim[jdx]->nm,dmn_out[kdx]->nm)){
-		  var_tmp->dim[jdx]=dmn_out[kdx];
-		  break;
-		}
-	  /* dim not found die gracefully */
-	  if(kdx==nbr_dmn_fl_1){
-	   (void)fprintf(fp_stdout,"%s: ERROR dim \"%s\" in second file %s - not present in first file %s\n",prg_nm,var_tmp->dim[jdx]->nm,fl_in_2,fl_in_1);
+
+  /* Change dims in dim_2 to dim_out */
+  for( idx=0 ; idx<nbr_dmn_xtr_2 ; idx++){
+    for(jdx=0 ; jdx<nbr_dmn_xtr_1; jdx++)  
+      if(!strcmp( dim_2[idx]->nm, dmn_out[jdx]->nm)){  
+	  nco_dmn_free(dim_2[idx]);  
+          dim_2[idx]=nco_dmn_dpl(dmn_out[jdx]);
+          break;
+      }
+      /* dim not found die gracefully */
+      if(jdx==nbr_dmn_xtr_1){
+	 (void)fprintf(fp_stdout,"%s: ERROR dim \"%s\" in second file %s - not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
 	   nco_exit(EXIT_FAILURE);
-	  }  
-			
-      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
-      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
-      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
-      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
-      sz*=var_tmp->dim[jdx]->cnt;
-      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
-     }/* end loop over jdx */
-     var_tmp->sz=sz; 
-     var_tmp->sz_rec=sz_rec;
-  } /* end loop over idx */
+      }  
+  } 
 
+  /* Refresh var_2 with dim_out data */
+  (void)nco_var_dmn_refresh(var_2,nbr_xtr_2);
+
+    
   /* Divide variable lists into lists of fixed variables and variables to be processed
      Create lists from file_1 last so those values remain in *_out arrays */
   (void)nco_var_lst_dvd(var_2,var_out,nbr_xtr_2,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);
@@ -851,8 +791,10 @@ main(int argc,char **argv)
     if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free dimension lists */
     if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
-    if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
     if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
+    if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
+
+
     /* Free variable lists 
        Using nco_var_lst_free() to free main var_1 and var_2 lists would fail
        if ncap_var_prc_dmn() had to broadcast any variables because pointer
