@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.245 2009-10-30 00:55:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.246 2009-11-16 14:19:41 hmb Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.245 2009-10-30 00:55:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.245 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.246 2009-11-16 14:19:41 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.246 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -491,26 +491,17 @@ main(int argc,char **argv)
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
-  /* Merge hyperslab limit information into dimension structures */
-  /* if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr); */
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++){ 
+  for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
-    /* Merge limit from lmt_all_lst into dmn_out */ 
-    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-      if(!strcmp(dmn_out[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){
-	dmn_out[idx]->sz=lmt_all_lst[jdx]->dmn_cnt;
-	dmn_out[idx]->srt=0L;
-	dmn_out[idx]->end=lmt_all_lst[jdx]->dmn_cnt-1L;
-	dmn_out[idx]->cnt=lmt_all_lst[jdx]->dmn_cnt;
-	dmn_out[idx]->srd=1L;
-	break;
-      } /* endif dmn_out matches lmt */
-    } /* end loop over all dimensions */
-  } /* end loop over extracted dimensions */
+    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
+  }
+
+  /* Merge hyperslab limit information into dimension structures */
+  if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
+
   
   /* Create stand-alone limit structure just for record dimension */
   if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
@@ -586,26 +577,10 @@ main(int argc,char **argv)
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
 
+
   /* Refresh var_out with dim_out data */
-  for(idx=0;idx<nbr_xtr;idx++){
-    long sz;
-    long sz_rec;
-    sz=1;
-    sz_rec=1;
-    var_sct *var_tmp;
-    var_tmp=var_out[idx];
-    
-    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
-      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
-      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
-      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
-      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
-      sz*=var_tmp->dim[jdx]->cnt;
-      if(jdx>0) sz_rec*=var_tmp->dim[jdx]->cnt;
-     }/* end loop over jdx */
-     var_tmp->sz=sz; 
-     var_tmp->sz_rec=sz_rec;
-  } /* end loop over idx */
+  (void)nco_var_dmn_refresh(var_out,nbr_xtr);
+
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
