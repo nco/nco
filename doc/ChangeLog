@@ -1,3 +1,6 @@
+2009-11-16  Henry Butowsky  <henryb@hush.com> 
+	* tidy ups in main() ncpdq/ncecat/ncflint/ncra/ncbo
+
 2009-11-09  Henry Butowsky  <henryb@hush.com> 
 	* mods to 'dsort(var,&var_mp)'
 	if output file is netcdf4 then the created map is of type NC_UINT64 
