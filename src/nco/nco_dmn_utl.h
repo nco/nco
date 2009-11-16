@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.28 2009-11-13 15:52:44 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.29 2009-11-16 14:20:53 hmb Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -99,6 +99,18 @@ void
 nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
 (dmn_sct * const dmn_1, /* I/O [sct] Dimension structure */
  dmn_sct * const dmn_2); /* I/O [sct] Dimension structure */
+
+
+void 
+nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
+(dmn_sct ** const dim_1, /* I [sct] Dimension list 1 */
+ const int nbr_dmn_1,  /* I [nbr] Number of dimension structures in structure list */
+ dmn_sct **const dim_2,  /* I [sct] Dimension list 1 */
+ const int nbr_dmn_2,  /* I [nbr] Number of dimension structures in structure list */
+ const char* const fl_sng_1, /* I [sng] Name of first file */
+ const char *fl_sng_2);     /* I [sng] Name of second file */
+
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
