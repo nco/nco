@@ -1,3 +1,6 @@
+2009-11-20  Henry Butowsky  <henryb@hush.com> 
+	* added to manual chapter on bilinear_interp_wrap()
+
 2009-11-16  Henry Butowsky  <henryb@hush.com> 
 	* tidy ups in main() ncpdq/ncecat/ncflint/ncra/ncbo
 
