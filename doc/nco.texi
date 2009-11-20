@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.560 2009-11-07 22:54:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.561 2009-11-20 16:19:25 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7202,9 +7202,9 @@ The mask procedure is identical for all @var{R}.
 
 @table @code
 @item grid_in
-Input function data. Usually a 2D variable. It must be of size @code{grid_in_x.size()*grid_in_y*size()}       
+Input function data. Usually a 2D variable. It must be of size @code{grid_in_x.size()*grid_in_y.size()}       
 @item grid_out
-This variable is the shape of var_out. Usually a 2D variable. It must be of size @code{grid_out_x.size()*grid_out_y*size()}@item grid_out_x
+This variable is the shape of var_out. Usually a 2D variable. It must be of size @code{grid_out_x.size()*grid_out_y.size()}@item grid_out_x
 X output values 
 @item grid_out_y
 Y output values 
@@ -7264,6 +7264,53 @@ print(var_out);
 /***************************************/ 
 
 @end example
+
+@noindent @strong{Wrapping and Extrapolation} @*
+@noindent The function @code{bilinear_interp_wrap()} takes the same arguments as @code{bilinear_interp()} but performs wrapping (Y) and extrapolation (X) for points off the edge of the grid. If the given range of longitude is say (25-335) and we have a point at 20 degrees-  then the end points of the range are used for the interpolation. This is what wrapping means.  
+For wrapping to occur Y must be longitude and must be in the range (0,360) or (-180,180). There are no restrictions on the longitude (X) values , but typically these are in the range (-90,90). @* @*
+The follwing ncap script illustrates both wrapping and extrapolation of end points.@*
+
+@example
+/****************************************/ 
+defdim("lat_in",6);
+defdim("lon_in",5);
+
+// co-ordinate in vars
+lat_in[$lat_in]=@{ -80,-40,0,30,60.0,85.0 @};
+lon_in[$lon_in]=@{ 30, 110, 190, 270, 350.0 @};
+
+
+T_in[$lat_in,$lon_in]=
+  @{ 10,40,50,30,15,   
+    12,43,52,31,16,   
+    14,46,54,32,17,   
+    16,49,56,33,18,   
+    18,52,58,34,19,   
+    20,55,60,35,20.0 @};
+
+   
+defdim("lat_out",4);
+defdim("lon_out",3);
+
+// co-ordinate vars
+lat_out[$lat_out]=@{ -90, 0, 70, 88.0 @};   
+lon_out[$lon_out]=@{ 0, 190, 355.0 @};
+
+T_out[$lat_out,$lon_out]=0.0;
+
+T_out=bilinear_interp_wrap(T_in,T_out,lat_out,lon_out,lat_in,lon_in);
+print(T_out); 
+//  13.4375, 49.5, 14.09375,
+//  16.25, 54, 16.625,
+//  19.25, 58.8, 19.325,
+//  20.15, 60.24, 20.135 ;
+
+
+/****************************************/ 
+@end example
+
+
+
 
 @html
 <a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
