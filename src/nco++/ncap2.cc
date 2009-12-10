@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.103 2009-10-30 00:55:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.104 2009-12-10 13:35:04 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.103 2009-10-30 00:55:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.104 2009-12-10 13:35:04 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.104 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -414,7 +414,7 @@ main(int argc,char **argv)
   } /* end if */    
   
   /* create function/method vector */
-
+ 
   // Conversion functions
   cnv_cls cnv_obj(true);
   // Aggregate functions
@@ -457,8 +457,8 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&unr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&arr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bil_obj);
-  
-
+   
+ 
   // GSL functions
 #ifdef ENABLE_GSL
   char *str_ptr;
@@ -564,7 +564,8 @@ main(int argc,char **argv)
   prs_arg.ATT_INHERIT=ATT_INHERIT;
   prs_arg.NCAP_MPI_SORT=(thr_nbr>1 ? true:false);
   
-  prs_arg.dfl_lvl=dfl_lvl; /* [enm] Deflate level */
+  prs_arg.dfl_lvl=dfl_lvl;  /* [enm] Deflate level */
+  prs_arg.cnk_sz=(size_t*)NULL; /* chunks sizes for now set to null */ 
   
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 || fl_out_fmt==NC_FORMAT_NETCDF4_CLASSIC);
@@ -859,7 +860,7 @@ main(int argc,char **argv)
     }  
     
     /* Clear vectors */
-    
+    /*
     fmc_vtr.clear();
     cnv_obj.fmc_vtr.clear();
     agg_obj.fmc_vtr.clear();
@@ -871,7 +872,7 @@ main(int argc,char **argv)
     msk_obj.fmc_vtr.clear();
     pck_obj.fmc_vtr.clear();     
 
-
+    */
     /* Free variable lists */
     if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
     if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
