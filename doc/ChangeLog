@@ -1,3 +1,8 @@
+2009-12-10  Henry Butowsky  <henryb@hush.com> 
+	* added initialization to null of chunk sizes 
+	prs_arg.cnk_sz in ncap2.cc. This was causing a bug on
+	CentOS builds
+
 2009-11-20  Henry Butowsky  <henryb@hush.com> 
 	* added to manual chapter on bilinear_interp_wrap()
 
