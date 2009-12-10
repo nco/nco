@@ -51,14 +51,14 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
           
   }else if(var_mp->type==NC_UINT64){
     // var_mp will hold the mapping
-    (void)cast_void_nctype(NC_UINT64,&var_mp->val);
+    (void)cast_void_nctype((nc_type)NC_UINT64,&var_mp->val);
 
     for(idx=0 ; idx<sz; idx++){
       // nb reverse the map
       var_mp->val.ui64p[ mp[idx]._imp] =idx;
       tp[idx]=mp[idx]._V;
     }
-    (void)cast_nctype_void(NC_UINT64,&var_mp->val); 
+    (void)cast_nctype_void((nc_type)NC_UINT64,&var_mp->val); 
   }
 
 
