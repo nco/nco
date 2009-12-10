@@ -75,7 +75,8 @@ class fmc_cls;
      ATT_INHERIT=prs_cpy.ATT_INHERIT; 
      NCAP_MPI_SORT=prs_cpy.NCAP_MPI_SORT;
      NCAP4_FILL=prs_cpy.NCAP4_FILL;
-     dfl_lvl=prs_cpy.dfl_lvl;      
+     dfl_lvl=prs_cpy.dfl_lvl;
+     cnk_sz=prs_cpy.cnk_sz;     
 
    }
 
