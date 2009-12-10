@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.34 2009-11-09 16:39:09 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.35 2009-12-10 13:32:32 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1599,7 +1599,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
     var1=walker.out(args_vtr[0]);
     var2=walker.out(args_vtr[1]);
-    var2=nco_var_cnf_typ(NC_UINT64, var2);
+    var2=nco_var_cnf_typ((nc_type)NC_UINT64, var2);
 
 
 
@@ -1660,7 +1660,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           
          
           var1=nco_var_free(var1);
-          (void)cast_nctype_void(NC_UINT64,&var2->val);
+          (void)cast_nctype_void((nc_type)NC_UINT64,&var2->val);
           var2=nco_var_free(var2);
              
           var1=var_out;
