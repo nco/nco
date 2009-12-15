@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.67 2009-09-26 18:23:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.68 2009-12-15 17:08:15 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -200,7 +200,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int NCO_GET_VARA_UBYTE(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_ubyte *ubp);
   int NCO_GET_VARA_USHORT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_ushort *usp);
   int NCO_GET_VARA_UINT(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_uint *uip);
-  int NCO_GET_VARA_INT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_int64 *i64p);
+  int NCO_GET_VARA_INT64(const int ncrd_id,const int var_id,const size_t *srt,const size_t *cnt,nco_int64 *i64p);
   int NCO_GET_VARA_UINT64(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_uint64 *ui64p);
   int NCO_GET_VARA_STRING(const int nc_id,const int var_id,const size_t *srt,const size_t *cnt,nco_string *sngp);
 #endif /* HAVE_NETCDF4_H */

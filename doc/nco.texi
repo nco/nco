@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.561 2009-11-20 16:19:25 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.562 2009-12-15 17:08:15 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2816,7 +2816,7 @@ The local @command{ncwa} client then computes and stores (locally) the
 regional mean surface pressure @w{(in Pa)}. 
 @example
 ncwa -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
-http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/surface \
   pres.sfc.1969.nc ~/foo.nc
 @end example
 @noindent
@@ -2907,7 +2907,7 @@ machine.
 For example, 
 @example
 ncks -R -l . -p \
-http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/surface \
   pres.sfc.1969.nc
 @end example
 Note that @acronym{NCO} is never the preffered way to transport files
@@ -12262,7 +12262,7 @@ ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
 
 NOAA DAP servers:
 ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
-http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/surface \
 pres.sfc.1969.nc ~/foo.nc
 
 LLNL PCMDI IPCC OPeNDAP Data Portal: 
