@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.529 2009-11-05 22:35:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.530 2009-12-29 21:40:27 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -54,8 +54,8 @@
 # cd ${HOME}/nco/bld;make OMP=Y CUDA=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
 # cd ${HOME}/nco/bld;make OMP=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
-# mpi-selector --set openmpi_gcc-1.3.3 # Then use serial libraries
-# mpi-selector --set openmpi_gcc-1.3.3 # After compiling
+# mpi-selector --set openmpi_gcc-1.3.3 # Then use /sopt/netcdf/netcdf3-gcc-serial serial libraries
+# mpi-selector --set mpich_pgi_1.2.7p1 # After compiling
 # cd ${HOME}/nco/bld;ANTLR=/sopt/gfortran_g++/bin/antlr ANTLR_ROOT=/sopt/gfortran_g++ CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet gcc
 # cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet intel
 # cd ${HOME}/nco/bld;ANTLR=/sopt/pgf90_pgcc/bin/antlr ANTLR_ROOT=/sopt/pgf90_pgcc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet pgi
