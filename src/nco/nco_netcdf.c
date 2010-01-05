@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.126 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.127 2010-01-05 21:16:20 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1303,13 +1303,13 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 #ifndef HAVE_NETCDF4_H
 /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
    NCO stubs perform no-ops on netCDF3 files */
-# ifdef HAVE_NEW_CHUNKING_API
+# ifdef NC_HAVE_NEW_CHUNKING_API
   /* Newer, post-200906 netCDF4 API has chk_sz as const */
 int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz){return 1;}
-# else /* !HAVE_NEW_CHUNKING_API */
+# else /* !NC_HAVE_NEW_CHUNKING_API */
   /* Older, pre-200906 netCDF4 API has chk_sz as non-const */
 int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,size_t * const cnk_sz){return 1;}
-# endif /* !HAVE_NEW_CHUNKING_API */
+# endif /* !NC_HAVE_NEW_CHUNKING_API */
 int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t *const cnk_sz){*srg_typ=(size_t)NC_CONTIGUOUS;*cnk_sz=(size_t)NULL;return 1;}
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=0;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
