@@ -8,7 +8,7 @@ Homepage: http://nco.sourceforge.net/
 
 Package: nco
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: command-line operators to analyze netCDF files
  NCO is a suite of programs known as operators. The operators are stand-alone,
  command-line programs executable in a POSIX shell. Operators take one or more
