@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.344 2009-11-08 06:48:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.345 2010-01-05 20:02:17 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.0 are ready. 
 
@@ -11,36 +11,39 @@ Chunking on all operators, GSL fitting, bilinear interpolation.
 Short explanations of these appear below.
 
 Work on NCO 4.0.1 is underway. Areas of improvement include
+Support for spectral transforms, more chunking rulesets.
 
-Spectral transforms.
+"New stuff" in 4.0.0 details:
 
-"New stuff" details:
+A. Support CF "calendar" attribute = no_leap, 360_day, 365_day.
+   Now time-based hyperslabs understand common model calendars!
+   This _greatly_ eases analyzing datasets such as the CMIP3/AR4 GCMs
 
-A. NCO recognizes more variables that are coordinate variables
+B. NCO recognizes more variables that are coordinate variables
    or multi-dimensional coordinate variables and does not attempt
    to arithmetically process (e.g., difference) these in most
    situations. This allows more convenient manipulation of datasets
    with irregular grids, e.g., CLM and NARCCAP output.
 
-B. ncap2 supports the GSL (Chapter 2) fitting routines, e.g., fxm
+C. ncap2 supports the GSL (Chapter 36) least-squares fitting routines, e.g.,
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
    ncap2 functions added since 3.9.9 are listed below
    http://nco.sf.net/nco.html#gsl
 
-C. All NCO operators supports netCDF4 chunking options:
+D. All NCO operators now support netCDF4 chunking options:
    These options can improve performance on large datasets.
    Large file users: Send us suggestions on useful chunking patterns!
    More usefule chunking patterns will be implemented in NCO 4.0.1.
    ncks -O -4 --cnk_plc=all in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
-D. NCO improves support for the netCDF4 NC_STRING atomic type.
+E. NCO improves support for the netCDF4 NC_STRING atomic type.
    An "s" trailing double quotes specifies NC_STRING (not NC_CHAR):
    ncap2 -4 -O -v -s 'name[lat]={"US"s,"Them"s};' in.nc out.nc
    Ragged arrays of strings are finally here! Let's use them.
    http://nco.sf.net/nco.html#nco4
 
-E. Dimension-reduction to scalars works with irregular hyperslabs.
+F. Dimension-reduction to scalars works with irregular hyperslabs.
    Commands that now work include
    scalar=avg(three_dmn_var_dbl(0:1,:,0:3));
    scalar=total(three_dmn_var_dbl(0:1,:,0:3)); 
@@ -48,26 +51,18 @@ E. Dimension-reduction to scalars works with irregular hyperslabs.
    intermediate dimension sizes used in the hyperslabs were present 
    on disk. 
 
-G. Support CF "calendar" attribute = no_leap, 360_day, 365_day.
-   Now time-based hyperslabs understand common model calendars!
-   This greatly eases analyzing datasets such as the CMIP3/AR4 GCMs
-
-H. OpenSuse packages are now available (Filipe Fernandes)
+G. OpenSuse packages are now available (Filipe Fernandes)
    http://download.opensuse.org/repositories/home:/ocefpaf/openSUSE_11.1
 
 "Sticky" reminders:
 
-K. Pre-built, up-to-date Debian Sid & Ubuntu Jaunty/Karmic packages:
+K. Pre-built, up-to-date Debian Sid & Ubuntu Karmic packages:
    http://nco.sf.net#debian
 
 L. Pre-built Fedora and CentOS RPMs:
    http://nco.sf.net#rpm
 
-M. Find/add NCO tips and tricks on the NCO Wiki:
-
-   http://nco.wiki.sourceforge.net
-
-N. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
+M. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    SWAMP efficiently schedules/executes NCO scripts on remote servers:  
 
    http://swamp.googlecode.com
@@ -76,32 +71,30 @@ N. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    If you must transfer lots of data from a server to your client
    before you analyze it, then SWAMP will likely speed things up. 
 
-O. NCO support for netCDF4 features is tracked at
+N. NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.0.0 with was built and tested with HDF5 1.8.3-snap2 and with
-   netCDF4 4.1-beta1-snapshot2009061712.
+   NCO 4.0.0 with was built and tested with HDF5 hdf5-1.8.4 and with
+   netCDF4 netcdf-4.1-snapshot2009111500.
    NCO may not build with earlier, but should build with later, netCDF4 releases.
    This is particularly true since NCO 4.0.0 takes advantage of
-   an internal change to the netCDF API in June 2007 for
+   an internal change to the netCDF API in June 2009 for
    nc_def_var_chunking(). 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
-P. Have you seen the NCO logo candidates by Tony Freeman and Rich Signell?
-   http://nco.sf.net/logo_pch.png
-   http://nco.sf.net/logo_cog.png
+O. Have you seen the NCO logo candidates by Tony Freeman, Rich
+   Signell, Rob Hetland, and Andrea Cimatoribus?
+   http://nco.sf.net
    Tell us what you think...
 
 Enjoy,
 Charlie
  
 GSL functions added to ncap2 in 4.0.0: 
-    ncap2 -f | grep gsl_interp
-    ncap2 -f | grep gsl_stats
-gsl_interp_akima()
-fxm
+    ncap2 -f | grep gsl_fit
+    ncap2 -f | grep bilinear

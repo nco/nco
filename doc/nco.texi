@@ -4,13 +4,13 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.562 2009-12-15 17:08:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.563 2010-01-05 20:02:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2009 Charlie Zender
+Copyright (C) 1995--2010 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -101,10 +101,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 4.0.0
 @set doc-edition 4.0.0
-@set copyright-years 1995--2009
-@set update-year 2009
-@set update-date 15 July 2009
-@set update-month July 2009
+@set copyright-years 1995--2010
+@set update-year 2010
+@set update-date 4 January 2010
+@set update-month January 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -990,7 +990,7 @@ You must build @acronym{NCO} with netCDF4 to obtain this support.
 @cindex @code{NC_INT64}
 @cindex @code{NC_UINT64}
 The main netCDF4 features that NCO currently supports are the new 
-atomic data types and Lempel-Ziv compression.
+atomic data types, Lempel-Ziv compression, and chunking.
 The new atomic data types are @code{NC_UBYTE}, @code{NC_USHORT}, 
 @code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}.
 Eight-byte integer support is an especially useful improvement from
@@ -2983,7 +2983,7 @@ the new @code{NETCDF4} format.
 Users are advised to use the default @code{CLASSIC} format or the
 @code{NETCDF4_CLASSIC} format until netCDF4 is more widespread.
 Widespread support for @code{NETCDF4} format files is not expected for 
-many years, 2009--2010, say.
+a few more years, 2010--2011, say.
 If performance or coolness are issues, then use @code{NETCDF4_CLASSIC}  
 instead of @code{CLASSIC} format files.
 
@@ -5695,7 +5695,7 @@ put into maintenance mode in November, 2006.
 This documentation refers to @command{ncap2}, which has a superset of
 the @command{ncap} functionality. 
 Eventually @command{ncap} will be deprecated in favor @command{ncap2}.
-@command{ncap2} may be renamed @command{ncap} in 2008 or 2009.}.
+@command{ncap2} may be renamed @command{ncap} in 2010 or 2011.}.
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}

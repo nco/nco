@@ -2,7 +2,7 @@
 # -*- makefile -*-
 # Purpose: debian/rules file for NCO
 # Copyright (C) 1999--2002 by Brian Mays
-# Copyright (C) 2003--2009 by Charlie Zender
+# Copyright (C) 2003--2010 by Charlie Zender
 # Usage:
 # scp ~/nco/debian/rules virga.ess.uci.edu:nco/debian
 

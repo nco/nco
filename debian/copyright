@@ -36,7 +36,7 @@ Henry Butowsky and Karen Schuchardt. Their names were removed from the
 copyright statements in the files where they had been listed:
 nco_msa.c, nco_msa.h, and nco_aux.c.
 
-NCO is copyright (C) 1995--2009 Charlie Zender
+NCO is copyright (C) 1995--2010 Charlie Zender
 Portions of the following NCO files are copyright by others:
 nco_getopt.c: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
 nco_getopt.h: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler

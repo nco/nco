@@ -1,7 +1,7 @@
 
 /* Purpose: Multi-calendar functions */
 
-/* Copyright (C) 2009--2009 Charlie Zender
+/* Copyright (C) 2009--2010 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
