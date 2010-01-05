@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.135 2009-07-26 18:09:58 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.136 2010-01-05 21:41:39 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -190,6 +190,8 @@ sudo /bin/rm /var/cache/pbuilder/result/nco_4.0.0* # Cleanup prior build
 cd ${DATA};DIST=sid sudo pbuilder build nco_4.0.0-1.dsc > ~/foo.nco.pbuilder 2>&1
 cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_4.0.0-1_*.changes
 lintian /var/cache/pbuilder/result/nco_4.0.0-1_*.deb
+scp /var/cache/pbuilder/result/nco_4.0.0* dust.ess.uci.edu:/var/www/html/nco/src
+scp /var/cache/pbuilder/result/nco_4.0.0* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 # NB: Debian versions is a PITA, ensure RPMs build before uploading to Debian
 cd /var/cache/pbuilder/result;dupload -t mentors nco_4.0.0-1_*.changes
 

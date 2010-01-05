@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.562 2010-01-05 20:37:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.563 2010-01-05 21:41:39 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -511,10 +511,11 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO/SDO 4.0.2</b>: (<i>Future</i>) 
 netCDF4 compound types?
 <li><b>NCO/SDO 4.0.1</b>: (<i>In progress</i>)
-Spectral toolkit
+Spectral toolkit;
+Chunking in all operators;
 <li><b>NCO/SDO 4.0.0</b>: 
 Bilinear interpolation, GSL fitting; 
-Chunking in all operators;
+Chunking improvements;
 Better support CF <tt>calendar</tt> and <tt>coordinate</tt> attributes;
 <li><b>NCO/SDO 3.9.9</b>: 
 netCDF4 chunking and <tt>NC_STRING</tt> support; 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.345 2010-01-05 20:02:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.346 2010-01-05 21:41:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.0 are ready. 
 
@@ -6,12 +6,13 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This version offers significant new features:
-Chunking on all operators, GSL fitting, bilinear interpolation.
+Chunking in ncks, ncecat, GSL fitting, bilinear interpolation.
 
 Short explanations of these appear below.
 
 Work on NCO 4.0.1 is underway. Areas of improvement include
-Support for spectral transforms, more chunking rulesets.
+Support for spectral transforms, chunking in all operators,
+more chunking rulesets.
 
 "New stuff" in 4.0.0 details:
 
@@ -30,7 +31,7 @@ C. ncap2 supports the GSL (Chapter 36) least-squares fitting routines, e.g.,
    ncap2 functions added since 3.9.9 are listed below
    http://nco.sf.net/nco.html#gsl
 
-D. All NCO operators now support netCDF4 chunking options:
+D. ncks and ncecat support netCDF4 chunking options:
    These options can improve performance on large datasets.
    Large file users: Send us suggestions on useful chunking patterns!
    More usefule chunking patterns will be implemented in NCO 4.0.1.
