@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.0 release"
 	cvs tag -c nco-4_0_0;cvs tag -c nco-4_0_0-1
 
+	* Change HAVE_NEW_CHUNKING_API to NC_HAVE_NEW_CHUNKING_API to
+	leverage information now in netcdf.h about correct API.
+	Required for successful .deb builds with netCDF3.
+
 2009-12-10  Henry Butowsky  <henryb@hush.com> 
 
 	* Added initialization to NULL of chunk sizes prs_arg.cnk_sz in

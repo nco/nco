@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.127 2010-01-05 21:16:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.128 2010-01-05 21:25:48 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1304,7 +1304,8 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
    NCO stubs perform no-ops on netCDF3 files */
 # ifdef NC_HAVE_NEW_CHUNKING_API
-  /* Newer, post-200906 netCDF4 API has chk_sz as const */
+  /* Newer, post-200906 netCDF4 API has chk_sz as const
+     netcdf.h signals this API with NC_HAVE_NEW_CHUNKING_API as of ~200911 */
 int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz){return 1;}
 # else /* !NC_HAVE_NEW_CHUNKING_API */
   /* Older, pre-200906 netCDF4 API has chk_sz as non-const */
