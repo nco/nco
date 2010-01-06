@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.1 release"
 	cvs tag -c nco-4_0_1;cvs tag -c nco-4_0_1-1
 
+	* configure: make -enable-netcdf-4 synonym for -enable-netcdf4
+
 	* Add ${misc:Depends} to Depends rule in debian/control
 
 	* NCO 4.0.0 release procedure:
