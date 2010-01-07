@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.309 2010-01-06 00:01:14 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.310 2010-01-07 18:19:35 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -11,7 +11,7 @@
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
-# cd ~/nco;autoreconf -f -i --foreign
+# cd ~/nco;autoreconf --force --install --foreign
 
 # Distribution:
 # scp ~/nco/configure virga.ess.uci.edu:nco
@@ -335,9 +335,9 @@ AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
 echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
-AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
-# 20100105: make -enable-netcdf-4 synonym for -enable-netcdf4
-AC_ARG_ENABLE(netcdf-4,AS_HELP_STRING([--enable-netcdf-4],[Enable netCDF Version 4 features [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
+AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features (same as enable-netcdf-4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
+# 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
+AC_ARG_ENABLE(netcdf-4,AS_HELP_STRING([--enable-netcdf-4],[Enable netCDF Version 4 features (same as enable-netcdf4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
 if test "${enable_netcdf4}" = 'yes'; then
