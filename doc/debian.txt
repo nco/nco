@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.137 2010-01-05 21:54:55 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.138 2010-01-08 20:52:15 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -170,11 +170,12 @@ sudo dpkg --install ${DATA}/nco_4.0.1-1_*.deb
 lintian ${DATA}/nco_4.0.1-1_*.deb
 ls -l ${DATA}/nco_4.0.1*
 m ~/foo.nco
+# Upload Ubuntu (rather than Debian) packages to websites
 scp ${DATA}/nco_4.0.1* dust.ess.uci.edu:/var/www/html/nco/src
 scp ${DATA}/nco_4.0.1* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 # NB: Make sure RPMs build before uploading to debian, since changing
 # Debian versions are such a PITA
-# NB: Only upload pbuilder (not personal) .deb builds to mentors
+# NB: Only upload pbuilder Debian Sid (not personal Ubuntu) .deb builds to Debian mentors
 # cd ${DATA};dupload -t mentors nco_4.0.1-1_*.changes
 bsrc # Reset shell environment for regular development
 
@@ -190,9 +191,9 @@ sudo /bin/rm /var/cache/pbuilder/result/nco_4.0.1* # Cleanup prior build
 cd ${DATA};DIST=sid sudo pbuilder build nco_4.0.1-1.dsc > ~/foo.nco.pbuilder 2>&1
 cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_4.0.1-1_*.changes
 lintian /var/cache/pbuilder/result/nco_4.0.1-1_*.deb
-scp /var/cache/pbuilder/result/nco_4.0.1* dust.ess.uci.edu:/var/www/html/nco/src
-scp /var/cache/pbuilder/result/nco_4.0.1* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
-# NB: Debian versions is a PITA, ensure RPMs build before uploading to Debian
+# NB: Upload pbuilder Debian Sid packages to Debian mentors, but not
+# to personal or NCO websites since most people use Ubuntu not Debian
+# NB: Debian versions are a PITA, ensure RPMs build before uploading to Debian
 cd /var/cache/pbuilder/result;dupload -t mentors nco_4.0.1-1_*.changes
 
 # RPM builds as root

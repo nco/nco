@@ -1,4 +1,4 @@
-2010-01-05  Charlie Zender  <zender@uci.edu>
+2010-01-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.1 release procedure:
 	Changes since nco-4_0_0: fxm
@@ -6,7 +6,11 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.1 release"
 	cvs tag -c nco-4_0_1;cvs tag -c nco-4_0_1-1
 
-	* configure: make -enable-netcdf-4 synonym for -enable-netcdf4
+	* Patch --enable-netcdf-4 implementation
+
+2010-01-05  Charlie Zender  <zender@uci.edu>
+
+	* configure: make --enable-netcdf-4 synonym for --enable-netcdf4
 
 	* Add ${misc:Depends} to Depends rule in debian/control
 

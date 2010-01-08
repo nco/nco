@@ -16870,13 +16870,15 @@ else
 fi
 
 # 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
-# Check whether --enable-netcdf-4 was given.
+if test "x${enable_netcdf4}" = 'xno' ; then
+    # Check whether --enable-netcdf-4 was given.
 if test "${enable_netcdf_4+set}" = set; then :
   enableval=$enable_netcdf_4; enable_netcdf4=${enableval}
 else
   enable_netcdf4=no
 fi
 
+fi # !netCDF4
 
 # Test if user set NETCDF4_ROOT and it exists
 if test "${enable_netcdf4}" = 'yes'; then
