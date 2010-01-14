@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.44 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.45 2010-01-14 13:49:18 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -4514,31 +4514,31 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
     std::string serr;    
     vtl_typ lcl_typ;
     
-    var_sct *var_in[12];  
+    var_sct *var_in[13];  
        
  
     nbr_args=vtr_args.size();  
 
     switch(fdx){
       case PLIN:
-	in_nbr_args=10;
-        in_val_nbr_args=4;
-        susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,&co,&c1,&cov00,&cov01,&cov11,&sumsq)";
+	in_nbr_args=11;
+        in_val_nbr_args=5;
+        susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq)";
 	break;   
       case PWLIN:
-	in_nbr_args=12;
-        in_val_nbr_args=6;
-        susg="usage: status="+sfnm+"(data_x,stride_x,weight,stride_w,data_y,stride_y,&co,&c1,&cov00,&cov01,&cov11,&chisq)";
+	in_nbr_args=13;
+        in_val_nbr_args=7;
+        susg="usage: status="+sfnm+"(data_x,stride_x,weight,stride_w,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&chisq)";
 	break; 
       case PMUL:
-	in_nbr_args=7;
-        in_val_nbr_args=4;
-        susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,&c1,&cov11,&sumsq)";
+	in_nbr_args=8;
+        in_val_nbr_args=5;
+        susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,n,&c1,&cov11,&sumsq)";
 	break;   
       case PWMUL:
-	in_nbr_args=9;
-        in_val_nbr_args=6;
-        susg="usage: status="+sfnm+"(data_x,weight,stride_wstride_x,data_y,stride_y,&c1,&cov11,&sumsq)";
+	in_nbr_args=10;
+        in_val_nbr_args=7;
+        susg="usage: status="+sfnm+"(data_x,weight,stride_wstride_x,data_y,stride_y,n,&c1,&cov11,&sumsq)";
 	break;   
 	break;
     }   
@@ -4641,12 +4641,13 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       1  x stride
       2  y_in
       3  y stride
-      4  c0
-      5  c1
-      6  c00 
-      7  c01
-      8  c11
-      9  sumsq       
+      4  n
+      5  c0
+      6  c1
+      7  c00 
+      8  c01
+      9  c11
+      10  sumsq       
       */
       // convert x,y to type double
       var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
@@ -4655,21 +4656,22 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       // make x,y  conform 
       (void)ncap_var_att_cnf(var_in[2],var_in[0]);
               
-      // convert strides to NC_INT
-      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
-      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
+      // convert strides to NC_UINT64
+      var_in[1]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[3]);   
+      var_in[4]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[4]);   
 
       //cast pointers from void 
       for(idx=0 ; idx< in_nbr_args ;idx++)
         (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
 
       // make the call -- 
-      ret=gsl_fit_linear(var_in[0]->val.dp,var_in[1]->val.lp[0],
-                         var_in[2]->val.dp,var_in[3]->val.lp[0],     
-                         var_in[0]->sz,
-                         var_in[4]->val.dp, var_in[5]->val.dp,
-                         var_in[6]->val.dp, var_in[7]->val.dp,
-                         var_in[8]->val.dp, var_in[9]->val.dp);
+      ret=gsl_fit_linear(var_in[0]->val.dp,var_in[1]->val.ui64p[0],
+                         var_in[2]->val.dp,var_in[3]->val.ui64p[0],     
+                         var_in[4]->val.ui64p[0],
+                         var_in[5]->val.dp, var_in[6]->val.dp,
+                         var_in[7]->val.dp, var_in[8]->val.dp,
+                         var_in[9]->val.dp, var_in[10]->val.dp);
         
       // free up or save values 
 
@@ -4685,12 +4687,13 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       3  weight stride 
       4  y_in
       5  y stride
-      6  c0
-      7  c1
-      8  c00 
-      9  c01
-      10 c11
-      11 chisq       
+      6  n
+      7  c0
+      8  c1
+      9  c00 
+      10  c01
+      11 c11
+      12 chisq       
       */
       // convert x,w,y to type double
       var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
@@ -4704,23 +4707,26 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
         var_arr[2]=&var_in[4];    
 	(void)ncap_var_att_arr_cnf(false,var_arr,3);
       }        
-      // convert strides to NC_INT
-      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
-      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
-      var_in[5]=nco_var_cnf_typ(NC_INT,var_in[5]);   
+      // convert strides to NC_UINT64
+      var_in[1]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[3]);   
+      var_in[5]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[5]);   
+      var_in[6]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[6]);   
 
+ 
       //cast pointers from void 
       for(idx=0 ; idx< in_nbr_args ;idx++)
         (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
+       
 
       // make the call -- 
-      ret=gsl_fit_wlinear(var_in[0]->val.dp,var_in[1]->val.lp[0],
-                          var_in[2]->val.dp,var_in[3]->val.lp[0],     
-                          var_in[4]->val.dp,var_in[5]->val.lp[0],     
-                          var_in[0]->sz,
-                          var_in[6]->val.dp, var_in[7]->val.dp,
-                          var_in[8]->val.dp, var_in[9]->val.dp,
-                          var_in[10]->val.dp,var_in[11]->val.dp);
+      ret=gsl_fit_wlinear(var_in[0]->val.dp,var_in[1]->val.ui64p[0],
+                          var_in[2]->val.dp,var_in[3]->val.ui64p[0],     
+                          var_in[4]->val.dp,var_in[5]->val.ui64p[0],     
+                          var_in[6]->val.ui64p[0],
+                          var_in[7]->val.dp, var_in[8]->val.dp,
+                          var_in[9]->val.dp, var_in[10]->val.dp,
+                          var_in[11]->val.dp,var_in[12]->val.dp);
         
     
       } break; 
@@ -4732,9 +4738,10 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       1  x stride
       2  y_in
       3  y stride
-      4  c1
-      5  cov11
-      6  sumsq 
+      4  n
+      5  c1
+      6  cov11
+      7  sumsq 
       */
       // convert x,y to type double
       var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
@@ -4743,20 +4750,21 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       // make x,y  conform 
       (void)ncap_var_att_cnf(var_in[2],var_in[0]);
               
-      // convert strides to NC_INT
-      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
-      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
+      // convert strides to NC_UINT64
+      var_in[1]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[3]);   
+      var_in[4]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[4]);   
 
       //cast pointers from void 
       for(idx=0 ; idx< in_nbr_args ;idx++)
         (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
 
       // make the call -- 
-      ret=gsl_fit_mul(var_in[0]->val.dp,var_in[1]->val.lp[0],
-                      var_in[2]->val.dp,var_in[3]->val.lp[0],     
-                      var_in[0]->sz,
-                      var_in[4]->val.dp, var_in[5]->val.dp,
-                      var_in[6]->val.dp);        
+      ret=gsl_fit_mul(var_in[0]->val.dp,var_in[1]->val.ui64p[0],
+                      var_in[2]->val.dp,var_in[3]->val.ui64p[0],     
+                      var_in[4]->val.ui64p[0],
+                      var_in[5]->val.dp, var_in[6]->val.dp,
+                      var_in[7]->val.dp);        
 
 
       } break;
@@ -4770,9 +4778,10 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       3  weight stride 
       4  y_in
       5  y stride
-      6  c1
-      7  cov11
-      8  sumsq       
+      6  n 
+      7  c1
+      8  cov11
+      9  sumsq       
       */
       // convert x,w,y to type double
       var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
@@ -4786,25 +4795,24 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
         var_arr[2]=&var_in[4];    
 	(void)ncap_var_att_arr_cnf(false,var_arr,3);
       }        
-      // convert strides to NC_INT
-      var_in[1]=nco_var_cnf_typ(NC_INT,var_in[1]);   
-      var_in[3]=nco_var_cnf_typ(NC_INT,var_in[3]);   
-      var_in[5]=nco_var_cnf_typ(NC_INT,var_in[5]);   
+      // convert strides to NC_UINT64
+      var_in[1]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[1]);   
+      var_in[3]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[3]);   
+      var_in[5]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[5]);   
+      var_in[6]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[6]);   
 
       //cast pointers from void 
       for(idx=0 ; idx< in_nbr_args ;idx++)
         (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
 
       // make the call -- 
-      ret=gsl_fit_wmul(var_in[0]->val.dp,var_in[1]->val.lp[0],
-                          var_in[2]->val.dp,var_in[3]->val.lp[0],     
-                          var_in[4]->val.dp,var_in[5]->val.lp[0],     
-                          var_in[0]->sz,
-                          var_in[6]->val.dp, var_in[7]->val.dp,
-                          var_in[8]->val.dp);
+      ret=gsl_fit_wmul(var_in[0]->val.dp,var_in[1]->val.ui64p[0],
+                          var_in[2]->val.dp,var_in[3]->val.ui64p[0],     
+                          var_in[4]->val.dp,var_in[5]->val.ui64p[0],     
+                          var_in[6]->val.ui64p[0],
+                          var_in[7]->val.dp, var_in[8]->val.dp,
+                          var_in[9]->val.dp);
 
-        
-    
       } break;
 
 
