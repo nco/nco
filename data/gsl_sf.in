@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.8 2010-01-14 14:06:22 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/gsl_sf.in,v 1.9 2010-01-14 14:12:53 hmb Exp $ -*-C++-*-
 
 // Purpose: Script to test gsl special functions
 
@@ -503,17 +503,13 @@ nbr_err_ttl=0;
   h_win[time]=1.0;
   gsl_fit_wlinear(h_xin,1,h_win,1,h_yin,1,$time.size,&h_c0,&h_c1,&h_cov00,&h_cov01,&h_cov11,&h_sumsq);
 
-
-
-   // check weighted functions
+   // check c0 coefficient
   if( abs( h_c0-0.2) >0.01){  
      print("ERROR: h1: Least squares fitting\n");
      nbr_err++;	
   }
 
-
-
-   // check weighted functions
+   // check c1 coefficient
   if( abs( h_c1-2.98545) >0.001){  
      print("ERROR: h2: Least squares fitting\n");
      nbr_err++;	
