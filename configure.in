@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.311 2010-01-08 20:52:12 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.312 2010-01-15 02:09:38 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -726,6 +726,10 @@ if test "${enable_gsl}" != 'no'; then
 # Assumes GSL version in form 1.[0-9]+  extract minor version only   
     GSL_VER="`${GSL_CONFIG} --version`" 
     GSL_VER=`echo "${GSL_VER}" | sed -e 's/^1\.//'`  
+# 20100114: necessary on bluefire which has limited GSL without gsl-config
+    if test "${GSL_VER}" = ''; then
+	GSL_VER='4'
+    fi
     AC_MSG_NOTICE([These GSL library and header tests must succeed for GSL support:])
 # fxm: default action of check_lib adds a superfluous -lgsl to $LIBS
     AC_CHECK_LIB([gsl],[gsl_sf_gamma_inc],,enable_gsl=no)

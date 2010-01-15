@@ -18399,6 +18399,10 @@ if test "${enable_gsl}" != 'no'; then
 # Assumes GSL version in form 1.[0-9]+  extract minor version only
     GSL_VER="`${GSL_CONFIG} --version`"
     GSL_VER=`echo "${GSL_VER}" | sed -e 's/^1\.//'`
+# 20100114: necessary on bluefire which has limited GSL without gsl-config
+    if test "${GSL_VER}" = ''; then
+	GSL_VER='4'
+    fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: These GSL library and header tests must succeed for GSL support:" >&5
 $as_echo "$as_me: These GSL library and header tests must succeed for GSL support:" >&6;}
 # fxm: default action of check_lib adds a superfluous -lgsl to $LIBS

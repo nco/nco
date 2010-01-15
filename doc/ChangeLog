@@ -1,5 +1,8 @@
 2010-01-14  Charlie Zender  <zender@uci.edu>
 
+	* Patch configure.in for broken GSL installations like bluefire's, 
+	where GSL exists though gsl-config does not
+
 	* Only attempt duplicating netCDF4 settings when output is netCDF4
 	Do not rely on no-ops from netCDF3 and netCDF4-classic files
 
