@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.172 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.173 2010-01-15 15:02:46 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1244,12 +1244,11 @@ static std::vector<std::string> lpp_vtr;
     |#(DEFDIM def:NSTRING  var=out){
             
         long sz;
-            
-        var=nco_var_cnf_typ(NC_INT,var);
+        var=nco_var_cnf_typ((nc_type)NC_INT64,var);
         iret=DEFDIM;
 
-        (void)cast_void_nctype((nc_type)NC_INT,&var->val);
-        sz=*var->val.lp;
+        (void)cast_void_nctype((nc_type)NC_INT64,&var->val);
+        sz=var->val.i64p[0];
         var=(var_sct*)nco_var_free(var);
         (void)ncap_def_dim(def->getText(),sz,prs_arg);
      }
