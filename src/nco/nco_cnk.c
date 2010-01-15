@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.24 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.25 2010-01-15 00:57:18 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -235,7 +235,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 
   nco_bool flg_cnk=False; /* [flg] Chunking requested */
   nco_bool is_rec_var; /* [flg] Record variable */
-  nco_bool is_chk_var; /* [flg] Checksum variable */
+  nco_bool is_chk_var; /* [flg] Checksummed variable */
   nco_bool is_cmp_var; /* [flg] Compressed variable */
   nco_bool is_chunked; /* [flg] Chunked variable */
   nco_bool must_be_chunked; /* [flg] Variable must be chunked */
@@ -310,7 +310,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
     srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
     cnk_sz=(size_t *)NULL; /* [nbr] Chunksize list */
     is_rec_var=False; /* [flg] Record variable */
-    is_chk_var=False; /* [flg] Checksum variable */
+    is_chk_var=False; /* [flg] Checksummed variable */
     is_cmp_var=False; /* [flg] Compressed variable */
     is_chunked=False; /* [flg] Chunked variable */
 
