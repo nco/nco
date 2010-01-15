@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.45 2010-01-14 13:49:18 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.46 2010-01-15 17:53:53 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -4528,7 +4528,7 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       case PWLIN:
 	in_nbr_args=13;
         in_val_nbr_args=7;
-        susg="usage: status="+sfnm+"(data_x,stride_x,weight,stride_w,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&chisq)";
+        susg="usage: status="+sfnm+"(data_x,stride_x,data_w,stride_w,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&chisq)";
 	break; 
       case PMUL:
 	in_nbr_args=8;
@@ -4538,7 +4538,7 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
       case PWMUL:
 	in_nbr_args=10;
         in_val_nbr_args=7;
-        susg="usage: status="+sfnm+"(data_x,weight,stride_wstride_x,data_y,stride_y,n,&c1,&cov11,&sumsq)";
+        susg="usage: status="+sfnm+"(data_x,stride_x,data_w,stride_w,stride_y,data_y,n,&c1,&cov11,&sumsq)";
 	break;   
 	break;
     }   
@@ -4861,12 +4861,12 @@ var_sct *gsl_fit_cls::fit_est_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, f
       case PLIN_EST:
 	in_nbr_args=6;
         in_val_nbr_args=4;
-        susg="usage: status="+sfnm+"(data_x,c0,c1,cov00,cov01,cov11)";
+        susg="usage: data_y="+sfnm+"(data_x,c0,c1,cov00,cov01,cov11)";
 	break;   
       case PMUL_EST:
 	in_nbr_args=3;
         in_val_nbr_args=1;
-        susg="usage: status="+sfnm+"(data_x,c1,cov11)";
+        susg="usage: data_y="+sfnm+"(data_x,c1,cov11)";
 	break; 
 
     }   
