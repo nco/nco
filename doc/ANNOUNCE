@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.348 2010-01-06 00:01:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.349 2010-01-15 02:08:02 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.1 are ready. 
 
@@ -20,16 +20,8 @@ A. Configure: --enable-netcdf-4 is synonymous with --enable-netcdf4
    Now NCO configure accepts the usage of the netCDF configure.
    According to the Unidata netCDF team, the converse is also true.
 
-A. Support CF "calendar" attribute = no_leap, 360_day, 365_day.
-   Now time-based hyperslabs understand common model calendars!
-   This _greatly_ eases analyzing datasets such as the CMIP3/AR4 GCMs
-
-B. NCO recognizes more variables that are coordinate variables
-   or multi-dimensional coordinate variables and does not attempt
-   to arithmetically process (e.g., difference) these in most
-   situations. This allows more convenient manipulation of datasets
-   with irregular grids, e.g., CLM and NARCCAP output.
-
+A. Fix problems converting netcdf4_classic input files to netcdf3
+   
 C. ncap2 supports the GSL (Chapter 36) least-squares fitting routines, e.g.,
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
    ncap2 functions added since 3.9.9 are listed below

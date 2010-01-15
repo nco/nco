@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.565 2010-01-05 22:42:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.566 2010-01-15 02:08:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2499,6 +2499,11 @@ with @samp{-o @var{fl_out}} near the beginning of an argument list.
 @cindex compilers
 @cindex linkers
 Compilers and linkers are usually invoked this way.
+
+Users should specify @var{fl_out} using either but not both methods.
+If @var{fl_out} is specified twice (once with the switch and once as
+the last positional argument), then the positional argument takes
+precedence. 
 
 @html
 <a name="rmt"></a> <!-- http://nco.sf.net/nco.html#rmt -->
