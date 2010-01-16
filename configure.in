@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.312 2010-01-15 02:09:38 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.313 2010-01-16 00:52:38 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -723,13 +723,6 @@ if test "${enable_gsl}" != 'no'; then
 	GSL_LIB="${GSL_ROOT}/lib"
 	LIBS="`${GSL_CONFIG} --libs` ${LIBS}"
     fi
-# Assumes GSL version in form 1.[0-9]+  extract minor version only   
-    GSL_VER="`${GSL_CONFIG} --version`" 
-    GSL_VER=`echo "${GSL_VER}" | sed -e 's/^1\.//'`  
-# 20100114: necessary on bluefire which has limited GSL without gsl-config
-    if test "${GSL_VER}" = ''; then
-	GSL_VER='4'
-    fi
     AC_MSG_NOTICE([These GSL library and header tests must succeed for GSL support:])
 # fxm: default action of check_lib adds a superfluous -lgsl to $LIBS
     AC_CHECK_LIB([gsl],[gsl_sf_gamma_inc],,enable_gsl=no)
@@ -743,9 +736,16 @@ if test "${enable_gsl}" != 'no'; then
 	LIBS="${nco_LIBS_no_GSL}"  
 	CPPFLAGS="${nco_CPPFLAGS_no_GSL}"
     elif test "${enable_gsl}" = 'yes'; then
-       AC_DEFINE(ENABLE_GSL,1,Compile operators with GSL support)
-       AC_DEFINE_UNQUOTED(NCO_GSL_MINOR_VERSION,${GSL_VER},GSL minor version number)
-       AC_MSG_NOTICE([GSL support enabled])
+# Assumes GSL version in form 1.[0-9]+  extract minor version only   
+	GSL_VER="`${GSL_CONFIG} --version`" 
+	GSL_VER=`echo "${GSL_VER}" | sed -e 's/^1\.//'`  
+	if test "x${GSL_VER}" = 'x'; then
+	    # 20100115: Fix for machines like bluefire that lack gsl-config
+	    GSL_VER='4' 
+	fi
+	AC_DEFINE(ENABLE_GSL,1,Compile operators with GSL support)
+	AC_DEFINE_UNQUOTED(NCO_GSL_MINOR_VERSION,${GSL_VER},GSL minor version number)
+	AC_MSG_NOTICE([GSL support enabled])
     fi
 fi
 AM_CONDITIONAL(ENABLE_GSL,[test "${enable_gsl}" = 'yes'])
