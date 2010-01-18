@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.173 2010-01-15 15:02:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.174 2010-01-18 12:09:20 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2156,23 +2156,40 @@ out returns [var_sct *var]
         {
             string sDim=dval->getText();
             dmn_sct *dmn_fd;
-            
-            // Check output
-            if(prs_arg->ntl_scn){
-                var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nc_type)NC_INT,false);
+
+            // Check output 
+            dmn_fd=prs_arg->dmn_out_vtr.find(sDim);
+            // Check input
+            if(dmn_fd==NULL_CEWI)
+              dmn_fd=prs_arg->dmn_in_vtr.find(sDim);
+
+            // nb there is  a problem with the below code 
+            // if we have a netcdf4 file and on the intial scan dim is undefined (dmn_fd==NULL)     
+            // and on the final scan  size >NC_MAX_INT then there is a conflict between 
+            // the initial returned  type (NC_INT) and the final returned type (NC_INT64)
+
+            //Initial Scan
+            if(prs_arg->ntl_scn){  
+                if( (dmn_fd==NULL_CEWI )|| (dmn_fd->sz <= NC_MAX_INT) )
+                   var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nc_type)NC_INT,false);
+                else 
+                   var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nc_type)NC_INT64,false);
+
             }else{ 
-                // Check output 
-                dmn_fd=prs_arg->dmn_out_vtr.find(sDim);
-                // Check input
-                if(dmn_fd==NULL_CEWI)
-                dmn_fd=prs_arg->dmn_in_vtr.find(sDim);
-                
-                if( dmn_fd==NULL_CEWI ){
-                    err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
-                }
-                var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nco_int)dmn_fd->sz);
-            } // end else 
-        } // end action 
+
+                if( dmn_fd==NULL_CEWI )
+                    err_prn(fnc_nm,"Unable to locate dimension " +sDim+ " in input or output files ");
+
+
+                if(dmn_fd->sz <= NC_MAX_INT )
+                  var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nco_int)dmn_fd->sz);
+                else
+                  var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nco_int64)dmn_fd->sz); 
+            } 
+                  
+
+
+        }  // end action 
         
      // Variable with argument list 
     | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
