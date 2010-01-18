@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.46 2010-01-15 17:53:53 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.47 2010-01-18 18:24:51 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -2728,10 +2728,10 @@ var_sct *gsl_cls::hnd_fnc_udrdu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     if(var_arr[0]->has_mss_val){
       has_mss_val=true; 
       (void)cast_void_nctype(NC_DOUBLE,&var_arr[0]->mss_val);
-      mss_val_dbl=var_arr[2]->mss_val.dp[0]; 
+      mss_val_dbl=var_arr[0]->mss_val.dp[0]; 
       (void)cast_nctype_void(NC_DOUBLE,&(var_arr[0]->mss_val));
       // use C imlicit conversion  
-      mss_val_lng=(unsigned int)mss_val_dbl;  
+      mss_val_lng=(nco_uint)mss_val_dbl;  
     } 
     
     // do the deed !!!
