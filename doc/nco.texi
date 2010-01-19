@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.566 2010-01-15 02:08:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.567 2010-01-19 15:18:55 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5748,7 +5748,8 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Irregular grids::
 * bilinear interpolation::             
 * GSL special functions::
-* GSL interpolation::       
+* GSL interpolation::
+* GSL least-squares fitting::       
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity ::  
@@ -7733,7 +7734,7 @@ print(status);
 @html
 <a name="gsl_int"></a> <!-- http://nco.sf.net/nco.html#gsl_int -->
 @end html
-@node GSL interpolation, Examples ncap2, GSL special functions, ncap2 netCDF Arithmetic Processor
+@node GSL interpolation, GSL least-squares fitting, GSL special functions, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} interpolation
 @cindex @acronym{GSL}
 @noindent As of version 3.9.9 (released July, 2009), @acronym{NCO} has wrappers to the GSL interpolation functions.
@@ -7782,10 +7783,89 @@ gsl_spline_deriv2() @*
 gsl_spline_integ() @*
 
 
+
+
+@html
+<a name="ncap_lsqf"></a> <!-- http://nco.sf.net/nco.html#ncap_lsqf -->
+@end html
+@node GSL least-squares fitting, Examples ncap2, GSL interpolation, ncap2 netCDF Arithmetic Processor
+@subsection  GSL least-squares fitting       
+@noindent Least Squares fitting is a method of calculating a straight line through a set of experimental data points in the XY plane. The data maybe weighted or unweighted. For more information please refer to the @acronym{GSL} manual.
+
+@noindent These GSL functions fall into three categories:@*
+@strong{A)} Fitting data to Y=c0+c1*X@*
+@strong{B)} Fitting data (through the origin) Y=c1*X@*
+@strong{C)} Multi-parameter fitting (not yet implemented)@* 
+
+@strong{Section A} @* @*
+@code{status=@strong{gsl_fit_linear}(data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq) }
+
+@noindent @strong{Input variables}: data_x, stride_x, data_y, stride_y, n @* 
+From the above variables an X and Y vector both of length 'n' are derived. 
+If data_x or data_y is less than type double then it is converted to type @code{double}. 
+It is up to you to do bounds checking on the input data. 
+For example if stride_x=3 and n=8 then the size of data_x must be at least 24
+
+
+@noindent @strong{Output variables}: c0, c1, cov00, cov01, cov11,sumsq @* 
+The '&' prefix indicates that these are call-by-reference variables.
+If any of the output variables don't exist prior to the call then they are created on the fly as scalar variables of type @code{double}. If they already exist then their existing value is overwritten. If the function call is successful then @code{status=0}. 
+
+@code{status= @strong{gsl_fit_wlinear}(data_x,stride_x,data_w,stride_w,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&chisq) }
+
+@noindent Similar to the above call except it creates an additional weighting vector from the variables data_w, stride_w, n  
+
+
+@code{ data_y_out=@strong{gsl_fit_linear_est}(data_x,c0,c1,cov00,cov01,cov11) }
+
+@noindent This function calculates y values along the line Y=c0+c1*X @* @*
+
+
+
+@strong{Section B} @* @*
+@code{status=@strong{gsl_fit_mul}(data_x,stride_x,data_y,stride_y,n,&c1,&cov11,&sumsq) }
+
+@noindent @strong{Input variables}: data_x, stride_x, data_y, stride_y, n @* 
+From the above variables an X and Y vector both of length 'n' are derived. 
+If data_x or data_y is less than type @code{double} then it is converted to type @code{double}. @*
+
+@noindent @strong{Output variables}: c1,cov11,sumsq @* 
+
+
+@code{status= @strong{gsl_fit_wmul}(data_x,stride_x,data_w,stride_w,data_y,stride_y,n,&c1,&cov11,&sumsq) }
+
+@noindent Similar to the above call except it creates an additional weighting vector from the variables data_w, stride_w, n  
+
+
+@code{ data_y_out=@strong{gsl_fit_mul_est}(data_x,c0,c1,cov11) }
+
+@noindent This function calculates y values along the line Y=c1*X @* @*
+
+@noindent The below example shows @strong{gsl_fit_linear()} in action
+
+@example
+defdim("d1",10);
+xin[d1]=@{1,2,3,4,5,6,7,8,9,10.0@};
+yin[d1]=@{3.1,6.2,9.1,12.2,15.1,18.2,21.3,24.0,27.0,30.0@};
+gsl_fit_linear(xin,1,yin,1,$d1.size,&c0,&c1,&cov00,&cov01,&cov11,&sumsq);
+print(c0);  // 0.2
+print(c1);  // 2.98545454545
+
+
+defdim("e1",4);
+xout[e1]=@{1.0,3.0,4.0,11@};
+yout[e1]=0.0;
+
+yout=gsl_fit_linear_est(xout, c0,c1, cov00,cov01, cov11, sumsq);
+
+print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
+@end example
+@* @*
+
 @html
 <a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
 @end html
-@node Examples ncap2, Intrinsic mathematical methods, GSL interpolation, ncap2 netCDF Arithmetic Processor
+@node Examples ncap2, Intrinsic mathematical methods, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
 @subsection Examples ncap2
 
 See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
