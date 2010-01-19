@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.174 2010-01-18 12:09:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.175 2010-01-19 21:48:04 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2167,6 +2167,11 @@ out returns [var_sct *var]
             // if we have a netcdf4 file and on the intial scan dim is undefined (dmn_fd==NULL)     
             // and on the final scan  size >NC_MAX_INT then there is a conflict between 
             // the initial returned  type (NC_INT) and the final returned type (NC_INT64)
+
+// csz 20100119 Workaround dependence on NC_MAX_INT which DNE in netcdf.h until ~2009
+#ifndef NC_MAX_INT
+# define NC_MAX_INT 2147483647
+#endif
 
             //Initial Scan
             if(prs_arg->ntl_scn){  

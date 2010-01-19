@@ -1,6 +1,11 @@
-2010-1-19  Henry Butowsky  <henryb@hush.com> 
+2010-01-19  Charlie Zender  <zender@uci.edu>
+
+	* Workaround ncoGrammer.g dependence on NC_MAX_INT which DNE 
+	in netcdf.h until ~2009
+
+2010-01-19  Henry Butowsky  <henryb@hush.com> 
 	
-	* added chapter on "GSL Least-Squares Fitting" to ncap2 manual
+	* Add chapter on "GSL Least-Squares Fitting" to ncap2 manual
 
 2010-01-14  Charlie Zender  <zender@uci.edu>
 
