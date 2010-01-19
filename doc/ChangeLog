@@ -1,3 +1,7 @@
+2010-1-19  Henry Butowsky  <henryb@hush.com> 
+	
+	* added chapter on "GSL Least-Squares Fitting" to ncap2 manual
+
 2010-01-14  Charlie Zender  <zender@uci.edu>
 
 	* Patch configure.in for broken GSL installations like bluefire's, 
