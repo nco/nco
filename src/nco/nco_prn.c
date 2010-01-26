@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.57 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.58 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -467,7 +467,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     } /* end if */
   } /* end if PRN_DMN_UNITS */
 
-  if(dlm_sng != NULL){
+  if(dlm_sng){
     /* Print each element with user-supplied formatting code */
 
     /* Replace C language '\X' escape codes with ASCII bytes */

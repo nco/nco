@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.45 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.46 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -46,11 +46,11 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
     /* CCM3, CCSM1 conventions */
-    if(strstr(att_val,"NCAR-CSM") != NULL) CNV_CCM_CCSM_CF=True; /* Backwards compatibility */
+    if(strstr(att_val,"NCAR-CSM")) CNV_CCM_CCSM_CF=True; /* Backwards compatibility */
     /* Climate-Forecast conventions */
-    if(strstr(att_val,"CF-1.0") != NULL) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
+    if(strstr(att_val,"CF-1.0")) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
-    if(strstr(att_val,"CF1.0") != NULL) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
+    if(strstr(att_val,"CF1.0")) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     if(CNV_CCM_CCSM_CF && dbg_lvl_get() > 0){
       (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",prg_nm_get(),cnv_sng,att_val);
       if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
@@ -128,7 +128,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
 #else /* !USE_FORTRAN_ARITHMETIC */
   date=nco_newdate(nbdate,day);
 #endif /* !USE_FORTRAN_ARITHMETIC */
-  if(var[date_idx]->val.lp != NULL) return; else var[date_idx]->val.lp[0]=date;
+  if(var[date_idx]->val.lp) return; else var[date_idx]->val.lp[0]=date;
   
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_cnv_ccm_ccsm_cf_date */

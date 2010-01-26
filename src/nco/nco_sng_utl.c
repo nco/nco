@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.28 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.29 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -122,7 +122,7 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
   /* Check if control codes are embedded once before entering loop */
   backslash_ptr=strchr(sng,backslash_chr);
 
-  while(backslash_ptr != NULL){
+  while(backslash_ptr){
     /* Default is to translate this escape sequence */
     trn_flg=True;
     /* Replace backslash character by corresponding control code */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.72 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.73 2010-01-26 13:06:25 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.72 2010-01-05 20:02:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.73 2010-01-26 13:06:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -404,7 +404,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
-    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
+    if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   if(CMD_LN_NTP_VAR && CMD_LN_NTP_WGT){
@@ -625,9 +625,9 @@ main(int argc,char **argv)
     (void)nco_var_dvd(wgt_1->type,wgt_1->sz,wgt_1->has_mss_val,wgt_1->mss_val,ntp_2->val,wgt_1->val);
     (void)nco_var_dvd(wgt_2->type,wgt_2->sz,wgt_2->has_mss_val,wgt_2->mss_val,ntp_2->val,wgt_2->val);
     
-    if(ntp_1 != NULL) ntp_1=nco_var_free(ntp_1);
-    if(ntp_2 != NULL) ntp_2=nco_var_free(ntp_2);
-    if(ntp_var_out != NULL) ntp_var_out=nco_var_free(ntp_var_out);
+    if(ntp_1) ntp_1=nco_var_free(ntp_1);
+    if(ntp_2) ntp_2=nco_var_free(ntp_2);
+    if(ntp_var_out) ntp_var_out=nco_var_free(ntp_var_out);
   } /* end if CMD_LN_NTP_VAR */
   
   if(CMD_LN_NTP_WGT){
@@ -780,9 +780,9 @@ main(int argc,char **argv)
 	    } /* end OpenMP critical */
 	    
 	    /* Free dynamically allocated buffers */
-	    if(var_prc_1[idx] != NULL) var_prc_1[idx]=nco_var_free(var_prc_1[idx]);
-	    if(var_prc_2[idx] != NULL) var_prc_2[idx]=nco_var_free(var_prc_2[idx]);
-	    if(var_prc_out[idx] != NULL) var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
+	    if(var_prc_1[idx]) var_prc_1[idx]=nco_var_free(var_prc_1[idx]);
+	    if(var_prc_2[idx]) var_prc_2[idx]=nco_var_free(var_prc_2[idx]);
+	    if(var_prc_out[idx]) var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
 	    
 #ifdef ENABLE_MPI
 	    /* Close output file and increment written counter */
@@ -817,27 +817,27 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncflint-specific memory */
-    if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
-    if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
+    if(fl_in_1) fl_in_1=(char *)nco_free(fl_in_1);
+    if(fl_in_2) fl_in_2=(char *)nco_free(fl_in_2);
     var_prc_1=(var_sct **)nco_free(var_prc_1);
     var_prc_2=(var_sct **)nco_free(var_prc_2);
-    if(wgt_1 != NULL) wgt_1=(var_sct *)nco_var_free(wgt_1);
-    if(wgt_2 != NULL) wgt_2=(var_sct *)nco_var_free(wgt_2);
-    if(wgt_out_1 != NULL) wgt_out_1=(var_sct *)nco_var_free(wgt_out_1);
-    if(wgt_out_2 != NULL) wgt_out_2=(var_sct *)nco_var_free(wgt_out_2);
+    if(wgt_1) wgt_1=(var_sct *)nco_var_free(wgt_1);
+    if(wgt_2) wgt_2=(var_sct *)nco_var_free(wgt_2);
+    if(wgt_out_1) wgt_out_1=(var_sct *)nco_var_free(wgt_out_1);
+    if(wgt_out_2) wgt_out_2=(var_sct *)nco_var_free(wgt_out_2);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_out) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     
     /* Free lists of strings */
-    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);

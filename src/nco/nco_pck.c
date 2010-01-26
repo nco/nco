@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.77 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.78 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -375,7 +375,7 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
   } /* end nco_pck_map switch */ 
   
   /* Only fill in nc_typ_pck_out if it is non-NULL */
-  if(nc_typ_pck_out != NULL) *nc_typ_pck_out=nc_typ_pck_out_tmp;
+  if(nc_typ_pck_out) *nc_typ_pck_out=nc_typ_pck_out_tmp;
   
   return nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
 } /* end nco_pck_plc_typ_get() */
@@ -572,7 +572,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     if(var_in->pck_ram){
       if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: INFO %s keeping existing packing attributes for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
       /* Warn if packing attribute values are in memory for pre-packed variables */
-      if(var_out->scl_fct.vp != NULL || var_out->add_fst.vp != NULL) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has packing attribute values in memory. This is not supposed to happen through known code paths, but is not necessarily dangerous.\n",prg_nm_get(),fnc_nm,var_in->nm);
+      if(var_out->scl_fct.vp || var_out->add_fst.vp) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has packing attribute values in memory. This is not supposed to happen through known code paths, but is not necessarily dangerous.\n",prg_nm_get(),fnc_nm,var_in->nm);
       /* Remove dangling pointer, see explanation below */
       var_in->val.vp=NULL; 
     }else{
@@ -868,7 +868,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
       zero_var=scl_mk_var(zero_unn,var->type); /* [sct] NCO variable for value 0.0 */
       /* Set scale_factor to 0.0 */
       (void)memcpy(var->scl_fct.vp,zero_var->val.vp,nco_typ_lng(var->type));
-      if(zero_var != NULL) zero_var=nco_var_free(zero_var);
+      if(zero_var) zero_var=nco_var_free(zero_var);
       /* Set add_offset to first variable value 
 	 Variable is constant everywhere so particular value copied is unimportant */
       (void)memcpy(var->add_fst.vp,var->val.vp,nco_typ_lng(var->type));
@@ -887,11 +887,11 @@ nco_var_pck /* [fnc] Pack variable in memory */
     if(var->has_mss_val) ptr_unn_mss_val_dbl.vp=nco_free(ptr_unn_mss_val_dbl.vp);
 
     /* Free variables */
-    if(min_var != NULL) min_var=nco_var_free(min_var);
-    if(max_var != NULL) max_var=nco_var_free(max_var);
-    if(max_var_dpl != NULL) max_var_dpl=nco_var_free(max_var_dpl);
-    if(hlf_var != NULL) hlf_var=nco_var_free(hlf_var);
-    if(ndrv_var != NULL) ndrv_var=nco_var_free(ndrv_var);
+    if(min_var) min_var=nco_var_free(min_var);
+    if(max_var) max_var=nco_var_free(max_var);
+    if(max_var_dpl) max_var_dpl=nco_var_free(max_var_dpl);
+    if(hlf_var) hlf_var=nco_var_free(hlf_var);
+    if(ndrv_var) ndrv_var=nco_var_free(ndrv_var);
 
     /* Do not bother creating superfluous scale_factor (0.0 or 1.0) or add_offset (0.0) */
     scl_fct_dbl=ptr_unn_2_scl_dbl(var->scl_fct,var->type); 
@@ -1105,6 +1105,6 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
      Setting var_tmp->val.vp=NULL accomplishes this
      Use var_out->val.vp to free() this buffer later with nco_var_free() */
   var_tmp->val.vp=NULL;
-  if(var_tmp != NULL) var_tmp=nco_var_free(var_tmp);
+  if(var_tmp) var_tmp=nco_var_free(var_tmp);
 } /* end nco_var_upk_swp() */
 

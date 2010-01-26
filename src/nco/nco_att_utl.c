@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.99 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.100 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -610,8 +610,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     aed_lst[idx].id=-1;
 
     /* Fill in structure */
-    if(arg_lst[0] != NULL) aed_lst[idx].att_nm=strdup(arg_lst[0]);
-    if(arg_lst[1] != NULL) aed_lst[idx].var_nm=strdup(arg_lst[1]);
+    if(arg_lst[0]) aed_lst[idx].att_nm=strdup(arg_lst[0]);
+    if(arg_lst[1]) aed_lst[idx].var_nm=strdup(arg_lst[1]);
 
     /* fxm: Change these switches to string comparisons someday */
     /* Set mode of current aed structure */

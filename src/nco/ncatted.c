@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.125 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.126 2010-01-26 13:06:25 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.125 2010-01-05 20:02:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.125 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.126 2010-01-26 13:06:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.126 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -284,12 +284,12 @@ main(int argc,char **argv)
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end switch */
-    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
+    if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
-  if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=(char *)strdup(fl_lst_in[0]);
+  if(fl_out) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=(char *)strdup(fl_lst_in[0]);
 
   if(nbr_aed == 0){
     (void)fprintf(stdout,"%s: ERROR must specify an attribute to edit\n",prg_nm);
@@ -406,23 +406,23 @@ main(int argc,char **argv)
     /* ncatted-specific memory */
     for(idx=0;idx<nbr_aed;idx++) aed_arg[idx]=(char *)nco_free(aed_arg[idx]);
     for(idx=0;idx<nbr_aed;idx++){
-      if(aed_lst[idx].att_nm != NULL) aed_lst[idx].att_nm=(char *)nco_free(aed_lst[idx].att_nm);
-      if(aed_lst[idx].var_nm != NULL) aed_lst[idx].var_nm=(char *)nco_free(aed_lst[idx].var_nm);
+      if(aed_lst[idx].att_nm) aed_lst[idx].att_nm=(char *)nco_free(aed_lst[idx].att_nm);
+      if(aed_lst[idx].var_nm) aed_lst[idx].var_nm=(char *)nco_free(aed_lst[idx].var_nm);
       aed_lst[idx].val.vp=(void *)nco_free(aed_lst[idx].val.vp);
     } /* end for */
     if(nbr_aed > 0) aed_lst=(aed_sct *)nco_free(aed_lst);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-    if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in) fl_in=(char *)nco_free(fl_in);
+    if(fl_out) fl_out=(char *)nco_free(fl_out);
+    if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     /* Free lists of strings */
-    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
   } /* !flg_cln */
   
   /* End timer */ 

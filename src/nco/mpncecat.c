@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.73 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.74 2010-01-26 13:06:25 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.73 2010-01-05 20:02:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.73 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.74 2010-01-26 13:06:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.74 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -374,7 +374,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
-    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
+    if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
@@ -782,21 +782,21 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncecat-specific memory cleanup */
-    if(rec_dmn_nm != NULL) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-    if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-    if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
+    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in) fl_in=(char *)nco_free(fl_in);
+    if(fl_out) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     /* Free lists of strings */
-    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);

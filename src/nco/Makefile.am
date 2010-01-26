@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.43 2009-05-21 15:38:08 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.44 2010-01-26 13:06:25 zender Exp $ -*-makefile-*-
 
 if BUILD_YACC_SOURCE
 NCAP=ncap
@@ -94,7 +94,6 @@ nco_dbg.h \
 nco_dmn_utl.h \
 nco_fl_utl.h \
 nco_getopt.h \
-nco_gmm.h \
 nco_lmt.h \
 nco_lst_utl.h \
 nco_mmr.h \
@@ -147,7 +146,6 @@ nco_ctl.c \
 nco_dbg.c \
 nco_dmn_utl.c \
 nco_fl_utl.c \
-nco_gmm.c \
 nco_lmt.c \
 nco_lst_utl.c \
 nco_mmr.c \

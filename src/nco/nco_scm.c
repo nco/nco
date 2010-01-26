@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.41 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.42 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -112,7 +112,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   cvs_pch_vrs_sng=(char *)nco_malloc((size_t)cvs_pch_vrs_len+1);
   cvs_pch_vrs_sng[cvs_pch_vrs_len]='\0';
   cvs_vrs_sng=(char *)nco_malloc((size_t)cvs_vrs_sng_len+1);
-  if(usc_2_ptr != NULL){
+  if(usc_2_ptr){
     cvs_pch_vrs_sng=strncpy(cvs_pch_vrs_sng,usc_2_ptr+1,(size_t)cvs_pch_vrs_len);
     cvs_pch_vrs=strtol(cvs_pch_vrs_sng,(char **)NULL,10);
     (void)sprintf(cvs_vrs_sng,"%li.%li.%li",cvs_mjr_vrs,cvs_mnr_vrs,cvs_pch_vrs);

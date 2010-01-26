@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.115 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.116 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -185,7 +185,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   psn_arg_nbr=argc-arg_crr; /* [nbr] Number of remaining positional arguments */
 
   /* Is output file already known from command line switch (i.e., -o fl_out)? */
-  if(*fl_out != NULL){
+  if(*fl_out){
     /* fl_out is already known so interpret all remaining positional arguments as input files */
     FL_OUT_FROM_PSN_ARG=False;
     /* Offset expected number of positional arguments by one to account for fl_out being known */
@@ -522,7 +522,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
 
     /* Construct local filename from user-supplied local file path and existing file stub */
-    if(fl_pth_lcl != NULL){
+    if(fl_pth_lcl){
       fl_nm_lcl_tmp=fl_nm_lcl;
       /* Allocate enough room for the joining slash '/' and the terminating NUL */
       fl_nm_lcl=(char *)nco_malloc((strlen(fl_pth_lcl)+strlen(fl_nm_stub)+2)*sizeof(char));
@@ -916,7 +916,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       char *fl_nm_cnc=NULL; /* [sng] Canonical file name */
       /* Determine canonical filename and properties */
       fl_nm_cnc=nco_fl_info_get(fl_nm_lcl);
-      if(fl_nm_cnc != NULL) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
+      if(fl_nm_cnc) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
     } /* endif dbg */
     
   } /* end if file is truly local */
@@ -985,12 +985,12 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   fl_nm=(char *)nco_free(fl_nm);
 
   /* Construct filename from NINTAP-style arguments and input name */
-  if(fl_lst_abb != NULL){
+  if(fl_lst_abb){
     if(FIRST_INVOCATION){
       int fl_nm_sfx_lng=0;
 
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
-      if(fl_nbr != NULL) *fl_nbr=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
+      if(fl_nbr) *fl_nbr=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
       fl_nm_nbr_ttl=*fl_nbr;
 
       if(abb_arg_nbr > 1){
@@ -1057,7 +1057,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   } /* end if no abbreviation list */
 
   /* Prepend path prefix */
-  if(fl_pth != NULL){
+  if(fl_pth){
     char *fl_nm_stub;
 
     fl_nm_stub=fl_nm;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.70 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.71 2010-01-26 13:06:25 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.70 2010-01-05 20:02:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.70 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.71 2010-01-26 13:06:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.71 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -398,7 +398,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
-    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
+    if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
@@ -1054,17 +1054,17 @@ main(int argc,char **argv)
       dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
       dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
     } /* end loop over idx */
-    if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
-    if(dmn_rvr_in != NULL) dmn_rvr_in=(nco_bool **)nco_free(dmn_rvr_in);
-    if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
+    if(dmn_idx_out_in) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
+    if(dmn_rvr_in) dmn_rvr_in=(nco_bool **)nco_free(dmn_rvr_in);
+    if(dmn_rvr_rdr) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
     if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
     /* Free dimension list pointers */
     dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
     /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
   } /* endif dmn_rdr_nbr > 0 */
   if(nco_pck_plc != nco_pck_plc_nil){
-    if(nco_pck_plc_sng != NULL) nco_pck_plc_sng=(char *)nco_free(nco_pck_plc_sng);
-    if(nco_pck_map_sng != NULL) nco_pck_map_sng=(char *)nco_free(nco_pck_map_sng);
+    if(nco_pck_plc_sng) nco_pck_plc_sng=(char *)nco_free(nco_pck_plc_sng);
+    if(nco_pck_map_sng) nco_pck_map_sng=(char *)nco_free(nco_pck_map_sng);
     if(nco_pck_plc != nco_pck_plc_upk){
       /* No need for loop over var_prc variables to free attribute values
 	 Variable structures and attribute edit lists share same attribute values
@@ -1076,17 +1076,17 @@ main(int argc,char **argv)
   
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
+  if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+  if(fl_in) fl_in=(char *)nco_free(fl_in);
+  if(fl_out) fl_out=(char *)nco_free(fl_out);
+  if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+  if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+  if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
   /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+  if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+  if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+  if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.54 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.55 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -616,7 +616,7 @@ sng_lst_cat /* [fnc] Join string list together into one string, delete originals
   /* Jump here if only one string */
  cln_and_xit:
   for(lmn=0L;lmn<lmn_nbr;lmn++){
-    if(sng_lst[lmn] != NULL) sng_lst[lmn]=(char *)nco_free(sng_lst[lmn]);
+    if(sng_lst[lmn]) sng_lst[lmn]=(char *)nco_free(sng_lst[lmn]);
   } /* end loop over lmn */
 
   return sng;

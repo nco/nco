@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.68 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.69 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -75,7 +75,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
   *DO_CONFORM=False;
   
   /* Does current weight (wgt_crr) conform to variable's dimensions? */
-  if(wgt_crr != NULL){
+  if(wgt_crr){
     /* Test rank first because wgt_crr because of 19960218 bug (invalid dmn_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
       /* Test whether all wgt and var dimensions match in sequence */

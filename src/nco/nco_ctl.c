@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.254 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.255 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -645,7 +645,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   lbr_vrs_sng[lbr_vrs_sng_lng]='\0'; /* NUL-terminate */
 
   dlr_ptr=strstr(lbr_sng," $");
-  if(of_ptr != NULL && dlr_ptr != NULL){
+  if(of_ptr && dlr_ptr){
     cmp_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4ul); /* 4 is the length of " of " */
     cmp_dat_sng=(char *)nco_malloc(cmp_dat_sng_lng+1ul);
     strncpy(cmp_dat_sng,of_ptr+4ul,cmp_dat_sng_lng); /* 4 is the length of " of " */
@@ -789,7 +789,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
 
   /* Get program name (use strrchr() first in case nm_in contains a path) */
   nm_out_orig=nm_out_tmp=(char *)strdup(nm_in);
-  if(strrchr(nm_out_tmp,'/') != NULL) nm_out_tmp=strrchr(nm_out_tmp,'/')+1;
+  if(strrchr(nm_out_tmp,'/')) nm_out_tmp=strrchr(nm_out_tmp,'/')+1;
 
   /* Skip possible libtool prefix */
   if(!strncmp(nm_out_tmp,"lt-",3)){nm_out_tmp+=3;}

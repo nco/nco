@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.38 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.39 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -60,7 +60,7 @@ nco_free /* [fnc] Wrapper for free() */
      Free memory and set pointer to NULL
      Routine does not call free() when vp == NULL
      Usage: vp=nco_free(vp) */
-  if(vp != NULL) free(vp);
+  if(vp) free(vp);
 #ifdef NCO_MMR_DBG
   (void)nco_mmr_stt(nco_mmr_free,(size_t)0L); /* fxm dbg */
 #endif /* !NCO_MMR_DBG */
@@ -234,7 +234,7 @@ nco_realloc /* [fnc] Wrapper for realloc() */
   /* This degenerate case sometimes occurs
      Performing realloc() call here would be ANSI-legal but would trigger Electric Fence */
   if(ptr == NULL && sz == 0) return ptr;
-  if(ptr != NULL && sz == 0){
+  if(ptr && sz == 0){
     ptr=nco_free(ptr);
     ptr=NULL;
     return ptr;

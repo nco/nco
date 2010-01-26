@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.74 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.75 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -837,7 +837,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Call also initializes var.sz with final size */
   
   /* User supplied dlm_sng, print var (includes nbr_dmn == 0) */  
-  if(dlm_sng != NULL){
+  if(dlm_sng){
     /* Print each element with user-supplied formatting code */
     /* Replace C language '\X' escape codes with ASCII bytes */
     (void)sng_ascii_trn(dlm_sng);

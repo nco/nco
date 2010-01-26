@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.98 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.99 2010-01-26 13:06:25 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.98 2010-01-05 20:02:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.98 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.99 2010-01-26 13:06:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.99 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -480,7 +480,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
-    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
+    if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Parse mask string */
@@ -703,7 +703,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
   
   /* Add new missing values to output file while in define mode */
-  if(msk_nm != NULL){
+  if(msk_nm){
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_mtd_refresh */
       if(!var_prc_out[idx]->has_mss_val){
@@ -771,7 +771,7 @@ main(int argc,char **argv)
     if(False) (void)nco_fl_cmp_err_chk();
     
     /* Find weighting variable in input file */
-    if(wgt_nm != NULL){
+    if(wgt_nm){
       int wgt_id;
       
       rcd=nco_inq_varid(in_id,wgt_nm,&wgt_id);
@@ -789,7 +789,7 @@ main(int argc,char **argv)
     } /* end if */
     
     /* Find mask variable in input file */
-    if(msk_nm != NULL){
+    if(msk_nm){
       int msk_id;
       
       rcd=nco_inq_varid(in_id,msk_nm,&msk_id);
@@ -905,7 +905,7 @@ main(int argc,char **argv)
 	    var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
 	    var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	    
-	    if(msk_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+	    if(msk_nm && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	      msk_out=nco_var_cnf_dmn(var_prc[idx],msk,msk_out,MUST_CONFORM,&DO_CONFORM_MSK);
 	      /* If msk and var did not conform then do not mask var! */
 	      if(DO_CONFORM_MSK){
@@ -933,7 +933,7 @@ main(int argc,char **argv)
 		break;
 	      } /* end case */
 	    } /* var_prc[idx]->is_crd_var */
-	    if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+	    if(wgt_nm && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	      /* fxm: nco_var_cnf_dmn() has bug where it does not allocate tally array
 		 for weights that do already conform to var_prc. TODO #114. */
 	      wgt_out=nco_var_cnf_dmn(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
@@ -990,7 +990,7 @@ main(int argc,char **argv)
 	      /* Free current input buffer */
 	      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	      
-	      if(msk_nm != NULL && DO_CONFORM_MSK){
+	      if(msk_nm && DO_CONFORM_MSK){
 		/* Must mask weight in same fashion as variable was masked
 		   If msk and var did not conform then do not mask wgt
 		   Ensure wgt_avg has a missing value */
@@ -1030,7 +1030,7 @@ main(int argc,char **argv)
 		(void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
 	      } /* endif */
 	      /* Free wgt_avg, but keep wgt_out, after each use */
-	      if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
+	      if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
 	      /* End of branch for normalization when weights were specified */
 	    }else if(NRM_BY_DNM){
 	      /* Branch for normalization when no weights were specified
@@ -1130,10 +1130,10 @@ main(int argc,char **argv)
 		
 		/* Assign remaining input for DDRA diagnostics */
 		ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
-		if(wgt != NULL) ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
+		if(wgt) ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
 		ddra_info.nco_op_typ=nco_op_typ; /* [enm] Operation type */
 		ddra_info.rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
-		if(wgt != NULL) ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
+		if(wgt) ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
 		ddra_info.var_idx=idx; /* [enm] Index */
 	ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
 		
@@ -1182,28 +1182,28 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncwa-specific memory */
     if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_free(dmn_avg);
-    if(msk != NULL) msk=nco_var_free(msk);
-    if(msk_nm != NULL) msk_nm=(char *)nco_free(msk_nm);
-    if(msk_out != NULL) msk_out=nco_var_free(msk_out);
-    if(msk_cnd_sng != NULL) msk_cnd_sng=(char *)nco_free(msk_cnd_sng);
-    if(wgt != NULL) wgt=nco_var_free(wgt);
-    if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
-    if(wgt_nm != NULL) wgt_nm=(char *)nco_free(wgt_nm);
-    if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
+    if(msk) msk=nco_var_free(msk);
+    if(msk_nm) msk_nm=(char *)nco_free(msk_nm);
+    if(msk_out) msk_out=nco_var_free(msk_out);
+    if(msk_cnd_sng) msk_cnd_sng=(char *)nco_free(msk_cnd_sng);
+    if(wgt) wgt=nco_var_free(wgt);
+    if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
+    if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
+    if(wgt_out) wgt_out=nco_var_free(wgt_out);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-    if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-    if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
+    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in) fl_in=(char *)nco_free(fl_in);
+    if(fl_out) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     /* Free lists of strings */
-    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);

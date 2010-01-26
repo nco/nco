@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.48 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.49 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -88,7 +88,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   } /* end error */
 
   if(dbg_lvl_get() > 2){
-    if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS")) != NULL) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,(char **)NULL,10);
+    if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS"))) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,(char **)NULL,10);
 /* [sng] Environment variable OMP_NUM_THREADS */
     (void)fprintf(fp_stderr,"%s: INFO Environment variable OMP_NUM_THREADS ",prg_nm_get());
     if(ntg_OMP_NUM_THREADS > 0) (void)fprintf(fp_stderr,"= %d\n",ntg_OMP_NUM_THREADS); else (void)fprintf(fp_stderr,"does not exist\n");

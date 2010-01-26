@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.90 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.91 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -115,7 +115,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
 	lmt_dim->min_sng=(char *)strdup(lmt[idx]->min_sng);
 	lmt_dim->is_usr_spc_min=True; /* True if user-specified, else False */
       } /* end if */
-      if(lmt[idx]->srd_sng != NULL) lmt_dim->srd_sng=(char *)strdup(lmt[idx]->srd_sng); else lmt_dim->srd_sng=NULL;
+      if(lmt[idx]->srd_sng) lmt_dim->srd_sng=(char *)strdup(lmt[idx]->srd_sng); else lmt_dim->srd_sng=NULL;
       lmt_dim->nm=(char *)strdup(lmt[idx]->nm);
       break;
     } /* end if */
@@ -253,7 +253,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     nco_exit(EXIT_FAILURE);
   } /* end if */
   
-  if(lmt.srd_sng != NULL){
+  if(lmt.srd_sng){
     if(strchr(lmt.srd_sng,'.') || strchr(lmt.srd_sng,'e') || strchr(lmt.srd_sng,'E') || strchr(lmt.srd_sng,'d') || strchr(lmt.srd_sng,'D')){
       (void)fprintf(stdout,"%s: ERROR Requested stride for \"%s\", %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
       nco_exit(EXIT_FAILURE);
@@ -273,8 +273,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* min_sng and max_sng are not both NULL */
     /* Limit is coordinate value if string contains decimal point or is in exponential format 
        Otherwise limit is interpreted as zero-based dimension offset */
-    if(lmt.min_sng != NULL) min_lmt_typ=nco_lmt_typ(lmt.min_sng);
-    if(lmt.max_sng != NULL) max_lmt_typ=nco_lmt_typ(lmt.max_sng);
+    if(lmt.min_sng) min_lmt_typ=nco_lmt_typ(lmt.min_sng);
+    if(lmt.max_sng) max_lmt_typ=nco_lmt_typ(lmt.max_sng);
     
     /* Copy lmt_typ from defined limit to undefined */
     if(lmt.min_sng == NULL) min_lmt_typ=max_lmt_typ;
@@ -510,13 +510,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 since 0L is valid search result.
       */
       if(monotonic_direction == increasing){
-	if(lmt.min_sng != NULL){
+	if(lmt.min_sng){
 	  /* Find index of smallest coordinate greater than min_val */
 	  tmp_idx=0L;
 	  while((dmn_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx < dmn_sz)) tmp_idx++;
 	  if(tmp_idx != dmn_sz) lmt.min_idx=tmp_idx; else lmt.min_idx=-1L;
 	} /* end if */
-	if(lmt.max_sng != NULL){
+	if(lmt.max_sng){
 	  /* Find index of largest coordinate less than max_val */
 	  tmp_idx=dmn_sz-1L;
 	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx > -1L)) tmp_idx--;
@@ -524,13 +524,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	} /* end if */
 	/* end if monotonic_direction == increasing */
       }else{ /* monotonic_direction == decreasing */
-	if(lmt.min_sng != NULL){
+	if(lmt.min_sng){
 	  /* Find index of smallest coordinate greater than min_val */
 	  tmp_idx=dmn_sz-1L;
 	  while((dmn_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx > -1L)) tmp_idx--;
 	  if(tmp_idx != -1L) lmt.min_idx=tmp_idx; else lmt.min_idx=-1L;
 	} /* end if */
-	if(lmt.max_sng != NULL){
+	if(lmt.max_sng){
 	  /* Find index of largest coordinate less than max_val */
 	  tmp_idx=0L;
 	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx < dmn_sz)) tmp_idx++;

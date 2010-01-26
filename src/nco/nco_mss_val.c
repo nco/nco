@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.39 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.40 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -243,7 +243,7 @@ nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
 
   if(!var1->has_mss_val){
     var2->has_mss_val=False;
-    if(var2->mss_val.vp != NULL) free(var2->mss_val.vp);
+    if(var2->mss_val.vp) free(var2->mss_val.vp);
   }else{ /* endif no mss_val in var1 */
     var2->mss_val.vp=(void *)nco_realloc(var2->mss_val.vp,nco_typ_lng(var2->type));
     (void)nco_val_cnf_typ(var1->type,var1->mss_val,var2->type,var2->mss_val);

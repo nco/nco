@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.146 2010-01-15 00:57:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.147 2010-01-26 13:06:25 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -612,10 +612,10 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   (void)memcpy((void *)var_cpy,(const void *)var,sizeof(var_sct));
 
   /* Make sure var_free() frees names when variable is destructed */
-  if(var->nm != NULL) var_cpy->nm=(char *)strdup(var->nm);
+  if(var->nm) var_cpy->nm=(char *)strdup(var->nm);
 
   /* Deep-copy dyamically allocated arrays from original to copy */
-  if(var->val.vp != NULL){
+  if(var->val.vp){
     var_cpy->val.vp=(void *)nco_malloc_dbg(var_cpy->sz*nco_typ_lng(var_cpy->type),"Unable to malloc() value buffer in variable deep-copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->val.vp),(void *)(var->val.vp),var_cpy->sz*nco_typ_lng(var_cpy->type));
     /* Deep-copy string data, if any */
@@ -637,47 +637,47 @@ nco_var_dpl /* [fnc] Duplicate input variable */
 	 Therefore not necessary to un-typecast pointer unions */
     } /* endif type */
   } /* end if val */
-  if(var->mss_val.vp != NULL){
+  if(var->mss_val.vp){
     var_cpy->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_cpy->type));
     (void)memcpy((void *)(var_cpy->mss_val.vp),(void *)(var->mss_val.vp),nco_typ_lng(var_cpy->type));
   } /* end if */
-  if(var->tally != NULL){
+  if(var->tally){
     var_cpy->tally=(long *)nco_malloc_dbg(var_cpy->sz*sizeof(long),"Unable to malloc() tally buffer in variable deep-copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->tally),(void *)(var->tally),var_cpy->sz*sizeof(long));
   } /* end if */
-  if(var->dim != NULL){
+  if(var->dim){
     var_cpy->dim=(dmn_sct **)nco_malloc(var_cpy->nbr_dim*sizeof(dmn_sct *));
     (void)memcpy((void *)(var_cpy->dim),(void *)(var->dim),var_cpy->nbr_dim*sizeof(var->dim[0]));
   } /* end if */
-  if(var->dmn_id != NULL){
+  if(var->dmn_id){
     var_cpy->dmn_id=(int *)nco_malloc(var_cpy->nbr_dim*sizeof(int));
     (void)memcpy((void *)(var_cpy->dmn_id),(void *)(var->dmn_id),var_cpy->nbr_dim*sizeof(var->dmn_id[0]));
   } /* end if */
-  if(var->cnk_sz != NULL){
+  if(var->cnk_sz){
     var_cpy->cnk_sz=(size_t *)nco_malloc(var_cpy->nbr_dim*sizeof(size_t));
     (void)memcpy((void *)(var_cpy->cnk_sz),(void *)(var->cnk_sz),var_cpy->nbr_dim*sizeof(var->cnk_sz[0]));
   } /* end if */
-  if(var->cnt != NULL){
+  if(var->cnt){
     var_cpy->cnt=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_cpy->cnt),(void *)(var->cnt),var_cpy->nbr_dim*sizeof(var->cnt[0]));
   } /* end if */
-  if(var->srt != NULL){
+  if(var->srt){
     var_cpy->srt=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_cpy->srt),(void *)(var->srt),var_cpy->nbr_dim*sizeof(var->srt[0]));
   } /* end if */
-  if(var->end != NULL){
+  if(var->end){
     var_cpy->end=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_cpy->end),(void *)(var->end),var_cpy->nbr_dim*sizeof(var->end[0]));
   } /* end if */
-  if(var->srd != NULL){
+  if(var->srd){
     var_cpy->srd=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_cpy->srd),(void *)(var->srd),var_cpy->nbr_dim*sizeof(var->srd[0]));
   } /* end if */
-  if(var->scl_fct.vp != NULL){
+  if(var->scl_fct.vp){
     var_cpy->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var_cpy->typ_upk));
     (void)memcpy((void *)(var_cpy->scl_fct.vp),(void *)(var->scl_fct.vp),nco_typ_lng(var_cpy->typ_upk));
   } /* end if */
-  if(var->add_fst.vp != NULL){
+  if(var->add_fst.vp){
     var_cpy->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var_cpy->typ_upk));
     (void)memcpy((void *)(var_cpy->add_fst.vp),(void *)(var->add_fst.vp),nco_typ_lng(var_cpy->typ_upk));
   } /* end if */
@@ -978,7 +978,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     if(rcd != NC_NOERR){
       
       /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, nco_var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, nco_var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
-      if(dmn_ncl != NULL || prg_id == ncwa){
+      if(dmn_ncl || prg_id == ncwa){
 	/* ...operator is ncwa and/or changes variable rank... */
 	int idx_ncl;
 	/* Initialize number of dimensions for current variable */
