@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.49 2010-01-27 15:15:21 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.50 2010-01-27 15:51:00 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -824,7 +824,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       bool has_mss_val;
       long sz=var->sz;
       double mss_val_dbl=0.0; 
-      nco_uint *lp;
+      nco_uint *uip;
       double *dp;
       
       var_sct *var_out;
@@ -852,16 +852,16 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       var=nco_var_cnf_typ((nc_type)NC_UINT,var);                     
       
       (void)cast_void_nctype((nc_type)NC_UINT,&(var->val));
-      lp=var->val.uip;  
+      uip=var->val.uip;  
       
       if(has_mss_val){  
 	for(idx=0;idx<sz;idx++)
 	  if(dp[idx] != mss_val_dbl)
 	    // note fnc_int return status flag, if 0 then no error occured
-	    dp[idx]=( (*fnc_int)(lp[idx],&rslt) ? mss_val_dbl : rslt.val );             
+	    dp[idx]=( (*fnc_int)(uip[idx],&rslt) ? mss_val_dbl : rslt.val );             
       }else{
 	for(idx=0;idx<sz;idx++) 
-	  dp[idx]=( (*fnc_int)(lp[idx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+	  dp[idx]=( (*fnc_int)(uip[idx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
       }
       
       
@@ -2045,7 +2045,7 @@ var_sct *gsl_cls::hnd_fnc_ud(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   { 
     bool has_mss_val=false;
     long sz;
-    nco_uint *lp; 
+    nco_uint *uip; 
     double *dp;
     double mss_val_dbl;
     double (*fnc_dbl)(unsigned,double);
@@ -2061,7 +2061,7 @@ var_sct *gsl_cls::hnd_fnc_ud(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     fnc_dbl=gpr_obj.g_args().cud; 
     
     (void)cast_void_nctype((nc_type)NC_UINT,&(var1->val));
-    lp=var1->val.uip;  
+    uip=var1->val.uip;  
     (void)cast_void_nctype(NC_DOUBLE,&(var2->val));
     dp=var2->val.dp;  
     
@@ -2075,12 +2075,12 @@ var_sct *gsl_cls::hnd_fnc_ud(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     
     if(!has_mss_val){ 
       for(idx=0;idx<sz;idx++) 
-	dp[idx]=(*fnc_dbl)(lp[idx],dp[idx]);
+	dp[idx]=(*fnc_dbl)(uip[idx],dp[idx]);
     }else{
       
       for(idx=0;idx<sz;idx++)
 	if(dp[idx] != mss_val_dbl)
-	  dp[idx]=(*fnc_dbl)(lp[idx],dp[idx]);
+	  dp[idx]=(*fnc_dbl)(uip[idx],dp[idx]);
 
     }           
     
@@ -2148,7 +2148,7 @@ var_sct *gsl_cls::hnd_fnc_udu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     bool has_mss_val=false;
     int sz;
     double *dp;
-    nco_uint *lp[2]; 
+    nco_uint *uip[2]; 
     double mss_val_dbl;
     double (*fnc_dbl)(unsigned,double,unsigned);       
 
@@ -2158,13 +2158,13 @@ var_sct *gsl_cls::hnd_fnc_udu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     sz=var_arr[0]->sz;
 
     (void)cast_void_nctype((nc_type)NC_UINT,&(var_arr[0]->val));                  
-    lp[0]=var_arr[0]->val.uip;
+    uip[0]=var_arr[0]->val.uip;
     
     (void)cast_void_nctype(NC_DOUBLE,&(var_arr[1]->val));                  
     dp=var_arr[1]->val.dp;
     
     (void)cast_void_nctype((nc_type)NC_UINT,&(var_arr[2]->val));                  
-    lp[1]=var_arr[1]->val.uip;
+    uip[1]=var_arr[1]->val.uip;
     
     has_mss_val=false;  
     if(var_arr[1]->has_mss_val){
@@ -2176,12 +2176,12 @@ var_sct *gsl_cls::hnd_fnc_udu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
       
       if(!has_mss_val){ 
 	for(jdx=0;jdx<sz;jdx++) 
-	  dp[jdx]=(*fnc_dbl)(lp[0][jdx],dp[jdx],lp[1][jdx] );
+	  dp[jdx]=(*fnc_dbl)(uip[0][jdx],dp[jdx],uip[1][jdx] );
       }else{
 	
 	for(jdx=0;jdx<sz;jdx++)
 	  if(dp[jdx] != mss_val_dbl)
-	   dp[jdx]=(*fnc_dbl)(lp[0][jdx],dp[jdx],lp[1][jdx] );
+	   dp[jdx]=(*fnc_dbl)(uip[0][jdx],dp[jdx],uip[1][jdx] );
 
       } // end else           
 
@@ -2458,7 +2458,7 @@ var_sct *gsl_cls::hnd_fnc_ru(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     { 
       long sz=var->sz;
       nco_uint  mss_val_ntg=0; 
-      nco_uint *lp;
+      nco_uint *uip;
       double *dp;      
 
       double (*fnc_dbl)(const gsl_rng*,unsigned);
@@ -2473,7 +2473,7 @@ var_sct *gsl_cls::hnd_fnc_ru(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
       dp=var1->val.dp;
                      
       (void)cast_void_nctype((nc_type)NC_UINT,&(var->val));
-      lp=var->val.uip;  
+      uip=var->val.uip;  
       
       
       if(var->has_mss_val){
@@ -2485,12 +2485,12 @@ var_sct *gsl_cls::hnd_fnc_ru(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
       
       if(var->has_mss_val){  
 	for(idx=0;idx<sz;idx++)
-	  if(lp[idx] != mss_val_ntg)
-            dp[idx]=(*fnc_dbl)(ncap_rng,lp[idx]);   
+	  if(uip[idx] != mss_val_ntg)
+            dp[idx]=(*fnc_dbl)(ncap_rng,uip[idx]);   
 
       }else{
 	for(idx=0;idx<sz;idx++) 
-	  dp[idx]=(*fnc_dbl)(ncap_rng,lp[idx]);
+	  dp[idx]=(*fnc_dbl)(ncap_rng,uip[idx]);
       }
       
       
@@ -2549,8 +2549,8 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   case NC_UINT:
     { 
       long sz=var->sz;
-      nco_uint  mss_val_lng=0; 
-      nco_uint *lp;
+      nco_uint  mss_val_uint=0; 
+      nco_uint *uip;
       
       unsigned (*fnc_int)(const gsl_rng*,unsigned);
       
@@ -2558,20 +2558,20 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       
       var=nco_var_cnf_typ((nc_type)NC_UINT,var);                     
       (void)cast_void_nctype((nc_type)NC_UINT,&(var->val));
-      lp=var->val.uip;  
+      uip=var->val.uip;  
       
       if(var->has_mss_val)
-        mss_val_lng=var->mss_val.uip[0]; 
+        mss_val_uint=var->mss_val.uip[0]; 
        
       
       if(var->has_mss_val){  
 	for(idx=0;idx<sz;idx++)
-	  if(lp[idx] != mss_val_lng)
-            lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);   
+	  if(uip[idx] != mss_val_uint)
+            uip[idx]=(*fnc_int)(ncap_rng,uip[idx]);   
 
       }else{
 	for(idx=0;idx<sz;idx++) 
-	  lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);
+	  uip[idx]=(*fnc_int)(ncap_rng,uip[idx]);
       }
       
       
@@ -2585,7 +2585,7 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     { 
       bool has_mss_val;
       int sz=var->sz;
-      nco_uint *lp;
+      nco_uint *uip;
       double mss_val_dbl;
       double *dp;
 
@@ -2605,7 +2605,7 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       var_out=nco_var_cnf_typ((nc_type)NC_UINT,var_out);                        
 
       (void)cast_void_nctype((nc_type)NC_UINT,&(var_out->val));
-      lp=var_out->val.uip;  
+      uip=var_out->val.uip;  
       
       
       (void)cast_void_nctype(NC_DOUBLE,&(var->val));
@@ -2622,10 +2622,10 @@ var_sct *gsl_cls::hnd_fnc_udrx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       if(has_mss_val){  
 	for(idx=0;idx<sz;idx++)
 	  if(dp[idx] != mss_val_dbl)
-	   lp[idx]=(*fnc_int)(ncap_rng,dp[idx]);
+	   uip[idx]=(*fnc_int)(ncap_rng,dp[idx]);
       }else{
 	for(idx=0;idx<sz;idx++) 
-	  lp[idx]=(*fnc_int)(ncap_rng,dp[idx]);
+	  uip[idx]=(*fnc_int)(ncap_rng,dp[idx]);
       }
       
       
@@ -2709,8 +2709,8 @@ var_sct *gsl_cls::hnd_fnc_udrdu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     bool has_mss_val=false;
     long sz;
     double *dp;
-    nco_uint  mss_val_lng=0; 
-    nco_uint *lp;
+    nco_uint  mss_val_uint=0; 
+    nco_uint *uip;
 
     double mss_val_dbl;
     
@@ -2721,7 +2721,7 @@ var_sct *gsl_cls::hnd_fnc_udrdu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     dp=var_arr[0]->val.dp;
     
     (void)cast_void_nctype((nc_type)NC_UINT,&(var_arr[1]->val));                  
-    lp=var_arr[1]->val.uip;
+    uip=var_arr[1]->val.uip;
     
     
     has_mss_val=false;  
@@ -2731,7 +2731,7 @@ var_sct *gsl_cls::hnd_fnc_udrdu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
       mss_val_dbl=var_arr[0]->mss_val.dp[0]; 
       (void)cast_nctype_void(NC_DOUBLE,&(var_arr[0]->mss_val));
       // use C imlicit conversion  
-      mss_val_lng=(nco_uint)mss_val_dbl;  
+      mss_val_uint=(nco_uint)mss_val_dbl;  
     } 
     
     // do the deed !!!
@@ -2741,14 +2741,14 @@ var_sct *gsl_cls::hnd_fnc_udrdu(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
       
       if(!has_mss_val){ 
 	for(jdx=0;jdx<sz;jdx++) 
-	  lp[jdx]=(*fnc_int)(ncap_rng,dp[jdx],lp[jdx]);
+	  uip[jdx]=(*fnc_int)(ncap_rng,dp[jdx],uip[jdx]);
       }else{
 	
 	for(jdx=0;jdx<sz;jdx++)
 	  if(dp[jdx] != mss_val_dbl )
-             lp[jdx]=(*fnc_int)(ncap_rng,dp[jdx],lp[jdx]);  
+             uip[jdx]=(*fnc_int)(ncap_rng,dp[jdx],uip[jdx]);  
 	  else
-	     lp[jdx]=mss_val_lng;      
+	     uip[jdx]=mss_val_uint;      
       } // end else           
     
     } // done the deed !!
@@ -2823,7 +2823,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   case NC_NAT:
     { 
       long sz=var->sz;
-      nco_uint *lp;
+      nco_uint *uip;
       
       unsigned long int (*fnc_int)(const gsl_rng*);
       
@@ -2841,10 +2841,10 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       
       var=nco_var_cnf_typ((nc_type)NC_UINT,var);                     
       (void)cast_void_nctype((nc_type)NC_UINT,&(var->val));
-      lp=var->val.uip;  
+      uip=var->val.uip;  
 
       for(idx=0;idx<sz;idx++) 
-	lp[idx]=(*fnc_int)(ncap_rng);
+	uip[idx]=(*fnc_int)(ncap_rng);
       
       (void)cast_nctype_void((nc_type)NC_UINT,&(var->val));
       
@@ -2859,8 +2859,8 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
     { 
       bool has_mss_val;
       long sz=var->sz;
-      nco_uint64 *lp;
-      nco_uint64 mss_val_lng;
+      nco_uint64 *ui64p;
+      nco_uint64 mss_val_uint64;
       double *dp; 
 
       unsigned long int(*fnc_int)(const gsl_rng*,unsigned long int);
@@ -2871,15 +2871,15 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       var=nco_var_cnf_typ((nc_type)NC_UINT64,var);                        
 
       (void)cast_void_nctype((nc_type)NC_UINT64,&(var->val));
-      lp=var->val.ui64p;  
+      ui64p=var->val.ui64p;  
       
       //check requested  max values
       if( NCO_TYP_GSL_UINT==NC_INT && rng_max_lng > INT_MAX)
         for(idx=0 ; idx<sz ;idx++)
-          if( lp[idx]>INT_MAX ) {
+          if( ui64p[idx]>INT_MAX ) {
 	    // bomb out if necessary  
             ostringstream os; 
-            os<<"Possible integer overflow. You have rquested the generation of integers up to the value of " <<lp[idx]<<" .This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
+            os<<"Possible integer overflow. You have rquested the generation of integers up to the value of " <<ui64p[idx]<<" .This is greater than "<<INT_MAX<<" - the maximium value that can be stored in the netcdf datatype NC_INT. Consider using another random number generator e.g ran0,fishman18 or knuthran. Consult the GSL manual for details. Alternatively recompile nco for netcdf4 and set the compile flag NCO_TYP_GSL_UINT=NC_UINT\n"; 
             err_prn(sfnm,os.str());
           }
           
@@ -2887,17 +2887,17 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       if(var->has_mss_val){
 	has_mss_val=true;
 	(void)cast_void_nctype((nc_type)NC_UINT64,&(var->mss_val));
-	mss_val_lng=var->mss_val.ui64p[0];    
+	mss_val_uint64=var->mss_val.ui64p[0];    
 	(void)cast_nctype_void((nc_type)NC_UINT64,&(var->mss_val));
       }
       
       if(has_mss_val){  
 	for(idx=0;idx<sz;idx++)
-	  if(lp[idx] != mss_val_lng)
-	   lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);
+	  if(ui64p[idx] != mss_val_uint64)
+	   ui64p[idx]=(*fnc_int)(ncap_rng,ui64p[idx]);
       }else{
 	for(idx=0;idx<sz;idx++) 
-	  lp[idx]=(*fnc_int)(ncap_rng,lp[idx]);
+	  ui64p[idx]=(*fnc_int)(ncap_rng,ui64p[idx]);
       }
       
       
