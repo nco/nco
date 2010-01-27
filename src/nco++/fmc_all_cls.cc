@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.37 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.38 2010-01-27 15:57:58 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1169,7 +1169,7 @@
       char *cp_in;
       char *cp_out;
       long idx;
-      nco_int *lp;
+      nco_int *ip;
       long var_sz;
       long msk_sz;
       size_t slb_sz;
@@ -1182,7 +1182,7 @@
 
       // De-Reference 
       (void)cast_void_nctype(NC_INT,&var_msk->val);
-      lp=var_msk->val.ip;
+      ip=var_msk->val.ip;
 
       msk_sz=var_msk->sz;
       var_sz=var->sz;
@@ -1195,23 +1195,23 @@
 
         if(prs_arg->FORTRAN_IDX_CNV) {
 
-          if( lp[idx]<1L || lp[idx] > var_sz){
+          if( ip[idx]<1L || ip[idx] > var_sz){
             std::ostringstream os;
-            os<<" Function reporting that fortran index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 1"<<"-"<<var_sz; 
+            os<<" Function reporting that fortran index "<<ip[idx]<<" into "<<var->nm<<" is out of bounds 1"<<"-"<<var_sz; 
             err_prn(sfnm,os.str());         
           }
-	  --lp[idx];
+	  --ip[idx];
         }else{
          
-          if( lp[idx]<0L || lp[idx] >= var_sz){
+          if( ip[idx]<0L || ip[idx] >= var_sz){
             std::ostringstream os;
-            os<<"Function reporting that index "<<lp[idx]<<" into "<<var->nm<<" is out of bounds 0"<<"-"<<var_sz-1; 
+            os<<"Function reporting that index "<<ip[idx]<<" into "<<var->nm<<" is out of bounds 0"<<"-"<<var_sz-1; 
             err_prn(sfnm,os.str());         
 
           }
         }
 
-        cp_in=(char*)(var->val.vp)+ (size_t)lp[idx]*slb_sz;
+        cp_in=(char*)(var->val.vp)+ (size_t)ip[idx]*slb_sz;
 	(void)memcpy(cp_out,cp_in ,slb_sz);            
         cp_out+=slb_sz;
       } // end for
