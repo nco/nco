@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.48 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.49 2010-01-27 15:15:21 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -879,7 +879,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       bool has_mss_val;
       int sz=var->sz;
       double mss_val_dbl=0; 
-      nco_int *lp;
+      nco_int *ip;
       double *dp;
       
       var_sct *var_out;
@@ -907,16 +907,16 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       var=nco_var_cnf_typ(NC_INT,var);                     
       
       (void)cast_void_nctype(NC_INT,&(var->val));
-      lp=var->val.ip;  
+      ip=var->val.ip;  
       
       if(has_mss_val){  
 	for(idx=0;idx<sz;idx++)
 	  if(dp[idx] != mss_val_dbl)
 	    // note fnc_int return status flag, if 0 then no error occured
-	    dp[idx]=( (*fnc_int)(lp[idx],&rslt) ? mss_val_dbl : rslt.val );             
+	    dp[idx]=( (*fnc_int)(ip[idx],&rslt) ? mss_val_dbl : rslt.val );             
       }else{
 	for(idx=0;idx<sz;idx++) 
-	  dp[idx]=( (*fnc_int)(lp[idx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+	  dp[idx]=( (*fnc_int)(ip[idx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
       }
       
       
@@ -1032,8 +1032,8 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   case NC_INT: { 
     bool has_mss_val=false;
     int sz;
-    int mss_val_lp; 
-    nco_int *lp1; 
+    nco_int mss_val_ntg; 
+    nco_int *ip1; 
     double *dp2;
     
     double mss_val_dbl;
@@ -1051,7 +1051,7 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     fnc_int=gpr_obj.g_args().aid; 
     
     (void)cast_void_nctype(NC_INT,&(var1->val));
-    lp1=var1->val.ip;  
+    ip1=var1->val.ip;  
     (void)cast_void_nctype(NC_DOUBLE,&(var2->val));
     dp2=var2->val.dp;  
     
@@ -1059,7 +1059,7 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     if(var1->has_mss_val){
       //has_mss_val=true; 
       (void)cast_void_nctype(NC_INT,&var1->mss_val);
-      mss_val_lp=*var1->mss_val.ip;
+      mss_val_ntg=*var1->mss_val.ip;
       (void)cast_nctype_void(NC_INT,&(var1->mss_val));
     } 
     
@@ -1073,12 +1073,12 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     if(!has_mss_val){ 
       for(idx=0;idx<sz;idx++) 
 	// note fnc_int returns status flag, if 0 then no error
-	dp2[idx]=( (*fnc_int)(lp1[idx],dp2[idx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+	dp2[idx]=( (*fnc_int)(ip1[idx],dp2[idx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
     }else{
       
       for(idx=0;idx<sz;idx++)
 	// note fnc_int returns status flag, if 0 then no error
-	if(dp2[idx] == mss_val_dbl || (*fnc_int)(lp1[idx],dp2[idx], &rslt) )
+	if(dp2[idx] == mss_val_dbl || (*fnc_int)(ip1[idx],dp2[idx], &rslt) )
 	  dp2[idx]=mss_val_dbl;
 	else
 	  dp2[idx]=rslt.val;      
@@ -1837,7 +1837,7 @@ var_sct *gsl_cls::hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     bool has_mss_val=false;
     int sz;
     double *dp;
-    nco_int *lp[2]; 
+    nco_int *ip[2]; 
     double mss_val_dbl;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
     
@@ -1845,10 +1845,10 @@ var_sct *gsl_cls::hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     sz=var_arr[0]->sz;
 
     (void)cast_void_nctype(NC_INT,&(var_arr[0]->val));                  
-    lp[0]=var_arr[0]->val.ip;
+    ip[0]=var_arr[0]->val.ip;
     
     (void)cast_void_nctype(NC_INT,&(var_arr[1]->val));                  
-    lp[1]=var_arr[1]->val.ip;
+    ip[1]=var_arr[1]->val.ip;
     
     (void)cast_void_nctype(NC_DOUBLE,&(var_arr[2]->val));                  
     dp=var_arr[2]->val.dp;
@@ -1868,12 +1868,12 @@ var_sct *gsl_cls::hnd_fnc_iid(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
       
       if(!has_mss_val){ 
 	for(jdx=0;jdx<sz;jdx++) 
-	  dp[jdx]=( (*fnc_int)(lp[0][jdx],lp[1][jdx],dp[jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+	  dp[jdx]=( (*fnc_int)(ip[0][jdx],ip[1][jdx],dp[jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
       }else{
 	
 	for(jdx=0;jdx<sz;jdx++)
 	  // note fnc_int return status flag, if 0 then no error
-	  if(dp[jdx] == mss_val_dbl || (*fnc_int)(lp[0][jdx],lp[1][jdx],dp[jdx], &rslt) )
+	  if(dp[jdx] == mss_val_dbl || (*fnc_int)(ip[0][jdx],ip[1][jdx],dp[jdx], &rslt) )
 	    dp[jdx]=mss_val_dbl;
 	  else
 	    dp[jdx]=rslt.val;      
@@ -1939,7 +1939,7 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     bool has_mss_val=false;
     int sz;
     double *dp[2];
-    nco_int *lp; 
+    nco_int *ip; 
     double mss_val_dbl;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
 
@@ -1947,7 +1947,7 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     sz=var_arr[0]->sz;
     
     (void)cast_void_nctype(NC_INT,&(var_arr[0]->val));                  
-    lp=var_arr[0]->val.ip;
+    ip=var_arr[0]->val.ip;
     
     (void)cast_void_nctype(NC_DOUBLE,&(var_arr[1]->val));                  
     dp[0]=var_arr[1]->val.dp;
@@ -1973,14 +1973,14 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
       
       if(!has_mss_val){ 
 	for(jdx=0;jdx<sz;jdx++) 
-	  dp[0][jdx]=( (*fnc_int)(lp[jdx],dp[0][jdx],dp[1][jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
+	  dp[0][jdx]=( (*fnc_int)(ip[jdx],dp[0][jdx],dp[1][jdx],&rslt) ? NC_FILL_DOUBLE : rslt.val );
       }else{
 	
 	for(jdx=0;jdx<sz;jdx++)
 	  // note fnc_int return status flag, if 0 then no error
 	  if( dp[0][jdx] == mss_val_dbl || 
 	      dp[1][jdx] == mss_val_dbl || 
-	      (*fnc_int)(lp[jdx],dp[0][jdx],dp[1][jdx], &rslt)
+	      (*fnc_int)(ip[jdx],dp[0][jdx],dp[1][jdx], &rslt)
 	      )
 	    dp[0][jdx]=mss_val_dbl;
 	  else
