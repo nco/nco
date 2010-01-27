@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.131 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.132 2010-01-27 16:04:50 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1310,7 +1310,7 @@ ncap_var_var_stc
 {
   static VarOp<double> Vd;
   static VarOp<float> Vf;
-  static VarOp<nco_int> Vl;
+  static VarOp<nco_int> Vi;
   static VarOp<nco_short> Vs;
   static VarOp<nco_ushort> Vus;
   static VarOp<nco_uint> Vui;
@@ -1318,6 +1318,7 @@ ncap_var_var_stc
   static VarOp<nco_uint64> Vui64;
   static VarOp<nco_byte> Vb;
   static VarOp<nco_ubyte> Vub;
+  static VarOp<nco_char> Vc;
   var_sct *var_ret=NULL_CEWI;
   
   //If var2 is null then we are dealing with a unary function
@@ -1326,7 +1327,7 @@ ncap_var_var_stc
     switch (var1->type) {
     case NC_DOUBLE: var_ret=Vd.var_op(var1,op); break;
     case NC_FLOAT: var_ret=Vf.var_op(var1,op); break;
-    case NC_INT: var_ret=Vl.var_op(var1,op); break;            
+    case NC_INT: var_ret=Vi.var_op(var1,op); break;            
     case NC_SHORT: var_ret=Vs.var_op(var1,op); break;
     case NC_USHORT: var_ret=Vus.var_op(var1,op); break;
     case NC_UINT: var_ret=Vui.var_op(var1,op); break;
@@ -1334,8 +1335,8 @@ ncap_var_var_stc
     case NC_UINT64: var_ret=Vui64.var_op(var1,op); break;
     case NC_BYTE: var_ret=Vb.var_op(var1,op); break;
     case NC_UBYTE: var_ret=Vub.var_op(var1,op); break;
-    case NC_CHAR: break; /* Do nothing */
-    case NC_STRING: break; /* Do nothing */
+    case NC_CHAR:  var_ret=Vs.var_op(var1,op); break;
+    case NC_STRING:  break; /* Do nothing */
     default: nco_dfl_case_nc_type_err(); break;
     }
     return var_ret;
@@ -1344,7 +1345,7 @@ ncap_var_var_stc
   switch (var1->type) {
   case NC_DOUBLE: var_ret=Vd.var_var_op(var1,var2,op); break;
   case NC_FLOAT: var_ret=Vf.var_var_op(var1,var2,op); break;
-  case NC_INT:var_ret=Vl.var_var_op(var1,var2,op); break;            
+  case NC_INT:var_ret=Vi.var_var_op(var1,var2,op); break;            
   case NC_SHORT: var_ret=Vs.var_var_op(var1,var2,op); break;
   case NC_USHORT: var_ret=Vus.var_var_op(var1,var2,op); break;
   case NC_UINT: var_ret=Vui.var_var_op(var1,var2,op); break;
