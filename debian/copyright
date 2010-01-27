@@ -36,11 +36,14 @@ Henry Butowsky and Karen Schuchardt. Their names were removed from the
 copyright statements in the files where they had been listed:
 nco_msa.c, nco_msa.h, and nco_aux.c.
 
+On January 26, 2010, Charlie Zender removed John Burkhardt from this 
+copyright file after removing his gamma function code (nco_gmm.c)
+from the source. 
+
 NCO is copyright (C) 1995--2010 Charlie Zender
 Portions of the following NCO files are copyright by others:
 nco_getopt.c: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
 nco_getopt.h: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
-nco_gmm.c: Copyright (C) 2008 John Burkardt
 
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 

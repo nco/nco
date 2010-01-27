@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.27 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.28 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -263,7 +263,8 @@ typedef unsigned short nco_ushort; /* [typ] NC_USHORT */
 /* NC_INT handling */
 #ifndef NCO_INT
 /* Valid options are NCO_TYP_INT, NCO_TYP_LONG
-   Default is NCO_TYP_LONG, which treats NC_INT as C-type long */
+   Before 20091030, default was NCO_TYP_LONG, which treats NC_INT as C-type long
+   Since  20091030, default is  NCO_TYP_INT,  which treats NC_INT as C-type int */
 # define NCO_INT NCO_TYP_INT
 #endif /* NCO_INT */
 #if NCO_INT == NCO_TYP_INT

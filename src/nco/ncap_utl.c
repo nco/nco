@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.144 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.145 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -295,7 +295,7 @@ ncap_scv_2_ptr_unn
   switch(type){
   case NC_FLOAT: *val.fp=scv.val.f; break;
   case NC_DOUBLE: *val.dp=scv.val.d; break;
-  case NC_INT: *val.lp=scv.val.l; break;
+  case NC_INT: *val.ip=scv.val.i; break;
   case NC_SHORT: *val.sp=scv.val.s; break;
   case NC_USHORT: *val.usp=scv.val.us; break;
   case NC_UINT: *val.uip=scv.val.ui; break;
@@ -792,11 +792,11 @@ ncap_scv_clc
     } break;
   case NC_INT:
     switch(op){
-    case '+': scv_out.val.l=scv_1.val.l+scv_2.val.l;break;
-    case '-': scv_out.val.l=scv_1.val.l-scv_2.val.l;break;
-    case '/': scv_out.val.l=scv_1.val.l/scv_2.val.l;break;
-    case '*': scv_out.val.l=scv_1.val.l*scv_2.val.l;break;
-    case '%': scv_out.val.l=scv_1.val.l%scv_2.val.l;break;
+    case '+': scv_out.val.i=scv_1.val.i+scv_2.val.i;break;
+    case '-': scv_out.val.i=scv_1.val.i-scv_2.val.i;break;
+    case '/': scv_out.val.i=scv_1.val.i/scv_2.val.i;break;
+    case '*': scv_out.val.i=scv_1.val.i*scv_2.val.i;break;
+    case '%': scv_out.val.i=scv_1.val.i%scv_2.val.i;break;
     } break;
   case NC_SHORT:
     switch(op){
@@ -877,7 +877,7 @@ ncap_scv_abs(scv_sct scv)
   switch(scv.type){ 
   case NC_FLOAT: scv_out.val.f=fabsf(scv.val.f); break;
   case NC_DOUBLE: scv_out.val.d=fabs(scv.val.d); break;
-  case NC_INT: scv_out.val.l=labs(scv.val.l); break; /* int abs(int), long labs(long) */ break;            
+  case NC_INT: scv_out.val.i=labs(scv.val.i); break; /* int abs(int), long labs(long) */ break;            
   case NC_SHORT: scv_out.val.s=((scv.val.s >= 0) ? scv.val.s : -scv.val.s); break;
   case NC_USHORT: scv_out.val.us=scv.val.us; break;
   case NC_UINT: scv_out.val.ui=scv.val.ui; break;
@@ -899,7 +899,7 @@ ncap_scv_minus(scv_sct *scv)
   switch(scv->type){ 
   case NC_FLOAT: scv->val.f=-scv->val.f; break;
   case NC_DOUBLE: scv->val.d=-scv->val.d; break;
-  case NC_INT: scv->val.l=-scv->val.l; break;            
+  case NC_INT: scv->val.i=-scv->val.i; break;            
   case NC_SHORT: scv->val.s=-scv->val.s; break;
   case NC_INT64: scv->val.i64=-scv->val.i64; break;
   case NC_BYTE: scv->val.b=-scv->val.b; break;

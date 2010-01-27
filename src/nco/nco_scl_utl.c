@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.24 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.25 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -48,7 +48,7 @@ scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
   switch(val_typ){
   case NC_FLOAT: val_ptr_unn.fp=&val.f; break; 
   case NC_DOUBLE: val_ptr_unn.dp=&val.d; break; 
-  case NC_INT: val_ptr_unn.lp=&val.l; break;
+  case NC_INT: val_ptr_unn.ip=&val.i; break;
   case NC_SHORT: val_ptr_unn.sp=&val.s; break;
   case NC_CHAR: val_ptr_unn.cp=&val.c; break;
   case NC_BYTE: val_ptr_unn.bp=&val.b; break;
@@ -143,7 +143,7 @@ ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
   switch(type){
   case NC_FLOAT: scv.val.f=*val.fp; break;
   case NC_DOUBLE: scv.val.d=*val.dp; break;
-  case NC_INT: scv.val.l=*val.lp; break;
+  case NC_INT: scv.val.i=*val.ip; break;
   case NC_SHORT: scv.val.s=*val.sp; break;
   case NC_BYTE: scv.val.b=*val.bp; break;
   case NC_CHAR: break; /* Do nothing */

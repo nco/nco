@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.96 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.97 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -206,7 +206,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
          (void)cast_void_nctype((nc_type)NC_INT,&var_out->val);
 
           // only interested in the first value.
-         lcl_ind[jdx]=var_out->val.lp[0];
+         lcl_ind[jdx]=var_out->val.ip[0];
 
          var_out=nco_var_free(var_out);
         }

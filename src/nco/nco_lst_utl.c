@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.55 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.56 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -446,8 +446,8 @@ nco_cmp_ptr_unn /* Compare values of two pointer unions of same type */
     return *op1_dp < *op2_dp ? -1 : (*op1_dp > *op2_dp);}
     break;
   case NC_INT:
-    {const nco_int * const op1_lp=op1.lp;
-    const nco_int * const op2_lp=op2.lp;
+    {const nco_int * const op1_lp=op1.ip;
+    const nco_int * const op2_lp=op2.ip;
     return *op1_lp < *op2_lp ? -1 : (*op1_lp > *op2_lp);}
     break;
   case NC_SHORT:

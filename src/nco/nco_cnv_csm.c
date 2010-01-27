@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.46 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.47 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -128,7 +128,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
 #else /* !USE_FORTRAN_ARITHMETIC */
   date=nco_newdate(nbdate,day);
 #endif /* !USE_FORTRAN_ARITHMETIC */
-  if(var[date_idx]->val.lp) return; else var[date_idx]->val.lp[0]=date;
+  if(var[date_idx]->val.ip) return; else var[date_idx]->val.ip[0]=date;
   
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_cnv_ccm_ccsm_cf_date */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.17 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.18 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -175,7 +175,7 @@ bool bfll){
       // get dim name
       (void)nco_inq_dimname(fl_id,dim_id[idx],dmn_nm);
       // check if dim is already in output
-      if(dmn_out_vtr.find(dmn_nm) != NULL) continue; 
+      if(dmn_out_vtr.find(dmn_nm)) continue; 
       // Get dim from input list
       dmn_fd= dmn_in_vtr.find(dmn_nm);
       // not in list -- crash out
@@ -511,7 +511,7 @@ bool bram){
     if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
     /* Set chunk sizes, if requested */
     // fxm: must first allow cnk_sz specification in ncap2.cc main()
-    //    if(cnk_sz != NULL && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
+    //    if(cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
   } // bdef
   /* Put missing value 
   if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
@@ -603,7 +603,7 @@ void prs_cls::ncap_def_ntl_scn(void)
 	if(dfl_lvl > 0 && var1->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
 	/* Set chunk sizes, if requested */
 	// fxm: must first allow cnk_sz specification in ncap2.cc main()
-	//	if(cnk_sz != NULL && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,cnk_sz);
+	//	if(cnk_sz && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,cnk_sz);
 	Nvar->var->id=var_id;
 	Nvar->var->nc_id=out_id;
 	Nvar->flg_stt=1;

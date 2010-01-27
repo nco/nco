@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.99 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.100 2010-01-27 09:36:31 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.99 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.99 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.100 2010-01-27 09:36:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.100 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -971,7 +971,7 @@ main(int argc,char **argv)
 		switch(wgt_avg->type){
 		case NC_FLOAT: mss_val_dbl=wgt_avg->mss_val.fp[0]; break; 
 		case NC_DOUBLE: mss_val_dbl=wgt_avg->mss_val.dp[0]; break; 
-		case NC_INT: mss_val_dbl=wgt_avg->mss_val.lp[0]; break;
+		case NC_INT: mss_val_dbl=wgt_avg->mss_val.ip[0]; break;
 		case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
 		case NC_USHORT: mss_val_dbl=wgt_avg->mss_val.usp[0]; break;
 		case NC_UINT: mss_val_dbl=wgt_avg->mss_val.uip[0]; break;

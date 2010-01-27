@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.36 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.37 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -862,7 +862,7 @@
 
         var2=nco_var_cnf_typ(NC_INT,var2);
         (void)cast_void_nctype(NC_INT,&var2->val);
-        c_typ=var2->val.lp[0];      
+        c_typ=var2->val.ip[0];      
         (void)cast_nctype_void(NC_INT,&var2->val);
         var2=nco_var_free(var2);
 
@@ -1182,7 +1182,7 @@
 
       // De-Reference 
       (void)cast_void_nctype(NC_INT,&var_msk->val);
-      lp=var_msk->val.lp;
+      lp=var_msk->val.ip;
 
       msk_sz=var_msk->sz;
       var_sz=var->sz;

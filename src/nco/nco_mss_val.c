@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.40 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.41 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -25,7 +25,7 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
   switch(type){
   case NC_FLOAT: *mss_val.fp=NC_FILL_FLOAT; break; 
   case NC_DOUBLE: *mss_val.dp=NC_FILL_DOUBLE; break; 
-  case NC_INT: *mss_val.lp=NC_FILL_INT; break;
+  case NC_INT: *mss_val.ip=NC_FILL_INT; break;
   case NC_SHORT: *mss_val.sp=NC_FILL_SHORT; break;
   case NC_CHAR: *mss_val.cp=NC_FILL_CHAR; break;
   case NC_BYTE: *mss_val.bp=NC_FILL_BYTE; break;
@@ -74,7 +74,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     switch(var_typ){
     case NC_FLOAT: MSS_VAL_EQL=(*var1->mss_val.fp == *var2->mss_val.fp); break;
     case NC_DOUBLE: MSS_VAL_EQL=(*var1->mss_val.dp == *var2->mss_val.dp); break;
-    case NC_INT: MSS_VAL_EQL=(*var1->mss_val.lp == *var2->mss_val.lp); break;
+    case NC_INT: MSS_VAL_EQL=(*var1->mss_val.ip == *var2->mss_val.ip); break;
     case NC_SHORT: MSS_VAL_EQL=(*var1->mss_val.sp == *var2->mss_val.sp); break;
     case NC_CHAR: MSS_VAL_EQL=(*var1->mss_val.cp == *var2->mss_val.cp); break;
     case NC_BYTE: MSS_VAL_EQL=(*var1->mss_val.bp == *var2->mss_val.bp); break;
@@ -96,7 +96,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       case NC_FLOAT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.fp[0]); break;
       case NC_DOUBLE: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.dp[0]); break;
       case NC_SHORT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.sp[0]); break;
-      case NC_INT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.lp[0]); break;
+      case NC_INT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.ip[0]); break;
       case NC_CHAR: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.cp[0]); break;
       case NC_BYTE: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.bp[0]); break;
       case NC_UBYTE: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.ubp[0]); break;
@@ -112,7 +112,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       case NC_FLOAT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.fp[0]); break;
       case NC_DOUBLE: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.dp[0]); break;
       case NC_SHORT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.sp[0]); break;
-      case NC_INT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.lp[0]); break;
+      case NC_INT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.ip[0]); break;
       case NC_CHAR: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.cp[0]); break;
       case NC_BYTE: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.bp[0]); break;
       case NC_UBYTE: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.ubp[0]); break;
@@ -160,9 +160,9 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       for(idx=0L;idx<var_sz;idx++) if(var_val.dp[idx] == mss_val_2_dbl) var_val.dp[idx]=mss_val_1_dbl;
     } break;
     case NC_INT: {
-      const nco_int mss_val_1_lng=*var1->mss_val.lp;
-      const nco_int mss_val_2_lng=*var2->mss_val.lp; 
-      for(idx=0L;idx<var_sz;idx++) if(var_val.lp[idx] == mss_val_2_lng) var_val.lp[idx]=mss_val_1_lng;
+      const nco_int mss_val_1_ntg=*var1->mss_val.ip;
+      const nco_int mss_val_2_ntg=*var2->mss_val.ip; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.ip[idx] == mss_val_2_ntg) var_val.ip[idx]=mss_val_1_ntg;
     } break;
     case NC_SHORT: {
       const short mss_val_1_sht=*var1->mss_val.sp;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.145 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.146 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -410,7 +410,7 @@ extern "C" {
   typedef union{ /* ptr_unn */
     float * restrict fp;
     double * restrict dp;
-    nco_int * restrict lp;
+    nco_int * restrict ip;
     short * restrict sp;
     nco_char * restrict cp;
     nco_byte * restrict bp;
@@ -427,7 +427,7 @@ extern "C" {
   typedef union{ /* val_unn */
     float f;
     double d;
-    nco_int l;
+    nco_int i;
     short s;
     nco_char c;
     nco_byte b;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.75 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.76 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -853,7 +853,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var.val.fp[lmn]); break;
       case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var.val.dp[lmn]); break;
       case NC_SHORT: (void)fprintf(stdout,dlm_sng,var.val.sp[lmn]); break;
-      case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.lp[lmn]); break;
+      case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.ip[lmn]); break;
       case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
       case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
       case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var.val.ubp[lmn]); break;
@@ -898,7 +898,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
       case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
       case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
-      case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
+      case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.ip[lmn],unit_sng); break;
       case NC_CHAR:
 	if(var.val.cp[lmn] != '\0'){
 	  (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
@@ -921,7 +921,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn]); break;
       case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn]); break;
       case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn]); break;
-      case NC_INT: (void)fprintf(stdout,var_sng,var.val.lp[lmn]); break;
+      case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn]); break;
       case NC_CHAR:
 	if(var.val.cp[lmn] != '\0'){
 	  (void)sprintf(var_sng,"'%s'\n",nco_typ_fmt_sng(var.type));
@@ -1049,7 +1049,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	    case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
 	    case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
 	    case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
-	    case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
+	    case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ip[crd_idx_crr]); break;
 	    case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
 	    case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
 	    case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
@@ -1065,7 +1065,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	    case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.fp[crd_idx_crr]); break;
 	    case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.dp[crd_idx_crr]); break;
 	    case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.sp[crd_idx_crr]); break;
-	    case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.lp[crd_idx_crr]); break;
+	    case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ip[crd_idx_crr]); break;
 	    case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.cp[crd_idx_crr]); break;
 	    case NC_BYTE: (void)fprintf(stdout,dmn_sng,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
 	    case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
@@ -1142,7 +1142,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
 	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
 	case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sp[lmn],unit_sng); break;
-	case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.lp[lmn],unit_sng); break;
+	case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ip[lmn],unit_sng); break;
 	case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.cp[lmn],unit_sng); break;
 	case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,(unsigned char)var.val.bp[lmn],unit_sng); break;
 	case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ubp[lmn],unit_sng); break;
@@ -1158,7 +1158,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn],unit_sng); break;
 	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn],unit_sng); break;
 	case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn],unit_sng); break;
-	case NC_INT: (void)fprintf(stdout,var_sng,var.val.lp[lmn],unit_sng); break;
+	case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn],unit_sng); break;
 	case NC_CHAR: (void)fprintf(stdout,var_sng,var.val.cp[lmn],unit_sng); break;
 	case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn],unit_sng); break;
 	case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn],unit_sng); break;

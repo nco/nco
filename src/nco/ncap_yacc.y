@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.53 2010-01-05 20:02:17 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.54 2010-01-27 09:36:31 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -216,10 +216,10 @@ PRINT '(' var_xpr ')' ';' {
     switch($3.type){
   /* NB: Format depends on opaque type of nco_int
      Until 200911, nco_int was C-type long, and now nco_int is C-type int
-     case NC_INT: (void)fprintf(stderr,"%ld\n",$3.val.l); break; */
+     case NC_INT: (void)fprintf(stderr,"%ld\n",$3.val.i); break; */
     case NC_FLOAT: (void)fprintf(stderr,"%G\n",$3.val.f); break;
     case NC_DOUBLE: (void)fprintf(stderr,"%.5G\n",$3.val.d);break;
-    case NC_INT: (void)fprintf(stderr,"%d\n",$3.val.l); break;
+    case NC_INT: (void)fprintf(stderr,"%d\n",$3.val.i); break;
     case NC_SHORT: (void)fprintf(stderr,"%hi\n",$3.val.s); break;
     case NC_BYTE: (void)fprintf(stderr,"%hhi\n",$3.val.b); break;
     case NC_UBYTE: (void)fprintf(stderr,"%hhu\n",$3.val.ub); break;
@@ -455,10 +455,10 @@ sng_xpr '+' sng_xpr {
   switch ($3.type){
   /* NB: Format depends on opaque type of nco_int
      Until 200911, nco_int was C-type long, and now nco_int is C-type int
-     case NC_INT: sprintf(bfr,"%ld",$3.val.l); break; */
+     case NC_INT: sprintf(bfr,"%ld",$3.val.i); break; */
   case NC_DOUBLE: sprintf(bfr,"%.10G",$3.val.d); break;
   case NC_FLOAT: sprintf(bfr,"%G",$3.val.f); break;
-  case NC_INT: sprintf(bfr,"%d",$3.val.l); break;
+  case NC_INT: sprintf(bfr,"%d",$3.val.i); break;
   case NC_SHORT: sprintf(bfr,"%hi",$3.val.s); break;
   case NC_BYTE: sprintf(bfr,"%hhi",$3.val.b); break;
   case NC_UBYTE: sprintf(bfr,"%hhu",$3.val.ub); break;
@@ -479,7 +479,7 @@ sng_xpr '+' sng_xpr {
   switch ($3.type){
   case NC_DOUBLE: sprintf(bfr,$5,$3.val.d); break;
   case NC_FLOAT: sprintf(bfr,$5,$3.val.f); break;
-  case NC_INT: sprintf(bfr,$5,$3.val.l); break;
+  case NC_INT: sprintf(bfr,$5,$3.val.i); break;
   case NC_SHORT: sprintf(bfr,$5,$3.val.s); break;
   case NC_BYTE: sprintf(bfr,$5,$3.val.b); break;
   case NC_UBYTE: sprintf(bfr,$5,$3.val.ub); break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.100 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.101 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -142,7 +142,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     switch(var->type){
     case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;
     case NC_DOUBLE: for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;} break;
-    case NC_INT: for(idx=0L;idx<var_sz;idx++) {if(var_val.lp[idx] == *mss_val_crr.lp) var_val.lp[idx]=*mss_val_new.lp;} break;
+    case NC_INT: for(idx=0L;idx<var_sz;idx++) {if(var_val.ip[idx] == *mss_val_crr.ip) var_val.ip[idx]=*mss_val_new.ip;} break;
     case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
     case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;
     case NC_BYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.bp[idx] == *mss_val_crr.bp) var_val.bp[idx]=*mss_val_new.bp;} break;
@@ -410,7 +410,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   /* Copy fl_nbr so can take address without endangering number */
   fl_nbr_lng=fl_nbr;
   /* Insert number of files into value */
-  att_val.lp=&fl_nbr_lng;
+  att_val.ip=&fl_nbr_lng;
   /* Initialize nco_input_file_number attribute edit structure */
   fl_in_nbr_aed.att_nm=att_nm_nbr;
   fl_in_nbr_aed.var_nm=NULL;
@@ -727,7 +727,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	switch(aed_lst[idx].type){
 	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=(float)val_arg_dbl[lmn];} break; 
 	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
-	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(nco_int)val_arg_lng_lng[lmn];} break; 
+	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ip[lmn]=(nco_int)val_arg_lng_lng[lmn];} break; 
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(nco_short)val_arg_lng_lng[lmn];} break; 
 	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_ulng_lng[lmn];} break; 
 	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(nco_byte)val_arg_lng_lng[lmn];} break; 
@@ -916,7 +916,7 @@ nco_thr_att_cat /* [fnc] Add threading global attribute */
   /* Copy thr_nbr so can take address without endangering number */
   thr_nbr_lng=thr_nbr;
   /* Insert thread number into value */
-  att_val.lp=&thr_nbr_lng;
+  att_val.ip=&thr_nbr_lng;
   /* Initialize nco_openmp_thread_number attribute edit structure */
   thr_nbr_aed.att_nm=att_nm_nbr;
   thr_nbr_aed.var_nm=NULL;
@@ -945,7 +945,7 @@ nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
   /* Copy mpi_nbr so can take address without endangering number */
   mpi_nbr_lng=mpi_nbr;
   /* Insert tasks number into value */
-  att_val.lp=&mpi_nbr_lng;
+  att_val.ip=&mpi_nbr_lng;
   /* Initialize nco_mpi_task_number attribute edit structure */
   mpi_nbr_aed.att_nm=att_nm_nbr;
   mpi_nbr_aed.var_nm=NULL;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.105 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.106 2010-01-27 09:36:31 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.105 2010-01-05 20:02:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.105 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.106 2010-01-27 09:36:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.106 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -394,7 +394,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
-    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
+    if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Append ";\n" to command-script arguments, then concatenate them */
@@ -481,7 +481,7 @@ main(int argc,char **argv)
   gsl_set_error_handler_off(); 
   
   /* initialize global from environment variable */  
-  if((str_ptr=getenv("GSL_PREC_MODE")) != NULL) ncap_gsl_mode_prec=(int)strtol(str_ptr,(char **)NULL,10);
+  if((str_ptr=getenv("GSL_PREC_MODE"))) ncap_gsl_mode_prec=(int)strtol(str_ptr,(char **)NULL,10);
   
   if(ncap_gsl_mode_prec<0 || ncap_gsl_mode_prec>2) ncap_gsl_mode_prec=0;
 
@@ -663,7 +663,7 @@ main(int argc,char **argv)
   /* Find and add any new dimensions to output */
   for(idx=0;idx<nbr_dmn_ass;idx++){
     dmn_item=dmn_out_vtr.find(dmn_lst[idx].nm);
-    if(dmn_item != NULL) continue;    
+    if(dmn_item) continue;    
     dmn_item=dmn_in_vtr.find(dmn_lst[idx].nm);
     if(dmn_item == NULL) continue;
     dmn_new=nco_dmn_dpl(dmn_item);
@@ -818,7 +818,7 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncap-specific memory */
-    if(fl_spt_usr != NULL_CEWI) fl_spt_usr=(char *)nco_free(fl_spt_usr);
+    if(fl_spt_usr) fl_spt_usr=(char *)nco_free(fl_spt_usr);
     
     /* Free extraction lists */ 
     xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
@@ -826,20 +826,20 @@ main(int argc,char **argv)
     
     /* Free command line algebraic arguments, if any */
     for(idx=0;idx<nbr_spt;idx++) spt_arg[idx]=(char *)nco_free(spt_arg[idx]);
-    if(spt_arg_cat != NULL_CEWI) spt_arg_cat=(char *)nco_free(spt_arg_cat);
+    if(spt_arg_cat) spt_arg_cat=(char *)nco_free(spt_arg_cat);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-    if(cmd_ln != NULL_CEWI) cmd_ln=(char *)nco_free(cmd_ln);
-    if(fl_in != NULL_CEWI) fl_in=(char*)nco_free(fl_in);
-    if(fl_out != NULL_CEWI) fl_out=(char *)nco_free(fl_out);
-    if(fl_out_tmp != NULL_CEWI) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-    if(fl_pth != NULL_CEWI) fl_pth=(char *)nco_free(fl_pth);
-    if(fl_pth_lcl != NULL_CEWI) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in) fl_in=(char*)nco_free(fl_in);
+    if(fl_out) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     /* Free lists of strings */
-    if(fl_lst_in != NULL_CEWI && fl_lst_abb == NULL_CEWI) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-    if(fl_lst_in != NULL_CEWI && fl_lst_abb != NULL_CEWI) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-    if(fl_lst_abb != NULL_CEWI) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(fl_lst_in && fl_lst_abb == NULL_CEWI) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);

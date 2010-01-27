@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.18 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.19 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
@@ -55,7 +55,7 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
   switch(var->type){
   case NC_FLOAT: rec_crd_val_crr=var->val.fp[0]; break; 
   case NC_DOUBLE: rec_crd_val_crr=var->val.dp[0]; break; 
-  case NC_INT: rec_crd_val_crr=var->val.lp[0]; break;
+  case NC_INT: rec_crd_val_crr=var->val.ip[0]; break;
   case NC_SHORT: rec_crd_val_crr=var->val.sp[0]; break;
   case NC_USHORT: rec_crd_val_crr=var->val.usp[0]; break;
   case NC_UINT: rec_crd_val_crr=var->val.uip[0]; break;

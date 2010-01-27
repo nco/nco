@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.175 2010-01-19 21:48:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.176 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -797,7 +797,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
          (void)cast_void_nctype((nc_type)NC_INT,&var_out->val);
 
           // only interested in the first value.
-         lcl_ind[jdx]=var_out->val.lp[0];
+         lcl_ind[jdx]=var_out->val.ip[0];
 
          var_out=nco_var_free(var_out);
         }
@@ -2750,7 +2750,7 @@ var_sct *var_nbr;
 
               var_nbr=nco_var_cnf_typ(NC_INT,var_nbr); 
               (void)cast_void_nctype(NC_INT,&var_nbr->val);
-              srt=var_nbr->val.lp[0];
+              srt=var_nbr->val.ip[0];
               (void)cast_nctype_void(NC_INT,&var_nbr->val);
 
 
@@ -2857,7 +2857,7 @@ var_sct *var_nbr;
                // calculate single hyperslab limit
                var_nbr=nco_var_cnf_typ(NC_INT,var_nbr); 
                (void)cast_void_nctype(NC_INT,&var_nbr->val);
-               srt=var_nbr->val.lp[0];
+               srt=var_nbr->val.ip[0];
                (void)cast_nctype_void(NC_INT,&var_nbr->val);
  
                // fortran index convention   

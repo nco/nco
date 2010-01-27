@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.130 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.131 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -317,7 +317,7 @@ prs_cls *prs_arg) /*Maybe used at some point */
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_INT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)var->val.lp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)var->val.ip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_CHAR:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++){
@@ -1946,7 +1946,7 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
     lst_nm=str_vtr[idx].c_str();
     // Search dmn_out_vtr for dimension
     dmn_item=prs_arg->dmn_out_vtr.find(lst_nm);
-    if(dmn_item != NULL){ 
+    if(dmn_item){ 
       dmn[idx]=dmn_item;
       continue;
     }
@@ -2217,7 +2217,7 @@ ncap_sclr_var_mk(
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,(nc_type)NC_INT,true);
   (void)cast_void_nctype((nc_type)NC_INT,&var->val);
-  *var->val.lp=val_int;
+  *var->val.ip=val_int;
 
   (void)cast_nctype_void((nc_type)NC_INT,&var->val);
   return var;
@@ -2860,7 +2860,7 @@ ncap_evl_srp(
     return true;
   
   for(idx=0 ; idx < srp_vtr.size() ; idx++)
-    if( *srp_vtr[idx] != NULL_CEWI) 
+    if( *srp_vtr[idx]) 
       return false;
   
   return true;

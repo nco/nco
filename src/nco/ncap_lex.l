@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.71 2010-01-05 20:02:17 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.72 2010-01-27 09:36:31 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -331,7 +331,7 @@ XPN [eE][+-]?[0-9]+
     sprintf(ncap_err_sng,"Bad int64 constant: %s",(char *)yytext);
     yyerror(prs_arg,ncap_err_sng);
   } /* endif err */
-  lval_ptr->scv.val.l=int64_tkn;
+  lval_ptr->scv.val.i=int64_tkn;
   lval_ptr->scv.type=NC_INT64;
   return SCV;
 } /* end int64 */
@@ -344,7 +344,7 @@ XPN [eE][+-]?[0-9]+
     sprintf(ncap_err_sng,"Bad uint64 constant: %s",(char *)yytext);
     yyerror(prs_arg,ncap_err_sng);
   } /* endif err */
-  lval_ptr->scv.val.l=uint64_tkn;
+  lval_ptr->scv.val.i=uint64_tkn;
   lval_ptr->scv.type=NC_UINT64;
   return SCV;
 } /* end uint64 */
@@ -360,7 +360,7 @@ XPN [eE][+-]?[0-9]+
     sprintf(ncap_err_sng,"Bad int constant: %s",(char *)yytext);
     yyerror(prs_arg,ncap_err_sng);
   } /* endif err */
-  lval_ptr->scv.val.l=int_tkn;
+  lval_ptr->scv.val.i=int_tkn;
   lval_ptr->scv.type=NC_INT;
   return SCV;
 } /* end int */

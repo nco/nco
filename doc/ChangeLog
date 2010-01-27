@@ -1,3 +1,24 @@
+2010-01-26  Charlie Zender  <zender@uci.edu>
+
+	* As of 20091030 NCO_TYP_INT defaults to int rather than long
+	Following changes bring nomenclature into alignment with this
+
+	* Change NC_INT variable names from *_lng to *_ntg
+
+	* Change ptr_typ union for NC_INT from lp to ip
+
+	* Change val_typ union for NC_INT from l to i
+
+	* Remove nco_gmm.[ch] to avoid Burkardt copyright
+	Gamma functions now supplied by GSL.
+
+	* Replace " != NULL" and " != NULL_CEWI" with ""
+	This is just code cleanup which is always valid
+	When pointer values are evaluated as boolean conditions, it is
+	identical to comparing the pointer to NULL.
+	Hence code now has, e.g., if(cmd_ln) ... instead of if(cmd_ln != NULL)
+	Could/should also replace "foo == NULL" with !foo?
+	
 2010-01-19  Charlie Zender  <zender@uci.edu>
 
 	* Workaround ncoGrammer.g dependence on NC_MAX_INT which DNE 
@@ -6,6 +27,10 @@
 2010-01-19  Henry Butowsky  <henryb@hush.com> 
 	
 	* Add chapter on "GSL Least-Squares Fitting" to ncap2 manual
+
+2010-01-18  Charlie Zender  <zender@uci.edu>
+
+	* Fix out of range index in fmc_gsl_cls.c
 
 2010-01-14  Charlie Zender  <zender@uci.edu>
 

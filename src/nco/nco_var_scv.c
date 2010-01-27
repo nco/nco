@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.33 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.34 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -55,13 +55,13 @@ var_scv_add /* [fnc] Add scalar to variable */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_int scv_lng=scv->val.l;
+    const nco_int scv_ntg=scv->val.i;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]+=scv_lng;
+      for(idx=0;idx<sz;idx++) op1.ip[idx]+=scv_ntg;
     }else{
-      const nco_int mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      const nco_int mss_val_ntg=*mss_val.ip; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]+=scv_lng; 
+	if(op1.ip[idx] != mss_val_ntg) op1.ip[idx]+=scv_ntg; 
       } /* end for */
     } /* end else */
     break;
@@ -185,13 +185,13 @@ var_scv_sub /* [fnc] Subtract scalar from variable */
     break;
   }
   case NC_INT:{
-    const nco_int scv_lng=scv->val.l;
+    const nco_int scv_ntg=scv->val.i;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]-=scv_lng;
+      for(idx=0;idx<sz;idx++) op1.ip[idx]-=scv_ntg;
     }else{
-      const nco_int mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      const nco_int mss_val_ntg=*mss_val.ip; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]-=scv_lng; 
+	if(op1.ip[idx] != mss_val_ntg) op1.ip[idx]-=scv_ntg; 
       } /* end for */
     } /* end else */
     break;
@@ -315,13 +315,13 @@ var_scv_mlt /* [fnc] Multiply variable by scalar */
     break;
   }
   case NC_INT:{
-    const nco_int scv_lng=scv->val.l;
+    const nco_int scv_ntg=scv->val.i;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]*=scv_lng;
+      for(idx=0;idx<sz;idx++) op1.ip[idx]*=scv_ntg;
     }else{
-      const nco_int mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      const nco_int mss_val_ntg=*mss_val.ip; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]*=scv_lng; 
+	if(op1.ip[idx] != mss_val_ntg) op1.ip[idx]*=scv_ntg; 
       } /* end for */
     } /* end else */
     break;
@@ -445,13 +445,13 @@ var_scv_dvd /* [fnc] Divide variable by scalar */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_int scv_lng=scv->val.l;
+    const nco_int scv_ntg=scv->val.i;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]/=scv_lng;
+      for(idx=0;idx<sz;idx++) op1.ip[idx]/=scv_ntg;
     }else{
-      const nco_int mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      const nco_int mss_val_ntg=*mss_val.ip; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]/=scv_lng; 
+	if(op1.ip[idx] != mss_val_ntg) op1.ip[idx]/=scv_ntg; 
       } /* end for */
     } /* end else */
     break;
@@ -575,13 +575,13 @@ scv_var_dvd /* [fnc] Divide scalar by variable */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_int scv_lng=scv->val.l;
+    const nco_int scv_ntg=scv->val.i;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op2.lp[idx]=scv_lng/op2.lp[idx];
+      for(idx=0;idx<sz;idx++) op2.ip[idx]=scv_ntg/op2.ip[idx];
     }else{
-      const nco_int mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      const nco_int mss_val_ntg=*mss_val.ip; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op2.lp[idx] != mss_val_lng) op2.lp[idx]=scv_lng/op2.lp[idx];
+	if(op2.ip[idx] != mss_val_ntg) op2.ip[idx]=scv_ntg/op2.ip[idx];
       } /* end for */
     } /* end else */
     break;
@@ -719,13 +719,13 @@ var_scv_mod /* [fnc] Modulo variable by scalar */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_int scv_lng=scv->val.l;
+    const nco_int scv_ntg=scv->val.i;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]%=scv_lng;
+      for(idx=0;idx<sz;idx++) op1.ip[idx]%=scv_ntg;
     }else{
-      const nco_int mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      const nco_int mss_val_ntg=*mss_val.ip; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]%=scv_lng; 
+	if(op1.ip[idx] != mss_val_ntg) op1.ip[idx]%=scv_ntg; 
       } /* end for */
     } /* end else */
     break;
@@ -860,13 +860,13 @@ scv_var_mod /* [fnc] Modulo scalar by variable */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_int scv_lng=scv->val.l;
+    const nco_int scv_ntg=scv->val.i;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op2.lp[idx]=scv_lng%op2.lp[idx];
+      for(idx=0;idx<sz;idx++) op2.ip[idx]=scv_ntg%op2.ip[idx];
     }else{
-      const nco_int mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      const nco_int mss_val_ntg=*mss_val.ip; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op2.lp[idx] != mss_val_lng) op2.lp[idx]=scv_lng%op2.lp[idx];
+	if(op2.ip[idx] != mss_val_ntg) op2.ip[idx]=scv_ntg%op2.ip[idx];
       } /* end for */
     } /* end else */
     break;

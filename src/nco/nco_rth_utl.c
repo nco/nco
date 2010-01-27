@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.36 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.37 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -185,7 +185,7 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
     for(idx=0;idx<sz;idx++) op1.dp[idx]=op2;
     break;
   case NC_INT:
-    for(idx=0;idx<sz;idx++) op1.lp[idx]=(nco_int)op2; /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.ip[idx]=(nco_int)op2; /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_SHORT:
     for(idx=0;idx<sz;idx++) op1.sp[idx]=(nco_short)op2; /* Coerce to avoid C++ compiler assignment warning */

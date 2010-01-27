@@ -44,7 +44,7 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
 
     for(idx=0 ; idx<sz; idx++){
       // nb reverse the map
-      var_mp->val.lp[ mp[idx]._imp] =idx;
+      var_mp->val.ip[ mp[idx]._imp] =idx;
       tp[idx]=mp[idx]._V;
     }
     (void)cast_nctype_void(NC_INT,&var_mp->val); 

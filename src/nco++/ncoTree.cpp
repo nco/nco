@@ -3710,7 +3710,7 @@ var_sct * ncoTree::var_lmt_one(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			var_nbr=nco_var_cnf_typ(NC_INT,var_nbr); 
 			(void)cast_void_nctype(NC_INT,&var_nbr->val);
-			srt=var_nbr->val.lp[0];
+			srt=var_nbr->val.ip[0];
 			(void)cast_nctype_void(NC_INT,&var_nbr->val);
 			
 			
@@ -3859,7 +3859,7 @@ var_sct * ncoTree::var_lmt_one_lhs(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 			// calculate single hyperslab limit
 			var_nbr=nco_var_cnf_typ(NC_INT,var_nbr); 
 			(void)cast_void_nctype(NC_INT,&var_nbr->val);
-			srt=var_nbr->val.lp[0];
+			srt=var_nbr->val.ip[0];
 			(void)cast_nctype_void(NC_INT,&var_nbr->val);
 			
 			// fortran index convention   

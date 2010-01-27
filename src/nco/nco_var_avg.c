@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.59 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.60 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -432,7 +432,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   nco_ubyte mss_val_ubyte;
   nco_string mss_val_string;
   nco_byte mss_val_byte;
-  nco_int mss_val_lng=nco_int_CEWI;
+  nco_int mss_val_ntg=nco_int_CEWI;
   nco_short mss_val_short=nco_short_CEWI;
   nco_ushort mss_val_ushort=nco_ushort_CEWI;
   nco_uint mss_val_uint=nco_uint_CEWI;
@@ -449,7 +449,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
     case NC_SHORT: mss_val_short=*mss_val.sp; break;
-    case NC_INT: mss_val_lng=*mss_val.lp; break;
+    case NC_INT: mss_val_ntg=*mss_val.ip; break;
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
     case NC_CHAR: mss_val_char=*mss_val.cp; break;
     case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
@@ -575,7 +575,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1.lp[blk_off+idx_blk];
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ip[idx_op2]+=op1.ip[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
@@ -583,12 +583,12 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.lp[idx_op1] != mss_val_lng){
-	    op2.lp[idx_op2]+=op1.lp[idx_op1];
+	  if(op1.ip[idx_op1] != mss_val_ntg){
+	    op2.ip[idx_op2]+=op1.ip[idx_op1];
 	    tally[idx_op2]++;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.lp[idx_op2]=mss_val_lng;
+	if(tally[idx_op2] == 0L) op2.ip[idx_op2]=mss_val_ntg;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -596,22 +596,22 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
-      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
+      (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
       
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ip[idx_op2]+=op1_2D[idx_op2][idx_blk];
 	  tally[idx_op2]=sz_blk;
 	} /* end loop over idx_op2 */
       }else{
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
-	      op2.lp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
+	      op2.ip[idx_op2]+=op1_2D[idx_op2][idx_blk];
 	      tally[idx_op2]++;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.lp[idx_op2]=mss_val_lng;
+	  if(tally[idx_op2] == 0L) op2.ip[idx_op2]=mss_val_ntg;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -903,7 +903,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
 
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  nco_int mss_val_lng=nco_int_CEWI;
+  nco_int mss_val_ntg=nco_int_CEWI;
   nco_short mss_val_short=nco_short_CEWI;
   nco_ushort mss_val_ushort=nco_ushort_CEWI;
   nco_uint mss_val_uint=nco_uint_CEWI;
@@ -926,7 +926,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
     case NC_SHORT: mss_val_short=*mss_val.sp; break;
-    case NC_INT: mss_val_lng=*mss_val.lp; break;
+    case NC_INT: mss_val_ntg=*mss_val.ip; break;
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
     case NC_CHAR: mss_val_char=*mss_val.cp; break;
     case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
@@ -1056,9 +1056,9 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
-	op2.lp[idx_op2]=op1.lp[blk_off];
+	op2.ip[idx_op2]=op1.ip[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
+	  if(op2.ip[idx_op2] > op1.ip[blk_off+idx_blk]) op2.ip[idx_op2]=op1.ip[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -1066,12 +1066,12 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.lp[idx_op1] != mss_val_lng){
-	    if(!flg_mss || op2.lp[idx_op2] > op1.lp[idx_op1]) op2.lp[idx_op2]=op1.lp[idx_op1];
+	  if(op1.ip[idx_op1] != mss_val_ntg){
+	    if(!flg_mss || op2.ip[idx_op2] > op1.ip[idx_op1]) op2.ip[idx_op2]=op1.ip[idx_op1];
 	    flg_mss= True;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1079,24 +1079,24 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
-      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
+      (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
       
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
+	  op2.ip[idx_op2]=op1_2D[idx_op2][0];
 	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	    if(op2.ip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
-	      if(!flg_mss || op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
+	      if(!flg_mss || op2.ip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	  if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -1408,7 +1408,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
   
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  nco_int mss_val_lng=nco_int_CEWI;
+  nco_int mss_val_ntg=nco_int_CEWI;
   nco_short mss_val_short=nco_short_CEWI;
   nco_ushort mss_val_ushort=nco_ushort_CEWI;
   nco_uint mss_val_uint=nco_uint_CEWI;
@@ -1431,7 +1431,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
     case NC_SHORT: mss_val_short=*mss_val.sp; break;
-    case NC_INT: mss_val_lng=*mss_val.lp; break;
+    case NC_INT: mss_val_ntg=*mss_val.ip; break;
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
     case NC_CHAR: mss_val_char=*mss_val.cp; break;
     case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
@@ -1561,9 +1561,9 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
-	op2.lp[idx_op2]=op1.lp[blk_off];
+	op2.ip[idx_op2]=op1.ip[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
+	  if(op2.ip[idx_op2] < op1.ip[blk_off+idx_blk]) op2.ip[idx_op2]=op1.ip[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -1571,12 +1571,12 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.lp[idx_op1] != mss_val_lng){
-	    if(!flg_mss || op2.lp[idx_op2] < op1.lp[idx_op1]) op2.lp[idx_op2]=op1.lp[idx_op1];
+	  if(op1.ip[idx_op1] != mss_val_ntg){
+	    if(!flg_mss || op2.ip[idx_op2] < op1.ip[idx_op1]) op2.ip[idx_op2]=op1.ip[idx_op1];
 	    flg_mss= True;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1584,24 +1584,24 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
-      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
+      (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
       
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
+	  op2.ip[idx_op2]=op1_2D[idx_op2][0];
 	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	    if(op2.ip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
-	      if(!flg_mss || op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
+	      if(!flg_mss || op2.ip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	  if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */

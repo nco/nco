@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.91 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.92 2010-01-27 09:36:31 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -373,7 +373,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       switch(dim.type){
       case NC_FLOAT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.fp[idx];} break; 
       case NC_DOUBLE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.dp[idx];} break; 
-      case NC_INT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.lp[idx];} break;
+      case NC_INT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.ip[idx];} break;
       case NC_SHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.sp[idx];} break;
       case NC_USHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.usp[idx];} break;
       case NC_UINT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.uip[idx];} break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.272 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.273 2010-01-27 09:36:31 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.272 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.272 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.273 2010-01-27 09:36:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.273 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -840,7 +840,7 @@ main(int argc,char **argv)
 	  switch(wgt_avg->type){
 	  case NC_FLOAT: mss_val_dbl=wgt_avg->mss_val.fp[0]; break; 
 	  case NC_DOUBLE: mss_val_dbl=wgt_avg->mss_val.dp[0]; break; 
-	  case NC_INT: mss_val_dbl=wgt_avg->mss_val.lp[0]; break;
+	  case NC_INT: mss_val_dbl=wgt_avg->mss_val.ip[0]; break;
 	  case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
 	  case NC_USHORT: mss_val_dbl=wgt_avg->mss_val.usp[0]; break;
 	  case NC_UINT: mss_val_dbl=wgt_avg->mss_val.uip[0]; break;
@@ -892,7 +892,7 @@ main(int argc,char **argv)
 	} /* endif */
 	/* Divide numerator by denominator */
 	/* Diagnose common PEBCAK before it causes core dump */
-	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.lp[0] == 0){
+	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.ip[0] == 0){
 	  (void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */
 	/* Rather complex conditional statement is shorter than switch() */
