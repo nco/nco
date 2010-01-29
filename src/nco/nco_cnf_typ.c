@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.53 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.54 2010-01-29 14:32:48 hmb Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -939,33 +939,33 @@ nco_typ_sgn /* [fnc] Identify signed types */
   return flg_sgn;
 } /* end nco_typ_sgn */
 
-nc_type /* O [enm] Highest precision of input variables */
-ncap_var_retype /* [fnc] Promote variable to higher common precision */
-(var_sct *var_1, /* I/O [sct] Variable */
- var_sct *var_2) /* I/O [sct] Variable */
+
+nc_type /* O [enm] Return Highest type */
+ncap_typ_hgh /* [fnc] Return Highest type */
+(nc_type typ_1, /* I [enm] type */
+ nc_type typ_2) /* I [enm] type */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Perform intelligent type conversion with the netCDF3/4 types 
      The logic is as follows
-     1) If one type is double then other is converted to double .. end
-     2) if one type float then other converted to float         .. end
-     3) if both are signed type then the "lower" type is converted 
-        to the higher type
-     4) if both are unsigned type then the "lower" type is converted 
-        to the higher type
+     1) If one type is double highest type double .. end
+     2) if one type float then highest type float .. end
+     3) if both are signed type then highest type returned
+        
+     4) if both are unsigned type then highest type returned
+        
      5) First var signed second var unsigned
         if the signed type can represent all values af the unsigned type 
-        Then the second var is converted to the first vars type .. end
+        Then the signed type returned
 
-        If the types are the same then the signed var is converted to the
-        unsigned type 
+        If the types are the same then unsigned type returned
 
-        If the signed type is less than the unsigned type then the signed type is 
-        converted to unsigned type
+        If the signed type is less than the unsigned type then the unsigned 
+         type is returned    
 
         Examples:
 
-        NC_CHAR,NC_UBYTE -> result NC_UBYTE
+        NC_CHAR,NC_UBYTE -> result NC_CHAR
         NC_INT, NC_USHORT -> result NC_INT
         NC_SHORT, NC_UINT -> result NC_UINT  
         NC_INT64, NC_UINT -> result NC_INT64
@@ -973,82 +973,77 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
  
   nco_bool v1s;
   nco_bool v2s;
-  nc_type typ_1;
-  nc_type typ_2;
-
-  typ_1=var_1->type;
-  typ_2=var_2->type;
  
   /* already identical */
   if(typ_1 == typ_2)
     return typ_1;
 
   /* deal with NC_DOUBLE */
-  if(typ_1 == NC_DOUBLE || typ_2 == NC_DOUBLE ){
-    var_1=nco_var_cnf_typ(NC_DOUBLE,var_1);
-    var_2=nco_var_cnf_typ(NC_DOUBLE,var_2);
+  if(typ_1 == NC_DOUBLE || typ_2 == NC_DOUBLE )
     return NC_DOUBLE;
-  }
+  
 
   /* deal with NC_FLOAT */
-  if(typ_1 == NC_FLOAT || typ_2 ==NC_FLOAT ){
-    var_1=nco_var_cnf_typ(NC_FLOAT,var_1);
-    var_2=nco_var_cnf_typ(NC_FLOAT,var_2);
-    return NC_FLOAT;
-  }
+  if(typ_1 == NC_FLOAT || typ_2 ==NC_FLOAT )
+      return NC_FLOAT;
+  
 
   v1s=nco_typ_sgn(typ_1);
   v2s=nco_typ_sgn(typ_2);
 
   /* Both signed or both unsigned */
-  /* convert to the highest type */
-  if( v1s==v2s  ){
-    if(typ_1 > typ_2)
-      var_2=nco_var_cnf_typ(typ_1,var_2);
-     else  
-      var_1=nco_var_cnf_typ(typ_2,var_1); 
+  if( v1s==v2s  )
+    return ( typ_1 > typ_2 ? typ_1 : typ_2 );  
 
-    return typ_1;
-  }
-  /* From here on one is unsigned the other signed */
+
+  /* From here on one is signed the other unsigned */
   
   /* Swap vars about so var_1 is signed, var_2 unsigned */
   if(v1s == False && v2s == True){
-    var_sct *var_tmp;
-    var_tmp=var_1;var_1=var_2;var_2=var_tmp;
-    
-    /* refresh types */
-    typ_1=var_1->type;
-    typ_2=var_2->type;  
+    nc_type typ_tmp;
+    typ_tmp=typ_1;typ_1=typ_2;typ_2=typ_tmp; 
   }
 
   switch(typ_1){
-  case NC_BYTE: 
-  case NC_CHAR:
-    var_1=nco_var_cnf_typ(typ_2,var_1); 
-    break;
-  case NC_SHORT: 
-    if( typ_2 < NC_USHORT )  
-      var_2=nco_var_cnf_typ(typ_1,var_2);
-    else   
-      var_1=nco_var_cnf_typ(typ_2,var_1); 
-    break;
-  case NC_INT:
-    if( typ_2 < NC_UINT )  
-      var_2=nco_var_cnf_typ(typ_1,var_2);
-    else   
-      var_1=nco_var_cnf_typ(typ_2,var_1); 
-    break;
-  case NC_INT64:
-    if( typ_2 < NC_UINT64 )  
-      var_2=nco_var_cnf_typ(typ_1,var_2);
-    else   
-      var_1=nco_var_cnf_typ(typ_2,var_1); 
-    break; 
+    case NC_NAT:
+      return typ_2; 
+      break;
+    case NC_BYTE: 
+      return typ_2; 
+      break;
+    case NC_CHAR:
+      return typ_2; 
+      break;
+    case NC_SHORT: 
+      return (typ_2<NC_USHORT ? typ_1 : typ_2);
+      break;
+    case NC_INT:
+      return (typ_2<NC_UINT ? typ_1 : typ_2); 
+      break;
+    case NC_INT64:
+       return (typ_2<NC_UINT64 ? typ_1 : typ_2); 
+      break; 
   default: nco_dfl_case_nc_type_err(); break;
     
   } /* end switch */
   return typ_1;
+} /* end ncap_typ_hgh */
+
+
+nc_type /* O [enm] Highest precision of input variables */
+ncap_var_retype /* [fnc] Promote variable to higher common precision */
+(var_sct *var_1, /* I/O [sct] Variable */
+ var_sct *var_2) /* I/O [sct] Variable */
+{
+  /* Threads: Routine is thread safe and makes no unsafe routines *
+  /* Purpose: Perform intelligent type conversion with the netCDF3/4 types */
+
+  nc_type type;
+
+  type=ncap_typ_hgh(var_1->type,var_2->type);
+  var_1=nco_var_cnf_typ(type,var_1);
+  var_2=nco_var_cnf_typ(type,var_2);
+
 } /* end ncap_var_retype */
 
 nc_type /* O [enm] Highest precision of arguments */
