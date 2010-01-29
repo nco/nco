@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.30 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.31 2010-01-29 14:31:16 hmb Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -69,6 +69,13 @@ int /* O [enm] Dummy return */
 nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
 (const nc_type typ_new, /* I [enm] Type to convert scv_old to */
  scv_sct * const scv_old); /* I/O [sct] Scalar value to convert */
+
+
+nc_type /* O [enm] Return Highest type */
+ncap_typ_hgh /* [fnc] Promote variable to higher common precision */
+(nc_type typ_1,  /* I [enm] type */
+ nc_type typ_2); /* I [enm] type */
+
 
 nc_type /* O [enm] Highest precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */
