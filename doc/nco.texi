@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.567 2010-01-19 15:18:55 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.568 2010-02-04 16:10:30 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5750,6 +5750,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * GSL special functions::
 * GSL interpolation::
 * GSL least-squares fitting::       
+* GSL statistics::
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity ::  
@@ -7788,7 +7789,7 @@ gsl_spline_integ() @*
 @html
 <a name="ncap_lsqf"></a> <!-- http://nco.sf.net/nco.html#ncap_lsqf -->
 @end html
-@node GSL least-squares fitting, Examples ncap2, GSL interpolation, ncap2 netCDF Arithmetic Processor
+@node GSL least-squares fitting, GSL statistics, GSL interpolation, ncap2 netCDF Arithmetic Processor
 @subsection  GSL least-squares fitting       
 @noindent Least Squares fitting is a method of calculating a straight line through a set of experimental data points in the XY plane. The data maybe weighted or unweighted. For more information please refer to the @acronym{GSL} manual.
 
@@ -7862,10 +7863,78 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 @end example
 @* @*
 
+
+
+@html
+<a name="ncap_stat"></a> <!-- http://nco.sf.net/nco.html#ncap_stat -->
+@end html
+
+@node GSL statistics, Examples ncap2, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
+@subsection @acronym{GSL} statistics
+
+@noindent Wrappers for most of the GSL Statistical functions have been implemented. The GSL function names include a type specifier (except for type double functions). To obtain the equivalent NCO name simply remove the type specifier; then depending on the data type the appropriate GSL function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in GSL for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell @command{ncap2 -f|grep _stats}   
+
+@noindent GSL Functions
+@example
+short gsl_stats_max (const short data[], const size_t stride, const size_t n);
+double gsl_stats_int_mean (const int data[], const size_t stride, const size_t n);
+double gsl_stats_short_sd_with_fixed_mean (const short data[], const size_t stride, const size_t n, const double mean);
+double gsl_stats_wmean (const double w[], const size_t wstride, const double data[], const size_t stride, const size_t n);
+double gsl_stats_quantile_from_sorted_data (const double sorted_data[], const size_t stride, const size_t n, const double f) ;
+@end example
+
+
+@noindent Equivalent ncap2 wrapper functions
+@example
+short gsl_stats_max (var_data, data_stride, n);
+double gsl_stats_mean (var_data, data_stride, n);
+double gsl_stats_sd_with_fixed_mean (var_data, data_stride, n, var_mean);
+double gsl_stats_wmean (var_weight, weight_stride, var_data, data_stride, n, var_mean);
+double gsl_stats_quantile_from_sorted_data (var_sorted_data, data_stride, n, var_f) ;
+@end example
+
+@noindent GSL has no notion of missing values or dimensionality beyond one. If your data has missing values which you want ignored in the calculations then use the @command{ncap2} built in aggregate functions( @ref{Methods and functions} ). The GSL functions operate on a vector of values created from the var_data/stride/n arguments. The ncap wrappers check that there is no bounding error with regard to the size of the data and the final value in the vector. 
+
+Some examples
+
+@example
+a1[time]=@{1,2,3,4,5,6,7,8,9,10 @};
+
+a1_avg=gsl_stats_mean(a1,1,10);
+print(a1_avg); // 5.5
+
+a1_var=gsl_stats_variance(a1,4,3);
+print(a1_var); // 16.0
+
+// bounding error, vector attempts to access element a1(10)
+a1_sd=gsl_stats_sd(a1,5,3); 
+
+@end example
+
+@noindent For functions that take the three arguments @code{func_nm(var_data, data_stride, n)} you can omit the second or third arguments. The default value for stride is one. The default value for n is @code{ 1+ (data.size()-1)/stride}          
+
+@example
+// The following are equvalent
+n2=gsl_stats_max(a1,1,10)
+n2=gsl_stats_max(a1,1);
+n2=gsl_stats_max(a1);
+
+// the following are equivalent
+n3=gsl_stats_median_from_sorted_data(a1,2,5);
+n3=gsl_stats_median_from_sorted_data(a1,2);
+
+// the following are NOT equivalent
+n4=gsl_stats_kurtosis(a1,3,2);
+n4=gsl_stats_kurtosis(a1,3); //default n=4
+@end example 
+
+
+
+
 @html
 <a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
 @end html
-@node Examples ncap2, Intrinsic mathematical methods, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
+@node Examples ncap2, Intrinsic mathematical methods, GSL statistics, ncap2 netCDF Arithmetic Processor
 @subsection Examples ncap2
 
 See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
