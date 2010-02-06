@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.148 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.149 2010-02-06 07:19:25 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.148 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.149 2010-02-06 07:19:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -151,7 +151,6 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int jdx;
-  int kdx;
   int dmn_idx;
   int dmn_jdx;
   int in_id_1;  
@@ -487,21 +486,18 @@ main(int argc,char **argv)
   dmn_lst_1=nco_nm_id_lst_free(dmn_lst_1,nbr_dmn_xtr_1);
   dmn_lst_2=nco_nm_id_lst_free(dmn_lst_2,nbr_dmn_xtr_2);
 
-
   /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
   (void)nco_dmn_sct_cmp(dim_1,nbr_dmn_xtr_1,dim_2,nbr_dmn_xtr_2,fl_in_1,fl_in_2);    
 	  
-
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
-  for(idx=0  ; idx<nbr_dmn_xtr_1 ; idx++){ 
+  for(idx=0;idx<nbr_dmn_xtr_1;idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim_1[idx]);
     (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]);
   }
 
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl_1 > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr_1,lmt_all_lst,nbr_dmn_fl_1); 
-
 
   if(dbg_lvl >= nco_dbg_sbr){
     for(idx=0;idx<nbr_xtr_1;idx++) (void)fprintf(stderr,"xtr_lst_1[%d].nm = %s, .id= %d\n",idx,xtr_lst_1[idx].nm,xtr_lst_1[idx].id);
@@ -517,9 +513,7 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var_1[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
-  for(idx=0;idx<nbr_xtr_2;idx++){
-    var_2[idx]=nco_var_fll(in_id_2,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim_2,nbr_dmn_xtr_2);
-	 } /* end loop over idx */
+  for(idx=0;idx<nbr_xtr_2;idx++) var_2[idx]=nco_var_fll(in_id_2,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim_2,nbr_dmn_xtr_2);
 
   /* Extraction lists no longer needed */
   xtr_lst_1=nco_nm_id_lst_free(xtr_lst_1,nbr_xtr_1);
@@ -531,29 +525,26 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
   } /* endif */
 
-
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,nbr_xtr_1);
 
-
-  /* Change dims in dim_2 to dim_out */
-  for( idx=0 ; idx<nbr_dmn_xtr_2 ; idx++){
-    for(jdx=0 ; jdx<nbr_dmn_xtr_1; jdx++)  
-      if(!strcmp( dim_2[idx]->nm, dmn_out[jdx]->nm)){  
-	  nco_dmn_free(dim_2[idx]);  
-          dim_2[idx]=nco_dmn_dpl(dmn_out[jdx]);
-          break;
-      }
-      /* dim not found die gracefully */
-      if(jdx==nbr_dmn_xtr_1){
-	 (void)fprintf(fp_stdout,"%s: ERROR dim \"%s\" in second file %s - not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
-	   nco_exit(EXIT_FAILURE);
-      }  
-  } 
+  /* Change dimensions in dim_2 to dim_out */
+  for(idx=0;idx<nbr_dmn_xtr_2;idx++){
+    for(jdx=0;jdx<nbr_dmn_xtr_1;jdx++)  
+      if(!strcmp(dim_2[idx]->nm,dmn_out[jdx]->nm)){  
+	nco_dmn_free(dim_2[idx]);  
+	dim_2[idx]=nco_dmn_dpl(dmn_out[jdx]);
+	break;
+      } /* endif */
+    /* dimension not found so die gracefully */
+    if(jdx==nbr_dmn_xtr_1){
+      (void)fprintf(fp_stdout,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
+      nco_exit(EXIT_FAILURE);
+    } /* endif dimension not found */
+  } /* end loop over dimensions */
 
   /* Refresh var_2 with dim_out data */
   (void)nco_var_dmn_refresh(var_2,nbr_xtr_2);
-
     
   /* Divide variable lists into lists of fixed variables and variables to be processed
      Create lists from file_1 last so those values remain in *_out arrays */
@@ -565,7 +556,7 @@ main(int argc,char **argv)
 
   /* Die gracefully on unsupported features... */
   if(nbr_var_fix_1 < nbr_var_fix_2){
-    (void)fprintf(fp_stdout,"%s: ERROR First file has fewer fixed variables than second file (%d < %d). This feature is NCO TODO 581.\n",prg_nm,nbr_var_fix_1,nbr_var_fix_2);
+    (void)fprintf(fp_stdout,"%s: ERROR First file has fewer fixed variables than second file (%d < %d). This feature is TODO nco581.\n",prg_nm,nbr_var_fix_1,nbr_var_fix_2);
       nco_exit(EXIT_FAILURE);
   } /* endif */
 

@@ -2484,7 +2484,7 @@ void ncoLexer::mNSTRING(bool _createToken) {
 	_saveIndex = text.length();
 	match('\"' /* charlit */ );
 	text.erase(_saveIndex);
-#line 606 "ncoGrammer.g"
+#line 605 "ncoGrammer.g"
 	_ttype = NSTRING;
 #line 2490 "ncoLexer.cpp"
 	{
@@ -2492,7 +2492,7 @@ void ncoLexer::mNSTRING(bool _createToken) {
 		_saveIndex = text.length();
 		match('s' /* charlit */ );
 		text.erase(_saveIndex);
-#line 607 "ncoGrammer.g"
+#line 606 "ncoGrammer.g"
 		_ttype = N4STRING;
 #line 2498 "ncoLexer.cpp"
 	}

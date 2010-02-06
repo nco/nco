@@ -1,7 +1,13 @@
-2010-1-29  Henry Butowsky  <henryb@hush.com> 
-	* tidy up of value_list action in tree parser added 
-	value_list_string for NC_STRING
-	* added ncap_typ_hgh() to libnco
+2010-02-05  Charlie Zender  <zender@uci.edu>
+
+	* Cleanup ncbo.c
+
+2010-01-29  Henry Butowsky  <henryb@hush.com> 
+
+	* Tidy-up value_list action in tree parser.
+	  Added value_list_string for NC_STRING
+
+	* Added ncap_typ_hgh() to libnco
 
 2010-01-26  Charlie Zender  <zender@uci.edu>
 

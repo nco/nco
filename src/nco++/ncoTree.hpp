@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.97 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.98 2010-02-06 07:19:25 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -445,6 +445,9 @@ public:
 	);
 	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * value_list_string(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
+		 std::vector<var_sct*> &exp_vtr
+	);
 	public: bool  where_assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 		var_sct *var_msk
 	);
