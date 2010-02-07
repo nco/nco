@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.50 2010-01-27 15:51:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.51 2010-02-07 15:51:16 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -3228,21 +3228,31 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   for(idx=0 ;idx<in_nbr_args; idx++)
     var[idx]=walker.out(args_vtr[idx]);
 
-  
+
+
+
   // Deal with initial scan
   if(prs_arg->ntl_scn){
+
+
+    if(var[0]->undefined)
+      var_ret=ncap_var_udf("~rhs_undefined");
+
+    else if(fdx ==PS_MIN_IDX ||fdx==PS_MAX_IDX) 
+      var_ret=ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat3"),NC_INT,false);   
+
+    else if(fdx==PS_MIN || fdx==PS_MAX)
+      var_ret=ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat3"),(nc_type)var[0]->type,false);   
+
 
     for(idx=0 ;idx<in_nbr_args; idx++)
       var[idx]=nco_var_free(var[idx]);
 
 
-    if(fdx ==PS_MIN_IDX ||fdx==PS_MAX_IDX) 
-      var_ret=ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat3"),NC_INT,false);   
-
-    if(fdx==PS_MIN || fdx==PS_MAX) 
-      var_ret=ncap_sclr_var_mk(static_cast< std::string>("~hnd_fnc_stat3"),(nc_type)var[0]->type,false);   
+    return var_ret; 
 
   }
+
 
 
   if(var[0]->type==(nc_type)NC_INT64 && sizeof(long)!=sizeof(long long) )
