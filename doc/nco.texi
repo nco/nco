@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.568 2010-02-04 16:10:30 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.569 2010-02-08 16:56:57 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7872,15 +7872,15 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 @node GSL statistics, Examples ncap2, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} statistics
 
-@noindent Wrappers for most of the GSL Statistical functions have been implemented. The GSL function names include a type specifier (except for type double functions). To obtain the equivalent NCO name simply remove the type specifier; then depending on the data type the appropriate GSL function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in GSL for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell @command{ncap2 -f|grep _stats}   
+@noindent Wrappers for most of the GSL Statistical functions have been implemented. The GSL function names include a type specifier (except for type double functions). To obtain the equivalent NCO name simply remove the type specifier; then depending on the data type the appropriate GSL function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in GSL for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
 
 @noindent GSL Functions
 @example
-short gsl_stats_max (const short data[], const size_t stride, const size_t n);
-double gsl_stats_int_mean (const int data[], const size_t stride, const size_t n);
-double gsl_stats_short_sd_with_fixed_mean (const short data[], const size_t stride, const size_t n, const double mean);
-double gsl_stats_wmean (const double w[], const size_t wstride, const double data[], const size_t stride, const size_t n);
-double gsl_stats_quantile_from_sorted_data (const double sorted_data[], const size_t stride, const size_t n, const double f) ;
+short gsl_stats_max (short data[], size_t stride, size_t n);
+double gsl_stats_int_mean (int data[], size_t stride, size_t n);
+double gsl_stats_short_sd_with_fixed_mean (short data[], size_t stride, size_t n, double mean);
+double gsl_stats_wmean (double w[], size_t wstride, double data[], size_t stride, size_t n);
+double gsl_stats_quantile_from_sorted_data (double sorted_data[], size_t stride, size_t n, double f) ;
 @end example
 
 
@@ -7911,10 +7911,10 @@ a1_sd=gsl_stats_sd(a1,5,3);
 
 @end example
 
-@noindent For functions that take the three arguments @code{func_nm(var_data, data_stride, n)} you can omit the second or third arguments. The default value for stride is one. The default value for n is @code{ 1+ (data.size()-1)/stride}          
+@noindent For functions with the signature  @strong{func_nm(var_data, data_stride, n)} you can omit the second or third arguments. The default value for stride is @code{1}. The default value for n is @code{ 1+ (data.size()-1)/stride}          
 
 @example
-// The following are equvalent
+// the following are equvalent
 n2=gsl_stats_max(a1,1,10)
 n2=gsl_stats_max(a1,1);
 n2=gsl_stats_max(a1);
@@ -7928,7 +7928,34 @@ n4=gsl_stats_kurtosis(a1,3,2);
 n4=gsl_stats_kurtosis(a1,3); //default n=4
 @end example 
 
+@noindent The following example illustrates some of the weighted functions in action. The data is randomly generated. In this case the value of the weight for each datum is either 0.0 or 1.0  
 
+@example
+defdim("r1",2000);
+data[r1]=1.0;
+
+// fill with ramdon numbers [0.0,10.0)
+data=10.0*gsl_rng_uniform(data);
+
+// Create a weighting var 
+weight=(data>4.0);
+
+wmean=gsl_stats_wmean(weight,1,data,1,$r1.size);
+print(wmean);
+
+wsd=gsl_stats_wsd(weight,1,data,1,$r1.size);
+print(wsd);
+
+// number of values in data that are greater than 4
+weight_size=weight.total();
+print(weight_size);
+
+// print min/max of data 
+dmin=data.gsl_stats_min();
+dmax=data.gsl_stats_max();
+print(dmin);print(dmax);
+
+@end example
 
 
 @html
