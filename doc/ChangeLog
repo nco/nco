@@ -1,3 +1,8 @@
+2010-02-09  Charlie Zender  <zender@uci.edu>
+
+	* Remove MPI print line from non-MPI code in mpncra.c to fix build
+	bug reported by Mark Van Moer
+
 2010-02-05  Charlie Zender  <zender@uci.edu>
 
 	* Cleanup ncbo.c
