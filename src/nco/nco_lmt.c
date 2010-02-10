@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.92 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.93 2010-02-10 18:48:40 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -177,6 +177,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   return lmt_dim;
   
 } /* end nco_lmt_sct_mk() */
+
 
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
@@ -556,13 +557,68 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.srt=lmt.max_idx;
       lmt.end=lmt.min_idx;
     }  /* end else */
+
+
     
     /* Un-typecast pointer to values after access */
     (void)cast_nctype_void((nc_type)NC_DOUBLE,&dim.val);
   
     /* Free space allocated for dimension */
     dim.val.vp=nco_free(dim.val.vp);
+
+
+    if(rec_dmn_and_mlt_fl_opr){ 
+        long cnt;
+        long tmp_srt;   
+
+	if(cnt_crr==0){
+	  /* reset all flags */
+	  lmt.rec_skp_nsh_spf=0L;
+          lmt.rec_skp_vld_prv=0L;  
+
+          if(lmt.srd > 1L){
+            cnt=(lmt.end-lmt.srt)/lmt.srd;  
+            lmt.end=lmt.srt+cnt*lmt.srd;    
+          }     
+	}else if(cnt_crr >0L){
+
+	  if(lmt.srd>1L){
+
+	    tmp_srt=lmt.srd-1L-(lmt.rec_skp_nsh_spf+lmt.rec_skp_vld_prv)%lmt.srd;
+            if(tmp_srt>lmt.end)
+	      flg_no_data=True;
+            else
+              lmt.srt=tmp_srt;    
+
+            cnt=(lmt.end-lmt.srt)/lmt.srd ;
+            lmt.end=lmt.srt+cnt*lmt.srd;        
+
+	  }
+	}  
+
+        if(lmt.end==lmt.srt)
+	  lmt.srd=1;
+        	
+	/* Compute diagnostic count for this file only */
+	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
+	/* Save current rec_skp_vld_prv for diagnostics */
+	rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+	/* rec_skp_vld_prv for next file is stride minus number of unused records
+	   at end of this file (dmn_sz-1L-lmt.end) minus one */
+	lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+	/*      assert(lmt.rec_skp_vld_prv >= 0);*/
+
+        
+    }/* end if rec_muli_file_op */
+
+
+          
+    if(flg_no_data)
+       goto no_data;
+
     
+
+
   }else{ /* end if limit arguments were coordinate values */
     /* Convert limit strings to zero-based indicial offsets */
     
