@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.95 2010-02-15 15:29:55 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.96 2010-02-15 16:04:25 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -600,12 +600,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         cnt=(lmt.end-lmt.srt)/lmt.srd;  
         lmt.end=lmt.srt+cnt*lmt.srd;    
 
-        /* reset skipped records */ 
-	lmt.rec_skp_nsh_spf=0L;
          
         if(lmt.end==lmt.srt)
 	  lmt.srd=1;
           
+	lmt.rec_skp_nsh_spf+=dmn_sz;
         	
 	/* Compute diagnostic count for this file only */
 	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
@@ -742,6 +741,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	if(lmt.end==lmt.srt)
 	  lmt.srd=1;
 
+         
 	lmt.rec_skp_nsh_spf+=dmn_sz;	
 	/* Compute diagnostic count for this file only */
 	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
