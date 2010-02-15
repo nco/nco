@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.146 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.147 2010-02-15 14:51:08 hmb Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -345,8 +345,8 @@ extern "C" {
     nco_bool is_usr_spc_min; /* True if user-specified, else False */
     nco_bool is_usr_spc_max; /* True if user-specified, else False */
     nco_bool is_rec_dmn; /* True if record dimension, else False */
-    long rec_skp_vld_prv; /* Records skipped at end of previous valid file (multi-file record dimension only) */
-    long rec_skp_nsh_spf; /* Number of records skipped in initial superfluous files (multi-file record dimension only) */
+    long rec_skp_vld_prv; /* Records skipped since prevous good one (multi-file record dimension only) */
+    long rec_skp_nsh_spf; /* Sum of records in already processed files (multi-file record dimension only) */
     char *min_sng; /* User-specified string for dimension minimum */
     char *max_sng; /* User-specified string for dimension maximum */
     char *srd_sng; /* User-specified string for dimension stride */
