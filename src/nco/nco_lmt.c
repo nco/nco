@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.94 2010-02-15 14:53:18 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.95 2010-02-15 15:29:55 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -584,31 +584,22 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  /* reset all flags */
           lmt.rec_skp_vld_prv=0L;  
 
-          if(lmt.srd > 1L){
-            cnt=(lmt.end-lmt.srt)/lmt.srd;  
-            lmt.end=lmt.srt+cnt*lmt.srd;    
-          }     
 	}else if(cnt_crr >0L){
 
 	  if(lmt.srd>1L){
-
-	    //tmp_srt=lmt.srd-1L-(lmt.rec_skp_nsh_spf+lmt.rec_skp_vld_prv)%lmt.srd;
            tmp_srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
-            if(tmp_srt>lmt.end){
-	      flg_no_data=True;
-              if(flg_no_data) goto no_data;
-	    } 
-            else
+	   if(tmp_srt>lmt.end)
+             {flg_no_data=True;goto no_data;}
+           else
               lmt.srt=tmp_srt;    
-
-            cnt=(lmt.end-lmt.srt)/lmt.srd ;
-            lmt.end=lmt.srt+cnt*lmt.srd;        
-            /* reset skipped records */
 
 	  }
 	}
   
         /* if we are here then there are valid records in current files */ 
+        cnt=(lmt.end-lmt.srt)/lmt.srd;  
+        lmt.end=lmt.srt+cnt*lmt.srd;    
+
         /* reset skipped records */ 
 	lmt.rec_skp_nsh_spf=0L;
          
