@@ -1,3 +1,9 @@
+2010-02-15  Henry Butowsky  <henryb@hush.com> 
+	* fixed -- hyperslab limits of  type lmt_crd_val/lmt_udu_sng with 
+	stride > 1 now working with multifile operators.
+	fix in nco_lmt.c 
+	e.g ncrcat -v time -d time,3.0,30.0,8 t1.nc t2.nc out.nc
+
 2010-02-09  Charlie Zender  <zender@uci.edu>
 
 	* Remove MPI print line from non-MPI code in mpncra.c to fix build
