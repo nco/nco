@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.97 2009-09-11 15:37:12 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.98 2010-02-16 16:02:13 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -880,6 +880,74 @@ sub tst_rgr {
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tempf_02%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,0.0,,11  %tempf_00% %tempf_01% %tempf_02% %tempf_03% 2> %tempf_05%";
+    $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_03% %tempf_04%";
+    $tst_cmd[5]="time_ttl = 33";
+    $dsc_sng="Conc 1D var over 3 files with  Large stride Requires UDUnits.";
+    $tst_cmd[6]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tempf_02%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,22.0,,7  %tempf_00% %tempf_01% %tempf_02% %tempf_03% 2> %tempf_05%";
+    $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_03% %tempf_04%";
+    $tst_cmd[5]="time_ttl = 51";
+    $dsc_sng="Conc 1D var over 3 files coo-rd limits+stride  Requires UDUnits.";
+    $tst_cmd[6]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tempf_02%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1990-1-1 22:0:0',,7  %tempf_00% %tempf_01% %tempf_02% %tempf_03% 2> %tempf_05%";
+    $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_03% %tempf_04%";
+    $tst_cmd[5]="time_ttl = 51";
+    $dsc_sng="Conc 1D var over three files date-stamp limits+stride  Requires UDUnits.";
+    $tst_cmd[6]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tempf_02%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1990-1-1 ',,9  %tempf_00% %tempf_01% %tempf_02% %tempf_03% 2> %tempf_05%";
+    $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_03% %tempf_04%";
+    $tst_cmd[5]="time_ttl = 54";
+    $dsc_sng="Conc 1D var over 3 files date-stamp limits+stride  Requires UDUnits.";
+    $tst_cmd[6]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tempf_01%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 20:0:0\"' $in_pth_arg in.nc %tempf_02%";
+    $tst_cmd[3]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,,,20  %tempf_00% %tempf_01% %tempf_02% %tempf_03% 2> %tempf_05%";
+    $tst_cmd[4]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tempf_03% %tempf_04%";
+    $tst_cmd[5]="time_ttl = 20";
+    $dsc_sng="Conc 1D variable over 3 files dmn limits+stride  Requires UDUnits.";
+    $tst_cmd[6]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+
 
 #    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
     
