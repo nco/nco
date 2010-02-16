@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.96 2010-02-15 16:04:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.97 2010-02-16 16:00:58 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -414,34 +414,49 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       min_idx=dmn_sz-1L;
       max_idx=0L;
     } /* end else */
+
     
+
     /* Determine min and max values of entire coordinate */
     dmn_min=dmn_val_dp[min_idx];
     dmn_max=dmn_val_dp[max_idx];
     
+    /* set defaults */  
+    lmt.min_val=dmn_val_dp[min_idx]; 
+    lmt.max_val=dmn_val_dp[max_idx];
+
     /* Convert UDUnits strings if necessary */
+    /* If we are here then either min_sng is set or max_sng is set or both set */  
+
     if(lmt.lmt_typ == lmt_udu_sng){
       
       if(!fl_udu_sng){ 
         (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),dim.nm);
         nco_exit(EXIT_FAILURE);
       } /* end if */
-      
-      if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
-      if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
- 
+
+      if(lmt.min_sng)
+        if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
+
+      if(lmt.max_sng) 
+        if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
+
+
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
-      if(lmt.min_sng == NULL) lmt.min_val=dmn_val_dp[min_idx]; else lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
-      if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
+      if(lmt.min_sng) lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
+      if(lmt.max_sng) lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
       
       /* re-base co-ordinates as necessary in multi-file operatators 
          lmt.origin has been calculated earlier in file */
       if(rec_dmn_and_mlt_fl_opr){ 
         if(lmt.min_sng) lmt.min_val-=lmt.origin;
-        if(lmt.max_sng) lmt.max_val-=lmt.origin;     
-      }
+        if(lmt.max_sng) lmt.max_val-=lmt.origin;   
+       }  
+     
     }
+  
+
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
     if(dbg_lvl_get() > nco_dbg_std && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
