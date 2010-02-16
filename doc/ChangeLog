@@ -1,3 +1,6 @@
+2010-02-16  Henry Butowsky  <henryb@hush.com> 
+	* added ncrcat tests for mods below
+	
 2010-02-15  Henry Butowsky  <henryb@hush.com> 
 	* fixed -- hyperslab limits of  type lmt_crd_val/lmt_udu_sng with 
 	stride > 1 now working with multifile operators.
