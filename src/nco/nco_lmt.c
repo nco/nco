@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.97 2010-02-16 16:00:58 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.98 2010-02-16 16:49:13 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -435,11 +435,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         nco_exit(EXIT_FAILURE);
       } /* end if */
 
-      if(lmt.min_sng)
-        if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
+        if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
 
-      if(lmt.max_sng) 
-        if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
+        if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
 
 
     }else{ /* end UDUnits conversion */
