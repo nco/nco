@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.563 2010-01-05 21:41:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.564 2010-02-17 06:23:35 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -221,17 +221,17 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>What is NCO?</h2>
 <p>The <a
 href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-Operators, or NCO, are a suite of programs known as <b>operators</b>. 
-They are standalone, command-line programs like, e.g., <tt>ls</tt> or <tt>mkdir</tt>. 
+Operators (NCO) are a suite of standalone, command-line programs like,
+e.g., <tt>ls</tt> or <tt>mkdir</tt>.
 Each operator takes <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
 files as input, then operates (e.g., derives new data, averages, 
 hyperslabs, manipulates metadata) and produces a 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
-output file. 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
+output file.  
 NCO primarily aids manipulation and analysis of gridded scientific data. 
 The single-command style of NCO allows users to manipulate and analyze
-files interactively, with simple scripts that avoid some overhead (and
-power) of higher level programming environments.  
+files interactively, or with simple scripts that avoid some overhead
+(and power) of higher level programming environments.  
 The <a href="./nco.html">NCO User's Guide</a> illustrates their use
 with examples from the field of climate modeling and analysis.
 Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 

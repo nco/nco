@@ -1,11 +1,16 @@
+2010-02-16  Charlie Zender  <zender@uci.edu>
+
+	* Cleanup nco_lmt.c
+
 2010-02-16  Henry Butowsky  <henryb@hush.com> 
-	* added ncrcat tests for mods below
+
+	* Add ncrcat tests for modifications below
 	
 2010-02-15  Henry Butowsky  <henryb@hush.com> 
-	* fixed -- hyperslab limits of  type lmt_crd_val/lmt_udu_sng with 
-	stride > 1 now working with multifile operators.
-	fix in nco_lmt.c 
-	e.g ncrcat -v time -d time,3.0,30.0,8 t1.nc t2.nc out.nc
+
+	* Hyperslab limits of type lmt_crd_val/lmt_udu_sng with 
+	stride > 1 now work with multifile operators, e.g.,
+	ncrcat -v time -d time,3.0,30.0,8 t1.nc t2.nc out.nc
 
 2010-02-09  Charlie Zender  <zender@uci.edu>
 

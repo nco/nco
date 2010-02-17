@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.98 2010-02-16 16:49:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.99 2010-02-17 06:23:35 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -19,9 +19,9 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
   lmt->re_bs_sng=(char*)nco_free(lmt->re_bs_sng);   
-
+  
   lmt=(lmt_sct *)nco_free(lmt);
-
+  
   return lmt;
 } /* end nco_lmt_free() */
 
@@ -33,12 +33,12 @@ nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated limit structure list */
   int idx;
-
+  
   for(idx=0;idx<lmt_nbr;idx++) lmt_lst[idx]=nco_lmt_free(lmt_lst[idx]);
-
+  
   /* Free structure pointer last */
   lmt_lst=(lmt_sct **)nco_free(lmt_lst);
-
+  
   return lmt_lst;
 } /* end nco_lmt_lst_free() */
 
@@ -51,9 +51,9 @@ nco_lmt_all_free /* [fnc] Free memory associated with limit structure */
   lmt_all->dmn_nm=(char *)nco_free(lmt_all->dmn_nm);
   /* NB: lmt_dmn[idx] are free'd by nco_lmt_lst_free() in calling routine */
   lmt_all->lmt_dmn=(lmt_sct **)nco_free(lmt_all->lmt_dmn);
-
+  
   lmt_all=(lmt_all_sct *)nco_free(lmt_all);
-
+  
   return lmt_all;
 } /* end nco_lmt_all_free() */
 
@@ -65,12 +65,12 @@ nco_lmt_all_lst_free /* [fnc] Free memory associated with lmt_all structure list
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated limit structure list */
   int idx;
-
+  
   for(idx=0;idx<lmt_all_nbr;idx++) lmt_all_lst[idx]=nco_lmt_all_free(lmt_all_lst[idx]);
-
+  
   /* Free structure pointer last */
   lmt_all_lst=(lmt_all_sct **)nco_free(lmt_all_lst);
-
+  
   return lmt_all_lst;
 } /* end nco_lmt_all_lst_free() */
 
@@ -91,7 +91,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   lmt_sct *lmt_dim;
   
   lmt_dim=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
+  
   /* Initialize defaults to False, override later if warranted */
   lmt_dim->is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
   lmt_dim->is_usr_spc_max=False; /* True if user-specified, else False */
@@ -178,7 +178,6 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   
 } /* end nco_lmt_sct_mk() */
 
-
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 (int nc_id, /* I [idx] netCDF file ID */
@@ -214,9 +213,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
   long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
   long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file (diagnostic only) */
-    
+  
   char *fl_udu_sng=NULL_CEWI;   /* store units attribute of co-ordinate dim */
-          
+  
   lmt=*lmt_ptr;
   
   prg_id=prg_get(); /* Program ID */
@@ -293,39 +292,38 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     nco_exit(EXIT_FAILURE);
   } /* end if */
   lmt.lmt_typ=min_lmt_typ;
-
+  
   /* co-ordinate rebasing code */
   lmt.origin=0.0;
   /* Get variable ID of coordinate */
   rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
   if(rcd==NC_NOERR){
     char *cal_sng=NULL_CEWI;
- 
+    
     fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"units"); /* units attribute of co-ordinate var */
     cal_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* calendar attribute */
-
+    
     if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-    if(nco_cln_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cal,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
+      if(nco_cln_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cal,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
- 
-
+    
     /* for ncra, ncrcat the "calendar" attribute has been read in main() 
-        avoid multiple reads of the calendar att in multifile
-     operations */
+       avoid multiple reads of the calendar att in multifile
+       operations */
     if(!rec_dmn_and_mlt_fl_opr){
       if(cal_sng)
         lmt.lmt_cal=nco_cln_get_cal_typ(cal_sng); 
-       else
+      else
         lmt.lmt_cal=cal_void;
     }  
     if(cal_sng)
       cal_sng=nco_free(cal_sng);
-   
-  } /* end rcd */
     
+  } /* end rcd */
+  
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
     double *dmn_val_dp;
     
@@ -336,8 +334,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     long min_idx;
     long tmp_idx;
     long dmn_srt=0L;
-
-
+    
     /* Get variable ID of coordinate 
        rcd=nco_inq_varid(nc_id,lmt.nm,&dim.cid); */
     
@@ -414,9 +411,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       min_idx=dmn_sz-1L;
       max_idx=0L;
     } /* end else */
-
     
-
     /* Determine min and max values of entire coordinate */
     dmn_min=dmn_val_dp[min_idx];
     dmn_max=dmn_val_dp[max_idx];
@@ -424,22 +419,21 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* set defaults */  
     lmt.min_val=dmn_val_dp[min_idx]; 
     lmt.max_val=dmn_val_dp[max_idx];
-
+    
     /* Convert UDUnits strings if necessary */
     /* If we are here then either min_sng is set or max_sng is set or both set */  
-
+    
     if(lmt.lmt_typ == lmt_udu_sng){
       
       if(!fl_udu_sng){ 
         (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),dim.nm);
         nco_exit(EXIT_FAILURE);
       } /* end if */
-
-        if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
-
-        if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
-
-
+      
+      if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
+      
+      if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
+      
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
       if(lmt.min_sng) lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
@@ -450,11 +444,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(rec_dmn_and_mlt_fl_opr){ 
         if(lmt.min_sng) lmt.min_val-=lmt.origin;
         if(lmt.max_sng) lmt.max_val-=lmt.origin;   
-       }  
-     
+      }  
     }
-  
-
+    
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
     if(dbg_lvl_get() > nco_dbg_std && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
@@ -570,75 +562,58 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.srt=lmt.max_idx;
       lmt.end=lmt.min_idx;
     }  /* end else */
-
-
     
     /* Un-typecast pointer to values after access */
     (void)cast_nctype_void((nc_type)NC_DOUBLE,&dim.val);
-  
+    
     /* Free space allocated for dimension */
     dim.val.vp=nco_free(dim.val.vp);
-
-
-    if(rec_dmn_and_mlt_fl_opr){ 
-        long cnt;
-        long tmp_srt;   
-
-        /* no wrapping with mult-file operators */ 
-        if(monotonic_direction == increasing && lmt.min_val >lmt.max_val ||
-	   monotonic_direction == decreasing && lmt.min_val <lmt.max_val){
-	    flg_no_data=True;
-            goto no_data;   
-        }
-
-
-
-	if(cnt_crr==0){
-	  /* reset all flags */
-          lmt.rec_skp_vld_prv=0L;  
-
-	}else if(cnt_crr >0L){
-
-	  if(lmt.srd>1L){
-           tmp_srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
-	   if(tmp_srt>lmt.end)
-             {flg_no_data=True;goto no_data;}
-           else
-              lmt.srt=tmp_srt;    
-
-	  }
-	}
-  
-        /* if we are here then there are valid records in current files */ 
-        cnt=(lmt.end-lmt.srt)/lmt.srd;  
-        lmt.end=lmt.srt+cnt*lmt.srd;    
-
-         
-        if(lmt.end==lmt.srt)
-	  lmt.srd=1;
-          
-	lmt.rec_skp_nsh_spf+=dmn_sz;
-        	
-	/* Compute diagnostic count for this file only */
-	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
-	/* Save current rec_skp_vld_prv for diagnostics */
-	rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-	/* rec_skp_vld_prv for next file is stride minus number of unused records
-	   at end of this file (dmn_sz-1L-lmt.end) minus one */
-	lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
-	/*      assert(lmt.rec_skp_vld_prv >= 0);*/
-
-        
-    }/* end if rec_muli_file_op */
-
-
-          
-    if(flg_no_data)
-       goto no_data;
-
     
-
-
+    if(rec_dmn_and_mlt_fl_opr){ 
+      long cnt;
+      long tmp_srt;   
+      
+      /* No wrapping with multi-file operators */ 
+      if((monotonic_direction == increasing && lmt.min_val > lmt.max_val) ||
+	 (monotonic_direction == decreasing && lmt.min_val < lmt.max_val)){
+	flg_no_data=True;
+	goto no_data;   
+      }
+      
+      if(cnt_crr == 0){
+	/* Reset all flags */
+	lmt.rec_skp_vld_prv=0L;  
+      }else if(cnt_crr >0L){
+	
+	if(lmt.srd>1L){
+	  tmp_srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
+	  if(tmp_srt>lmt.end)
+	    {flg_no_data=True;goto no_data;}
+	  else
+	    lmt.srt=tmp_srt;    
+	}
+      }
+      
+      /* if we are here then there are valid records in current files */ 
+      cnt=(lmt.end-lmt.srt)/lmt.srd;  
+      lmt.end=lmt.srt+cnt*lmt.srd;    
+      
+      if(lmt.end==lmt.srt) lmt.srd=1;
+      
+      lmt.rec_skp_nsh_spf+=dmn_sz;
+      
+      /* Compute diagnostic count for this file only */
+      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
+      /* Save current rec_skp_vld_prv for diagnostics */
+      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+      /* rec_skp_vld_prv for next file is stride minus number of unused records
+	 at end of this file (dmn_sz-1L-lmt.end) minus one */
+      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+      /*      assert(lmt.rec_skp_vld_prv >= 0);*/
+    } /* end if rec_muli_file_op */
+    
+    if(flg_no_data) goto no_data;
+    
   }else{ /* end if limit arguments were coordinate values */
     /* Convert limit strings to zero-based indicial offsets */
     
@@ -678,7 +653,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.min_idx--;
       lmt.max_idx--;
     } /* end if */
-  
+    
     /* Exit if requested indices are always invalid for all operators... */
     if(lmt.min_idx < 0 || lmt.max_idx < 0 || 
        /* ...or are invalid for non-record dimensions or single file operators */
@@ -709,8 +684,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 No records were skipped in previous files */
       if(cnt_crr == 0L && lmt.rec_skp_nsh_spf == 0L) lmt.rec_skp_vld_prv=0L;
       
-    
-
       /* This if statement is required to avoid an ugly goto statment */
       if(!flg_no_data){
 	
@@ -726,35 +699,33 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	{  
           long min_lcl;
           long max_lcl; 
-           
+	  
           min_lcl=( lmt.is_usr_spc_min ? lmt.min_idx :0L); 
           max_lcl=( lmt.is_usr_spc_max ? lmt.max_idx :lmt.rec_skp_nsh_spf+dmn_sz-1L); 
-
-
+	  
+	  
           if(lmt.rec_skp_nsh_spf > max_lcl) {flg_no_data=True;goto no_data;} 
           /* see if min_idx is in current record */
           if(min_lcl > lmt.rec_skp_nsh_spf+dmn_sz-1L) {flg_no_data=True;goto no_data;}    
-              
+	  
 	  if(cnt_crr == 0L)
 	    /* Start index is min_idx adjusted for any skipped initial superfluous files */  
 	    lmt.srt=min_lcl-lmt.rec_skp_nsh_spf;
           else
             lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
-
+	  
           if(lmt.srt >dmn_sz-1L) {flg_no_data=True;goto no_data;}  
-
+	  
           lmt.end=(max_lcl < lmt.rec_skp_nsh_spf+dmn_sz) ? max_lcl-lmt.rec_skp_nsh_spf : dmn_sz-1L;
-           /* integer arithmetic */
+	  /* integer arithmetic */
 	  cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;
 	  lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
-
 	}
-
+	
         /* hmb fix 12-2-2010 set stride to one */
 	if(lmt.end==lmt.srt)
 	  lmt.srd=1;
-
-         
+	
 	lmt.rec_skp_nsh_spf+=dmn_sz;	
 	/* Compute diagnostic count for this file only */
 	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
@@ -837,8 +808,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* number records skipped since last good one */ 
     lmt.rec_skp_vld_prv+=dmn_sz;  
     /* Set variables to preserve utility of diagnostic routines at end of routine */
-    cnt_rmn_crr==0L;rec_skp_vld_prv_dgn=0L;
-
+    cnt_rmn_crr=rec_skp_vld_prv_dgn=0L;
+    
   } /* endif */
   
   /* Place contents of working structure in location of returned structure */
@@ -874,7 +845,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
     if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try multislabbing (http://nco.sf.net/nco.html#msa) wrapped dimension using ncks first, and then apply %s to the resulting file\n",prg_nm_get());
   } /* end dbg */
-
+  
   (void*)nco_free(fl_udu_sng);
   
 } /* end nco_lmt_evl() */
@@ -946,17 +917,17 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     
     if(lmt[idx]->max_sng == NULL) lmt[idx]->is_usr_spc_max=False; else lmt[idx]->is_usr_spc_max=True;
     if(lmt[idx]->min_sng == NULL) lmt[idx]->is_usr_spc_min=False; else lmt[idx]->is_usr_spc_min=True;
-
+    
     /* Initialize types used to re-base coordinate variables */
     lmt[idx]->origin=0.0;
     lmt[idx]->re_bs_sng=NULL_CEWI;
     lmt[idx]->lmt_cal=cal_void;
-
+    
     /* Free current pointer array to strings
        Strings themselves are untouched 
        They will be free()'d with limit structures in nco_lmt_lst_free() */
     arg_lst=(char **)nco_free(arg_lst);
-
+    
   } /* End loop over lmt structure list */
   
   return lmt;
@@ -988,7 +959,7 @@ nco_lmt_typ /* [fnc] Determine limit type */
   }  
   /* Default: Limit is dimension index */
   return lmt_dmn_idx;
-
+  
 } /* end nco_lmt_typ() */
 
 
@@ -999,21 +970,19 @@ nco_lmt_get_udu_att /* Successful conversion returns units attribute otherwise n
  const int var_id,
  const char *att_nm) /* I [id] Variable ID whose attribute to read */
 {
- /* Grab units attribute from disk */
- nc_type att_typ; 
- long att_sz;
- char *fl_udu_sng=NULL_CEWI;
-
- if(nco_inq_att_flg(nc_id,var_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
-   /* Allocate memory for attribute */
-   if(att_typ == NC_CHAR){
-     fl_udu_sng=(char *)nco_malloc((att_sz+1UL)*sizeof(char));
-     /* Get 'units' attribute */
-     (void)nco_get_att(nc_id,var_id,att_nm,fl_udu_sng,att_typ);
-     fl_udu_sng[att_sz]='\0';
-   } /* !NC_CHAR */
- } /* endif */
- return fl_udu_sng;
+  /* Grab units attribute from disk */
+  nc_type att_typ; 
+  long att_sz;
+  char *fl_udu_sng=NULL_CEWI;
+  
+  if(nco_inq_att_flg(nc_id,var_id,att_nm,&att_typ,&att_sz) == NC_NOERR){
+    /* Allocate memory for attribute */
+    if(att_typ == NC_CHAR){
+      fl_udu_sng=(char *)nco_malloc((att_sz+1UL)*sizeof(char));
+      /* Get 'units' attribute */
+      (void)nco_get_att(nc_id,var_id,att_nm,fl_udu_sng,att_typ);
+      fl_udu_sng[att_sz]='\0';
+    } /* !NC_CHAR */
+  } /* endif */
+  return fl_udu_sng;
 } /* end nco_lmt_get_udu_att() */
-
-
