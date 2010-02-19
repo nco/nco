@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1067 2009-11-05 22:35:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1068 2010-02-19 06:12:16 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -140,7 +140,7 @@ nco241. Add run-time switch which requests that output be _FillValue where ANY i
 nco245. Eliminate all instances of passing naked constants
 nco246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
 nco250. ncks -s should refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
-        nconcks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
+        ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 nco251. Does ncks -B correctly write packed variables in binary format?
 nco255. Desktop icon for NCO gui interface
 nco256. Turn udunits into .deb
