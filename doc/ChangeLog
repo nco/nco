@@ -1,3 +1,6 @@
+2010-03-01  Henry Butowsky  <henryb@hush.com> 
+	* added to Manual Chapter on Re-basing Time Coordinate
+
 2010-02-16  Charlie Zender  <zender@uci.edu>
 
 	* Cleanup nco_lmt.c
