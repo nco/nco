@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.569 2010-02-08 16:56:57 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.570 2010-03-01 16:35:03 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2040,7 +2040,8 @@ feature is automatic and cannot be controlled by the user.
 * Multislabs::                  
 * Wrapped Coordinates::         
 * Auxiliary Coordinates::       
-* UDUnits Support::             
+* UDUnits Support::
+* Rebasing Time Coordinate::             
 * Missing Values::              
 * Chunking::                    
 * Deflation::                   
@@ -3941,7 +3942,7 @@ to avoid confusion.
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 <a name="UDUnits2"></a> <!-- http://nco.sf.net/nco.html#UDUnits2 -->
 @end html
-@node UDUnits Support, Missing Values, Auxiliary Coordinates, Common features
+@node UDUnits Support, Rebasing Time Coordinate, Auxiliary Coordinates, Common features
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
@@ -4121,6 +4122,9 @@ Results in the hyperslab lon_cal=1,2,3,4
 @end example 
 
 
+
+
+
 @cindex MKS units
 @cindex God
 netCDF variables should always be stored with MKS (i.e., God's) units,
@@ -4134,6 +4138,57 @@ units, MKS (e.g., meters, Pascals, seconds).
 The feature is not intended to encourage writers to store data in 
 esoteric units (e.g., furlongs, pounds per square inch, fortnights). 
 
+
+
+
+@html
+<a name="time_rebase"></a> <!-- http://nco.sf.net/nco.html#time_rebase -->
+@end html
+@node Rebasing Time Coordinate, Missing Values, UDUnits Support, Common features
+@section Rebasing Time Coordinate
+@cartouche
+Availability: 
+@command{ncra}, @command{ncrcat} 
+Short options: None@*
+@end cartouche
+
+
+@noindent Time rebasing seeks to fix the following problem. we have a bunch files to concatenate or average along a common record dimension/ coordinate. The thing is although the record coordinate is in the same time units in each file the date offset is different. @* 
+For example suppose the time co-ordinate is in hours and we have 31 files for each day in january. Witin each file is the variable temperature @strong{temp(time)}; and a time co-ordinate that goes from 0-23 hours. The time:units attribute from each file is as follows
+@example
+file01.nc -- time:units="hours since 1990-1-1"   
+file02.nc -- time:units="hours since 1990-1-2"   
+file03.nc -- time:units="hours since 1990-1-3"   
+file04.nc -- time:units="hours since 1990-1-4"   
+...
+...
+@end example
+
+
+@noindent @example
+//Find the mean noon day temperature in january
+ncra -v temp -d time,"1990-1-1 12:00:00","1990-1-31 23:59:59",24 \
+      file??.nc noon.nc    
+
+// concatenate day2 noon - day3 noon records
+ncrcat -v temp -d time,"1990-1-2 12:00:00","1990-1-3 11:59:59" \ 
+      file01.nc file02.nc file03.nc noon.nc    
+
+// As you can see the time has been rebased to the time units in the first file
+time=36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
+     53, 54, 55, 56, 57, 58, 59 ;
+  
+// If we repeat the above command but with only two input files
+ncrcat -v temp -d time,"1990-1-2 12:00:00","1990-1-3 11:59:59" \
+      file02.nc file03 noon.nc    
+
+// then the output time coordinate is "based" on the units in the second file
+time = 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+    29, 30, 31, 32, 33, 34, 35 ;
+@end example
+
+
+
 @html
 <a name="missing_value"></a> <!-- http://nco.sf.net/nco.html#missing_value -->
 <a name="_FillValue"></a> <!-- http://nco.sf.net/nco.html#_FillValue -->
@@ -4141,7 +4196,7 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html
-@node Missing Values, Chunking, UDUnits Support, Common features
+@node Missing Values, Chunking, Rebasing Time Coordinate, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
