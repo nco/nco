@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.99 2010-02-17 06:23:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.100 2010-03-08 09:56:38 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -570,33 +570,29 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     dim.val.vp=nco_free(dim.val.vp);
     
     if(rec_dmn_and_mlt_fl_opr){ 
-      long cnt;
-      long tmp_srt;   
-      
       /* No wrapping with multi-file operators */ 
       if((monotonic_direction == increasing && lmt.min_val > lmt.max_val) ||
 	 (monotonic_direction == decreasing && lmt.min_val < lmt.max_val)){
-	flg_no_data=True;
-	goto no_data;   
+	flg_no_data=True; goto no_data;   
       }
       
       if(cnt_crr == 0){
 	/* Reset all flags */
 	lmt.rec_skp_vld_prv=0L;  
       }else if(cnt_crr >0L){
-	
-	if(lmt.srd>1L){
-	  tmp_srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
-	  if(tmp_srt>lmt.end)
-	    {flg_no_data=True;goto no_data;}
-	  else
-	    lmt.srt=tmp_srt;    
-	}
+
+        lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
+
+	if(lmt.srt>lmt.end) 
+         {flg_no_data=True;goto no_data;}
+
       }
       
-      /* if we are here then there are valid records in current files */ 
-      cnt=(lmt.end-lmt.srt)/lmt.srd;  
-      lmt.end=lmt.srt+cnt*lmt.srd;    
+      /* If we are here then there are valid records in current files */ 
+       
+      /* Integer arithmetic */ 
+      cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;  
+      lmt.end=lmt.srt+cnt_rmn_crr*lmt.srd;    
       
       if(lmt.end==lmt.srt) lmt.srd=1;
       
@@ -612,7 +608,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       /*      assert(lmt.rec_skp_vld_prv >= 0);*/
     } /* end if rec_muli_file_op */
     
-    if(flg_no_data) goto no_data;
     
   }else{ /* end if limit arguments were coordinate values */
     /* Convert limit strings to zero-based indicial offsets */
@@ -673,20 +668,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.end=lmt.max_idx;
     }else{
       
-      /* Allow for possibility initial files are superfluous in multi-file hyperslab */
-      if(rec_dmn_and_mlt_fl_opr && cnt_crr == 0L && lmt.min_idx >= dmn_sz+lmt.rec_skp_nsh_spf) flg_no_data=True;
-      
       /* Initialize rec_skp_vld_prv to 0L on first call to nco_lmt_evl() 
 	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
 	 rec_skp_vld_prv is used only by multi-file operators
 	 rec_skp_vld_prv counts records skipped at end of previous valid file
 	 cnt_crr and rec_skp_nsh_spf are both zero only for first file
 	 No records were skipped in previous files */
-      if(cnt_crr == 0L && lmt.rec_skp_nsh_spf == 0L) lmt.rec_skp_vld_prv=0L;
+
+        if(cnt_crr == 0L && lmt.rec_skp_nsh_spf == 0L) lmt.rec_skp_vld_prv=0L;
       
-      /* This if statement is required to avoid an ugly goto statment */
-      if(!flg_no_data){
-	
 	/* For record dimensions with user-specified limit, allow for possibility 
 	   that limit pertains to record dimension in a multi-file operator.
 	   Then user-specified maximum index may exceed number of records in any one file
@@ -703,8 +693,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
           min_lcl=( lmt.is_usr_spc_min ? lmt.min_idx :0L); 
           max_lcl=( lmt.is_usr_spc_max ? lmt.max_idx :lmt.rec_skp_nsh_spf+dmn_sz-1L); 
 	  
-	  
-          if(lmt.rec_skp_nsh_spf > max_lcl) {flg_no_data=True;goto no_data;} 
+	  /* see if we are passed max_lcl  */
+          if(max_lcl < lmt.rec_skp_nsh_spf) {flg_no_data=True;goto no_data;} 
           /* see if min_idx is in current record */
           if(min_lcl > lmt.rec_skp_nsh_spf+dmn_sz-1L) {flg_no_data=True;goto no_data;}    
 	  
@@ -735,8 +725,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	   at end of this file (dmn_sz-1L-lmt.end) minus one */
 	lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
 	/*      assert(lmt.rec_skp_vld_prv >= 0);*/
-	
-      } /* endif !flg_no_data */
       
     } /* endif user-specified limits to record dimension */
     
