@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.247 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.248 2010-03-11 14:48:49 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -85,6 +85,7 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool NO_REC_DMN_OUT=False; /* [flg] Define rec dimension in output as a regular dimension */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
   nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
@@ -121,8 +122,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.247 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.247 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.248 2010-03-11 14:48:49 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.248 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -190,6 +191,7 @@ main(int argc,char **argv)
       {"noclobber",no_argument,0,0},
       {"no-clobber",no_argument,0,0},
       {"no_clobber",no_argument,0,0},
+      {"no_rec_dmn",no_argument,0,0},
       {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"no_nm_prn",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"secret",no_argument,0,0},
@@ -328,6 +330,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")){
 	PRN_DMN_VAR_NM=False;
       } /* endif "no_clb" */
+      if(!strcmp(opt_crr,"no_rec_dmn")) NO_REC_DMN_OUT=True;
       if(!strcmp(opt_crr,"tst_udunits")){ 
 	char *cp;
         char **args;
@@ -607,7 +610,7 @@ main(int argc,char **argv)
       int var_out_id;
 
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,dfl_lvl);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,NO_REC_DMN_OUT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,NO_REC_DMN_OUT,xtr_lst[idx].nm,dfl_lvl);
       /* Copy variable's attributes */
       if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */
