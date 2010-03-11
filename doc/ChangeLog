@@ -1,3 +1,8 @@
+2010-03-11  Henry Butowsky  <henryb@hush.com> 
+	* added '--no_rec_dmn' switch to ncks. 
+	Causes the record dimension in input to be converted to a
+	regular dimension in output
+
 2010-03-01  Henry Butowsky  <henryb@hush.com> 
 	* added to Manual Chapter on Re-basing Time Coordinate
 
