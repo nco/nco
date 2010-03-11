@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.56 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.57 2010-03-11 14:45:56 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -47,6 +47,7 @@ extern "C" {
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+   const nco_bool NO_REC_DMN_OUT,  /* I [flg] Define rec dimension in output as a regular dimension */
    const char * const var_nm, /* I [sng] Input variable name */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
@@ -55,6 +56,7 @@ extern "C" {
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+   const nco_bool NO_REC_DMN_OUT,  /* I [flg] Define rec dimension in output as a regular dimension */
    const char * const var_nm, /* I [sng] Input variable name */
    CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
    const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
