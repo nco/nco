@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.177 2010-01-29 14:34:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.178 2010-03-11 15:06:48 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2558,7 +2558,7 @@ var=NULL_CEWI;
          var_ret->nm=strdup("~zz@value_list");
          var_ret->nbr_dim=0;
          var_ret->sz=nbr_lst;
-         var_ret->type=NC_STRING;
+         var_ret->type=(nc_type)NC_STRING;
 
 
 
