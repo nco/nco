@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.147 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.148 2010-03-11 14:47:37 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -13,6 +13,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+ const nco_bool NO_REC_DMN_OUT, /* I [flg] Define rec dimension in output as a regular dimension */
  const char * const var_nm, /* I [sng] Input variable name */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
@@ -68,7 +69,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     
     /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
-      if(dmn_in_id[idx] != rec_dmn_id){
+      if(dmn_in_id[idx] != rec_dmn_id || NO_REC_DMN_OUT){
 	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
 	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
@@ -122,6 +123,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+ const nco_bool NO_REC_DMN_OUT, /* I [flg] Define rec dimension in output as a regular dimension */
  const char * const var_nm, /* I [sng] Input variable name */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
@@ -176,7 +178,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     
     /* If dimension has not been defined, copy it */
     if(rcd_lcl != NC_NOERR){
-      if(dmn_in_id[idx] != rec_dmn_id){
+      if(dmn_in_id[idx] != rec_dmn_id || NO_REC_DMN_OUT ){
 	int lmt_all_idx;
 
 	/* Does dimension have any user-specified limits? */
