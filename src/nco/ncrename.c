@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.114 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.115 2010-03-12 06:29:06 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.114 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.115 2010-03-12 06:29:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.115 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -321,6 +321,8 @@ main(int argc,char **argv)
 	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed variable \'%s\' to \'%s\'\n",var_rnm_lst[idx].old_nm+1,var_rnm_lst[idx].new_nm);
       }else{
 	(void)fprintf(stderr,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx].old_nm+1,fl_in);
+	/* Reset error code */
+	rcd=NC_NOERR; 
       } /* end if */
     }else{ /* Variable name does not contain '.' so variable presence is required */
       rcd=nco_inq_varid(nc_id,var_rnm_lst[idx].old_nm,&var_rnm_lst[idx].id);
@@ -338,6 +340,8 @@ main(int argc,char **argv)
 	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed dimension \'%s\' to \'%s\'\n",dmn_rnm_lst[idx].old_nm+1,dmn_rnm_lst[idx].new_nm);
       }else{
 	(void)fprintf(stderr,"%s: WARNING Dimension \'%s\' not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx].old_nm+1,fl_in);
+	/* Reset error code */
+	rcd=NC_NOERR; 
       } /* end if */
       
     }else{
@@ -367,6 +371,8 @@ main(int argc,char **argv)
 	    rcd=nco_inq_varid_flg(nc_id,var_nm+1,&var_id);
 	    if(rcd != NC_NOERR){
 	      (void)fprintf(stderr,"%s: WARNING Variable \'%s\' not present in %s, skipping it.\n",prg_nm,var_nm+1,fl_in);
+	      /* Reset error code */
+	      rcd=NC_NOERR; 
 	      continue;
 	    } /* end if */
 	  }else{ /* Variable name does not contain '.' so variable presence is required */

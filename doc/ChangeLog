@@ -1,5 +1,8 @@
 2010-03-11  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncrename.c to not die after skipping non-existent targets
+	(variables/dimensions/attributes) preceded by '.'. Longstanding bug!
+
 	* Supercede NO_REC_DMN with FIX_REC_DMN
 
 	* Various cleanups of ncoGrammer.g, nco_mss_val.c, ncks.c, nco_var_utl.c
