@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.248 2010-03-11 14:48:49 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.249 2010-03-12 01:27:39 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -79,13 +79,13 @@ main(int argc,char **argv)
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool NO_REC_DMN_OUT=False; /* [flg] Define rec dimension in output as a regular dimension */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
   nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.248 2010-03-11 14:48:49 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.248 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.249 2010-03-12 01:27:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.249 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -181,17 +181,18 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
+      {"fix_rec_dmn",no_argument,0,0}, /* [flg] Fix record dimension */
+      {"no_rec_dmn",no_argument,0,0}, /* [flg] Fix record dimension */
       {"lbr",no_argument,0,0},
       {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
+      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       {"no_clb",no_argument,0,0},
       {"noclobber",no_argument,0,0},
       {"no-clobber",no_argument,0,0},
       {"no_clobber",no_argument,0,0},
-      {"no_rec_dmn",no_argument,0,0},
       {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"no_nm_prn",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"secret",no_argument,0,0},
@@ -313,6 +314,7 @@ main(int argc,char **argv)
       } /* endif "cmp" */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")) FIX_REC_DMN=True; /* [flg] Fix record dimension */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
       if(!strcmp(opt_crr,"lbr") || !strcmp(opt_crr,"library")){
@@ -324,13 +326,8 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
-      if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")){
-	FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
-      } /* endif "no_clb" */
-      if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")){
-	PRN_DMN_VAR_NM=False;
-      } /* endif "no_clb" */
-      if(!strcmp(opt_crr,"no_rec_dmn")) NO_REC_DMN_OUT=True;
+      if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
+      if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
       if(!strcmp(opt_crr,"tst_udunits")){ 
 	char *cp;
         char **args;
@@ -610,7 +607,7 @@ main(int argc,char **argv)
       int var_out_id;
 
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,NO_REC_DMN_OUT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,NO_REC_DMN_OUT,xtr_lst[idx].nm,dfl_lvl);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,FIX_REC_DMN,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,FIX_REC_DMN,xtr_lst[idx].nm,dfl_lvl);
       /* Copy variable's attributes */
       if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */

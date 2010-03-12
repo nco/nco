@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.147 2010-02-15 14:51:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.148 2010-03-12 01:27:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -145,6 +145,7 @@ extern "C" {
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
+  char *nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);
@@ -164,10 +165,13 @@ extern "C" {
 
 # ifdef NCO_USE_FILL_VALUE
   char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
+  char nco_not_mss_val_sng[]="missing_value"; /* [sng] Not missing value attribute name */
 # else /* !NCO_USE_FILL_VALUE */
   char nco_mss_val_sng[]="missing_value"; /* [sng] Missing value attribute name */
+  char nco_not_mss_val_sng[]="_FillValue"; /* [sng] Not missing value attribute name */
 # endif /* !NCO_USE_FILL_VALUE */
   char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
+  char *nco_not_mss_val_sng_get(void){return nco_not_mss_val_sng;} /* [sng] Not missing value attribute name */
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
   

@@ -1,10 +1,11 @@
 \input texinfo @c -*-texinfo-*- 
+
 @c 19980817: TeX-based systems (texi2dvi, texi2dvi --pdf) require texinfo.tex
 @c Hyper-text systems (texi2html, makeinfo) do not require texinfo.tex
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.570 2010-03-01 16:35:03 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.571 2010-03-12 01:27:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.1
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 5 January 2010
-@set update-month January 2010
+@set update-date 11 March 2010
+@set update-month March 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -10185,7 +10186,7 @@ SYNTAX
 @example
 ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] 
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fix_rec_dmn]
 [-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] 
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] 
 [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -10347,6 +10348,18 @@ Activate native machine binary output writing to binary file
 @file{file}.
 Also @samp{--fl_bnr} and @samp{--binary-file}.
 Writing packed variables in binary format is not supported.
+
+@html
+<a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
+<a name="fix_rec_dmn"></a> <!-- http://nco.sf.net/nco.html#fix_rec_dmn -->
+@end html
+@cindex record dimension
+@cindex fixed dimension
+@cindex @code{--fix_rec_dmn}
+@cindex @code{--no_rec_dmn}
+@item --fix_rec_dmn
+Change all record dimensions in the input file into fixed dimensions
+in the output file.
 
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]

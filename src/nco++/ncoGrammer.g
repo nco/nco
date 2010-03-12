@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.178 2010-03-11 15:06:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.179 2010-03-12 01:27:39 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1875,7 +1875,6 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                bcst=false;
                var_cst=NULL_CEWI; 
               
-              
                var1=out(vid2->getNextSibling());
                
                // Save name 
@@ -1889,8 +1888,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                Nvar=prs_arg->var_vtr.find(vid2->getText());
                //rcd=nco_inq_varid_flg(prs_arg->out_id,var1->nm ,&var_id);
 
-              
-               if(!Nvar || Nvar && Nvar->flg_stt==1)
+               if(!Nvar || (Nvar && Nvar->flg_stt==1))
                  (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
                
                 // var is defined and populated &  RHS is scalar -then stretch var to match

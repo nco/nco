@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.350 2010-02-07 18:36:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.351 2010-03-12 01:27:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.1 are ready. 
 
@@ -21,6 +21,10 @@ A. Configure: --enable-netcdf-4 is synonymous with --enable-netcdf4
    According to the Unidata netCDF team, the converse is also true.
 
 A. Fix problems converting netcdf4_classic input files to netcdf3
+
+A. Add ncks --fix_rec_dmn switch to change all record dimensions in 
+   in.nc into fixed dimensions in out.nc:
+   ncks --fix_rec_dmn in.nc out.nc
 
 A. Fix erroneous ncbo WARNING about non-duplicated variables fxm
    

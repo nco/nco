@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.41 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.42 2010-03-12 01:27:39 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -264,7 +264,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 
   /* has_mss_val is typed as int not bool because it was sent to Fortran routines */
 
-  static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value problem */
+  static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value mismatch */
 
   char att_nm[NC_MAX_NAME];
   
@@ -321,6 +321,10 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
     mss_tmp.vp=nco_free(mss_tmp.vp);
     break;
   } /* end loop over att */
+
+  /* Warn when NCO looks for _FillValue but file has missing_value */
+
+  /* Warn when NCO looks for missing_value but file has _FillValue */
 
   /* Warn when missing_value is and _FillValue is not defined */
   if(has_fll_val && !var->has_mss_val && WRN_FIRST){
