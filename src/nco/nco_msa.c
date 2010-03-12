@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.77 2010-03-10 12:35:58 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.78 2010-03-12 07:08:15 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -839,10 +839,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
   /* Call also initializes var.sz with final size */
 
-  /* print warning if var is packed */
-  if( nco_pck_dsk_inq(in_id,&var))
-    (void)fprintf(stderr,"%s: WARNING about to print the contents of the packed variable \"%s\". Consider unpacking it first using ncpdq -U .\n",prg_nm_get(),var_nm);
-
+  /* Warn if variable is packed */
+  if(nco_pck_dsk_inq(in_id,&var)) (void)fprintf(stderr,"%s: WARNING about to print packed contents of packed variable \"%s\". Consider unpacking it first using ncpdq -U.\n",prg_nm_get(),var_nm);
   
   /* User supplied dlm_sng, print var (includes nbr_dmn == 0) */  
   if(dlm_sng){

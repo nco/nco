@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.351 2010-03-12 01:27:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.352 2010-03-12 07:08:15 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.1 are ready. 
 
@@ -25,6 +25,13 @@ A. Fix problems converting netcdf4_classic input files to netcdf3
 A. Add ncks --fix_rec_dmn switch to change all record dimensions in 
    in.nc into fixed dimensions in out.nc:
    ncks --fix_rec_dmn in.nc out.nc
+
+A. Fix behavior of ncrename when target (variable/dimension/attribute
+   does not exist and name was prefixed with '.'. Used to die messily.
+   Correct behavior, now implemented is to skip it with a warning. 
+   Thanks to Patrick for reporting this bug.
+
+A. ncks warns when printing packed contents of packed variables
 
 A. Fix erroneous ncbo WARNING about non-duplicated variables fxm
    
