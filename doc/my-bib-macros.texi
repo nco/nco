@@ -1,4 +1,7 @@
-\input texinfo   @c -*-texinfo-*-
+@c % csz 20100313 remove next line to prevent "\input texinfo" from
+@c % appearing in printed output
+@c %% \input texinfo   @c -*-texinfo-*-
+
 @c %% my-bib-macros.texi --- Texinfo macros providing a crude
 @c %% bibliography and citation capability.
 
