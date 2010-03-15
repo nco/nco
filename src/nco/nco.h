@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.149 2010-03-15 17:04:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.150 2010-03-15 18:02:58 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -144,8 +144,8 @@ extern "C" {
 #endif /* NCO_MSS_VAL_SNG */
 
   /* Prototype global functions before defining them in next block */
-  const char *const nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
-  const char *const nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
+  char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
+  char *nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);
@@ -164,14 +164,14 @@ extern "C" {
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
 
 # ifdef NCO_USE_FILL_VALUE
-  const char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
-  const char nco_not_mss_val_sng[]="missing_value"; /* [sng] Not missing value attribute name */
+  char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
+  char nco_not_mss_val_sng[]="missing_value"; /* [sng] Not missing value attribute name */
 # else /* !NCO_USE_FILL_VALUE */
-  const char nco_mss_val_sng[]="missing_value"; /* [sng] Missing value attribute name */
-  const char nco_not_mss_val_sng[]="_FillValue"; /* [sng] Not missing value attribute name */
+  char nco_mss_val_sng[]="missing_value"; /* [sng] Missing value attribute name */
+  char nco_not_mss_val_sng[]="_FillValue"; /* [sng] Not missing value attribute name */
 # endif /* !NCO_USE_FILL_VALUE */
-  const char *const nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
-  const char *const nco_not_mss_val_sng_get(void){return nco_not_mss_val_sng;} /* [sng] Not missing value attribute name */
+  char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
+  char *nco_not_mss_val_sng_get(void){return nco_not_mss_val_sng;} /* [sng] Not missing value attribute name */
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
   

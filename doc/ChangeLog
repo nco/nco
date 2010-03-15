@@ -1,3 +1,7 @@
+2010-03-15  Charlie Zender  <zender@uci.edu>
+
+	* Remove consti-fication of return values in global functions
+
 2010-03-13  Charlie Zender  <zender@uci.edu>
 
 	* Comment-out "\input texinfo" from my-bib-macros.texi to prevent
