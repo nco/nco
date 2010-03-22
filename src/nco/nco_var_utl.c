@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.149 2010-03-12 01:27:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.150 2010-03-22 15:21:47 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -12,8 +12,7 @@ int /* O [id] Output file variable ID */
 nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
- const int rec_dmn_id, /* I [id] Input file record dimension ID  */
- const nco_bool FIX_REC_DMN, /* I [flg] Fix record dimension */
+ const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
  const char * const var_nm, /* I [sng] Input variable name */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
@@ -32,6 +31,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_in_id;
   int var_out_id;
+  int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
   
   nc_type var_type;
   
@@ -44,6 +44,9 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
+
+  /* Get unlimited dimension in output */
+  (void)nco_inq(out_id,(int*)NULL,(int*)NULL,(int*)NULL,&rec_dmn_out_id);
   
   /* Recall:
      1. Dimensions must be defined before variables
@@ -69,12 +72,20 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     
     /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
-      if(dmn_in_id[idx] != rec_dmn_id || FIX_REC_DMN){
+      if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm))
 	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
-      }else{
+      else{
 	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
-      } /* end else */
+        rec_dmn_out_id=dmn_out_id[idx];
+      } /* end else */ 
+
     } /* end if */
+
+    /* Very Important -blow out if record dim isn't the first record */
+    if( idx >0 && dmn_out_id[idx]==rec_dmn_out_id ){
+      (void)fprintf(stdout,"%s: ERROR You have defined the record dimension in output to be \"%s\". Yet in the variable \"%s\" the record dimension is dimension number %d  and not the 1st dimension. Consider using ncpdq to permute the record dimension.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx+1);  
+        nco_exit(EXIT_FAILURE);
+    }  
 
   } /* end loop over dim */
   
@@ -122,8 +133,7 @@ int /* O [id] Output file variable ID */
 nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
- const int rec_dmn_id, /* I [id] Input file record dimension ID  */
- const nco_bool FIX_REC_DMN, /* I [flg] Fix record dimension */
+ const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
  const char * const var_nm, /* I [sng] Input variable name */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
@@ -141,6 +151,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_in_id;
   int var_out_id;
+  int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
   
   nc_type var_type;
 
@@ -153,6 +164,11 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
+
+
+  /* Get unlimited dimension in output */
+  (void)nco_inq(out_id,(int*)NULL,(int*)NULL,(int*)NULL,&rec_dmn_out_id);
+
   
   /* Recall:
      1. Dimensions must be defined before variable
@@ -178,7 +194,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     
     /* If dimension has not been defined, copy it */
     if(rcd_lcl != NC_NOERR){
-      if(dmn_in_id[idx] != rec_dmn_id || FIX_REC_DMN ){
+      if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm) ){
 	int lmt_all_idx;
 
 	/* Does dimension have any user-specified limits? */
@@ -191,8 +207,16 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
 	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
+        rec_dmn_out_id=dmn_out_id[idx];
       } /* end else */
     } /* end if */
+
+    /* Very Important -blow out if record dim isn't the first record */
+    if( idx >0 && dmn_out_id[idx]==rec_dmn_out_id ){
+      (void)fprintf(stdout,"%s: ERROR You have defined the record dimension in output to be \"%s\". Yet in the variable \"%s\" the record dimension is dimension number %d  and not the 1st dimension. Consider using ncpdq to permute the record dimension.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx+1);  
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+
   } /* end loop over dim */
   
   /* Define variable in output file */
