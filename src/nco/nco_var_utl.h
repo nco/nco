@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.58 2010-03-12 01:27:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.59 2010-03-22 15:19:59 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -46,8 +46,7 @@ extern "C" {
   nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
-   const int rec_dmn_id, /* I [id] Input file record dimension ID  */
-   const nco_bool FIX_REC_DMN,  /* I [flg] Fix record dimension */
+   const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
    const char * const var_nm, /* I [sng] Input variable name */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
@@ -55,8 +54,7 @@ extern "C" {
   nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
-   const int rec_dmn_id, /* I [id] Input file record dimension ID  */
-   const nco_bool FIX_REC_DMN,  /* I [flg] Fix record dimension */
+   const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
    const char * const var_nm, /* I [sng] Input variable name */
    CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
    const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
