@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.564 2010-02-17 06:23:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.565 2010-03-30 04:08:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -513,6 +513,7 @@ netCDF4 compound types?
 <li><b>NCO/SDO 4.0.1</b>: (<i>In progress</i>)
 Spectral toolkit;
 Chunking in all operators;
+<tt>ncks --mk_rec_dmn</tt> and <tt>--fix_rec_dmn</tt>;
 <li><b>NCO/SDO 4.0.0</b>: 
 Bilinear interpolation, GSL fitting; 
 Chunking improvements;

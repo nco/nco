@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.572 2010-03-13 23:47:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.573 2010-03-30 04:08:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,7 +104,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.1
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 11 March 2010
+@set update-date 29 March 2010
 @set update-month March 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -10187,7 +10187,7 @@ SYNTAX
 ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fix_rec_dmn]
-[-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] 
+[-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}]
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] 
 [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 @var{input-file} [[@var{output-file}]]
@@ -10349,6 +10349,11 @@ Activate native machine binary output writing to binary file
 Also @samp{--fl_bnr} and @samp{--binary-file}.
 Writing packed variables in binary format is not supported.
 
+@cindex stride
+@item -d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
+Add @dfn{stride} argument to hyperslabber. 
+For a complete description of the @var{stride} argument, @xref{Stride}.
+
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
 <a name="fix_rec_dmn"></a> <!-- http://nco.sf.net/nco.html#fix_rec_dmn -->
@@ -10361,10 +10366,15 @@ Writing packed variables in binary format is not supported.
 Change all record dimensions in the input file into fixed dimensions
 in the output file.
 
-@cindex stride
-@item -d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-Add @dfn{stride} argument to hyperslabber. 
-For a complete description of the @var{stride} argument, @xref{Stride}.
+@html
+<a name="dmn_rec_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rec_mk -->
+<a name="mk_rec_dmn"></a> <!-- http://nco.sf.net/nco.html#mk_rec_dmn -->
+@end html
+@cindex record dimension
+@cindex fixed dimension
+@cindex @code{--mk_rec_dmn @var{dim}}
+@item --mk_rec_dmn
+Change dimension @var{dim} to a record dimension in the output file.
 
 @html
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->

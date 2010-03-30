@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.250 2010-03-22 15:18:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.251 2010-03-30 04:08:06 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,10 +121,10 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *rec_dmn_nm=NULL;
+  char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.250 2010-03-22 15:18:07 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.250 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.251 2010-03-30 04:08:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.251 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -213,7 +213,7 @@ main(int argc,char **argv)
       {"file_format",required_argument,0,0},
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
-      {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dim in Output */ 
+      {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"tst_udunits",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
@@ -312,7 +312,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"mk_rec_dmn")){
 	rec_dmn_nm=strdup(optarg);
-      }
+      } /* endif mk_rec_dmn */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
@@ -522,11 +522,11 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
-  /* get record dimension name name if not already defined with --mk_rec_dmn and --fix_rec_dmn is false */
-  if( !FIX_REC_DMN && !rec_dmn_nm && rec_dmn_id != NCO_REC_DMN_UNDEFINED){ 
-    rec_dmn_nm=(char*)nco_malloc(NC_MAX_NAME*(sizeof(char))); 
+  /* Get record dimension name name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
+  if(!FIX_REC_DMN && !rec_dmn_nm && (rec_dmn_id != NCO_REC_DMN_UNDEFINED)){ 
+    rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
     (void)nco_inq_dimname(in_id,rec_dmn_id,rec_dmn_nm);
-  }
+  } /* endif rec_dmn_nm */
 
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
@@ -706,6 +706,7 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
+    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
 
     /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
     for(idx=0;idx<nbr_dmn_fl;idx++)
@@ -739,7 +740,6 @@ main(int argc,char **argv)
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
-    if(rec_dmn_nm) rec_dmn_nm=(char*)nco_free(rec_dmn_nm);
   } /* !flg_cln */
   
   /* End timer */ 

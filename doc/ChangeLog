@@ -1,8 +1,13 @@
+2010-03-29  Charlie Zender  <zender@uci.edu>
+
+	* Cleanup and document '--mk_rec_dmn' switch
+
 2010-03-22  Henry Butowsky  <henryb@hush.com> 
 
 	* Add '--mk_rec_dmn' switch to ncks: 
-	 Allows user to (re)define the record dimension. If the redefined record dim is not the
-	 first dimension of a selected var then ncks bombs out with a warning message.
+	Allows user to (re-)define the record dimension. If the redefined
+	record dimension is not the first dimension of a given variable,
+	then ncks fails with an error message.
 
 2010-03-15  Charlie Zender  <zender@uci.edu>
 
