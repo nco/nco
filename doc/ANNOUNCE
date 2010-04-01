@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.353 2010-03-30 04:08:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.354 2010-04-01 06:01:12 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.1 are ready. 
 
@@ -41,6 +41,9 @@ A. Add ncks --mk_rec_dmn dmn_nm switch to define the indicated dimension
    Otherwise ncks will fail with an error.
    ncks --mk_rec_dmn time in.nc out.nc
    
+A. Avoid namespace collision between mvapich2, netCDF4, and NCO when
+   netCDF (4.1) is compiled with parallel HDF5 (1.8.4). Thanks to anonymous!
+
 C. ncap2 supports the GSL (Chapter 36) least-squares fitting routines, e.g.,
    ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
    ncap2 functions added since 3.9.9 are listed below
