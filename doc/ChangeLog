@@ -1,3 +1,7 @@
+2010-04-04  Charlie Zender  <zender@uci.edu>
+
+	* Change Debian to libnetcdf4 with libnetcdf-dev (>= 1:4.0.0) in control
+
 2010-03-29  Charlie Zender  <zender@uci.edu>
 
 	* Cleanup and document '--mk_rec_dmn' switch
