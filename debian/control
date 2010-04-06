@@ -6,7 +6,6 @@ Maintainer: Charlie Zender <zender@uci.edulegum3
 Build-Depends: debhelper (>= 5), antlr, bison, flex, gsl-bin, libgsl0-dev, libantlr-dev, netcdf-bin, libnetcdf-dev, texinfo
 Standards-Version: 3.8.2
 Homepage: http://nco.sourceforge.net/
-
 Package: nco
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
