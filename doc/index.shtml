@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.565 2010-03-30 04:08:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.566 2010-04-06 00:09:34 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -66,7 +66,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is 4.0.0 last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is 4.0.1 last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 
@@ -119,7 +119,9 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2010 Spring?: NCO 4.0.1 (Spectral toolkit)(TBD)</li>
+<li>2010 Summer?: NCO 4.0.2 (TBD)</li>
+
+<li>2010 Apr&nbsp;05: NCO 4.0.1</li>
 
 <li>2010 Jan&nbsp;05: NCO 4.0.0 (bilinear interpolation, calendar attribute)</li>
 
@@ -509,11 +511,10 @@ You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO/SDO 4.0.2</b>: (<i>Future</i>) 
+Chunking in all operators;
 netCDF4 compound types?
 <li><b>NCO/SDO 4.0.1</b>: (<i>In progress</i>)
-Spectral toolkit;
-Chunking in all operators;
-<tt>ncks --mk_rec_dmn</tt> and <tt>--fix_rec_dmn</tt>;
+<tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;
 <li><b>NCO/SDO 4.0.0</b>: 
 Bilinear interpolation, GSL fitting; 
 Chunking improvements;
@@ -683,7 +684,7 @@ the directory index <a href="src">here</a>.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.0.0</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.0.1</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/jaunty/nco">Ubuntu NCO</a> homepages.
@@ -691,13 +692,13 @@ the directory index <a href="src">here</a>.
 This standard package is, unfortunately, <i>old</i> (version 3.9.0,
 from about 2005) unless you have a very <i>new</i> flavor of Debian
 (i.e., Sid or Karmic) that supplies the latest numbered NCO release.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.0-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.0.0-1_amd64.deb">nco_4.0.0-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.0-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.0-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.0.0-1_i386.deb">nco_4.0.0-1_i386.deb</a> (<!--#fsize file="src/nco_4.0.0-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_4.0.0-1_i386.deb"-->)</li>
-<li><a href="src/nco_4.0.0-1.dsc">nco_4.0.0-1.dsc</a> (<!--#fsize file="src/nco_4.0.0-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.0-1.dsc"-->)</li>
-<li><a href="src/nco_4.0.0-1_i386.changes">nco_4.0.0-1_i386.changes</a> (<!--#fsize file="src/nco_4.0.0-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.0-1_i386.changes"-->)</li>
-<li><a href="src/nco_4.0.0.orig.tar.gz">nco_4.0.0.orig.tar.gz</a> (<!--#fsize file="src/nco_4.0.0.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.0.0.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.0.0-1.diff.gz">nco_4.0.0-1.diff.gz</a> (<!--#fsize file="src/nco_4.0.0-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.0.0-1_i386.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.1-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_4.0.1-1_amd64.deb">nco_4.0.1-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.1-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.1-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.0.1-1_i386.deb">nco_4.0.1-1_i386.deb</a> (<!--#fsize file="src/nco_4.0.1-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_4.0.1-1_i386.deb"-->)</li>
+<li><a href="src/nco_4.0.1-1.dsc">nco_4.0.1-1.dsc</a> (<!--#fsize file="src/nco_4.0.1-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.1-1.dsc"-->)</li>
+<li><a href="src/nco_4.0.1-1_i386.changes">nco_4.0.1-1_i386.changes</a> (<!--#fsize file="src/nco_4.0.1-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.1-1_i386.changes"-->)</li>
+<li><a href="src/nco_4.0.1.orig.tar.gz">nco_4.0.1.orig.tar.gz</a> (<!--#fsize file="src/nco_4.0.1.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.0.1.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.0.1-1.diff.gz">nco_4.0.1-1.diff.gz</a> (<!--#fsize file="src/nco_4.0.1-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.0.1-1_i386.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -855,10 +856,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
-<a href="src/nco-4.0.0.tar.gz">nco-4.0.0.tar.gz</a> 
-(<!--#fsize file="src/nco-4.0.0.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.0.0.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.0.0.tar.gz"--> 
+<a href="src/nco-4.0.1.tar.gz">nco-4.0.1.tar.gz</a> 
+(<!--#fsize file="src/nco-4.0.1.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.0.1.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.0.1.tar.gz"--> 
 </li>
 </ul>
 
@@ -879,19 +880,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>4.0.0</tt> (which is
-tagged as <tt>nco-4_0_0</tt> due to CVS rules) into local directory
-<tt>nco-4.0.0</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_0 -d nco-4.0.0 nco</tt></p>
+This command retrieves and places NCO version <tt>4.0.1</tt> (which is
+tagged as <tt>nco-4_0_1</tt> due to CVS rules) into local directory
+<tt>nco-4.0.1</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_1 -d nco-4.0.1 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_0_0</tt>) and the development version is that the
+(e.g., <tt>nco-4_0_1</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.0.0</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.0.1</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1265,7 +1266,7 @@ should fix the problem.
 <ul><b>Platform-specific Run-time Problems:</b>
 <a name="bug_ncap_flt_fnc_aix"></a>
 <li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-<tt>ncap</tt> versions through 4.0.0 have a bug that causes all float-valued
+<tt>ncap</tt> versions through 4.0.1 have a bug that causes all float-valued
 intrinsic math functions to fail under AIX.
 Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
 <tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.

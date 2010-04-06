@@ -23,7 +23,6 @@ int main(int argc, char **argv){
   s_out=strdup(argv[2]); // output units             e.g feet,inches, "days since 2001:10:12 00:00:01"
   //s_out=strdup("feet");
   printf("system check argv[1]=%s argv[2]=%s\n", s_in,s_out); 
-
     
   (void)cdChar2Comp(cdStandard,s_in, &comptime);     
 
@@ -32,6 +31,5 @@ int main(int argc, char **argv){
   printf("year=%li month=%d day=%d hour=%f \n",comptime.year,comptime.month,comptime.day,comptime.hour);
 
   exit(0);
-
 }
 

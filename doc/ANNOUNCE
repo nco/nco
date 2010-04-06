@@ -1,13 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.354 2010-04-01 06:01:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.355 2010-04-06 00:09:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version offers significant new features:
-Chunking in ncks, ncecat, GSL fitting, bilinear interpolation.
-
+This version offers many minor fixes and improvements.
 Short explanations of these appear below.
 
 Work on NCO 4.0.1 is underway. Areas of improvement include
@@ -16,64 +14,45 @@ more chunking rulesets.
 
 "New stuff" in 4.0.1 details:
 
-A. Configure: --enable-netcdf-4 is synonymous with --enable-netcdf4
-   Now NCO configure accepts the usage of the netCDF configure.
-   According to the Unidata netCDF team, the converse is also true.
-
-A. Fix problems converting netcdf4_classic input files to netcdf3
-
 A. Add ncks --fix_rec_dmn switch to change all record dimensions in 
    in.nc into fixed dimensions in out.nc:
    ncks --fix_rec_dmn in.nc out.nc
 
-A. Fix behavior of ncrename when target (variable/dimension/attribute
-   does not exist and name was prefixed with '.'. Used to die messily.
-   Correct behavior, now implemented is to skip it with a warning. 
-   Thanks to Patrick for reporting this bug.
-
-A. ncks warns when printing packed contents of packed variables
-
-A. Fix erroneous ncbo WARNING about non-duplicated variables fxm
-
-A. Add ncks --mk_rec_dmn dmn_nm switch to define the indicated dimension
+B. Add ncks --mk_rec_dmn dmn_nm switch to define the indicated dimension
    as the record dimension. The specified dimension should be the
    first dimension, not an inner dimension, of some variable.
    Otherwise ncks will fail with an error.
    ncks --mk_rec_dmn time in.nc out.nc
    
-A. Avoid namespace collision between mvapich2, netCDF4, and NCO when
-   netCDF (4.1) is compiled with parallel HDF5 (1.8.4). Thanks to anonymous!
+C. Fix problems converting netcdf4_classic input files to netcdf3
+   ncks -3 in_4c.nc out_3.nc
 
-C. ncap2 supports the GSL (Chapter 36) least-squares fitting routines, e.g.,
-   ncap2 -v -O -s 'defdim("dmn",100);sigma[dmn]=1.0;var1=gsl_ran_gaussian(sigma);var2=gsl_stats_skew(var1);print(var2)' in.nc out.nc
-   ncap2 functions added since 3.9.9 are listed below
-   http://nco.sf.net/nco.html#gsl
+D. Fix behavior of ncrename when target (variable/dimension/attribute
+   does not exist and name was prefixed with '.'. Used to die messily.
+   Correct behavior, now implemented is to skip it with a warning. 
+   Thanks to Patrick for reporting this bug.
 
-D. ncks and ncecat support netCDF4 chunking options:
-   These options can improve performance on large datasets.
-   Large file users: Send us suggestions on useful chunking patterns!
-   More usefule chunking patterns will be implemented in NCO 4.0.1.
-   ncks -O -4 --cnk_plc=all in.nc out.nc
-   http://nco.sf.net/nco.html#chunking
+E. Configure: --enable-netcdf-4 is synonymous with --enable-netcdf4
+   Now NCO configure accepts the usage of the netCDF configure.
+   According to the Unidata netCDF team, the converse is also true.
 
-E. NCO improves support for the netCDF4 NC_STRING atomic type.
-   An "s" trailing double quotes specifies NC_STRING (not NC_CHAR):
-   ncap2 -4 -O -v -s 'name[lat]={"US"s,"Them"s};' in.nc out.nc
-   Ragged arrays of strings are finally here! Let's use them.
-   http://nco.sf.net/nco.html#nco4
+F. ncks warns when printing packed contents of packed variables
 
-F. Dimension-reduction to scalars works with irregular hyperslabs.
-   Commands that now work include
-   scalar=avg(three_dmn_var_dbl(0:1,:,0:3));
-   scalar=total(three_dmn_var_dbl(0:1,:,0:3)); 
-   Formerly these required multiple steps to ensure that the
-   intermediate dimension sizes used in the hyperslabs were present 
-   on disk. 
+G. Fix misleading ncbo WARNING about non-duplicated variables
 
-G. OpenSuse packages are now available (Filipe Fernandes)
-   http://download.opensuse.org/repositories/home:/ocefpaf/openSUSE_11.1
+H. Known Problem: 
+   Namespace collision between mvapich2, netCDF4, and NCO when netCDF
+   (4.1) is compiled with parallel HDF5 (1.8.4). Thanks to anonymous
+   for pointing this out. We are working on it!
 
 "Sticky" reminders:
+
+J. ncks and ncecat support netCDF4 chunking options:
+   These options can improve performance on large datasets.
+   Large file users: Send us suggestions on useful chunking patterns!
+   More useful chunking patterns may be implemented in NCO 4.0.1.
+   ncks -O -4 --cnk_plc=all in.nc out.nc
+   http://nco.sf.net/nco.html#chunking
 
 K. Pre-built, up-to-date Debian Sid & Ubuntu Karmic packages:
    http://nco.sf.net#debian

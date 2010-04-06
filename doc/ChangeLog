@@ -1,3 +1,11 @@
+2010-04-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.0.1 release procedure:
+	Changes since nco-4_0_0: fix_rec_dmn, mk_rec_dmn, .ncrename
+	cd ~/nco;cvs tag -d nco-4_0_1;cvs tag -d nco-4_0_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.1 release"
+	cvs tag -c nco-4_0_1;cvs tag -c nco-4_0_1-1
+
 2010-04-04  Charlie Zender  <zender@uci.edu>
 
 	* Change Debian to libnetcdf4 with libnetcdf-dev (>= 1:4.0.0) in control
@@ -113,12 +121,6 @@
 	Do not rely on no-ops from netCDF3 and netCDF4-classic files
 
 2010-01-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.1 release procedure:
-	Changes since nco-4_0_0: fxm
-	cd ~/nco;cvs tag -d nco-4_0_1;cvs tag -d nco-4_0_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.1 release"
-	cvs tag -c nco-4_0_1;cvs tag -c nco-4_0_1-1
 
 	* Patch --enable-netcdf-4 implementation
 
