@@ -2,7 +2,7 @@ Source: nco
 Section: science
 Priority: optional
 Maintainer: Charlie Zender <zender@uci.edu>
-Build-Depends: debhelper (>= 5), antlr, bison, flex, gsl-bin, libgsl0-dev, libantlr-dev, netcdf-bin, libnetcdf-dev (>= 1:4.0.0), texinfo
+Build-Depends: debhelper (>= 5), antlr, bison, flex, gsl-bin, libgsl0-dev, libantlr-dev, netcdf-bin, libnetcdf-dev, texinfo
 Standards-Version: 3.8.2
 Homepage: http://nco.sourceforge.net/
 
