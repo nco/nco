@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
 	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
 
+	* Noticed that VERSION file released with 4.0.1 says version is 4.0.0
+
 	* NCO 4.0.1 release procedure:
 	Changes since nco-4_0_0: fix_rec_dmn, mk_rec_dmn, .ncrename
 	cd ~/nco;cvs tag -d nco-4_0_1;cvs tag -d nco-4_0_1-1
