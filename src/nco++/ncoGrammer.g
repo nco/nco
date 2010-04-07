@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.179 2010-03-12 01:27:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.180 2010-04-07 18:47:59 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2610,7 +2610,6 @@ var_sct *var_rhs;
    nco_bool DO_CONFORM;
    std::string var_nm=vid->getText();
    var_sct *var_lhs;
-   var_sct *var_tmp=NULL_CEWI;
    NcapVar *Nvar;
 
    bret=false;
@@ -2621,26 +2620,42 @@ var_sct *var_rhs;
             
    var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);         
    if(var_rhs->sz >1L && var_rhs->sz != var_lhs->sz) {
-     std::ostringstream os;
-     os<<"assign in where: size of expression on rhs doesn't match size of var on lhs";  
-     err_prn(fnc_nm,os.str());         
+     var_sct *var_tmp=NULL_CEWI;
+     //  try and make RHS conform to LHS
+     var_tmp=nco_var_cnf_dmn(var_lhs,var_rhs,var_tmp,True,&DO_CONFORM);
+
+     if(DO_CONFORM==False) {
+       std::ostringstream os;
+       os<<"Cannot make variable:"<<var_lhs->nm <<" and  variable "<<var_rhs->nm <<" conform in where statement.";
+       err_prn(fnc_nm,os.str()); 
+     }
+
+     if(var_rhs != var_tmp){
+       var_rhs=nco_var_free(var_rhs);
+       var_rhs=var_tmp;
+     }  
+
    }
+ 
  
   
    // Make mask conform
-    var_tmp=nco_var_cnf_dmn(var_lhs,var_msk,var_tmp,True,&DO_CONFORM);
-    if(var_msk != var_tmp){
-      //var_msk=nco_var_free(var_msk);
-      bfr=true;
-      var_msk=var_tmp;
-    }
+   if(var_msk->sz != var_lhs->sz){
+     var_sct *var_tmp=NULL_CEWI;
+     var_tmp=nco_var_cnf_dmn(var_lhs,var_msk,var_tmp,True,&DO_CONFORM);
 
-    if(DO_CONFORM==False) {
-      std::ostringstream os;
-      os<<"Cannot make variable:"<<var_lhs->nm <<" and where mask variable "<<var_msk->nm <<" conform. ";
-      err_prn(fnc_nm,os.str()); 
-    }
+     if(DO_CONFORM==False) {
+       std::ostringstream os;
+       os<<"Cannot make variable:"<<var_lhs->nm <<" and where mask variable "<<var_msk->nm <<" conform. ";
+       err_prn(fnc_nm,os.str()); 
+     }
 
+     if(var_msk != var_tmp){
+       //var_msk=nco_var_free(var_msk);
+       bfr=true;
+       var_msk=var_tmp;
+     }
+   }
 
     char *cp_in;
     char *cp_out;
