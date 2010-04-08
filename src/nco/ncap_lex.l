@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.72 2010-01-27 09:36:31 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.73 2010-04-08 22:57:14 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -49,6 +49,7 @@
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strdup */
+
 
   /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -186,7 +187,7 @@ XPN [eE][+-]?[0-9]+
 
   /* Create new scanner input buffer for include file and switch to it
      Current start conditions remains active in new input buffer */
-  yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE));
+  NCOyy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE));
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
 } /* end enter #include file */
@@ -214,7 +215,7 @@ XPN [eE][+-]?[0-9]+
     /* Reclaim storage used by buffer just exited */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     /* Switch back to parent buffer */
-    yy_switch_to_buffer(ncl_stk[ncap_ncl_dpt_crr]);
+    NCOyy_switch_to_buffer(ncl_stk[ncap_ncl_dpt_crr]);
   } /* endelse */
 } /* end <EOF> */
 
@@ -315,7 +316,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
   if(sscanf((char *)yytext,"%e",&float_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad float: %s",yytext);
-    yyerror(prs_arg, ncap_err_sng);
+    NCOyyerror(prs_arg, ncap_err_sng);
     return EPROVOKE;
   } /* endif */
   lval_ptr->scv.val.f=float_tkn;
@@ -329,7 +330,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int64 %s\n",yytext); 
   if(sscanf((char *)yytext,"%lli",&int64_tkn) != 1){
     sprintf(ncap_err_sng,"Bad int64 constant: %s",(char *)yytext);
-    yyerror(prs_arg,ncap_err_sng);
+    NCOyyerror(prs_arg,ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.i=int64_tkn;
   lval_ptr->scv.type=NC_INT64;
@@ -342,7 +343,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint64 %s\n",yytext); 
   if(sscanf((char *)yytext,"%llu",&uint64_tkn) != 1){
     sprintf(ncap_err_sng,"Bad uint64 constant: %s",(char *)yytext);
-    yyerror(prs_arg,ncap_err_sng);
+    NCOyyerror(prs_arg,ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.i=uint64_tkn;
   lval_ptr->scv.type=NC_UINT64;
@@ -358,7 +359,7 @@ XPN [eE][+-]?[0-9]+
      if(sscanf((char *)yytext,"%li",&int_tkn) != 1){ */
   if(sscanf((char *)yytext,"%i",&int_tkn) != 1){
     sprintf(ncap_err_sng,"Bad int constant: %s",(char *)yytext);
-    yyerror(prs_arg,ncap_err_sng);
+    NCOyyerror(prs_arg,ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.i=int_tkn;
   lval_ptr->scv.type=NC_INT;
@@ -371,7 +372,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint %s\n",yytext); 
   if(sscanf((char *)yytext,"%u",&uint_tkn) != 1){
     sprintf(ncap_err_sng,"Bad uint constant: %s",(char *)yytext);
-    yyerror(prs_arg,ncap_err_sng);
+    NCOyyerror(prs_arg,ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.ui=uint_tkn;
   lval_ptr->scv.type=NC_UINT;
@@ -384,7 +385,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
   if(sscanf((char *)yytext,"%hi",&short_tkn) != 1){
     sprintf(ncap_err_sng,"Bad short constant: %s",(char *)yytext);
-    yyerror(prs_arg,ncap_err_sng);
+    NCOyyerror(prs_arg,ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.s=short_tkn;
   lval_ptr->scv.type=NC_SHORT;
@@ -397,7 +398,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ushort %s\n",yytext); 	
   if(sscanf((char *)yytext,"%hu",&short_tkn) != 1){
     sprintf(ncap_err_sng,"Bad short constant: %s",(char *)yytext);
-    yyerror(prs_arg,ncap_err_sng);
+    NCOyyerror(prs_arg,ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.s=short_tkn;
   lval_ptr->scv.type=NC_USHORT;
@@ -410,7 +411,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
   if(sscanf((char *)yytext,"%hhi",&byte_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
-    yyerror(prs_arg, ncap_err_sng);
+    NCOyyerror(prs_arg, ncap_err_sng);
     return EPROVOKE;
   } /* endif err */
   lval_ptr->scv.val.b=byte_tkn;
@@ -424,7 +425,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ubyte %s\n",yytext); 
   if(sscanf((char *)yytext,"%hhu",&ubyte_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
-    yyerror(prs_arg, ncap_err_sng);
+    NCOyyerror(prs_arg, ncap_err_sng);
     return EPROVOKE;
   } /* endif err */
   lval_ptr->scv.val.ub=ubyte_tkn;
@@ -494,7 +495,7 @@ M_PI {return NAMED_CONSTANT;}
         return FUNCTION;
      } /* endif */
    (void)sprintf(ncap_err_sng,"Warning: Unable to locate function %s. Perhaps %s is a variable?",yytext,yytext);
-   (void)yyerror(prs_arg,ncap_err_sng);       
+   (void)NCOyyerror(prs_arg,ncap_err_sng);       
    return EPROVOKE;             
 } /* end functions */
 
@@ -564,7 +565,7 @@ M_PI {return NAMED_CONSTANT;}
       rcd=nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&att_sz);
       if (rcd == NC_ENOTATT){
 	(void)sprintf(ncap_err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
-	(void)yyerror(prs_arg, ncap_err_sng);
+	(void)NCOyyerror(prs_arg, ncap_err_sng);
 	lval_ptr->scv.val.b=0;
 	lval_ptr->scv.type=NC_BYTE;
 	return SCV;
@@ -588,7 +589,7 @@ M_PI {return NAMED_CONSTANT;}
     }else{ /* ...else rcd reported an error */
       /* Attribute is not in table or on disk so return 0-byte  */
       (void)sprintf(ncap_err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
-      (void)yyerror(prs_arg,ncap_err_sng);
+      (void)NCOyyerror(prs_arg,ncap_err_sng);
       lval_ptr->scv.val.b=0;
       lval_ptr->scv.type=NC_BYTE;
       return SCV;
@@ -612,7 +613,7 @@ M_PI {return NAMED_CONSTANT;}
       return OUT_ATT;
     }else{
       (void)sprintf(ncap_err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
-      (void)yyerror(prs_arg, ncap_err_sng);
+      (void)NCOyyerror(prs_arg, ncap_err_sng);
       return EPROVOKE; 
     } /* end else */
   } /* end if */
@@ -716,7 +717,7 @@ M_PI {return NAMED_CONSTANT;}
    if(jdx != prs_arg->nbr_dmn_in) continue;
    /* Exit action if dimension not found */
    (void)sprintf(ncap_err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
-   (void)yyerror(prs_arg, ncap_err_sng);
+   (void)NCOyyerror(prs_arg, ncap_err_sng);
    (void)nco_enddef(prs_arg->out_id);
    goto end_LHS_sbs;                     
   } /* endif */
@@ -726,7 +727,7 @@ M_PI {return NAMED_CONSTANT;}
   for(idx=1;idx<dmn_nbr;idx++)
     if(dmn[idx]->is_rec_dmn){
       (void)sprintf(ncap_err_sng,"Warning:\"%s\" is the record dimension. It can only be the first dimension in a list",dmn[idx]->nm);
-      (void)yyerror(prs_arg, ncap_err_sng);
+      (void)NCOyyerror(prs_arg, ncap_err_sng);
       goto end_LHS_sbs;                     
     } /* endif */
 
@@ -822,7 +823,7 @@ M_PI {return NAMED_CONSTANT;}
 <RHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
   /* RHS_SUBSCRIPT */
   (void)sprintf(ncap_err_sng,"Warning RHS subscripts are not yet implemented");
-  (void)yyerror(prs_arg, ncap_err_sng);
+  (void)NCOyyerror(prs_arg, ncap_err_sng);
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
 } /* end RHS_SUBSCRIPT */

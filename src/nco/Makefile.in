@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.103 2010-01-28 04:30:45 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.104 2010-04-08 22:58:00 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -255,6 +255,7 @@ LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LFLAGS = @LFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -360,7 +361,7 @@ top_srcdir = @top_srcdir@
 @BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
 @NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
-AM_YFLAGS = -d
+AM_YFLAGS = -d --name-prefix=NCOyy
 ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
 ncap_LDADD = libnco.la
 ncatted_SOURCES = ncatted.c

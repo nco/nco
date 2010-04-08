@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.233 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.234 2010-04-08 22:57:14 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -81,7 +81,7 @@ glb_init_free /* [fnc] Initialize and free global variables (line numbers and in
 int 
 main(int argc,char **argv)
 {
-  extern int yyparse(prs_sct *prs_arg); /* Prototype here as in bison.simple to avoid compiler warning */
+  extern int NCOyyparse(prs_sct *prs_arg); /* Prototype here as in bison.simple to avoid compiler warning */
   /* Following declaration gets rid of implicit declaration compiler warning
      It is a condensation of the lexer declaration from lex.yy.c:
      YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.233 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.233 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.234 2010-04-08 22:57:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.234 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -619,7 +619,7 @@ main(int argc,char **argv)
     ncap_fl_spt_glb[ncap_ncl_dpt_crr]=fl_spt_usr;
     
     /* Invoke parser */
-    rcd=yyparse(&prs_arg);
+    rcd=NCOyyparse(&prs_arg);
     
     /* Tidy up */  
     if(nbr_spt > 0) fl_spt_usr=(char*)nco_free(fl_spt_usr);

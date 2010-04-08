@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.44 2010-01-26 13:06:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.45 2010-04-08 22:57:14 zender Exp $ -*-makefile-*-
 
 if BUILD_YACC_SOURCE
 NCAP=ncap
@@ -24,7 +24,7 @@ else
 bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ${NCWA}
 endif
 
-AM_YFLAGS = -d
+AM_YFLAGS = -d --name-prefix=NCOyy
 
 ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
 ncap_LDADD = libnco.la

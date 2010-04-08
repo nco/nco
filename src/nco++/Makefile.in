@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.51 2010-01-05 20:16:26 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.52 2010-04-08 22:58:00 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -125,6 +125,7 @@ LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LFLAGS = @LFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@

@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.67 2010-01-05 20:16:26 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.68 2010-04-08 22:58:00 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -152,6 +152,7 @@ LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LFLAGS = @LFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
