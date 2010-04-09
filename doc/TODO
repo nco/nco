@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1070 2010-04-09 21:16:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1071 2010-04-09 21:18:10 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -687,14 +687,6 @@ nco979. UDUnits1: time zone at end of user-specified limit string is ignored (ba
 nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between files like  "hours since 1965-010-01 12:00" and "minutes  since 1968-02-01 12:32"
 nco983. change default to netcdf3 64bit? or compile-time option to do so?
 nco984. remove makeinfo dependency trigger from nco configure build
-nco985. string NUL-append problem
-	cd;/bin/rm foo.nc;
-	ncgen -o foo.nc << EOF
-	netcdf foo { variables: double v ; v:long_name = "var" ; data: v = 1 ; }
-	EOF
-	ncatted -O -h -a long_name,v,a,c,'b' foo.nc
-	ncatted -O -h -a long_name,v,a,c,'c' foo.nc 
-	ncdump -h foo.nc 
 nco986. 
 ************************************************************************
 End ncoXXX TODOs
