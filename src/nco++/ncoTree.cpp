@@ -660,7 +660,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 						else 
 						fmt_sng=(char*)NULL; 
 						
-						(void)ncap_att_prn(var,fmt_sng,prs_arg);
+						(void)ncap_att_prn(var,fmt_sng);
 						var=nco_var_free(var); 
 						
 						end3:   ;

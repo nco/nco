@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.132 2010-01-27 16:04:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.133 2010-04-09 05:04:39 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -277,13 +277,10 @@ ncap_att_cpy
   return nbr_att;
 }
 
-
-
 void 
 ncap_att_prn     /* [fnc] Print a single attribute*/
 (var_sct *var,   /* I Variable containing att */
-char *const att_in_sng, /* user defined format string */
-prs_cls *prs_arg) /*Maybe used at some point */
+ char *const att_in_sng) /* user defined format string */
 {
   char dlm_sng[3];
   char att_sng[NCO_MAX_LEN_FMT_SNG];
@@ -357,11 +354,6 @@ prs_cls *prs_arg) /*Maybe used at some point */
   (void)fflush(stdout);
 
 } /* end ncap_att_prn() */
-
-
-
-
-
 
 var_sct * /* O [sct] Remainder of modulo operation of input variables (var1%var2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */

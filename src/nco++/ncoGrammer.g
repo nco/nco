@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.180 2010-04-07 18:47:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.181 2010-04-09 05:04:39 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1354,7 +1354,7 @@ static std::vector<std::string> lpp_vtr;
           else 
             fmt_sng=(char*)NULL; 
 
-          (void)ncap_att_prn(var,fmt_sng,prs_arg);
+          (void)ncap_att_prn(var,fmt_sng);
           var=nco_var_free(var); 
 
           end3:   ;
