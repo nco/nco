@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.101 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.102 2010-04-09 20:57:00 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -26,7 +26,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
   
-  /* fxm: netCDF2 specifies att_sz should be type int, netCDF3 uses size_t */
+  /* NB: netCDF2 specifies att_sz is type int, netCDF3 and netCDF4 use size_t */
   int nbr_att; /* [nbr] Number of attributes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   long att_sz;
@@ -252,10 +252,10 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   } /* end switch */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-    if(flg_netCDF4 && !strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete ){
+    if(flg_netCDF4 && !strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete){
       (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
-      /* Restore orginal name (space already allocated)*/
-     strcpy(aed.att_nm,nco_mss_val_sng_get()); 
+      /* Restore original name (space already allocated) */
+      strcpy(aed.att_nm,nco_mss_val_sng_get()); 
     } /* !flg_netCDF4 */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
@@ -668,7 +668,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
 	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
 	/* Rewrite list, splicing in original delimiter string */
-	/* fxm: TODO nco527 this is probably where ncatted memory is lost */
+	/* fxm: TODO nco527 ncatted memory may be lost here */
 	arg_lst[idx_att_val_arg]=sng_lst_cat(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
 	/* Keep bookkeeping straight, just in case */
 	arg_nbr=idx_att_val_arg+1L;
