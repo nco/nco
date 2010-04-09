@@ -1,5 +1,9 @@
 2010-04-09  Charlie Zender  <zender@uci.edu>
 
+	* Fix off-by-one error in ncatted appends for type NC_CHAR
+	Extra NULs are no longer inserted with each append
+	Thanks to A.T. Wittenburg for this bug report.
+
 	* Clean-up ncatted to address NUL-append problem
 
 2010-04-08  Charlie Zender  <zender@uci.edu>

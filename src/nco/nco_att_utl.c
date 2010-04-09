@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.102 2010-04-09 20:57:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.103 2010-04-09 21:16:32 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -680,8 +680,12 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
       /* Set size of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
-	/* Include NUL-terminator in string length */
-	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+1L;
+	/* 20100409 Remove extra space formerly allocated for NUL-terminator 
+	   This caused each append to insert a NUL at end of NC_CHAR attributes
+	   Multiple appends would then result in attributes pockmarked with NULs
+	   Solves TODO nco985
+	   Not yet sure there are no ill side-effects though... */ 
+	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg]);
       }else{
 	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;

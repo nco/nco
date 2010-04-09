@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.356 2010-04-06 22:56:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.357 2010-04-09 21:16:31 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.2 are ready. 
 
@@ -14,31 +14,9 @@ more chunking rulesets.
 
 "New stuff" in 4.0.2 details:
 
-A. Add ncks --fix_rec_dmn switch to change all record dimensions in 
-   in.nc into fixed dimensions in out.nc:
-   ncks --fix_rec_dmn in.nc out.nc
-
-B. Add ncks --mk_rec_dmn dmn_nm switch to define the indicated dimension
-   as the record dimension. The specified dimension should be the
-   first dimension, not an inner dimension, of some variable.
-   Otherwise ncks will fail with an error.
-   ncks --mk_rec_dmn time in.nc out.nc
-   
-C. Fix problems converting netcdf4_classic input files to netcdf3
-   ncks -3 in_4c.nc out_3.nc
-
-D. Fix behavior of ncrename when target (variable/dimension/attribute
-   does not exist and name was prefixed with '.'. Used to die messily.
-   Correct behavior, now implemented is to skip it with a warning. 
-   Thanks to Patrick for reporting this bug.
-
-E. Configure: --enable-netcdf-4 is synonymous with --enable-netcdf4
-   Now NCO configure accepts the usage of the netCDF configure.
-   According to the Unidata netCDF team, the converse is also true.
-
-F. ncks warns when printing packed contents of packed variables
-
-G. Fix misleading ncbo WARNING about non-duplicated variables
+A. Fix off-by-one error in ncatted appends for type NC_CHAR
+   Extra NULs are no longer inserted with each append
+   Thanks to A.T. Wittenburg for this bug report.
 
 H. Known Problem: 
    Namespace collision between mvapich2, netCDF4, and NCO when netCDF
