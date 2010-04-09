@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.54 2010-01-27 09:36:31 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.55 2010-04-09 04:51:20 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -209,7 +209,7 @@ PRINT '(' var_xpr ')' ';' {
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
-  (void)yyerror(prs_arg, ncap_err_sng);
+  (void)nco_yyerror(prs_arg,ncap_err_sng);
   
   if(dbg_lvl_get() > 1){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);

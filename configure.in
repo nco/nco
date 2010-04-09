@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.316 2010-04-09 00:19:33 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.317 2010-04-09 04:51:20 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1264,10 +1264,10 @@ echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 AC_SUBST(NCOXX)
 # End config
 
-# Prefix Flex output symbols with NCOyy to avoid clash with programs/libraries using lex
-# 20100408 Denis Nadeau
-LEX_OUTPUT_ROOT="lex.NCOyy"
-LFLAGS="-PNCOyy"
+# Prefix Flex output symbols with NCO string to avoid namespace conflict with flex-generated symbols from other programs/libraries
+NCO_YY_PFX='nco_yy'
+LEX_OUTPUT_ROOT="lex.${NCO_YY_PFX}"
+LFLAGS="-P${NCO_YY_PFX}"
 AC_SUBST(LEX_OUTPUT_ROOT)
 AC_SUBST(LFLAGS)
 

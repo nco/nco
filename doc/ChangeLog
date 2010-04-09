@@ -1,5 +1,7 @@
 2010-04-08  Charlie Zender  <zender@uci.edu>
 
+	* Namespace patches work with bld/Makefile. Not sure about configure.
+
 	* These patches caused build breakage. Not surprising. Will try to fix.
 
 	* Apply patches from Denis Nadeau to prevent namespace clashes

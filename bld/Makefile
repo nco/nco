@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.540 2010-04-09 00:19:34 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.541 2010-04-09 04:51:20 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -151,13 +151,7 @@ ifndef I18N
  I18N := N
 endif
 ifndef NCO_YY_PFX
- NCO_YY_PFX := NCOyy
-endif
-ifndef YFLAGS
- YFLAGS := -d --name-prefix=${NCO_YY_PFX}
-endif
-ifndef LFLAGS
- LFLAGS := -P${NCO_YY_PFX}
+ NCO_YY_PFX := nco_yy
 endif
 ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
@@ -239,6 +233,12 @@ endif # endif ZNETCDF
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+ifndef LFLAGS # Flags for Flex (Lex)
+ LFLAGS := -P${NCO_YY_PFX}
+endif
+ifndef YFLAGS # Flags for Bison (Yacc)
+ YFLAGS := -d --name-prefix=${NCO_YY_PFX}
+endif
 
 # Default NCO build: DAP_NETCDF, DAP_OPENDAP, NETCDF4, PNETCDF, and ZNETCDF clauses may overwrite this
 NC_LDFLAGS := -L${NETCDF_LIB}
@@ -1882,7 +1882,8 @@ dbg:
 	@printf "LAMMPICC = ${LAMMPICC}\n"
 	@printf "LAMMPICXX = ${LAMMPICXX}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
-	@printf "LEX = $(LEX)\n"
+	@printf "LEX = ${LEX}\n"
+	@printf "LFLAGS = ${LFLAGS}\n"
 	@printf "LINUX_CC = $(LINUX_CC)\n"
 	@printf "LINUX_CXX = $(LINUX_CXX)\n"
 	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
@@ -1940,6 +1941,7 @@ dbg:
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
 	@printf "YACC = ${YACC}\n"
+	@printf "YFLAGS = ${YFLAGS}\n"
 	@printf "ZNETCDF = ${ZNETCDF}\n"
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln

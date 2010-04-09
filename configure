@@ -19573,10 +19573,10 @@ echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 
 # End config
 
-# Prefix Flex output symbols with NCOyy to avoid clash with programs/libraries using lex
-# 20100408 Denis Nadeau
-LEX_OUTPUT_ROOT="lex.NCOyy"
-LFLAGS="-PNCOyy"
+# Prefix Flex output symbols with NCO string to avoid namespace conflict with flex-generated symbols from other programs/libraries
+NCO_YY_PFX='nco_yy'
+LEX_OUTPUT_ROOT="lex.${NCO_YY_PFX}"
+LFLAGS="-P${NCO_YY_PFX}"
 
 
 

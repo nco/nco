@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.145 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.146 2010-04-09 04:51:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -195,7 +195,7 @@ ncap_var_write
     /* Check to see if variable has already been defined and written */
     if(rcd == NC_NOERR){
       (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",var->nm,((prs_sct *)prs_arg)->fl_out);
-      (void)yyerror(prs_arg,ncap_err_sng);
+      (void)nco_yyerror(prs_arg,ncap_err_sng);
       var = nco_var_free(var);
       return False;
     }
