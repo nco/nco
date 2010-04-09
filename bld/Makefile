@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.539 2010-04-06 23:03:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.540 2010-04-09 00:19:34 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -149,6 +149,15 @@ ifndef ICC_RCH_ARG
 endif # endif ICC_RCH_ARG
 ifndef I18N
  I18N := N
+endif
+ifndef NCO_YY_PFX
+ NCO_YY_PFX := NCOyy
+endif
+ifndef YFLAGS
+ YFLAGS := -d --name-prefix=${NCO_YY_PFX}
+endif
+ifndef LFLAGS
+ LFLAGS := -P${NCO_YY_PFX}
 endif
 ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
@@ -525,7 +534,7 @@ MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these file
 MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefile nco.spec nco_dst.pl) # `make tags' includes these files
 MDL_BLD_SRC += $(addprefix ${MY_BM_DIR}/,NCO_bm.pm NCO_benchmarks.pm NCO_rgr.pm nco_bm.pl nco_bm.sh mk_bm_plots.pl) # `make tags' includes these files
 # Files, if any, to exclude from tags
-TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc .//lex.yy.c
+TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc .//lex.${NCO_YY_PFX}.c
 
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
@@ -1949,22 +1958,22 @@ tags:
 # Solution is to comment out that definition in bison.simple
 ifeq (${YACC},bison)
 ${MY_SRC_DIR}/%_yacc.c ${MY_SRC_DIR}/%_yacc.h : ${MY_SRC_DIR}/%_yacc.y
-	${YACC} --output=$(basename $<).c -d $<
+	${YACC} ${YFLAGS} --output=$(basename $<).c -d $<
 #${MY_SRC_DIR}/%_yacc.c ${MY_SRC_DIR}/%_yacc.h : ${MY_SRC_DIR}/%_yacc.y
-#	${YACC} --file-prefix=$(notdir $($(basename $<))) -d $<
+#	${YACC} ${YFLAGS} --file-prefix=$(notdir $($(basename $<))) -d $<
 #%_yacc.c %_yacc.h : %_yacc.y
-#	${YACC} --file-prefix=$(notdir $($(basename $<))) -d $<
+#	${YACC} ${YFLAGS} --file-prefix=$(notdir $($(basename $<))) -d $<
 endif
 ifeq (${YACC},yacc)
 %.tab.c %.tab.h : %.y
-	${YACC} -d $<
+	${YACC} ${YFLAGS} $<
 	mv y.tab.c $(basename $<).c
 	mv y.tab.h $(basename $<).h
 endif
 
 %_lex.c : %_lex.l
-	${LEX} $<
-	mv lex.yy.c $(basename $<).c
+	${LEX} ${LFLAGS} $<
+	mv lex.${NCO_YY_PFX}.c $(basename $<).c
 
 # ncap, and only ncap, requires AIX system C++ library
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.315 2010-04-08 22:57:14 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.316 2010-04-09 00:19:33 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -43,6 +43,7 @@
 # AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
 # AC_MSG_NOTICE Print MSG to output
 # AC_MSG_WARN Print MSG to output
+# AC_SUBST fxm
 # NCO_CHECK_FUNC Sets HAVE_XXX = 0 _and_ NEED_XXX = 1 when xxx() not found
 
 # Process configure input with autoconf to produce configure script

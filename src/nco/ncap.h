@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.89 2010-04-08 22:57:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.90 2010-04-09 00:19:34 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -100,7 +100,7 @@ typedef struct{ /* prs_sct */
 } prs_sct;
 
 /* Begin funtions in ncap_lex.l */
-void 
+void
 ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
 (prs_sct * const prs_arg, /* I/O [sct] Global information required in parser routines */
  const char * const spt_arg_cat, /* I [sng] User-specified script */
