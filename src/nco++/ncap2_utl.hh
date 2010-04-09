@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.16 2009-06-16 08:23:58 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.17 2010-04-09 05:18:26 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -106,13 +106,10 @@ ncap_att_cpy
  const std::string s_src,
  prs_cls  *prs_arg);
 
-
 void 
 ncap_att_prn   
 (var_sct *var, 
-char *const att_in_sng,
-prs_cls *prs_arg);
-
+ char *const att_in_sng);
 
 var_sct *   /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */

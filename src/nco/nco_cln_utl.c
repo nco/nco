@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.20 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.21 2010-04-09 05:18:26 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -572,15 +572,20 @@ int idx;
 int idays=0;
 
  switch(lmt_cal){
-   case cal_360:
-     days=DAYS360;
-     break; 
-   case cal_365:
-     days=DAYS365;
-     break; 
-   case cal_366: 
-     days=DAYS366;
-     break;  
+ case cal_360:
+   days=DAYS360;
+   break; 
+ case cal_365:
+   days=DAYS365;
+   break; 
+ case cal_366: 
+   days=DAYS366;
+   break;  
+ case cal_std:
+ case cal_greg:
+ case cal_jul:
+ case cal_void:
+   break;
  }
 
  months--;
@@ -620,6 +625,11 @@ double *data;
      break;
    case cal_366:
      break;
+ case cal_std:
+ case cal_greg:
+ case cal_jul:
+ case cal_void:
+   break;
  }
 
  return;
@@ -643,6 +653,11 @@ double scl;
      break;
    case cal_366:
      break;
+ case cal_std:
+ case cal_greg:
+ case cal_jul:
+ case cal_void:
+   break;
  }
 
  /* switch for type */

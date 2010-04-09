@@ -1,5 +1,11 @@
 2010-04-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.2 release procedure:
+ 	Changes since nco-4_0_1: namespace, fxm
+	cd ~/nco;cvs tag -d nco-4_0_2;cvs tag -d nco-4_0_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
+	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
+
 	* Namespace patches work with bld/Makefile. Not sure about configure.
 
 	* These patches caused build breakage. Not surprising. Will try to fix.
@@ -10,12 +16,6 @@
 	Flex/Bison. 
 
 2010-04-06  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.2 release procedure:
- 	Changes since nco-4_0_1: namespace, fxm
-	cd ~/nco;cvs tag -d nco-4_0_2;cvs tag -d nco-4_0_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
-	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
 
 	* Oops! VERSION file released with 4.0.1 may say version is 4.0.0?
 
