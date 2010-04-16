@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.359 2010-04-16 21:09:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.360 2010-04-16 21:21:50 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.2 are ready. 
 
@@ -10,8 +10,32 @@ Short explanations of these appear below.
 
 Additionally, Debian/Ubuntu users should note that the bleeding-edge
 NCO features are available in Debian package format long before
-official releases. For example, the .deb package for this 4.0.2
-release have been in the periodically 
+official releases. New features are built into pre-release .deb
+packages as the features are introduced. Once an (arbritrary) number
+of new features seems stable, we simply announce that the current
+pre-release code is the official (stable) release code. For example,
+packages with the same name as the current 4.0.2 release .deb packages  
+have been at their location
+
+http://nco.sourceforge.net/src/nco_4.0.2-1_amd64.deb
+
+for many months, but the NCO homepage for binary package download
+only points to this location once the release is official. Until then,
+they are rebuilt and replaced as each new feature is added. When the
+release is official, the package is frozen and a package with the next 
+version number 
+
+http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
+
+is created. And is not announced until it stabilizes a few months
+later. So, with judicious use of dpkg, Debian/Ubuntu users can easily
+track NCO feature development more closely than official releases.
+Just remove your existing NCO package and replace it with the latest
+(unannounced) package that has the feature you want with, e.g., 
+
+sudo dpkg --remove nco
+wget http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb .
+sudo dpkg --install nco_4.0.3-1_*.deb
 
 Work on NCO 4.0.3 is underway. Areas of improvement include
 Support for spectral transforms, chunking in all operators,
