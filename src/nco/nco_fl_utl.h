@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.42 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.43 2010-04-16 21:04:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -63,6 +63,12 @@ void
 nco_fl_cp /* [fnc] Copy first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to copy */
  const char * const fl_dst); /* I [sng] Name of destination file */
+
+void
+nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */
+(const int fl_fmt, /* I [enm] Output file format */
+ const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
+ const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
 char * /* O [sng] Canonical file name*/
 nco_fl_info_get /* [fnc] Determine canonical filename and properties */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.251 2010-03-30 04:08:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.252 2010-04-16 21:04:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.251 2010-03-30 04:08:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.251 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.252 2010-04-16 21:04:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.252 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -603,6 +603,9 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+
+    /* Verify output file format supports requested actions */
+    (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);

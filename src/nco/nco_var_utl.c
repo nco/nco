@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.150 2010-03-22 15:21:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.151 2010-04-16 21:04:18 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -955,6 +955,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
   int dmn_id_vec[NC_MAX_DIMS];
   int idx;
   int dmn_idx;
+  int fl_fmt; /* [enm] Output file format */
   int prg_id; /* [enm] Program ID */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
@@ -1044,7 +1045,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
       /* Set HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl > 0 && dmn_nbr > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
+      rcd=nco_inq_format(out_id,&fl_fmt);
+      if(dfl_lvl > 0 && dmn_nbr > 0 && fl_fmt == NC_FORMAT_NETCDF4) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm

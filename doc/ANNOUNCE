@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.357 2010-04-09 21:16:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.358 2010-04-16 21:04:15 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.2 are ready. 
 
@@ -17,6 +17,10 @@ more chunking rulesets.
 A. Fix off-by-one error in ncatted appends for type NC_CHAR
    Extra NULs are no longer inserted with each append
    Thanks to A.T. Wittenburg for this bug report.
+
+B. Warn on deflation (compression) attempts if fl_fmt != NC_FORMAT_NETCDF4.
+   Commands like "ncks -L 9 --fl_fmt=netcdf4_classic in.nc out.nc"
+   will still attempt to complete without deflation, but will warn.
 
 H. Known Problem: 
    Namespace collision between mvapich2, netCDF4, and NCO when netCDF

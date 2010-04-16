@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.116 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.117 2010-04-16 21:04:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -88,6 +88,17 @@ nco_fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */
 {
   /* Purpose: Perform error checking on file */
 } /* end nco_fl_cmp_err_chk() */
+
+void
+nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */
+(const int fl_fmt, /* I [enm] Output file format */
+ const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
+ const int dfl_lvl) /* I [enm] Deflate level [0..9] */
+{
+  /* Purpose: Verify output file format supports requested actions */
+  if(cnk_nbr > 0 && fl_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stdout,"%s: WARNING Attempt to chunk variables in output file which has netCDF format %s. The only netCDF file format that supports chunking is NC_FORMAT_NETCDF4. Command will attempt to complete but without chunking. HINT: re-run command and change output type to NC_FORMAT_NETCDF4 using \"-4\" or \"--fl_fmt=netcdf4\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
+  if(dfl_lvl > 0 && fl_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stdout,"%s: WARNING Attempt to deflate (compress) variables in output file which has netCDF format %s. The only netCDF file format that supports deflation is NC_FORMAT_NETCDF4. Command will attempt to complete but without deflation. HINT: re-run command and change output type to NC_FORMAT_NETCDF4 using \"-4\" or \"--fl_fmt=netcdf4\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
+} /* end nco_nco_fl_fmt_vet() */
 
 void
 nco_fl_cp /* [fnc] Copy first file to second */
