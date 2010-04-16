@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.358 2010-04-16 21:04:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.359 2010-04-16 21:09:28 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.2 are ready. 
 
@@ -7,6 +7,11 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This version offers many minor fixes and improvements.
 Short explanations of these appear below.
+
+Additionally, Debian/Ubuntu users should note that the bleeding-edge
+NCO features are available in Debian package format long before
+official releases. For example, the .deb package for this 4.0.2
+release have been in the periodically 
 
 Work on NCO 4.0.3 is underway. Areas of improvement include
 Support for spectral transforms, chunking in all operators,
