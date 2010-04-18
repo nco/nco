@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.25 2010-01-15 00:57:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.26 2010-04-18 17:59:53 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -266,7 +266,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 
   /* Does output file support chunking? */
   (void)nco_inq_format(nc_id,&fl_fmt);
-  if(fl_fmt != NC_FORMAT_NETCDF4){
+  if(fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_NETCDF4_CLASSIC){
     (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will be ignored\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
     return;
   } /* endif dbg */

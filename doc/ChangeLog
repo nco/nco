@@ -1,3 +1,9 @@
+2010-04-18  Charlie Zender  <zender@uci.edu>
+
+	* Allow deflation and chunking on both netCDF4 filetypes
+
+	* Warn when attempting to deflate or chunk either netCDF3 filetype
+
 2010-04-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.2 release procedure:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.117 2010-04-16 21:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.118 2010-04-18 17:59:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -96,8 +96,8 @@ nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Verify output file format supports requested actions */
-  if(cnk_nbr > 0 && fl_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stdout,"%s: WARNING Attempt to chunk variables in output file which has netCDF format %s. The only netCDF file format that supports chunking is NC_FORMAT_NETCDF4. Command will attempt to complete but without chunking. HINT: re-run command and change output type to NC_FORMAT_NETCDF4 using \"-4\" or \"--fl_fmt=netcdf4\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
-  if(dfl_lvl > 0 && fl_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stdout,"%s: WARNING Attempt to deflate (compress) variables in output file which has netCDF format %s. The only netCDF file format that supports deflation is NC_FORMAT_NETCDF4. Command will attempt to complete but without deflation. HINT: re-run command and change output type to NC_FORMAT_NETCDF4 using \"-4\" or \"--fl_fmt=netcdf4\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
+  if(cnk_nbr > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to chunk variables in output file which has netCDF format %s. Chunking is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without chunking. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
+  if(dfl_lvl > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to deflate (compress) variables in output file which has netCDF format %s. Deflation is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without deflation. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
 } /* end nco_nco_fl_fmt_vet() */
 
 void

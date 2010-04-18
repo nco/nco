@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.151 2010-04-16 21:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.152 2010-04-18 17:59:53 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -94,7 +94,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 
   /* Duplicate netCDF4 settings when possible */
   rcd=nco_inq_format(out_id,&fl_fmt);
-  if(fl_fmt == NC_FORMAT_NETCDF4){
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     /* Deflation */
     if(nbr_dim > 0){
       int shuffle; /* [flg] Turn on shuffle filter */
@@ -224,7 +224,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   
   /* Duplicate netCDF4 settings when possible */
   rcd=nco_inq_format(out_id,&fl_fmt);
-  if(fl_fmt == NC_FORMAT_NETCDF4){
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     
     /* Deflation */
     if(nbr_dim > 0){
@@ -1046,7 +1046,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       
       /* Set HDF Lempel-Ziv compression level, if requested */
       rcd=nco_inq_format(out_id,&fl_fmt);
-      if(dfl_lvl > 0 && dmn_nbr > 0 && fl_fmt == NC_FORMAT_NETCDF4) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
+      if(dfl_lvl > 0 && dmn_nbr > 0 && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm

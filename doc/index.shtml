@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.567 2010-04-18 17:38:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.568 2010-04-18 17:59:52 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1052,13 +1052,13 @@ NCO versions 3.9.0 and greater (May, 2007) require netCDF versions
 <!-- http://nco.sf.net#bld_ncap -->
 <a name="bld_ncap"></a>
 <li><i><tt>ncap</tt> build hints:</i>
-<tt>ncap</tt> is a very sophisticated and somewhat fragile program.
+<tt>ncap</tt> is a sophisticated and somewhat fragile program.
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
 AT&T <tt>lex</tt> will not work because it does not understand
-<tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
+<tt>EOF</tt> rules used in <tt>ncap_lex.l</tt>.
 <tt>bison</tt> version 1.29 (the default version on early
 Mac OS&nbsp;X) is buggy and does not parse <tt>ncap_yacc.y</tt>
-correctly; previous and later versions of <tt>bison</tt> work
+correctly; previous and later <tt>bison</tt>'s work
 correctly. 
 <tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
 Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
@@ -1074,7 +1074,7 @@ If <tt>ncap</tt> keeps you from building NCO, and you do not need
 NCO versions 3.9.6&mdash; support automatic building and linking
 for <a href="http://www.gnu.org/software/gsl">GSL</a>
 versions&nbsp;1.4&mdash;. 
-No earlier versions of GSL are supported.<br>
+Earlier GSL versions are not supported.<br>
 </li>
 
 <!-- http://nco.sf.net#bld_DAP -->
@@ -1212,7 +1212,7 @@ Users at NCAR should try the <i>supported</i> executables in
 <dt><a name="BM"></dt>
 <h2>Benchmarks</h2>
 <p>
-We are benchmarking NCO in SMP (e.g., AIX) and MPI (e.g., Linux) environments.
+We have benchmarked NCO in SMP (e.g., AIX) and MPI (e.g., Linux) environments.
 The full NCO Benchmarks (in PDF form) are available 
 <a href="http://dust.ess.uci.edu/nco/bm/index.html">here</a>.
 Please send us your suggestions for improved configurations.
@@ -1254,7 +1254,7 @@ Problems with recent releases:
 <li><i>Core dump with <tt>ncks</tt>:</i>
 Printing variables to screen with <tt>ncks</tt> triggers
 a segfault in NCO 3.9.9.
-Users may upgrade to 4.0.0 or apply this one-line patch themselves to 3.9.9:
+Users may upgrade, downgrade, or apply this one-line patch to 3.9.9 sources:
 Remove this line
 &ldquo;<tt>*cnk_sz=(size_t)NULL;</tt>&rdquo;
 &mdash;near line&nbsp;751 of <tt>nco/src/nco/nco_netcdf.c</tt>&mdash;
@@ -1452,7 +1452,7 @@ Director, UCI Earth System Modeling Facility
 (<a href="http://www.ess.uci.edu/esmf">ESMF</a>).
 <i>Role</i>: Project PI.
 <i>Contributions</i>: NCO core library, porting, release manager
-<i>Current Research</i>: 
+<i>Related Research</i>: 
 1.&nbsp;Extend empirically verified analytic model for terascale data 
 reduction of gridded datasets to account for cluster- and network-
 effects.  
@@ -1463,24 +1463,24 @@ netCDF4/HDF5 parallel filesystem features.
 
 <li>
 <a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
-<a href="http://spds.ece.uci.edu/~sjenks">Steve Jenks</a>,
-Assistant Professor of Electrical Engineering and Computer Science
+<a href="http://spds.ece.uci.edu/~sjenks">Stephen Jenks</a>,
+Former Assistant Professor of Electrical Engineering and Computer Science
 (<a href="http://www.eecs.uci.edu">EECS</a>) and 
 Director, Scalable Parallel and Distributed Systems 
 (<a href="http://spds.ece.uci.edu">SPDS</a>) lab.
 <i>Roles</i>: Collaborator. Thesis advisor.
-<i>Current Research</i>: 
+<i>Related Research</i>: 
 1.&nbsp;Consulting on SWAMP design and implementation.
 <i>Other Interests</i>: Cache memory usage
 </li>
 
 <li>
 <a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
-<a href="http://dust.ess.uci.edu/~wangd">Daniel Wang</a>:
-Former EECS Ph.D. student with Jenks and Zender, now at SLAC.
+<a href="http://dust.ess.uci.edu/~wangd">Dr.&nbsp;Daniel Wang</a>:
+Earned EECS Ph.D. (2008) with Jenks and Zender at UCI, now at SLAC.
 <i>Role</i>: Architect distributed data reduction and analysis
 solutions for geoscience workflows
-<i>Current Research</i>: 
+<i>Related Research</i>: 
 1.&nbsp;Use of compiler techniques and whole program analysis to 
 discover and exploit parallelism in scripted workflows.
 2.&nbsp;Resource management in combined computation-data service environments.
@@ -1504,9 +1504,9 @@ Henry Butowsky, software engineer.
 
 <li>
 <a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
-<a href="http://dust.ess.uci.edu/scapps/web">Scott Capps</a>, 
-Ph.D. Candidate, Earth System Science. 
-<i>Current Research</i>: 
+<a href="http://dust.ess.uci.edu/scapps/web">Dr.&nbsp;Scott Capps</a>, 
+Earned Earth System Science Ph.D. (2009) with Zender at UCI, now at UCLA.
+<i>Related Research</i>: 
 1.&nbsp;Test NCO on real tera-scale geoscience analysis problems and
 identify necessary improvements in <tt>ncap2</tt> and in SWAMP.
 2.&nbsp;Role of satellite-observed sub-gridscale wind variability 
