@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.566 2010-04-06 00:09:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.567 2010-04-18 17:38:49 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -696,9 +696,9 @@ from about 2005) unless you have a very <i>new</i> flavor of Debian
 <li><a href="src/nco_4.0.1-1_amd64.deb">nco_4.0.1-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.1-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.1-1_amd64.deb"-->)</li>
 <li><a href="src/nco_4.0.1-1_i386.deb">nco_4.0.1-1_i386.deb</a> (<!--#fsize file="src/nco_4.0.1-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_4.0.1-1_i386.deb"-->)</li>
 <li><a href="src/nco_4.0.1-1.dsc">nco_4.0.1-1.dsc</a> (<!--#fsize file="src/nco_4.0.1-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.1-1.dsc"-->)</li>
-<li><a href="src/nco_4.0.1-1_i386.changes">nco_4.0.1-1_i386.changes</a> (<!--#fsize file="src/nco_4.0.1-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.1-1_i386.changes"-->)</li>
+<li><a href="src/nco_4.0.1-1_amd64.changes">nco_4.0.1-1_amd64.changes</a> (<!--#fsize file="src/nco_4.0.1-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.1-1_amd64.changes"-->)</li>
 <li><a href="src/nco_4.0.1.orig.tar.gz">nco_4.0.1.orig.tar.gz</a> (<!--#fsize file="src/nco_4.0.1.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.0.1.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.0.1-1.diff.gz">nco_4.0.1-1.diff.gz</a> (<!--#fsize file="src/nco_4.0.1-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.0.1-1_i386.changes"-->)</li>
+<li><a href="src/nco_4.0.1-1.diff.gz">nco_4.0.1-1.diff.gz</a> (<!--#fsize file="src/nco_4.0.1-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.0.1-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
