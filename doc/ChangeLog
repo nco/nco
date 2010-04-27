@@ -1,3 +1,7 @@
+2010-04-27  Henry Butowsky  <henryb@hush.com> 
+	* Added to manual chapter on
+	GSL Random Number generation
+
 2010-04-18  Charlie Zender  <zender@uci.edu>
 
 	* Allow deflation and chunking on both netCDF4 filetypes
