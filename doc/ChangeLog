@@ -1,6 +1,16 @@
+2010-04-27  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.0.2 release procedure:
+ 	Changes since nco-4_0_1: namespace, ncatted NUL, fxm
+	cd ~/nco;cvs tag -d nco-4_0_2;cvs tag -d nco-4_0_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
+	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
+
+	* Merge Francesco Paolo Lovergine's downstream Debian changes
+
 2010-04-27  Henry Butowsky  <henryb@hush.com> 
-	* Added to manual chapter on
-	GSL Random Number generation
+
+	* Added to manual chapter on GSL Random Number generation
 
 2010-04-18  Charlie Zender  <zender@uci.edu>
 
@@ -9,12 +19,6 @@
 	* Warn when attempting to deflate or chunk either netCDF3 filetype
 
 2010-04-09  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.2 release procedure:
- 	Changes since nco-4_0_1: namespace, ncatted NUL, fxm
-	cd ~/nco;cvs tag -d nco-4_0_2;cvs tag -d nco-4_0_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
-	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
 
 	* Fix off-by-one error in ncatted appends for type NC_CHAR (TODO nco985)
 	Extra NULs are no longer inserted with each append

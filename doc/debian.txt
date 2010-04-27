@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.139 2010-04-06 22:56:58 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.140 2010-04-27 21:21:03 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -78,7 +78,7 @@ Debian diff to the original source to produce Debian source:
 cd /data/zender;/bin/rm -r nco-X.Y.Z.orig nco-X.Y.Z 
 tar xvzf nco_X.Y.Z.orig.tar.gz # Untar original source
 cp -r nco-X.Y.Z.orig nco-X.Y.Z # Create destination for patches
-patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
+patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
 
 6. To synchronize .debs with new releases, follow this procedure:
    cd ~/nco/bld

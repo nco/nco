@@ -6,14 +6,20 @@ nco (4.0.2-1) unstable; urgency=low
 
 nco (4.0.1-1) unstable; urgency=low
 
+  [ Charlie Zender ]
   * new upstream version (fix_rec_dmn, mk_rec_dmn, .ncrename)
   * debian/copyright
     - remove John Burkhardt
   * debian/control
     - add ${misc:Depends}
-    - libnetcdf-dev (>= 1:4.0.0)
 
- -- Charlie Zender <zender@uci.edu>  Mon, 05 Apr 2010 17:04:37 -0700
+  [ Francesco Paolo Lovergine ]
+  * Policy bumped to 3.8.4.
+  * Debhelper level set to 7.
+  * Added me as uploaders.
+  * Removing top dir info file.
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Mon, 26 Apr 2010 22:51:21 +0200
 
 nco (4.0.0-1) unstable; urgency=low
 
