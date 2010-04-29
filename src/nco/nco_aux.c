@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.24 2010-04-29 19:06:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.25 2010-04-29 20:44:49 zender Exp $ */
 
 /* Copyright (C) 1995--2010 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -49,7 +49,7 @@ nco_find_lat_lon
   
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
-    (void)fprintf(stderr,"%s: WARNING nco_aux_evl() reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n");
+    (void)fprintf(stderr,"%s: WARNING nco_find_lat_lon() reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",prg_nm_get());
   } /* !CF */
   
   /* Get number of variables */
@@ -68,11 +68,13 @@ nco_find_lat_lon
 	
 	/* Get units; assume same for both lat and lon */
 	rcd=nco_inq_attlen(nc_id,idx,"units",&lenp);
-	if (rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl: CF convention requires \"latitude\" to have units attribute\n");
+	if(rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl: CF convention requires \"latitude\" to have units attribute\n");
 	*units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
 	NCO_GET_ATT_CHAR(nc_id,idx,"units",*units);
 	units[lenp]='\0';
 	
+	if(var_ndims > 1) (void)fprintf(stderr,"%s: WARNING nco_aux_evl() reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",prg_nm_get(),name,var_ndims);
+
 	/* Assign type; assumed same for both lat and lon */
 	*crd_typ=var_type;
 	ret++;
@@ -88,7 +90,7 @@ nco_find_lat_lon
     
   } /* end loop over vars */
   
-  return ret == 2;  // true if both found
+  return ret == 2;  // True if both found
 } /* nco_find_lat_lon */
 
 int  /* status code */
@@ -111,7 +113,7 @@ nco_get_dmn_info
   
   /* Get dimension information */
   rcd=nco_inq_var(nc_id,varid,0,&var_type,&var_ndims,var_dimids,&var_natts);
-  if (rcd == NC_NOERR) {
+  if(rcd == NC_NOERR) {
     *dimid=var_dimids[0];
     rcd=nco_inq_dimlen(nc_id,var_dimids[0],dmn_sz);
     rcd=nco_inq_dimname(nc_id,var_dimids[0],dimname);
@@ -189,9 +191,9 @@ nco_aux_evl
   lon.srt=0;
   vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
   rcd=nco_get_vara(in_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
-  if (rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
+  if(rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
   rcd=nco_get_vara(in_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
-  if (rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
+  if(rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
   
   *lmt_nbr=0;
   
@@ -259,7 +261,7 @@ nco_aux_evl
   } /* end loop over user supplied -X options */
 
   /* fxm: this is weird */
-  if (units != 0) units=(char *)nco_free(units);
+  if(units != 0) units=(char *)nco_free(units);
   vp_lat=nco_free(vp_lat);
   vp_lon=nco_free(vp_lon);
   
