@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.60 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.61 2010-04-29 19:06:42 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -470,8 +470,8 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	/* Operations: 1 multiply 
-	   Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
-	   Total Counts: \rthnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
+	   Repetitions: \dmn_szavg^(\dmnnbr-\avgnbr)
+	   Total Counts: \rthnbr=\dmn_szavg^(\dmnnbr-\avgnbr) */
 	const long blk_off=idx_op2*sz_blk;
 	/* Operations: 1 fp add, 3 pointer offsets, 3 user memory fetch
 	   Repetitions: \lmnnbr

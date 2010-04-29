@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.23 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.24 2010-04-29 19:06:42 zender Exp $ */
 
 /* Copyright (C) 1995--2010 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -20,20 +20,20 @@
 int 
 nco_find_lat_lon
 (int nc_id,
- char latvar[], 
- char lonvar[], 
+ char var_nm_lat[], 
+ char var_nm_lon[], 
  char **units,
- int *latid,
- int *lonid,
- nc_type *coordtype
+ int *lat_id,
+ int *lon_id,
+ nc_type *crd_typ
  ){
   /* Purpose: Find auxillary coordinate variables that map to latitude/longitude 
      Find variables with standard_name = "latitude" and "longitude"
      Return true if both latitude and longitude standard names are found
      Also return needed information about these auxiliary coordinates
      Assumes that units and types for latitude and longitude are identical
-     Caller responsible for memory management for variable names.
-     Memory for unit strings must be freed bay caller */
+     Caller responsible for memory management for variable names
+     Memory for unit strings must be freed by caller */
   
   int idx;
   long lenp;
@@ -49,8 +49,8 @@ nco_find_lat_lon
   
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
-    nco_err_exit(-1,"nco_aux_evl: CF-1.0 Convention attribute is required for -X option.");
-  }
+    (void)fprintf(stderr,"%s: WARNING nco_aux_evl() reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n");
+  } /* !CF */
   
   /* Get number of variables */
   rcd=nco_inq_nvars(nc_id,&nvars);
@@ -63,8 +63,8 @@ nco_find_lat_lon
       NCO_GET_ATT_CHAR(nc_id,idx,"standard_name",value);
       value[lenp]='\0';
       if(strcmp(value,"latitude") == 0){
-	strcpy(latvar,name);
-	*latid=idx;
+	strcpy(var_nm_lat,name);
+	*lat_id=idx;
 	
 	/* Get units; assume same for both lat and lon */
 	rcd=nco_inq_attlen(nc_id,idx,"units",&lenp);
@@ -74,13 +74,13 @@ nco_find_lat_lon
 	units[lenp]='\0';
 	
 	/* Assign type; assumed same for both lat and lon */
-	*coordtype=var_type;
+	*crd_typ=var_type;
 	ret++;
       } /* end if var is lattitude */
       
       if(strcmp(value,"longitude") == 0){
-	strcpy(lonvar,name);
-	*lonid=idx;
+	strcpy(var_nm_lon,name);
+	*lon_id=idx;
 	ret++;
       } /* end if var is longitude */
       
@@ -92,12 +92,12 @@ nco_find_lat_lon
 } /* nco_find_lat_lon */
 
 int  /* status code */
-nco_getdmninfo
+nco_get_dmn_info
 (int nc_id,
  int varid,
  char dimname[],
  int *dimid,
- long *dmnsz)
+ long *dmn_sz)
 {
   /* Purpose: Get dimension information associated with specified variable
      In our case, this is lat or lon---they are presumed to be identical */
@@ -113,11 +113,11 @@ nco_getdmninfo
   rcd=nco_inq_var(nc_id,varid,0,&var_type,&var_ndims,var_dimids,&var_natts);
   if (rcd == NC_NOERR) {
     *dimid=var_dimids[0];
-    rcd=nco_inq_dimlen(nc_id,var_dimids[0],dmnsz);
+    rcd=nco_inq_dimlen(nc_id,var_dimids[0],dmn_sz);
     rcd=nco_inq_dimname(nc_id,var_dimids[0],dimname);
   }
   return rcd;
-} /* nco_getdmninfo */
+} /* nco_get_dmn_info */
 
 lmt_sct **
 nco_aux_evl
@@ -135,9 +135,9 @@ nco_aux_evl
   
   char *units=0; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
   char buf[100]; /* buffer for making user-assigned limit names */
-  char dmnname[NC_MAX_NAME+1];
-  char latvar[NC_MAX_NAME+1];
-  char lonvar[NC_MAX_NAME+1];
+  char dmn_nm[NC_MAX_NAME+1];
+  char var_nm_lat[NC_MAX_NAME+1];
+  char var_nm_lon[NC_MAX_NAME+1];
   
   dmn_sct lat;
   dmn_sct lon;
@@ -153,57 +153,57 @@ nco_aux_evl
   int cell;                 /* cell iterator */
   int consec=0;           /* current number matching consecutive cells */
   int curit;                /* iterator over user -X options */
-  int dmnid=int_CEWI;
-  int latid;
-  int lonid;
+  int dmn_id=int_CEWI;
+  int lat_id;
+  int lon_id;
   int mincell=-1;           /* min. index of cell in consecutive cell set */
   int rcd=NC_NOERR;
   
   lmt_sct **lmts=0;         /* return structure */
   
-  long dmnsz=0;
+  long dmn_sz=0;
   
-  nc_type coordtype;
+  nc_type crd_typ;
   
-  void *latvp;                /* lat coordinate array; float or double only */
-  void *lonvp;                /* lon coordinate array; float or double only */
+  void *vp_lat;                /* lat coordinate array; float or double only */
+  void *vp_lon;                /* lon coordinate array; float or double only */
   
   /* Obtain lat/lon variable names */
-  if(!nco_find_lat_lon(in_id,latvar,lonvar,&units,&latid,&lonid,&coordtype)){
-    nco_err_exit(-1,"nco_aux_evl: Unable to indentify lat/lon auxillary coordinate variables.");
-  } /* end nco_find_lat_lon fails */
+  if(!nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ)){
+    nco_err_exit(-1,"nco_aux_evl: Unable to identify lat/lon auxillary coordinate variables.");
+  } /* !nco_find_lat_lon() */
   
-  if(nco_getdmninfo(in_id,latid,dmnname,&dmnid,&dmnsz) != NC_NOERR){
+  if(nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz) != NC_NOERR){
     nco_err_exit(-1,"nco_aux_evl: Unable to get dimension information");
-  } /* end nco_getdmninfo fails */
+  } /* !nco_get_dmn_info() */
   
-  /*printf("coords are: %s %s; units are: %s; %s %ld\n",latvar,lonvar,units,dmnname,dmnsz); */
+  /*printf("coords are: %s %s; units are: %s; %s %ld\n",var_nm_lat,var_nm_lon,units,dmn_nm,dmn_sz); */
   
-  /* load the lat/lon vars needed to search for region matches. */
-  lat.type=coordtype;
-  lat.sz=dmnsz;
+  /* Load latitude/longitude variables needed to search for region matches */
+  lat.type=crd_typ;
+  lat.sz=dmn_sz;
   lat.srt=0;
-  latvp=(void *)nco_malloc(dmnsz*nco_typ_lng(lat.type));
-  lon.type=coordtype;
-  lon.sz=dmnsz;
+  vp_lat=(void *)nco_malloc(dmn_sz*nco_typ_lng(lat.type));
+  lon.type=crd_typ;
+  lon.sz=dmn_sz;
   lon.srt=0;
-  lonvp=(void *)nco_malloc(dmnsz*nco_typ_lng(lon.type));
-  rcd=nco_get_vara(in_id,latid,&lat.srt,&lat.sz,latvp,lat.type);
+  vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
+  rcd=nco_get_vara(in_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
   if (rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
-  rcd=nco_get_vara(in_id,lonid,&lon.srt,&lon.sz,lonvp,lon.type);
+  rcd=nco_get_vara(in_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
   if (rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
   
   *lmt_nbr=0;
   
   lmt_sct base;
-  base.nm=(char *)strdup(dmnname);
+  base.nm=(char *)strdup(dmn_nm);
   base.lmt_typ=lmt_dmn_idx;
   base.is_usr_spc_lmt=1; 
   base.is_usr_spc_min=1; 
   base.is_usr_spc_max=1;
   base.srd_sng=(char *)strdup("1");
   base.is_rec_dmn=0;
-  base.id=dmnid;
+  base.id=dmn_id;
   base.min_idx=0;
   base.max_idx=0;
   base.srt=0;
@@ -213,7 +213,7 @@ nco_aux_evl
   
   /* malloc() the return lmt structure
      No way to know exact size in advance but maximum is about dimsz/2 */
-  int MAXDMN=dmnsz/2;
+  int MAXDMN=dmn_sz/2;
   
   if(aux_nbr > 0) lmts=(lmt_sct **)nco_malloc(MAXDMN*sizeof(lmt_sct *));
   
@@ -224,9 +224,9 @@ nco_aux_evl
     
     mincell=-1;
     consec=0;
-    for(cell=0; cell<dmnsz; cell++){
-      if(lat.type == NC_FLOAT) clat=((float*)latvp)[cell]; else clat=((double*)latvp)[cell];
-      if(lon.type == NC_FLOAT) clon=((float*)lonvp)[cell]; else clon=((double*)lonvp)[cell];
+    for(cell=0; cell<dmn_sz; cell++){
+      if(lat.type == NC_FLOAT) clat=((float *)vp_lat)[cell]; else clat=((double *)vp_lat)[cell];
+      if(lon.type == NC_FLOAT) clon=((float *)vp_lon)[cell]; else clon=((double *)vp_lon)[cell];
       if(clon >= lllon && clon <= urlon &&
 	 clat >= lllat && clat <= urlat){
 	/*printf("match %lf %lf %lf/ %lf %lf %lf\n",clon,lllon,urlon,clat,lllat,urlat); */
@@ -260,8 +260,8 @@ nco_aux_evl
 
   /* fxm: this is weird */
   if (units != 0) units=(char *)nco_free(units);
-  latvp=nco_free(latvp);
-  lonvp=nco_free(lonvp);
+  vp_lat=nco_free(vp_lat);
+  vp_lon=nco_free(vp_lon);
   
   /* printf ("returning structure %d\n",*lmt_nbr);
     for (curit=0; curit<(*lmt_nbr); curit++)

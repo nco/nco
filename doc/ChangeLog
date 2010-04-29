@@ -1,3 +1,7 @@
+2010-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up nco_aux.[ch] to work better with WRF files
+
 2010-04-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.2 release procedure:
