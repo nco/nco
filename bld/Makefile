@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.541 2010-04-09 04:51:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.542 2010-04-30 23:56:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -76,6 +76,8 @@
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.4/include' UDUNITS_LIB='/contrib/udunits-1.12.4/lib' make --jobs=1 ABI=64 GSL=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 32-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib32/r4i4' UDUNITS_INC='/contrib/include' UDUNITS_LIB='/contrib/lib' make --jobs=1 ABI=32 GSL=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
+# Cygwin on Windows systems:
+# cd ~/nco/bld;make --jobs=1 DAP_NETCDF=Y GSL=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP_OPENDAP=Y
