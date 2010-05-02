@@ -1,14 +1,18 @@
-2010-04-29  Charlie Zender  <zender@uci.edu>
+2010-05-02  Charlie Zender  <zender@uci.edu>
 
-	* Clean-up nco_aux.[ch] to work better with WRF files
-
-2010-04-27  Charlie Zender  <zender@uci.edu>
+	* Generate autoconf/libtool sources with Ubuntu 10.04 Lucid Lynx stack
 
 	* NCO 4.0.2 release procedure:
  	Changes since nco-4_0_1: namespace, ncatted NUL, fxm
 	cd ~/nco;cvs tag -d nco-4_0_2;cvs tag -d nco-4_0_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
 	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
+
+2010-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up nco_aux.[ch] to work better with WRF files
+
+2010-04-27  Charlie Zender  <zender@uci.edu>
 
 	* Merge Francesco Paolo Lovergine's downstream Debian changes
 
