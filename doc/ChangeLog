@@ -1,3 +1,12 @@
+2010-05-03  Charlie Zender  <zender@uci.edu>
+
+	* Upgrading to Kubuntu 10.04 Lucid Lynx failed, so took a day to
+	get NCO running on Cygwin 1.7.5-1 under Vista. Everything was supplied by
+	Cygwin:	GSL, or compiled fine from source: netCDF4/HDF5 and Antlr
+	(actually antlr-2.7.7 needs #include <cstring> patch to CharScanner.hpp).
+	So NCO with DAP, UDUnits2, netCDF4, ncap2 built fine! Amazing. 
+	Only problem is executing ncap2, which cannot find java.
+
 2010-05-02  Charlie Zender  <zender@uci.edu>
 
 	* Generate autoconf/libtool sources with Ubuntu 10.04 Lucid Lynx stack
