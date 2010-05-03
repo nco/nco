@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.568 2010-04-18 17:59:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.569 2010-05-03 23:37:28 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -510,10 +510,11 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO/SDO 4.0.2</b>: (<i>Future</i>) 
-Chunking in all operators;
+<li><b>NCO/SDO 4.0.3</b>: (<i>Future</i>) 
 netCDF4 compound types?
-<li><b>NCO/SDO 4.0.1</b>: (<i>In progress</i>)
+<li><b>NCO/SDO 4.0.2</b>: (<i>In progress</i>)
+Chunking in all operators;
+<li><b>NCO/SDO 4.0.1</b>:
 <tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;
 <li><b>NCO/SDO 4.0.0</b>: 
 Bilinear interpolation, GSL fitting; 
@@ -743,6 +744,15 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
  <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>
   for NCO 3.9.9. Maintained by Takeshi Enomoto.</li>
 </ul>
+
+<a name="cygwin"></a><a name="dbn"></a> <!-- http://nco.sf.net#cygwin -->
+<a name="windows"></a><a name="ubn"></a> <!-- http://nco.sf.net#windows -->
+<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> running <a href="http://www.cygwin.org">Cygwin</a></h3>
+<ul>
+<li><a href="src/nco-4.0.2.win32.cygwin.tar.gz">nco_4.0.2.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.2.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.2.win32.cygwin.tar.gz"-->)</li>
+Thanks to RedHat Inc. for supporting Cygwin over the years. 
+</ul>
+
 <hr></p>
 <!-- End http://nco.sf.net#bnr -->
 
@@ -1177,7 +1187,7 @@ Will someone with NEC&nbsp;SX please send us a working patch?
 <li><i>Windows build hints:</i>
 Building on Microsoft Windows is possible with Cygwin.
 The resulting executables will behave normally on local files,
-but will not have most of NCO's network functionality
+but will not have some (most?) of NCO's network functionality
 (e.g., <tt>scp</tt>, <a href="http://opendap.org">OPeNDAP</a>).
 See the <a href="http://nco.sf.net/nco.html#wnd">User's Guide</a>
 for more details.
