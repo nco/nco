@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.569 2010-05-03 23:37:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.570 2010-05-14 18:02:40 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -511,9 +511,10 @@ You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO/SDO 4.0.3</b>: (<i>Future</i>) 
-netCDF4 compound types?
+Chunking in all operators; netCDF4 compound types?
 <li><b>NCO/SDO 4.0.2</b>: (<i>In progress</i>)
-Chunking in all operators;
+Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
+Fix <tt>ncatted</tt> appending <tt>NUL</tt>s.
 <li><b>NCO/SDO 4.0.1</b>:
 <tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;
 <li><b>NCO/SDO 4.0.0</b>: 
