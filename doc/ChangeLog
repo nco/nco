@@ -1,4 +1,8 @@
-2010-05-19  U-givre\zender  <zender@uci.edu>
+2010-05-20  givre zender  <zender@uci.edu>
+
+	* Makefile fixes for netCDF4 on AIX (bluefire)
+
+2010-05-19  givre zender  <zender@uci.edu>
 
 	* Fix Makefile.old for libnco_c++.a build on Cygwin
 
