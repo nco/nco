@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.101 2010-05-20 00:48:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.102 2010-05-20 20:49:05 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -349,6 +349,9 @@ endif # !MPI_ROOT
 ifdef MPI_ROOT
  NC_LIBS += -lmpi
 endif # !MPI_ROOT
+ifdef CURL_LIB
+ NC_LDFLAGS += -L${CURL_LIB}
+endif # end 
 ifeq (${SZ},Y)
 ifndef SZ_LIB
  SZ_LIB := /usr/lib # Directory containing libsz.a
@@ -1319,6 +1322,10 @@ ifeq ($(STC),Y)
  LDFLAGS := -static ${LDFLAGS}
 endif # endif STC
 
+# Remove accidental empty paths
+CPPFLAGS := $(subst -I-I,-I,${CPPFLAGS})
+LDFLAGS := $(subst -L-L,-L,${LDFLAGS})
+
 # Define any remaining variables
 libnco_c++ := ${MY_LIB_DIR}/libnco_c++
 libnco++ := ${MY_LIB_DIR}/libnco++
@@ -1432,6 +1439,7 @@ dbg:
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"
 	@printf "CPP_PTH = ${CPP_PTH}\n"
 	@printf "CPP_TKN = ${CPP_TKN}\n"
+	@printf "CURL_LIB = ${CURL_LIB}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
 	@printf "DAP_NETCDF = ${DAP_NETCDF}\n"

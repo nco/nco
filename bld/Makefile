@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.547 2010-05-20 20:39:29 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.548 2010-05-20 20:49:05 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -249,7 +249,7 @@ ifndef DAP_NETCDF_ROOT
 # Directory containing libcurl.a
  DAP_NETCDF_ROOT := /usr
 endif # DAP_NETCDF_ROOT
- NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib ${NC_LDFLAGS}
+ NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
 # netCDF 4.0.1+:
  NC_LIBS := -lcurl
 endif # end DAP_NETCDF
