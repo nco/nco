@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.543 2010-05-03 23:15:55 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.544 2010-05-20 00:48:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -76,7 +76,7 @@
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.4/include' UDUNITS_LIB='/contrib/udunits-1.12.4/lib' make --jobs=1 ABI=64 GSL=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 32-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB='/usr/local/lib32/r4i4' UDUNITS_INC='/contrib/include' UDUNITS_LIB='/contrib/lib' make --jobs=1 ABI=32 GSL=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
-# Cygwin on Windows systems:
+# Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 DAP_NETCDF=Y GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 
 # Top-level tokens defining directory structure
@@ -124,7 +124,7 @@ ifndef ${CUDA}
  CUDA := N
 endif # CUDA
 ifndef DAP_NETCDF
- DAP_NETCDF := N
+ DAP_NETCDF := Y
 endif # DAP_NETCDF
 ifndef DAP_OPENDAP
  DAP_OPENDAP := N

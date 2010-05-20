@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.100 2010-01-16 00:58:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.101 2010-05-20 00:48:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -22,12 +22,13 @@
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=N all # esmf
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=Y OPTS=D UDUNITS2=N all # silt
 # cd ~/nco/src/nco++;make -f Makefile.old NETCDF4=N OMP=N OPTS=D UDUNITS2=N all # sand, clay, tephra
-
 # 64-bit ABI on UCI MPC systems:
-# cd ${HOME}/nco/src/nco++;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
-# cd ${HOME}/nco/src/nco++;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
+# cd ${HOME}/nco/src/nco++;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make -f Makefile.old --jobs=1 ABI=64 all;cd -
+# cd ${HOME}/nco/src/nco++;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make -f Makefile.old --jobs=1 ABI=64 all;cd -
 # 64-bit ABI on NCAR AIX systems:
-# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make -f Makefile.old --jobs=1 ABI=64 allinone;cd -
+# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make -f Makefile.old --jobs=1 ABI=64 all;cd -
+# Cygwin on Windows Vista systems:
+# cd ~/nco/src/nco++;ANTLR='antlr' make -f Makefile.old GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y all;cd -
 
 # NB: ncap2 requires ANTLR headers and library
 # http://www.antlr.org
@@ -108,7 +109,7 @@ ifndef CNK
  CNK := Y
 endif # endif CNK
 ifndef DAP_NETCDF
- DAP_NETCDF := N
+ DAP_NETCDF := Y
 endif # DAP_NETCDF
 ifndef DAP_OPENDAP
  DAP_OPENDAP := N

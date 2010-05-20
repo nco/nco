@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.86 2010-01-05 20:02:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.87 2010-05-20 00:48:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -19,6 +19,7 @@
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=N dpn_cln cln all # ashes, elnino
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # esmf, sand
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=N dpn_cln cln all # sand, tephra
+# cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=Y UDUNITS2=Y dpn_cln cln all # cygwin
 
 # In rule 
 # foobar.o : foo.c bar.c
@@ -88,7 +89,7 @@ ifndef ${CCACHE}
  CCACHE := N
 endif # CCACHE
 ifndef DAP_NETCDF
- DAP_NETCDF := N
+ DAP_NETCDF := Y
 endif # DAP_NETCDF
 ifndef DAP_OPENDAP
  DAP_OPENDAP := N
@@ -161,6 +162,10 @@ endif
 ifndef UDUNITS
 # Use UDUnits functionality
  UDUNITS := Y
+endif
+ifndef UDUNITS2
+# Use UDUnits2 functionality
+ UDUNITS2 := N
 endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
@@ -338,6 +343,9 @@ ifeq (${PNETCDF},Y)
  NC_LIBS += -lpnetcdf
 endif # endif PNETCDF
 
+ifeq (${UDUNITS2},Y)
+ UDUNITS := Y
+endif # end if UDUNITS
 ifeq (${UDUNITS},Y)
 # Build UDUnits-enabled NCO 
 # Place UDUNITS block after DAP blocks for both to work together
@@ -353,7 +361,11 @@ endif # end
 ifneq (${UDUNITS_LIB},${NETCDF_LIB})
  NC_LDFLAGS += -L${UDUNITS_LIB}
 endif # end if
+ifeq (${UDUNITS2},Y)
+ NC_LIBS += -ludunits2
+else
  NC_LIBS += -ludunits
+endif # end if UDUNITS2
 endif # end if UDUNITS
 
 # TMP_* and NCO_* are required to play nicely with DAP flags
@@ -503,7 +515,11 @@ endif # MPI_FAKE
 endif # !MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
+ifeq (${UDUNITS2},Y)
+ CPP_TKN_OS += -DHAVE_UDUNITS2_H
+endif # !UDUNITS2
 endif # !UDUNITS
+
 ifeq (${null},$(findstring SGI,${PVM_ARCH}))
  CPP_TKN_OS += -DHAVE_CSTDLIB
 endif # SGI

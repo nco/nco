@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.570 2010-05-14 18:02:40 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.571 2010-05-20 00:48:30 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -671,7 +671,7 @@ development systems
 (<a href="http://www.ubuntu.com">Ubuntu</a>-flavored <a
 href="http://www.debian.org">Debian</a> GNU/Linux for x86 and x86_64) 
 and in our high-end scientific computing environments
-(<a href="http://www-1.ibm.com/servers/aix">AIX&nbsp;5</a> for Power4/5/6).
+(<a href="http://www.ibm.com/servers/aix">AIX&nbsp;5</a> for Power4/5/6/7).
 We also attempt to provide (theoretically) platform-independent sources
 in the most common UNIX packaging formats (Debian and RPM).
 Below are links to these and to packages created by volunteers who
@@ -680,6 +680,14 @@ Volunteers willing to perform regular regression testing and porting
 of NCO to other platforms are welcome.  
 Previous versions of these binaries are still available by searching
 the directory index <a href="src">here</a>.
+
+<a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
+<h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
+<ul>
+<li><a href="src/nco-4.0.2.aix53.tar.gz">nco-4.0.2.aix53.tar.gz</a>
+  (<!--#fsize file="src/nco-4.0.2.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.2.aix53.tar.gz"-->)</li>
+Thanks to NSF for supporting AIX machines at NCAR over the years. 
+</ul>
 
 <a name="debian"></a><a name="dbn"></a> <!-- http://nco.sf.net#debian -->
 <a name="ubuntu"></a><a name="ubn"></a> <!-- http://nco.sf.net#ubuntu -->
@@ -750,7 +758,7 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <a name="windows"></a><a name="ubn"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> running <a href="http://www.cygwin.org">Cygwin</a></h3>
 <ul>
-<li><a href="src/nco-4.0.2.win32.cygwin.tar.gz">nco_4.0.2.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.2.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.2.win32.cygwin.tar.gz"-->)</li>
+<li><a href="src/nco-4.0.2.win32.cygwin.tar.gz">nco-4.0.2.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.2.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.2.win32.cygwin.tar.gz"-->)</li>
 Thanks to RedHat Inc. for supporting Cygwin over the years. 
 </ul>
 
