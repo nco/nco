@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.545 2010-05-20 20:14:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.546 2010-05-20 20:30:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -72,7 +72,7 @@
 # cd ${HOME}/nco/bld;env ANTLR='/usr/local/pgi/bin/antlr' ANTLR_ROOT='/usr/local/pgi' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on NCAR AIX systems (bluefire):
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 DAP_OPENDAP=N OPTS=D allinone ABI=64;cd -
-# cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' NETCDF_INC='/contrib/netcdf-4.1.1_sequential/include' NETCDF_LIB='/contrib/netcdf-4.1.1_sequential/lib' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 NETCDF4=Y OPTS=D allinone ABI=64;cd -
+# cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' DAP_NETCDF_ROOT='/contrib/curl' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' HDF5_ROOT='/contrib/hdf5-1.8.4-patch1_sequential' NETCDF_ROOT='/contrib/netcdf-4.1.1_sequential' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 NETCDF4=Y OPTS=D allinone ABI=64;cd -
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 DAP_NETCDF=Y GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 
@@ -249,7 +249,7 @@ ifndef DAP_NETCDF_ROOT
 # Directory containing libcurl.a
  DAP_NETCDF_ROOT := /usr
 endif # DAP_NETCDF_ROOT
- NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
+ NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib ${NC_LDFLAGS}
 # netCDF 4.0.1+:
  NC_LIBS := -lcurl
 endif # end DAP_NETCDF
@@ -324,7 +324,7 @@ ifdef MPI_ROOT
 endif # !MPI_ROOT
  NETCDF_INC := ${NETCDF4_ROOT}/include
  NETCDF_LIB := ${NETCDF4_ROOT}/lib
- NC_LDFLAGS := -L${NETCDF_LIB} $(addprefix -L,${HDF5_LIB})
+ NC_LDFLAGS := -L${NETCDF_LIB} $(addprefix -L,${HDF5_LIB}) ${NC_LDFLAGS}
  NC_LIBS := -lnetcdf -lhdf5_hl -lhdf5 -lz ${NC_LIBS}
 ifdef MPI_ROOT
  NC_LIBS += -lmpi
