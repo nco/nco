@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.549 2010-05-20 21:13:56 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.550 2010-05-24 23:34:26 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -51,8 +51,8 @@
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 supportXF
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
-# cd ${HOME}/nco/bld;make OMP=Y CUDA=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
-# cd ${HOME}/nco/bld;make OMP=Y DAP_NETCDF=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
+# cd ${HOME}/nco/bld;make OMP=Y CUDA=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre
+# cd ${HOME}/nco/bld;make OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # givre, neige
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # glace, virga
 # mpi-selector --set openmpi_gcc-1.3.3 # Then use /sopt/netcdf/netcdf3-gcc-serial serial libraries
 # mpi-selector --set mpich_pgi_1.2.7p1 # After compiling
@@ -75,7 +75,7 @@
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' HDF5_ROOT='/contrib/hdf5-1.8.4-patch1_sequential' NETCDF_ROOT='/contrib/netcdf-4.1.1_sequential' SZ_LIB='/contrib/szip/lib' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 NETCDF4=Y OPTS=D SZ=Y allinone ABI=64;cd -
 # Cygwin on Windows Vista systems:
-# cd ~/nco/bld;ANTLR='antlr' make --jobs=1 DAP_NETCDF=Y GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
+# cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP_OPENDAP=Y
