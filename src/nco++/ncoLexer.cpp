@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (20081024): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
+/* $ANTLR 2.7.7 (20100319): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
 #include "ncoLexer.hpp"
 #include <antlr/CharBuffer.hpp>
 #include <antlr/TokenStreamException.hpp>
