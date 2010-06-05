@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.576 2010-04-27 13:29:42 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.577 2010-06-05 22:26:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1342,14 +1342,19 @@ file} or @dfn{pasting}.
 Appending is often confused with what @acronym{NCO} calls
 @dfn{concatenation}. 
 @cindex record dimension
-In @acronym{NCO}, concatenation refers to splicing a variable along the
-record dimension. 
-Appending, on the other hand, refers to adding variables from one file
-to another
+In @acronym{NCO}, concatenation refers to splicing a variable
+along the record dimension.  
+The length along the record dimension of the output is the sum of the
+lengths of the input files. 
+Appending, on the other hand, refers to copying a variable from one file
+to another file which may or may not already contain the variable 
 @footnote{Yes, the terminology is confusing. 
 By all means mail me if you think of a better nomenclature.
 Should @acronym{NCO} use @dfn{paste} instead of @dfn{append}?
 }. 
+@acronym{NCO} can append or concatenate just one variable, or all the
+variables in a file at the same time.
+
 In this sense, @command{ncks} can append variables from one file to
 another file. 
 This capability is invoked by naming two files on the command line,
