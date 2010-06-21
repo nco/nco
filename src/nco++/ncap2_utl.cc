@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.133 2010-04-09 05:04:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.134 2010-06-21 12:53:54 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -131,8 +131,9 @@ ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
   char *cp;
   char **sng_cp;
     
-  if(var->sz > 1L || nw_sz <1)
-    return false; 
+  if(var->sz > 1L || nw_sz <1) return false; 
+
+  if(nw_sz==1) return true;
     
   var_typ_sz=nco_typ_lng(var->type);
 
