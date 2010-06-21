@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.99 2010-02-22 15:27:28 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.100 2010-06-21 13:45:25 hmb Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -181,6 +181,20 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+    
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",1); b[\$a]=10;c=b(0:0);' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncwa -h -O $fl_fmt $nco_D_flg -C  -a a %tempf_00% %tempf_01%";
+    $tst_cmd[2]="ncks -C -H -v b -s '%i' %tempf_01%";
+    $dsc_sng="Casting variable with a single dim of sz=1 ";
+    ##TODO ncap81
+    $tst_cmd[3]="10";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+
+
 
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait=<STDIN>;
     
