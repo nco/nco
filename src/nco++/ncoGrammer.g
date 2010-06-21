@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.181 2010-04-09 05:04:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.182 2010-06-21 13:11:42 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1804,16 +1804,24 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               }
 
               // Cast is applied in VAR_ID action in function out()
+              // Note cast is NOT applied to an attribute, an irregular hyperslab
+              // or any entity which has a size of one.
               var_cst=ncap_cst_mk(str_vtr,prs_arg);     
               var1=out(vid1->getNextSibling());
 
               /* NB var_cst->val.vp always now set to null */ 
 
 
-              bool br1=(var_cst->sz >1 && var1->sz==1);
+              // If the RHS has size one or is an attribute or an irregular hyperslab
+              // then we neet to use the var_cst as the shape of the written variable.
+              // It is possible for the cast on the LHS to have a size of one and the RHS 
+              // to have a size of one e.g if the dim(s) in the list have a size of one   
+              bool br1=(var_cst->sz >=1 && var1->sz==1);
               bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
               
-               
+              
+
+              // The code rebuilds var1 with the shape from the casting variable  
               if( br1 || br2){
                 var_sct *var_nw;
                 void *vp_swp;
