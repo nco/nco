@@ -1,3 +1,8 @@
+2010-06-21  Henry Butowsky  <henryb@hush.com> 
+	* Fixed bug with casting  a variable
+	of size one. nb the following is NOW working
+	'defdim("one",1);irmax[$one]=20L;'
+
 2010-05-24  Charlie Zender  <zender@uci.edu>
 
 	* Mark Hadfield reports that my Cygwin ncap2 build works fine
