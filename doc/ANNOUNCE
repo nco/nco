@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.363 2010-04-18 19:30:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.364 2010-06-24 17:36:04 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.2 are ready. 
 
@@ -71,10 +71,15 @@ C. Allow deflation and chunking on netCDF4_classic filetypes.
    Formerly, this was not uniformly implemented.
    Thanks to Romain Ramel for pointing this out.   
 
-H. Known Problem: 
-   Namespace collision between mvapich2, netCDF4, and NCO when netCDF
-   (4.1) is compiled with parallel HDF5 (1.8.4). Thanks to anonymous
-   for pointing this out. We are working on it!
+D. Resolve namespace collision between mvapich2, netCDF4, and NCO when netCDF
+   (4.1) is compiled with parallel HDF5 (1.8.4). 
+   Thanks to Denis Nadeau for the patches.
+
+E. Fix ncap2 to correctly cast variables with single dimension of size one.
+   Formerly, ncap2 would write these as scalars in certain situations.
+   Thanks to Hugo for pointing this out and to Henry Butowsky for fixing it.
+
+F. Updated Cygwin (GNU on Microsoft Windows) executables available on the homepage!
 
 "Sticky" reminders:
 
@@ -107,10 +112,9 @@ N. NCO support for netCDF4 features is tracked at
    NCO supports netCDF4 atomic data types, compression, and chunking.
    NCO 4.0.2 with was built and tested with HDF5 hdf5-1.8.4 and with
    netCDF4 netcdf-4.1-snapshot2009111500.
-   NCO may not build with earlier, but should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.0.2 takes advantage of
-   an internal change to the netCDF API in June 2009 for
-   nc_def_var_chunking(). 
+   NCO may not build with earlier, and should build with later, netCDF4 releases.
+   This is particularly true since NCO 4.0.2 takes advantage of an
+   internal change to the netCDF nc_def_var_chunking() API in June 2009. 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
@@ -125,5 +129,5 @@ Enjoy,
 Charlie
  
 GSL functions added to ncap2 in 4.0.2: 
-    ncap2 -f | grep gsl_fit
-    ncap2 -f | grep bilinear
+    none!
+(Most desired GSL functions have been merged)

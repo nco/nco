@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.571 2010-05-20 00:48:30 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.572 2010-06-24 17:36:04 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -514,6 +514,7 @@ You can also retrieve the source of tagged versions directly
 Chunking in all operators; netCDF4 compound types?
 <li><b>NCO/SDO 4.0.2</b>: (<i>In progress</i>)
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
+Fix <tt>ncap2</tt> RAM vars, 1-D arrays.
 Fix <tt>ncatted</tt> appending <tt>NUL</tt>s.
 <li><b>NCO/SDO 4.0.1</b>:
 <tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;

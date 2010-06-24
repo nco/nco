@@ -1,7 +1,19 @@
+2010-06-22  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.0.2 release procedure:
+ 	Changes since nco-4_0_1: namespace, ncatted NUL, fxm
+	cd ~/nco;cvs tag -d nco-4_0_2;cvs tag -d nco-4_0_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
+	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
+
+	* Fix ncap2 to correctly cast variables with single dimension of size one
+	Formerly, ncap2 wrote these as scalars in certain situations
+	Thanks to Hugo for pointing this out and to Henry Butowsky for fixing it
+
 2010-06-21  Henry Butowsky  <henryb@hush.com> 
-	* Fixed bug with casting  a variable
-	of size one. nb the following is NOW working
-	'defdim("one",1);irmax[$one]=20L;'
+
+	* Fixed bug with casting  a variable of size one. 
+	This NOW works 'defdim("one",1);irmax[$one]=20L;'
 
 2010-05-24  Charlie Zender  <zender@uci.edu>
 
@@ -9,11 +21,11 @@
 	His machines have working java setup, mine do not
 	Either way, all NCO-caused issues with Cygwin have been resolved
 
-	* NCO 4.0.2 release procedure:
- 	Changes since nco-4_0_1: namespace, ncatted NUL, fxm
-	cd ~/nco;cvs tag -d nco-4_0_2;cvs tag -d nco-4_0_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.2 release"
-	cvs tag -c nco-4_0_2;cvs tag -c nco-4_0_2-1
+2010-05-24  Charlie Zender  <zender@uci.edu>
+
+	* Mark Hadfield reports that my Cygwin ncap2 build works fine
+	His machines have working java setup, mine do not
+	Either way, all NCO-caused issues with Cygwin have been resolved
 
 2010-05-20  givre zender  <zender@uci.edu>
 
