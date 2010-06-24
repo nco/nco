@@ -21,12 +21,6 @@
 	His machines have working java setup, mine do not
 	Either way, all NCO-caused issues with Cygwin have been resolved
 
-2010-05-24  Charlie Zender  <zender@uci.edu>
-
-	* Mark Hadfield reports that my Cygwin ncap2 build works fine
-	His machines have working java setup, mine do not
-	Either way, all NCO-caused issues with Cygwin have been resolved
-
 2010-05-20  givre zender  <zender@uci.edu>
 
 	* Makefile fixes for netCDF4 on AIX (bluefire)
