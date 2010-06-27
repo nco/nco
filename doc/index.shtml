@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.572 2010-06-24 17:36:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.573 2010-06-27 18:00:45 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -119,7 +119,9 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2010 Summer?: NCO 4.0.2 (TBD)</li>
+<li>2010 Fall?: NCO 4.0.3 (TBD)</li>
+
+<li>2010 Jun&nbsp;27: NCO 4.0.2</li>
 
 <li>2010 Apr&nbsp;05: NCO 4.0.1</li>
 
@@ -510,9 +512,11 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO/SDO 4.0.3</b>: (<i>Future</i>) 
+<li><b>NCO/SDO 4.0.4</b>: (<i>Future</i>) 
 Chunking in all operators; netCDF4 compound types?
-<li><b>NCO/SDO 4.0.2</b>: (<i>In progress</i>)
+<li><b>NCO/SDO 4.0.3</b>: (<i>In progress</i>)
+Chunking in all operators; netCDF4 compound types?
+<li><b>NCO/SDO 4.0.2</b>: 
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
 Fix <tt>ncap2</tt> RAM vars, 1-D arrays.
 Fix <tt>ncatted</tt> appending <tt>NUL</tt>s.

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.364 2010-06-24 17:36:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.365 2010-06-27 18:00:45 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.2 are ready. 
 
@@ -65,7 +65,7 @@ A. Fix off-by-one error in ncatted appends for type NC_CHAR
 
 B. Warn on deflation (compression) and chunking attempts with netCDF3. 
    Commands like "ncks -3 -L 9 in.nc out.nc" will still attempt to
-   complete without deflation, but will warn.  
+   complete without deflation, and will warn.  
 
 C. Allow deflation and chunking on netCDF4_classic filetypes.
    Formerly, this was not uniformly implemented.
@@ -79,7 +79,9 @@ E. Fix ncap2 to correctly cast variables with single dimension of size one.
    Formerly, ncap2 would write these as scalars in certain situations.
    Thanks to Hugo for pointing this out and to Henry Butowsky for fixing it.
 
-F. Updated Cygwin (GNU on Microsoft Windows) executables available on the homepage!
+F. Update Cygwin (GNU on Microsoft Windows) executables available on the homepage
+
+G. Update AIX executables available on the homepage
 
 "Sticky" reminders:
 
