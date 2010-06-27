@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.141 2010-06-27 20:20:48 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.142 2010-06-27 21:50:13 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -159,7 +159,7 @@ cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ag
 tar cvzf ./nco_4.0.3.orig.tar.gz --exclude='nco-4.0.3/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.3 
 /bin/rm -rf ${DATA}/nco-4.0.3 # Remove cvs-exported directory
 tar xvzf ./nco_4.0.3.orig.tar.gz # Untar to get directory without excluded files
-mkdir ${DATA}/nco-4.0.3/debian;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.3/debian # Replace debian directory with _CURRENT_ (main trunk) settings
+mkdir -p ${DATA}/nco-4.0.3/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.3/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.3/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
 export NETCDF_INC='/usr/include';export NETCDF_LIB='/usr/lib';export LD_LIBRARY_PATH='/usr/lib';unset NETCDF4_ROOT; # Guarantee that Debian packages take precedence over development libraries in, e.g., /usr/local. Indirectly inhibits libtool from using RPATH.
 #cd ${DATA}/nco-4.0.3;dpkg-buildpackage -rsudo -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
 #cd ${DATA}/nco-4.0.3;dpkg-buildpackage -rsudo -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
