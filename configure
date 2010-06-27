@@ -16979,7 +16979,8 @@ echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
-# The converse is not true
+# The converse is not true! Some distributions (e.g., Debian stable)
+# build _only_ netCDF3 library from netCDF4 source code
 header_defines_nc_chunked='no'
 if test "x${enable_netcdf4}" = 'xyes' ; then
     header_defines_nc_chunked='yes'

@@ -1,8 +1,8 @@
 nco (4.0.2-1) unstable; urgency=low
 
-  * new upstream version (netCDF4_classic behavior)
+  * new upstream version (namespace, ncatted NUL, ncap2 1-d arrays)
 
- -- Charlie Zender <zender@uci.edu>  Sun, 02 May 2010 11:20:58 -0700
+ -- Charlie Zender <zender@uci.edu>  Sun, 27 Jun 2010 11:04:41 -0700
 
 nco (4.0.1-1) unstable; urgency=low
 
