@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1071 2010-04-09 21:18:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1072 2010-06-27 20:20:48 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -374,8 +374,8 @@ nco646. pnetCDF builds on elnino, not ashes. Why?
 	/usr/bin/mpicc -c -O -g -I.   -O -g mpinetcdf.c
 	In file included from nc.h:14,
                  from mpinetcdf.c:8:
-	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:152: error: two or more data types in declaration specifiers
-	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:214: error: duplicate unsignednco
+	/usr/lib/gcc/i486-linux-gnu/4.0.3/include/stddef.h:152: error: two or more data types in declaration specifiers
+	/usr/lib/gcc/i486-linux-gnu/4.0.3/include/stddef.h:214: error: duplicate unsignednco
 nco648. Does mpncra create dangling pointers when it packs/unpacks variables?
 nco649. Add ncks --prn_cln switch to print coords/vars naked (no names, indices)
 nco651. Use hdr_pad standard to add documentation for long switches without short counterparts, e.g., --cmp, --mpi 

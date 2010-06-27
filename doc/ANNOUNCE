@@ -1,12 +1,95 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.365 2010-06-27 18:00:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.366 2010-06-27 20:20:48 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.0.2 are ready. 
+The netCDF operators NCO version 4.0.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version offers many minor fixes and improvements.
+This version contains many minor fixes and improvements.
 Short explanations of these appear below.
+A special note for Debian/Ubuntu users who want the latest NCO
+features before official releases appears at the bottom.
+
+Work on NCO 4.0.3 is underway. Areas of improvement include
+Support for spectral transforms, chunking in all operators,
+more chunking rulesets.
+
+"New stuff" in 4.0.3 details:
+
+A. Fix off-by-one error in ncatted appends for type NC_CHAR
+   Extra NULs are no longer inserted with each append
+   Thanks to A.T. Wittenburg for this bug report.
+
+B. Warn on deflation (compression) and chunking attempts with netCDF3. 
+   Commands like "ncks -3 -L 9 in.nc out.nc" will still attempt to
+   complete without deflation, and will warn.  
+
+C. Allow deflation and chunking on netCDF4_classic filetypes.
+   Formerly, this was not uniformly implemented.
+   Thanks to Romain Ramel for pointing this out.   
+
+D. Resolve namespace collision between mvapich2, netCDF4, and NCO when netCDF
+   (4.1) is compiled with parallel HDF5 (1.8.4). 
+   Thanks to Denis Nadeau for the patches.
+
+E. Fix ncap2 to correctly cast variables with single dimension of size one.
+   Formerly, ncap2 would write these as scalars in certain situations.
+   Thanks to Hugo for pointing this out and to Henry Butowsky for fixing it.
+
+F. Update Cygwin (GNU on Microsoft Windows) executables available on the homepage
+
+G. Update AIX executables available on the homepage
+
+"Sticky" reminders:
+
+J. ncks and ncecat support netCDF4 chunking options:
+   These options can improve performance on large datasets.
+   Large file users: Send us suggestions on useful chunking patterns!
+   More useful chunking patterns may be implemented in NCO 4.0.3.
+   ncks -O -4 --cnk_plc=all in.nc out.nc
+   http://nco.sf.net/nco.html#chunking
+
+K. Pre-built, up-to-date Debian Sid & Ubuntu Karmic packages:
+   http://nco.sf.net#debian
+
+L. Pre-built Fedora and CentOS RPMs:
+   http://nco.sf.net#rpm
+
+M. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
+   SWAMP efficiently schedules/executes NCO scripts on remote servers:  
+
+   http://swamp.googlecode.com
+
+   SWAMP can work command-line operator analysis scripts besides NCO. 
+   If you must transfer lots of data from a server to your client
+   before you analyze it, then SWAMP will likely speed things up. 
+
+N. NCO support for netCDF4 features is tracked at
+
+   http://nco.sf.net/nco.html#nco4
+
+   NCO supports netCDF4 atomic data types, compression, and chunking.
+   NCO 4.0.3 with was built and tested with HDF5 hdf5-1.8.4 and with
+   netCDF4 netcdf-4.1-snapshot2009111500.
+   NCO may not build with earlier, and should build with later, netCDF4 releases.
+   This is particularly true since NCO 4.0.3 takes advantage of an
+   internal change to the netCDF nc_def_var_chunking() API in June 2009. 
+
+   export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
+   cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
+   cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
+
+O. Have you seen the NCO logo candidates by Tony Freeman, Rich
+   Signell, Rob Hetland, and Andrea Cimatoribus?
+   http://nco.sf.net
+   Tell us what you think...
+
+Enjoy,
+Charlie
+ 
+GSL functions added to ncap2 in 4.0.3: 
+    none!
+(Most desired GSL functions have been merged)
 
 Debian/Ubuntu users who want the latest NCO features before official
 releases take heed: The bleeding-edge NCO features are available in
@@ -14,10 +97,10 @@ Debian package format long before official releases. New features are
 built into pre-release .deb packages as the features are introduced. 
 Once an (arbritrary) number of new features seems stable, we simply
 announce that the current pre-release code is the official (stable)
-release code. For example, .deb packages with the 4.0.2 release name  
+release code. For example, .deb packages with the 4.0.3 release name  
 have been at the expected location
 
-http://nco.sourceforge.net/src/nco_4.0.2-1_amd64.deb
+http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
 
 for many months, but the NCO homepage for binary package download
 only points to this location once the release is official. Until then,
@@ -52,84 +135,3 @@ late in making netCDF4 library .debs available). For netCDF4 support,
 you still need to build NCO from source. Or you can use NCO RPMs
 (e.g., from Fedora) but those are built until after official NCO
 releases so you can't preview features with pre-built RPMs. 
-
-Work on NCO 4.0.3 is underway. Areas of improvement include
-Support for spectral transforms, chunking in all operators,
-more chunking rulesets.
-
-"New stuff" in 4.0.2 details:
-
-A. Fix off-by-one error in ncatted appends for type NC_CHAR
-   Extra NULs are no longer inserted with each append
-   Thanks to A.T. Wittenburg for this bug report.
-
-B. Warn on deflation (compression) and chunking attempts with netCDF3. 
-   Commands like "ncks -3 -L 9 in.nc out.nc" will still attempt to
-   complete without deflation, and will warn.  
-
-C. Allow deflation and chunking on netCDF4_classic filetypes.
-   Formerly, this was not uniformly implemented.
-   Thanks to Romain Ramel for pointing this out.   
-
-D. Resolve namespace collision between mvapich2, netCDF4, and NCO when netCDF
-   (4.1) is compiled with parallel HDF5 (1.8.4). 
-   Thanks to Denis Nadeau for the patches.
-
-E. Fix ncap2 to correctly cast variables with single dimension of size one.
-   Formerly, ncap2 would write these as scalars in certain situations.
-   Thanks to Hugo for pointing this out and to Henry Butowsky for fixing it.
-
-F. Update Cygwin (GNU on Microsoft Windows) executables available on the homepage
-
-G. Update AIX executables available on the homepage
-
-"Sticky" reminders:
-
-J. ncks and ncecat support netCDF4 chunking options:
-   These options can improve performance on large datasets.
-   Large file users: Send us suggestions on useful chunking patterns!
-   More useful chunking patterns may be implemented in NCO 4.0.2.
-   ncks -O -4 --cnk_plc=all in.nc out.nc
-   http://nco.sf.net/nco.html#chunking
-
-K. Pre-built, up-to-date Debian Sid & Ubuntu Karmic packages:
-   http://nco.sf.net#debian
-
-L. Pre-built Fedora and CentOS RPMs:
-   http://nco.sf.net#rpm
-
-M. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
-   SWAMP efficiently schedules/executes NCO scripts on remote servers:  
-
-   http://swamp.googlecode.com
-
-   SWAMP can work command-line operator analysis scripts besides NCO. 
-   If you must transfer lots of data from a server to your client
-   before you analyze it, then SWAMP will likely speed things up. 
-
-N. NCO support for netCDF4 features is tracked at
-
-   http://nco.sf.net/nco.html#nco4
-
-   NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.0.2 with was built and tested with HDF5 hdf5-1.8.4 and with
-   netCDF4 netcdf-4.1-snapshot2009111500.
-   NCO may not build with earlier, and should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.0.2 takes advantage of an
-   internal change to the netCDF nc_def_var_chunking() API in June 2009. 
-
-   export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
-   cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
-   cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
-
-O. Have you seen the NCO logo candidates by Tony Freeman, Rich
-   Signell, Rob Hetland, and Andrea Cimatoribus?
-   http://nco.sf.net
-   Tell us what you think...
-
-Enjoy,
-Charlie
- 
-GSL functions added to ncap2 in 4.0.2: 
-    none!
-(Most desired GSL functions have been merged)
