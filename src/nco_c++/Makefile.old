@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.89 2010-06-28 21:22:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.90 2010-06-28 21:28:00 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -166,7 +166,7 @@ ifndef STC
 endif
 ifndef UDUNITS
 # Use UDUnits functionality
- UDUNITS := Y
+ UDUNITS := N
 endif
 ifndef UDUNITS2
 # Use UDUnits2 functionality
@@ -330,6 +330,9 @@ endif # !MPI_ROOT
 ifdef MPI_ROOT
  NC_LIBS += -lmpi
 endif # !MPI_ROOT
+ifdef CURL_LIB
+ NC_LDFLAGS += -L${CURL_LIB}
+endif # end 
 ifeq (${SZ},Y)
 ifndef SZ_LIB
  SZ_LIB := /usr/lib # Directory containing libsz.a
