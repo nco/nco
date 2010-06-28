@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.88 2010-05-24 23:34:26 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.89 2010-06-28 21:22:05 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -20,6 +20,11 @@
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=Y dpn_cln cln all # esmf, sand
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=N OMP=N dpn_cln cln all # sand, tephra
 # cd ~/nco/src/nco_c++;make -f Makefile.old NETCDF4=Y OMP=Y UDUNITS2=Y dpn_cln cln all # cygwin
+
+# 64-bit ABI netCDF3 on NCAR AIX systems (bluefire):
+# cd ${HOME}/nco/src/nco_c++;NETCDF_LIB='/usr/local/lib64/r4i4' make -f Makefile.old --jobs=1 ABI=64 all;cd -
+# 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
+# cd ${HOME}/nco/src/nco_c++;CURL_LIB='/contrib/curl/lib' HDF5_ROOT='/contrib/hdf5-1.8.4-patch1_sequential' NETCDF_ROOT='/contrib/netcdf-4.1.1_sequential' SZ_LIB='/contrib/szip/lib' make -f Makefile.old --jobs=1 ABI=64 NETCDF4=Y OPTS=D SZ=Y all;cd -
 
 # In rule 
 # foobar.o : foo.c bar.c
@@ -540,7 +545,7 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
 FC := xlf95_r
 LD := ld
 LDFLAGS += -bh:5 ${TMP_LDFLAGS} ${TMP_LIBS}
