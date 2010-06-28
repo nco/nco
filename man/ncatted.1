@@ -460,22 +460,12 @@ to an array of four integers.
 ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
 .RE
 .PP
-Demonstrate input of C-language escape sequences
-and
-other special characters
-.RS
-ncatted -h -a special,global,o,c,
-'\\nDouble quote: \\"\\nTwo consecutive double quotes: \\"\\"\\n
-Single quote: Beyond my shell abilities!\\nBackslash: \\\\n
-Two consecutive backslashes: \\\\\\nQuestion mark: \\?\\n' in.nc
-.RE
-Note that the entire attribute is protected from the shell by single
-quotes. 
-These outer single quotes are necessary for interactive use, but may be
-omitted in batch scripts.
+See the manual for more complex examples, including how to input
+C-language escape sequences and other special characters like
+backslashes and question marks. 
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncatted.1,v 1.7 2010-01-05 20:02:17 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncatted.1,v 1.8 2010-06-28 18:05:52 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
