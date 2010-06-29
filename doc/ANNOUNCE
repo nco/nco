@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.366 2010-06-27 20:20:48 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.367 2010-06-29 00:01:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.3 are ready. 
 
@@ -110,7 +110,7 @@ version number
 
 http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
 
-is created. The is not announced until it stabilizes a few months
+is created. This is not announced until it stabilizes a few months
 later. So, with judicious use of dpkg, Debian/Ubuntu users can easily
 track NCO feature development more closely than official releases.
 Just remove your existing NCO package and replace it with the latest
@@ -122,10 +122,10 @@ sudo dpkg --install nco_4.0.3-1_*.deb
 
 Caveats: 
 1. Only amd64 .debs are available early (because that is my
-development machine). Knowledgeable users will be able to build the 
-binary .deb for any architecture using the other files (.changes,
-.diff.gz, .dsc, and .tar.gz) found at the same location. 
-2. Pre-release packages are not for the meek, but getting feedback
+development machine). Savvy users can build the binary .deb for any
+architecture using the other files (.changes, .diff.gz, .dsc, and
+.tar.gz) found at the same location.   
+2. Pre-release packages are not for the meek, yet getting feedback
 on features from those who most need the features is immensely
 valuable to stabilizing the code for the final release. So we
 encourage users to try these packages. The worst that could happen is
@@ -133,5 +133,5 @@ that a pre-release NCO may crush you puppy or eat your cat.
 3. These .debs do not yet support netCDF4 (because Debian has been
 late in making netCDF4 library .debs available). For netCDF4 support,
 you still need to build NCO from source. Or you can use NCO RPMs
-(e.g., from Fedora) but those are built until after official NCO
-releases so you can't preview features with pre-built RPMs. 
+(e.g., from Fedora) but those are not built until after official NCO 
+releases so you cannot preview features with pre-built RPMs. 
