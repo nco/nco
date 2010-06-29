@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.578 2010-06-27 20:20:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.579 2010-06-29 19:41:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -437,7 +437,7 @@ January 2003@*
 Irvine, California@*
 
 @sp 2
-@acronym{NCO} has been generously supported from 2004--2008 by US 
+@acronym{NCO} was generously supported from 2004--2008 by US 
 National Science Foundation (@acronym{NSF}) grant 
 @uref{http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203,IIS-0431203}. 
 This support allowed me to maintain and extend core @acronym{NCO} code,
@@ -455,6 +455,25 @@ been immensely rewarding.@*
 Charlie Zender@*
 March 2008@*
 Grenoble, France@*
+
+@ignore
+@sp 2
+Under construction:
+The end of the NSF SEI grant curtailed @acronym{NCO} development. 
+Following that, NSF grant
+@uref{http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0714088,ARC-0714088}.
+and 
+NASA grant
+@uref{http://www.nasa.gov/mission_pages/IPY/main/PolarExploration.html,NNX07AR23G}.
+supported Henry Butowsky until May, 2010 while he developed key
+@command{ncap2} features used in our research. 
+fxm.@*
+@sp 1
+@noindent
+Charlie Zender@*
+2010@*
+Irvine, California@*
+@end ignore
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
