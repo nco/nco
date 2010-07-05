@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.367 2010-06-29 00:01:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.368 2010-07-05 19:18:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.3 are ready. 
 
@@ -7,38 +7,15 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This version contains many minor fixes and improvements.
 Short explanations of these appear below.
-A special note for Debian/Ubuntu users who want the latest NCO
-features before official releases appears at the bottom.
 
-Work on NCO 4.0.3 is underway. Areas of improvement include
+Work on NCO 4.0.4 is underway. Areas of improvement include
 Support for spectral transforms, chunking in all operators,
 more chunking rulesets.
 
 "New stuff" in 4.0.3 details:
 
-A. Fix off-by-one error in ncatted appends for type NC_CHAR
-   Extra NULs are no longer inserted with each append
-   Thanks to A.T. Wittenburg for this bug report.
-
-B. Warn on deflation (compression) and chunking attempts with netCDF3. 
-   Commands like "ncks -3 -L 9 in.nc out.nc" will still attempt to
-   complete without deflation, and will warn.  
-
-C. Allow deflation and chunking on netCDF4_classic filetypes.
-   Formerly, this was not uniformly implemented.
-   Thanks to Romain Ramel for pointing this out.   
-
-D. Resolve namespace collision between mvapich2, netCDF4, and NCO when netCDF
-   (4.1) is compiled with parallel HDF5 (1.8.4). 
-   Thanks to Denis Nadeau for the patches.
-
-E. Fix ncap2 to correctly cast variables with single dimension of size one.
-   Formerly, ncap2 would write these as scalars in certain situations.
-   Thanks to Hugo for pointing this out and to Henry Butowsky for fixing it.
-
-F. Update Cygwin (GNU on Microsoft Windows) executables available on the homepage
-
-G. Update AIX executables available on the homepage
+A. Allow for sensing, handling MAC OS X on x86_64 chips
+   Thanks to drkdev for solving this problem
 
 "Sticky" reminders:
 
@@ -90,48 +67,3 @@ Charlie
 GSL functions added to ncap2 in 4.0.3: 
     none!
 (Most desired GSL functions have been merged)
-
-Debian/Ubuntu users who want the latest NCO features before official
-releases take heed: The bleeding-edge NCO features are available in
-Debian package format long before official releases. New features are
-built into pre-release .deb packages as the features are introduced. 
-Once an (arbritrary) number of new features seems stable, we simply
-announce that the current pre-release code is the official (stable)
-release code. For example, .deb packages with the 4.0.3 release name  
-have been at the expected location
-
-http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
-
-for many months, but the NCO homepage for binary package download
-only points to this location once the release is official. Until then,
-they are rebuilt and replaced as each new feature is added. When the
-release is official, the package is frozen and a package with the next 
-version number 
-
-http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
-
-is created. This is not announced until it stabilizes a few months
-later. So, with judicious use of dpkg, Debian/Ubuntu users can easily
-track NCO feature development more closely than official releases.
-Just remove your existing NCO package and replace it with the latest
-(unannounced) package that has the feature you want with, e.g., 
-
-wget http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb .
-sudo dpkg --remove nco
-sudo dpkg --install nco_4.0.3-1_*.deb
-
-Caveats: 
-1. Only amd64 .debs are available early (because that is my
-development machine). Savvy users can build the binary .deb for any
-architecture using the other files (.changes, .diff.gz, .dsc, and
-.tar.gz) found at the same location.   
-2. Pre-release packages are not for the meek, yet getting feedback
-on features from those who most need the features is immensely
-valuable to stabilizing the code for the final release. So we
-encourage users to try these packages. The worst that could happen is
-that a pre-release NCO may crush you puppy or eat your cat.
-3. These .debs do not yet support netCDF4 (because Debian has been
-late in making netCDF4 library .debs available). For netCDF4 support,
-you still need to build NCO from source. Or you can use NCO RPMs
-(e.g., from Fedora) but those are not built until after official NCO 
-releases so you cannot preview features with pre-built RPMs. 

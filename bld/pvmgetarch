@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# $Id: pvmgetarch,v 1.7 2003-11-16 20:51:47 zender Exp $
+# $Id: pvmgetarch,v 1.8 2010-07-05 19:18:26 zender Exp $
 
 # Purpose: Generate PVM architecture string
 
 # Usage:
-# cp ~/bin/sh/pvmgetarch ~/nco/bld/pvmgetarch
-# cp ~/bin/sh/pvmgetarch ~/aer/pvmgetarch
-# scp ~/bin/sh/pvmgetarch dust.ess.uci.edu:/var/www/html/dead/pvmgetarch
+# cp ~/sh/pvmgetarch ~/nco/bld/pvmgetarch
+# cp ~/sh/pvmgetarch ~/aer/pvmgetarch
+# scp ~/sh/pvmgetarch dust.ess.uci.edu:/var/www/html/dead/pvmgetarch
 
 # This is a heuristic thing that may need to be tuned from time
 # to time.  I don't know of a real solution to determining the
@@ -77,6 +77,9 @@ if [ -f /bin/uname -o -f /usr/bin/uname \
 	FreeBSD,i386 )          ARCH=FREEBSD ;;
 # 20020812 csz++ Implement MACOSX
 	Darwin,Power* )         ARCH=MACOSX ;;
+# csz--
+# 20100705 csz++ Implement OS X on PC chips
+	Darwin,x86_64 )         ARCH=MACOSX ;;
 # csz--
 # 20020812 csz++ deprecate SX3 in favor of NECSX
 #	SUPER-UX,SX-3 )         ARCH=SX3 ;;

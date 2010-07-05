@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.104 2010-05-24 23:34:26 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.105 2010-07-05 19:18:27 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1056,7 +1056,7 @@ CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC} -I${ANTLR_INC}
 FC := f90
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lresolv -lm
 LEX := flex
 LINT := lint
 YACC := bison
