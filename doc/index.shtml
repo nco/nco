@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.574 2010-06-27 18:06:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.575 2010-07-05 19:35:58 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1018,6 +1018,24 @@ method: <tt>cd ~/nco/bld;make all;make test</tt>.
 Disadvantages are that <tt>nco/bld/Makefile</tt> (1)&nbsp;Usually requires
 editing to fix your platforms paths; (2)&nbsp;Does not support shared
 libraries; and (3)&nbsp;Requires a degree from Hogwarts to understand.
+</li>
+
+<!-- http://nco.sf.net#dpl_sym -->
+<a name="dpl_sym"></a>
+<li><i>Duplicate symbols errors:</i>
+When building NCO with the netCDF4 library and headers, some compilers
+emit errors due to duplicate symbol definitions.
+This arises because of the complexity of the build system.
+Essentially, NCO has to define some netCDF API prototypes itself
+to handle the corner case where the netCDF4 distribution is used 
+to build netCDF3 libraries. 
+We have tried to address this issue using <tt>autoconf/configure</tt>
+but it is beyond our abilities.
+The fix is to manually tell NCO that the netCDF4 header
+file <tt>netcdf.h</tt> is in fact being used so that NCO should
+not attempt to define these prototypes.
+Do this, e.g., with <tt>CPPFLAGS='-DHAVE_NETCDF4_H'</tt> or
+<tt>USR_TKN='-DHAVE_NETCDF4_H'</tt> if you use <tt>configure</tt> 
 </li>
 
 <!-- http://nco.sf.net#bld_chn -->
