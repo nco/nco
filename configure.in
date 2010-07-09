@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.319 2010-06-27 20:20:48 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.320 2010-07-09 20:05:58 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -849,7 +849,7 @@ if test "${enable_udunits2}" != 'no'; then
 	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
 #    nco_udunits2_xml=${UDUNITS2_PATH}/src/lib/udunits2.xml
     elif test "${NETCDF_INC}"; then
-	nco_udunits_xml="${NETCDF_INC}/../share/udunits2.xml"
+	nco_udunits2_xml="${NETCDF_INC}/../share/udunits2.xml"
     else
 # Patch from Fedora Core 6 nco.spec:
 	for udunits2_data_file in /usr/local/share/udunits2.xml /share/udunits2.xml ; do
