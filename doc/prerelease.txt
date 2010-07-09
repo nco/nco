@@ -1,0 +1,51 @@
+************************************************************************
+Begin Debian/Ubuntu pre-release explanation:
+Posted to NCO groups in Spring 2010
+************************************************************************
+Debian/Ubuntu users who want the latest NCO features before official
+releases take heed: The bleeding-edge NCO features are available in
+Debian package format long before official releases. New features are
+built into pre-release .deb packages as the features are introduced. 
+Once an (arbritrary) number of new features seems stable, we simply
+announce that the current pre-release code is the official (stable)
+release code. For example, .deb packages with the 4.0.3 release name  
+have been at the expected location
+
+http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
+
+for many months, but the NCO homepage for binary package download
+only points to this location once the release is official. Until then,
+they are rebuilt and replaced as each new feature is added. When the
+release is official, the package is frozen and a package with the next 
+version number 
+
+http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
+
+is created. This is not announced until it stabilizes a few months
+later. So, with judicious use of dpkg, Debian/Ubuntu users can easily
+track NCO feature development more closely than official releases.
+Just remove your existing NCO package and replace it with the latest
+(unannounced) package that has the feature you want with, e.g., 
+
+wget http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb .
+sudo dpkg --remove nco
+sudo dpkg --install nco_4.0.3-1_*.deb
+
+Caveats: 
+1. Only amd64 .debs are available early (because that is my
+development machine). Savvy users can build the binary .deb for any
+architecture using the other files (.changes, .diff.gz, .dsc, and
+.tar.gz) found at the same location.   
+2. Pre-release packages are not for the meek, yet getting feedback
+on features from those who most need the features is immensely
+valuable to stabilizing the code for the final release. So we
+encourage users to try these packages. The worst that could happen is
+that a pre-release NCO may crush you puppy or eat your cat.
+3. These .debs do not yet support netCDF4 (because Debian has been
+late in making netCDF4 library .debs available). For netCDF4 support,
+you still need to build NCO from source. Or you can use NCO RPMs
+(e.g., from Fedora) but those are not built until after official NCO 
+releases so you cannot preview features with pre-built RPMs. 
+************************************************************************
+End Debian/Ubuntu pre-release explanation:
+************************************************************************
