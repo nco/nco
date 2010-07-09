@@ -1,14 +1,16 @@
 2010-07-09  Charlie Zender  <zender@uci.edu>
 
-	* Fix definition of nco_udunits2_xml in configure.in
-
-2010-07-05  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.0.3 release procedure:
  	Changes since nco-4_0_2: fxm
 	cd ~/nco;cvs tag -d nco-4_0_3;cvs tag -d nco-4_0_3-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
+
+	* Add prerelease.txt and point to from homepage
+
+	* Fix definition of nco_udunits2_xml in configure.in
+
+2010-07-05  Charlie Zender  <zender@uci.edu>
 
 	* Add -lresolv to MACOSX links in Makefile.old
 
