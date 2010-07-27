@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.321 2010-07-27 17:35:50 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.322 2010-07-27 18:53:06 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -213,7 +213,7 @@ echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
 AC_ARG_ENABLE(dap-netcdf,AS_HELP_STRING([--enable-dap-netcdf],[Build DAP-enabled NCO with netCDF-provided DAP [[default=yes]]]),enable_dap_netcdf=${enableval},enable_dap_netcdf=yes)
-AC_ARG_ENABLE(dap-opendap,AS_HELP_STRING([--enable-dap-opendap],[Build DAP-enabled NCO with OPeNDAP-provided DAP [[default=no]]]),enable_dap_opendap=${enableval},enable_dap_opendap=yes)
+AC_ARG_ENABLE(dap-opendap,AS_HELP_STRING([--enable-dap-opendap],[Build DAP-enabled NCO with OPeNDAP-provided DAP [[default=no]]]),enable_dap_opendap=${enableval},enable_dap_opendap=no)
 
 # Are both DAP-netCDF and DAP-OPeNDAP requested?
 echo "DEBUG: enable_dap_netcdf = ${enable_dap_netcdf} and enable_dap_opendap = ${enable_dap_opendap}"
@@ -228,7 +228,7 @@ fi # End test for DAP duplication
 # Check for DAP-netCDF libraries unless told not to
 if test "${enable_dap_netcdf}" != 'no'; then
     echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
-    AC_CHECK_LIB([netcdf],[nc__opendap],,enable_dap_netcdf=no,[-lcurl])
+    AC_CHECK_LIB([netcdf],[dapfree],,enable_dap_netcdf=no,[-lcurl])
     if test "${enable_dap_netcdf}" = 'no'; then
 	AC_MSG_WARN([DAP-netCDF support through libnetCDF disabled (missing DAP library)])
     fi
