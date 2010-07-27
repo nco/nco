@@ -1589,9 +1589,9 @@ Optional Features:
 			  (and sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
   --enable-dap-netcdf     Build DAP-enabled NCO with netCDF-provided DAP
-                          [[default=no]]
-  --enable-dap-opendap    Build DAP-enabled NCO with OPeNDAP-provided DAP
                           [[default=yes]]
+  --enable-dap-opendap    Build DAP-enabled NCO with OPeNDAP-provided DAP
+                          [[default=no]]
   --enable-netcdf4        Enable netCDF Version 4 features (same as
                           enable-netcdf-4) [[default=yes]]
   --enable-netcdf-4       Enable netCDF Version 4 features (same as
