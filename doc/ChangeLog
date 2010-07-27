@@ -6,6 +6,12 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* Configure now works with ncap2, netCDF4, UDUnits2, netCDF-DAP on givre
+
+	* Always include -lcurl when building with DAP
+
+	* Place configure GSL switches after netCDF switches
+
 	* Change configure defaults to enable-dap-netcdf=yes and enable-dap-opendap=no
 
 2010-07-09  Charlie Zender  <zender@uci.edu>

@@ -16702,8 +16702,8 @@ else
 fi
 
     if test "${enable_dap_netcdf}" = 'no'; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: DAP-netCDF support through libnetCDF disabled (missing DAP library)" >&5
-$as_echo "$as_me: WARNING: DAP-netCDF support through libnetCDF disabled (missing DAP library)" >&2;}
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: DAP-netCDF support through libnetcdf.a disabled (missing DAP functions)" >&5
+$as_echo "$as_me: WARNING: DAP-netCDF support through libnetcdf.a disabled (missing DAP functions)" >&2;}
     fi
 fi
 # End DAP-netCDF
@@ -16831,6 +16831,7 @@ $as_echo "#define ENABLE_DAP 1" >>confdefs.h
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: DAP support enabled" >&5
 $as_echo "$as_me: DAP support enabled" >&6;}
+    LIBS="${LIBS} -lcurl"
 # This would activate conditional GSL tests, if there were any
 #    AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 fi
@@ -18385,6 +18386,7 @@ echo "########################################"
 echo "#     Testing for GSL support          #"
 echo "########################################"
 # Begin GSL
+# NB: Desirable for GSL flags to follow netCDF flags so configure does not look in GSL location (often /usr) for netCDF
 # Store pre-GSL LIBS value to restore from later
 nco_LIBS_no_GSL="${LIBS}"
 nco_CPPFLAGS_no_GSL="${CPPFLAGS}"
@@ -18414,17 +18416,17 @@ if test "${enable_gsl}" != 'no'; then
 	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"
     fi
     if test "${GSL_INC}"; then
-	CPPFLAGS="-I${GSL_INC} ${CPPFLAGS}"
+	CPPFLAGS="${CPPFLAGS} -I${GSL_INC}"
     else
 	GSL_INC="${GSL_ROOT}/include"
 	GSL_INC_ARG="`${GSL_CONFIG} --cflags`"
-	CPPFLAGS="${GSL_INC_ARG} ${CPPFLAGS}"
+	CPPFLAGS="${CPPFLAGS} ${GSL_INC_ARG}"
     fi
     if test "${GSL_LIB}"; then
-	LIBS="-L${GSL_LIB} ${LIBS}"
+	LIBS="${LIBS} -L${GSL_LIB}"
     else
 	GSL_LIB="${GSL_ROOT}/lib"
-	LIBS="`${GSL_CONFIG} --libs` ${LIBS}"
+	LIBS="${LIBS} `${GSL_CONFIG} --libs`"
     fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: These GSL library and header tests must succeed for GSL support:" >&5
 $as_echo "$as_me: These GSL library and header tests must succeed for GSL support:" >&6;}
