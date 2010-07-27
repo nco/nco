@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.161 2010-07-27 20:14:47 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.162 2010-07-27 20:35:30 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -390,7 +390,7 @@ LINUXAMD64
 Linux sand.ess.uci.edu 2.6.8.1-4-amd64-generic #1 Thu Dec 16 11:44:05 UTC 2004 x86_64 GNU/Linux
 x86_64-unknown-linux-gnu
 
-# gcc/g++ Regular (non-root) users build NCO and install in your own directories:
+# gcc/g++ Regular (non-root) users build NCO with system-supplied netCDF3 and install in your own directories:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -401,15 +401,15 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# gcc/g++ Sysadmins use/modify this to install/update NCO in /usr/local:
+# gcc/g++ Sysadmins use/modify this to install/update NCO in /usr/local, based on netCDF4 also in /usr/local (works on givre 20100727):
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --prefix='/usr/local' > nco.configure.${GNU_TRP}.foo 2>&1
+CPPFLAGS='-DHAVE_NETCDF4_H -I/usr/local/include' LDFLAGS='-L/usr/local/lib' ./configure --prefix='/usr/local' --enable-ncap2 --enable-netcdf4 > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
+sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # gcc/g++ Zender uses this to test building NCO with pre-built Ubuntu netCDF

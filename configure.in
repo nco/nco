@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.323 2010-07-27 20:14:47 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.324 2010-07-27 20:35:30 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -228,7 +228,7 @@ fi # End test for DAP duplication
 # Check for DAP-netCDF libraries unless told not to
 if test "${enable_dap_netcdf}" != 'no'; then
     echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
-    AC_CHECK_LIB([netcdf],[dapfree],,enable_dap_netcdf=no,[-lcurl])
+    AC_CHECK_LIB([netcdf],[nc__opendap],,enable_dap_netcdf=no,[-lcurl])
     if test "${enable_dap_netcdf}" = 'no'; then
 	AC_MSG_WARN([DAP-netCDF support through libnetcdf.a disabled (missing DAP functions)])
     fi

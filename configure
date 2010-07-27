@@ -16654,9 +16654,9 @@ fi # End test for DAP duplication
 # Check for DAP-netCDF libraries unless told not to
 if test "${enable_dap_netcdf}" != 'no'; then
     echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dapfree in -lnetcdf" >&5
-$as_echo_n "checking for dapfree in -lnetcdf... " >&6; }
-if test "${ac_cv_lib_netcdf_dapfree+set}" = set; then :
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc__opendap in -lnetcdf" >&5
+$as_echo_n "checking for nc__opendap in -lnetcdf... " >&6; }
+if test "${ac_cv_lib_netcdf_nc__opendap+set}" = set; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -16670,27 +16670,27 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char dapfree ();
+char nc__opendap ();
 int
 main ()
 {
-return dapfree ();
+return nc__opendap ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_netcdf_dapfree=yes
+  ac_cv_lib_netcdf_nc__opendap=yes
 else
-  ac_cv_lib_netcdf_dapfree=no
+  ac_cv_lib_netcdf_nc__opendap=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdf_dapfree" >&5
-$as_echo "$ac_cv_lib_netcdf_dapfree" >&6; }
-if test "x$ac_cv_lib_netcdf_dapfree" = x""yes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdf_nc__opendap" >&5
+$as_echo "$ac_cv_lib_netcdf_nc__opendap" >&6; }
+if test "x$ac_cv_lib_netcdf_nc__opendap" = x""yes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBNETCDF 1
 _ACEOF

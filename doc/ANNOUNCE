@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.369 2010-07-09 20:20:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.370 2010-07-27 20:35:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.3 are ready. 
 
@@ -17,7 +17,7 @@ more chunking rulesets.
 A. Allow for sensing, handling MAC OS X on x86_64 chips
    Thanks to drkdev for solving this problem
 
-A. Fix configure problem with finding UDUNITS2 files
+A. Configure works better with ncap2, netCDF4, UDUnits2, and netCDF-DAP
 
 "Sticky" reminders:
 

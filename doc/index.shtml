@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.577 2010-07-09 20:23:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.578 2010-07-27 20:35:30 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -515,10 +515,10 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO/SDO 4.0.4</b>: (<i>Future</i>) 
 Chunking in all operators; netCDF4 compound types?
 <li><b>NCO/SDO 4.0.3</b>: (<i>In progress</i>)
-Chunking in all operators; netCDF4 compound types?
+Fix <tt>configure</tt> for ncap2, netCDF4, UDUnits2, netCDF-DAP;
 <li><b>NCO/SDO 4.0.2</b>: 
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
-Fix <tt>ncap2</tt> RAM vars, 1-D arrays.
+Fix <tt>ncap2</tt> RAM vars, 1-D arrays;
 Fix <tt>ncatted</tt> appending <tt>NUL</tt>s.
 <li><b>NCO/SDO 4.0.1</b>:
 <tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;
@@ -1007,6 +1007,24 @@ builds with it are less common than we would like.
 The file <tt>nco/configure.eg</tt> contains a table which describes the 
 success you can expect building NCO with the <tt>configure</tt>
 mechanism. 
+If the simple <tt>configure</tt> recipe above does not work, savvier
+users may find it straightforward to modify and use the following, more
+advanced <tt>configure</tt> recipe:
+<tt>
+<pre class="example">
+# gcc/g++ Sysadmins use/modify this to install/update NCO in /usr/local, based on netCDF4 also in /usr/local (works on givre 20100727):
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+CPPFLAGS='-DHAVE_NETCDF4_H -I/usr/local/include' LDFLAGS='-L/usr/local/lib' ./configure --prefix='/usr/local' --enable-ncap2 --enable-netcdf4 > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
+</pre>
+</tt>
+This is the recipe that the developers use to test <tt>configure</tt>
+on the development machines.
 Please contribute patches required to get the <tt>configure</tt> 
 mechanism working properly for NCO on your platform.
 The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
