@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* Add more complicated build instructions for ./configure to homepage
+
 	* Configure now works with ncap2, netCDF4, UDUnits2, netCDF-DAP on givre
 
 	* Always include -lcurl when building with DAP
