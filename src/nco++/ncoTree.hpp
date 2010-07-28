@@ -3,12 +3,12 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (20100319): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (20060906): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.101 2010-05-25 00:38:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.102 2010-07-28 23:26:35 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
