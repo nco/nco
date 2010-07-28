@@ -1,5 +1,7 @@
 2010-07-28  Charlie Zender  <zender@uci.edu>
 
+	* Allow DEB_BUILD_OPTIONS to Debian rules for netCDF4/UDUnits2
+
 	* NCO 4.0.3 release procedure:
  	Changes since nco-4_0_2: fxm
 	cd ~/nco;cvs tag -d nco-4_0_3;cvs tag -d nco-4_0_3-1
