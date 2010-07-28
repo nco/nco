@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.146 2010-07-28 22:00:24 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.147 2010-07-28 23:07:41 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -189,7 +189,7 @@ tar cvzf ./nco_4.0.3.orig.tar.gz --exclude='nco-4.0.3/debian*' --exclude='.cvsig
 /bin/rm -rf ${DATA}/nco-4.0.3 # Remove cvs-exported directory
 tar xvzf ./nco_4.0.3.orig.tar.gz # Untar to get directory without excluded files
 mkdir -p ${DATA}/nco-4.0.3/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.3/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.3/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
-export NETCDF_INC='/usr/local/include';export NETCDF_LIB='/usr/local/lib';export LD_LIBRARY_PATH='/usr/local/lib';unset NETCDF4_ROOT; # Guarantee that local packages take precedence over Debian
+export DEB_BUILD_OPTIONS='local netcdf4 udunits2';export NETCDF_INC='/usr/local/include';export NETCDF_LIB='/usr/local/lib';export LD_LIBRARY_PATH='/usr/local/lib';unset NETCDF4_ROOT; # Guarantee that local packages take precedence over Debian
 cd ${DATA}/nco-4.0.3;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
 sudo dpkg --remove nco
 sudo dpkg --install ${DATA}/nco_4.0.3-1_*.deb

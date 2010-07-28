@@ -35,6 +35,21 @@ ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 else
 	CFLAGS += -O2
 endif
+ifneq (,$(findstring local,$(DEB_BUILD_OPTIONS)))
+	CPPFLAGS += ' -I/usr/local/include'
+	LDFLAGS +=  ' -L/usr/local/lib'
+endif
+ifneq (,$(findstring netcdf4,$(DEB_BUILD_OPTIONS)))
+	confflags += --enable-netcdf4
+	CPPFLAGS += ' -DHAVE_NETCDF4_H'
+else
+	confflags += --disable-netcdf4
+endif
+ifneq (,$(findstring udunits2,$(DEB_BUILD_OPTIONS)))
+	confflags += --enable-udunits2
+else
+	confflags += --disable-udunits2
+endif
 
 # Set Debian-default netCDF directories to override development netCDF
 # installations in, e.g., /usr/local
@@ -44,21 +59,17 @@ endif
 # Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, UDUnits, and UDUnits2
 config.status: configure
 	dh_testdir
-	NETCDF_INC='/usr/include' \
-	NETCDF_LIB='/usr/lib' \
 	./configure $(confflags) \
 		--prefix=/usr \
 		--infodir=/usr/share/info \
 		--libdir=/usr/lib/nco \
 		--mandir=/usr/share/man \
 		--enable-gsl \
-		--enable-ncoxx \
+		--enable-ncap2 \
 		--disable-dap-netcdf \
 		--disable-dap-opendap \
 		--disable-nco_cplusplus \
-		--disable-netcdf4 \
 		--disable-udunits \
-		--disable-udunits2 \
 		--disable-static
 
 # Architecture 
