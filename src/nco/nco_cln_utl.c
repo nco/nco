@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.22 2010-07-28 21:08:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.23 2010-07-28 22:00:25 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -8,17 +8,15 @@
 
 #include "nco_cln_utl.h" /* Calendar utilities */
 
+/* Arrays to hold calendar type units */
+/* Format: year,month,day,hour,min,sec,origin,offset */   
+double DATA_360[8]={31104000,2592000,86400,3600,  60  ,1,0.0,0.0};
+double DATA_365[8]={31536000,2628000,86400,3600.0,60.0,1,0.0,0.0};
 
-/* array to hold calendar type units */
-/* format -  year,month,day,hour,min,sec,origin,offset */   
-double DATA_360[8]={ 31104000,2592000,86400,3600,60,1,0.0,0.0 };
-double DATA_365[8]={ 31536000,2628000,86400,3600.0,60.0,1,0.0,0.0 };
-
-/* days in months */
-int DAYS360[12]={30,30,30,30,30,30,30,30,30,30,30,30 };    
-int DAYS365[12]={31,28,31,30,31,30,31,31,30,31,30,31 };    
-int DAYS366[12]={31,29,31,30,31,30,31,31,30,31,30,31 };    
-
+/* Days in months */
+int DAYS360[12]={30,30,30,30,30,30,30,30,30,30,30,30};
+int DAYS365[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+int DAYS366[12]={31,29,31,30,31,30,31,31,30,31,30,31};
 
 int /* O [nbr] Number of days to end of month */
 nco_nd2endm /* [fnc] Compute number of days to end of month */
@@ -556,16 +554,14 @@ cal_typ ret_typ;
   else if(!strcmp(lcl_sng, "all_leap") || !strcmp(lcl_sng,"366_day" ))
     ret_typ=cal_366;
 
-
   return ret_typ;
- 
 }
 
 int                /* O [int] number of days */
 nco_cln_mths2days( /* [fnc] number of days in months */
 cal_typ lmt_cal,   /* [enum] calendar type */
 int months){       /* I [int] month */ 
-int *days;
+int *days=NULL_CEWI;
 int idx;
 int idays=0;
 
@@ -631,18 +627,16 @@ double *data;
  }
 
  return;
-
 }
 
 double nco_cln_rel_val( /* O [dbl] relative time */
 double offset,          /* I [dbl] time in base units */
 cal_typ lmt_cal,        /* I [enum] Calendar type */ 
 tm_typ bs_tm_typ){      /* I [enum] Time units */
-double *data;
-double scl;
+double *data=NULL_CEWI;
+double scl=double_CEWI;
 
  switch(lmt_cal) {
-       
    case cal_360:
      data=DATA_360;    
      break; 

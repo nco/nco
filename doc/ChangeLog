@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* Fix compiler error warning initialization (CEWI) problems in nco_cln_utl.c
+
 	* Do not write to NULL-pointer for date in nco_cnv_ccm_ccsm_cf_date()
 
 2010-07-27  Charlie Zender  <zender@uci.edu>
