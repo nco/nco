@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.48 2010-07-28 21:08:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.49 2010-07-28 21:09:58 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -111,7 +111,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
     if(!strcmp(var[idx]->nm,"time")) break;
   } /* end loop over idx */
   if(idx == nbr_var){
-    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" and \"nbdate\" but not \"time\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" and \"nbdate\" yet lacks \"time\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   }else{
