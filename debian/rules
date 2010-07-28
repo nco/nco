@@ -36,8 +36,11 @@ else
 	CFLAGS += -O2
 endif
 ifneq (,$(findstring local,$(DEB_BUILD_OPTIONS)))
-	CPPFLAGS += -I/usr/local/include
-	LDFLAGS +=  -L/usr/local/lib
+	DEB_NETCDF_INC='/usr/local/include'
+	DEB_NETCDF_LIB='/usr/local/lib'
+else
+	DEB_NETCDF_INC='/usr/include'
+	DEB_NETCDF_LIB='/usr/lib'
 endif
 ifneq (,$(findstring netcdf4,$(DEB_BUILD_OPTIONS)))
 	confflags += --enable-netcdf4
@@ -59,6 +62,8 @@ endif
 # Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, UDUnits, and UDUnits2
 config.status: configure
 	dh_testdir
+	NETCDF_INC=$DEB_NETCDF_INC \
+	NETCDF_LIB=$DEB_NETCDF_LIB \
 	./configure $(confflags) \
 		--prefix=/usr \
 		--infodir=/usr/share/info \
