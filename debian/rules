@@ -36,12 +36,12 @@ else
 	CFLAGS += -O2
 endif
 ifneq (,$(findstring local,$(DEB_BUILD_OPTIONS)))
-	CPPFLAGS += ' -I/usr/local/include'
-	LDFLAGS +=  ' -L/usr/local/lib'
+	CPPFLAGS += -I/usr/local/include
+	LDFLAGS +=  -L/usr/local/lib
 endif
 ifneq (,$(findstring netcdf4,$(DEB_BUILD_OPTIONS)))
 	confflags += --enable-netcdf4
-	CPPFLAGS += ' -DHAVE_NETCDF4_H'
+	CPPFLAGS += -DHAVE_NETCDF4_H
 else
 	confflags += --disable-netcdf4
 endif
