@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.144 2010-07-09 20:20:09 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.145 2010-07-28 21:08:38 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -150,6 +150,7 @@ Warren Turkal <wt@atmos.colostate.edu>
 Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal <wt@atmos.colostate.edu>
 
 # New build system
+# This builds NCO with debian packages, and thus lacks UDUnits and netCDF4 support
 # Non-native debian builds Rod05 p. 46
 # sudo aptitude install antlr bison flex gsl-bin libgsl0-dev libantlr-dev netcdf-bin libnetcdf-dev texinfo
 cd ~/nco;cvc

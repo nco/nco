@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.21 2010-04-09 05:18:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.22 2010-07-28 21:08:38 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -45,7 +45,7 @@ nco_nd2endm /* [fnc] Compute number of days to end of month */
 nco_int /* O [YYMMDD] Date a specified number of days from input date */
 nco_newdate /* [fnc] Compute date a specified number of days from input date */
 (const nco_int date, /* I [YYMMDD] Date */
- const long day_srt) /* I [day] Days ahead of input date */
+ const nco_int day_srt) /* I [day] Days ahead of input date */
 {
   /* Purpose: Find date a specified number of days (possibly negative) from given date 
      Original fortran: Brian Eaton cal_util.F:newdate()
@@ -132,8 +132,6 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
 
   return newdate_YYMMDD;
 } /* end nco_newdate() */
-
-
 
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.47 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.48 2010-07-28 21:08:38 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -78,12 +78,11 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
   int rcd=NC_NOERR; /* [rcd] Return code */
   int time_idx;
   
-  long day;
-
   int nbdate_id;
   
-  nco_int nbdate;
+  nco_int day;
   nco_int date;
+  nco_int nbdate;
   
   (void)sprintf(wrn_sng,"Most, but not all, CCM/CCSM/CF files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
 
@@ -112,7 +111,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
     if(!strcmp(var[idx]->nm,"time")) break;
   } /* end loop over idx */
   if(idx == nbr_var){
-    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" but not \"time\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" and \"nbdate\" but not \"time\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   }else{
@@ -120,7 +119,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
   } /* endif */
   
   /* Assign current day to averaged day number */
-  day=(long)(var[time_idx]->val.dp[0]);
+  day=(nco_int)(var[time_idx]->val.dp[0]);
   
   /* Recompute date variable based on new (averaged) day number */
 #ifdef USE_FORTRAN_ARITHMETIC
@@ -128,7 +127,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
 #else /* !USE_FORTRAN_ARITHMETIC */
   date=nco_newdate(nbdate,day);
 #endif /* !USE_FORTRAN_ARITHMETIC */
-  if(var[date_idx]->val.ip) return; else var[date_idx]->val.ip[0]=date;
+  if(!var[date_idx]->val.ip) return; else var[date_idx]->val.ip[0]=date;
   
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_cnv_ccm_ccsm_cf_date */
