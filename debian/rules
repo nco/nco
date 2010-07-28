@@ -62,8 +62,8 @@ endif
 # Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, UDUnits, and UDUnits2
 config.status: configure
 	dh_testdir
-	NETCDF_INC=$DEB_NETCDF_INC \
-	NETCDF_LIB=$DEB_NETCDF_LIB \
+	NETCDF_INC=$(DEB_NETCDF_INC) \
+	NETCDF_LIB=$(DEB_NETCDF_LIB) \
 	./configure $(confflags) \
 		--prefix=/usr \
 		--infodir=/usr/share/info \
