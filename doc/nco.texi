@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.579 2010-06-29 19:41:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.580 2010-07-28 03:20:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -819,9 +819,10 @@ platform, and the change in the wallclock time for execution.}.
 @cindex Microsoft
 @cindex XP (Microsoft operating system)
 @cindex NT (Microsoft operating system)
+@cindex Vista (Microsoft operating system)
 
-@acronym{NCO} has been successfully ported and tested on the Microsoft
-Windows (95/98/NT/2000/XP) operating systems.
+@acronym{NCO} has been successfully ported and tested on most Microsoft  
+Windows operating systems including: 95/98/NT/2000/XP/Vista.
 The switches necessary to accomplish this are included in the standard
 distribution of @acronym{NCO}.
 Using the freely available Cygwin (formerly gnu-win32) development
@@ -830,9 +831,8 @@ environment
 @code{http://sourceware.redhat.com/cygwin}@*
 @cindex @code{gcc}
 @cindex @code{g++}
-@cindex @code{g77}
-Currently, @w{Cygwin 20.x} comes with the @acronym{GNU} C/C++/Fortran
-compilers (@command{gcc}, @command{g++}, @command{g77}).
+Currently, @w{Cygwin 20.x} comes with the @acronym{GNU} C/C++
+compilers (@command{gcc}, @command{g++}.
 These @acronym{GNU} compilers may be used to build the netCDF
 distribution itself.}, the compilation process is very similar to
 installing @acronym{NCO} on a @acronym{UNIX} system.  
