@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.34 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.35 2010-07-29 20:23:33 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -13,7 +13,7 @@
 #define NCO_CTL_H
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */

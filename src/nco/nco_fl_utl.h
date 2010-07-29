@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.43 2010-04-16 21:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.44 2010-07-29 20:23:33 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -13,7 +13,7 @@
 #define NCO_FL_UTL_H
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */

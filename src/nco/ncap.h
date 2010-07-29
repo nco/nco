@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.91 2010-04-09 04:51:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.92 2010-07-29 20:23:33 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -13,7 +13,7 @@
 #define NCAP_H
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */

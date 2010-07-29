@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.73 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.74 2010-07-29 20:23:33 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -38,7 +38,7 @@
    ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
@@ -50,10 +50,10 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.73 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.73 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.74 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.74 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.23 2010-07-28 21:08:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.24 2010-07-29 20:23:33 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -13,7 +13,7 @@
 #define NCO_CLN_UTL_H
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */

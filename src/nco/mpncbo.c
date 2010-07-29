@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.92 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.93 2010-07-29 20:23:33 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -53,7 +53,7 @@
    ncks -O -v scalar_var in.nc ~/foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbo -O -v four_dmn_rec_var in.nc ~/foo.nc foo2.nc */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
@@ -65,10 +65,10 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.92 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.92 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.93 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.93 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

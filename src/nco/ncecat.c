@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.176 2010-04-18 17:59:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.177 2010-07-29 20:23:33 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -30,7 +30,7 @@
    Irvine, CA 92697-3100 */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
@@ -42,10 +42,10 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -94,8 +94,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.176 2010-04-18 17:59:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.177 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.177 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;

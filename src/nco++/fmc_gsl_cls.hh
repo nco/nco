@@ -8,14 +8,13 @@
 #define FMC_GSL_CLS_HH
 
 #ifdef HAVE_CONFIG_H   
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 // Only use when GSL is present and enabled
 #ifdef ENABLE_GSL
 
-
-/* used in some of _ran handles, need it for INT_MAX */
+/* Used in some _ran handles, need it for INT_MAX */
 #include <limits.h> 
 
 #include <sstream>

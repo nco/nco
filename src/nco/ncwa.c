@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.274 2010-04-16 21:04:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.275 2010-07-29 20:23:33 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -40,7 +40,7 @@
    scp ~/nco/src/nco/ncwa.c esmf.ess.uci.edu:nco/src/nco */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
@@ -52,10 +52,10 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.274 2010-04-16 21:04:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.274 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.275 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.275 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

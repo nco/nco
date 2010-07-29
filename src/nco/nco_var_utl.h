@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.59 2010-03-22 15:19:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.60 2010-07-29 20:23:33 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -13,7 +13,7 @@
 #define NCO_VAR_UTL_H
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */

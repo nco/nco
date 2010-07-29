@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.71 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.72 2010-07-29 20:23:33 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -39,7 +39,7 @@
    ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
@@ -50,10 +50,10 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.71 2010-01-26 13:06:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.71 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.72 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.72 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;

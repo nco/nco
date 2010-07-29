@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.28 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.29 2010-07-29 20:23:33 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -13,7 +13,7 @@
 #define NCO_TYP_H
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */

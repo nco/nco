@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_getopt.c,v 1.2 2003-01-09 01:05:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_getopt.c,v 1.3 2010-07-29 20:23:33 zender Exp $ */
 
 /* "my_getopt" package is "drop-in" replacement for GNU getopt() 
    by Benjamin Sittler <bsittler@iname.com> downloaded from
@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "nco_getopt.h"  /* renamed this with an nco_ prefix */
+#include "nco_getopt.h"  /* csz renamed this with nco_ prefix */
 
 int my_optind=1, my_opterr=1, my_optopt=0;
 char *my_optarg=0;

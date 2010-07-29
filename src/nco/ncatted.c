@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.127 2010-04-09 20:57:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.128 2010-07-29 20:23:33 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -92,7 +92,7 @@
    ncks -C -h ~/foo.nc | m */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
@@ -104,10 +104,10 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.127 2010-04-09 20:57:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.128 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

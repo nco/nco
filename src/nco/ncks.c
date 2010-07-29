@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.253 2010-04-18 17:59:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.254 2010-07-29 20:23:33 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -46,7 +46,7 @@
    ncks -H -C -v lon -d lon,3,1 in.nc */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
@@ -57,10 +57,10 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.253 2010-04-18 17:59:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.253 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.254 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.254 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;

@@ -1,6 +1,8 @@
 2010-07-29  Charlie Zender  <zender@uci.edu>
 
-	* Look for udunits2.xml in /usr/local/share/udunits
+	* Add whitespace to clarify conditional #include config.h, getopt.h and nco_getopt.h
+
+	* Look for udunits2.xml in /usr/local/share/udunits/
 
 	* Correct nco_getopt.[ch] handling by autotools
 

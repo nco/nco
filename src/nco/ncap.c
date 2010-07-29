@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.237 2010-07-29 18:49:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.238 2010-07-29 20:23:33 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -36,7 +36,7 @@
    scp ~/nco/src/nco/ncap.c esmf.ess.uci.edu:nco/src/nco/ncap.c */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
@@ -52,10 +52,10 @@
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
    fxm: Unsure what ALPHA and SGI do */
 #ifndef HAVE_GETOPT_LONG
-#include "nco_getopt.h"
+# include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>
+# include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.237 2010-07-29 18:49:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.237 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.238 2010-07-29 20:23:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.238 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)

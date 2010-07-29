@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.19 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.20 2010-07-29 20:23:33 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -13,7 +13,7 @@
 #define NCO_SCM_H
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
+# include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
