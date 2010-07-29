@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.371 2010-07-28 21:08:38 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.372 2010-07-29 18:11:20 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.3 are ready. 
 
@@ -20,6 +20,7 @@ A. Allow for sensing, handling MAC OS X on x86_64 chips
 A. Configure works better with ncap2, netCDF4, UDUnits2, and netCDF-DAP
 
 A. Correctly write averaged date with ncra on CCM/CCSM/CF files
+   Fixes bug introduced in 4.0.1 that can segfault on ncra averages
 
 "Sticky" reminders:
 

@@ -32,16 +32,10 @@ fi
 ])
 
 AC_DEFUN([NCO_CHECK_FUNCS],
-[AC_FOREACH([AC_Func],[$1],
-  [AH_TEMPLATE(AS_TR_CPP(HAVE_[]AC_Func),dnl
-		[Define to 1 if compiler finds external `]AC_Func[' function])
-	AH_TEMPLATE(AS_TR_CPP(NEED_[]AC_Func),dnl
-	[Define to 1 if compiler needs external `]AC_Func[' function])	       
-	       ])dnl
-for ac_func in $1
-do
-AC_CHECK_FUNC($ac_func,
-              [AC_DEFINE_UNQUOTED([AS_TR_CPP([HAVE_$ac_func])])],
-              [AC_DEFINE_UNQUOTED([AS_TR_CPP([NEED_$ac_func])])])dnl
-done
-])
+[AC_FOREACH([NCO_Func],[$1],
+ [AC_CHECK_FUNC(NCO_Func,
+   [AC_DEFINE_UNQUOTED([HAVE_]NCO_Func, [1],
+     [Define to 1 if compiler finds external `]NCO_Func[' function])],
+   [AC_DEFINE_UNQUOTED([NEED_]NCO_Func, [1],
+     [Define to 1 if compiler needs external `]NCO_Func[' function])]dnl
+)])])
