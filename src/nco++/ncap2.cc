@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.107 2010-04-16 21:04:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.108 2010-07-29 21:08:13 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -59,7 +59,7 @@
    fxm: Unsure what ALPHA and SGI do */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
-#else /* !NEED_GETOPT_LONG */ 
+#else /* HAVE_GETOPT_LONG */ 
 # ifdef HAVE_GETOPT_H
 #  include <getopt.h>
 # endif /* !HAVE_GETOPT_H */ 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.107 2010-04-16 21:04:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.107 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.108 2010-07-29 21:08:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.108 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.76 2010-07-29 21:05:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.77 2010-07-29 21:08:13 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -43,7 +43,7 @@
 #include <unistd.h> /* POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
-#else /* !NEED_GETOPT_LONG */ 
+#else /* HAVE_GETOPT_LONG */ 
 # ifdef HAVE_GETOPT_H
 #  include <getopt.h>
 # endif /* !HAVE_GETOPT_H */ 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.76 2010-07-29 21:05:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.76 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.77 2010-07-29 21:08:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.77 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;

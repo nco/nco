@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.75 2010-07-29 21:05:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.76 2010-07-29 21:08:13 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -51,7 +51,7 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
-#else /* !NEED_GETOPT_LONG */ 
+#else /* HAVE_GETOPT_LONG */ 
 # ifdef HAVE_GETOPT_H
 #  include <getopt.h>
 # endif /* !HAVE_GETOPT_H */ 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.75 2010-07-29 21:05:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.75 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.76 2010-07-29 21:08:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.76 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;

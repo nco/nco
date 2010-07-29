@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.159 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.160 2010-07-29 21:08:13 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -51,7 +51,7 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
-#else /* !NEED_GETOPT_LONG */ 
+#else /* HAVE_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.159 2010-07-29 20:23:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.159 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.160 2010-07-29 21:08:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.160 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
