@@ -1,5 +1,11 @@
 2010-07-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.3 release procedure:
+ 	Changes since nco-4_0_2: nco_cnv_ccm_ccsm_cf_date() bug
+	cd ~/nco;cvs tag -d nco-4_0_3;cvs tag -d nco-4_0_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
+	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
+
 	* Add whitespace to clarify conditional #include config.h, getopt.h and nco_getopt.h
 
 	* Look for udunits2.xml in /usr/local/share/udunits/
@@ -9,12 +15,6 @@
 	* Using M4 definition of NCO_CHECK_FUNCS provided by Eric Blake of RedHat
 
 2010-07-28  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.3 release procedure:
- 	Changes since nco-4_0_2: fxm
-	cd ~/nco;cvs tag -d nco-4_0_3;cvs tag -d nco-4_0_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
-	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
 	* Allow DEB_BUILD_OPTIONS to Debian rules for netCDF4/UDUnits2
 
