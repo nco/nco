@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.99 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.100 2010-07-29 21:05:56 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -61,9 +61,9 @@
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
-#ifdef HAVE_GETOPT_H
-# include <getopt.h>
-#endif /* !HAVE_GETOPT_H */ 
+# ifdef HAVE_GETOPT_H
+#  include <getopt.h>
+# endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
 /* Internationalization i18n, Linux Journal 200211 p. 57--59 */
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.99 2010-07-29 20:23:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.99 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.100 2010-07-29 21:05:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.100 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;

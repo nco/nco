@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.116 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.117 2010-07-29 21:05:56 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -49,9 +49,9 @@
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
-#ifdef HAVE_GETOPT_H
-# include <getopt.h>
-#endif /* !HAVE_GETOPT_H */ 
+# ifdef HAVE_GETOPT_H
+#  include <getopt.h>
+# endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.116 2010-07-29 20:23:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.116 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.117 2010-07-29 21:05:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.117 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

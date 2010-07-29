@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.49 2010-07-28 21:09:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.50 2010-07-29 21:05:56 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -19,8 +19,8 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
   char *att_val;
   char *cnv_sng=NULL_CEWI;
 
-  /* netCDF standard is uppercase Conventions, but some models user lowercase */
-  char cnv_sng_UC[]="Conventions"; /* Unidata standard string (uppercase) */
+  /* netCDF standard is uppercase Conventions, though some models user lowercase */
+  char cnv_sng_UC[]="Conventions"; /* Unidata standard     string (uppercase) */
   char cnv_sng_LC[]="conventions"; /* Unidata non-standard string (lowercase) */
   
   int rcd; /* [rcd] Return code */
@@ -29,15 +29,14 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
 
   nc_type att_typ;
 
-  /* Look for signature of an CCM/CCSM/CF format file */
+  /* Look for signature of an CCM/CCSM/CF-format file */
   cnv_sng=cnv_sng_UC;
   rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
   if(rcd != NC_NOERR){
-    /* Some models, e.g., CLM user lowercase "conventions" */
+    /* Re-try with lowercase string because some models, e.g., CLM, user lowercase "conventions" */
     cnv_sng=cnv_sng_LC;
     rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
-
-  } /* Re-try with lowercase string */
+  } /* endif lowercase */
   
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
     /* Add one for NUL byte */
