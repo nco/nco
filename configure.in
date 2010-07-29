@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.324 2010-07-27 20:35:30 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.325 2010-07-29 19:11:53 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -846,15 +846,18 @@ echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 if test "${enable_udunits2}" != 'no'; then
     if test "${UDUNITS2_PATH}"; then
 # Add ${UDUNITS2_PATH}/lib to search path if present
-	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits2.xml
+	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
 	LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
 	CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
 #    nco_udunits2_xml=${UDUNITS2_PATH}/src/lib/udunits2.xml
     elif test "${NETCDF_INC}"; then
-	nco_udunits2_xml="${NETCDF_INC}/../share/udunits2.xml"
+	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
     else
-# Patch from Fedora Core 6 nco.spec:
-	for udunits2_data_file in /usr/local/share/udunits2.xml /share/udunits2.xml ; do
+# NB: 20100729 udunits2.xml location seems to have changed from 
+# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
+# Not sure of location in more recent Fedora systems...
+# Updating patch from Fedora Core 6 nco.spec:
+	for udunits2_data_file in /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml ; do
 	    if test -e "$udunits2_data_file" ; then
 		nco_udunits2_xml="$udunits2_data_file"
 	    fi

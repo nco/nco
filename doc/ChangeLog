@@ -1,5 +1,7 @@
 2010-07-29  Charlie Zender  <zender@uci.edu>
 
+	* Look for udunits2.xml in /usr/local/share/udunits
+
 	* Correct nco_getopt.[ch] handling by autotools
 
 	* Using M4 definition of NCO_CHECK_FUNCS provided by Eric Blake of RedHat
