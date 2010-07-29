@@ -1,5 +1,7 @@
 2010-07-29  Charlie Zender  <zender@uci.edu>
 
+	* Correct nco_getopt.[ch] handling by autotools
+
 	* Using M4 definition of NCO_CHECK_FUNCS provided by Eric Blake of RedHat
 
 2010-07-28  Charlie Zender  <zender@uci.edu>

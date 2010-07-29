@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.555 2010-07-09 20:05:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.556 2010-07-29 18:49:50 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1780,7 +1780,6 @@ lib : inc ${libnco}.a
 ifeq (${PVM_ARCH},MACOSX)
 	ranlib ${libnco}.a
 endif # endif LINUX
-# ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o)
 # If not using glibc, build Sittler's getopt() and getopt_long() functions
 ifeq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_getopt.o)

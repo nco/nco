@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.107 2010-07-29 18:11:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.108 2010-07-29 18:49:50 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -56,10 +56,8 @@ subdir = src/nco
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in ncap_lex.c \
 	ncap_yacc.c ncap_yacc.h
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
@@ -90,14 +88,14 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libnco_la_LIBADD =
-am__libnco_la_SOURCES_DIST = libnco.h ncap.h ncap_yacc.h nco.h \
-	nco_att_utl.h nco_aux.h nco_bnr.h nco_cln_utl.h nco_cnf_dmn.h \
-	nco_cnf_typ.h nco_cnk.h nco_cnv_arm.h nco_cnv_csm.h nco_ctl.h \
-	nco_dbg.h nco_dmn_utl.h nco_fl_utl.h nco_getopt.h nco_lmt.h \
-	nco_lst_utl.h nco_mmr.h nco_mpi.h nco_msa.h nco_mss_val.h \
-	nco_netcdf.h nco_omp.h nco_pck.h nco_prn.h nco_rec_var.h \
-	nco_rth_flt.h nco_rth_utl.h nco_scl_utl.h nco_scm.h \
-	nco_sng_utl.h nco_typ.h nco_var_avg.h nco_var_lst.h \
+am__libnco_la_SOURCES_DIST = libnco.h nco_getopt.h ncap.h ncap_yacc.h \
+	nco.h nco_att_utl.h nco_aux.h nco_bnr.h nco_cln_utl.h \
+	nco_cnf_dmn.h nco_cnf_typ.h nco_cnk.h nco_cnv_arm.h \
+	nco_cnv_csm.h nco_ctl.h nco_dbg.h nco_dmn_utl.h nco_fl_utl.h \
+	nco_lmt.h nco_lst_utl.h nco_mmr.h nco_mpi.h nco_msa.h \
+	nco_mss_val.h nco_netcdf.h nco_omp.h nco_pck.h nco_prn.h \
+	nco_rec_var.h nco_rth_flt.h nco_rth_utl.h nco_scl_utl.h \
+	nco_scm.h nco_sng_utl.h nco_typ.h nco_var_avg.h nco_var_lst.h \
 	nco_var_rth.h nco_var_scv.h nco_var_utl.h nco_getopt.c \
 	nco_att_utl.c nco_aux.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \
 	nco_cnf_typ.c nco_cnk.c nco_cnv_arm.c nco_cnv_csm.c nco_ctl.c \
@@ -107,8 +105,9 @@ am__libnco_la_SOURCES_DIST = libnco.h ncap.h ncap_yacc.h nco.h \
 	nco_scl_utl.c nco_scm.c nco_sng_utl.c nco_var_avg.c \
 	nco_var_lst.c nco_var_rth.c nco_var_scv.c nco_var_utl.c
 am__objects_1 =
-@NCO_NEED_GETOPT_LONG_TRUE@am__objects_2 = nco_getopt.lo
-am_libnco_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
+am__objects_2 = $(am__objects_1)
+@NCO_NEED_GETOPT_LONG_TRUE@am__objects_3 = nco_getopt.lo
+am_libnco_la_OBJECTS = $(am__objects_2) $(am__objects_3) \
 	nco_att_utl.lo nco_aux.lo nco_bnr.lo nco_cln_utl.lo \
 	nco_cnf_dmn.lo nco_cnf_typ.lo nco_cnk.lo nco_cnv_arm.lo \
 	nco_cnv_csm.lo nco_ctl.lo nco_dbg.lo nco_dmn_utl.lo \
@@ -361,8 +360,10 @@ top_srcdir = @top_srcdir@
 @BUILD_YACC_SOURCE_TRUE@NCAP = ncap
 @BUILD_YACC_SOURCE_FALSE@NCWA = 
 @BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
-@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
-@NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
+@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT_C = 
+@NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT_C = nco_getopt.c
+@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT_H = 
+@NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT_H = nco_getopt.h
 AM_YFLAGS = -d --name-prefix=nco_yy
 ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
 ncap_LDADD = libnco.la
@@ -400,6 +401,7 @@ mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 mpncwa_LDADD = libnco.la
 HEADER_SRC = \
 libnco.h \
+${NCO_GETOPT_H} \
 ncap.h \
 ncap_yacc.h \
 nco.h \
@@ -416,7 +418,6 @@ nco_ctl.h \
 nco_dbg.h \
 nco_dmn_utl.h \
 nco_fl_utl.h \
-nco_getopt.h \
 nco_lmt.h \
 nco_lst_utl.h \
 nco_mmr.h \
@@ -454,7 +455,7 @@ libnco_la_LDFLAGS = -release @VERSION@
 #include_HEADERS = $(HEADER_SRC)
 libnco_la_SOURCES = \
 ${HEADER_SRC} \
-${NCO_GETOPT} \
+${NCO_GETOPT_C} \
 nco_att_utl.c \
 nco_aux.c \
 nco_bnr.c \
@@ -489,7 +490,7 @@ nco_var_rth.c \
 nco_var_scv.c \
 nco_var_utl.c
 
-EXTRA_DIST = nco_getopt.c
+EXTRA_DIST = ${NCO_GETOPT_C}
 DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 CLEANFILES = ncdiff ncea ncrcat mpncdiff mpncea mpncrcat
 all: all-am
@@ -505,9 +506,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/nco/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/nco/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/nco/Makefile
+	  $(AUTOMAKE) --foreign src/nco/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

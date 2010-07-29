@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.236 2010-04-16 21:04:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.237 2010-07-29 18:49:50 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -50,7 +50,7 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 /* GNU getopt() is independent system header on FREEBSD, LINUX, LINUXALPHA, LINUXAMD, LINUXARM, WIN32
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
-   fxm: I'm not sure what ALPHA and SGI do */
+   fxm: Unsure what ALPHA and SGI do */
 #ifndef HAVE_GETOPT_LONG
 #include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.236 2010-04-16 21:04:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.236 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.237 2010-07-29 18:49:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.237 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)

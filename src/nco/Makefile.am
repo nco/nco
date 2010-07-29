@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.46 2010-04-09 05:10:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.47 2010-07-29 18:49:50 zender Exp $ -*-makefile-*-
 
 if BUILD_YACC_SOURCE
 NCAP=ncap
@@ -13,9 +13,11 @@ NCWA=
 endif
 
 if NCO_NEED_GETOPT_LONG
-NCO_GETOPT=nco_getopt.c
+NCO_GETOPT_C=nco_getopt.c
+NCO_GETOPT_H=nco_getopt.h
 else
-NCO_GETOPT=
+NCO_GETOPT_C=
+NCO_GETOPT_H=
 endif
 
 if ENABLE_MPI
@@ -77,6 +79,7 @@ mpncwa_LDADD = libnco.la
 
 HEADER_SRC = \
 libnco.h \
+${NCO_GETOPT_H} \
 ncap.h \
 ncap_yacc.h \
 nco.h \
@@ -93,7 +96,6 @@ nco_ctl.h \
 nco_dbg.h \
 nco_dmn_utl.h \
 nco_fl_utl.h \
-nco_getopt.h \
 nco_lmt.h \
 nco_lst_utl.h \
 nco_mmr.h \
@@ -132,7 +134,7 @@ libnco_la_LDFLAGS = -release @VERSION@
 
 libnco_la_SOURCES = \
 ${HEADER_SRC} \
-${NCO_GETOPT} \
+${NCO_GETOPT_C} \
 nco_att_utl.c \
 nco_aux.c \
 nco_bnr.c \
@@ -169,7 +171,7 @@ nco_var_utl.c
 
 TESTS = ${DAP_TESTS}
 
-EXTRA_DIST = nco_getopt.c
+EXTRA_DIST = ${NCO_GETOPT_C}
 
 DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 

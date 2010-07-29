@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.29 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.30 2010-07-29 18:49:50 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -135,9 +135,9 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
     case 't': *backslash_ptr='\t'; break; /* 011   9     09    HT  '\t' Horizontal tab */
     case 'v': *backslash_ptr='\v'; break; /* 013   11    0B    VT  '\v' Vertical tab */
     case '\\': *backslash_ptr='\\'; break; /* 134   92    5C    \   '\\' */
-    case '\?': *backslash_ptr='\?'; break; /* I'm not sure why or if this one works! */
-    case '\'': *backslash_ptr='\''; break; /* I'm not sure why or if this one works! */
-    case '\"': *backslash_ptr='\"'; break; /* I'm not sure why or if this one works! */
+    case '\?': *backslash_ptr='\?'; break; /* Unsure why or if this works! */
+    case '\'': *backslash_ptr='\''; break; /* Unsure why or if this works! */
+    case '\"': *backslash_ptr='\"'; break; /* Unsure why or if this works! */
       /* Do not translate \0 to NUL since this would "erase" the rest of the string */
     case '0':	
       /* Do not translate \0 to NUL since this would make the rest of the string invisible to all string functions */
