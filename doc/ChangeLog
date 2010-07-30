@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* Ensure CPP validity of NCO_CHECK_FUNCS tokens with AS_TR_CPP
+
 	* Add whitespace to clarify conditional #include config.h, getopt.h and nco_getopt.h
 
 	* Look for udunits2.xml in /usr/local/share/udunits/

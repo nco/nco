@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_getopt.c,v 1.3 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_getopt.c,v 1.4 2010-07-30 00:40:28 zender Exp $ */
 
 /* "my_getopt" package is "drop-in" replacement for GNU getopt() 
    by Benjamin Sittler <bsittler@iname.com> downloaded from
    http://www.geocities.com/ResearchTriangle/Node/9405/#my_getopt
-   It is distributed under BSD-like license. 
+   It is distributed under the BSD-like license below
    Modifications:
    20030101: Downloaded source
    20030108: Renamed my_getopt.h, my_getopt.c to nco_getopt.c, nco_getopt.h */

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.325 2010-07-29 19:11:53 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.326 2010-07-30 00:40:28 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -465,9 +465,10 @@ case ${host} in
 esac
 # End OS-specific libraries
 
-# NCO_CHECK_FUNC, defined in acinclude.m4, defines HAVE_XXX = 0
-# _and_ NEED_XXX = 1 when function xxx() is not found
-# Using if(NEED_XXX) in CPP conditionals is easier than if (!HAVE_xxx)
+# NCO_CHECK_FUNC, defined in acinclude.m4, does 
+# "#define HAVE_XXX 1" and "#undef NEED_XXX" when function xxx() is found and
+# "#undef HAVE_XXX" and "#define NEED_XXX 1" when function xxx() is not found
+# Purpose: CPP macros like "if(NEED_XXX)" are simpler to read than "if(!HAVE_xxx)"
 NCO_CHECK_FUNCS([nc_inq_format])
 NCO_CHECK_FUNCS([getopt getopt_long])
 NCO_CHECK_FUNCS([atan2])

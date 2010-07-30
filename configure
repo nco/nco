@@ -17560,20 +17560,21 @@ fi
 esac
 # End OS-specific libraries
 
-# NCO_CHECK_FUNC, defined in acinclude.m4, defines HAVE_XXX = 0
-# _and_ NEED_XXX = 1 when function xxx() is not found
-# Using if(NEED_XXX) in CPP conditionals is easier than if (!HAVE_xxx)
+# NCO_CHECK_FUNC, defined in acinclude.m4, does
+# "#define HAVE_XXX 1" and "#undef NEED_XXX" when function xxx() is found and
+# "#undef HAVE_XXX" and "#define NEED_XXX 1" when function xxx() is not found
+# Purpose: CPP macros like "if(NEED_XXX)" are simpler to read than "if(!HAVE_xxx)"
 ac_fn_c_check_func "$LINENO" "nc_inq_format" "ac_cv_func_nc_inq_format"
 if test "x$ac_cv_func_nc_inq_format" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_nc_inq_format 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_nc_inq_format 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17582,13 +17583,13 @@ ac_fn_c_check_func "$LINENO" "getopt" "ac_cv_func_getopt"
 if test "x$ac_cv_func_getopt" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_getopt 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_getopt 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17596,13 +17597,13 @@ ac_fn_c_check_func "$LINENO" "getopt_long" "ac_cv_func_getopt_long"
 if test "x$ac_cv_func_getopt_long" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_getopt_long 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_getopt_long 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17611,13 +17612,13 @@ ac_fn_c_check_func "$LINENO" "atan2" "ac_cv_func_atan2"
 if test "x$ac_cv_func_atan2" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_atan2 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_atan2 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17626,13 +17627,13 @@ ac_fn_c_check_func "$LINENO" "acosf" "ac_cv_func_acosf"
 if test "x$ac_cv_func_acosf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_acosf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_acosf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17640,13 +17641,13 @@ ac_fn_c_check_func "$LINENO" "asinf" "ac_cv_func_asinf"
 if test "x$ac_cv_func_asinf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_asinf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_asinf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17654,13 +17655,13 @@ ac_fn_c_check_func "$LINENO" "atanf" "ac_cv_func_atanf"
 if test "x$ac_cv_func_atanf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_atanf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_atanf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17668,13 +17669,13 @@ ac_fn_c_check_func "$LINENO" "atan2f" "ac_cv_func_atan2f"
 if test "x$ac_cv_func_atan2f" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_atan2f 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_atan2f 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17682,13 +17683,13 @@ ac_fn_c_check_func "$LINENO" "cosf" "ac_cv_func_cosf"
 if test "x$ac_cv_func_cosf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_cosf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_cosf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17696,13 +17697,13 @@ ac_fn_c_check_func "$LINENO" "expf" "ac_cv_func_expf"
 if test "x$ac_cv_func_expf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_expf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_expf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17710,13 +17711,13 @@ ac_fn_c_check_func "$LINENO" "fabsf" "ac_cv_func_fabsf"
 if test "x$ac_cv_func_fabsf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_fabsf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_fabsf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17724,13 +17725,13 @@ ac_fn_c_check_func "$LINENO" "fmodf" "ac_cv_func_fmodf"
 if test "x$ac_cv_func_fmodf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_fmodf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_fmodf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17738,13 +17739,13 @@ ac_fn_c_check_func "$LINENO" "log10f" "ac_cv_func_log10f"
 if test "x$ac_cv_func_log10f" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_log10f 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_log10f 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17752,13 +17753,13 @@ ac_fn_c_check_func "$LINENO" "logf" "ac_cv_func_logf"
 if test "x$ac_cv_func_logf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_logf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_logf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17766,13 +17767,13 @@ ac_fn_c_check_func "$LINENO" "powf" "ac_cv_func_powf"
 if test "x$ac_cv_func_powf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_powf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_powf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17780,13 +17781,13 @@ ac_fn_c_check_func "$LINENO" "sinf" "ac_cv_func_sinf"
 if test "x$ac_cv_func_sinf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_sinf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_sinf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17794,13 +17795,13 @@ ac_fn_c_check_func "$LINENO" "sqrtf" "ac_cv_func_sqrtf"
 if test "x$ac_cv_func_sqrtf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_sqrtf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_sqrtf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17808,13 +17809,13 @@ ac_fn_c_check_func "$LINENO" "tanf" "ac_cv_func_tanf"
 if test "x$ac_cv_func_tanf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_tanf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_tanf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17823,13 +17824,13 @@ ac_fn_c_check_func "$LINENO" "erff" "ac_cv_func_erff"
 if test "x$ac_cv_func_erff" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_erff 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_erff 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17837,13 +17838,13 @@ ac_fn_c_check_func "$LINENO" "erfcf" "ac_cv_func_erfcf"
 if test "x$ac_cv_func_erfcf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_erfcf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_erfcf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17851,13 +17852,13 @@ ac_fn_c_check_func "$LINENO" "gammaf" "ac_cv_func_gammaf"
 if test "x$ac_cv_func_gammaf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_gammaf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_gammaf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17866,13 +17867,13 @@ ac_fn_c_check_func "$LINENO" "acoshf" "ac_cv_func_acoshf"
 if test "x$ac_cv_func_acoshf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_acoshf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_acoshf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17880,13 +17881,13 @@ ac_fn_c_check_func "$LINENO" "asinhf" "ac_cv_func_asinhf"
 if test "x$ac_cv_func_asinhf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_asinhf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_asinhf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17894,13 +17895,13 @@ ac_fn_c_check_func "$LINENO" "atanhf" "ac_cv_func_atanhf"
 if test "x$ac_cv_func_atanhf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_atanhf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_atanhf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17908,13 +17909,13 @@ ac_fn_c_check_func "$LINENO" "coshf" "ac_cv_func_coshf"
 if test "x$ac_cv_func_coshf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_coshf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_coshf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17922,13 +17923,13 @@ ac_fn_c_check_func "$LINENO" "sinhf" "ac_cv_func_sinhf"
 if test "x$ac_cv_func_sinhf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_sinhf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_sinhf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17936,13 +17937,13 @@ ac_fn_c_check_func "$LINENO" "tanhf" "ac_cv_func_tanhf"
 if test "x$ac_cv_func_tanhf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_tanhf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_tanhf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17951,13 +17952,13 @@ ac_fn_c_check_func "$LINENO" "ceilf" "ac_cv_func_ceilf"
 if test "x$ac_cv_func_ceilf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_ceilf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_ceilf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17965,13 +17966,13 @@ ac_fn_c_check_func "$LINENO" "floorf" "ac_cv_func_floorf"
 if test "x$ac_cv_func_floorf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_floorf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_floorf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17980,13 +17981,13 @@ ac_fn_c_check_func "$LINENO" "nearbyintf" "ac_cv_func_nearbyintf"
 if test "x$ac_cv_func_nearbyintf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_nearbyintf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_nearbyintf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -17994,13 +17995,13 @@ ac_fn_c_check_func "$LINENO" "rintf" "ac_cv_func_rintf"
 if test "x$ac_cv_func_rintf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_rintf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_rintf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -18008,13 +18009,13 @@ ac_fn_c_check_func "$LINENO" "roundf" "ac_cv_func_roundf"
 if test "x$ac_cv_func_roundf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_roundf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_roundf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -18022,13 +18023,13 @@ ac_fn_c_check_func "$LINENO" "truncf" "ac_cv_func_truncf"
 if test "x$ac_cv_func_truncf" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_truncf 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_truncf 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -18037,13 +18038,13 @@ ac_fn_c_check_func "$LINENO" "getopt_long" "ac_cv_func_getopt_long"
 if test "x$ac_cv_func_getopt_long" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_getopt_long 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_getopt_long 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -18052,13 +18053,13 @@ ac_fn_c_check_func "$LINENO" "strdup" "ac_cv_func_strdup"
 if test "x$ac_cv_func_strdup" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_strdup 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_strdup 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi
@@ -18066,13 +18067,13 @@ ac_fn_c_check_func "$LINENO" "strcasecmp" "ac_cv_func_strcasecmp"
 if test "x$ac_cv_func_strcasecmp" = x""yes; then :
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_strcasecmp 1
+#define HAVE_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 else
 
 cat >>confdefs.h <<_ACEOF
-#define NEED_strcasecmp 1
+#define NEED_AS_TR_CPP(NCO_Func) 1
 _ACEOF
 
 fi

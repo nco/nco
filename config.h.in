@@ -48,6 +48,9 @@
 /* Autoconf-generated architecture \"triplet\" */
 #undef GNU_TRP
 
+/* Define to 1 if compiler finds external `strcasecmp' function */
+#undef HAVE_AS_TR_CPP
+
 /* Define to 1 if you have the `canonicalize_file_name' function. */
 #undef HAVE_CANONICALIZE_FILE_NAME
 
@@ -244,111 +247,6 @@
 /* Define if C++ compiler has working valarray<T> */
 #undef HAVE_VALARRAY
 
-/* Define to 1 if compiler finds external `acosf' function */
-#undef HAVE_acosf
-
-/* Define to 1 if compiler finds external `acoshf' function */
-#undef HAVE_acoshf
-
-/* Define to 1 if compiler finds external `asinf' function */
-#undef HAVE_asinf
-
-/* Define to 1 if compiler finds external `asinhf' function */
-#undef HAVE_asinhf
-
-/* Define to 1 if compiler finds external `atan2' function */
-#undef HAVE_atan2
-
-/* Define to 1 if compiler finds external `atan2f' function */
-#undef HAVE_atan2f
-
-/* Define to 1 if compiler finds external `atanf' function */
-#undef HAVE_atanf
-
-/* Define to 1 if compiler finds external `atanhf' function */
-#undef HAVE_atanhf
-
-/* Define to 1 if compiler finds external `ceilf' function */
-#undef HAVE_ceilf
-
-/* Define to 1 if compiler finds external `cosf' function */
-#undef HAVE_cosf
-
-/* Define to 1 if compiler finds external `coshf' function */
-#undef HAVE_coshf
-
-/* Define to 1 if compiler finds external `erfcf' function */
-#undef HAVE_erfcf
-
-/* Define to 1 if compiler finds external `erff' function */
-#undef HAVE_erff
-
-/* Define to 1 if compiler finds external `expf' function */
-#undef HAVE_expf
-
-/* Define to 1 if compiler finds external `fabsf' function */
-#undef HAVE_fabsf
-
-/* Define to 1 if compiler finds external `floorf' function */
-#undef HAVE_floorf
-
-/* Define to 1 if compiler finds external `fmodf' function */
-#undef HAVE_fmodf
-
-/* Define to 1 if compiler finds external `gammaf' function */
-#undef HAVE_gammaf
-
-/* Define to 1 if compiler finds external `getopt' function */
-#undef HAVE_getopt
-
-/* Define to 1 if compiler finds external `getopt_long' function */
-#undef HAVE_getopt_long
-
-/* Define to 1 if compiler finds external `log10f' function */
-#undef HAVE_log10f
-
-/* Define to 1 if compiler finds external `logf' function */
-#undef HAVE_logf
-
-/* Define to 1 if compiler finds external `nc_inq_format' function */
-#undef HAVE_nc_inq_format
-
-/* Define to 1 if compiler finds external `nearbyintf' function */
-#undef HAVE_nearbyintf
-
-/* Define to 1 if compiler finds external `powf' function */
-#undef HAVE_powf
-
-/* Define to 1 if compiler finds external `rintf' function */
-#undef HAVE_rintf
-
-/* Define to 1 if compiler finds external `roundf' function */
-#undef HAVE_roundf
-
-/* Define to 1 if compiler finds external `sinf' function */
-#undef HAVE_sinf
-
-/* Define to 1 if compiler finds external `sinhf' function */
-#undef HAVE_sinhf
-
-/* Define to 1 if compiler finds external `sqrtf' function */
-#undef HAVE_sqrtf
-
-/* Define to 1 if compiler finds external `strcasecmp' function */
-#undef HAVE_strcasecmp
-
-/* Define to 1 if compiler finds external `strdup' function */
-#undef HAVE_strdup
-
-/* Define to 1 if compiler finds external `tanf' function */
-#undef HAVE_tanf
-
-/* Define to 1 if compiler finds external `tanhf' function */
-#undef HAVE_tanhf
-
-/* Define to 1 if compiler finds external `truncf' function */
-#undef HAVE_truncf
-
 /* Hostname */
 #undef HOST
 
@@ -399,110 +297,8 @@
 /* Compatibility pvmgetarch token for SuperUX on NEC SX */
 #undef NECSX
 
-/* Define to 1 if compiler needs external `acosf' function */
-#undef NEED_acosf
-
-/* Define to 1 if compiler needs external `acoshf' function */
-#undef NEED_acoshf
-
-/* Define to 1 if compiler needs external `asinf' function */
-#undef NEED_asinf
-
-/* Define to 1 if compiler needs external `asinhf' function */
-#undef NEED_asinhf
-
-/* Define to 1 if compiler needs external `atan2' function */
-#undef NEED_atan2
-
-/* Define to 1 if compiler needs external `atan2f' function */
-#undef NEED_atan2f
-
-/* Define to 1 if compiler needs external `atanf' function */
-#undef NEED_atanf
-
-/* Define to 1 if compiler needs external `atanhf' function */
-#undef NEED_atanhf
-
-/* Define to 1 if compiler needs external `ceilf' function */
-#undef NEED_ceilf
-
-/* Define to 1 if compiler needs external `cosf' function */
-#undef NEED_cosf
-
-/* Define to 1 if compiler needs external `coshf' function */
-#undef NEED_coshf
-
-/* Define to 1 if compiler needs external `erfcf' function */
-#undef NEED_erfcf
-
-/* Define to 1 if compiler needs external `erff' function */
-#undef NEED_erff
-
-/* Define to 1 if compiler needs external `expf' function */
-#undef NEED_expf
-
-/* Define to 1 if compiler needs external `fabsf' function */
-#undef NEED_fabsf
-
-/* Define to 1 if compiler needs external `floorf' function */
-#undef NEED_floorf
-
-/* Define to 1 if compiler needs external `fmodf' function */
-#undef NEED_fmodf
-
-/* Define to 1 if compiler needs external `gammaf' function */
-#undef NEED_gammaf
-
-/* Define to 1 if compiler needs external `getopt' function */
-#undef NEED_getopt
-
-/* Define to 1 if compiler needs external `getopt_long' function */
-#undef NEED_getopt_long
-
-/* Define to 1 if compiler needs external `log10f' function */
-#undef NEED_log10f
-
-/* Define to 1 if compiler needs external `logf' function */
-#undef NEED_logf
-
-/* Define to 1 if compiler needs external `nc_inq_format' function */
-#undef NEED_nc_inq_format
-
-/* Define to 1 if compiler needs external `nearbyintf' function */
-#undef NEED_nearbyintf
-
-/* Define to 1 if compiler needs external `powf' function */
-#undef NEED_powf
-
-/* Define to 1 if compiler needs external `rintf' function */
-#undef NEED_rintf
-
-/* Define to 1 if compiler needs external `roundf' function */
-#undef NEED_roundf
-
-/* Define to 1 if compiler needs external `sinf' function */
-#undef NEED_sinf
-
-/* Define to 1 if compiler needs external `sinhf' function */
-#undef NEED_sinhf
-
-/* Define to 1 if compiler needs external `sqrtf' function */
-#undef NEED_sqrtf
-
 /* Define to 1 if compiler needs external `strcasecmp' function */
-#undef NEED_strcasecmp
-
-/* Define to 1 if compiler needs external `strdup' function */
-#undef NEED_strdup
-
-/* Define to 1 if compiler needs external `tanf' function */
-#undef NEED_tanf
-
-/* Define to 1 if compiler needs external `tanhf' function */
-#undef NEED_tanhf
-
-/* Define to 1 if compiler needs external `truncf' function */
-#undef NEED_truncf
+#undef NEED_AS_TR_CPP
 
 /* No netCDF version 2.x API */
 #undef NO_NETCDF_2
