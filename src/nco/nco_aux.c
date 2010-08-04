@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.25 2010-04-29 20:44:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.26 2010-08-04 23:48:51 zender Exp $ */
 
 /* Copyright (C) 1995--2010 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -27,7 +27,7 @@ nco_find_lat_lon
  int *lon_id,
  nc_type *crd_typ
  ){
-  /* Purpose: Find auxillary coordinate variables that map to latitude/longitude 
+  /* Purpose: Find auxiliary coordinate variables that map to latitude/longitude 
      Find variables with standard_name = "latitude" and "longitude"
      Return true if both latitude and longitude standard names are found
      Also return needed information about these auxiliary coordinates
@@ -172,7 +172,7 @@ nco_aux_evl
   
   /* Obtain lat/lon variable names */
   if(!nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ)){
-    nco_err_exit(-1,"nco_aux_evl: Unable to identify lat/lon auxillary coordinate variables.");
+    nco_err_exit(-1,"nco_aux_evl: Unable to identify lat/lon auxiliary coordinate variables.");
   } /* !nco_find_lat_lon() */
   
   if(nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz) != NC_NOERR){
