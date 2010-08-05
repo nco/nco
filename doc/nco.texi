@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.582 2010-07-29 18:49:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.583 2010-08-05 16:43:35 uid24006 Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.3
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 29 July 2010
-@set update-month July 2010
+@set update-date 5 August 2010
+@set update-month August 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -10509,6 +10509,7 @@ Change dimension @var{dim} to a record dimension in the output file.
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->
 @end html
 @cindex @code{-H}
+@cindex @code{--data}
 @cindex @code{--hieronymus}
 @item -H 
 Print data to screen.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.256 2010-07-29 21:08:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.257 2010-08-05 16:43:44 uid24006 Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.256 2010-07-29 21:08:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.256 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.257 2010-08-05 16:43:44 uid24006 Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.257 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -232,6 +232,7 @@ main(int argc,char **argv)
       {"crd",no_argument,0,'c'},
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
+      {"data",required_argument,0,'H'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
