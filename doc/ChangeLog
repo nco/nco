@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* Revised M4 definition of NCO_CHECK_FUNCS provided by Eric Blake of RedHat
+
 	* NB: configure is currently broken due to NCO_CHECK_FUNCS m4 macro
 
 	* Make ncks --data synonymous with ncks -H

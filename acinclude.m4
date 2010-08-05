@@ -31,11 +31,12 @@ if test "$ac_cv_cxx_namespaces" = yes; then
 fi
 ])
 
+dnl NCO_CHECK_FUNCS provided by Eric Blake of RedHat on autoconf USENET group 20100805
 AC_DEFUN([NCO_CHECK_FUNCS],
 [AC_FOREACH([NCO_Func],[$1],
  [AC_CHECK_FUNC(NCO_Func,
-   [AC_DEFINE_UNQUOTED([HAVE_]NCO_Func)], [1],
+ [AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_]NCO_Func), [1],
      [Define to 1 if compiler finds external `]NCO_Func[' function])],
-   [AC_DEFINE_UNQUOTED([NEED_]NCO_Func)], [1],
+ [AC_DEFINE_UNQUOTED(AS_TR_CPP([NEED_]NCO_Func), [1],
      [Define to 1 if compiler needs external `]NCO_Func[' function])]dnl
 )])])
