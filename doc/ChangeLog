@@ -6,10 +6,12 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* NCO seems to configure-build fine with shared netCDF4 in /usr/local
+
 	* Finally built recent netCDF with shared libs in /usr/local to
 	facilitate testing NCO configure mechanism with shared libs.
 
-	* Relaxed configure rule that netCDF4 mush be built static
+	* Relax configure rule that netCDF4 must be built static
 
 2010-08-05  Charlie Zender  <zender@uci.edu>
 
