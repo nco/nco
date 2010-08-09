@@ -6,6 +6,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* NCO fails dpkg-buildpackage configure-build with shared netCDF4 in /usr/local
+	This may be expected and OK because buildpackage checks, with
+	dh_shlibdeps, that shared library dependencies are resolvable
+	withing the dpkg universe which does not include /usr/local.
+	Thus, this builpackage problem may vanish with netCDF .debs
+	that include libnetCDF4.so.
+
 	* NCO seems to configure-build fine with shared netCDF4 in /usr/local
 
 	* Finally built recent netCDF with shared libs in /usr/local to
