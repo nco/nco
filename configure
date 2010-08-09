@@ -19826,13 +19826,10 @@ echo "#    Require Shared Libs?     #"
 echo "###############################"
 # If --enable-shared define ENABLE_SHARED
 echo "DEBUG: enable_shared: ${enable_shared} "
-if (test "${enable_shared}" = 'yes' && test "${enable_netcdf4}" = 'no'); then
+if (test "${enable_shared}" = 'yes'); then
 
 $as_echo "#define ENABLE_SHARED 1" >>confdefs.h
 
-else
-    echo "DEBUG: enable_shared: rejected due to netcdf4 requirement"
-#	AC_DEFINE(ENABLE_SHARED,0,Enable shared libraries)
 fi
 # End Shared
 

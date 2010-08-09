@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.326 2010-07-30 00:40:28 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.327 2010-08-09 18:11:52 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1234,11 +1234,8 @@ echo "#    Require Shared Libs?     #"
 echo "###############################"
 # If --enable-shared define ENABLE_SHARED
 echo "DEBUG: enable_shared: ${enable_shared} "
-if (test "${enable_shared}" = 'yes' && test "${enable_netcdf4}" = 'no'); then
+if (test "${enable_shared}" = 'yes'); then
     AC_DEFINE(ENABLE_SHARED,1,Enable shared libraries)
-else
-    echo "DEBUG: enable_shared: rejected due to netcdf4 requirement"
-#	AC_DEFINE(ENABLE_SHARED,0,Enable shared libraries)
 fi
 # End Shared
 

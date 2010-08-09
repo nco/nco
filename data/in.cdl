@@ -54,7 +54,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.114 2010-07-28 21:08:38 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.115 2010-08-09 18:11:55 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -813,7 +813,9 @@ data:
 	double_var2=10.;
 	e_dbl=2.71828182846;
 	e_flt=2.71828182846;
-	fl_dmn="a","b","3";
+// 	20100809: Single quotes around NC_CHAR coordinates required as of 4.1.2-beta1-snapshot2010080820
+// 	20100809: Double quotes cause "String constant too long" error in ncgen
+	fl_dmn='a','b','3';
 	fl_nm="/home/zender/nco/data/in.cdl";
 	float_var=10.;
 	four=4.;
