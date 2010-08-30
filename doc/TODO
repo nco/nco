@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1072 2010-06-27 20:20:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1073 2010-08-30 23:02:42 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -687,7 +687,18 @@ nco979. UDUnits1: time zone at end of user-specified limit string is ignored (ba
 nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between files like  "hours since 1965-010-01 12:00" and "minutes  since 1968-02-01 12:32"
 nco983. change default to netcdf3 64bit? or compile-time option to do so?
 nco984. remove makeinfo dependency trigger from nco configure build
-nco986. 
+nco986. nco: aix bluefire ncbo bug:
+      ncbo -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc
+      ncbo: ERROR nco_malloc() unable to allocate 7885078833219502080 bytes
+      where
+      nco_exit(rcd = 150999040), line 488 in "nco_ctl.c"
+      nco_malloc@AF12_3(??), line 90 in "nco_mmr.c"
+      nco_msa_rec_clc(dpt_crr = 0, dpt_crr_max = 0, lmt = (nil), lmt_lst = (nil), vara = 0x000000010056db30), line 149 in "nco_msa.c"
+      nco_msa_var_get(in_id = 50999040, var_in = 0x000000010056dd64, lmt_lst = 0x00000001270baab0, nbr_dmn_fl = 0), line 584 in "nco_msa.c"
+      main@OL@1(??, ??, ??), line 651 in "ncbo.c"
+      ncbo -O -D 5 -v lat_var -p ~/nco/data in.nc in.nc ~/foo.nc
+      NetCDF: Index exceeds dimension bound
+nco987. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

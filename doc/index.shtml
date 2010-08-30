@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.579 2010-07-28 03:20:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.580 2010-08-30 23:02:42 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -517,6 +517,7 @@ netCDF4 compound types?
 <li><b>NCO/SDO 4.0.3</b>: (<i>In progress</i>)
 Chunking in all operators?;
 Fix <tt>configure</tt> for ncap2, netCDF4, UDUnits2, netCDF-DAP;
+Fix <tt>ncbo</tt> bug under AIX xlC;
 <li><b>NCO/SDO 4.0.2</b>: 
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
 Fix <tt>ncap2</tt> RAM vars, 1-D arrays;

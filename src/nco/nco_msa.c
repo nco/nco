@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.78 2010-03-12 07:08:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.79 2010-08-30 23:02:43 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -536,7 +536,7 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
 } /* end nco_msa_min_idx() */
 
 void
-nco_msa_var_get    /* [fnc] Get var data from disk taking accound of multihyperslabs */
+nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multihyperslabs */
 (const int in_id,  /* I [id] netCDF input file ID */
  var_sct *var_in,
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
@@ -552,9 +552,9 @@ lmt_sct **lmt;
 
   nbr_dim=var_in->nbr_dim;	
 
-  // Refresh nc_id with in_id, NB: makes OpenMP threading work
-  // Should have been included in release 3.9.5
-  // Fixes TODO nco956
+  /* Refresh nc_id with in_id, NB: makes OpenMP threading work
+     Should have been included in release 3.9.5
+     Fixes TODO nco956 */
   var_in->nc_id=in_id; 
   /* Deal with scalar var */
   if(nbr_dim==0){
@@ -567,10 +567,10 @@ lmt_sct **lmt;
   lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
 
-/* Initialize lmt_mult with multi-limits from lmt_lst limits */
+  /* Initialize lmt_mult with multi-limits from lmt_lst limits */
   for(idx=0;idx<nbr_dim;idx++){
     for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-      if(!strcmp(var_in->dim[idx]->nm,lmt_lst[jdx]->dmn_nm ) ){
+      if(!strcmp(var_in->dim[idx]->nm,lmt_lst[jdx]->dmn_nm)){
 	lmt_mult[idx]=lmt_lst[jdx];
         break;
       } /* end if */
