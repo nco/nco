@@ -3,13 +3,13 @@ Begin Debian/Ubuntu pre-release explanation:
 Posted to NCO groups in Spring 2010
 ************************************************************************
 Debian/Ubuntu users who want the latest NCO features before official
-releases take heed: The bleeding-edge NCO features are available in
-Debian package format long before official releases. New features are
-built into pre-release .deb packages as the features are introduced. 
-Once an (arbritrary) number of new features seems stable, we simply
-announce that the current pre-release code is the official (stable)
-release code. For example, .deb packages with the 4.0.3 release name  
-have been at the expected location
+releases, without building from source, take heed: Bleeding-edge NCO
+features are available in Debian package format before official
+releases. New features are built into pre-release .deb packages as the
+features are introduced.  Once an (arbritrary) number of new features
+seems stable, we simply announce that the current pre-release code is
+the official (stable) release code. For example, .deb packages with
+the 4.0.3 release name have been at the expected location
 
 http://nco.sourceforge.net/src/nco_4.0.3-1_amd64.deb
 
