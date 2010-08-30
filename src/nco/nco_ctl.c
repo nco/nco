@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.268 2010-08-05 16:43:44 uid24006 Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.269 2010-08-30 04:49:46 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -666,7 +666,7 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 {
   /* Purpose: Print NCO configuration and help text */
 
-  (void)fprintf(stdout,"Homepage URL: http://nco.sf.net\n");
+  (void)fprintf(stdout,"Homepage: http://nco.sf.net\n");
   (void)fprintf(stdout,"User's Guide: http://nco.sf.net/nco.html\n");
   /* fxm: TKN2YESNO breaks when TKN is undefined
      Full macro language like M4 might be useful here, though probably too much trouble */
