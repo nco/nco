@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.580 2010-08-30 23:02:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.581 2010-08-31 16:30:54 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -517,7 +517,7 @@ netCDF4 compound types?
 <li><b>NCO/SDO 4.0.3</b>: (<i>In progress</i>)
 Chunking in all operators?;
 Fix <tt>configure</tt> for ncap2, netCDF4, UDUnits2, netCDF-DAP;
-Fix <tt>ncbo</tt> bug under AIX xlC;
+Fix <tt>ncbo</tt> <a href="#bug_ncbo_rfr">bug</a> under AIX xlC;
 <li><b>NCO/SDO 4.0.2</b>: 
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
 Fix <tt>ncap2</tt> RAM vars, 1-D arrays;
@@ -1396,6 +1396,13 @@ these versions of NCO.
 </ul>
 
 <ul><b>Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncbo_rfr -->
+<a name="bug_ncbo_rfr"></a>
+<li><i><tt>ncbo</tt> segmentation fault :</i>
+<tt>ncbo</tt> versions 4.0.0&mdash;4.0.2 incorrectly refreshed
+internal metadata, leading to segmentation faults and core dumps with
+some exacting compilers, notably xlC on AIX. 
+
 <!-- http://nco.sf.net#bug_ncap_cmt -->
 <a name="bug_ncap_cmt"></a>
 <li><i>Arithmetic problems with <tt>ncap</tt> division, modulo, and exponentiation:</i>
