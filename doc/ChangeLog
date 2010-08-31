@@ -1,5 +1,12 @@
 2010-08-31  Charlie Zender  <zender@uci.edu>
 
+	* Add protective #ifndef clauses to netCDF4 token definitions in nco_utl.hh
+	#ifndef <TOKEN>; #define <TOKEN> in Makefile.old
+
+	* Change conditions on compatibility token definitions from 
+	#ifdef ENABLE_NETCDF4 to #ifndef <TOKEN>; #define <TOKEN> in Makefile.old
+	since that more precisely determines when token definitions are needed
+
 	* NCO 4.0.3 release procedure:
  	Changes since nco-4_0_2: nco_cnv_ccm_ccsm_cf_date() bug, better configure
 	cd ~/nco;cvs tag -d nco-4_0_3;cvs tag -d nco-4_0_3-1

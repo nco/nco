@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.29 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.30 2010-08-31 19:03:27 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -66,20 +66,20 @@ C code." */
 /* Define compatibility tokens when user does not have netCDF4 */
 #ifndef HAVE_NETCDF4_H
 /* Datatypes referenced in nco_typ.h, nco_netcdf.c: */
-#define	NC_UBYTE 	7	/* unsigned 1 byte int */
-#define	NC_USHORT 	8	/* unsigned 2-byte int */
-#define	NC_UINT 	9	/* unsigned 4-byte int */
-#define	NC_INT64 	10	/* signed 8-byte int */
-#define	NC_UINT64 	11	/* unsigned 8-byte int */
-#define	NC_STRING 	12	/* string */
+# define	NC_UBYTE 	7	/* unsigned 1 byte int */
+# define	NC_USHORT 	8	/* unsigned 2-byte int */
+# define	NC_UINT 	9	/* unsigned 4-byte int */
+# define	NC_INT64 	10	/* signed 8-byte int */
+# define	NC_UINT64 	11	/* unsigned 8-byte int */
+# define	NC_STRING 	12	/* string */
 /* Fill values for netCDF4 datatypes. Referenced in nco_mss_val.c: */
-#define NC_FILL_UBYTE   (255)
-#define NC_FILL_USHORT  (65535)
-#define NC_FILL_UINT    (4294967295U)
+# define NC_FILL_UBYTE   (255)
+# define NC_FILL_USHORT  (65535)
+# define NC_FILL_UINT    (4294967295U)
 /* NB: These fill values are one shy of min(int64) and max(uint64) */
-#define NC_FILL_INT64   ((long long)-9223372036854775806LL)
-#define NC_FILL_UINT64  ((unsigned long long)18446744073709551614ULL)
-#define NC_FILL_STRING  ""
+# define NC_FILL_INT64   ((long long)-9223372036854775806LL)
+# define NC_FILL_UINT64  ((unsigned long long)18446744073709551614ULL)
+# define NC_FILL_STRING  ""
 #endif /* HAVE_NETCDF4_H */
 
 /* C pre-processor compares integers not strings

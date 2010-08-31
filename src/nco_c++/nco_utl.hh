@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.22 2010-01-05 20:02:18 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.23 2010-08-31 19:03:28 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -45,47 +45,70 @@ const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in functio
 # define NCO_FORMAT_UNDEFINED 0
 #endif // NCO_FORMAT_UNDEFINED
 
-  /* Define compatibility tokens when user does not have netCDF4 */
-#ifndef ENABLE_NETCDF4
-
+/* Define compatibility tokens when user does not have netCDF4 */
 /* Single compatibility token new to netCDF4 netcdf.h */
+#ifndef NC_NETCDF4
 # define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
+#endif
 /* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
    NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */
-# ifndef NC_64BIT_OFFSET
-#  define NC_64BIT_OFFSET (0x0200) /* Use large (64-bit) file offsets */
-# endif
-# ifndef NC_CLASSIC_MODEL
-#  define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
-# endif
-# ifndef NC_FORMAT_CLASSIC
-#  define NC_FORMAT_CLASSIC (1)
-# endif
-# ifndef NC_FORMAT_64BIT
-#  define NC_FORMAT_64BIT   (2)
-# endif
-# ifndef NC_FORMAT_NETCDF4
-#  define NC_FORMAT_NETCDF4 (3)
-# endif
-# ifndef NC_FORMAT_NETCDF4_CLASSIC
-#  define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
-# endif
+#ifndef NC_64BIT_OFFSET
+# define NC_64BIT_OFFSET (0x0200) /* Use large (64-bit) file offsets */
+#endif
+#ifndef NC_CLASSIC_MODEL
+# define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
+#endif
+#ifndef NC_FORMAT_CLASSIC
+# define NC_FORMAT_CLASSIC (1)
+#endif
+#ifndef NC_FORMAT_64BIT
+# define NC_FORMAT_64BIT   (2)
+#endif
+#ifndef NC_FORMAT_NETCDF4
+# define NC_FORMAT_NETCDF4 (3)
+#endif
+#ifndef NC_FORMAT_NETCDF4_CLASSIC
+# define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+#endif
 
 /* Datatypes referenced in nco_typ.h, nco_netcdf.c: */
-#define	NC_UBYTE 	7	/* unsigned 1 byte int */
-#define	NC_USHORT 	8	/* unsigned 2-byte int */
-#define	NC_UINT 	9	/* unsigned 4-byte int */
-#define	NC_INT64 	10	/* signed 8-byte int */
-#define	NC_UINT64 	11	/* unsigned 8-byte int */
-#define	NC_STRING 	12	/* string */
+#ifndef NC_UBYTE
+# define	NC_UBYTE 	7	/* unsigned 1 byte int */
+#endif
+#ifndef NC_USHORT
+# define	NC_USHORT 	8	/* unsigned 2-byte int */
+#endif
+#ifndef NC_UINT
+# define	NC_UINT 	9	/* unsigned 4-byte int */
+#endif
+#ifndef NC_INT64
+# define	NC_INT64 	10	/* signed 8-byte int */
+#endif
+#ifndef NC_UINT64
+# define	NC_UINT64 	11	/* unsigned 8-byte int */
+#endif
+#ifndef NC_STRING
+# define	NC_STRING 	12	/* string */
+#endif
 /* Fill values for netCDF4 datatypes. Referenced in nco_mss_val.c: */
-#define NC_FILL_UBYTE   (255)
-#define NC_FILL_USHORT  (65535)
-#define NC_FILL_UINT    (4294967295U)
-#define NC_FILL_INT64   ((long long)-9223372036854775808)
-#define NC_FILL_UINT64  ((unsigned long long)18446744073709551615)
-#define NC_FILL_STRING  ""
-#endif /* !ENABLE_NETCDF4 */
+#ifndef NC_FILL_UBYTE
+# define NC_FILL_UBYTE   (255)
+#endif
+#ifndef NC_FILL_USHORT
+# define NC_FILL_USHORT  (65535)
+#endif
+#ifndef NC_FILL_UINT
+# define NC_FILL_UINT    (4294967295U)
+#endif
+#ifndef NC_FILL_INT64
+# define NC_FILL_INT64   ((long long)-9223372036854775808)
+#endif
+#ifndef NC_FILL_UINT64
+# define NC_FILL_UINT64  ((unsigned long long)18446744073709551615)
+#endif
+#ifndef NC_FILL_STRING
+# define NC_FILL_STRING  ""
+#endif
 
 /* C pre-processor compares integers not strings
    Perform comparisons on enumerated integer values corresponding to each type */
