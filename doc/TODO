@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1073 2010-08-30 23:02:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1074 2010-08-31 04:42:13 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -698,6 +698,7 @@ nco986. nco: aix bluefire ncbo bug:
       main@OL@1(??, ??, ??), line 651 in "ncbo.c"
       ncbo -O -D 5 -v lat_var -p ~/nco/data in.nc in.nc ~/foo.nc
       NetCDF: Index exceeds dimension bound
+      valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -O -D 5 -v lat_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco987. 
 ************************************************************************
 End ncoXXX TODOs
