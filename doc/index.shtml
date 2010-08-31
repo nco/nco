@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.581 2010-08-31 16:30:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.582 2010-08-31 17:34:37 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -690,9 +690,8 @@ the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
-<ul>
-<li><a href="src/nco-4.0.2.aix53.tar.gz">nco-4.0.2.aix53.tar.gz</a>
-  (<!--#fsize file="src/nco-4.0.2.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.2.aix53.tar.gz"-->)</li>
+<ul> <!-- http://nco.sf.net/src/nco-4.0.2.aix53.tar.gz -->
+<li><a href="src/nco-4.0.2.aix53.tar.gz">nco-4.0.2.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.0.2.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.2.aix53.tar.gz"-->)</li>
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
 
