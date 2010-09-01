@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.155 2010-08-31 16:30:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.156 2010-09-01 11:13:50 hmb Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.155 2010-08-31 16:30:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.155 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.156 2010-09-01 11:13:50 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.156 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -529,26 +529,24 @@ main(int argc,char **argv)
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,nbr_xtr_1);
 
-  /* Refresh var_2 with dim_out data */
-  for(idx=0;idx<nbr_xtr_2;idx++){
-    int kdx;
-    var_sct *var_tmp;
-    var_tmp=var_2[idx];
-    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
-      for(kdx=0;kdx<nbr_dmn_fl_1;kdx++)
-       if(!strcmp(var_tmp->dim[jdx]->nm,dmn_out[kdx]->nm)){
- 	 var_tmp->dim[jdx]=dmn_out[kdx];
- 	 break;
-       } /* end if dimension found */
-      /* Dimension not found, die gracefully */
-      if(kdx==nbr_dmn_fl_1){
-	(void)fprintf(fp_stdout,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm,var_tmp->dim[jdx]->nm,fl_in_2,fl_in_1);
- 	nco_exit(EXIT_FAILURE);
-      } /* endif error */
-    } /* end jdx loop over dimensions */
-  } /* end idx loop over variables */
- 
-  /* Refresh var_2 with dim_out data */
+
+  /* Change dimensions in dim_2 to dim_out */
+  for(idx=0;idx<nbr_dmn_xtr_2;idx++){
+    for(jdx=0;jdx<nbr_dmn_xtr_1;jdx++)  
+      if(!strcmp(dim_2[idx]->nm,dmn_out[jdx]->nm)){  
+        /* nb copy new dim data -NOT free as dim element is aliased in the var_2 array */ 
+	(void)nco_dmn_cpy(dim_2[idx],dmn_out[jdx]);  
+        break;   
+      } /* endif */
+    /* dimension not found so die gracefully */
+    if(jdx==nbr_dmn_xtr_1){
+      (void)fprintf(fp_stdout,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
+      nco_exit(EXIT_FAILURE);
+    } /* endif dimension not found */
+  } /* end loop over dimensions */
+
+       
+  /* Refresh var_2 with the new dim_2 data */
   (void)nco_var_dmn_refresh(var_2,nbr_xtr_2);
    
   /* Divide variable lists into lists of fixed variables and variables to be processed
