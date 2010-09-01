@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.31 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.32 2010-09-01 11:14:43 hmb Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -43,6 +43,13 @@ nco_dmn_dfn /* [fnc] Define dimensions in output file */
 dmn_sct * /* O [sct] copy of input dimension structure */
 nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
 (const dmn_sct * const dmn); /* I [sct] Dimension structure to duplicate */
+
+
+void 
+nco_dmn_cpy /* [fnc] Copy dim elements from dim from source to target */
+(dmn_sct *const dmn_t, /* O [sct] Dimension structure to copy into */
+ const dmn_sct * const dmn_s); 
+
 
 dmn_sct * /* O [sct] Output dimension structure */
 nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
