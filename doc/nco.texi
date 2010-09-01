@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.585 2010-08-30 20:56:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.586 2010-09-01 23:41:31 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -52,7 +52,7 @@ texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
-
+nits2
 NB: @cindex references in footnotes propagate to PDF file, but not to
     HTML files, bug-report sent to makeinfo people 20040229
 
@@ -104,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.3
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 10 August 2010
-@set update-month August 2010
+@set update-date 1 September 2010
+@set update-month September 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -643,8 +643,8 @@ Unidata has shown a commitment to maintaining netCDF and UDUnits on all
 popular @acronym{UNIX} platforms, and is moving towards full support for 
 the Microsoft Windows operating system (@acronym{OS}).
 Given this, the only difficulty in implementing @acronym{NCO} on a
-particular platform is standardization of various @w{C and} Fortran
-interface and system calls.
+particular platform is standardization of various @w{C}-language API
+system calls. 
 @acronym{NCO} code is tested for @acronym{ANSI} compliance by
 compiling with @w{C compilers} including those from 
 @cindex @command{CC}
@@ -4090,11 +4090,26 @@ When unquoted whitespace is present between these elements, the shell
 passes @acronym{NCO} arugment fragments which will not parse as
 intended. 
 
-@acronym{NCO} implemented support for the UDUnits2 library with version  
+@acronym{NCO} implemented support for the UDUnits2 library with version   
 3.9.2 (August, 2007).
 The @uref{http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html, UDUnits2} package supports non-ASCII characters and logarithmic units.
-We are interested in user-feedback on these features, 
-which are relatively un-tested with @acronym{NCO}.
+We are interested in user-feedback on these features.
+
+One aspect that deserves mention is that UDUnits, and thus
+@acronym{NCO}, supports run-time definition of the location of the
+relevant UDUnits databases. 
+With UDUnits @w{version 1}, users may specify the directory which
+contains the UDUnits database, @file{udunits.dat}, via the
+@code{UDUNITS_PATH} environment variable.
+With UDUnits @w{version 2}, users may specify the UDUnits database file 
+itself, @file{udunits2.xml}, via the @code{UDUNITS2_XML_PATH} 
+environment variable.
+@example
+export UDUNITS_PATH='/nonstandard/location/share/udunits' # UDUnits1
+export UDUNITS2_XML_PATH='/nonstandard/location/share/udunits/udunits2.xml' # UDUnits2
+@end example
+This run-time flexibility can enable the full functionality of
+pre-built binaries on machines with libraries in different locations.
 
 @cindex Climate and Forecast Metadata Convention
 @cindex CF conventions
