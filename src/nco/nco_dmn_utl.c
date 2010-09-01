@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.38 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.39 2010-09-01 11:15:25 hmb Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -58,6 +58,23 @@ nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
 
   return dmn_cpy;
 } /* end nco_dmn_dpl() */
+
+void 
+nco_dmn_cpy /* [fnc] Copy dim elements from dim from source to target */
+(dmn_sct * const dmn_t, /* O [sct] Dimension structure to copy into */
+ const dmn_sct * const dmn_s) /* I [sct] Dimension structure to copy from */
+{
+  if(dmn_t->nm)
+    dmn_t->nm=(char*)nco_free(dmn_t->nm);
+
+  /* shallow copy elements */
+  *dmn_t=*dmn_s;   
+  
+  /* re-copy name */
+  dmn_t->nm=strdup(dmn_s->nm);
+  return;
+} /* end nco_dmn_cpy() */
+  
 
 dmn_sct * /* O [sct] Output dimension structure */
 nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
