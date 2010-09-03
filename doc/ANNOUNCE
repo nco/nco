@@ -1,21 +1,21 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.376 2010-09-03 03:15:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.377 2010-09-03 03:37:17 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.0.3 are ready. 
+The netCDF operators NCO version 4.0.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This version contains only bug-fixes and improvements.
-Two of these bugs could caused core dumps in relatively common 
-situations, so it was important to generate a new stable release 
-before the next Ubuntu distribution became frozen.
+Two of these bugs were recently introduced and could cause core dumps
+in relatively common situations, so it was important to generate a new
+stable release before the next Debian and Ubuntu distributions froze. 
 Short explanations of these bugs appear below.
 
 Work on NCO 4.0.4 is underway. Areas of improvement include
 Support for spectral transforms, chunking in all operators,
 more chunking rulesets.
 
-"New stuff" in 4.0.3 details:
+"New stuff" in 4.0.4 details:
 
 A. Correctly write averaged date with ncra on CCM/CCSM/CF files
    Fixes bug introduced in 4.0.1 that can segfault on ncra averages
@@ -36,7 +36,7 @@ D. Configure works better with ncap2, netCDF4, UDUnits2, and netCDF-DAP
 J. ncks and ncecat support netCDF4 chunking options:
    These options can improve performance on large datasets.
    Large file users: Send us suggestions on useful chunking patterns!
-   More useful chunking patterns may be implemented in NCO 4.0.3.
+   More useful chunking patterns may be implemented in NCO 4.0.4.
    ncks -O -4 --cnk_plc=all in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
@@ -60,10 +60,10 @@ N. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.0.3 with was built and tested with HDF5 hdf5-1.8.4 and with
-   netCDF4 netcdf-4.1-snapshot2009111500.
+   NCO 4.0.4 with was built and tested with HDF5 hdf5-1.8.4-patch1 and with
+   netCDF4 4.1.2-beta1-snapshot2010080820
    NCO may not build with earlier, and should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.0.3 takes advantage of an
+   This is particularly true since NCO 4.0.4 takes advantage of an
    internal change to the netCDF nc_def_var_chunking() API in June 2009. 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
@@ -78,6 +78,6 @@ O. Have you seen the NCO logo candidates by Tony Freeman, Rich
 Enjoy,
 Charlie
  
-GSL functions added to ncap2 in 4.0.3: 
+GSL functions added to ncap2 in 4.0.4: 
     none!
 (Most desired GSL functions have been merged)
