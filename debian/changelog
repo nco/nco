@@ -1,6 +1,6 @@
 nco (4.0.3-1) unstable; urgency=low
 
-  * new upstream version (nco_cnv_ccm_ccsm_cf_date() bug, ncbo bug, configure tweaks)
+  * new upstream version (cf_date() bug, ncbo bug, configure tweaks)
   * Switch to dpkg-source 3.0 (quilt) format
 
  -- Charlie Zender <zender@uci.edu>  Thu, 02 Sep 2010 18:05:48 -0700
