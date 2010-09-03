@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.583 2010-09-03 01:07:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.584 2010-09-03 03:15:40 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -514,10 +514,11 @@ You can also retrieve the source of tagged versions directly
 <ul>
 <li><b>NCO/SDO 4.0.4</b>: (<i>Future</i>) 
 netCDF4 compound types?
-<li><b>NCO/SDO 4.0.3</b>: (<i>In progress</i>)
 Chunking in all operators?;
+<li><b>NCO/SDO 4.0.3</b>: (<i>In progress</i>)
 Fix <tt>configure</tt> for ncap2, netCDF4, UDUnits2, netCDF-DAP;
 Fix <tt>ncbo</tt> <a href="#bug_ncbo_rfr">bug</a> under AIX xlC;
+Fix <tt>ncra</tt> <a href="#bug_ncra_date">bug</a> for some CF-compliant dates.
 <li><b>NCO/SDO 4.0.2</b>: 
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
 Fix <tt>ncap2</tt> RAM vars, 1-D arrays;
@@ -1401,6 +1402,12 @@ these versions of NCO.
 <tt>ncbo</tt> versions 4.0.0&mdash;4.0.2 incorrectly refreshed
 internal metadata, leading to segmentation faults and core dumps with
 some exacting compilers, notably xlC on AIX. 
+
+<!-- http://nco.sf.net#bug_ncra_date -->
+<a name="bug_ncra_date"></a>
+<li><i><tt>ncra</tt> segmentation fault :</i>
+<tt>ncra</tt> versions 4.0.0&mdash;4.0.1 mishandled some CF-compliant  
+dates, leading to segmentation faults and core dumps.
 
 <!-- http://nco.sf.net#bug_ncap_cmt -->
 <a name="bug_ncap_cmt"></a>

@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
+	* Document ncra date bug at http://nco.sf.net#bug_ncra_date
+
 2010-09-01  Charlie Zender  <zender@uci.edu>
 
 	* Belatedly removed nco_cal.[ch] (subsumed into nco_cln_utl.[ch])

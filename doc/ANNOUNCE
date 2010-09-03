@@ -1,12 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.375 2010-08-31 16:30:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.376 2010-09-03 03:15:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version contains many minor fixes and improvements.
-Short explanations of these appear below.
+This version contains only bug-fixes and improvements.
+Two of these bugs could caused core dumps in relatively common 
+situations, so it was important to generate a new stable release 
+before the next Ubuntu distribution became frozen.
+Short explanations of these bugs appear below.
 
 Work on NCO 4.0.4 is underway. Areas of improvement include
 Support for spectral transforms, chunking in all operators,
@@ -14,17 +17,19 @@ more chunking rulesets.
 
 "New stuff" in 4.0.3 details:
 
-A. Allow for sensing, handling MAC OS X on x86_64 chips
-   Thanks to drkdev for solving this problem
-
-A. Configure works better with ncap2, netCDF4, UDUnits2, and netCDF-DAP
-   Thanks to Eric Blake of RedHat for simplifying M4 definitions
-
 A. Correctly write averaged date with ncra on CCM/CCSM/CF files
    Fixes bug introduced in 4.0.1 that can segfault on ncra averages
+   http://nco.sf.net#bug_ncra_date
 
-A. Fix bug exposed by xlC compilers that caused ncbo segfaults on AIX
+B. Fix bug exposed by xlC compilers that caused ncbo segfaults on AIX
    This bug was present in ncbo versions 4.0.0-4.0.2
+   http://nco.sf.net#bug_ncbo_rfr
+
+C. Sense, handle MAC OS X on x86_64 chips
+   Thanks to drkdev for solving this problem
+
+D. Configure works better with ncap2, netCDF4, UDUnits2, and netCDF-DAP
+   Thanks to Eric Blake of RedHat for simplifying M4 definitions
 
 "Sticky" reminders:
 
