@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.585 2010-09-03 03:37:17 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.586 2010-09-03 17:02:09 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -119,7 +119,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2010 Sep&nbsp;02: NCO 4.0.4 (TBD)</li>
+<li>2010 Winter?: NCO 4.0.4 (TBD)</li>
 
 <li>2010 Sep&nbsp;02: NCO 4.0.3</li>
 
@@ -767,7 +767,7 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <a name="windows"></a><a name="ubn"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> running <a href="http://www.cygwin.org">Cygwin</a></h3>
 <ul>
-<li><a href="src/nco-4.0.3.win32.cygwin.tar.gz">nco-4.0.3.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.3.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.3.win32.cygwin.tar.gz"-->)</li>
+<li><a href="src/nco-4.0.2.win32.cygwin.tar.gz">nco-4.0.2.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.2.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.2.win32.cygwin.tar.gz"-->)</li>
 Thanks to RedHat Inc. for supporting Cygwin over the years. 
 </ul>
 
