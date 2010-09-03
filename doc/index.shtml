@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.586 2010-09-03 17:02:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.587 2010-09-03 21:26:17 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -334,7 +334,7 @@ and
 in the 
 <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
 Until September 2004, NCO development was completely voluntary and without institutional support.
-This NSF support dramatically changed the scale and pace of NCO/SDO development.
+This NSF support dramatically changed the scale and pace of NCO development.
 This URL,
 <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a>,
 points to the most up-to-date information on the NCO/SDO proposal.</p> 
@@ -381,12 +381,12 @@ Our techniques tremendously accelerated the analysis of different
 climate prediction scenarios for the same model, and among different
 climate models.</p> 
 
-<p>We encourage you to e-mail NCO/SDO endorsements to
+<p>We encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
-with Subject: &ldquo;NCO/SDO Proposal Endorsement&rdquo;. 
-An endorsement can be a sentence or a page, describing how NCO/SDO
+with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
+An endorsement can be a sentence or a page, describing how NCO
 benefits your work or research.
-The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO/SDO proposal advocacy.
+The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.
 &ldquo;What future proposals?&rdquo; you ask, &ldquo;Didn't you just get funded?&rdquo;
 Yes, we are funded to optimize and &ldquo;grid-enable&rdquo; NCO.
 There are still many desirable and unexplored methods for distributed data analysis
@@ -514,38 +514,38 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO/SDO 4.0.5</b>: (<i>Future</i>) 
-<li><b>NCO/SDO 4.0.4</b>: (<i>In progress</i>)
+<li><b>NCO 4.0.5</b>: (<i>Future</i>) 
+<li><b>NCO 4.0.4</b>: (<i>In progress</i>)
 netCDF4 compound types?
 Chunking in all operators?;
-<li><b>NCO/SDO 4.0.3</b>:
+<li><b>NCO 4.0.3</b>:
 Fix <tt>configure</tt> for ncap2, netCDF4, UDUnits2, netCDF-DAP;
 Fix <tt>ncbo</tt> <a href="#bug_ncbo_rfr">bug</a> under AIX xlC;
 Fix <tt>ncra</tt> <a href="#bug_ncra_date">bug</a> for some CF-compliant dates.
-<li><b>NCO/SDO 4.0.2</b>: 
+<li><b>NCO 4.0.2</b>: 
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
 Fix <tt>ncap2</tt> RAM vars, 1-D arrays;
 Fix <tt>ncatted</tt> appending <tt>NUL</tt>s.
-<li><b>NCO/SDO 4.0.1</b>:
+<li><b>NCO 4.0.1</b>:
 <tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;
-<li><b>NCO/SDO 4.0.0</b>: 
+<li><b>NCO 4.0.0</b>: 
 Bilinear interpolation, GSL fitting; 
 Chunking improvements;
 Better support CF <tt>calendar</tt> and <tt>coordinate</tt> attributes;
-<li><b>NCO/SDO 3.9.9</b>: 
+<li><b>NCO 3.9.9</b>: 
 netCDF4 chunking and <tt>NC_STRING</tt> support; 
 GSL statistics, interpolation functions;
 UDUnits2 <tt>time-since</tt> support;
 <tt>ncrcat</tt> re-basing;
-<li><b>NCO/SDO 3.9.8</b>: 
+<li><b>NCO 3.9.8</b>: 
 <tt>ncap2</tt> supports <tt>sort()</tt>, <tt>array()</tt>;
 better DAP/libnetcdf and UDUnits2 builds;
 GSL distribution/RNG functions;
-<li><b>NCO/SDO 3.9.7</b>:
+<li><b>NCO 3.9.7</b>:
 Improve GSL-build support;
 <tt>ncap2</tt> threading improvements;
 <tt>ncks --no_dmn_var_nm</tt> printing;
-<li><b>NCO/SDO 3.9.6</b>: 
+<li><b>NCO 3.9.6</b>: 
 Fix OpenMP MSA <a href="#bug_thr_msa">bug</a> (<i>upgrade highly recommended</i>); 
 Memory management to improve threading;
 <tt>ncatted</tt> workaround for netCDF4 <tt>_FillValue</tt>;
@@ -555,48 +555,48 @@ no math on type <tt>NC_CHAR</tt>;
 better missing value propagation,
 <tt>#include</tt> files,
 <a href="http://nco.sf.net/nco.html#gsl">GSL</a> math functions;
-<li><b>NCO/SDO 3.9.5</b>: 
+<li><b>NCO 3.9.5</b>: 
 Multi-slabbing (MSA) and <tt>-X</tt> everywhere;
 <tt>ncecat -M</tt>;
 netCDF4-enabled builds on Cygwin;
 <tt>ncap2</tt> builds on Solaris;
-<li><b>NCO/SDO 3.9.4</b>: 
+<li><b>NCO 3.9.4</b>: 
 File consanguinity;
 <tt>ncks</tt>: CF auxiliary coords, LZ stats;
 <tt>ncap2</tt>: masks, index arrays, print attributes, OpenMP, <tt>atan2()</tt>, <tt>pow()</tt>;
-<li><b>NCO/SDO 3.9.3</b>: 
+<li><b>NCO 3.9.3</b>: 
 SWAMP release;
 <tt>ncecat -u</tt>;
 <tt>wget</tt> URLs;
 GCC&nbsp;4.2;
 <tt>ncap2</tt> OpenMP;
-<li><b>NCO/SDO 3.9.2</b>: 
+<li><b>NCO 3.9.2</b>: 
 <tt>_FillValue</tt> supplants <tt>missing_value</tt>;
 <tt>UDUnits2 support</tt>;
 <tt>ncap2</tt> type-conversion support and printing;
 netCDF4 <tt>configure</tt> fixes;
 Change licenses to GPL3 and FDL1.2;
-<li><b>NCO/SDO 3.9.1</b>: 
+<li><b>NCO 3.9.1</b>: 
 <a href="http://nco.sf.net/nco.html#deflate">Support</a> lossless netCDF4/HDF deflation;
 Improve Intel compiler support; 
 <tt>ncap2</tt> for/while loops;
 various and sundry build fixes;
-<li><b>NCO/SDO 3.9.0</b>: 
+<li><b>NCO 3.9.0</b>: 
 <a href="http://nco.sf.net/nco.html#nco4">Support netCDF4</a> types (<tt>ubyte</tt>, <tt>ushort</tt>, <tt>uint</tt>, <tt>int64</tt>, and <tt>uint64</tt>);
 Control <tt>ncks</tt> metadata <a href="http://nco.sf.net/nco.html#prn">copying</a>; 
 Fix <tt>ncbo</tt> packed valued <a href="#bug_ncbo_pck">bug</a> (<i>upgrade recommended</i>); 
 Improve IRIX&nbsp;6.5 support; 
-<li><b>NCO/SDO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes;
-<li><b>NCO/SDO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
-<li><b>NCO/SDO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt> 
-<li><b>NCO/SDO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt>
-<li><b>NCO/SDO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
-<li><b>NCO/SDO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support
-<li><b>NCO/SDO 3.1.4</b>: Fix <tt>ncbo</tt> memory problem; report timer results
-<li><b>NCO/SDO 3.1.3</b>: <tt>ncap2</tt> automatically <a href="http://nco.sf.net/nco.html#att_prp">propagates</a> attributes to new/derived variables; NCO handles record variables with zero records; <a href="http://nco.sf.net/nco.html#cnv_CF_crd">support</a> CF <tt>coordinates</tt> convention; <tt>ncwa -b</tt> <a href="http://nco.sf.net/nco.html#ncwa">retains</a> degenerate dimensions; build fixes for Cray T3E, Solaris, Cygwin.
-<li><b>NCO/SDO 3.1.2</b>: <tt>ncap2</tt> control structures (conditionals, loops, etc.); keep non-processed data <a href="bug_pack_fix">packed</a> in output file; binary operators <tt>ncbo</tt> and <tt>ncflint</tt> work when only one variable has <tt>missing_value</tt> attribute; change <tt>ncra</tt> and <tt>ncea</tt> to always average coordinate variables
-<li><b>NCO/SDO 3.1.1</b>: NCO builds (again) with C++ compilers; ncap2 development code; server-side extensions
-<li><b>NCO/SDO 3.1.0</b>: MPI operators are bug-free; fix <t>./configure</t> for MPI and netCDF4; MRV algorithm speeds up <tt>ncwa</tt> 5&mdash;10 times; <tt>ncap</tt> random number generator <tt>rnd_nbr()</tt>
+<li><b>NCO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes;
+<li><b>NCO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
+<li><b>NCO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt> 
+<li><b>NCO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt>
+<li><b>NCO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
+<li><b>NCO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support
+<li><b>NCO 3.1.4</b>: Fix <tt>ncbo</tt> memory problem; report timer results
+<li><b>NCO 3.1.3</b>: <tt>ncap2</tt> automatically <a href="http://nco.sf.net/nco.html#att_prp">propagates</a> attributes to new/derived variables; NCO handles record variables with zero records; <a href="http://nco.sf.net/nco.html#cnv_CF_crd">support</a> CF <tt>coordinates</tt> convention; <tt>ncwa -b</tt> <a href="http://nco.sf.net/nco.html#ncwa">retains</a> degenerate dimensions; build fixes for Cray T3E, Solaris, Cygwin.
+<li><b>NCO 3.1.2</b>: <tt>ncap2</tt> control structures (conditionals, loops, etc.); keep non-processed data <a href="bug_pack_fix">packed</a> in output file; binary operators <tt>ncbo</tt> and <tt>ncflint</tt> work when only one variable has <tt>missing_value</tt> attribute; change <tt>ncra</tt> and <tt>ncea</tt> to always average coordinate variables
+<li><b>NCO 3.1.1</b>: NCO builds (again) with C++ compilers; ncap2 development code; server-side extensions
+<li><b>NCO 3.1.0</b>: MPI operators are bug-free; fix <t>./configure</t> for MPI and netCDF4; MRV algorithm speeds up <tt>ncwa</tt> 5&mdash;10 times; <tt>ncap</tt> random number generator <tt>rnd_nbr()</tt>
 <li><b>NCO 3.0.3</b>: Eliminate all critical read regions (accelerates all SMP operators); builds with netCDF4 alpha; read <t>NETCDF4_CLASSIC</t> (i.e., HDF) files automatically; write <t>NETCDF4</t> files <a href="http://nco.sf.net/nco.html#netcdf4">on request</a>; <a href="http://nco.sf.net#BM">benchmark results</a> quantify parallelism.
 <li><b>NCO 3.0.2</b>: Fewer critical read regions; all known memory leaks plugged; better Intel compiler support; <tt>SFTP</tt> protocol support; FTP protocol supports <tt>.netrc</tt>-based passwords; better model grid-property-awareness (e.g., <tt>lat_bnds</tt>); <tt>ncatted</tt> <tt>ncks</tt>, <tt>ncrename</tt> support metadata header padding with <tt>--hdr</tt>; <tt>ncbo</tt> supports heterogeneous variable ordering; <tt>ncatted</tt> bugfix
   <li><b>NCO 3.0.1</b>: benchmarks; <tt>ncks</tt> printing tweaks; memory cleanup; <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>; thread operators by default
@@ -1592,7 +1592,7 @@ on air-surface exchange.
 </li>
 
 <p>Thanks also to 
-<a href="http://nco.sf.net/nco.html#ppl">past NCO/SDO contributors</a>.
+<a href="http://nco.sf.net/nco.html#ppl">past NCO contributors</a>.
 
 </ul>
 <hr></p>

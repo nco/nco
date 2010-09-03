@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.558 2010-09-03 03:37:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.559 2010-09-03 21:26:16 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -77,6 +77,7 @@
 # cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.0.4.aix53.tar.gz nc* ; scp ~/nco-4.0.4.aix53.tar.gz zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
+# cd ~/bin/WIN32;tar cvzf ~/nco-4.0.4.win32.cygwin.tar.gz nc* ; scp ~/nco-4.0.4.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP_OPENDAP=Y

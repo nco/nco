@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.587 2010-09-03 03:37:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.588 2010-09-03 21:26:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4273,7 +4273,7 @@ with version 3.9.2 (August, 2007).
 Prior to that, the @code{missing_value} attribute, if any, was assumed to  
 specify the value of data to ignore.
 Supporting both of these attributes simultaneously is not practical.
-Hence the behavior NCO once applied to @var{missing_value} it now applies 
+Hence the behavior @acronym{NCO} once applied to @var{missing_value} it now applies 
 to any @var{_FillValue}. 
 @acronym{NCO} now treats any @var{missing_value} as normal data 
 @footnote{
@@ -6244,7 +6244,7 @@ coordinate system is easy with left hand casting.
 @node Arrays and hyperslabs, Attributes, Left hand casting, ncap2 netCDF Arithmetic Processor
 @subsection Arrays and hyperslabs
 @cindex hyperslabs
-Hyperslabs in @command{ncap2} are a bit more limited than  hyperslabs with the other nco operators.
+Hyperslabs in @command{ncap2} are a bit more limited than  hyperslabs with the other @acronym{NCO} operators.
 There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntactic magic they are all are possible.
 @example
   var1( hyper_arg1, hyper_arg2 .. hyper_argN)
@@ -6465,8 +6465,7 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 @node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Number literals
 @cindex number literals @command{ncap}
-The table below lists the postfix character(s) to add to a number literal for type cohesion. To use the new netcdf4 types nco must be compiled/linked to the netcdf4 library and the Output file must be hdf5.
-
+The table below lists the postfix character(s) to add to a number literal for type cohesion. To use the new netCDF4 types @acronym{NCO} must be compiled/linked to the netCDF4 library and the output file must be HDF5.
 
 @example
 n1[$time]=1UL;   // n1 will now by type @code{NC_UINT}
@@ -6493,33 +6492,31 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @item
 @strong{netCDF3/4 Types}
 @item b|B	 
-  @code{NC_BYTE}  a signed 1 byte integer 
+  @code{NC_BYTE}, a signed 1-byte integer 
 @item none	 
-  @code{NC_CHAR}  a ISO/ASCII character 
+  @code{NC_CHAR}, an ISO/ASCII character 
 @item s|S	 
-  @code{NC_SHORT} a signed 2 byte integer 
+  @code{NC_SHORT}, a signed 2-byte integer 
 @item l|L	 
-  @code{NC_INT}   a signed 4 byte integer 
+  @code{NC_INT}, a signed 4-byte integer 
 @item f|F	 
-  @code{NC_FLOAT} a single precision floating point number 
+  @code{NC_FLOAT}, a single-precision (4-byte) floating point number 
 @item d|D
-  @code{NC_DOUBLE} a double precision floating point number 
+  @code{NC_DOUBLE}, a double-precision (8-byte) floating point number 
 @item
 @item
 @strong{netCDF4 Types}
 @item ub|UB	 
-  @code{NC_UBYTE} a unsigned 1 byte int 
+  @code{NC_UBYTE}, an unsigned 1-byte integer 
 @item us|US 
-  @code{NC_USHORT} a unsigned 2-byte int 
+  @code{NC_USHORT}, an unsigned 2-byte integer 
 @item u|U|ul|UL	 
-  @code{NC_UINT} a unsigned 4-byte int 
+  @code{NC_UINT}, an unsigned 4-byte integer 
 @item ll|LL	 
-  @code{NC_INT64} a signed 8-byte int 
+  @code{NC_INT64}, a signed 8-byte integer 
 @item ull|ULL 
-  @code{NC_UINT64} a unsigned 8-byte int 
+  @code{NC_UINT64}, an unsigned 8-byte integer 
 @end table
-
-
 
 @html
 <a name="ncap_if"></a> <!-- http://nco.sf.net/nco.html#ncap_if -->
@@ -6844,49 +6841,48 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @sp 1
 @noindent @strong{Type Conversion Methods @*}
-@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You can only use the new netcdf4 types if you have compiled/links nco with the netcdf4 library and the Output file is hdf5.
+@noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You can only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is HDF5.
 
 @table @code
 @item
 @strong{netCDF3/4 Types}
 @item byte()	 
 @cindex byte()
- convert to @code{NC_BYTE}  a signed 1 byte integer 
+ convert to @code{NC_BYTE},  a signed 1-byte integer 
 @item char()
 @cindex char()	 
- convert to @code{NC_CHAR}  a ISO/ASCII character 
+ convert to @code{NC_CHAR},  an ISO/ASCII character
 @item short()	
 @cindex sshort() 
- convert to @code{NC_SHORT} a signed 2 byte integer 
+ convert to @code{NC_SHORT}, a signed 2-byte integer 
 @item int()	 
 @cindex int()
- convert to @code{NC_INT}   a signed 4 byte integer 
+ convert to @code{NC_INT},   a signed 4-byte integer 
 @item float()
 @cindex float()	 
- convert to @code{NC_FLOAT} a single precision floating point number 
+ convert to @code{NC_FLOAT}, a single-precision (4-byte) floating point number 
 @item double() 
 @cindex double()
- convert to @code{NC_DOUBLE} a double precision floating point number 
+ convert to @code{NC_DOUBLE}, a double-precision (8-byte) floating point number 
 @item
 @item
 @strong{netCDF4 Types}
 @item ubyte()	 
 @cindex ubyte()
- convert to @code{NC_UBYTE} a unsigned 1 byte int 
+ convert to @code{NC_UBYTE}, an unsigned 1-byte integer 
 @item ushort() 
 @cindex ushort()
- convert to @code{NC_USHORT} a unsigned 2-byte int 
+ convert to @code{NC_USHORT}, an unsigned 2-byte integer 
 @item uint()
 @cindex uint()	 
- convert to @code{NC_UINT} a unsigned 4-byte int 
+ convert to @code{NC_UINT}, an unsigned 4-byte integer 
 @item int64()	
 @cindex int64() 
- convert to @code{NC_INT64} a signed 8-byte int 
+ convert to @code{NC_INT64}, a signed 8-byte integer 
 @item uint64() 
 @cindex unit64()
- convert to @code{NC_UINT64} a unsigned 8-byte int *
+ convert to @code{NC_UINT64}, an unsigned 8-byte integer
 @end table
-
 
 @noindent @strong{Intrinsic Mathematical Methods @*}
 The list of mathematical methods is system dependant.
@@ -7966,7 +7962,7 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 @node GSL statistics, GSL random number generation, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} statistics
 
-@noindent Wrappers for most of the GSL Statistical functions have been implemented. The GSL function names include a type specifier (except for type double functions). To obtain the equivalent NCO name simply remove the type specifier; then depending on the data type the appropriate GSL function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in GSL for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
+@noindent Wrappers for most of the GSL Statistical functions have been implemented. The GSL function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate GSL function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in GSL for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
 
 @noindent GSL Functions
 @example
@@ -8162,7 +8158,7 @@ print(b6_avg);
 @node Examples ncap2, Intrinsic mathematical methods, GSL random number generation, ncap2 netCDF Arithmetic Processor
 @subsection Examples ncap2
 
-See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
+See the @file{ncap.in} and @file{ncap2.in} scripts released with @acronym{NCO} 
 for more complete demonstrations of @command{ncap} and @command{ncap2}
 functionality, respectively (these scripts are available on-line at
 @url{http://nco.sf.net/ncap.in} and
@@ -8936,7 +8932,7 @@ This page lists the @command{ncap} operators in order of precedence (highest to 
 In this section when I refer to a name I mean a variable name, attribute name or a dimension name
 The allowed characters in a valid netCDF name vary from release to release. (See end section). If you want to use metacharacters in a name or use a method name as a variable name then the name has to be quoted wherever it occurs. 
 
-@noindent The default nco name is specified by the regular expressions:
+@noindent The default @acronym{NCO} name is specified by the regular expressions:
 
 @example
 DGT:     ('0'..'9');
@@ -10738,7 +10734,7 @@ Copy all global attributes (and no variables) from @file{in.nc} to
 @example
 ncks -A -x ~/nco/data/in.nc ~/out.nc
 @end example
-The @samp{-x} switch tells NCO to use the complement of the extraction
+The @samp{-x} switch tells @acronym{NCO} to use the complement of the extraction
 list (@pxref{Subsetting Variables}). 
 Since no extraction list is explicitly specified (with @samp{-v}),
 the default is to extract all variables.
