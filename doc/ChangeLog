@@ -1,4 +1,4 @@
-2010-09-01  Charlie Zender  <zender@uci.edu>
+2010-09-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.3 release procedure:
  	Changes since nco-4_0_2: nco_cnv_ccm_ccsm_cf_date() bug, ncbo bug, configure tweaks
@@ -6,7 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.3 release"
 	cvs tag -c nco-4_0_3;cvs tag -c nco-4_0_3-1
 
-	* Finally removed nco_cal.[ch] (subsumed into nco_cln_utl.[ch])
+2010-09-01  Charlie Zender  <zender@uci.edu>
+
+	* Belatedly removed nco_cal.[ch] (subsumed into nco_cln_utl.[ch])
 
 	* Document UDUNITS_PATH and UDUNITS2_XML_PATH in nco.texi
 
