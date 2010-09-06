@@ -1,10 +1,16 @@
-2010-09-03  Charlie Zender  <zender@uci.edu>
+2010-09-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.4 release procedure:
  	Changes since nco-4_0_3: fxm
 	cd ~/nco;cvs tag -d nco-4_0_4;cvs tag -d nco-4_0_4-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
 	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
+
+	* Added (finally) chunking infrastructure to all operators
+	Exception is ncwa which does not yet use lmt_all_sct (why?)
+	Capability not yet vetted, yet regression tests are passed
+	
+2010-09-03  Charlie Zender  <zender@uci.edu>
 
 	* Remove SDO from most of homepage since name never stuck
 

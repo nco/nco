@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.101 2010-07-29 21:08:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.102 2010-09-06 20:45:13 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -10,7 +10,7 @@
    to a single file. */
 
 /* Copyright (C) 1995--2010 Charlie Zender
-
+   
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
@@ -20,7 +20,7 @@
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
    HDF, netCDF, OPeNDAP, and UDUnits licenses.
-
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
@@ -134,6 +134,9 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
+  char *cnk_arg[NC_MAX_DIMS];
+  char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
+  char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
@@ -145,8 +148,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.101 2010-07-29 21:08:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.101 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.102 2010-09-06 20:45:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.102 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -160,8 +163,11 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   
   int *in_id_arr;
-
+  
   int abb_arg_nbr=0;
+  int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
+  int cnk_nbr=0; /* [nbr] Number of chunk sizes */
+  int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
@@ -199,6 +205,7 @@ main(int argc,char **argv)
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   
+  size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   
   var_sct **var;
   var_sct **var_fix;
@@ -240,7 +247,14 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
-      {"fl_fmt",required_argument,0,0},
+      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
@@ -319,9 +333,27 @@ main(int argc,char **argv)
     /* NB: access to opt_crr is only valid when long_opt is detected */
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
     opt_crr=(char *)strdup(opt_lng[opt_idx].name);
-
+    
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
+	/* Copy limit argument for later processing */
+	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
+	cnk_nbr++;
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
+	cnk_sz_scl=strtoul(optarg,(char **)NULL,10);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
+	/* Chunking map */
+	cnk_map_sng=(char *)strdup(optarg);
+	cnk_map=nco_cnk_map_get(cnk_map_sng);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
+	/* Chunking policy */
+	cnk_plc_sng=(char *)strdup(optarg);
+	cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
+      } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
@@ -455,13 +487,16 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
+  /* Make uniform list of user-specified chunksizes */
+  if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
+  
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
-
+  
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -481,7 +516,7 @@ main(int argc,char **argv)
   
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
+  
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
   
@@ -550,9 +585,12 @@ main(int argc,char **argv)
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Make output and input files consanguinous */
-  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-
-  /* Open output file */
+    if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+    
+    /* Verify output file format supports requested actions */
+    (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+    
+    /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     
     /* Copy global attributes */
@@ -577,6 +615,9 @@ main(int argc,char **argv)
     /* Define variables in output file, copy their attributes */
     (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
     
+    /* Set chunksize parameters */
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+    
     /* Turn off default filling behavior to enhance efficiency */
     (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
     
@@ -591,13 +632,13 @@ main(int argc,char **argv)
   if(prc_rnk != rnk_mgr) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
 #endif /* !ENABLE_MPI */
-
+  
   /* Pre-processor token spaghetti here is necessary so that 
      1. UP/SMP/MPI codes all zero srt vectors before calling nco_var_val_cpy() 
      2. No codes zero srt vectors more than once */
   /* Assign zero-start and unity-stride vectors to output variables */
   (void)nco_var_srd_srt_set(var_out,nbr_xtr);
-
+  
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
     TKN_WRT_FREE=False;
@@ -631,22 +672,22 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   /* NB: Only manager code manipulates value of TKN_WRT_FREE
      Pass 1: Workers construct local persistant variable lists
-             Open first file
-             mpncra and mpncrcat process first record only
-	     mpncea ingests complete file
-	     Workers create local list of their variables 
+     Open first file
+     mpncra and mpncrcat process first record only
+     mpncea ingests complete file
+     Workers create local list of their variables 
      Pass 2: Complete record/file loops with local variable lists
-             Workers skip first timestep (mpncra/mpncrcat) 
-             Workers process only variables in their local list from Pass 1 
-             This variable persistance is necessary for mpncra and mpncea
-	     since their workers must maintain running tallies for each variable.
-             Variable persistance is not necessary for mpncrcat 
-	     However, we do it anyway to keep mpncrcat and mpncra similar
-	     mpncrcat writes records as it reads them and finishes after pass 2
+     Workers skip first timestep (mpncra/mpncrcat) 
+     Workers process only variables in their local list from Pass 1 
+     This variable persistance is necessary for mpncra and mpncea
+     since their workers must maintain running tallies for each variable.
+     Variable persistance is not necessary for mpncrcat 
+     However, we do it anyway to keep mpncrcat and mpncra similar
+     mpncrcat writes records as it reads them and finishes after pass 2
      Pass 3: 
-             mpncea and mpncra require a final loop to normalize and write
-             Write-token for this loop is passed sequentially through the ranks */
-
+     mpncea and mpncra require a final loop to normalize and write
+     Write-token for this loop is passed sequentially through the ranks */
+  
   /* Begin Pass 1: Workers construct local persistant variable lists */
   fl_idx=0;
   
@@ -774,6 +815,9 @@ main(int argc,char **argv)
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
 	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
+	      /* Set chunksize parameters */
+	      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+	      
 	      /* Turn off default filling behavior to enhance efficiency */
 	      rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
@@ -886,7 +930,7 @@ main(int argc,char **argv)
      should only negligibly impact performance. */
   checkpointMpi(prc_rnk, 1);
 #endif  /* ENABLE_MPI */
-
+  
   /* End Pass 1: Workers construct local persistant variable lists */
   printf("DEBUG: prc_rnk %d is done with 1st pass\n",prc_rnk);
   /* Begin Pass 2: Complete record/file loops with local variable lists */
@@ -1026,6 +1070,9 @@ main(int argc,char **argv)
 		/* Worker has token---prepare to write */
 		if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
 		  rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
+		  /* Set chunksize parameters */
+		  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+		  
 		  /* Turn off default filling behavior to enhance efficiency */
 		  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
@@ -1126,7 +1173,7 @@ main(int argc,char **argv)
       
       /* Close input netCDF file */
       for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
-
+      
       /* Dispose local copy of file */
       if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
     } /* end loop over fl_idx */
@@ -1213,7 +1260,7 @@ main(int argc,char **argv)
     /* End Pass 2: Complete record/file loops with local variable lists */
     /* Begin Pass 3:  */
     /* End Pass 3:  */
-
+    
     /* Add time variable to output file
        NB: nco_cnv_arm_time_install() contains OpenMP critical region */
     if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
@@ -1294,6 +1341,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
     if(fl_in) fl_in=(char *)nco_free(fl_in);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
@@ -1308,6 +1357,9 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free chunking information */
+    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
     if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);

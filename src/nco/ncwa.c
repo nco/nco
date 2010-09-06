@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.277 2010-07-29 21:08:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.278 2010-09-06 20:45:13 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -105,6 +105,9 @@ main(int argc,char **argv)
   char **fl_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
+  char *cnk_arg[NC_MAX_DIMS];
+  char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
+  char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
@@ -118,10 +121,12 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.277 2010-07-29 21:08:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.277 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.278 2010-09-06 20:45:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.278 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
+  cnk_sct **cnk=NULL_CEWI;
+
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
   ddra_info.flg_ddra=False;
@@ -146,7 +151,9 @@ main(int argc,char **argv)
   int *in_id_arr;
 
   int abb_arg_nbr=0;
+  int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
+  int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
   int dmn_avg_nbr=0;
   int fl_idx=int_CEWI;
@@ -181,6 +188,8 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   nm_id_sct *dmn_avg_lst;
   
+  size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
+
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
@@ -210,7 +219,14 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
-      {"fl_fmt",required_argument,0,0},
+      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
@@ -302,6 +318,24 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
+	/* Copy limit argument for later processing */
+	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
+	cnk_nbr++;
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
+	cnk_sz_scl=strtoul(optarg,(char **)NULL,10);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
+	/* Chunking map */
+	cnk_map_sng=(char *)strdup(optarg);
+	cnk_map=nco_cnk_map_get(cnk_map_sng);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
+	/* Chunking policy */
+	cnk_plc_sng=(char *)strdup(optarg);
+	cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
+      } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
@@ -483,6 +517,9 @@ main(int argc,char **argv)
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
+
+  /* Make uniform list of user-specified chunksizes */
+  if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
@@ -673,6 +710,10 @@ main(int argc,char **argv)
       } /* end if */
     } /* end for */
   } /* end if */
+
+  /* Set chunksize parameters */
+  /* 20100906 fxm ncwa is only operator without lmt_all_lst */
+  // if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -1038,6 +1079,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
     if(fl_in) fl_in=(char *)nco_free(fl_in);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
@@ -1052,6 +1095,9 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free chunking information */
+    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
     if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);

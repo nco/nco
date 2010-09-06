@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.103 2010-07-29 21:08:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.104 2010-09-06 20:45:13 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -6,17 +6,17 @@
    in a single input netCDF file and output them to a single file. */
 
 /* Copyright (C) 1995--2010 Charlie Zender
-
+   
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
-
+   
    As a special exception to the terms of the GPL, you are permitted 
    to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
    HDF, netCDF, OPeNDAP, and UDUnits licenses.
-
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
@@ -108,6 +108,9 @@ main(int argc,char **argv)
   char **fl_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
+  char *cnk_arg[NC_MAX_DIMS];
+  char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
+  char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
@@ -121,9 +124,11 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.103 2010-07-29 21:08:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.104 2010-09-06 20:45:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.104 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
+  
+  cnk_sct **cnk=NULL_CEWI;
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -131,7 +136,7 @@ main(int argc,char **argv)
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.MRV_flg=False,.flg_ddra=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
 #endif /* !__cplusplus */
-
+  
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out=NULL_CEWI;
   dmn_sct **dmn_avg=NULL_CEWI;
@@ -147,8 +152,11 @@ main(int argc,char **argv)
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
   
   int *in_id_arr;
-
+  
   int abb_arg_nbr=0;
+  int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
+  int cnk_nbr=0; /* [nbr] Number of chunk sizes */
+  int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
   int dmn_avg_nbr=0;
   int fl_idx=int_CEWI;
@@ -185,6 +193,8 @@ main(int argc,char **argv)
   
   prs_sct prs_arg;  /* I/O [sct] Global information required in ncwa parser */
   
+  size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
+  
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
@@ -200,7 +210,7 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
-
+  
   nco_bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
   
   int fl_nm_lng; /* [nbr] Output file name length */
@@ -213,7 +223,7 @@ main(int argc,char **argv)
   int rnk_wrk; /* [idx] Worker rank */
   int wrk_id_bfr[wrk_id_bfr_lng]; /* [bfr] Buffer for rnk_wrk */
 #endif /* !ENABLE_MPI */
-
+  
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
@@ -228,7 +238,14 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
-      {"fl_fmt",required_argument,0,0},
+      {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
@@ -311,7 +328,7 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-
+  
   NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
   NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* CEWI: Avert compiler warning that variable is set but never used */
   
@@ -325,9 +342,27 @@ main(int argc,char **argv)
     /* NB: access to opt_crr is only valid when long_opt is detected */
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
     opt_crr=(char *)strdup(opt_lng[opt_idx].name);
-
+    
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
+	/* Copy limit argument for later processing */
+	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
+	cnk_nbr++;
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
+	cnk_sz_scl=strtoul(optarg,(char **)NULL,10);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
+	/* Chunking map */
+	cnk_map_sng=(char *)strdup(optarg);
+	cnk_map=nco_cnk_map_get(cnk_map_sng);
+      } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
+	/* Chunking policy */
+	cnk_plc_sng=(char *)strdup(optarg);
+	cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
+      } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
@@ -515,13 +550,16 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
+  /* Make uniform list of user-specified chunksizes */
+  if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
+  
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-    
+  
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
-
+  
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -541,7 +579,7 @@ main(int argc,char **argv)
   
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
+  
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
   
@@ -639,7 +677,7 @@ main(int argc,char **argv)
     } /* end loop over idx_xtr */
     /* Dimension average list no longer needed */
     dmn_avg_lst=nco_nm_id_lst_free(dmn_avg_lst,dmn_avg_nbr);
-
+    
     if(nbr_dmn_out != (flg_rdd ? nbr_dmn_xtr : nbr_dmn_xtr-dmn_avg_nbr)){
       (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != %s\n",prg_nm,(flg_rdd) ? "nbr_dmn_xtr" : "nbr_dmn_xtr-dmn_avg_nbr");
       nco_exit(EXIT_FAILURE);
@@ -673,9 +711,12 @@ main(int argc,char **argv)
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Make output and input files consanguinous */
-  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-
-  /* Open output file */
+    if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+    
+    /* Verify output file format supports requested actions */
+    (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+    
+    /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
     
@@ -720,6 +761,9 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
+    
+    /* Set chunksize parameters */
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -804,7 +848,7 @@ main(int argc,char **argv)
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
-
+    
 #ifdef ENABLE_MPI
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -1026,7 +1070,7 @@ main(int argc,char **argv)
 		 (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
 		 (nco_op_typ != nco_op_ttl || /* ...operation is not ttl() or... */
 		  var_prc[idx]->is_crd_var) /* ...variable is a coordinate */
-		 ){ /* Divide numerator by masked, averaged, weights */
+		  ){ /* Divide numerator by masked, averaged, weights */
 		(void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
 	      } /* endif */
 	      /* Free wgt_avg, but keep wgt_out, after each use */
@@ -1103,6 +1147,9 @@ main(int argc,char **argv)
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
 	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+	      /* Set chunksize parameters */
+	      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+	      
 	      /* Turn off default filling behavior to enhance efficiency */
 	      rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #endif /* !ENABLE_MPI */
@@ -1135,7 +1182,7 @@ main(int argc,char **argv)
 		ddra_info.rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
 		if(wgt) ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
 		ddra_info.var_idx=idx; /* [enm] Index */
-	ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
+		ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
 		
 		/* DDRA diagnostics */
 		rcd+=nco_ddra /* [fnc] Count operations */
@@ -1170,8 +1217,8 @@ main(int argc,char **argv)
     if(prc_rnk == rnk_mgr) (void)nco_fl_mv(fl_out_tmp,fl_out);
     if(prc_rnk == rnk_mgr) /* This if statement conditions nco_fl_rm() below */
 #else /* !ENABLE_MPI */
-    /* Close output file and move it from temporary to permanent location */
-    (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+      /* Close output file and move it from temporary to permanent location */
+      (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 #endif /* end !ENABLE_MPI */
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
@@ -1194,6 +1241,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
     if(fl_in) fl_in=(char *)nco_free(fl_in);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
@@ -1208,6 +1257,9 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free chunking information */
+    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
     if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
@@ -1232,5 +1284,3 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-
