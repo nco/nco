@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.377 2010-09-03 03:37:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.378 2010-09-06 21:01:52 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -17,9 +17,8 @@ more chunking rulesets.
 
 "New stuff" in 4.0.4 details:
 
-A. Correctly write averaged date with ncra on CCM/CCSM/CF files
-   Fixes bug introduced in 4.0.1 that can segfault on ncra averages
-   http://nco.sf.net#bug_ncra_date
+A. Chunking supported in all operators (fxm: except ncwa)
+   http://nco.sf.net/nco.html#cnk
 
 B. Fix bug exposed by xlC compilers that caused ncbo segfaults on AIX
    This bug was present in ncbo versions 4.0.0-4.0.2

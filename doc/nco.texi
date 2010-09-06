@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.588 2010-09-03 21:26:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.589 2010-09-06 21:01:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -52,7 +52,7 @@ texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
-nits2
+
 NB: @cindex references in footnotes propagate to PDF file, but not to
     HTML files, bug-report sent to makeinfo people 20040229
 
@@ -104,7 +104,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.4
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 1 September 2010
+@set update-date 6 September 2010
 @set update-month September 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -9439,8 +9439,9 @@ omitted in batch scripts.
 @noindent
 SYNTAX
 @example 
-ncbo [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h]
+ncbo [-3] [-4] [-6] [-A] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h]
 [-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -9778,8 +9779,9 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 SYNTAX
 @example
-ncea [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
+ncea [-3] [-4] [-6] [-A] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -9907,8 +9909,9 @@ Additionally, only data inside the tropics is included.
 @noindent
 SYNTAX
 @example
-ncecat [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
+ncecat [-3] [-4] [-6] [-A] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M] [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -10087,8 +10090,9 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncflint [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-i @var{var},@var{val3}]
+ncflint [-3] [-4] [-6] [-A] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -10874,8 +10878,9 @@ For more details @xref{Wrapped Coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-3] [-4] [-6] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
+ncpdq [-3] [-4] [-6] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
@@ -11363,8 +11368,9 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
+ncra [-3] [-4] [-6] [-A] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -11474,8 +11480,9 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncrcat [-3] [-4] [-6] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
+ncrcat [-3] [-4] [-6] [-A] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -11773,8 +11780,9 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 @noindent
 SYNTAX
 @example
-ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-I] [-L @var{dfl_lvl}] [-l @var{path}] 
+ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
+[--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-I] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{mask_comp}]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
