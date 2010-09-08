@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.589 2010-09-06 21:01:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.590 2010-09-08 05:45:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4564,7 +4564,7 @@ long options @samp{--cnk_dmn} or @samp{--chunk_dimension}).
 The option takes two comma-separated arguments,
 @var{dmn_nm},@var{cnk_sz}, which are the dimension name and its
 chunksize, respectively. 
-The @samp{--cnk_dmn} option may be us as many times as necessary.
+The @samp{--cnk_dmn} option may be used as many times as necessary.
 
 @html
 <a name="xmp_cnk"></a> <!-- http://nco.sf.net/nco.html#xmp_cnk -->
@@ -4583,8 +4583,8 @@ ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
 
 # Final, cleaner examples for manual
-ncks --cnk_plc=all     in.nc out.nc # Chunk in.nc
-ncks --cnk_plc=unchunk in.nc out.nc # Unchunk in.nc
+ncks -O -4 --cnk_plc=all     in.nc out.nc # Chunk in.nc
+ncks -O -4 --cnk_plc=unchunk in.nc out.nc # Unchunk in.nc
 @end example
 
 @html
