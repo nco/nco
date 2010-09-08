@@ -6,6 +6,11 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
 	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
 
+	* Maintain input deflation level where identifiable (fixes TODO nco990)
+
+	* Create test case to diagnose TODO nco990:
+	ncks maintains input deflation level, other operators do not
+
 	* Implement nco_sng_cnv_err() for strtol()-type calls, fixes TODO nco987
 
 	* Use NCO_SNG_CNV_BASE10 instead of naked 10
@@ -17,7 +22,7 @@
 	* Add (finally) chunking infrastructure to all operators
 	Exception is ncwa which does not yet use lmt_all_sct (why?)
 	Capability not yet vetted, yet regression tests all pass
-	
+
 2010-09-03  Charlie Zender  <zender@uci.edu>
 
 	* Remove SDO from most of homepage since name never stuck

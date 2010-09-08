@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.590 2010-09-08 05:45:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.591 2010-09-08 23:49:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4639,7 +4639,7 @@ Unscientific testing shows that deflation compresses typical climate
 datasets by 30-60%.  
 Packing, a lossy compression technique available for all netCDF files 
 (see @ref{Packed data}), can easily compress files by 50%.
-Packed data may be deflated to squeeze datasets by about 80%.
+Packed data may be deflated to squeeze datasets by about 80%:
 @example
 ncks  -4 -L 1 in.nc out.nc # Minimal deflation (~30-60% compression)
 ncks  -4 -L 9 in.nc out.nc # Maximal deflation (~31-63% compression)
