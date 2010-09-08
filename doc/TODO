@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1076 2010-09-08 05:45:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1077 2010-09-08 22:55:40 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -687,7 +687,10 @@ nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between
 nco983. change default to netcdf3 64bit? or compile-time option to do so?
 nco984. remove makeinfo dependency trigger from nco configure build
 nco987. don't segfault on bad cnk_scl arguments, e.g., --cnk_scl=1,1,1,361,720
+	ncks -O -4 -D 5 --cnk_scl=1,1,1,361,720 -p ~/nco/data in.nc ~/foo.nc
 nco988. maintain current chunksize unless otherwise specified
+nco989. implement nco_sng_cnv_err() checking throughout code-base
+nco990. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

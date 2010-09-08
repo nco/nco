@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.77 2010-09-06 20:45:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.78 2010-09-08 22:55:41 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.77 2010-09-06 20:45:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.77 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.78 2010-09-08 22:55:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.78 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -295,7 +295,7 @@ main(int argc,char **argv)
 	cnk_nbr++;
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
-	cnk_sz_scl=strtoul(optarg,(char **)NULL,10);
+	cnk_sz_scl=strtoul(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
 	/* Chunking map */
@@ -338,7 +338,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* The debugging level. Default is 0. */
-      dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
+      dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
       break;
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
@@ -364,7 +364,7 @@ main(int argc,char **argv)
       CMD_LN_NTP_WGT=False;
       break;
     case 'L': /* [enm] Deflate level. Default is 0. */
-      dfl_lvl=(int)strtol(optarg,(char **)NULL,10);
+      dfl_lvl=(int)strtol(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
@@ -395,7 +395,7 @@ main(int argc,char **argv)
       break;
 #endif /* !ENABLE_MPI */
     case 't': /* Thread number */
-      thr_nbr=(int)strtol(optarg,(char **)NULL,10);
+      thr_nbr=(int)strtol(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */

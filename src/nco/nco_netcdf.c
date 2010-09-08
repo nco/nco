@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.128 2010-01-05 21:25:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.129 2010-09-08 22:55:41 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -350,6 +350,22 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_nc_type_err() */
+
+void
+nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
+(const char *cnv_sng, /* I [sng] String to convert */
+ const char *sng_cnv_fnc, /* I [sng] Name of function used to convert string */
+ const char *err_ptr) /* I [chr] First illegal character in string */
+{
+  /* Purpose: Convenience routine for printing error and exiting when
+     strtol()/strtoul()/strtoll()/strtoull() receives illegal characters.
+     Placing this in its own routine saves many lines of error handling. */
+  const char fnc_nm[]="nco_sng_cnv_err()";
+  (void)fprintf(stdout,"%s: ERROR an NCO function or main program attempted to convert the user-defined string \"%s\" to an integer-type using the standard C-library function \"%s()\". This function stopped converting the input string when it encountered the illegal (i.e., non-numeric) character \'%c\'. This probably indicates a syntax error by the user. Please check the argument syntax and re-try the command. ",fnc_nm,cnv_sng,sng_cnv_fnc,err_ptr[0]);
+  if(err_ptr[0] == ',') (void)fprintf(stdout,"HINT: Conversion functions like \"%s()\" accept only one number at a time, so comma-separated lists of numbers are invalid. ",sng_cnv_fnc);
+  (void)fprintf(stdout,"Exiting...\n");
+  nco_err_exit(0,fnc_nm);
+} /* end nco_sng_cnv_err() */
 
 void
 nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(prg_id) case */

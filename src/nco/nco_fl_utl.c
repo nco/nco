@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.119 2010-04-18 18:14:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.120 2010-09-08 22:55:41 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1001,29 +1001,29 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       int fl_nm_sfx_lng=0;
 
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
-      if(fl_nbr) *fl_nbr=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
+      if(fl_nbr) *fl_nbr=(int)strtol(fl_lst_abb[0],(char **)NULL,NCO_SNG_CNV_BASE10);
       fl_nm_nbr_ttl=*fl_nbr;
 
       if(abb_arg_nbr > 1){
-	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,10);
+	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,NCO_SNG_CNV_BASE10);
       }else{
 	fl_nm_nbr_dgt=3;
       }/* end if */
 
       if(abb_arg_nbr > 2){
-	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],(char **)NULL,10);
+	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],(char **)NULL,NCO_SNG_CNV_BASE10);
       }else{
 	fl_nm_nbr_ncr=1;
       } /* end if */
 
       if(abb_arg_nbr > 3){
-	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],(char **)NULL,10);
+	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],(char **)NULL,NCO_SNG_CNV_BASE10);
       }else{
 	fl_nm_nbr_max=0;
       } /* end if */
 
       if(abb_arg_nbr > 4){
-	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],(char **)NULL,10);
+	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],(char **)NULL,NCO_SNG_CNV_BASE10);
       }else{
 	fl_nm_nbr_min=1;
       } /* end if */
@@ -1043,7 +1043,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       fl_nm_nbr_sng=(char *)nco_malloc((size_t)(fl_nm_nbr_dgt+1UL)*sizeof(char));
       fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,(size_t)fl_nm_nbr_dgt);
       fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
-      fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,(char **)NULL,10);
+      fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
       (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
 
       /* First filename is always specified on command line anyway... */

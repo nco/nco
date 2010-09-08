@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.103 2010-04-09 21:16:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.104 2010-09-08 22:55:41 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -714,14 +714,14 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	case NC_SHORT: 
 	case NC_INT64: 
 	  val_arg_lng_lng=(long long *)nco_malloc(aed_lst[idx].sz*sizeof(long long));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],(char **)NULL,10);} break;
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],(char **)NULL,NCO_SNG_CNV_BASE10);} break;
 	case NC_CHAR:
 	case NC_UBYTE: 
 	case NC_USHORT: 
 	case NC_UINT: 
 	case NC_UINT64: 
 	  val_arg_ulng_lng=(unsigned long long *)nco_malloc(aed_lst[idx].sz*sizeof(unsigned long long));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],(char **)NULL,10);} break;
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],(char **)NULL,NCO_SNG_CNV_BASE10);} break;
 	case NC_STRING: break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */

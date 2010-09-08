@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.100 2010-03-08 09:56:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.101 2010-09-08 22:55:41 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -258,7 +258,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       (void)fprintf(stdout,"%s: ERROR Requested stride for \"%s\", %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.srd=strtol(lmt.srd_sng,(char **)NULL,10);
+    lmt.srd=strtol(lmt.srd_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
     if(lmt.srd < 1){
       (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
       nco_exit(EXIT_FAILURE);
@@ -633,14 +633,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(FORTRAN_IDX_CNV) lmt.min_idx=1L; else lmt.min_idx=0L;
     }else{
       /* Use user-specified limit when available */
-      lmt.min_idx=strtol(lmt.min_sng,(char **)NULL,10);
+      lmt.min_idx=strtol(lmt.min_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
     } /* end if */
     if(lmt.max_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available---generate maximal dimension index */
       if(FORTRAN_IDX_CNV) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
     }else{
       /* Use user-specified limit when available */
-      lmt.max_idx=strtol(lmt.max_sng,(char **)NULL,10);
+      lmt.max_idx=strtol(lmt.max_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
     } /* end if */
     
     /* Adjust indices if FORTRAN style input was specified */

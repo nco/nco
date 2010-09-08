@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.378 2010-09-06 21:01:52 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.379 2010-09-08 22:55:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -20,15 +20,10 @@ more chunking rulesets.
 A. Chunking supported in all operators (fxm: except ncwa)
    http://nco.sf.net/nco.html#cnk
 
-B. Fix bug exposed by xlC compilers that caused ncbo segfaults on AIX
-   This bug was present in ncbo versions 4.0.0-4.0.2
-   http://nco.sf.net#bug_ncbo_rfr
+A. Perform stricter checks to identify malformed user-input strings.
+   Issue more informative warnings, hints, and errors when detected.
 
-C. Sense, handle MAC OS X on x86_64 chips
-   Thanks to drkdev for solving this problem
-
-D. Configure works better with ncap2, netCDF4, UDUnits2, and netCDF-DAP
-   Thanks to Eric Blake of RedHat for simplifying M4 definitions
+A. 
 
 "Sticky" reminders:
 

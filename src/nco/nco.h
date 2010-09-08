@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.150 2010-03-15 18:02:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.151 2010-09-08 22:55:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -119,6 +119,9 @@ extern "C" {
      Initial value should be a number that will never be a true netCDF format */
 #define NCO_FORMAT_UNDEFINED 0
   
+  /* Argument to strtol() and strtoul() indicating base-10 conversions */
+#define NCO_SNG_CNV_BASE10 10
+
   /* Debugging level that quiets all non-requested informational messages
      This value is compared against user-selected dbg_lvl 
      Running operators with --quiet automatically sets dbg_lvl=NCO_DBG_QUIET */

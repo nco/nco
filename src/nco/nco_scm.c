@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.42 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.43 2010-09-08 22:55:41 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -94,7 +94,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   cvs_mjr_vrs_sng=(char *)nco_malloc((size_t)cvs_mjr_vrs_len+1);
   cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+nco_sng_len+1,(size_t)cvs_mjr_vrs_len);
   cvs_mjr_vrs_sng[cvs_mjr_vrs_len]='\0';
-  cvs_mjr_vrs=strtol(cvs_mjr_vrs_sng,(char **)NULL,10);
+  cvs_mjr_vrs=strtol(cvs_mjr_vrs_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
   if(usc_2_ptr == NULL){
     cvs_mnr_vrs_len=cvs_nm_sng_len-cvs_mjr_vrs_len-1;
     cvs_pch_vrs_len=0;
@@ -107,14 +107,14 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   cvs_mnr_vrs_sng=(char *)nco_malloc((size_t)cvs_mnr_vrs_len+1);
   cvs_mnr_vrs_sng=strncpy(cvs_mnr_vrs_sng,usc_1_ptr+1,(size_t)cvs_mnr_vrs_len);
   cvs_mnr_vrs_sng[cvs_mnr_vrs_len]='\0';
-  cvs_mnr_vrs=strtol(cvs_mnr_vrs_sng,(char **)NULL,10);
+  cvs_mnr_vrs=strtol(cvs_mnr_vrs_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
 
   cvs_pch_vrs_sng=(char *)nco_malloc((size_t)cvs_pch_vrs_len+1);
   cvs_pch_vrs_sng[cvs_pch_vrs_len]='\0';
   cvs_vrs_sng=(char *)nco_malloc((size_t)cvs_vrs_sng_len+1);
   if(usc_2_ptr){
     cvs_pch_vrs_sng=strncpy(cvs_pch_vrs_sng,usc_2_ptr+1,(size_t)cvs_pch_vrs_len);
-    cvs_pch_vrs=strtol(cvs_pch_vrs_sng,(char **)NULL,10);
+    cvs_pch_vrs=strtol(cvs_pch_vrs_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
     (void)sprintf(cvs_vrs_sng,"%li.%li.%li",cvs_mjr_vrs,cvs_mnr_vrs,cvs_pch_vrs);
   }else{
     (void)sprintf(cvs_vrs_sng,"%li.%li",cvs_mjr_vrs,cvs_mnr_vrs);

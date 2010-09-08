@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.70 2010-01-05 21:16:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.71 2010-09-08 22:55:41 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -52,6 +52,13 @@ nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal switch(nc_typ
 void 
 nco_dfl_case_prg_id_err /* [fnc] Print error and exit for illegal switch(prg_id) case */
 (void);
+
+void
+nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
+(const char *cnv_sng, /* I [sng] String to convert */
+ const char *sng_cnv_fnc, /* I [sng] Name of function used to convert string */
+ const char *err_ptr); /* I [chr] First illegal character in string */
+/* end nco_sng_cnv_err() */
 
 void 
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
