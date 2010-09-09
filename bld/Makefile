@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.559 2010-09-03 21:26:16 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.560 2010-09-09 00:22:40 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -254,7 +254,7 @@ ifndef DAP_NETCDF_ROOT
 endif # DAP_NETCDF_ROOT
  NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
 # netCDF 4.0.4+:
- NC_LIBS := -lcurl
+ NC_LIBS += -lcurl
 endif # end DAP_NETCDF
                
 ifeq (${DAP_OPENDAP},Y)
@@ -275,7 +275,7 @@ endif # DAP_OPENDAP_ROOT
 # OPeNDAP 3.5.0-3.5.1:
 # NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
 # OPeNDAP 3.5+:
- NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
+ NC_LIBS += -lnc-dap -ldap -lxml2 -lcurl
 # In addition, AIX OPeNDAP requires these libraries...
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
  NC_LIBS += -lcrypto -liconv -lssl -lz

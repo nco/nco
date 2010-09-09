@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.106 2010-08-31 19:03:28 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.107 2010-09-09 00:25:26 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -269,7 +269,7 @@ ifndef DAP_NETCDF_ROOT
 endif # DAP_NETCDF_ROOT
  NC_LDFLAGS := -L${DAP_NETCDF_ROOT}/lib
 # netCDF 4.0.1+:
- NC_LIBS := -lcurl
+ NC_LIBS += -lcurl
 endif # end DAP_NETCDF
 
 ifeq (${DAP_OPENDAP},Y)

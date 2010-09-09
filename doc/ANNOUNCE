@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.379 2010-09-08 22:55:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.380 2010-09-09 00:22:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -23,8 +23,9 @@ A. Chunking supported in all operators (fxm: except ncwa)
 A. Perform stricter checks to identify malformed user-input strings.
    Issue more informative warnings, hints, and errors when detected.
 
-A. 
-
+A. ncecat, and all other operators, now retain the input deflation
+   level, if any, for a variable, as the default for the output file.
+   
 "Sticky" reminders:
 
 J. ncks and ncecat support netCDF4 chunking options:
