@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.589 2010-09-09 04:57:01 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.590 2010-09-10 00:26:30 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1523,8 +1523,8 @@ Version&nbsp;2.8.7 fixes this problem.
 <li>
 <a name="zender"></a><a name="Zender"></a> <!-- http://nco.sf.net#zender -->
 <a href="http://www.ess.uci.edu/~zender">Charlie Zender</a>, 
-Associate Professor of Earth System Science
-(<a href="http://www.ess.uci.edu">ESS</a>) and
+Professor of Earth System Science
+(<a href="http://www.ess.uci.edu">ESS</a>) and former
 Director, UCI Earth System Modeling Facility
 (<a href="http://www.ess.uci.edu/esmf">ESMF</a>).
 <i>Role</i>: Project PI.

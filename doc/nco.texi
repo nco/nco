@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.591 2010-09-08 23:49:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.592 2010-09-10 00:26:30 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12406,7 +12406,7 @@ OpenSuse packaging
 @cindex Alexander Hansen
 @cindex Takeshi Enomoto
 @item Takeshi Enomoto, Alexander Hansen
-MacIntosh packaging
+Mac OS packaging
 @cindex Eric Blake
 @item Eric Blake
 Autoconf/M4 help
