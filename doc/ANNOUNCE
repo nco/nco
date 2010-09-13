@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.381 2010-09-13 18:06:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.382 2010-09-13 22:24:50 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -27,9 +27,13 @@ A. Perform stricter checks to identify malformed user-input strings.
 A. ncecat, and all other operators, now retain the input deflation
    level, if any, for a variable, as the default for the output file.
    
-A. ncks -m prints metadata with clearer English descriptions
+A. ncks -m now always summarizes metadata on chunking, compression, and packing
+   Moreover, it prints metadata with clearer English descriptions
 
-A. ncks -m always summarizes metadata on chunking, compression, and packing
+A. Prior versions of ncrename -a .old_nm,new_nm in.nc out.nc
+   would, if old_nm did not exist, write the correct file then exit
+   with an error message although no error had occurred.
+   http://nco.sf.net#bug_ncrename_dot
 
 "Sticky" reminders:
 
