@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.60 2010-09-13 18:06:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.61 2010-09-13 21:32:00 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -217,17 +217,17 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Get record dimension ID, if any */
   (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
 
-  /* Get storage properties */
-  rcd=nco_inq_var_chunking(in_id,var_id,&srg_typ,cnk_sz);
-  rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
-  rcd=nco_inq_var_packing(in_id,var_id,&packing);
-  
   if(nbr_dim > 0){
     /* Allocate space for dimension info */
     cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t)); /* [nbr] Chunk sizes */
     dim=(dmn_sct *)nco_malloc(nbr_dim*sizeof(dmn_sct));
     dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   } /* end if nbr_dim > 0 */
+  
+  /* Get storage properties */
+  rcd=nco_inq_var_chunking(in_id,var_id,&srg_typ,cnk_sz);
+  rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
+  rcd=nco_inq_var_packing(in_id,var_id,&packing);
   
   /* Get dimension IDs */
   (void)nco_inq_vardimid(in_id,var_id,dmn_id);
