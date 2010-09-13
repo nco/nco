@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.158 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.159 2010-09-13 18:06:58 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.158 2010-09-08 22:55:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.158 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.159 2010-09-13 18:06:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.159 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -566,22 +566,20 @@ main(int argc,char **argv)
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,nbr_xtr_1);
 
-
   /* Change dimensions in dim_2 to dim_out */
   for(idx=0;idx<nbr_dmn_xtr_2;idx++){
     for(jdx=0;jdx<nbr_dmn_xtr_1;jdx++)  
       if(!strcmp(dim_2[idx]->nm,dmn_out[jdx]->nm)){  
-        /* nb copy new dim data -NOT free as dim element is aliased in the var_2 array */ 
+        /* NB: Copy new dim data but do NOT free original as dimension element is aliased in var_2 array */ 
 	(void)nco_dmn_cpy(dim_2[idx],dmn_out[jdx]);  
         break;   
       } /* endif */
-    /* dimension not found so die gracefully */
+    /* Dimension not found so die gracefully */
     if(jdx==nbr_dmn_xtr_1){
       (void)fprintf(fp_stdout,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
       nco_exit(EXIT_FAILURE);
     } /* endif dimension not found */
   } /* end loop over dimensions */
-
        
   /* Refresh var_2 with the new dim_2 data */
   (void)nco_var_dmn_refresh(var_2,nbr_xtr_2);

@@ -1,3 +1,9 @@
+2010-09-13  Charlie Zender  <zender@uci.edu>
+
+	* Implement nco_inq_var_packing() in ncks printing
+
+	* Change metadata print format to be more Englishy
+
 2010-09-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.4 release procedure:

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1079 2010-09-09 00:22:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1080 2010-09-13 18:06:58 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -293,7 +293,7 @@ nco569. bm: Add SRB test
 nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
 nco573. Consolidate -4, --64bit into one option a la ncks --fl_fmt
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
-nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
+nco577. ncbo: remove dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
 nco587. Command line MPI on AIX PPE with poe
@@ -687,7 +687,8 @@ nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between
 nco983. change default to netcdf3 64bit? or compile-time option to do so?
 nco984. remove makeinfo dependency trigger from nco configure build
 nco989. implement nco_sng_cnv_err() checking throughout code-base
-nco991. 
+nco991. ncap2 functions to return all variable and dimension names
+nco992. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

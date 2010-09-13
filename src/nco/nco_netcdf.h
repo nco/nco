@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.71 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.72 2010-09-13 18:06:58 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -132,6 +132,7 @@ int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * c
 int nco_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
 int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int * const deflate,int * const dfl_lvl);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
+int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
 int nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id);

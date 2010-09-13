@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.129 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.130 2010-09-13 18:06:58 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -818,6 +818,64 @@ nco_inq_var_fletcher32
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fletcher32()");
   return rcd;
 } /* end nco_inq_var_fletcher32() */
+
+int /* O [flg] Return success code */
+nco_inq_var_packing /* [fnc] Check whether variable is packed on disk */
+(const int nc_id, /* I [ID] netCDF ID */
+ const int var_id, /* I [ID] Variable ID */
+ int * const packing) /* O [flg] Variable is packed on disk */
+{
+  /* Purpose: Check whether variable is packed on disk
+     Designed to behave like netCDF-library call for packing (which does not exist)
+     Based on nco_pck_dsk_inq()
+     Difference is that:
+     nco_pck_dsk_inq() fills in members of variable structure
+     nco_inq_var_packing() does not need a variable structure, or anything from nco.h
+     Hence, nco_inq_var_packing is suitable for light-overhead calls, such as by ncks for printing */ 
+  
+  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  
+  int rcd; /* [rcd] Return success code */
+  int has_scl_fct; /* [flg] Valid scale_factor attribute exists */
+  int has_add_fst; /* [flg] Valid add_offset attribute exists */
+  
+  long add_fst_lng; /* [idx] Number of elements in add_offset attribute */
+  long scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
+
+  nc_type add_fst_typ; /* [idx] Type of add_offset attribute */
+  nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
+
+  /* Initialize and default to most-likely outcome, that variable is not packed */
+  has_scl_fct=0; /* [flg] Valid scale_factor attribute exists */
+  has_add_fst=0; /* [flg] Valid add_offset attribute exists */
+  *packing=0; /* [flg] Variable is packed on disk */
+
+  /* Vet scale_factor */
+  rcd=nco_inq_att_flg(nc_id,var_id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
+  if(rcd != NC_ENOTATT){
+    if(scl_fct_typ == NC_BYTE || scl_fct_typ == NC_CHAR) return NC_NOERR;
+    if(scl_fct_lng != 1) return NC_NOERR;
+    has_scl_fct=1; /* [flg] Valid scale_factor attribute exists */
+  } /* endif */
+
+  /* Vet add_offset */
+  rcd=nco_inq_att_flg(nc_id,var_id,add_fst_sng,&add_fst_typ,&add_fst_lng);
+  if(rcd != NC_ENOTATT){
+    if(add_fst_typ == NC_BYTE || add_fst_typ == NC_CHAR) return NC_NOERR;
+    if(add_fst_lng != 1) return NC_NOERR;
+    has_add_fst=1; /* [flg] Valid add_offset attribute exists */
+  } /* endif */
+
+  if(has_scl_fct && has_add_fst)
+    if(scl_fct_typ != add_fst_typ) 
+      return NC_NOERR;
+
+  /* Variable is considered packed iff either or both valid scale_factor or add_offset exist */
+  if(has_scl_fct || has_add_fst) *packing=1; /* [flg] Variable is packed on disk */
+
+  return NC_NOERR;
+} /* end nco_inq_var_packing() */
 
 int
 nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)

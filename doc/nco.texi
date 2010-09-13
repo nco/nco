@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.592 2010-09-10 00:26:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.593 2010-09-13 18:06:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,7 +104,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.4
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 6 September 2010
+@set update-date 12 September 2010
 @set update-month September 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -4571,21 +4571,36 @@ The @samp{--cnk_dmn} option may be used as many times as necessary.
 <a name="xmp_chunk"></a> <!-- http://nco.sf.net/nco.html#xmp_chunk -->
 @end html
 @example
-# Debugging
+# Simple chunking and unchunking
+ncks -O -4 --cnk_plc=all     in.nc out.nc # Chunk in.nc
+ncks -O -4 --cnk_plc=unchunk in.nc out.nc # Unchunk in.nc
+
+# Chunk data then unchunk it, printing informative metadata
+ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
+
+# More complex chunking procedures, with informative metadata
 ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_scl=8 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc 
 ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
-
-# Chunk data then unchunk it back to its original state:
-ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
-
-# Final, cleaner examples for manual
-ncks -O -4 --cnk_plc=all     in.nc out.nc # Chunk in.nc
-ncks -O -4 --cnk_plc=unchunk in.nc out.nc # Unchunk in.nc
 @end example
+
+@cindex record dimension
+It is appropriate to conclude by informing users about an aspect of
+chunking that may not be expected: 
+Record dimensions are always chunked with a chunksize of one. 
+Hence all variables that contain the record dimension are also stored 
+as chunked (since data cannot be stored with chunking only in some
+dimensions). 
+Unless otherwise specified by the user, the other (non-record)
+dimensions of such variables are assigned default chunk sizes. 
+The @acronym{HDF5} layer does all this automatically to optimize the
+on-disk variable/file storage geometry of record variables.
+Do not be surprised to learn that files created without any explicit
+instructions to activate chunking nevertheless contain chunked
+variables. 
 
 @html
 <a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
