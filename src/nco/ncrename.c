@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.119 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.120 2010-09-13 22:16:14 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.119 2010-09-08 22:55:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.119 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.120 2010-09-13 22:16:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.120 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -418,8 +418,10 @@ main(int argc,char **argv)
 	      }else{
 		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed global attribute \'%s\' to \'%s\'\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	      } /* end else */
-	    } /* end if */
-	    
+	    }else{ /* end if attribute was found */
+	      /* Reset return code so it does not trigger other erroneous */
+	      rcd=NC_NOERR; /* [rcd] Return code */
+	    } /* end else */
 	  }else{
 	    /* Rename attribute or die trying */
 	    rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1080 2010-09-13 18:06:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1081 2010-09-13 22:16:14 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -688,7 +688,8 @@ nco983. change default to netcdf3 64bit? or compile-time option to do so?
 nco984. remove makeinfo dependency trigger from nco configure build
 nco989. implement nco_sng_cnv_err() checking throughout code-base
 nco991. ncap2 functions to return all variable and dimension names
-nco992. 
+nco992. ncks -O -v fll_val in.nc ~/foo.nc;ncrename -D 5 -O -a .missing_value,_FillValue ~/foo.nc ~/foo2.nc
+nco993. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

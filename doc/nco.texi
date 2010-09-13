@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.593 2010-09-13 18:06:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.594 2010-09-13 22:16:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3894,13 +3894,14 @@ and longitude), it is stored in the netCDF file with only two dimensions,
 @code{time} and @code{gds_crd}.  
 @example
 % ncks -m -C -v gds_3dvar ~/nco/data/in.nc
-gds_3dvar: # dim. = 2, NC_FLOAT, # att. = 4, ID = 38
-gds_3dvar dimension 0: time, size = 10 NC_DOUBLE, dim. ID = 18 (CRD)(REC)
+gds_3dvar: type NC_FLOAT, 2 dimensions, 4 attributes, chunked? no, compressed? no, packed? no, ID = 41
+gds_3dvar RAM size is 10*8*sizeof(NC_FLOAT) = 80*4 = 320 bytes
+gds_3dvar dimension 0: time, size = 10 NC_DOUBLE, dim. ID = 20 (CRD)(REC)
 gds_3dvar dimension 1: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
-gds_3dvar memory size is 10*8*nco_typ_lng(NC_FLOAT) = 80*4 = 320 bytes
 gds_3dvar attribute 0: long_name, size = 17 NC_CHAR, value = Geodesic variable
 gds_3dvar attribute 1: units, size = 5 NC_CHAR, value = meter
 gds_3dvar attribute 2: coordinates, size = 15 NC_CHAR, value = lat_gds lon_gds
+gds_3dvar attribute 3: purpose, size = 64 NC_CHAR, value = Test auxiliary coordinates like those that define geodesic grids
 @end example
 The @code{coordinates} attribute lists the names of the latitude and
 longitude coordinates, @code{lat_gds} and @code{lon_gds}, respectively. 
@@ -3916,19 +3917,21 @@ The cell-based grid file must contain two variables whose
 @code{standard_name} attributes are ``latitude'', and ``longitude'':
 @example
 % ncks -m -C -v lat_gds,lon_gds ~/nco/data/in.nc
-lat_gds: # dim. = 1, NC_DOUBLE, # att. = 4, ID = 34
+lat_gds: type NC_DOUBLE, 1 dimensions, 4 attributes, chunked? no, compressed? no, packed? no, ID = 37
+lat_gds RAM size is 8*sizeof(NC_DOUBLE) = 8*8 = 64 bytes
 lat_gds dimension 0: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
-lat_gds memory size is 8*nco_typ_lng(NC_DOUBLE) = 8*8 = 64 bytes
 lat_gds attribute 0: long_name, size = 8 NC_CHAR, value = Latitude
 lat_gds attribute 1: standard_name, size = 8 NC_CHAR, value = latitude
 lat_gds attribute 2: units, size = 6 NC_CHAR, value = degree
+lat_gds attribute 3: purpose, size = 62 NC_CHAR, value = 1-D latitude coordinate referred to by geodesic grid variables
 
-lon_gds: # dim. = 1, NC_DOUBLE, # att. = 4, ID = 35
+lon_gds: type NC_DOUBLE, 1 dimensions, 4 attributes, chunked? no, compressed? no, packed? no, ID = 38
+lon_gds RAM size is 8*sizeof(NC_DOUBLE) = 8*8 = 64 bytes
 lon_gds dimension 0: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
-lon_gds memory size is 8*nco_typ_lng(NC_DOUBLE) = 8*8 = 64 bytes
 lon_gds attribute 0: long_name, size = 9 NC_CHAR, value = Longitude
 lon_gds attribute 1: standard_name, size = 9 NC_CHAR, value = longitude
 lon_gds attribute 2: units, size = 6 NC_CHAR, value = degree
+lon_gds attribute 3: purpose, size = 63 NC_CHAR, value = 1-D longitude coordinate referred to by geodesic grid variables
 @end example
 In this example @code{lat_gds} and @code{lon_gds} represent the 
 latitude or longitude, respectively, of cell-based variables.
@@ -6620,7 +6623,10 @@ print( variable_name/attribute name/string, format string);
 
 @noindent The print function takes a variable name or attribute name or a quoted string and prints the contents in a in a similar fashion to @code{ncks -H }. 
 There is also an optional C style format string argument. 
-Currently the print function can't print RAM variables or expressions e.g @code{'print(var_msk*3+4)'} is invalid. So if you want to print an expression first assign a variable with the expression; then print the variable.
+Currently the print function cannot print RAM variables or expressions
+such as @code{'print(var_msk*3+4)'}. 
+If you want to print an expression, first evaluate the expression
+and save the result to a (non-RAM) variable, and then print the variable. 
 
 @noindent examples
 @example
@@ -7873,7 +7879,6 @@ print(y3);      // '_'
 
 @noindent Note in the above example y3 is set to 'missing value' because 0.0 isn't within the input X range.  
 
-
 @strong{ GSL Interpolation Types } @*
 @noindent All the interpolation functions have been implemented. These are: @*
 gsl_interp_linear() @* gsl_interp_polynomial() @* gsl_interp_cspline()@*
@@ -7887,9 +7892,6 @@ gsl_spline_eval() @*
 gsl_spline_deriv() @*
 gsl_spline_deriv2() @*
 gsl_spline_integ() @*
-
-
-
 
 @html
 <a name="ncap_lsqf"></a> <!-- http://nco.sf.net/nco.html#ncap_lsqf -->
@@ -10645,10 +10647,11 @@ respectively.
 Print variable metadata to screen (similar to @kbd{ncdump -h}). 
 This displays all metadata pertaining to each variable, one variable
 at a time.
+@cindex chunking
 @cindex compression
 @cindex deflation
-This includes information on the compression level, if any
-@xref{Deflation}.
+This includes information on the storage properties of the variable,
+such as whether it employs chunking, compression, or packing.
 Also activated using @samp{--mtd} and @samp{--metadata}.
 The @command{ncks} default behavior is to print variable metadata to
 screen if no netCDF output file is specified.
@@ -11641,18 +11644,19 @@ ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}]
 @noindent
 DESCRIPTION
 
+@cindex @kbd{.}
 @command{ncrename} renames dimensions, variables, and attributes in a
 netCDF file.  
 Each object that has a name in the list of old names is renamed using
 the corresponding name in the list of new names. 
 All the new names must be unique. 
 Every old name must exist in the input file, unless the old name is
-preceded by the character @samp{.}. 
+preceded by the period (or ``dot'') character @samp{.}. 
 The validity of @var{old_name} is not checked prior to the renaming. 
 Thus, if @var{old_name} is specified without the the @samp{.} prefix and
 is not present in @var{input-file}, @command{ncrename} will abort. 
-The @var{new_name} should never be prefixed by a @samp{.} (the period
-will be included as part of the new name).
+The @var{new_name} should never be prefixed by a @samp{.} (or else the
+period will be included as part of the new name).
 The OPTIONS and EXAMPLES show how to select specific variables
 whose attributes are to be renamed.
 

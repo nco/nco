@@ -1,5 +1,9 @@
 2010-09-13  Charlie Zender  <zender@uci.edu>
 
+	* Fix erroneous error exit in ncrename when no attributes were renamed
+	Code was working and writing correct file then exiting as if error
+	had occurred since the return code was not handled properly.
+
 	* Implement nco_inq_var_packing() in ncks printing
 
 	* Change metadata print format to be more Englishy
