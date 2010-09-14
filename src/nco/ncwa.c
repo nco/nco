@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.280 2010-09-14 10:09:01 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.281 2010-09-14 11:22:43 hmb Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.280 2010-09-14 10:09:01 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.280 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.281 2010-09-14 11:22:43 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.281 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -162,6 +162,7 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
+  int jdx=int_CEWI;
   int idx_avg;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -1100,8 +1101,15 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-    /* Free limits */
-    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+
+    /* Free limits *
+       for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]); */
+
+    /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
+    for(idx=0;idx<nbr_dmn_fl;idx++)
+      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
