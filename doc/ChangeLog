@@ -1,5 +1,11 @@
 2010-09-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.4 release procedure:
+ 	Changes since nco-4_0_3: fxm
+	cd ~/nco;cvs tag -d nco-4_0_4;cvs tag -d nco-4_0_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
+	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
+
 	* Fix erroneous error exit in ncrename when no attributes were renamed
 	Code was working and writing correct file then exiting as if error
 	had occurred since the return code was not handled properly.
@@ -9,12 +15,6 @@
 	* Change metadata print format to be more Englishy
 
 2010-09-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.4 release procedure:
- 	Changes since nco-4_0_3: fxm
-	cd ~/nco;cvs tag -d nco-4_0_4;cvs tag -d nco-4_0_4-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
-	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
 
 	* Maintain input deflation level where identifiable (fixes TODO nco990)
 
