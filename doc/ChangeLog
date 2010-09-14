@@ -1,3 +1,6 @@
+2010-06-14  Henry Butowsky  <henryb@hush.com> 
+	* Enabled chunking in ncwa
+
 2010-09-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.4 release procedure:
