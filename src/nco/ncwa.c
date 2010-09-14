@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.281 2010-09-14 11:22:43 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.282 2010-09-14 20:21:43 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.281 2010-09-14 11:22:43 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.281 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.282 2010-09-14 20:21:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.282 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -562,11 +562,9 @@ main(int argc,char **argv)
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
-  
 
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-  
   /* Initialize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id,False,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
@@ -721,7 +719,6 @@ main(int argc,char **argv)
   } /* end if */
 
   /* Set chunksize parameters */
-  /* 20100906 fxm ncwa is only operator without lmt_all_lst */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
@@ -1085,6 +1082,12 @@ main(int argc,char **argv)
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
     if(wgt_out) wgt_out=nco_var_free(wgt_out);
     
+    /* Free lmt, lmt_dmn, and lmt_all_lst structures and lists */
+    for(idx=0;idx<nbr_dmn_fl;idx++)
+      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1102,15 +1105,6 @@ main(int argc,char **argv)
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
 
-    /* Free limits *
-       for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]); */
-
-    /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
-    for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
@@ -1134,5 +1128,3 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-

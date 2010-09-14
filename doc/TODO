@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1083 2010-09-14 00:42:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1084 2010-09-14 20:21:43 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -689,7 +689,9 @@ nco984. remove makeinfo dependency trigger from nco configure build
 nco989. implement nco_sng_cnv_err() checking throughout code-base
 nco991. ncap2 functions to return all variable and dimension names
 nco993. return type of nco_cln_get_cal_typ, tm_typ, does not match lmt.lmt_cal
-nco994. 
+nco994. chunking in ncwa
+nco995. chunking in ncap2
+nco996. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,9 @@
-2010-06-14  Henry Butowsky  <henryb@hush.com> 
+2010-09-14  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up ncflint.c, ncwa.c, ncra.c
+
+2010-09-14  Henry Butowsky  <henryb@hush.com>
+
 	* Enabled chunking in ncwa
 
 2010-09-13  Charlie Zender  <zender@uci.edu>
