@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.594 2010-09-13 22:16:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.595 2010-09-14 00:36:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4595,9 +4595,9 @@ It is appropriate to conclude by informing users about an aspect of
 chunking that may not be expected: 
 Record dimensions are always chunked with a chunksize of one. 
 Hence all variables that contain the record dimension are also stored 
-as chunked (since data cannot be stored with chunking only in some
-dimensions). 
-Unless otherwise specified by the user, the other (non-record)
+as chunked (since data must be stored with chunking either in all
+dimensions, or in no dimensions). 
+Unless otherwise specified by the user, the other (fixed, non-record) 
 dimensions of such variables are assigned default chunk sizes. 
 The @acronym{HDF5} layer does all this automatically to optimize the
 on-disk variable/file storage geometry of record variables.

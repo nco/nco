@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.24 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.25 2010-09-14 00:36:37 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -40,13 +40,13 @@ extern "C" {
 
 /* Calendar types */
 typedef enum {
-  cal_std=1,   /* Standard mixed Julian/Gregorian */
+  cal_std=1, /* Standard mixed Julian/Gregorian */
   cal_greg,  /* Gregorian Calendar */ 
   cal_jul,   /* Julian Calendar */ 
   cal_360 ,  /* 30 days a month Calendar */ 
   cal_365,   /* No Leap year Calendar */ 
-  cal_366,   /*  Leap year Calendar */ 
-  cal_void   /* no calendar found */
+  cal_366,   /* Leap year Calendar */ 
+  cal_void   /* No calendar found */
 } cal_typ;
 
 typedef enum {
@@ -56,7 +56,7 @@ typedef enum {
   tm_hour,
   tm_min,
   tm_sec,
-  tm_void  /* no time units matched */  
+  tm_void  /* No time units matched */  
 } tm_typ;
 
 typedef struct {

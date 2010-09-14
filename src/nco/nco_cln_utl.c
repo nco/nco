@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.23 2010-07-28 22:00:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.24 2010-09-14 00:36:37 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -475,13 +475,9 @@ return EXIT_SUCCESS;
 
 #endif /* !ENABLE_UDUNITS */
 
-
 /****************************************************************************************************/
 /******************** END ALL UDUNITS  ************************* ************************************/
 /****************************************************************************************************/
-
-
-
  
 tm_typ              /* [enum] Units type */    
 nco_cln_get_tm_typ /* returns time unit type or tm_void if not found */
@@ -515,7 +511,6 @@ tm_typ ret_typ;
     ret_typ=tm_sec;
 
   return ret_typ;
-
 }
 
 tm_typ               /* [enum] Calendar type */    
@@ -527,19 +522,16 @@ int len;
 char *lcl_sng;  
 cal_typ ret_typ;
 
- if(!ud_sng)
-   return (int)cal_void;
+ if(!ud_sng) return (int)cal_void;
  
   lcl_sng=strdup(ud_sng);
   
   /* initially set ret type to void */
-  ret_typ=cal_void;   
+  ret_typ=cal_void;
 
   /* convert to lower case */
   len=strlen(lcl_sng);
-  for(idx=0 ; idx<len ; idx++)
-    lcl_sng[idx]=tolower(lcl_sng[idx]);
-
+  for(idx=0;idx<len;idx++) lcl_sng[idx]=tolower(lcl_sng[idx]);
 
   if(!strcmp(lcl_sng, "standard") )
     ret_typ=cal_std;
@@ -588,7 +580,6 @@ int idays=0;
    idays+=days[idx];
   
  return idays;
-
 }
 
 void
@@ -676,7 +667,6 @@ double scl=double_CEWI;
  } /* end switch */ 
  
  return offset/scl;
-
 }
 
 
@@ -697,24 +687,19 @@ double crr_val;
 tm_typ bs_tm_typ;     /* enum for the units type in fl_bs_sng */
 tm_cal_sct unt_cal_sct;
 tm_cal_sct bs_cal_sct;
-
-
   
-if(dbg_lvl_get() >nco_dbg_std) {
+ if(dbg_lvl_get() >nco_dbg_std) {
     fprintf(stderr, "%s : nco_cln_clc_tm: unt_sng=%s bs_sng=%s\n",prg_nm_get(),fl_unt_sng,fl_bs_sng);
   }
 
-
-/* see if fl_unt_sng  looks like a regular timestamp */ 
-    if(sscanf(fl_unt_sng,"%d-%d",&year,&month)==2){
-      lcl_unt_sng=(char*)nco_malloc( (strlen(fl_unt_sng)+3) *sizeof(char) );
-      strcpy(lcl_unt_sng,"s@");
-      strcat(lcl_unt_sng,fl_unt_sng);
-
+ /* Does fl_unt_sng look like a regular timestamp? */ 
+ if(sscanf(fl_unt_sng,"%d-%d",&year,&month)==2){
+   lcl_unt_sng=(char*)nco_malloc( (strlen(fl_unt_sng)+3) *sizeof(char) );
+   strcpy(lcl_unt_sng,"s@");
+   strcat(lcl_unt_sng,fl_unt_sng);
   }else{
-    lcl_unt_sng=strdup(fl_unt_sng);
-  }
-
+   lcl_unt_sng=strdup(fl_unt_sng);
+ }
 
  /* temporary untill we deal with more calendar types */
  if(lmt_cal != cal_360 && lmt_cal != cal_365 ) {
