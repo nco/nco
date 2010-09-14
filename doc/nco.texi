@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.595 2010-09-14 00:36:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.596 2010-09-14 23:48:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4587,7 +4587,16 @@ ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_scl=8 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc 
 ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm_0112.nc ~/foo.nc
+
+# Chunking works with all operators...
+ncap2 -O -4 -D 4 --cnk_scl=8 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc
+ncbo -O -4 -D 4 --cnk_scl=8 -p ~/nco/data in.nc in.nc ~/foo.nc
+ncecat -O -4 -D 4 -n 12,2,1 --cnk_dmn lat,32 -p /data/zender/dstmch90 dstmch90_clm01.nc ~/foo.nc
+ncflint -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
+ncpdq -O -4 -D 4 -P all_new --cnk_scl=8 -L 5 ~/nco/data/in.nc ~/foo.nc
+ncrcat -O -4 -D 4 -n 12,2,1 --cnk_dmn lat,32 -p /data/zender/dstmch90 dstmch90_clm01.nc ~/foo.nc
+ncwa -O -4 -D 4 -a time --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm_0112.nc ~/foo.nc
 @end example
 
 @cindex record dimension

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.382 2010-09-13 22:24:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.383 2010-09-14 23:48:54 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -18,7 +18,7 @@ Support for spectral transforms, more chunking rulesets (fxm)
 
 "New stuff" in 4.0.4 details:
 
-A. Chunking supported in all operators (fxm: except ncwa)
+A. Chunking supported in all operators
    http://nco.sf.net/nco.html#cnk
 
 A. Perform stricter checks to identify malformed user-input strings.

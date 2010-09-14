@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.61 2010-09-13 21:32:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.62 2010-09-14 23:48:54 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -259,7 +259,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     /* NB: netCDF chunking/deflate define/inquire functions only work with netCDF4
        NCO wrappers perform no-ops on netCDF3 files */
     rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
-    if(deflate) (void)fprintf(stdout,"%s stored compressed (Lempel-Ziv %s shuffling) at level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
+    if(deflate) (void)fprintf(stdout,"%s on-disk compression (Lempel-Ziv %s shuffling) level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
     (void)fprintf(stdout,"%s RAM size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     long var_sz=1L;

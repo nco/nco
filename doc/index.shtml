@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.592 2010-09-13 22:24:50 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.593 2010-09-14 23:48:54 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -708,7 +708,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.0.3</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
-<a href="http://packages.ubuntu.com/jaunty/nco">Ubuntu NCO</a> homepages.
+<a href="http://packages.ubuntu.com/lucid/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 Newer Debian/Ubuntu flavors (i.e., Sid and Lucid) supply the latest numbered NCO release.
 Even newer (pre-release!) packages are available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/prerelease.txt">here</a>.

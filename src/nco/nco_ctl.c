@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.273 2010-09-09 00:38:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.274 2010-09-14 23:48:54 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -774,7 +774,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Love to run trails\n";
+  return "Pacific Coast Triathlon\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -864,7 +864,7 @@ nco_usg_prn(void)
 
   switch(prg_lcl){
   case ncap:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-C] [-c] [-D dbg_lvl] [-F] [-f] [-h] [-L lvl] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-t thr_nbr] [-v] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-F] [-f] [-h] [-L lvl] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-t thr_nbr] [-v] in.nc [out.nc]\n");
     break;
   case ncatted:
     opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] in.nc [[out.nc]]\n");
