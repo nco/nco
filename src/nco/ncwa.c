@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.279 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.280 2010-09-14 10:09:01 hmb Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.279 2010-09-08 22:55:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.279 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.280 2010-09-14 10:09:01 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.280 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -183,7 +183,8 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
-  
+  lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */  
+
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   nm_id_sct *dmn_avg_lst;
@@ -561,6 +562,13 @@ main(int argc,char **argv)
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
+
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  
+  /* Initialize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int(in_id,False,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
@@ -713,7 +721,7 @@ main(int argc,char **argv)
 
   /* Set chunksize parameters */
   /* 20100906 fxm ncwa is only operator without lmt_all_lst */
-  // if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
