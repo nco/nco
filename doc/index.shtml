@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.593 2010-09-14 23:48:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.594 2010-09-15 00:06:08 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -975,7 +975,7 @@ It is possible and often preferable to install most of the
 pre-requisite and optional software from pre-compiled packages on
 modern Debian- and RPM-based systems with (Debian/Ubuntu) 
 <tt>
-<dt>sudo aptitude install antlr # ANTLR</dt>
+<dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
 <dt>sudo aptitude install libcurl3-dev libxml2-dev # DAP-prereqs</dt>
 <dt>sudo aptitude install bison flex gcc g++ # GNU toolchain</dt>
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
