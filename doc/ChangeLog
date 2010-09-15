@@ -1,5 +1,7 @@
 2010-09-14  Charlie Zender  <zender@uci.edu>
 
+	* Document chunking better in nco.texi
+
 	* Clean-up ncflint.c, ncwa.c, ncra.c
 
 2010-09-14  Henry Butowsky  <henryb@hush.com>
