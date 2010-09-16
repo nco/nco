@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.18 2010-01-27 09:36:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.19 2010-09-16 13:28:52 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -507,11 +507,20 @@ bool bram){
   /* Define variable */   
   if(!bdef){
     (void)nco_def_var(out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
-    /* Set HDF Lempel-Ziv compression level, if requested */
-    if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
-    /* Set chunk sizes, if requested */
-    // fxm: must first allow cnk_sz specification in ncap2.cc main()
-    //    if(cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,cnk_sz);
+
+    // set deflate, shuffle, chunking
+    if(var->nbr_dim >0){ 
+      /* Set HDF Lempel-Ziv compression level, if requested */
+      if(dfl_lvl > 0 ) 
+        (void)nco_def_var_deflate(out_id,var_out_id,True,var->shuffle,dfl_lvl);    
+      else if(var->dfl_lvl)
+        (void)nco_def_var_deflate(out_id,var_out_id,True,var->shuffle,var->dfl_lvl);    
+
+      /* Set chunk sizes, if requested */
+      // fxm: must first allow cnk_sz specification in ncap2.cc main()
+      //if(var->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var->cnk_sz);
+    } 
+
   } // bdef
   /* Put missing value 
   if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
@@ -599,14 +608,24 @@ void prs_cls::ncap_def_ntl_scn(void)
       // define variable
       if(!Nvar->flg_mem) {
 	(void)nco_def_var(out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
-	/* Set HDF Lempel-Ziv compression level, if requested */
-	if(dfl_lvl > 0 && var1->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
-	/* Set chunk sizes, if requested */
-	// fxm: must first allow cnk_sz specification in ncap2.cc main()
-	//	if(cnk_sz && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,cnk_sz);
+
 	Nvar->var->id=var_id;
 	Nvar->var->nc_id=out_id;
 	Nvar->flg_stt=1;
+
+        // set deflate,shuffle,chunking 
+        if(var1->nbr_dim >0){ 
+	  /* Set HDF Lempel-Ziv compression level, if requested */
+	  if(dfl_lvl > 0 ) 
+            (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,True,dfl_lvl);    
+          else if(var1->dfl_lvl)
+            (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,True,var1->dfl_lvl);    
+
+	  /* Set chunk sizes, if requested */
+	  // fxm: must first allow cnk_sz specification in ncap2.cc main()
+	  //if(var1->cnk_sz && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var1->cnk_sz);
+        } 
+
       } else { 
 	//deal with RAM only var        
 	Nvar->var->id=-1;
