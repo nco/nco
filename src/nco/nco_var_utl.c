@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.153 2010-09-08 23:49:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.154 2010-09-16 13:23:25 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -894,7 +894,8 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->srd=(long *)NULL;
   var->undefined=False;
   var->is_fix_var=True; /* Is this a fixed (non-processed) variable? */
-
+  var->dfl_lvl=0;       /* deflate level */
+  var->shuffle=False;   /* shuffle filter */  
   /* Members related to packing */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
   var->has_add_fst=False; /* [flg] Valid add_offset attribute exists */
@@ -1210,11 +1211,15 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   /* Purpose: nco_malloc() and return a completed var_sct */
   char dmn_nm[NC_MAX_NAME];
 
+  int fl_fmt;
   int dmn_idx;
   int idx;
   int rec_dmn_id;
 
   var_sct *var;
+
+  /* get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
 
   /* Get record dimension ID */
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
@@ -1307,6 +1312,25 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
      nco_pck_dsk_inq() fills in these portions harmlessly */
     (void)nco_pck_dsk_inq(nc_id,var);
+    
+    /* Set deflate and chunking to defaults */  
+     var->dfl_lvl=0;  
+     var->shuffle=False;
+ 
+     for(idx=0; idx<var->nbr_dim; idx++)
+       var->cnk_sz[idx]=(size_t)0;
+
+
+    /* read deflate levels and chunking(if any) */  
+    if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC ){
+      int deflate;
+      int storage;
+      (void)nco_inq_var_deflate(nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
+	
+      (void)nco_inq_var_chunking(nc_id,var->id,&storage,var->cnk_sz);   
+
+    }
+   
   
   /* used when parsing script in ncap */
     var->undefined=False;
