@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.71 2010-01-05 20:02:17 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.72 2010-09-16 00:15:40 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -26,7 +26,7 @@ use strict;
 
 use NCO_rgr qw(
 	       tst_rgr
-	       $dodap $pfx_cmd $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl
+	       $dodap $pfx_cmd $pfx_cmd_crr $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl
 	       $fl_out
 	       );
 # $foo1_fl $foo_fl $foo_tst
@@ -40,7 +40,7 @@ our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
 		  tst_run dbg_msg drc_dat_set bm_ntl
-		  $pfx_cmd $drc_dat @fl_mtd_sct $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
+		  $pfx_cmd $pfx_cmd_crr $drc_dat @fl_mtd_sct $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 		  $prsrv_fl  $srv_sd $hiresfound $dodap $bm $dbg_lvl $sock $udp_rpt
 		  $mpi_prc $pfx_mpi $mpi_fk $mpi_upx
 		  );
@@ -51,7 +51,7 @@ use vars qw(
 	    $pfx_fk $hiresfound $md5 $mpi_prc $pfx_mpi $mpi_fk $mpi_upx
         $MY_BIN_DIR %NCO_RC $nsr_xpc
 	    $opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi
-	    $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nm  $pfx_cmd %real_tme
+	    $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nm  $pfx_cmd $pfx_cmd_crr %real_tme
 	    $cmd_rsl $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 	    @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
@@ -175,7 +175,9 @@ sub bm_ntl($$){
     dbg_msg(1,"$prg_nm: bm_ntl() reports:\n\t \$MY_BIN_DIR = $MY_BIN_DIR, \n\t \@opr_lst = @opr_lst\n\t \$opr_sng_mpi = $opr_sng_mpi\n\t \$opr_rgr_mpi = $opr_rgr_mpi\n");
     
 # Die if this path still does not work
-    die "$MY_BIN_DIR/$opr_lst[0] does not exist\n stopped" unless (-e "$MY_BIN_DIR/$opr_lst[0]" || $opr_lst[0] eq "net");
+    if($opr_lst[0] ne 'ncap2'){
+	die "$MY_BIN_DIR/$opr_lst[0] does not exist\n stopped" unless (-e "$MY_BIN_DIR/$opr_lst[0]" || $opr_lst[0] eq "net");
+    }
     
 # Create symbolic links for testing
 # If libtool created shared libraries, then point to real executables
@@ -309,8 +311,8 @@ sub fl_mk {
     if ($hiresfound) {$t0 = [gettimeofday()];}
     else {$t0 = time;}
 # csz 20061024: Changed ncap to ncap2 with no speed penalty (double-parsing works)
-    print "Executing: $tmr_app $pfx_cmd/ncap2 -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
-    system "$tmr_app $pfx_cmd/ncap2 -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
+    print "Executing: $tmr_app $pfx_cmd_crr/ncap2 -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
+    system "$tmr_app $pfx_cmd_crr/ncap2 -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
     else {$elapsed = time - $t0;}
     $fl_tmg[$idx][2] = $elapsed; # population time
@@ -586,14 +588,26 @@ sub tst_run {
 	    
 	    # Add $pfx_cmd only to NCO operator commands, not things like 'cut'.
 	    foreach my $op (@opr_lst_all) {
-		if ($_ =~ m/$op/ ) { # If op is anywhere in main list
+		$pfx_cmd_crr=$pfx_cmd;
+		if ($op eq 'ncap2'){
+		    # 20100915 Hack fix for ncap2 with Chad
+		    if (defined $ENV{'MY_BIN_DIR'} && $ENV{'MY_BIN_DIR'} ne ""){
+#			$pfx_cmd_crr=$ENV{'MY_BIN_DIR'};
+			$pfx_cmd_crr=$MY_BIN_DIR.'/';
+#			$pfx_cmd_crr=$pfx_cmd;
+		    }else{
+			$pfx_cmd_crr='../src/nco++'.'/';
+#			$pfx_cmd_crr=$pfx_cmd;
+		    }
+		} # endif ncap2
+		    if ($_ =~ m/$op/ ) { # If op is anywhere in main list
 		    if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) {
 			$_ = $tmr_app . $pfx_mpi . $_; } # ...and in MPI list...
 		    elsif ($mpi_fk  && $opr_sng_mpi =~ /$op/) {
 			$_ = $tmr_app . $pfx_fk . $_; } # Fake prefix
 		    # Non-MPI applications compiled w/MPI need special prefix to hold them to single process
-		    elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_pfx . $pfx_cmd . $_;}
-		    else         {$_ = $tmr_app . $pfx_cmd . $_; } # Standard prefix
+		    elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_pfx . $pfx_cmd_crr . $_;}
+		    else         {$_ = $tmr_app . $pfx_cmd_crr . $_; } # Standard prefix
 		    dbg_msg(1, "URGENT:before execution, cmd_ln= $_ \n");
 		    last;
 		}

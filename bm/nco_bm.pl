@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.148 2007-05-08 19:37:24 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.149 2010-09-16 00:15:40 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -52,7 +52,7 @@ use vars qw(
 	    %totbenchmarks @tst_cmd $tst_fl_mk $tst_fmt $tst_id_sng $tst_idx
 	    %tst_nbr $tw_prt_bm  $udp_rpt $USER $usg %usr_tme %wc_tbl
 	    $wnt_log $xdat_pth $xpt_dsc
-	    $pfx_cmd
+	    $pfx_cmd $pfx_cmd_crr
 	    );
 #$udp_rpt
 # Initializations
@@ -87,7 +87,8 @@ $pfx_mpi = '';
 $nco_D_flg='--mmr_drt'; # Require operators to clean memory before exiting
 $nco_vrs_sng = '';
 $os_sng = '';
-$pfx_cmd = '';
+$pfx_cmd ='';
+$pfx_cmd_crr='';
 $prsrv_fl = 1;
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 $pwd = `pwd`; chomp $pwd;

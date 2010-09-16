@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.594 2010-09-15 00:06:08 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.595 2010-09-16 00:15:40 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -681,7 +681,7 @@ executables for all platforms.
 Our source tarballs are always up-to-date, and work on our
 development systems 
 (<a href="http://www.ubuntu.com">Ubuntu</a>-flavored <a
-href="http://www.debian.org">Debian</a> GNU/Linux for x86 and x86_64) 
+href="http://www.debian.org">Debian</a> GNU/Linux for x86_64) 
 and in our high-end scientific computing environments
 (<a href="http://www.ibm.com/servers/aix">AIX&nbsp;5</a> for Power4/5/6/7).
 We also attempt to provide (theoretically) platform-independent sources
@@ -749,6 +749,8 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <li><a href="http://gentoo-portage.com/sci-misc/nco">nco-3.9.4</a>: Latest(?) Gentoo package</li>
 </ul>
 
+<a name="dmg"></a> <!-- http://nco.sf.net#dmg -->
+<a name="DMG"></a> <!-- http://nco.sf.net#DMG -->
 <a name="mac"></a> <!-- http://nco.sf.net#mac -->
 <a name="darwin"></a> <!-- http://nco.sf.net#darwin -->
 <a name="drw"></a> <!-- http://nco.sf.net#drw -->
@@ -758,6 +760,13 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <a name="fink"></a> <!-- http://nco.sf.net#fink -->
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
+<!-- Copy DMG files from http://ps.uci.edu/~pscsg/nco
+wget http://ps.uci.edu/~pscsg/nco/nco-4.0.3_x86_10.6.dmg -O /tmp/nco-4.0.3_x86_10.6.dmg
+/usr/bin/scp /tmp/nco-4.0.3_x86_10.6.dmg zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+scp /tmp/nco-4.0.3_x86_10.6.dmg dust.ess.uci.edu:/var/www/html/nco/src
+-->
+<li><a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> file for <a href="src/nco-4.0.3_x86_10.6.dmg">nco-4.0.3_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.3_x86_10.6.dmg"-->): Currently NCO 4.0.3 (last updated <!--#flastmod file="src/nco-4.0.3_x86_10.6.dmg"-->). Use DMG files if you do not have MacPorts installed. You may need to add <tt>/opt/local/bin</tt> to your executable path to access the operators.
+Maintained by Chad Cantwell.</li>
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.5. Maintained by Alexander Hansen.</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>:
  <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>
@@ -956,7 +965,7 @@ infrequently updated. Comments and suggestions are certainly welcomed on the
 
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
 The recommended first steps to build (i.e., compile, for the most part) NCO from source code are to install
-<a href="http://www.antlr.org">ANTLR 2.7.x</a> (required for <tt>ncap2</tt>), 
+<a href="http://www.antlr.org">ANTLR 2.7.x (not version 3.x!)</a> (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and

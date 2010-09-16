@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.100 2010-06-21 13:45:25 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.101 2010-09-16 00:15:40 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -14,14 +14,14 @@ use Cwd 'abs_path';
 use strict;
 
 use NCO_bm qw(dbg_msg tst_run
-	      $pfx_cmd $drc_dat @fl_mtd_sct $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc $srv_sd
+	      $pfx_cmd $pfx_cmd_crr $drc_dat @fl_mtd_sct $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc $srv_sd
 	      );
 
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw (
 		  tst_rgr
-		  $fl_out $dodap $dbg_lvl $pfx_cmd $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
+		  $fl_out $dodap $dbg_lvl $pfx_cmd $pfx_cmd_crr $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
 		  $foo1_fl $foo_fl $foo_tst $fl_out_rgn $foo_avg_fl $foo_x_fl $foo_y_fl $foo_yx_fl
 		  $foo_xy_fl  $foo_xymyx_fl $pth_rmt_scp_tst $omp_flg $nco_D_flg %NCO_RC
 		  );

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.383 2010-09-14 23:48:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.384 2010-09-16 00:15:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -34,6 +34,11 @@ A. Prior versions of ncrename -a .old_nm,new_nm in.nc out.nc
    would, if old_nm did not exist, write the correct file then exit
    with an error message although no error had occurred.
    http://nco.sf.net#bug_ncrename_dot
+
+A. MacIntosh users who do not use MacPort can now install NCO binaries
+   by clicking on an Apple Disk Image (.dmg) file.
+   Thanks to Chad Cantwell of UCI.
+   http://nco.sf.net#dmg
 
 "Sticky" reminders:
 
