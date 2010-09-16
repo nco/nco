@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.152 2010-09-14 00:36:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.153 2010-09-16 13:09:08 hmb Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -545,6 +545,8 @@ extern "C" {
     nc_type typ_upk; /* [enm] Type of variable when unpacked (expanded) (in memory) */
     int undefined; /* [flg] Variable is still undefined (in first parser pass) */
     int is_fix_var; /* [flg] Is this a fixed (non-processed) variable? */
+    int dfl_lvl;    /* [id]  Deflation Level for netcdf4, netcdf4-nc3 files */
+    int shuffle;    /* [flg] variable has shuffle filter on */    
   } var_sct; /* end var_sct_tag */
   
 #ifdef __cplusplus
