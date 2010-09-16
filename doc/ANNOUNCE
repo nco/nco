@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.385 2010-09-16 20:50:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.386 2010-09-16 23:33:14 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -43,8 +43,17 @@ A. MacIntosh users who do not use MacPort can now install NCO binaries
    Thanks to Chad Cantwell of UCI.
    http://nco.sf.net#dmg
 
-A. Deflation level (--dfl_lvl) propagates into ncap2 derived variables
+A. Deflation level (--dfl_lvl) propagates into ncap2 derived variables 
    Thanks to Henry Butowsky.
+
+A. ncpdq no longer packs coordinate variables by default. Rationale:
+   Coordinate variables are 1D, so packing saves little space,
+   and the resulting files are difficult for humans to read.
+   If users wish to pack coordinate variables, we will implement
+   new packing policies that explicitly pack coordinate variables.
+   We welcome your feedback. A workaround for those needing to 
+   pack coordinate variables now, is to use the packing functions
+   in ncap2.
 
 "Sticky" reminders:
 

@@ -1,5 +1,11 @@
 2010-09-16  Charlie Zender  <zender@uci.edu>
 
+	* Prevent ncpdq from packing coordinate variables
+	Coordinate variables are 1D, so packing saves little space,
+	and makes resulting files hard to read.
+	If users wish to pack coordinate variables, we should implement
+	new packing policies that explicitly pack coordinate variables.
+
 	* Add synonym/pseudonym section to nco.texi
 
 	* Update notes on propagating dfl_lvl and cnk_sz into ncap2

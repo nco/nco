@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.595 2010-09-16 00:15:40 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.596 2010-09-16 23:33:14 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -519,6 +519,7 @@ netCDF4 compound types?
 <li><b>NCO 4.0.4</b>: (<i>In progress</i>)
 Chunking in all operators; preserve deflation; <tt>ncks</tt> print formatting;
 Fix <tt>ncrename</tt> <a href="#bug_ncrename_dot">bug</a>;
+Do not pack coordinate variables;
 <li><b>NCO 4.0.3</b>:
 Fix <tt>configure</tt> for ncap2, netCDF4, UDUnits2, netCDF-DAP;
 Fix <tt>ncbo</tt> <a href="#bug_ncbo_rfr">bug</a> under AIX xlC;

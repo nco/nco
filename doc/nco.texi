@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.597 2010-09-16 20:50:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.598 2010-09-16 23:33:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -10985,7 +10985,7 @@ in @ref{Methods and functions}, and are also implemented in
 @command{ncap2}. 
 @command{ncpdq} extends the functionality of these algorithms by 
 providing high level control of the @dfn{packing policy} so that
-users can pack (and unpack) entire files consistently with one command. 
+users can consistently pack (and unpack) entire files with one command. 
 @cindex @var{pck_plc}
 @cindex @code{-P @var{pck_plc}}
 @cindex @code{--pck_plc @var{pck_plc}}
@@ -11017,6 +11017,21 @@ Equivalent key values are fully interchangeable.
 Multiple equivalent options are provided to satisfy disparate needs
 and tastes of @acronym{NCO} users working with scripts and from the
 command line.
+
+Regardless of the packing policy selected, @command{ncpdq} 
+no longer (as of @acronym{NCO} version 4.0.4 in October, 2010)
+packs coordinate variables.
+Prior @acronym{NCO} versions treated coordinate variables no
+differently from other variables.
+However, coordinate variables are one-dimensional, so packing saves
+little space on large files, and the resulting files are difficult for
+humans to read. 
+If users express strong wishes to pack coordinate variables, we will
+implement new packing policies that explicitly pack coordinate
+variables. 
+An immediate workaround for those needing to pack coordinate variables
+now, is to use the @command{ncap2} packing functions. 
+We welcome your feedback. 
 
 To reduce required memorization of these complex policy switches, 
 @command{ncpdq} may also be invoked via a synonym or with switches
@@ -11134,8 +11149,8 @@ This may lead you to elect a new @var{_FillValue}.
 Second, @code{ncpdq} actually allows packing into @code{NC_CHAR} (with,
 e.g., @samp{flt_chr}).
 However, the intrinsic conversion of @code{signed char} to higher
-precision types is tricky so for values equal to zero, i.e.,
-@code{NUL}. 
+precision types is tricky for values equal to zero, i.e., for
+@code{NUL}.  
 Hence packing to @code{NC_CHAR} is not documented or advertised.  
 Pack into @code{NC_BYTE} (with, e.g., @samp{flt_byt}) instead.
 

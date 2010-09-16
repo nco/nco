@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.88 2010-02-05 11:33:42 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.89 2010-09-16 23:33:15 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -750,6 +750,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	/* Packing operation requested
 	   Variables are processed for packing/unpacking operator unless ... */
 	if(
+	   /* ...packing coordinate variables has few benefits... */
+	   (var[idx]->is_crd_var) ||
 	   /* ...unpacking requested for unpacked variable... */
 	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram) ||
 	   /* ...or packing unpacked requested and variable is already packed... */
@@ -853,7 +855,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   } /* end if */
 
   /* fxm: Remove ncap exception when finished with ncap list processing */
-  /* fxm: ncpdq processes all variables when pakcing requested */
+  /* fxm: ncpdq processes all variables when packing requested */
   if(*nbr_var_prc == 0 && prg_id != ncap && prg_id != ncpdq){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
     switch(prg_id){

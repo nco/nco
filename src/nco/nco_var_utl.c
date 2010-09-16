@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.154 2010-09-16 13:23:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.155 2010-09-16 23:33:15 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1096,8 +1096,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
        --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
        4. Variable is not packed on input, packing is performed, and output is packed
-       --> Copy all attributes, define dummy values for scale_factor and add_offset now, 
-           write real values later */
+       --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
 
     /* Do not copy packing attributes "scale_factor" and "add_offset" 
        if variable is packed in input file and unpacked in output file 
@@ -1124,39 +1123,42 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     /* Create dummy packing attributes for ncpdq if necessary 
        Must apply nearly same logic at end of ncpdq when writing final attributes
        Recall ncap calls ncap_var_write() to define newly packed LHS variables 
-       If operator will attempt to pack some variables... */
-    if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){ 
-      /* ...and expanded variable is pack-able... */
-      if(nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)){
-	/* ...and operator will pack this particular variable... */
-	if(
-	   /* ...either because operator newly packs all variables... */
-	   (nco_pck_plc == nco_pck_plc_all_new_att) ||
-	   /* ...or because operator newly packs un-packed variables like this one... */
-	   (nco_pck_plc == nco_pck_plc_all_xst_att && !var[idx]->pck_ram) ||
-	   /* ...or because operator re-packs packed variables like this one... */
-	   (nco_pck_plc == nco_pck_plc_xst_new_att && var[idx]->pck_ram)
-	   ){
-	  
-	  /* ...then add/overwrite dummy scale_factor and add_offset attributes
-	     Overwrite these with correct values once known
-	     Adding dummy attributes of maximum possible size (NC_DOUBLE) now 
-	     reduces likelihood that netCDF layer will impose file copy 
-	     penalties when final attribute values are written later
-	     Either add_offset or scale_factor may be removed in nco_pck_val() 
-	     if nco_var_pck() packing algorithm did not require utilizing it */ 
-	  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-	  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-	  val_unn zero_unn; /* [frc] Generic container for value 0.0 */
-	  var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
-	  zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
-	  zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
-	  (void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
-	  (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
-	  zero_var=(var_sct *)nco_var_free(zero_var);
-	} /* endif this variable will be packed or re-packed */
-      } /* !nco_pck_plc_alw */
-    } /* endif nco_pck_plc involves packing */
+       If variable is not fixed (e.g., coordinate variables)...*/
+    if(!var[idx]->is_fix_var){
+      /* ...and operator will attempt to pack some variables... */
+      if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){ 
+	/* ...and expanded variable is pack-able... */
+	if(nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)){
+	  /* ...and operator will pack this particular variable... */
+	  if(
+	     /* ...either because operator newly packs all variables... */
+	     (nco_pck_plc == nco_pck_plc_all_new_att) ||
+	     /* ...or because operator newly packs un-packed variables like this one... */
+	     (nco_pck_plc == nco_pck_plc_all_xst_att && !var[idx]->pck_ram) ||
+	     /* ...or because operator re-packs packed variables like this one... */
+	     (nco_pck_plc == nco_pck_plc_xst_new_att && var[idx]->pck_ram)
+	     ){
+	    
+	    /* ...then add/overwrite dummy scale_factor and add_offset attributes
+	       Overwrite these with correct values once known
+	       Adding dummy attributes of maximum possible size (NC_DOUBLE) now 
+	       reduces likelihood that netCDF layer will impose file copy 
+	       penalties when final attribute values are written later
+	       Either add_offset or scale_factor may be removed in nco_pck_val() 
+	       if nco_var_pck() packing algorithm did not require utilizing it */ 
+	    const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+	    const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+	    val_unn zero_unn; /* [frc] Generic container for value 0.0 */
+	    var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
+	    zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
+	    zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
+	    (void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
+	    (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
+	    zero_var=(var_sct *)nco_var_free(zero_var);
+	  } /* endif this variable will be packed or re-packed */
+	} /* !nco_pck_plc_alw */
+      } /* endif nco_pck_plc involves packing */
+    } /* endif variable is processed (not fixed) */
   } /* end loop over idx variables to define */
 } /* end nco_var_dfn() */
 
