@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.384 2010-09-16 00:15:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.385 2010-09-16 20:50:13 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -18,10 +18,13 @@ Support for spectral transforms, more chunking rulesets (fxm)
 
 "New stuff" in 4.0.4 details:
 
-A. Chunking supported in all operators
+A. Chunking supported in all operators.
+   The exception is ncap2, which propagates chunking from fixed
+   and copied variables, but not from algebraic expressions.
+   (This capability may be in the next version.)
    http://nco.sf.net/nco.html#cnk
 
-A. Perform stricter checks to identify malformed user-input strings.
+A. Stricter checks to identify malformed user-input strings.
    Issue more informative warnings, hints, and errors when detected.
 
 A. ncecat, and all other operators, now retain the input deflation
@@ -39,6 +42,9 @@ A. MacIntosh users who do not use MacPort can now install NCO binaries
    by clicking on an Apple Disk Image (.dmg) file.
    Thanks to Chad Cantwell of UCI.
    http://nco.sf.net#dmg
+
+A. Deflation level (--dfl_lvl) propagates into ncap2 derived variables
+   Thanks to Henry Butowsky.
 
 "Sticky" reminders:
 

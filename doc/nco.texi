@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.596 2010-09-14 23:48:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.597 2010-09-16 20:50:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -507,6 +507,7 @@ netCDF itself.
 @menu
 * Availability::                
 * Compatability::               
+* Symbolic Links::              
 * Libraries::                   
 * netCDF2/3/4 and HDF4/5 Support::  
 * Help Requests and Bug Reports::  
@@ -594,7 +595,7 @@ This tests incorporates an image using the @code{@@image} command.
 @image{/data/zender/ps/odxc,6in,}
 @end ignore
 
-@node Compatability, Libraries, Availability, Introduction
+@node Compatability, Symbolic Links, Availability, Introduction
 @section Operating systems compatible with @acronym{NCO}
 @cindex @acronym{OS}
 @cindex @acronym{IBM}
@@ -875,9 +876,60 @@ The @acronym{NCO} operators should behave identically on Windows and
 @acronym{UNIX} platforms in all other respects.
 
 @html
+<a name="sym"></a> <!-- http://nco.sf.net/nco.html#sym -->
+@end html
+@node Symbolic Links, Libraries, Compatability, Introduction
+@section Symbolic Links
+@cindex symbolic links
+@acronym{NCO} relies on a common set of underlying algorithms.
+To minimize duplication of source code, multiple operators sometimes
+share the same underlying source.
+This is accomplished by symbolic links from a single underlying
+executable program to one or more invoked executable names.
+For example, @command{ncea} and @command{ncrcat} are symbolically linked  
+to the @command{ncra} executable.
+The @command{ncra} executable behaves slightly differently based on its
+invocation name (i.e., @samp{argv[0]}), which can be 
+@command{ncea}, @command{ncra}, or @command{ncrcat}.
+Logically, these are three different operators that happen to share 
+the same executable.
+
+@cindex Cygwin
+@cindex synonym
+@cindex pseudonym
+@cindex @code{--pseudonym}
+For historical reasons, and to be more user friendly, multiple synonyms 
+(or pseudonyms) may refer to the same operator invoked with different
+switches. 
+For example, @command{ncdiff} is the same as @command{ncbo} and
+@command{ncpack} is the same as @command{ncpdq}.
+We implement the symbolic links and synonyms by the executing the
+following @acronym{UNIX} commands in the directory where the
+@acronym{NCO} executables are installed.
+@example
+ln -s -f ncbo ncdiff    # ncbo --op_typ='+'
+ln -s -f ncra ncecat    # ncra --pseudonym='ncecat'
+ln -s -f ncra ncrcat    # ncra --pseudonym='ncrcat'
+ln -s -f ncbo ncadd     # ncbo --op_typ='+'
+ln -s -f ncbo ncsubtract # ncbo --op_typ='-'
+ln -s -f ncbo ncmultiply # ncbo --op_typ='*'
+ln -s -f ncbo ncdivide   # ncbo --op_typ='/'
+ln -s -f ncpdq ncpack    # ncpdq
+ln -s -f ncpdq ncunpack  # ncpdq --unpack
+# NB: Cygwin executable (and link) names have an '.exe' suffix, e.g.,
+ln -s -f ncbo.exe ncdiff.exe
+...
+@end example
+The imputed command called by the link is given after the comment.
+As can be seen, some these links impute the passing of a command line
+argument to further modify the behavior of the underlying executable.
+For example, @command{ncdivide} is a pseudonym for
+@command{ncbo --op_typ='/'}.
+
+@html
 <a name="lbr"></a> <!-- http://nco.sf.net/nco.html#lbr -->
 @end html
-@node Libraries, netCDF2/3/4 and HDF4/5 Support, Compatability, Introduction
+@node Libraries, netCDF2/3/4 and HDF4/5 Support, Symbolic Links, Introduction
 @section Libraries
 @cindex libraries
 @cindex @code{LD_LIBRARY_PATH}
@@ -2065,8 +2117,8 @@ feature is automatic and cannot be controlled by the user.
 * Multislabs::                  
 * Wrapped Coordinates::         
 * Auxiliary Coordinates::       
-* UDUnits Support::
-* Rebasing Time Coordinate::             
+* UDUnits Support::             
+* Rebasing Time Coordinate::    
 * Missing Values::              
 * Chunking::                    
 * Deflation::                   
@@ -5864,14 +5916,14 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Where statement::             
 * Loops::                       
 * Include files::               
-* sort methods::
-* Irregular grids::
-* bilinear interpolation::             
-* GSL special functions::
-* GSL interpolation::
-* GSL least-squares fitting::       
-* GSL statistics::
-* GSL random number generation::
+* sort methods::                
+* Irregular grids::             
+* bilinear interpolation::      
+* GSL special functions::       
+* GSL interpolation::           
+* GSL least-squares fitting::   
+* GSL statistics::              
+* GSL random number generation::  
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity ::  
