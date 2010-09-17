@@ -1,11 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.387 2010-09-17 18:33:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.388 2010-09-17 18:42:35 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version contains several minor improvements and bug-fixes.
+This version contains several improvements and ... no bug-fixes.
+That's right, after two minor releases, 4.0.2 and 4.0.3, that
+comprised mostly bug fixes, the only problems left to fix in 4.0.4
+were minor or could generously be called "features". New stuff:
+
 Chunking is now supported on all relevant operators, i.e., all except
 ncrename and ncatted. ncap2, moreover, now propagates deflation, and
 tries to propagate chunking options, through derived expressions.
@@ -40,7 +44,7 @@ A. Prior versions of ncrename -a .old_nm,new_nm in.nc out.nc
    with an error message although no error had occurred.
    http://nco.sf.net#bug_ncrename_dot
 
-A. MacIntosh users who do not use MacPort can now install NCO binaries
+A. MacIntosh users who do not use MacPorts can install NCO binaries
    by clicking on an Apple Disk Image (.dmg) file.
    Thanks to Chad Cantwell of UCI.
    http://nco.sf.net#dmg
