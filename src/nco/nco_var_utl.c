@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.155 2010-09-16 23:33:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.156 2010-09-17 09:41:31 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -102,7 +102,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
       int dfl_lvl_in; /* [enm] Deflate level [0..9] */
       rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
       /* Copy original deflation settings */
-      if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_out_id,deflate,shuffle,dfl_lvl_in);
+      if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
