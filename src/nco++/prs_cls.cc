@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.19 2010-09-16 13:28:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.20 2010-09-17 09:39:42 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -512,9 +512,9 @@ bool bram){
     if(var->nbr_dim >0){ 
       /* Set HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl > 0 ) 
-        (void)nco_def_var_deflate(out_id,var_out_id,True,var->shuffle,dfl_lvl);    
+        (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,True,dfl_lvl);    
       else if(var->dfl_lvl)
-        (void)nco_def_var_deflate(out_id,var_out_id,True,var->shuffle,var->dfl_lvl);    
+        (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,True,var->dfl_lvl);    
 
       /* Set chunk sizes, if requested */
       // fxm: must first allow cnk_sz specification in ncap2.cc main()
