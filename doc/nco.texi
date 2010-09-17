@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.598 2010-09-16 23:33:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.599 2010-09-17 18:33:46 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,7 +104,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.4
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 12 September 2010
+@set update-date 17 September 2010
 @set update-month September 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -5590,7 +5590,7 @@ may amount to many thousands of filenames in a metadata attribute.
 @cindex @code{msk_*}
 @cartouche
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
-@command{ncflint}, @command{ncra}, @command{ncwa}@*
+@command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@*
 Short options: None@*
 @end cartouche
 @acronym{NCO} recognizes the Climate and Forecast (@acronym{CF})
@@ -11020,17 +11020,22 @@ command line.
 
 Regardless of the packing policy selected, @command{ncpdq} 
 no longer (as of @acronym{NCO} version 4.0.4 in October, 2010)
-packs coordinate variables.
-Prior @acronym{NCO} versions treated coordinate variables no
-differently from other variables.
+packs coordinate variables, or the special variables, weights, 
+and other grid properties described in @ref{CF Conventions}.
+Prior @command{ncpdq} versions treated coordinate variables and
+grid properties no differently from other variables.
 However, coordinate variables are one-dimensional, so packing saves
 little space on large files, and the resulting files are difficult for
 humans to read. 
-If users express strong wishes to pack coordinate variables, we will
-implement new packing policies that explicitly pack coordinate
-variables. 
-An immediate workaround for those needing to pack coordinate variables
-now, is to use the @command{ncap2} packing functions. 
+Concurrently, Gaussian and area weights and other grid properties are
+often used to derive fields in re-inflated (unpacked) files, so packing
+such grid properties causes a considerable loss of precision in 
+downstream data processing.
+If users express strong wishes to pack grid properties, we will
+implement new packing policies.
+An immediate workaround for those needing to pack grid properties
+now, is to use the @command{ncap2} packing functions or to rename the
+grid properties prior to calling @command{ncpdq}. 
 We welcome your feedback. 
 
 To reduce required memorization of these complex policy switches, 

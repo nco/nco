@@ -1,3 +1,16 @@
+2010-09-17  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.0.4 release procedure:
+ 	Changes since nco-4_0_3: chunking everywhere, ncrename bugfix, ncks -m
+	cd ~/nco;cvs tag -d nco-4_0_4;cvs tag -d nco-4_0_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
+	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
+
+	* Make ncpdq follow same rules as ncbo, ncra, etc. in whether to
+	pack grid properties. Accomplish this by adding ncpdq (packing,
+	not permuting) to list of operators that return true in call to
+	nco_is_rnk_prs_rth_opr().
+
 2010-09-16  Charlie Zender  <zender@uci.edu>
 
 	* Prevent ncpdq from packing coordinate variables
@@ -11,12 +24,6 @@
 	* Update notes on propagating dfl_lvl and cnk_sz into ncap2
 
 2010-09-15  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.4 release procedure:
- 	Changes since nco-4_0_3: chunking everywhere, ncrename bugfix, ncks -m
-	cd ~/nco;cvs tag -d nco-4_0_4;cvs tag -d nco-4_0_4-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
-	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
 
 	* Add DMG file info to homepage
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.35 2010-07-29 20:23:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.36 2010-09-17 18:33:49 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -33,6 +33,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_pck.h" /* Packing and unpacking variables */
 #include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
@@ -55,7 +56,8 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 
 nco_bool /* [flg] Program does arithmetic and preserves rank */
 nco_is_rnk_prs_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? */
-(const int prg_id); /* [enm] Program ID */
+(const int prg_id, /* I [enm] Program ID */
+ const int nco_pck_plc); /* I [enm] Packing policy */
 
 nco_bool /* [flg] Program is multi-file operator */
 nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */

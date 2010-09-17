@@ -1,15 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.386 2010-09-16 23:33:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.387 2010-09-17 18:33:46 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version contains one major improvement and various bug-fixes.
-Chunking is now supported on all operators which one would expect,
-i.e., all except ncrename and ncatted. We have also re-formatted,
-expanded, and clarified the printing of metadata by ncks. Scripts
-that depend on the exact format of ncks print output may break.
+This version contains several minor improvements and bug-fixes.
+Chunking is now supported on all relevant operators, i.e., all except
+ncrename and ncatted. ncap2, moreover, now propagates deflation, and
+tries to propagate chunking options, through derived expressions.
+ncpdq now tries to avoid packing grid properties like coordinates.
+Metadata printed by ncks is now re-formatted, expanded, and simpler.
+Scripts that depend on the exact format of ncks output may break.
 Let us know if this causes you major heartburn and, if so, we will
 consider implementing an option to restore the previous format.
 
@@ -46,14 +48,18 @@ A. MacIntosh users who do not use MacPort can now install NCO binaries
 A. Deflation level (--dfl_lvl) propagates into ncap2 derived variables 
    Thanks to Henry Butowsky.
 
-A. ncpdq no longer packs coordinate variables by default. Rationale:
-   Coordinate variables are 1D, so packing saves little space,
-   and the resulting files are difficult for humans to read.
-   If users wish to pack coordinate variables, we will implement
-   new packing policies that explicitly pack coordinate variables.
-   We welcome your feedback. A workaround for those needing to 
-   pack coordinate variables now, is to use the packing functions
-   in ncap2.
+A. ncpdq no longer packs grid properties such as coordinate variables,
+   CF "special variables, or weights. Rationale: Coordinate variables
+   are 1D, so packing saves little space, and the resulting files are
+   difficult for humans to read. Similarly, Gaussian and area weights 
+   are often used to multiply other variables in re-inflated
+   (unpacked) files. Packing such weights causes a considerable loss
+   of precision in the result. If users wish to pack such variables,
+   we could implement new packing policies that explicitly packs
+   coordinates and weighting variables. We welcome your feedback. A
+   workaround for those needing to  pack such variables now, is to use
+   the packing functions in ncap2, or to rename the grid properties
+   prior to calling ncpdq.
 
 "Sticky" reminders:
 

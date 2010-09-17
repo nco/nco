@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.274 2010-09-14 23:48:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.275 2010-09-17 18:33:49 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -576,20 +576,22 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 
 nco_bool /* [flg] Program does arithmetic and preserves rank */
 nco_is_rnk_prs_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? */
-(const int prg_id) /* [enm] Program ID */
+(const int prg_id, /* I [enm] Program ID */
+ const int nco_pck_plc) /* I [enm] Packing policy */
 {
   /* Purpose: Is program rank-preserving arithmetic operator?
      For purposes of this function, arithmetic operators change values
      Concatenators (ncrcat, ncecat) are not arithmetic because they just glue data
-     Permutor (ncpdq) is not arithmetic because it just re-arranges values
-     Packer (ncpdq) is not arithmetic because it re-represents values
+     Permutor (ncpdq) _is not_ arithmetic because it only re-arranges values
+     Packer (ncpdq) _is_ arithmetic because it uses floating point arithmetic to re-represent values
+     nco_pck_plc flag is required as input and used only to distinguish between ncpdq packing and permuting.
      Attributors (ncrename, ncatted) are not arithmetic because they change metadata, not data
      One use of nco_is_rnk_prs_rth_opr() is to tell which operators should
      not process multidimensional coordinate values.
      For example, we want ncwa to act of coordinates that are reduced 
-     But we do not want ncea, ncbo, or ncflint, for example, to load and process
-     single or multi-dimensional coordinate variables.
-     They are best treated as "fixed" variables to be copied directly from the input to the output file. */ 
+     However, we do not want ncea, ncbo, or ncflint, for example, to load and process single or multi-dimensional coordinate variables.
+     Nor do we want ncpdq to pack variables like gaussian weights, or area since that causes a significant loss of arithmetic precision when those are used as weights in re-inflated files.
+     Such variables to these operators are best treated as "fixed" variables to be copied directly from the input to the output file. */ 
   switch(prg_id){
   case ncap: 
   case ncbo:
@@ -601,11 +603,13 @@ nco_is_rnk_prs_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? 
   case ncatted: 
   case ncecat: 
   case ncks: 
-  case ncpdq: 
   case ncrcat: 
   case ncrename: 
   case ncwa:
     return False;
+    break;
+  case ncpdq: 
+    if(nco_pck_plc != nco_pck_plc_nil) return True; else return False; 
     break;
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
