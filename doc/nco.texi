@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.599 2010-09-17 18:33:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.600 2010-09-18 00:38:08 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5594,17 +5594,16 @@ Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 Short options: None@*
 @end cartouche
 @acronym{NCO} recognizes the Climate and Forecast (@acronym{CF})
-metadata conventions, and treats such data (often called history tapes), 
-specially.  
-@acronym{NCO} handles older @acronym{NCAR} model datasets, such as
+metadata conventions, and applies special rules to such data.
+@acronym{NCO} also handles older @acronym{NCAR} model datasets, such as 
 @acronym{CCM} and early @acronym{CCSM} datasets, with its @acronym{CF}    
 rules even though the earlier data may not contain an explicit
 @code{Conventions} attribute (e.g., @samp{CF-1.0}).
 We refer to all such data collectively as @acronym{CF} data.
 Skip this section if you never work with @acronym{CF} data.
 
-The @acronym{CF} netCDF conventions are described at
-@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html}. 
+The @acronym{CF} netCDF conventions are described 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
 Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}  
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
@@ -5630,18 +5629,18 @@ The analogous problem has been fixed in @acronym{ARM} files
 (@pxref{ARM Conventions}) and could be fixed for @acronym{CF} files if
 there is sufficient lobbying.
 }.
-However, to facilitate maximum user friendliness, @acronym{NCO} does
-treat certain variables in some @acronym{CF} files specially. 
+However, to facilitate maximum user friendliness, @acronym{NCO} applies 
+special rules to certain variables in @acronym{CF} files.
 The special functions are not required by the @acronym{CF} netCDF
-conventions, but experience shows they simplify data analysis.
+conventions, yet experience shows that they simplify data analysis.
 
 Currently, @acronym{NCO} determines whether a datafile is a
-@acronym{CF} output datafile simply by checking whether value of the
-global attribute @code{Conventions} (if it exists) equals
-@samp{CF-1.0} or @samp{NCAR-CSM}.   
+@acronym{CF} output datafile simply by checking (case-insensitively)
+whether the value of the global attribute @code{Conventions} (if any)
+equals @samp{CF-1.0} or @samp{NCAR-CSM} 
 Should @code{Conventions} equal either of these in the (first)
-@var{input-file}, @acronym{NCO} will attempt to treat certain variables
-specially, because of their meaning in @acronym{CF} files. 
+@var{input-file}, @acronym{NCO} will apply special rules to certain
+variables because of their usual meaning in @acronym{CF} files. 
 @acronym{NCO} will not average the following variables often found in
 @acronym{CF} files: 
 @code{ntrm}, @code{ntrn}, @code{ntrk}, @code{ndbase}, @code{nsbase},
@@ -5650,8 +5649,13 @@ These variables contain scalar metadata such as the resolution of the
 host geophysical model and it makes no sense to change their values.
 
 @cindex non-coordinate grid properties
-Furthermore, the @command{ncbo} operator does not operate on (i.e., add,
-subtract, etc.) the following variables: 
+Furthermore, the @dfn{rank-preserving arithmetic operators} try
+not to operate on certain grid properties.
+These operators are @command{ncap}, @command{ncbo}, @command{ncea},
+@command{ncflint}, @command{ncra}, and @command{ncpdq} (when used for
+packing, not for permutation). 
+These operators do not operate, by default, on (i.e., add, subtract,
+pack, etc.) the following variables:   
 @code{ORO}, 
 @code{area}, 
 @code{datesec}, 
