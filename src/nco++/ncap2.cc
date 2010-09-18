@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.111 2010-09-10 00:26:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.112 2010-09-18 23:17:14 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,13 +134,15 @@ main(int argc,char **argv)
   char *fl_spt_usr=NULL_CEWI; /* Option s */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL_CEWI; /* [sng] String representation of current long-option name */
+  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
   const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.111 2010-09-10 00:26:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.111 $";
+
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.112 2010-09-18 23:17:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.112 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   cnk_sct **cnk=NULL_CEWI;
@@ -305,7 +307,8 @@ main(int argc,char **argv)
 	cnk_nbr++;
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
-	cnk_sz_scl=strtoul(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
+	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
 	/* Chunking map */
@@ -348,7 +351,8 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
+      dbg_lvl=(unsigned short)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
@@ -360,7 +364,8 @@ main(int argc,char **argv)
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'L': /* [enm] Deflate level. Default is 0. */
-      dfl_lvl=(int)strtol(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
+      dfl_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
@@ -402,7 +407,8 @@ main(int argc,char **argv)
       fl_spt_usr=(char *)strdup(optarg);
       break;
     case 't': /* Thread number */
-      thr_nbr=(int)strtol(optarg,(char **)NULL,NCO_SNG_CNV_BASE10);
+      thr_nbr=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'v': /* Variables to extract/exclude */
       PROCESS_ALL_VARS=False;
@@ -447,7 +453,7 @@ main(int argc,char **argv)
     } /* end else */
   } /* end if */    
   
-  /* create function/method vector */
+  /* Create function/method vector */
  
   // Conversion functions
   cnv_cls cnv_obj(true);
@@ -476,8 +482,7 @@ main(int argc,char **argv)
   //biliner interpolation functions
   bil_cls bil_obj(true); 
 
-  
-  //populate vector
+  // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
   (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
   (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
@@ -492,7 +497,6 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&arr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bil_obj);
    
- 
   // GSL functions
 #ifdef ENABLE_GSL
   char *str_ptr;
@@ -502,7 +506,6 @@ main(int argc,char **argv)
   gsl_stt2_cls gsl_stt2_obj(true);
   gsl_spl_cls gsl_spl_obj(true);
   gsl_fit_cls gsl_fit_obj(true);
-
  
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl2_obj);
@@ -510,11 +513,10 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&gsl_spl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl_fit_obj);
 
-  
   /* Set GSL error handler */
   gsl_set_error_handler_off(); 
   
-  /* initialize global from environment variable */  
+  /* Initialize global from environment variable */  
   if((str_ptr=getenv("GSL_PREC_MODE"))) ncap_gsl_mode_prec=(int)strtol(str_ptr,(char **)NULL,NCO_SNG_CNV_BASE10);
   
   if(ncap_gsl_mode_prec<0 || ncap_gsl_mode_prec>2) ncap_gsl_mode_prec=0;
@@ -522,8 +524,7 @@ main(int argc,char **argv)
   /* create a generator chosen by the 
     environment variables GSL_RNG_TYPE ,GSL_RNG_SEED */
      
- gsl_rng_env_setup();
-
+  gsl_rng_env_setup();
 
 #endif // !ENABLE_GSL
   

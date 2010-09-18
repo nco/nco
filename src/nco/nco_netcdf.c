@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.130 2010-09-13 18:06:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.131 2010-09-18 23:17:14 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -95,7 +95,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
      Only attempt to print netCDF error messages when rcd != 0 */
   (void)fprintf(stderr,"%s: ERROR Error code is %d. ",fnc_nm,rcd);
   if(rcd == NC_NOERR){
-    (void)fprintf(stderr,"This indicates an inconvenient truth in the NCO code (not in the netCDF layer)\n");
+    (void)fprintf(stderr,"This indicates an error occurred outside of the netCDF layer, i.e., in NCO code or in a system call.\n");
   }else{
     (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
   } /* !NC_NOERR */
@@ -361,7 +361,13 @@ nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
      strtol()/strtoul()/strtoll()/strtoull() receives illegal characters.
      Placing this in its own routine saves many lines of error handling. */
   const char fnc_nm[]="nco_sng_cnv_err()";
-  (void)fprintf(stdout,"%s: ERROR an NCO function or main program attempted to convert the user-defined string \"%s\" to an integer-type using the standard C-library function \"%s()\". This function stopped converting the input string when it encountered the illegal (i.e., non-numeric) character \'%c\'. This probably indicates a syntax error by the user. Please check the argument syntax and re-try the command. ",fnc_nm,cnv_sng,sng_cnv_fnc,err_ptr[0]);
+  if(!strcmp(sng_cnv_fnc,"strtod")){
+    /* Handle conversion errors for strtod()... */
+    (void)fprintf(stdout,"%s: ERROR an NCO function or main program attempted to convert the (probably user-defined) string \"%s\" to a floating point type using the standard C-library function \"%s()\". This function stopped converting the input string when it encountered the illegal (i.e., non-numeric) character \'%c\'. This probably indicates a syntax error by the user. Please check the argument syntax and re-try the command. ",fnc_nm,cnv_sng,sng_cnv_fnc,err_ptr[0]);
+  }else{ /* !strtod() */
+    /* Handle conversion errors for strtol(), strtoul()... */
+    (void)fprintf(stdout,"%s: ERROR an NCO function or main program attempted to convert the user-defined string \"%s\" to an integer-type using the standard C-library function \"%s()\". This function stopped converting the input string when it encountered the illegal (i.e., non-numeric or non-integer) character \'%c\'. This probably indicates a syntax error by the user. Please check the argument syntax and re-try the command. ",fnc_nm,cnv_sng,sng_cnv_fnc,err_ptr[0]);
+  } /* !strtod() */
   if(err_ptr[0] == ',') (void)fprintf(stdout,"HINT: Conversion functions like \"%s()\" accept only one number at a time, so comma-separated lists of numbers are invalid. ",sng_cnv_fnc);
   (void)fprintf(stdout,"Exiting...\n");
   nco_err_exit(0,fnc_nm);
