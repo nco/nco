@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.122 2010-09-18 23:17:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.123 2010-09-19 01:01:50 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -88,8 +88,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.122 2010-09-18 23:17:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.123 2010-09-19 01:01:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.123 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -193,8 +193,8 @@ main(int argc,char **argv)
       nbr_att_rnm++;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
       dmn_rnm_arg[nbr_dmn_rnm]=(char *)strdup(optarg);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.80 2010-09-18 23:17:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.81 2010-09-19 01:01:50 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -97,8 +97,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.80 2010-09-18 23:17:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.80 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.81 2010-09-19 01:01:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.81 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -282,7 +282,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
 	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
 	/* Chunking map */
@@ -325,8 +325,8 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
@@ -343,7 +343,7 @@ main(int argc,char **argv)
       break;
     case 'L': /* [enm] Deflate level. Default is 0. */
       dfl_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
@@ -383,7 +383,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'u': /* New record dimension name */
       rec_dmn_nm=(char *)strdup(optarg);
@@ -582,18 +582,18 @@ main(int argc,char **argv)
       /* Allocate space to hold dimension IDs */
       var_prc_out[idx]->dim=(dmn_sct **)nco_realloc(var_prc_out[idx]->dim,var_prc_out[idx]->nbr_dim*sizeof(dmn_sct *));
       var_prc_out[idx]->dmn_id=(int *)nco_realloc(var_prc_out[idx]->dmn_id,var_prc_out[idx]->nbr_dim*sizeof(int));
-      var_prc_out[idx]->cnt=(long *)nco_realloc(var_prc_out[idx]->cnt,var_prc_out[idx]->nbr_dim*sizeof(long));
-      var_prc_out[idx]->end=(long *)nco_realloc(var_prc_out[idx]->end,var_prc_out[idx]->nbr_dim*sizeof(long));
-      var_prc_out[idx]->srd=(long *)nco_realloc(var_prc_out[idx]->srd,var_prc_out[idx]->nbr_dim*sizeof(long));
-      var_prc_out[idx]->srt=(long *)nco_realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long));
+      var_prc_out[idx]->cnt=(long *)nco_realloc(var_prc_out[idx]->cnt,var_prc_out[idx]->nbr_dim*sizeof(long int));
+      var_prc_out[idx]->end=(long *)nco_realloc(var_prc_out[idx]->end,var_prc_out[idx]->nbr_dim*sizeof(long int));
+      var_prc_out[idx]->srd=(long *)nco_realloc(var_prc_out[idx]->srd,var_prc_out[idx]->nbr_dim*sizeof(long int));
+      var_prc_out[idx]->srt=(long *)nco_realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long int));
       
       /* Move current array by one to make room for new record dimension info */
       (void)memmove((void *)(var_prc_out[idx]->dim+1),(void *)(var_prc_out[idx]->dim),(var_prc_out[idx]->nbr_dim-1)*sizeof(dmn_sct *));
       (void)memmove((void *)(var_prc_out[idx]->dmn_id+1),(void *)(var_prc_out[idx]->dmn_id),(var_prc_out[idx]->nbr_dim-1)*sizeof(int));
-      (void)memmove((void *)(var_prc_out[idx]->cnt+1),(void *)(var_prc_out[idx]->cnt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
-      (void)memmove((void *)(var_prc_out[idx]->end+1),(void *)(var_prc_out[idx]->end),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
-      (void)memmove((void *)(var_prc_out[idx]->srd+1),(void *)(var_prc_out[idx]->srd),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
-      (void)memmove((void *)(var_prc_out[idx]->srt+1),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
+      (void)memmove((void *)(var_prc_out[idx]->cnt+1),(void *)(var_prc_out[idx]->cnt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
+      (void)memmove((void *)(var_prc_out[idx]->end+1),(void *)(var_prc_out[idx]->end),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
+      (void)memmove((void *)(var_prc_out[idx]->srd+1),(void *)(var_prc_out[idx]->srd),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
+      (void)memmove((void *)(var_prc_out[idx]->srt+1),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
       
       /* Insert value for new record dimension */
       var_prc_out[idx]->dim[0]=rec_dmn;

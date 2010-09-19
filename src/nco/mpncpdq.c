@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.77 2010-09-18 23:17:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.78 2010-09-19 01:01:50 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.77 2010-09-18 23:17:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.77 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.78 2010-09-19 01:01:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.78 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -305,7 +305,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
 	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
 	/* Chunking map */
@@ -352,8 +352,8 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
@@ -367,7 +367,7 @@ main(int argc,char **argv)
       break;
     case 'L': /* [enm] Deflate level. Default is 0. */
       dfl_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
@@ -406,7 +406,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'U': /* Unpacking switch */
       nco_pck_plc_sng=(char *)strdup("upk");

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1085 2010-09-14 23:48:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1086 2010-09-19 01:01:49 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -555,7 +555,7 @@ nco839. What, if anything, should NC_FILL_STRING be?
 nco845. Add -Wno-switch to quiet GCC enum warnings on netCDF4 case labels?
 nco846. netCDF4: switch to long long array offsets everywhere? 
         e.g., can long tally hold > 2 GB array?
-nco847. switch sz, tally to type (unsigned long), perhaps size_t, and perhaps (unsigned long long)
+nco847. switch sz, tally to type (unsigned long), perhaps size_t, and perhaps (unsigned long long int)
 nco848. Add regression to demonstrate breakage on variables with 2--4 GB elements
 nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
 nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?

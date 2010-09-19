@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.131 2010-09-18 23:17:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.132 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -132,7 +132,7 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
   case NC_INT:
     return sizeof(nco_int);
   case NC_SHORT:
-    return sizeof(short);
+    return sizeof(short int);
   case NC_CHAR:
     return sizeof(nco_char);
   case NC_BYTE:

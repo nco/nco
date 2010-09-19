@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.104 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.105 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -88,8 +88,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     /* Get type of variable and number of dimensions */
     (void)nco_inq_var(nc_id,var_id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
     dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int));
-    dmn_sz=(long *)nco_malloc(var->nbr_dim*sizeof(long));
-    dmn_srt=(long *)nco_malloc(var->nbr_dim*sizeof(long));
+    dmn_sz=(long *)nco_malloc(var->nbr_dim*sizeof(long int));
+    dmn_srt=(long *)nco_malloc(var->nbr_dim*sizeof(long int));
     (void)nco_inq_vardimid(nc_id,var_id,dmn_id);
 
     /* Get dimension sizes and construct variable size */
@@ -429,7 +429,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   fl_in_lst_aed.att_nm=att_nm_lst;
   fl_in_lst_aed.var_nm=NULL;
   fl_in_lst_aed.id=NC_GLOBAL;
-  fl_in_lst_aed.sz=(long)strlen(fl_in_lst_sng)+1L;
+  fl_in_lst_aed.sz=(long int)strlen(fl_in_lst_sng)+1L;
   fl_in_lst_aed.type=NC_CHAR;
   /* Insert value into attribute structure */
   fl_in_lst_aed.val=att_val;
@@ -516,7 +516,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
   } /* endif history global attribute currently exists */
 
-  (void)nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long)(strlen(history_new)+1UL),(void *)history_new);
+  (void)nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(history_new)+1UL),(void *)history_new);
 
   history_crr=(char *)nco_free(history_crr);
   history_new=(char *)nco_free(history_new);
@@ -713,14 +713,14 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	case NC_INT: 
 	case NC_SHORT: 
 	case NC_INT64: 
-	  val_arg_lng_lng=(long long *)nco_malloc(aed_lst[idx].sz*sizeof(long long));
+	  val_arg_lng_lng=(long long *)nco_malloc(aed_lst[idx].sz*sizeof(long long int));
 	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],(char **)NULL,NCO_SNG_CNV_BASE10);} break;
 	case NC_CHAR:
 	case NC_UBYTE: 
 	case NC_USHORT: 
 	case NC_UINT: 
 	case NC_UINT64: 
-	  val_arg_ulng_lng=(unsigned long long *)nco_malloc(aed_lst[idx].sz*sizeof(unsigned long long));
+	  val_arg_ulng_lng=(unsigned long long *)nco_malloc(aed_lst[idx].sz*sizeof(unsigned long long int));
 	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],(char **)NULL,NCO_SNG_CNV_BASE10);} break;
 	case NC_STRING: break;
 	default: nco_dfl_case_nc_type_err(); break;
@@ -811,7 +811,7 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   dlm_ptr=strchr(rnm_att->new_nm,'@');	
   if(dlm_ptr){
     att_nm_lng=strlen(rnm_att->new_nm);
-    if((dlm_ptr-rnm_att->new_nm) < (long)att_nm_lng) rnm_att->new_nm=dlm_ptr+1; else return 0;
+    if((dlm_ptr-rnm_att->new_nm) < (long int)att_nm_lng) rnm_att->new_nm=dlm_ptr+1; else return 0;
   } /* endif */
   return 1;
 } /* end nco_prs_att() */

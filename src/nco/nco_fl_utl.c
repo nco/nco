@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.120 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.121 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -205,7 +205,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   /* Might there be problems with any specified files? */
   for(idx=arg_crr;idx<argc;idx++){
-    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
+    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
   } /* end loop over idx */
 
   /* All operators except multi-file operators must have at least one positional argument */
@@ -301,7 +301,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fl_nm_lng=strlen(bfr_in);
 	  fl_lst_in_lng+=fl_nm_lng;
 	  (*fl_nbr)++;
-	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
+	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);

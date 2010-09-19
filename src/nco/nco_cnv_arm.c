@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.27 2010-01-05 20:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.28 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 
@@ -141,8 +141,8 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   if(dfl_lvl > 0) (void)nco_def_var_deflate(nc_id,time_id,(int)True,(int)True,dfl_lvl);
 
   /* Add attributes for time variable */
-  (void)nco_put_att(nc_id,time_id,units_sng,NC_CHAR,(long)(strlen(att_units)+1UL),(const void *)att_units);
-  (void)nco_put_att(nc_id,time_id,long_name_sng,NC_CHAR,(long)(strlen(att_long_name)+1UL),(const void *)att_long_name);
+  (void)nco_put_att(nc_id,time_id,units_sng,NC_CHAR,(long int)(strlen(att_units)+1UL),(const void *)att_units);
+  (void)nco_put_att(nc_id,time_id,long_name_sng,NC_CHAR,(long int)(strlen(att_long_name)+1UL),(const void *)att_long_name);
 
   /* Catenate time-stamped reminder onto "history" global attribute */
   (void)nco_hst_att_cat(nc_id,"ncrcat added variable time=base_time+time_offset");

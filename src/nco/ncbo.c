@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.160 2010-09-18 23:17:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.161 2010-09-19 01:01:50 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.160 2010-09-18 23:17:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.160 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.161 2010-09-19 01:01:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.161 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -299,7 +299,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
 	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
 	/* Chunking map */
@@ -344,8 +344,8 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* The debugging level. Default is 0. */
-      dbg_lvl=(unsigned short)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
@@ -359,7 +359,7 @@ main(int argc,char **argv)
       break;
     case 'L': /* [enm] Deflate level. Default is 0. */
       dfl_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
@@ -385,7 +385,7 @@ main(int argc,char **argv)
       break;
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(sng_cnv_rcd && False) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */

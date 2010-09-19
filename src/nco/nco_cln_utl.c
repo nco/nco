@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.24 2010-09-14 00:36:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.25 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -82,7 +82,7 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
     for(mth_idx=mth_srt;mth_idx<=mth_srt+12L;mth_idx++){
       mth_tmp=mth_idx;
       if(mth_idx > 12L) mth_tmp=mth_idx-12L;
-      day_nbr_2_eom=(long)nco_nd2endm(mth_tmp,day_crr);
+      day_nbr_2_eom=(long int)nco_nd2endm(mth_tmp,day_crr);
       if(day_ncr > day_nbr_2_eom){
 	mth_crr++;
 	if(mth_crr > 12L){

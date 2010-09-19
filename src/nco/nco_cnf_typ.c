@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.55 2010-02-06 07:23:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.56 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -330,8 +330,8 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     } break;
   case NC_SHORT:
     switch(var_in_typ){
-    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short)(val_in.dp[idx]);} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short int)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short int)(val_in.dp[idx]);} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.ip[idx];} break;
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.cp[idx];} break;
@@ -562,11 +562,11 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     } break;
   case NC_SHORT:
     switch(typ_in){
-    case NC_FLOAT: *val_out.sp=(short)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: *val_out.sp=(short)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: *val_out.sp=(short int)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.sp=(short int)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: *val_out.sp=*val_in.ip; break;
     case NC_SHORT: *val_out.sp=*val_in.sp; break;
-    case NC_CHAR: *val_out.sp=(short)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_CHAR: *val_out.sp=(short int)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.sp=*val_in.bp; break;
     case NC_UBYTE: *val_out.sp=*val_in.ubp; break;
     case NC_USHORT: *val_out.sp=*val_in.usp; break;
@@ -774,8 +774,8 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
     } break;
   case NC_SHORT:
     switch(typ_old){
-    case NC_FLOAT: scv_new.val.s=(short)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: scv_new.val.s=(short)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: scv_new.val.s=(short int)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: scv_new.val.s=(short int)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: scv_new.val.s=(scv_old->val).i; break;
     case NC_SHORT: scv_new.val.s=(scv_old->val).s; break;
     case NC_BYTE: scv_new.val.s=(scv_old->val).b; break;

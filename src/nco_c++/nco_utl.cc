@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.23 2010-01-05 20:02:18 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.24 2010-09-19 01:01:50 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -194,7 +194,7 @@ nco_typ_lng // [fnc] Internal (native) size (Bytes) of netCDF external type
   case NC_INT: 
     return sizeof(long); 
   case NC_SHORT: 
-    return sizeof(short); 
+    return sizeof(short int); 
   case NC_CHAR: 
     return sizeof(unsigned char); 
   case NC_BYTE: 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.51 2010-02-07 15:51:16 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.52 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -3027,13 +3027,13 @@ var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
      case NC_UINT:   r_val=gpr_obj.g_args(7).csuipss(var[0]->val.uip,d_srd,sz);break;
 
      case NC_INT64:  
-                     if( sizeof(long)!=sizeof(long long) )
+                     if( sizeof(long)!=sizeof(long long int) )
 		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
                       
                       r_val=gpr_obj.g_args(8).cslpss((const long*)var[0]->val.i64p,d_srd,sz);
                       break;
      case NC_UINT64: 
-                     if( sizeof(unsigned long)!=sizeof(unsigned long long) )
+                     if( sizeof(unsigned long)!=sizeof(unsigned long long int) )
 		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
 
                       r_val=gpr_obj.g_args(9).csulpss((const unsigned long*)var[0]->val.ui64p,d_srd,sz);
@@ -3158,13 +3158,13 @@ var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
      case NC_UINT:   r_val=gpr_obj.g_args(7).csuipssd(var_arr[0]->val.uip,d_srd,sz,dmean);break;
 
      case NC_INT64:  
-                     if( sizeof(long)!=sizeof(long long) )
+                     if( sizeof(long)!=sizeof(long long int) )
 		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
                       
                       r_val=gpr_obj.g_args(8).cslpssd((const long*)var_arr[0]->val.i64p,d_srd,sz,dmean);
                       break;
      case NC_UINT64: 
-                     if( sizeof(unsigned long)!=sizeof(unsigned long long) )
+                     if( sizeof(unsigned long)!=sizeof(unsigned long long int) )
 		       err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
 
                       r_val=gpr_obj.g_args(9).csulpssd((const unsigned long*)var_arr[0]->val.ui64p,d_srd,sz,dmean);
@@ -3255,10 +3255,10 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 
 
-  if(var[0]->type==(nc_type)NC_INT64 && sizeof(long)!=sizeof(long long) )
+  if(var[0]->type==(nc_type)NC_INT64 && sizeof(long)!=sizeof(long long int) )
     err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
 
-  if(var[0]->type==(nc_type)NC_UINT64 && sizeof(unsigned long)!=sizeof(unsigned long long) )
+  if(var[0]->type==(nc_type)NC_UINT64 && sizeof(unsigned long)!=sizeof(unsigned long long int) )
     err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
 
 
@@ -3534,10 +3534,10 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 
 
-  if(var_arr[0]->type==(nc_type)NC_INT64 && sizeof(long)!=sizeof(long long) )
+  if(var_arr[0]->type==(nc_type)NC_INT64 && sizeof(long)!=sizeof(long long int) )
     err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_INT64");
 
-  if(var_arr[0]->type==(nc_type)NC_UINT64 && sizeof(unsigned long)!=sizeof(unsigned long long) )
+  if(var_arr[0]->type==(nc_type)NC_UINT64 && sizeof(unsigned long)!=sizeof(unsigned long long int) )
     err_prn(sfnm,"This function from the GSL Library is not implemented for the type NC_UINT64");
 
 

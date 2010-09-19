@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.146 2010-04-09 04:51:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.147 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -121,7 +121,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
       (void)strcpy(var->nm,var_nm); */
   
   /* Tally is not required yet since ncap does not perform cross-file operations (yet) */
-  /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
+  /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long int),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
      (void)nco_zero_long(var->sz,var->tally); */
   var->tally=(long *)NULL;
   
@@ -877,7 +877,7 @@ ncap_scv_abs(scv_sct scv)
   switch(scv.type){ 
   case NC_FLOAT: scv_out.val.f=fabsf(scv.val.f); break;
   case NC_DOUBLE: scv_out.val.d=fabs(scv.val.d); break;
-  case NC_INT: scv_out.val.i=labs(scv.val.i); break; /* int abs(int), long labs(long) */ break;            
+  case NC_INT: scv_out.val.i=labs(scv.val.i); break; /* int abs(int), long labs(long int) */ break;            
   case NC_SHORT: scv_out.val.s=((scv.val.s >= 0) ? scv.val.s : -scv.val.s); break;
   case NC_USHORT: scv_out.val.us=scv.val.us; break;
   case NC_UINT: scv_out.val.ui=scv.val.ui; break;
@@ -1368,7 +1368,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
       for(var_gtr_lmn=0;var_gtr_lmn<var_gtr_sz;var_gtr_lmn++){
 	dmn_ss[var_gtr_nbr_dmn_m1]=var_gtr_lmn%var_gtr_cnt[var_gtr_nbr_dmn_m1];
 	for(idx=0;idx<var_gtr_nbr_dmn_m1;idx++){
-	  dmn_ss[idx]=(long)(var_gtr_lmn/dmn_var_gtr_map[idx]);
+	  dmn_ss[idx]=(long int)(var_gtr_lmn/dmn_var_gtr_map[idx]);
 	  dmn_ss[idx]%=var_gtr_cnt[idx];
 	} /* end loop over dimensions */
 	

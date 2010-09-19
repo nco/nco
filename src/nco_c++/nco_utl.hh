@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.23 2010-08-31 19:03:28 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.24 2010-09-19 01:01:50 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -101,10 +101,10 @@ const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in functio
 # define NC_FILL_UINT    (4294967295U)
 #endif
 #ifndef NC_FILL_INT64
-# define NC_FILL_INT64   ((long long)-9223372036854775808)
+# define NC_FILL_INT64   ((long long int)-9223372036854775808)
 #endif
 #ifndef NC_FILL_UINT64
-# define NC_FILL_UINT64  ((unsigned long long)18446744073709551615)
+# define NC_FILL_UINT64  ((unsigned long long int)18446744073709551615)
 #endif
 #ifndef NC_FILL_STRING
 # define NC_FILL_STRING  ""

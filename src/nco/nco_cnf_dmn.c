@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.69 2010-01-26 13:06:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.70 2010-09-19 01:01:50 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -307,7 +307,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	     Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
 	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
 	     NB: Neglected loop arithmetic/compare */
-	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
+	  dmn_ss[idx]=(long int)(var_lmn/dmn_var_map[idx]);
 	  dmn_ss[idx]%=var_cnt[idx];
 	} /* end loop over dimensions */
 	
@@ -779,7 +779,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
     /* dmn_in_sbs are corresponding indices (subscripts) into N-D array */
     dmn_in_sbs[dmn_in_nbr_m1]=var_in_lmn%var_in_cnt[dmn_in_nbr_m1];
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr_m1;dmn_in_idx++){
-      dmn_in_sbs[dmn_in_idx]=(long)(var_in_lmn/dmn_in_map[dmn_in_idx]);
+      dmn_in_sbs[dmn_in_idx]=(long int)(var_in_lmn/dmn_in_map[dmn_in_idx]);
       dmn_in_sbs[dmn_in_idx]%=var_in_cnt[dmn_in_idx];
     } /* end loop over dimensions */
 
