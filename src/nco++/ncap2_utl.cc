@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.134 2010-06-21 12:53:54 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.135 2010-09-20 23:14:47 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1997,11 +1997,13 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
   if(var->nbr_dim > 0) var->srt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
   if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
   if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
+  if(var->nbr_dim > 0) var->cnk_sz=(size_t *)nco_malloc(var->nbr_dim*sizeof(size_t)); else var->cnk_sz=(size_t *)NULL;
   
   /* Defensive programming */
   var->sz=1L; 
   /* Attach LHS dimensions to variable */
   for(idx=0;idx<dmn_nbr;idx++){
+    var->cnk_sz[idx]=(size_t)0;   
     var->dim[idx]=dmn[idx];
     var->dmn_id[idx]=dmn[idx]->id;
     var->cnt[idx]=dmn[idx]->cnt;
@@ -2009,6 +2011,7 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
     var->end[idx]=dmn[idx]->end;
     var->srd[idx]=dmn[idx]->srd;
     var->sz*=var->cnt[idx];
+
   } /* end loop over dim */
   
 
