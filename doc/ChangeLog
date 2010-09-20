@@ -1,6 +1,6 @@
 2010-09-19  Charlie Zender  <zender@uci.edu>
 
-	* Continue error handling of string-conversion
+	* Continue error handling of string-conversion, now strtod()
 
 2010-09-18  Charlie Zender  <zender@uci.edu>
 
