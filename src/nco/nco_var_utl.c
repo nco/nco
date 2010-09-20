@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.157 2010-09-17 09:51:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.158 2010-09-20 05:12:32 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -211,8 +211,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
       } /* end else */
     } /* end if */
 
-    /* Very Important -blow out if record dim isn't the first record */
-    if( idx >0 && dmn_out_id[idx]==rec_dmn_out_id ){
+    /* Die if record dimension is not the first dimension */
+    if(idx>0 && dmn_out_id[idx]==rec_dmn_out_id ){
       (void)fprintf(stdout,"%s: ERROR You have defined the record dimension in output to be \"%s\". Yet in the variable \"%s\" the record dimension is dimension number %d  and not the 1st dimension. Consider using ncpdq to permute the record dimension.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if */

@@ -1,5 +1,11 @@
 2010-09-19  Charlie Zender  <zender@uci.edu>
 
+	* Note that ncks 4.0.3 and earlier suffer from a bug Henry caught
+	in nco_cpy_var_dfn_lmt() where the shuffle and deflate arguments
+	to nco_def_var_deflate() were reversed. This would cause
+	propagation of deflate and shuffle attributes from in.nc to out.nc
+	to go awry when shuffle or deflate, but not both, were true.
+
 	* Continue error handling of string-conversion, now strtod()
 
 2010-09-18  Charlie Zender  <zender@uci.edu>
