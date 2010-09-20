@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.113 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.114 2010-09-20 03:34:33 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -139,10 +139,9 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const att_nm_tmp="eulaVlliF_"; /* name used for netCDF4 name hack */
-
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.113 2010-09-19 01:01:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.114 2010-09-20 03:34:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   cnk_sct **cnk=NULL_CEWI;
@@ -376,7 +375,6 @@ main(int argc,char **argv)
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 3)
 	err_prn(fnc_nm, "Incorrect abbreviation for file list\n");
-      
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -399,9 +397,7 @@ main(int argc,char **argv)
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
-      if(nbr_spt == NCAP_SPT_NBR_MAX-1) 
-        wrn_prn(fnc_nm,"No more than " +nbr2sng(NCAP_SPT_NBR_MAX) + " allowed. TODO# 24.");
-      //(void)fprintf(stderr,"%s:  %d script arguments allowed. TODO #24\n",prg_nm_get(),NCAP_SPT_NBR_MAX);
+      if(nbr_spt == NCAP_SPT_NBR_MAX-1) wrn_prn(fnc_nm,"No more than " +nbr2sng(NCAP_SPT_NBR_MAX) + " allowed. TODO# 24.");
       break;
     case 'S': /* Read command script from file rather than from command line */
       fl_spt_usr=(char *)strdup(optarg);
@@ -416,12 +412,7 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
-      /*
-	if(EXCLUDE_INPUT_LIST) 
-        err_prn(fnc_nm,std::string(prg_nm_get())+ " does not currently implement -x option\n");
-      */
       break;
-      
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
