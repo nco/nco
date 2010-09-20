@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.180 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.181 2010-09-20 03:44:51 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.180 2010-09-19 01:01:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.180 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.181 2010-09-20 03:44:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.181 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -411,10 +411,13 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       }else if(nbr_ntp == 2){
-	wgt_val_1=strtod(ntp_lst_in[0],(char **)NULL);
-	wgt_val_2=strtod(ntp_lst_in[1],(char **)NULL);
+	wgt_val_1=strtod(ntp_lst_in[0],&sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[0],"strtod",sng_cnv_rcd);
+	wgt_val_2=strtod(ntp_lst_in[1],&sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[1],"strtod",sng_cnv_rcd);
       }else if(nbr_ntp == 1){
-	wgt_val_1=strtod(ntp_lst_in[0],(char **)NULL);
+	wgt_val_1=strtod(ntp_lst_in[0],&sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[0],"strtod",sng_cnv_rcd);
 	wgt_val_2=1.0-wgt_val_1;
       } /* end else */
       CMD_LN_NTP_WGT=True;

@@ -1,3 +1,7 @@
+2010-09-19  Charlie Zender  <zender@uci.edu>
+
+	* Continue error handling of string-conversion
+
 2010-09-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.4 release procedure:
