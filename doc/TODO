@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1086 2010-09-19 01:01:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1087 2010-09-21 00:20:29 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -705,7 +705,7 @@ Valgrind: Archive of valgrind tests which are memory-error and leak-free
 vg1. ncap
    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
      ncap2
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 vg2. ncbo
    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 vg3. ncea
