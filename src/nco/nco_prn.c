@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.62 2010-09-14 23:48:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.63 2010-09-22 21:06:15 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -240,7 +240,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* end loop over dim */
 
   /* Print header for variable */
-  (void)fprintf(stdout,"%s: type %s, %i dimensions, %i attributes, chunked? %s, compressed? %s, packed? %s, ID = %i\n",var_nm,nco_typ_sng(var_typ),nbr_dim,nbr_att,(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no",var_id);
+  (void)fprintf(stdout,"%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s, ID = %i\n",var_nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no",var_id);
 
   /* Print type, shape, and total size of variable */
   if(nbr_dim>0){
