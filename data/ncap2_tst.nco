@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.22 2009-10-16 14:58:05 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.23 2010-09-23 23:04:04 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -29,7 +29,7 @@ nbr_err_ttl=0;
   b5=three_dmn_var_dbl.rmssdn($1).avgsqr();
   b6=three_dmn_var_dbl.total($2).avg();
 
-  //check total handles missing values correctly  
+  // Check that total handles missing values correctly  
   // two missing values
   b10[time]={1,2,3,4,5,6,7,8,9,1};
   b10.set_miss(1L);

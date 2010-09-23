@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.160 2010-09-23 22:23:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.161 2010-09-23 23:04:04 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1314,7 +1314,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   
   for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
   
-  /* read deflate levels and chunking(if any) */  
+  /* Read deflate levels and chunking (if any) */  
   if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC){
     int deflate; /* [enm] Deflate filter is on */
     int srg_typ; /* [enm] Storage type */

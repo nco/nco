@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.155 2010-09-23 22:23:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.156 2010-09-23 23:04:04 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -510,43 +510,43 @@ extern "C" {
   /* Variable structure */
   typedef struct var_sct_tag{ /* var_sct */
     char *nm; /* [sng] Variable name */
-    int id; /* [id] Variable ID */
-    int nc_id; /* [id] File ID */
-    int nbr_dim; /* [nbr] Number of dimensions of variable in input file */
-    nc_type type; /* [enm] Type of variable in RAM */
-    nc_type typ_dsk; /* [enm] Type of variable on disk (never changes) */
-    short is_rec_var; /* [flg] Is this a record variable? */
-    short is_crd_var; /* [flg] Is this a coordinate variable? */
-    long sz; /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
-    long sz_rec; /* [nbr] Number of elements in one record of hyperslab */
-    int nbr_att; /* [nbr] Number of attributes */
-    int has_dpl_dmn; /* [flg] Variable has duplicate copies of same dimension */
-    int has_mss_val; /* [flg] Is there a missing_value attribute? */
-    ptr_unn mss_val; /* [frc] Value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */
-    int cid; /* [id] Dimension ID of associated coordinate, if any */
     char fmt[5]; /* [sng] Hint for printf()-style formatting */
     dmn_sct **dim; /* [sct] Pointers to full dimension structures */
     int *dmn_id; /* [id] Contiguous vector of dimension IDs */
-    size_t *cnk_sz; /* [id] Contiguous vector of chunk sizes */
-    long *srt; /* [id] Contiguous vector of indices to start of hyperslab */
-    long *end; /* [id] Contiguous vector of indices to end of hyperslab */
-    long *cnt; /* [id] Contiguous vector of lengths of hyperslab */
-    long *srd; /* [id] Contiguous vector of stride of hyperslab */
-    ptr_unn val; /* [bfr] Buffer to hold hyperslab */
-    long *tally; /* [nbr] Number of valid operations performed so far */
-    struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
+    int cid; /* [id] Dimension ID of associated coordinate, if any */
+    int dfl_lvl; /* [enm] Deflate level [0..9] */
+    int has_add_fst; /* [flg] Valid add_offset attribute exists */
+    int has_dpl_dmn; /* [flg] Variable has duplicate copies of same dimension */
+    int has_mss_val; /* [flg] Is there a missing_value attribute? */
+    int has_scl_fct; /* [flg] Valid scale_factor attribute exists */
+    int id; /* [id] Variable ID */
+    int nbr_att; /* [nbr] Number of attributes */
+    int nbr_dim; /* [nbr] Number of dimensions of variable in input file */
+    int nc_id; /* [id] File ID */
     int pck_dsk; /* [flg] Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
     int pck_ram; /* [flg] Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
-    int has_scl_fct; /* [flg] Valid scale_factor attribute exists */
-    int has_add_fst; /* [flg] Valid add_offset attribute exists */
-    ptr_unn scl_fct; /* [frc] Value of scale_factor attribute of type typ_upk */
-    ptr_unn add_fst; /* [frc] Value of add_offset attribute of type typ_upk */
+    int shuffle; /* [flg] Turn on shuffle filter */
+    int undefined; /* [flg] Variable is still undefined (in first parser pass) */
+    long *cnt; /* [id] Contiguous vector of lengths of hyperslab */
+    long *end; /* [id] Contiguous vector of indices to end of hyperslab */
+    long *srd; /* [id] Contiguous vector of stride of hyperslab */
+    long *srt; /* [id] Contiguous vector of indices to start of hyperslab */
+    long *tally; /* [nbr] Number of valid operations performed so far */
+    long sz; /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
+    long sz_rec; /* [nbr] Number of elements in one record of hyperslab */
+    nc_type typ_dsk; /* [enm] Type of variable on disk (never changes) */
     nc_type typ_pck; /* [enm] Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
     nc_type typ_upk; /* [enm] Type of variable when unpacked (expanded) (in memory) */
-    int undefined; /* [flg] Variable is still undefined (in first parser pass) */
-    int is_fix_var; /* [flg] Is this a fixed (non-processed) variable? */
-    int dfl_lvl; /* [enm] Deflate level [0..9] */
-    int shuffle; /* [flg] Turn on shuffle filter */
+    nc_type type; /* [enm] Type of variable in RAM */
+    ptr_unn add_fst; /* [frc] Value of add_offset attribute of type typ_upk */
+    ptr_unn mss_val; /* [frc] Value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */
+    ptr_unn scl_fct; /* [frc] Value of scale_factor attribute of type typ_upk */
+    ptr_unn val; /* [bfr] Buffer to hold hyperslab */
+    short is_crd_var; /* [flg] Is this a coordinate variable? */
+    short is_fix_var; /* [flg] Is this a fixed (non-processed) variable? */
+    short is_rec_var; /* [flg] Is this a record variable? */
+    size_t *cnk_sz; /* [id] Contiguous vector of chunk sizes */
+    struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
   } var_sct; /* end var_sct_tag */
   
 #ifdef __cplusplus
