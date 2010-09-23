@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.597 2010-09-18 00:38:08 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.598 2010-09-23 14:27:48 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1328,13 +1328,15 @@ Problems with recent releases:
 <!-- http://nco.sf.net#bug_ncks_m -->
 <a name="bug_ncks_m"></a>
 <li><i>Core dump with <tt>ncks</tt>:</i>
-Printing variables to screen with <tt>ncks</tt> triggers
-a segfault in NCO 3.9.9.
+Printing variables to screen with <tt>ncks</tt> can trigger a segfault
+in NCO 3.9.9&mdash;4.0.3. 
 Users may upgrade, downgrade, or apply this one-line patch to 3.9.9 sources:
 Remove this line
 &ldquo;<tt>*cnk_sz=(size_t)NULL;</tt>&rdquo;
 &mdash;near line&nbsp;751 of <tt>nco/src/nco/nco_netcdf.c</tt>&mdash;
 should fix the problem.
+The problem in later NCO versions is due to a different bug and this
+patch will not work.
 </li>
 
 </ul>
