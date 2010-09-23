@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.156 2010-09-23 23:04:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.157 2010-09-23 23:45:25 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -486,20 +486,20 @@ extern "C" {
   /* Dimension structure */
   typedef struct dmn_sct_tag{ /* dmn_sct */
     char *nm; /* [sng] Dimension name */
+    char fmt[5]; /* [sng] Hint for printf()-style formatting */
+    int cid; /* [id] Variable ID of associated coordinate, if any */
     int id; /* [id] Dimension ID */
     int nc_id; /* [id] File ID */
-    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
-    short is_rec_dmn; /* [flg] Is this the record dimension? */
-    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
-    int cid; /* [id] Variable ID of associated coordinate, if any */
-    nc_type type; /* [enm] Type of coordinate, if applicable */
-    char fmt[5]; /* [sng] Hint for printf()-style formatting */
-    long srt; /* [idx] Index to start of hyperslab */
-    long end; /* [idx] Index to end of hyperslab */
     long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
+    long end; /* [idx] Index to end of hyperslab */
     long srd; /* [nbr] Stride of hyperslab */
-    size_t cnk_sz; /* [nbr] Chunk size */
+    long srt; /* [idx] Index to start of hyperslab */
+    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
+    nc_type type; /* [enm] Type of coordinate, if applicable */
     ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
+    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
+    short is_rec_dmn; /* [flg] Is this the record dimension? */
+    size_t cnk_sz; /* [nbr] Chunk size */
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
   

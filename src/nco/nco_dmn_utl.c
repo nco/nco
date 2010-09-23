@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.39 2010-09-01 11:15:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.40 2010-09-23 23:45:25 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -98,6 +98,7 @@ nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
   dmn->val.vp=NULL;
 
   dmn->is_crd_dmn=False;
+  dmn->cid=-1; /* [id] Variable ID of associated coordinate, if any */
   (void)nco_inq_dimlen(dmn->nc_id,dmn_id,&dmn->sz);
   
   /* Get record dimension ID */
