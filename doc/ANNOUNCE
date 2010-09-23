@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.388 2010-09-17 18:42:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.389 2010-09-23 23:46:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -19,7 +19,7 @@ Scripts that depend on the exact format of ncks output may break.
 Let us know if this causes you major heartburn and, if so, we will
 consider implementing an option to restore the previous format.
 
-Work on NCO 4.0.4 is underway. Areas of improvement include
+Work on NCO 4.0.5 is underway. Areas of improvement include
 Support for spectral transforms, more chunking rulesets (fxm)
 
 "New stuff" in 4.0.4 details:
