@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.159 2010-09-20 15:48:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.160 2010-09-23 22:23:31 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -115,7 +115,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
       rcd=nco_inq_var_chunking(in_id,var_in_id,&srg_typ,cnk_sz);
       /* Copy original chunking settings */
       if(srg_typ == NC_CHUNKED){
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s copying input-to-ouput chunking information for %s\n",prg_nm_get(),fnc_nm,var_nm);
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s copying chunking information from input to output for %s\n",prg_nm_get(),fnc_nm,var_nm);
 	(void)nco_def_var_chunking(out_id,var_out_id,srg_typ,cnk_sz);
       } /* endif */
       cnk_sz=(size_t *)nco_free(cnk_sz);
@@ -886,10 +886,10 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->srt=(long *)NULL;
   var->end=(long *)NULL;
   var->srd=(long *)NULL;
-  var->undefined=False;
+  var->undefined=False; /* [flg] Used by ncap parser */
   var->is_fix_var=True; /* Is this a fixed (non-processed) variable? */
-  var->dfl_lvl=0;       /* deflate level */
-  var->shuffle=False;   /* shuffle filter */  
+  var->dfl_lvl=0; /* [enm] Deflate level */
+  var->shuffle=False; /* [flg] Turn on shuffle filter */
   /* Members related to packing */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
   var->has_add_fst=False; /* [flg] Valid add_offset attribute exists */
@@ -1053,8 +1053,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	    /* When output name is in input file, inquire input deflation level */
 	    rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
 	    /* Copy original deflation settings */
-	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,deflate
-,shuffle,dfl_lvl_in);
+	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,deflate,shuffle,dfl_lvl_in);
 	  } /* endif */
 	  /* Overwrite HDF Lempel-Ziv compression level, if requested */
 	  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
@@ -1225,7 +1224,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
 
   /* Fill in known fields */
-  /* Make sure var_free() frees names when variable is destructed */
+  /* Make sure var_free() frees names when variable is destroyed */
   var->nm=(char *)strdup(var_nm);
   var->id=var_id;
   var->nc_id=nc_id;
@@ -1307,29 +1306,23 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
      nco_pck_dsk_inq() fills in these portions harmlessly */
-    (void)nco_pck_dsk_inq(nc_id,var);
-    
-    /* Set deflate and chunking to defaults */  
-     var->dfl_lvl=0;  
-     var->shuffle=False;
- 
-     for(idx=0; idx<var->nbr_dim; idx++)
-       var->cnk_sz[idx]=(size_t)0;
-
-
-    /* read deflate levels and chunking(if any) */  
-    if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC ){
-      int deflate;
-      int storage;
-      (void)nco_inq_var_deflate(nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
-	
-      (void)nco_inq_var_chunking(nc_id,var->id,&storage,var->cnk_sz);   
-
-    }
-   
+  (void)nco_pck_dsk_inq(nc_id,var);
   
-  /* used when parsing script in ncap */
-    var->undefined=False;
+  /* Set deflate and chunking to defaults */  
+  var->dfl_lvl=0; /* [enm] Deflate level */
+  var->shuffle=False; /* [flg] Turn on shuffle filter */
+  
+  for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
+  
+  /* read deflate levels and chunking(if any) */  
+  if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC){
+    int deflate; /* [enm] Deflate filter is on */
+    int srg_typ; /* [enm] Storage type */
+    (void)nco_inq_var_deflate(nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
+    (void)nco_inq_var_chunking(nc_id,var->id,&srg_typ,var->cnk_sz);   
+  } /* endif */
+  
+  var->undefined=False; /* [flg] Used by ncap parser */
   return var;
 } /* end nco_var_fll() */
 
@@ -1351,20 +1344,42 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
      NCO is only known tool that makes this all user-transparent
      Thus this capability is very important to maintain
      fxm: why isn't variable type set here? */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int nbr_dim_old;
 
-  /* Refresh variable ID */
   var->nc_id=nc_id;
-
+  
   /* 20050519: Not sure why I originally made next four lines SMP-critical
      20050629: Making next four lines multi-threaded causes no problems */
-  (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
-    
+  /* Refresh variable ID first */
+  rcd+=nco_inq_varid(var->nc_id,var->nm,&var->id);
+  
   /* fxm: Not sure if/why necessary to refresh number of dimensions...though it should not hurt */
   /* Refresh number of dimensions in variable */
-  (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
+  nbr_dim_old=var->nbr_dim;
+  rcd+=nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
+  if(nbr_dim_old != var->nbr_dim){
+    (void)fprintf(stdout,"%s: ERROR Variable \"%s\" changed number of dimensions from %d to %d\n",prg_nm_get(),var->nm,nbr_dim_old,var->nbr_dim);
+    nco_err_exit(0,"nco_var_mtd_refresh()");
+  } /* endif err */
     
+  /* 20100923: Any need to refresh storage properties (shuffle,deflate,dfl_lvl,cnk_sz) here?
+     Certainly they can change between files, that alone is not reason to refresh them
+     Unlike missing values, storage properties in input are transparent to arithmetic
+     The netCDF/HDF5 I/O layer handles all this transparently
+     Moreover, output storage properties must be set just after variable definition, long before nco_var_mtd_refresh()
+     So storage properties of variable in current file cannot affect arithmetic, nor output
+     Hence there is no reason to track current storage properties in var_sct
+     However, if that ever changes, here are hooks to do so */
+  if(False && var->nbr_dim > 0){
+    int deflate; /* [flg] Turn on deflate filter */
+    int srg_typ; /* [enm] Storage type */
+    rcd+=nco_inq_var_deflate(var->nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);
+    rcd+=nco_inq_var_chunking(var->nc_id,var->id,&srg_typ,var->cnk_sz);
+  } /* endif */
+
   /* Set variable type so following nco_mss_val_get() casts missing_value to correct type */
-  (void)nco_inq_vartype(var->nc_id,var->id,&var->type);
+  rcd+=nco_inq_vartype(var->nc_id,var->id,&var->type);
 
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
@@ -1401,8 +1416,6 @@ nco_var_srd_srt_set /* [fnc] Assign zero-start and unity-stride vectors to varia
   } /* end loop over variables */
   
 } /* end nco_var_srd_srt_set() */
-
-
   
 void
 nco_var_dmn_refresh /* [fnc] Refresh var hyperslab info with var->dim[] info */
@@ -1414,21 +1427,23 @@ nco_var_dmn_refresh /* [fnc] Refresh var hyperslab info with var->dim[] info */
   for(idx=0;idx<nbr_var;idx++){
     long sz;
     long sz_rec;
-    sz=1;
-    sz_rec=1;
+    sz=1L;
+    sz_rec=1L;
     var_sct *var_tmp;
     var_tmp=var[idx];
     
-    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
+    /* 20100923: Any need to refresh storage properties (shuffle,deflate,dfl_lvl,cnk_sz) here? */
+
+    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
       var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
       var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
       var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
       var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
       sz*=var_tmp->dim[jdx]->cnt;
-      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
-    }
-     var_tmp->sz=sz; 
-     var_tmp->sz_rec=sz_rec;
-  } 
+      if(jdx > 0) sz_rec*=var_tmp->dim[jdx]->cnt;
+    } /* end loop over dimensions */
+    var_tmp->sz=sz; 
+    var_tmp->sz_rec=sz_rec;
+  } /* end loop over variables */
 
 }  /* end nco_var_dmn_refresh() */
