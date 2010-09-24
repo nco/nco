@@ -1,14 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.390 2010-09-24 17:05:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.391 2010-09-24 18:16:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version contains several improvements and ... no bug-fixes.
-That's right, after two minor releases, 4.0.2 and 4.0.3, that
-comprised mostly bug fixes, the only problems left to fix in 4.0.4
-were minor or could generously be called "features". New stuff:
+This version contains several improvements and a few fixes. New stuff:
 
 Chunking is now supported on all relevant operators, i.e., all except
 ncrename and ncatted. ncap2, moreover, now propagates deflation, and
