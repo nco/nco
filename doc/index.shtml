@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.600 2010-09-24 18:34:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.601 2010-09-24 19:28:36 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -121,7 +121,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <ul>
 <li>2010 Winter?: NCO 4.0.5 (TBD)</li>
 
-<li>2010 Sep&nbsp;23: NCO 4.0.4</li>
+<li>2010 Sep&nbsp;24: NCO 4.0.4 (chunking everywhere)</li>
 
 <li>2010 Sep&nbsp;02: NCO 4.0.3</li>
 
