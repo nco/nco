@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.105 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.106 2010-09-24 00:24:28 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -695,6 +695,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       if(aed_lst[idx].type == NC_CHAR){
 	aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
       }else{
+	char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 	double *val_arg_dbl=NULL_CEWI;
 	long long *val_arg_lng_lng=NULL_CEWI;
 	unsigned long long *val_arg_ulng_lng=NULL_CEWI;
@@ -708,20 +709,32 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	case NC_FLOAT: 
 	case NC_DOUBLE: 
 	  val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL);} break; 
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+	    val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd);
+	    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtod",sng_cnv_rcd);
+	  } /* end loop over elements */
+	  break; 
 	case NC_BYTE:
 	case NC_INT: 
 	case NC_SHORT: 
 	case NC_INT64: 
 	  val_arg_lng_lng=(long long *)nco_malloc(aed_lst[idx].sz*sizeof(long long int));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],(char **)NULL,NCO_SNG_CNV_BASE10);} break;
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+	    val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtoll",sng_cnv_rcd);
+	  } /* end loop over elements */
+	  break;
 	case NC_CHAR:
 	case NC_UBYTE: 
 	case NC_USHORT: 
 	case NC_UINT: 
 	case NC_UINT64: 
 	  val_arg_ulng_lng=(unsigned long long *)nco_malloc(aed_lst[idx].sz*sizeof(unsigned long long int));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],(char **)NULL,NCO_SNG_CNV_BASE10);} break;
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+	    val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd,NCO_SNG_CNV_BASE10); 
+	    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtoull",sng_cnv_rcd);
+	  } /* end loop over elements */
+	break;
 	case NC_STRING: break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */

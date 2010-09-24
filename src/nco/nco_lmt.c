@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.101 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.102 2010-09-24 00:24:28 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -193,6 +193,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   nco_bool flg_no_data=False; /* True if file contains no data for hyperslab */
   nco_bool rec_dmn_and_mlt_fl_opr=False; /* True if record dimension in multi-file operator */
   
+  char *fl_udu_sng=NULL_CEWI;   /* store units attribute of co-ordinate dim */
+  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  
   dmn_sct dim;
   
   enum monotonic_direction{
@@ -213,8 +216,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
   long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
   long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file (diagnostic only) */
-  
-  char *fl_udu_sng=NULL_CEWI;   /* store units attribute of co-ordinate dim */
   
   lmt=*lmt_ptr;
   
@@ -258,7 +259,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       (void)fprintf(stdout,"%s: ERROR Requested stride for \"%s\", %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.srd=strtol(lmt.srd_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
+    lmt.srd=strtol(lmt.srd_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.srd_sng,"strtol",sng_cnv_rcd);
     if(lmt.srd < 1){
       (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
       nco_exit(EXIT_FAILURE);
@@ -436,8 +438,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
-      if(lmt.min_sng) lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
-      if(lmt.max_sng) lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
+      if(lmt.min_sng) lmt.min_val=strtod(lmt.min_sng,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.min_sng,"strtod",sng_cnv_rcd);
+      if(lmt.max_sng) lmt.max_val=strtod(lmt.max_sng,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.max_sng,"strtod",sng_cnv_rcd);
       
       /* re-base co-ordinates as necessary in multi-file operatators 
          lmt.origin has been calculated earlier in file */
@@ -633,14 +637,16 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(FORTRAN_IDX_CNV) lmt.min_idx=1L; else lmt.min_idx=0L;
     }else{
       /* Use user-specified limit when available */
-      lmt.min_idx=strtol(lmt.min_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
+      lmt.min_idx=strtol(lmt.min_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.min_sng,"strtol",sng_cnv_rcd);
     } /* end if */
     if(lmt.max_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available---generate maximal dimension index */
       if(FORTRAN_IDX_CNV) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
     }else{
       /* Use user-specified limit when available */
-      lmt.max_idx=strtol(lmt.max_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
+      lmt.max_idx=strtol(lmt.max_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.max_sng,"strtol",sng_cnv_rcd);
     } /* end if */
     
     /* Adjust indices if FORTRAN style input was specified */

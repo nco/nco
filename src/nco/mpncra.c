@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.105 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.106 2010-09-24 00:24:28 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -147,11 +147,10 @@ main(int argc,char **argv)
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.105 2010-09-19 01:01:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.105 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.106 2010-09-24 00:24:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.106 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
