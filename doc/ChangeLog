@@ -1,13 +1,16 @@
 2010-09-23  Charlie Zender  <zender@uci.edu>
 
-	* Adding string conversion checking to nco_lmt.c, nco_att_utl.c
-	caused one new ncra regression 
-
 	* NCO 4.0.4 release procedure:
  	Changes since nco-4_0_3: chunking everywhere, ncrename bugfix, ncks -m
 	cd ~/nco;cvs tag -d nco-4_0_4;cvs tag -d nco-4_0_4-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
 	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
+
+	* Document that ncecat does not process coordinate variables
+
+	* Adding string conversion checking to nco_lmt.c, nco_att_utl.c
+	caused one ephemeral new ncrcat regression? Which has mysteriously
+	disappeared.... 
 
 	* Fix harmless problem that valgrind flagged where ncap2 relied on
 	an uninitialized value of dmn->cid in nco_var_fll().

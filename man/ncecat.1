@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.16 2010-01-05 20:02:17 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.17 2010-09-24 03:30:37 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncecat
 .\" Usage:
 .\" nroff -man ~/nco/man/ncecat.1
@@ -42,6 +42,10 @@ output file.
 Input files must be the same size.
 Each input file is stored consecutively as a single record in the output
 file.
+Each variable (except coordinate variables) in each input file becomes
+one record in the same variable in the output file. 
+Coordinate variables are not concatenated, they are instead simply
+copied from the first input file to the output-file.
 Thus, the size of the output file is the sum of the sizes of the input
 files. 
 .PP
@@ -100,7 +104,7 @@ It contains 60 months of data (which might or might not be stored in the
 record dimension, depending on the input files).
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.16 2010-01-05 20:02:17 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.17 2010-09-24 03:30:37 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
