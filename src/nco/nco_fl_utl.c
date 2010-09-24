@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.121 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.122 2010-09-24 17:05:33 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -979,6 +979,8 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
      Routine implements NINTAP-style specification by using static
      memory to avoid repetition in construction of filename */
 
+  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+
   static short FIRST_INVOCATION=True;
 
   static char *fl_nm_1st_dgt;
@@ -1001,29 +1003,34 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       int fl_nm_sfx_lng=0;
 
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
-      if(fl_nbr) *fl_nbr=(int)strtol(fl_lst_abb[0],(char **)NULL,NCO_SNG_CNV_BASE10);
+      if(fl_nbr) *fl_nbr=(int)strtol(fl_lst_abb[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[0],"strtol",sng_cnv_rcd);
       fl_nm_nbr_ttl=*fl_nbr;
 
       if(abb_arg_nbr > 1){
-	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,NCO_SNG_CNV_BASE10);
+	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[1],"strtol",sng_cnv_rcd);
       }else{
 	fl_nm_nbr_dgt=3;
       }/* end if */
 
       if(abb_arg_nbr > 2){
-	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],(char **)NULL,NCO_SNG_CNV_BASE10);
+	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[2],"strtol",sng_cnv_rcd);
       }else{
 	fl_nm_nbr_ncr=1;
       } /* end if */
 
       if(abb_arg_nbr > 3){
-	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],(char **)NULL,NCO_SNG_CNV_BASE10);
+	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[3],"strtol",sng_cnv_rcd);
       }else{
 	fl_nm_nbr_max=0;
       } /* end if */
 
       if(abb_arg_nbr > 4){
-	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],(char **)NULL,NCO_SNG_CNV_BASE10);
+	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[4],"strtol",sng_cnv_rcd);
       }else{
 	fl_nm_nbr_min=1;
       } /* end if */
@@ -1043,7 +1050,8 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       fl_nm_nbr_sng=(char *)nco_malloc((size_t)(fl_nm_nbr_dgt+1UL)*sizeof(char));
       fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,(size_t)fl_nm_nbr_dgt);
       fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
-      fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,(char **)NULL,NCO_SNG_CNV_BASE10);
+      fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(fl_nm_nbr_sng,"strtol",sng_cnv_rcd);
       (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
 
       /* First filename is always specified on command line anyway... */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.389 2010-09-23 23:46:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.390 2010-09-24 17:05:33 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.4 are ready. 
 
@@ -20,39 +20,26 @@ Let us know if this causes you major heartburn and, if so, we will
 consider implementing an option to restore the previous format.
 
 Work on NCO 4.0.5 is underway. Areas of improvement include
-Support for spectral transforms, more chunking rulesets (fxm)
+support for spectral transforms, more chunking rulesets.
 
 "New stuff" in 4.0.4 details:
 
 A. Chunking supported in all operators.
    The exception is ncap2, which propagates chunking from fixed
-   and copied variables, but not from algebraic expressions.
+   and copied variables, though not through algebraic expressions.
    (This capability may be in the next version.)
    http://nco.sf.net/nco.html#cnk
 
-A. Stricter checks to identify malformed user-input strings.
-   Issue more informative warnings, hints, and errors when detected.
-
-A. ncecat, and all other operators, now retain the input deflation
+B. ncecat, and all other operators, now retain the input deflation
    level, if any, for a variable, as the default for the output file.
    
-A. ncks -m now always summarizes metadata on chunking, compression, and packing
-   Moreover, it prints metadata with clearer English descriptions
-
-A. Prior versions of ncrename -a .old_nm,new_nm in.nc out.nc
-   would, if old_nm did not exist, write the correct file then exit
-   with an error message although no error had occurred.
-   http://nco.sf.net#bug_ncrename_dot
-
-A. MacIntosh users who do not use MacPorts can install NCO binaries
-   by clicking on an Apple Disk Image (.dmg) file.
-   Thanks to Chad Cantwell of UCI.
-   http://nco.sf.net#dmg
-
-A. Deflation level (--dfl_lvl) propagates into ncap2 derived variables 
+C. Deflation level (--dfl_lvl) propagates into ncap2 derived variables 
    Thanks to Henry Butowsky.
 
-A. ncpdq no longer packs grid properties such as coordinate variables,
+D. ncks -m now always summarizes metadata on chunking, compression, and packing
+   Moreover, it prints metadata with clearer English descriptions
+
+E. ncpdq no longer packs grid properties such as coordinate variables,
    CF "special variables, or weights. Rationale: Coordinate variables
    are 1D, so packing saves little space, and the resulting files are
    difficult for humans to read. Similarly, Gaussian and area weights 
@@ -64,6 +51,19 @@ A. ncpdq no longer packs grid properties such as coordinate variables,
    workaround for those needing to  pack such variables now, is to use
    the packing functions in ncap2, or to rename the grid properties
    prior to calling ncpdq.
+
+F. Stricter checks to identify malformed user-input strings.
+   Issue more informative warnings, hints, and errors when detected.
+
+G. Prior versions of ncrename -a .old_nm,new_nm in.nc out.nc
+   would, if old_nm did not exist, write the correct file then exit
+   with an error message although no error had occurred.
+   http://nco.sf.net#bug_ncrename_dot
+
+H. MacIntosh users who do not use MacPorts can install NCO binaries
+   by clicking on an Apple Disk Image (.dmg) file.
+   Thanks to Chad Cantwell of UCI.
+   http://nco.sf.net#dmg
 
 "Sticky" reminders:
 

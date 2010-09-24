@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.29 2010-09-14 23:48:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.30 2010-09-24 17:05:33 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -120,6 +120,7 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
   void nco_usg_prn(void);
   
   char **arg_lst;
+  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   
   const char dlm_sng[]=",";
   
@@ -156,7 +157,8 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
     
     /* Fill in structure */
     cnk[idx]->nm=arg_lst[0];
-    cnk[idx]->sz=strtoul(arg_lst[1],(char **)NULL,NCO_SNG_CNV_BASE10);
+    cnk[idx]->sz=strtoul(arg_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[1],"strtoul",sng_cnv_rcd);
     
     /* Free current pointer array to strings
        Strings themselves are untouched and will be free()'d with chunk structures 

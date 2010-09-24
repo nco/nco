@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
 	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
 
+	* Finish handling strtod()/strtol() returns
+	Corner case where sng_cnv_rcd == NULL not handled
+	'man strtol' has convoluted description using errno for this
+
 	* Henry fixed ncap2 dsort() bug
 
 	* Clean-up calendar types and acronyms so building with CC=g++ works

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.107 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.108 2010-09-24 17:05:33 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.107 2010-09-19 01:01:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.107 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.108 2010-09-24 17:05:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.108 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -440,7 +440,8 @@ main(int argc,char **argv)
       msk_nm=(char *)strdup(optarg);
       break;
     case 'M': /* Good data defined by relation to mask value. Default is 1. */
-      msk_val=strtod(optarg,(char **)NULL);
+      msk_val=strtod(optarg,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtod",sng_cnv_rcd);
       break;
     case 'N':
       NRM_BY_DNM=False;

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.74 2010-04-09 04:51:20 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.75 2010-09-24 17:05:33 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -304,8 +304,10 @@ XPN [eE][+-]?[0-9]+
   /* NB: Tempted to prepend lexer expressions for floats and doubles with [+-]? 
      so that unary plus/minus is handled in lexer rather than parser.
      However, this has unintended side effects so let parser handle it for now */
+  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
-  lval_ptr->scv.val.d=strtod(yytext,(char **)NULL);
+  lval_ptr->scv.val.d=strtod(yytext,&sng_cnv_rcd);
+  if(*sng_cnv_rcd) nco_sng_cnv_err(yytext,"strtod",sng_cnv_rcd);
   lval_ptr->scv.type=NC_DOUBLE;
   return SCV;
 } /* end double or long double */

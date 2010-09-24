@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.50 2010-09-08 22:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.51 2010-09-24 17:05:33 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -41,7 +41,8 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
 
-  char * nvr_OMP_NUM_THREADS; /* [sng] Environment variable OMP_NUM_THREADS */
+  char *nvr_OMP_NUM_THREADS; /* [sng] Environment variable OMP_NUM_THREADS */
+  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
   nco_bool USR_SPC_THR_RQS=False;
@@ -88,8 +89,8 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   } /* end error */
 
   if(dbg_lvl_get() > 2){
-    if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS"))) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,(char **)NULL,NCO_SNG_CNV_BASE10);
-/* [sng] Environment variable OMP_NUM_THREADS */
+    if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS"))) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable OMP_NUM_THREADS */
+    if(*sng_cnv_rcd) nco_sng_cnv_err(nvr_OMP_NUM_THREADS,"strtol",sng_cnv_rcd);
     (void)fprintf(fp_stderr,"%s: INFO Environment variable OMP_NUM_THREADS ",prg_nm_get());
     if(ntg_OMP_NUM_THREADS > 0) (void)fprintf(fp_stderr,"= %d\n",ntg_OMP_NUM_THREADS); else (void)fprintf(fp_stderr,"does not exist\n");
     (void)fprintf(fp_stderr,"%s: INFO Number of processors available is %d\n",prg_nm_get(),prc_nbr_max);
