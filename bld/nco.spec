@@ -11,7 +11,7 @@ URL:            http://nco.sourceforge.net/
 
 # Obtain NCO version 4.0.4-1 tar.gz from Sourceforge using CVS:
 # cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
-# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_4-1 -d nco-%{version} nco
+# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_5-1 -d nco-%{version} nco
 # tar czf nco-%{version}.tar.gz --exclude='nco-4.0.4/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
 #Patch0:		nco_install_C_headers.patch
@@ -108,7 +108,10 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Thu Sep 02 2010 Charlie Zender <zender@uci.edu> - 4.0.4-1
+* Sat Sep 25 2010 Charlie Zender <zender@uci.edu> - 4.0.5-1
+- new upstream 4.0.5
+
+* Fri Sep 24 2010 Charlie Zender <zender@uci.edu> - 4.0.4-1
 - new upstream 4.0.4
 
 * Thu Sep 02 2010 Charlie Zender <zender@uci.edu> - 4.0.3-1

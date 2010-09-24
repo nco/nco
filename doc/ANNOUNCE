@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.391 2010-09-24 18:16:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.392 2010-09-24 18:34:34 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.0.4 are ready. 
+The netCDF operators NCO version 4.0.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -19,7 +19,7 @@ consider implementing an option to restore the previous format.
 Work on NCO 4.0.5 is underway. Areas of improvement include
 support for spectral transforms, more chunking rulesets.
 
-"New stuff" in 4.0.4 details:
+"New stuff" in 4.0.5 details:
 
 A. Chunking supported in all operators.
    The exception is ncap2, which propagates chunking from fixed
@@ -91,10 +91,10 @@ N. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.0.4 with was built and tested with HDF5 hdf5-1.8.4-patch1 and with
+   NCO 4.0.5 with was built and tested with HDF5 hdf5-1.8.4-patch1 and with
    netCDF4 4.1.2-beta1-snapshot2010080820
    NCO may not build with earlier, and should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.0.4 takes advantage of an
+   This is particularly true since NCO 4.0.5 takes advantage of an
    internal change to the netCDF nc_def_var_chunking() API in June 2009. 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
@@ -109,6 +109,6 @@ O. Have you seen the NCO logo candidates by Tony Freeman, Rich
 Enjoy,
 Charlie
  
-GSL functions added to ncap2 in 4.0.4: 
+GSL functions added to ncap2 in 4.0.5: 
     none!
 (Most desired GSL functions have been merged)

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.149 2010-09-03 03:37:17 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.150 2010-09-24 18:34:34 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -29,19 +29,19 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
-   For starters, we wish to create .debs of tagged releases, e.g., nco-4.0.4
-   First we create a clean source distribution of nco and place it in nco-4.0.4
-   Once automated, we will use cvs co -rnco-4_0_4 to get source
+   For starters, we wish to create .debs of tagged releases, e.g., nco-4.0.5
+   First we create a clean source distribution of nco and place it in nco-4.0.5
+   Once automated, we will use cvs co -rnco-4_0_5 to get source
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
 
 cd ~/nco;make distclean;cd bld;make clean;cd ~
 tar cvzf ./nco/nco.tar.gz ./nco/*
-cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-4.0.4
-/bin/rm nco.tar.gz;tar cvzf nco-4.0.4.tar.gz ./nco-4.0.4/*
-cd ~/nco/nco-4.0.4
-dh_make -e zender@uci.edu -f ../nco-4.0.4.tar.gz
+cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-4.0.5
+/bin/rm nco.tar.gz;tar cvzf nco-4.0.5.tar.gz ./nco-4.0.5/*
+cd ~/nco/nco-4.0.5
+dh_make -e zender@uci.edu -f ../nco-4.0.5.tar.gz
 
     2.2 The preceding steps created template debian files for a .deb,
     Those files now reside in ~/nco/debian.
@@ -56,7 +56,7 @@ dh_make -e zender@uci.edu -f ../nco-4.0.4.tar.gz
    from previous build
 
    cd ~/nco;/bin/rm *.gz
-   cd ~/nco/nco-4.0.4
+   cd ~/nco/nco-4.0.5
    dpkg-buildpackage -rfakeroot > foo 2>&1
    dpkg-buildpackage -rsudo > foo 2>&1
 
@@ -85,12 +85,12 @@ patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
    make tags
 # Put cute version-specific string in nco_ctl.c:nco_nmn_get()
 # Install correct version numbers before updating Debian
-# tags-query replace 4_0_4 with X_Y_Z+1
-# tags-query replace 4.0.4 with X.Y.Z+1
+# tags-query replace 4_0_5 with X_Y_Z+1
+# tags-query replace 4.0.5 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION 
-   cd ~/nco/debian;dch -b --force-distribution --distribution=unstable -v 4.0.4-1 # Update changelog (-b forces this version number)
+   cd ~/nco/debian;dch -b --force-distribution --distribution=unstable -v 4.0.5-1 # Update changelog (-b forces this version number)
    emacs ~/nco/bld/nco.spec # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
@@ -98,20 +98,20 @@ patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
    cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
-   cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release";cvs tag -c nco-4_0_4
-   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_0_4
+   cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release";cvs tag -c nco-4_0_5
+   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_0_5
 
 7. Ubuntu PPA
 https://help.launchpad.net/Packaging/PPA
-dput NCO nco_4.0.4-2~ppa1_source.changes
+dput NCO nco_4.0.5-2~ppa1_source.changes
 sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com
 
 # Location of build diagnostics for mentors to help 
-http://dust.ess.uci.edu/nco/src/nco_4.0.4-1.dpkg-buildpackage.txt
-http://dust.ess.uci.edu/nco/src/nco_4.0.4-1.dsc
-http://dust.ess.uci.edu/nco/src/nco_4.0.4-1_i386.changes
-http://dust.ess.uci.edu/nco/src/nco_4.0.4-1_i386.deb
-http://dust.ess.uci.edu/nco/src/nco_4.0.4.orig.tar.gz
+http://dust.ess.uci.edu/nco/src/nco_4.0.5-1.dpkg-buildpackage.txt
+http://dust.ess.uci.edu/nco/src/nco_4.0.5-1.dsc
+http://dust.ess.uci.edu/nco/src/nco_4.0.5-1_i386.changes
+http://dust.ess.uci.edu/nco/src/nco_4.0.5-1_i386.deb
+http://dust.ess.uci.edu/nco/src/nco_4.0.5.orig.tar.gz
 
 # Becoming a Debian developer
 http://www.debian.org/devel/join/newmaint
@@ -154,55 +154,55 @@ Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal 
 # Non-native debian builds Rod05 p. 46
 # sudo aptitude install antlr bison flex gsl-bin libgsl0-dev libantlr-dev netcdf-bin libnetcdf-dev texinfo
 cd ~/nco;cvc
-sudo /bin/rm -rf ${DATA}/nco-4.0.4 ${DATA}/nco_4.0.4* ${DATA}/debian # Cleanup last build. sudo necessary for removal because dpkg-buildpackage uses sudo?
-# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_0_4-1 -d nco-4.0.4 nco # Export based on tag
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-4.0.4 nco # Export most recent
-tar cvzf ./nco_4.0.4.orig.tar.gz --exclude='nco-4.0.4/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.4 
-/bin/rm -rf ${DATA}/nco-4.0.4 # Remove cvs-exported directory
-tar xvzf ./nco_4.0.4.orig.tar.gz # Untar to get directory without excluded files
-mkdir -p ${DATA}/nco-4.0.4/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.4/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.4/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
+sudo /bin/rm -rf ${DATA}/nco-4.0.5 ${DATA}/nco_4.0.5* ${DATA}/debian # Cleanup last build. sudo necessary for removal because dpkg-buildpackage uses sudo?
+# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_0_5-1 -d nco-4.0.5 nco # Export based on tag
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-4.0.5 nco # Export most recent
+tar cvzf ./nco_4.0.5.orig.tar.gz --exclude='nco-4.0.5/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.5 
+/bin/rm -rf ${DATA}/nco-4.0.5 # Remove cvs-exported directory
+tar xvzf ./nco_4.0.5.orig.tar.gz # Untar to get directory without excluded files
+mkdir -p ${DATA}/nco-4.0.5/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.5/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.5/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
 export DEB_BUILD_OPTIONS='' # Reset to default
-#cd ${DATA}/nco-4.0.4;dpkg-buildpackage -rsudo -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
-#cd ${DATA}/nco-4.0.4;dpkg-buildpackage -rsudo -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
-cd ${DATA}/nco-4.0.4;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
+#cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
+#cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
+cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
 sudo dpkg --remove nco
-sudo dpkg --install ${DATA}/nco_4.0.4-1_*.deb
+sudo dpkg --install ${DATA}/nco_4.0.5-1_*.deb
 # http://lintian.debian.org/full/zender@uci.edu.html
-lintian ${DATA}/nco_4.0.4-1_*.deb
-ls -l ${DATA}/nco_4.0.4*
+lintian ${DATA}/nco_4.0.5-1_*.deb
+ls -l ${DATA}/nco_4.0.5*
 m ~/foo.nco
 # Upload Ubuntu (rather than Debian) packages to websites
-scp ${DATA}/nco_4.0.4* dust.ess.uci.edu:/var/www/html/nco/src
-scp ${DATA}/nco_4.0.4* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+scp ${DATA}/nco_4.0.5* dust.ess.uci.edu:/var/www/html/nco/src
+scp ${DATA}/nco_4.0.5* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 # NB: Make sure RPMs build before uploading to debian, since changing
 # Debian versions are such a PITA
 # NB: Only upload pbuilder Debian Sid (not personal Ubuntu) .deb builds to Debian mentors
-# cd ${DATA};dupload -t mentors nco_4.0.4-1_*.changes
+# cd ${DATA};dupload -t mentors nco_4.0.5-1_*.changes
 bsrc # Reset shell environment for regular development
 
 # New build system #2
 # This builds NCO with /usr/local packages, and thus includes UDUnits and netCDF4 support
 cd ~/nco;cvc
-sudo /bin/rm -rf ${DATA}/nco-4.0.4 ${DATA}/nco_4.0.4* ${DATA}/debian # Cleanup last build. sudo necessary for removal because dpkg-buildpackage uses sudo?
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-4.0.4 nco # Export most recent
-tar cvzf ./nco_4.0.4.orig.tar.gz --exclude='nco-4.0.4/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.4 
-/bin/rm -rf ${DATA}/nco-4.0.4 # Remove cvs-exported directory
-tar xvzf ./nco_4.0.4.orig.tar.gz # Untar to get directory without excluded files
-mkdir -p ${DATA}/nco-4.0.4/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.4/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.4/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
+sudo /bin/rm -rf ${DATA}/nco-4.0.5 ${DATA}/nco_4.0.5* ${DATA}/debian # Cleanup last build. sudo necessary for removal because dpkg-buildpackage uses sudo?
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-4.0.5 nco # Export most recent
+tar cvzf ./nco_4.0.5.orig.tar.gz --exclude='nco-4.0.5/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.5 
+/bin/rm -rf ${DATA}/nco-4.0.5 # Remove cvs-exported directory
+tar xvzf ./nco_4.0.5.orig.tar.gz # Untar to get directory without excluded files
+mkdir -p ${DATA}/nco-4.0.5/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.5/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.5/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
 export DEB_BUILD_OPTIONS='local netcdf4 udunits2'; # Configure local packages to take precedence over Debian-installed
-cd ${DATA}/nco-4.0.4;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
+cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
 sudo dpkg --remove nco
-sudo dpkg --install ${DATA}/nco_4.0.4-1_*.deb
-lintian ${DATA}/nco_4.0.4-1_*.deb
-ls -l ${DATA}/nco_4.0.4*
+sudo dpkg --install ${DATA}/nco_4.0.5-1_*.deb
+lintian ${DATA}/nco_4.0.5-1_*.deb
+ls -l ${DATA}/nco_4.0.5*
 m ~/foo.nco
 # Upload Ubuntu (rather than Debian) packages to websites
-scp ${DATA}/nco_4.0.4* dust.ess.uci.edu:/var/www/html/nco/src
-scp ${DATA}/nco_4.0.4* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+scp ${DATA}/nco_4.0.5* dust.ess.uci.edu:/var/www/html/nco/src
+scp ${DATA}/nco_4.0.5* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 # NB: Make sure RPMs build before uploading to debian, since changing
 # Debian versions are such a PITA
 # NB: Only upload pbuilder Debian Sid (not personal Ubuntu) .deb builds to Debian mentors
-# cd ${DATA};dupload -t mentors nco_4.0.4-1_*.changes
+# cd ${DATA};dupload -t mentors nco_4.0.5-1_*.changes
 bsrc # Reset shell environment for regular development
 
 # New build system #3
@@ -215,46 +215,46 @@ DIST=sid sudo pbuilder update # Update chroot before building package in it
 # dget http://ftp.debian.org/debian/pool/main/n/nco/nco_3.9.0-1.dsc
 # dget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1-1.dsc
 # apt-get source nco # Get package source
-sudo /bin/rm /var/cache/pbuilder/result/nco_4.0.4* # Cleanup prior build
-cd ${DATA};DIST=sid sudo pbuilder build nco_4.0.4-1.dsc > ~/foo.nco.pbuilder 2>&1
-cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_4.0.4-1_*.changes
-lintian /var/cache/pbuilder/result/nco_4.0.4-1_*.deb
+sudo /bin/rm /var/cache/pbuilder/result/nco_4.0.5* # Cleanup prior build
+cd ${DATA};DIST=sid sudo pbuilder build nco_4.0.5-1.dsc > ~/foo.nco.pbuilder 2>&1
+cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_4.0.5-1_*.changes
+lintian /var/cache/pbuilder/result/nco_4.0.5-1_*.deb
 # NB: Upload pbuilder Debian Sid packages to Debian mentors, but not
 # to personal or NCO websites since most people use Ubuntu not Debian
 # NB: Debian versions are a PITA, ensure RPMs build before uploading to Debian
-cd /var/cache/pbuilder/result;dupload -t mentors nco_4.0.4-1_*.changes
+cd /var/cache/pbuilder/result;dupload -t mentors nco_4.0.5-1_*.changes
 
 # RPM builds as root
 export rpm_root='/usr/src/redhat'
 # export sudo_sng='' # sudo not-necessary when builing in user directories
 export sudo_sng='sudo' # sudo necessary when building in system directories
 cd ~/nco;cvc;cvu
-/bin/rm -rf ${DATA}/nco-4.0.4 ${DATA}/nco-4.0.4* # Cleanup last build
+/bin/rm -rf ${DATA}/nco-4.0.5 ${DATA}/nco-4.0.5* # Cleanup last build
 ${sudo_sng} /bin/rm -r -f \
-${rpm_root}/BUILD/nco-4.0.4 \
-${rpm_root}/RPMS/i386/nco-4.0.4-?.i386.rpm \
-${rpm_root}/RPMS/i386/nco-debuginfo-4.0.4-?.i386.rpm \
-${rpm_root}/RPMS/i386/nco-devel-4.0.4-?.i386.rpm \
-${rpm_root}/SOURCES/nco-4.0.4.tar.gz \
-${rpm_root}/SPECS/nco-4.0.4.spec \
-${rpm_root}/SRPMS/nco-4.0.4-?.src.rpm
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_0_4-1 -d nco-4.0.4 nco # Export based on tag
-${sudo_sng} ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/SPECS/nco-4.0.4.spec
-tar cvzf ./nco-4.0.4.tar.gz --exclude='nco-4.0.4/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.4 
-${sudo_sng} /bin/cp ${DATA}/nco-4.0.4.tar.gz ${rpm_root}/SOURCES
+${rpm_root}/BUILD/nco-4.0.5 \
+${rpm_root}/RPMS/i386/nco-4.0.5-?.i386.rpm \
+${rpm_root}/RPMS/i386/nco-debuginfo-4.0.5-?.i386.rpm \
+${rpm_root}/RPMS/i386/nco-devel-4.0.5-?.i386.rpm \
+${rpm_root}/SOURCES/nco-4.0.5.tar.gz \
+${rpm_root}/SPECS/nco-4.0.5.spec \
+${rpm_root}/SRPMS/nco-4.0.5-?.src.rpm
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_0_5-1 -d nco-4.0.5 nco # Export based on tag
+${sudo_sng} ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/SPECS/nco-4.0.5.spec
+tar cvzf ./nco-4.0.5.tar.gz --exclude='nco-4.0.5/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.5 
+${sudo_sng} /bin/cp ${DATA}/nco-4.0.5.tar.gz ${rpm_root}/SOURCES
 cd ${rpm_root}/SPECS
-${sudo_sng} rpmbuild -ba --sign nco-4.0.4.spec > ~/foo.nco 2>&1
+${sudo_sng} rpmbuild -ba --sign nco-4.0.5.spec > ~/foo.nco 2>&1
 scp \
-${rpm_root}/RPMS/i386/nco-4.0.4-?.i386.rpm \
-${rpm_root}/RPMS/i386/nco-debuginfo-4.0.4-?.i386.rpm \
-${rpm_root}/RPMS/i386/nco-devel-4.0.4-?.i386.rpm \
-${rpm_root}/SRPMS/nco-4.0.4-?.src.rpm \
+${rpm_root}/RPMS/i386/nco-4.0.5-?.i386.rpm \
+${rpm_root}/RPMS/i386/nco-debuginfo-4.0.5-?.i386.rpm \
+${rpm_root}/RPMS/i386/nco-devel-4.0.5-?.i386.rpm \
+${rpm_root}/SRPMS/nco-4.0.5-?.src.rpm \
 dust.ess.uci.edu:/var/www/html/nco/src
 scp \
-${rpm_root}/RPMS/i386/nco-4.0.4-?.i386.rpm \
-${rpm_root}/RPMS/i386/nco-debuginfo-4.0.4-?.i386.rpm \
-${rpm_root}/RPMS/i386/nco-devel-4.0.4-?.i386.rpm \
-${rpm_root}/SRPMS/nco-4.0.4-?.src.rpm \
+${rpm_root}/RPMS/i386/nco-4.0.5-?.i386.rpm \
+${rpm_root}/RPMS/i386/nco-debuginfo-4.0.5-?.i386.rpm \
+${rpm_root}/RPMS/i386/nco-devel-4.0.5-?.i386.rpm \
+${rpm_root}/SRPMS/nco-4.0.5-?.src.rpm \
 zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 
 # RPM builds as user
@@ -263,33 +263,33 @@ zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 export rpm_root="${DATA}/rpm/nco"
 #cd ~/nco;cvc;cvu # This risks committing unwanted *.[ch]pp files
 mkdir -p ${DATA}/rpm/nco/TMP ${DATA}/rpm/nco/BUILD
-/bin/rm -rf ${DATA}/nco-4.0.4 ${DATA}/nco-4.0.4* # Cleanup last build
+/bin/rm -rf ${DATA}/nco-4.0.5 ${DATA}/nco-4.0.5* # Cleanup last build
 /bin/rm -r -f \
-${rpm_root}/nco-4.0.4-?.src.rpm \
-${rpm_root}/nco-4.0.4.spec \
-${rpm_root}/nco-4.0.4.tar.gz \
-${rpm_root}/*/nco-4.0.4-?.*.rpm \
-${rpm_root}/*/nco-debuginfo-4.0.4-?.*.rpm \
-${rpm_root}/*/nco-devel-4.0.4-?.*.rpm
-# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_0_4-1 -d nco-4.0.4 nco # Export based on tag
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -dnco-4.0.4 nco # Export most recent and build as 4.0.4-1
-tar cvzf ./nco-4.0.4.tar.gz --exclude='nco-4.0.4/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.4 
-/bin/cp ${DATA}/nco-4.0.4.tar.gz ${rpm_root}
+${rpm_root}/nco-4.0.5-?.src.rpm \
+${rpm_root}/nco-4.0.5.spec \
+${rpm_root}/nco-4.0.5.tar.gz \
+${rpm_root}/*/nco-4.0.5-?.*.rpm \
+${rpm_root}/*/nco-debuginfo-4.0.5-?.*.rpm \
+${rpm_root}/*/nco-devel-4.0.5-?.*.rpm
+# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_0_5-1 -d nco-4.0.5 nco # Export based on tag
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -dnco-4.0.5 nco # Export most recent and build as 4.0.5-1
+tar cvzf ./nco-4.0.5.tar.gz --exclude='nco-4.0.5/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.5 
+/bin/cp ${DATA}/nco-4.0.5.tar.gz ${rpm_root}
 ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/nco.spec
 cd ${rpm_root}
 rpmbuild -ba --sign nco.spec > ~/foo.nco 2>&1
-rpmlint ${rpm_root}/*/nco-4.0.4-?.*.rpm
+rpmlint ${rpm_root}/*/nco-4.0.5-?.*.rpm
 sudo yum remove nco
-sudo yum install ${rpm_root}/*/nco-4.0.4-?.*.rpm
+sudo yum install ${rpm_root}/*/nco-4.0.5-?.*.rpm
 scp \
-${rpm_root}/*/nco-4.0.4-?.*.rpm \
-${rpm_root}/*/nco-debuginfo-4.0.4-?.*.rpm \
-${rpm_root}/*/nco-devel-4.0.4-?.*.rpm \
-${rpm_root}/nco-4.0.4-?.*.src.rpm \
+${rpm_root}/*/nco-4.0.5-?.*.rpm \
+${rpm_root}/*/nco-debuginfo-4.0.5-?.*.rpm \
+${rpm_root}/*/nco-devel-4.0.5-?.*.rpm \
+${rpm_root}/nco-4.0.5-?.*.src.rpm \
 dust.ess.uci.edu:/var/www/html/nco/src
 scp \
-${rpm_root}/*/nco-4.0.4-?.*.rpm \
-${rpm_root}/*/nco-debuginfo-4.0.4-?.*.rpm \
-${rpm_root}/*/nco-devel-4.0.4-?.*.rpm \
-${rpm_root}/nco-4.0.4-?.*.src.rpm \
+${rpm_root}/*/nco-4.0.5-?.*.rpm \
+${rpm_root}/*/nco-debuginfo-4.0.5-?.*.rpm \
+${rpm_root}/*/nco-devel-4.0.5-?.*.rpm \
+${rpm_root}/nco-4.0.5-?.*.src.rpm \
 zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.132 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.133 2010-09-24 18:34:34 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -491,7 +491,7 @@ nco__enddef /* [fnc] Wrapper for nc__enddef */
   const size_t v_align=4UL; /* [B] Alignment of beginning of data section for fixed variables */
   const size_t v_minfree=0UL; /* [B] Pad at end of data section for fixed size variables */
   const size_t r_align=4UL; /* [B] Alignment of beginning of data section for record variables */
-  /* nc_enddef(ncid) is equivalent to nc__enddef(ncid,0,4,0,4) */
+  /* nc_enddef(ncid) is equivalent to nc__enddef(ncid,0,4.0.5) */
   rcd=nc__enddef(nc_id,hdr_pad,v_align,v_minfree,r_align);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco__enddef()");
   return rcd;
