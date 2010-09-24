@@ -142,7 +142,7 @@ static ncoTree** wlk_ptr;
  return 1;
 }
 
-int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
+int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
 {
   
   ANTLR_USING_NAMESPACE(std);

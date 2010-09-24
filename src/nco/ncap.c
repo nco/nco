@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.244 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.245 2010-09-24 16:21:53 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.244 2010-09-19 01:01:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.244 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.245 2010-09-24 16:21:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.245 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;
@@ -666,7 +666,7 @@ main(int argc,char **argv)
     rcd=nco_yyparse(&prs_arg);
     
     /* Tidy up */  
-    if(nbr_spt > 0) fl_spt_usr=(char*)nco_free(fl_spt_usr);
+    if(nbr_spt > 0) fl_spt_usr=(char *)nco_free(fl_spt_usr);
     (void)glb_init_free(False); 
     
     if(!prs_arg.ntl_scn) continue;
@@ -846,7 +846,7 @@ main(int argc,char **argv)
     /* ncap-specific memory */
     /* fxm: ncap-specific memory freeing instructions go here */
     for(idx=0;idx<sym_tbl_nbr;idx++){
-      sym_tbl[idx]->nm=(char*)nco_free(sym_tbl[idx]->nm);
+      sym_tbl[idx]->nm=(char *)nco_free(sym_tbl[idx]->nm);
       sym_tbl[idx]=(sym_sct *)nco_free(sym_tbl[idx]);
     } /* end loop */
     sym_tbl=(sym_sct **)nco_free(sym_tbl);
@@ -881,7 +881,7 @@ main(int argc,char **argv)
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
     if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
-    if(fl_in) fl_in=(char*)nco_free(fl_in);
+    if(fl_in) fl_in=(char *)nco_free(fl_in);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
     if(fl_pth) fl_pth=(char *)nco_free(fl_pth);

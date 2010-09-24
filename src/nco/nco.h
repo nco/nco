@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.157 2010-09-23 23:45:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.158 2010-09-24 16:21:54 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -343,32 +343,42 @@ extern "C" {
   } nod_typ_enm; /* end Node enumerator */
   /* end enumeration section */
 
+  typedef enum { /* [enm] Calendar type */
+    cln_std=1, /* Standard mixed Julian/Gregorian */
+    cln_grg, /* Gregorian Calendar */ 
+    cln_jul, /* Julian Calendar */ 
+    cln_360 , /* 30 days a month Calendar */ 
+    cln_365, /* No Leap year Calendar */ 
+    cln_366, /* Leap year Calendar */ 
+    cln_nil /* No calendar found */
+  } cln_typ; /* [enm] Calendar type */
+  
   /* Limit structure */
   typedef struct { /* lmt_sct */
-    char *nm; /* [sng] Dimension name */
-    int lmt_typ; /* crd_val or dmn_idx */
     /* Following four flags are used only by multi-file operators ncra and ncrcat: */
-    nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
-    nco_bool is_usr_spc_min; /* True if user-specified, else False */
-    nco_bool is_usr_spc_max; /* True if user-specified, else False */
-    nco_bool is_rec_dmn; /* True if record dimension, else False */
-    long rec_skp_vld_prv; /* Records skipped since prevous good one (multi-file record dimension only) */
-    long rec_skp_nsh_spf; /* Sum of records in already processed files (multi-file record dimension only) */
-    char *min_sng; /* User-specified string for dimension minimum */
     char *max_sng; /* User-specified string for dimension maximum */
-    char *srd_sng; /* User-specified string for dimension stride */
-    int id; /* Dimension ID */
-    long min_idx; /* Index of minimum requested value in dimension */
-    long max_idx; /* Index of maximum requested value in dimension */
-    double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
-    double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
-    long srt; /* Index to start of hyperslab */
-    long end; /* Index to end of hyperslab */
-    long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
-    long srd; /* Stride of hyperslab */
-    double origin;   /* Used by ncra, ncrcat to re-base record coordinate */
+    char *min_sng; /* User-specified string for dimension minimum */
+    char *nm; /* [sng] Dimension name */
     char *re_bs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
-    int lmt_cal; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
+    char *srd_sng; /* User-specified string for dimension stride */
+    cln_typ lmt_cln; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
+    double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
+    double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
+    double origin;   /* Used by ncra, ncrcat to re-base record coordinate */
+    int id; /* Dimension ID */
+    int lmt_typ; /* crd_val or dmn_idx */
+    long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
+    long end; /* Index to end of hyperslab */
+    long max_idx; /* Index of maximum requested value in dimension */
+    long min_idx; /* Index of minimum requested value in dimension */
+    long rec_skp_nsh_spf; /* Sum of records in already processed files (multi-file record dimension only) */
+    long rec_skp_vld_prv; /* Records skipped since prevous good one (multi-file record dimension only) */
+    long srd; /* Stride of hyperslab */
+    long srt; /* Index to start of hyperslab */
+    nco_bool is_rec_dmn; /* True if record dimension, else False */
+    nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
+    nco_bool is_usr_spc_max; /* True if user-specified, else False */
+    nco_bool is_usr_spc_min; /* True if user-specified, else False */
   } lmt_sct;
 
   /* Container holding all limit structures indexible by dimension */

@@ -615,7 +615,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 						
 						int apsn;
 						var_sct *var1;
-						char* fmt_sng;
+						char *fmt_sng;
 						std::string fl_nm;
 						std::string att_nm;
 						std::string var_nm;

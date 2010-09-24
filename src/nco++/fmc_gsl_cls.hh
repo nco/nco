@@ -131,24 +131,24 @@ union f_unn{
   
   //gsl_statistics function prototypes
 
-   double (*cscpss)(const char* ,size_t,size_t);
+   double (*cscpss)(const char *,size_t,size_t);
    double (*csspss)(const short* ,size_t,size_t);
    double (*csipss)(const int* ,size_t,size_t);
    double (*csfpss)(const float* ,size_t,size_t);
     double (*csdpss)(const double*,size_t,size_t);
-   double (*csucpss)(const unsigned char* ,size_t,size_t);
+   double (*csucpss)(const unsigned char *,size_t,size_t);
    double (*csuspss)(const unsigned short* ,size_t,size_t);
    double (*csuipss)(const unsigned int* ,size_t,size_t);
    double (*cslpss)(const long* ,size_t,size_t);   
    double (*csulpss)(const unsigned long* ,size_t,size_t);   
 
 
-   double (*cscpssd)(const char* ,size_t,size_t,double);
+   double (*cscpssd)(const char *,size_t,size_t,double);
    double (*csspssd)(const short* ,size_t,size_t,double);
    double (*csipssd)(const int* ,size_t,size_t,double);
    double (*csfpssd)(const float* ,size_t,size_t,double);
    double (*csdpssd)(const double*,size_t,size_t,double);
-   double (*csucpssd)(const unsigned char* ,size_t,size_t,double);
+   double (*csucpssd)(const unsigned char *,size_t,size_t,double);
    double (*csuspssd)(const unsigned short* ,size_t,size_t,double);
    double (*csuipssd)(const unsigned int* ,size_t,size_t,double);
    double (*cslpssd)(const long* ,size_t,size_t,double);   
@@ -222,8 +222,8 @@ union f_unn{
 
   
   //gsl_statistics function prototypes
-  f_unn(double (*c)(const unsigned char* ,size_t,size_t))            {csucpss=c;}
-  f_unn(double (*c)(const char* ,size_t,size_t))                     {cscpss=c;}
+  f_unn(double (*c)(const unsigned char *,size_t,size_t))            {csucpss=c;}
+  f_unn(double (*c)(const char *,size_t,size_t))                     {cscpss=c;}
   f_unn(double (*c)(const short* ,size_t,size_t))                    {csspss=c;}
   f_unn(double (*c)(const int* ,size_t,size_t))                      {csipss=c;}
   f_unn(double (*c)(const float* , size_t,size_t)  )                 {csfpss=c;}
@@ -233,8 +233,8 @@ union f_unn{
   f_unn(double (*c)(const long* ,size_t,size_t))                     {cslpss=c;}      
   f_unn(double (*c)(const unsigned long* ,size_t,size_t))            {csulpss=c;}  
 
-  f_unn(double (*c)(const unsigned char* ,size_t,size_t,double))            {csucpssd=c;}
-  f_unn(double (*c)(const char* ,size_t,size_t,double))                     {cscpssd=c;}
+  f_unn(double (*c)(const unsigned char *,size_t,size_t,double))            {csucpssd=c;}
+  f_unn(double (*c)(const char *,size_t,size_t,double))                     {cscpssd=c;}
   f_unn(double (*c)(const short* ,size_t,size_t,double))                    {csspssd=c;}
   f_unn(double (*c)(const int* ,size_t,size_t,double))                      {csipssd=c;}
   f_unn(double (*c)(const float* , size_t,size_t,double)  )                 {csfpssd=c;}

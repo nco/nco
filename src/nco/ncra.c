@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.258 2010-09-23 22:23:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.259 2010-09-24 16:21:54 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.258 2010-09-23 22:23:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.258 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.259 2010-09-24 16:21:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.259 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -557,10 +557,10 @@ main(int argc,char **argv)
     if(prg == ncra || prg == ncrcat){
       lmt_rec->origin=0.0; 
       int var_id;
-      char *cal_att_sng=(char*)NULL;
+      char *cln_att_sng=(char*)NULL;
 
       lmt_rec->re_bs_sng=(char *)NULL;
-      lmt_rec->lmt_cal=cal_void; 
+      lmt_rec->lmt_cln=cln_nil; 
 
 
       rcd=nco_inq_varid_flg(in_id,lmt_rec->nm,&var_id);
@@ -568,12 +568,12 @@ main(int argc,char **argv)
 
       if(rcd == NC_NOERR){ 
        lmt_rec->re_bs_sng=nco_lmt_get_udu_att(in_id,var_id,"units"); 
-       cal_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
-       lmt_rec->lmt_cal=nco_cln_get_cal_typ(cal_att_sng); 
+       cln_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
+       lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
       }
 
-      if(cal_att_sng)
-        cal_att_sng=(char*)nco_free(cal_att_sng);  
+      if(cln_att_sng)
+        cln_att_sng=(char*)nco_free(cln_att_sng);  
 
     } /* endif ncra, ncrcat */
   } /* Record dimension exists */

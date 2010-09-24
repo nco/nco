@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.101 2010-09-16 00:15:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.102 2010-09-24 16:21:53 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -620,8 +620,8 @@ sub tst_rgr {
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lon_cal -d lon_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tempf_00%";
 
-    $tst_cmd[1]="ncap2 -O -v -C -s 'lon_cal_ttl=lon_cal.total();print(lon_cal_ttl)' %tempf_00% %tempf_01%";
-    $tst_cmd[2]="lon_cal_ttl = 10";
+    $tst_cmd[1]="ncap2 -O -v -C -s 'lon_cln_ttl=lon_cal.total();print(lon_cln_ttl)' %tempf_00% %tempf_01%";
+    $tst_cmd[2]="lon_cln_ttl = 10";
 
     $dsc_sng="dim slice using UDUnits library and cal 365_days (fails without UDUnits library support)";
     $tst_cmd[3]="SS_OK";
@@ -631,8 +631,8 @@ sub tst_rgr {
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat_cal -d lat_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tempf_00%";
 
-    $tst_cmd[1]="ncap2 -O -v -C -s 'lat_cal_ttl=lat_cal.total();print(lat_cal_ttl)' %tempf_00% %tempf_01%";
-    $tst_cmd[2]="lat_cal_ttl = 18";
+    $tst_cmd[1]="ncap2 -O -v -C -s 'lat_cln_ttl=lat_cal.total();print(lat_cln_ttl)' %tempf_00% %tempf_01%";
+    $tst_cmd[2]="lat_cln_ttl = 18";
 
     $dsc_sng="dim slice using UDUnits library and cal 360_days (fails without UDUnits library support)";
     $tst_cmd[3]="SS_OK";

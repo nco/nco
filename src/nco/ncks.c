@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.260 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.261 2010-09-24 16:21:54 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.260 2010-09-19 01:01:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.260 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.261 2010-09-24 16:21:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.261 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -352,7 +352,7 @@ main(int argc,char **argv)
         cp=strdup(optarg); 
         args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
         
-        nco_cln_clc_org(args[0],args[1],(lmt_nbr>2 ? nco_cln_get_cal_typ(args[2]):cal_void) ,&crr_val);        
+        nco_cln_clc_org(args[0],args[1],(lmt_nbr>2 ? nco_cln_get_cln_typ(args[2]):cln_nil) ,&crr_val);        
         (void)fprintf(stdout,"units in=%s units out=%s difference=%f\n",args[0],args[1],crr_val);
 
         nco_free(cp);
@@ -360,7 +360,7 @@ main(int argc,char **argv)
 
       } /* endif "tst_udunits" */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nTest udunits\t\t--tst_udunits,'units_in','units_out','cal_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nTest udunits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.52 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.53 2010-09-24 16:21:54 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -16,8 +16,6 @@ int  ncap_void(void){
   return 10;
 }
 
-
-
 gsl_cls::gsl_cls(bool flg_dbg){
     // populate gpr_vtr
   gsl_ini_sf();    // Special Functions 
@@ -25,13 +23,10 @@ gsl_cls::gsl_cls(bool flg_dbg){
   gsl_ini_ran();   // Random Number Generator functions
   gsl_ini_stats();  // Statistics  
   // Copy into fmc_cls vector  
-  for(unsigned idx=0;idx<gpr_vtr.size();idx++) 
-   fmc_vtr.push_back(fmc_cls(gpr_vtr[idx].fnm(),this,idx));
- 
+  for(unsigned idx=0;idx<gpr_vtr.size();idx++) fmc_vtr.push_back(fmc_cls(gpr_vtr[idx].fnm(),this,idx));
 }
 
 void gsl_cls::gsl_ini_sf(void) {
-
     // Airy Functions
     gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Ai",f_unn(gsl_sf_airy_Ai_e),hnd_fnc_nd,P1DBLMD));  
     gpr_vtr.push_back(gpr_cls("gsl_sf_airy_Bi",f_unn(gsl_sf_airy_Bi_e),hnd_fnc_nd,P1DBLMD));  
@@ -2784,7 +2779,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   int args_nbr;
   long idx;
   unsigned long rng_max_lng;
-  const char* rng_nm_sng;
+  const char *rng_nm_sng;
   nc_type type;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();

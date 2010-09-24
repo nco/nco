@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.135 2010-09-20 23:14:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.136 2010-09-24 16:21:54 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2549,7 +2549,7 @@ char *cp_out)                   // Slab to be "put"
         cp_in+=(ptrdiff_t)cnt*slb_sz;
       }
       if(srd >1) {
-        char* cp_lcl=cp_end;
+        char *cp_lcl=cp_end;
         for(jdx=0 ; jdx<cnt ; jdx++ ){
           (void)memcpy(cp_lcl,cp_in,slb_sz);
           cp_in+=(ptrdiff_t)slb_sz;

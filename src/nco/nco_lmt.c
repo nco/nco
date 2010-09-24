@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.102 2010-09-24 00:24:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.103 2010-09-24 16:21:54 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -295,35 +295,28 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end if */
   lmt.lmt_typ=min_lmt_typ;
   
-  /* co-ordinate rebasing code */
+  /* Coordinate rebasing code */
   lmt.origin=0.0;
   /* Get variable ID of coordinate */
   rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
-  if(rcd==NC_NOERR){
-    char *cal_sng=NULL_CEWI;
+  if(rcd == NC_NOERR){
+    char *cln_sng=NULL_CEWI;
     
     fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"units"); /* units attribute of co-ordinate var */
-    cal_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* calendar attribute */
+    cln_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* calendar attribute */
     
     if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-      if(nco_cln_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cal,&lmt.origin)!=EXIT_SUCCESS) lmt.origin=0.0;
+      if(nco_cln_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cln,&lmt.origin) != EXIT_SUCCESS) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
     
-    /* for ncra, ncrcat the "calendar" attribute has been read in main() 
-       avoid multiple reads of the calendar att in multifile
-       operations */
-    if(!rec_dmn_and_mlt_fl_opr){
-      if(cal_sng)
-        lmt.lmt_cal=nco_cln_get_cal_typ(cal_sng); 
-      else
-        lmt.lmt_cal=cal_void;
-    }  
-    if(cal_sng)
-      cal_sng=nco_free(cal_sng);
-    
+    /* ncra and ncrcat read the "calendar" attribute in main() 
+       Avoid multiple reads of calendar attritbute in multi-file operations */
+    if(!rec_dmn_and_mlt_fl_opr)
+      if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
+    if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
   } /* end rcd */
   
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
@@ -432,9 +425,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         nco_exit(EXIT_FAILURE);
       } /* end if */
       
-      if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cal,&lmt.min_val)) nco_exit(EXIT_FAILURE);
+      if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val)) nco_exit(EXIT_FAILURE);
       
-      if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cal,&lmt.max_val)) nco_exit(EXIT_FAILURE);
+      if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val)) nco_exit(EXIT_FAILURE);
       
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
@@ -915,19 +908,15 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     /* Initialize types used to re-base coordinate variables */
     lmt[idx]->origin=0.0;
     lmt[idx]->re_bs_sng=NULL_CEWI;
-    lmt[idx]->lmt_cal=cal_void;
+    lmt[idx]->lmt_cln=cln_nil;
     
-    /* Free current pointer array to strings
-       Strings themselves are untouched 
+    /* Free current pointer array to strings, leaving untouched the strings themselves
        They will be free()'d with limit structures in nco_lmt_lst_free() */
     arg_lst=(char **)nco_free(arg_lst);
-    
   } /* End loop over lmt structure list */
   
   return lmt;
-  
 } /* end nco_lmt_prs() */
-
 
 int /* O [enm] Limit type */
 nco_lmt_typ /* [fnc] Determine limit type */

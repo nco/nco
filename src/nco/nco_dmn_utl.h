@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.32 2010-09-01 11:14:43 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.33 2010-09-24 16:21:54 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -114,7 +114,7 @@ nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and 
  const int nbr_dmn_1,  /* I [nbr] Number of dimension structures in structure list */
  dmn_sct **const dim_2,  /* I [sct] Dimension list 1 */
  const int nbr_dmn_2,  /* I [nbr] Number of dimension structures in structure list */
- const char* const fl_sng_1, /* I [sng] Name of first file */
+ const char *const fl_sng_1, /* I [sng] Name of first file */
  const char *fl_sng_2);     /* I [sng] Name of second file */
 
 
