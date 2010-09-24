@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.601 2010-09-24 03:30:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.602 2010-09-24 05:11:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1050,8 +1050,10 @@ website.
 @html
 <a name="nco4"></a> <!-- http://nco.sf.net/nco.html#nco4 -->
 @end html
-@acronym{NCO} version 3.9.0 added support for all netCDF4 atomic data 
-types except @code{NC_STRING} in May, 2007. 
+@acronym{NCO} version 3.9.0, released in May, 2007, added support for
+all netCDF4 atomic data types except @code{NC_STRING}.
+Support for @code{NC_STRING}, including ragged arrays of strings,
+was finally added in version 3.9.9, released in June, 2009.
 Support for additional netCDF4 features has been incremental.
 We add one netCDF4 feature at a time.
 You must build @acronym{NCO} with netCDF4 to obtain this support.
@@ -1062,7 +1064,7 @@ You must build @acronym{NCO} with netCDF4 to obtain this support.
 @cindex @code{NC_INT64}
 @cindex @code{NC_UINT64}
 The main netCDF4 features that NCO currently supports are the new 
-atomic data types, Lempel-Ziv compression, and chunking.
+atomic data types, Lempel-Ziv compression (deflation), and chunking. 
 The new atomic data types are @code{NC_UBYTE}, @code{NC_USHORT}, 
 @code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}.
 Eight-byte integer support is an especially useful improvement from
@@ -1072,11 +1074,6 @@ copies and prints them, @command{ncra} averages them, and
 @command{ncap2} processes algebraic scripts with them.
 @command{ncks} prints compression information, if any, to screen.
 
-@cindex @code{NC_STRING}
-@acronym{NCO} version 3.9.9 (June, 2009) added support for the 
-@code{NC_STRING} netCDF4 atomic data type.
-Ragged arrays of strings are supported.
-
 @cindex deflation
 @acronym{NCO} version 3.9.1 (June, 2007) added support for netCDF4 
 Lempel-Ziv deflation.
@@ -1085,7 +1082,9 @@ See @ref{Deflation} for more details.
 
 @cindex chunking
 @acronym{NCO} version 3.9.9 (June, 2009) added support for netCDF4
-chunking. 
+chunking in @command{ncks} and @command{ncecat}.
+@acronym{NCO} version 4.0.4 (September, 2010) completed support for
+netCDF4 chunking in the remaining operators.
 See @ref{Chunking} for more details.
 
 @cindex @acronym{HDF5}
@@ -1101,15 +1100,16 @@ See @ref{Selecting Output File Format} for more details.
 
 @cindex @acronym{RPM}
 @cindex Debian
-Use appropriate caution while netCDF4 is beta software.
+As of 2010, netCDF4 is still relatively new software.
 Problems with netCDF4 and @acronym{HDF} libraries are still being fixed.
-@acronym{NCO} support for netCDF4 atomic types is relatively untested.
-Binary @acronym{NCO} distributions (@acronym{RPM}s and debs) still use
-netCDF3.
+Binary @acronym{NCO} distributions shipped as @acronym{RPM}s use the
+netCDF4 library, while debs use the netCDF3 library, because of upstream
+requirements. 
 
 @cindex @code{NETCDF4_ROOT}
-For now you must build @acronym{NCO} from source to get netCDF4 support.
-Typically, one specifies the root of the netCDF4-beta 
+One must often build @acronym{NCO} from source to obtain netCDF4
+support. 
+Typically, one specifies the root of the netCDF4
 installation directory. Do this with the @code{NETCDF4_ROOT} variable.
 Then use your preferred @acronym{NCO} build mechanism, e.g.,
 @example
@@ -1118,11 +1118,12 @@ cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
 cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 @end example
 
-Our short term goal is to track the netCDF4-beta releases, keep the
-new netCDF4 atomic type support working, and iron out any problems.
+We carefully track the netCDF4 releases, and keep the netCDF4 atomic
+type support and other features working.
 Our long term goal is to utilize more of the extensive new netCDF4
 feature set. The next major netCDF4 feature we are likely to utilize
-is parallel I/O. We will enable this in the @acronym{MPI} netCDF operators.
+is parallel I/O. We will enable this in the @acronym{MPI} netCDF
+operators. 
 
 @html
 <a name="help"></a> <!-- http://nco.sf.net/nco.html#help -->
