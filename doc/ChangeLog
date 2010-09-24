@@ -6,8 +6,11 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.4 release"
 	cvs tag -c nco-4_0_4;cvs tag -c nco-4_0_4-1
 
+	* Use longer but more bullet-proof and less warning-prone netcdf.h
+	backwards compatibility token definitions in nco_typ.h
+
 	* Finish handling strtod()/strtol() returns
-	Corner case where sng_cnv_rcd == NULL not handled
+	Corner case where sng_cnv_rcd == NUL not handled?
 	'man strtol' has convoluted description using errno for this
 
 	* Henry fixed ncap2 dsort() bug

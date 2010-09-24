@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.31 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.32 2010-09-24 18:04:29 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -63,24 +63,50 @@ C code." */
    Unfortunately this pre-precessor macro has never worked... */
 #define NCO_TYP_IO_FNC_MRG(x,y) x##y
 
-/* Define compatibility tokens when user does not have netCDF4 */
-#ifndef HAVE_NETCDF4_H
+/* Define compatibility tokens when user does not have netCDF4 netcdf.h
+   Compatibility tokens for when NCO compiled with older netcdf.h
+   It is hard to track where/when many tokens defined
+   Easiest to individually check for pre-definition of each */
 /* Datatypes referenced in nco_typ.h, nco_netcdf.c: */
+#ifndef NC_UBYTE
 # define	NC_UBYTE 	7	/* unsigned 1 byte int */
+#endif
+#ifndef NC_USHORT
 # define	NC_USHORT 	8	/* unsigned 2-byte int */
+#endif
+#ifndef NC_UINT
 # define	NC_UINT 	9	/* unsigned 4-byte int */
+#endif
+#ifndef NC_INT64
 # define	NC_INT64 	10	/* signed 8-byte int */
+#endif
+#ifndef NC_UINT64
 # define	NC_UINT64 	11	/* unsigned 8-byte int */
+#endif
+#ifndef NC_STRING
 # define	NC_STRING 	12	/* string */
+#endif
 /* Fill values for netCDF4 datatypes. Referenced in nco_mss_val.c: */
+#ifndef NC_FILL_UBYTE
 # define NC_FILL_UBYTE   (255)
+#endif
+#ifndef NC_FILL_USHORT
 # define NC_FILL_USHORT  (65535)
+#endif
+#ifndef NC_FILL_UINT
 # define NC_FILL_UINT    (4294967295U)
+#endif
 /* NB: These fill values are one shy of min(int64) and max(uint64) */
+#ifndef NC_FILL_INT64
 # define NC_FILL_INT64   ((long long int)-9223372036854775806LL)
+#endif
+#ifndef NC_FILL_UINT64
 # define NC_FILL_UINT64  ((unsigned long long int)18446744073709551614ULL)
+#endif
+#ifndef NC_FILL_STRING
 # define NC_FILL_STRING  ""
-#endif /* HAVE_NETCDF4_H */
+#endif
+/* end define compatibility tokens when user does not have netCDF4 netcdf.h */
 
 /* C pre-processor compares integers not strings
    Perform comparisons on enumerated integer values corresponding to each type */
