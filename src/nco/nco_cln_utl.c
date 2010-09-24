@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.25 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.26 2010-09-24 10:50:13 hmb Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -513,7 +513,7 @@ tm_typ ret_typ;
   return ret_typ;
 }
 
-tm_typ               /* [enum] Calendar type */    
+cal_typ               /* [enum] Calendar type */    
 nco_cln_get_cal_typ /*  [fnc]  Calendar type or cal_void if not found */
 (const char* ud_sng) /* I [ptr] units string  */      
 {
@@ -522,7 +522,7 @@ int len;
 char *lcl_sng;  
 cal_typ ret_typ;
 
- if(!ud_sng) return (int)cal_void;
+ if(!ud_sng) return cal_void;
  
   lcl_sng=strdup(ud_sng);
   

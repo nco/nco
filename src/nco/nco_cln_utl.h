@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.25 2010-09-14 00:36:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.26 2010-09-24 10:49:13 hmb Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -97,7 +97,7 @@ tm_typ              /* [enum] Units type */
 nco_cln_get_tm_typ( /* returns time unit type or tm_void if not found */
 const char* ud_sng); /* I [ptr] units string  */      
 
-tm_typ               /* [enum] Calendar type */    
+cal_typ               /* [enum] Calendar type */    
 nco_cln_get_cal_typ( /* [fnc] Calendar type or cal_void if not found */
 const char* ud_sng); /* I [ptr] units string  */      
 
