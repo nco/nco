@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.38 2010-01-27 15:57:58 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.39 2010-09-24 13:12:44 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1644,7 +1644,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           cp_in=(char*)var1->val.vp; 
 
           // var2 contains the mapping
-          (void)cast_void_nctype(NC_INT,&var2->val);
+          (void)cast_void_nctype((nc_type)NC_UINT64,&var2->val);
           lp_mp=var2->val.ui64p; 
          
           for(idx=0; idx<sz_idx; idx++){ 
