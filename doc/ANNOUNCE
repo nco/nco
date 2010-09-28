@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.393 2010-09-24 18:44:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.394 2010-09-28 17:04:21 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
@@ -25,7 +25,7 @@ J. All operators support netCDF4 chunking options:
    ncks -O -4 --cnk_plc=all in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
-K. Pre-built, up-to-date Debian Sid & Ubuntu Karmic packages:
+K. Pre-built, up-to-date Debian Sid & Ubuntu Lucid packages:
    http://nco.sf.net#debian
 
 L. Pre-built Fedora and CentOS RPMs:
