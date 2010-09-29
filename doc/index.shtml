@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.603 2010-09-29 00:22:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.604 2010-09-29 23:08:27 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1421,14 +1421,11 @@ these versions of NCO.
 <a name="bug_ncrename_dot"></a>
 <li><i><tt>ncrename</tt> erroneous error exit:</i>
 Versions 4.0.1&mdash;4.0.3 of <tt>ncrename</tt> contain a bug where
-<tt>ncrename -a .old_nm,new_nm in.nc out.nc</tt>
-   would, if old_nm did not exist, write the correct file then exit
-   with an error message although no error had occurred.
-   http://nco.sf.net#bug_ncrename_dot
-
-
-internal metadata, leading to segmentation faults and core dumps with
-some exacting compilers, notably xlC on AIX. 
+commands like <tt>ncrename -a .old_nm,new_nm in.nc out.nc</tt>
+would, if <tt>old_nm</tt> did not exist, write the correct file and
+then exit with an error message although no error had occurred.
+The files written were fine, and the error message can be safely
+ignored. This was due to not clearing an extraneous return code.
 
 <!-- http://nco.sf.net#bug_ncbo_rfr -->
 <a name="bug_ncbo_rfr"></a>

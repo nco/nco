@@ -54,7 +54,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.115 2010-08-09 18:11:55 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.116 2010-09-29 23:08:27 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -605,6 +605,14 @@ variables:
 	one_dmn_rec_var:long_name = "one dimensional record variable";
 	one_dmn_rec_var:units = "second";
         
+	float one_dmn_rec_var_missing_value(time);
+	one_dmn_rec_var_missing_value:long_name = "One dimensional record variable with missing data indicated by missing_value attribute only. No _FillValue attribute exists.";
+	one_dmn_rec_var_missing_value:missing_value = 1.0e36f;
+
+	float one_dmn_rec_var__FillValue(time);
+	one_dmn_rec_var__FillValue:long_name = "One dimensional record variable with missing data indicated by _FillValue attribute only. No missing_value attribute exists.";
+	one_dmn_rec_var__FillValue:_FillValue = 1.0e36f;
+
 	int RDM(time);
         
 	float tpt(time);
@@ -890,6 +898,8 @@ data:
 	non_nul_trm_char_two_dmn="abcd","efgh","ijkm";
 	one=1.;
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var_missing_value=1,2,3,4,5,6,7,8,9,1.0e36;
+	one_dmn_rec_var__FillValue=1,2,3,4,5,6,7,8,9,1.0e36;
 	RDM=1,9,36,84,126,126,84,36,9,1;
 	one_dmn_rec_var_sng="Hello Wor";
 	one_dmn_var=1.,10.;
