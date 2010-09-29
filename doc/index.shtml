@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.602 2010-09-28 17:04:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.603 2010-09-29 00:22:04 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1420,7 +1420,13 @@ these versions of NCO.
 <!-- http://nco.sf.net#bug_ncrename_dot -->
 <a name="bug_ncrename_dot"></a>
 <li><i><tt>ncrename</tt> erroneous error exit:</i>
-<tt>ncrename</tt> versions 4.0.1&mdash;4.0.3 incorrectly refreshed
+Versions 4.0.1&mdash;4.0.3 of <tt>ncrename</tt> contain a bug where
+<tt>ncrename -a .old_nm,new_nm in.nc out.nc</tt>
+   would, if old_nm did not exist, write the correct file then exit
+   with an error message although no error had occurred.
+   http://nco.sf.net#bug_ncrename_dot
+
+
 internal metadata, leading to segmentation faults and core dumps with
 some exacting compilers, notably xlC on AIX. 
 
