@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.124 2010-09-30 01:12:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.125 2010-09-30 04:02:55 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -435,7 +435,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       switch(prg_id){
       case ncatted:
       case ncrename:
-	(void)fprintf(stderr,"%s: ERROR nco_fl_mk_lcl() reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: ERROR %s() reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
 	break;
       default:

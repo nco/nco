@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.261 2010-09-24 16:21:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.262 2010-09-30 04:02:55 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -31,11 +31,11 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncks in.nc 
-   ncks -v one in.nc 
-   ncks in.nc ~/foo.nc
-   ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/foo.nc
-   ncks -v one in.nc ~/foo.nc
+   ncks ~/nco/data/in.nc 
+   ncks -v one ~/nco/data/in.nc 
+   ncks ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 ~/nco/data/in.nc ~/foo.nc
+   ncks -v one ~/nco/data/in.nc ~/foo.nc
    ncks -p /ZENDER/tmp -l /data/zender/tmp h0001.nc ~/foo.nc
    ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
    ncks -H -v fl_nm,fl_nm_arr ~/nco/data/in.nc
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.261 2010-09-24 16:21:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.261 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.262 2010-09-30 04:02:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.262 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
