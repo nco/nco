@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.122 2010-09-24 17:05:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.123 2010-09-30 01:06:31 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -448,6 +448,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
       /* Great! DAP worked so file has earned DAP identification */
       DAP_URL=True; 
+
+      (void)fprintf(stdout,"%s: INFO nco_fl_mk_lcl() successfully accessed this file using the DAP protocol\n",prg_nm_get());
 
       /* Set rcd=0 to agree with successful stat() so rest of function treats file as local
 	 (DAP treats HTTP protocol files as local files) */
