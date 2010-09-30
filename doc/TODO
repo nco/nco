@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1089 2010-09-30 01:06:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1090 2010-09-30 01:12:28 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -694,7 +694,7 @@ nco996. ncap2 fails netCDF4 test:
 	ncap2 -O -4 -D 4 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc # fails
 	ncap2 -O    -D 4 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc # works
 nco997. Bug triggered by using stride argument when accessing a file through DAP protocol
-	ncks -O -F -D9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
+	ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
 nco998. 
 ************************************************************************
 End ncoXXX TODOs
