@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.603 2010-09-24 18:34:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.604 2010-10-03 05:51:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6246,14 +6246,12 @@ three_mw=three_dmn_var_dbl.permute($time,$lon,$lat);
 three_mw=three_dmn_var_dbl.permute($0,$2,$1);
 @end example
 
-
 @noindent @strong{ID Quoting @*}
 If the dim name contains non-regular characters use ID quoting. See @pxref{ID Quoting}
 @example
 defdim("a--list.A",10);
 A1['$a--list.A']=30.0;
 @end example
-
 
 @noindent @strong{GOTCHA @*}
 @noindent It is not possible to manually define in Output any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
@@ -6348,11 +6346,9 @@ if "stride" is omitted - default = 1
 @noindent If a single value is present then it is assumed that that dimension collapses to a single value (ie a cross-section). The number of hyperslab arguments MUST be equal to the number of dimensions of the variable. 
 @sp 1
 
-
 @noindent @strong{Hyperslabs on the Right Hand Side of an assign@*}
 
 A simple 1D example:
-
 @example 
 ($time.size=10)
 od[$time]=@{20,22,24,26,28,30,32,34,36,38@};
@@ -6366,7 +6362,6 @@ od(:)      //  20,22,24,26,28,30,32,34,36,38
 @end example
 
 A more complex 3D example  
-
 @example
 ($lat.size=2, $lon.size=4 )
 th[$time,$lat,$lon]=      
@@ -6390,8 +6385,7 @@ th(::5 ,:,0:3:2); // 1, 3, 5, 7, 41, 43, 45, 47 ;
 
 If any of the hyperslab arguments collapse to a single value ( a cross-section has been specified), then that dimension is removed from the returned variable. If all the values collapse then a scalar variable is returned
 
-So for example: the following is valid: 
-
+So, for example, the following is valid: 
 @example
 th_nw=th(0,:,:) +th(9,:,:); 
 th_nw  has dimensions $lon,$lat 
@@ -6438,8 +6432,6 @@ P(:,0,:,:)=th0;
 P(:,1,:,:)=th1
 @end example
 
-
-
 @noindent @strong{Reverse method} @*
 @cindex reverse()
 If you want to reverse a dimension's elements in an variable use the @code{reverse()} method
@@ -6469,7 +6461,6 @@ three_dmn_var_pm=
   14,18,22,
   3,7,11,
   15,19,23;
-
 @end example
 
 @html
@@ -6479,8 +6470,7 @@ three_dmn_var_pm=
 @subsection Attributes
 @cindex attributes@command{ncap}
 @noindent Attributes are referred to by @emph{var_nm@@att_nm} @*
-All the following are valid statements
-
+All the following are valid statements:
 @example
 global@@text="Test Attributes";  /* Assign a global variable attribute */
 a1[$time]=time*20;
@@ -6491,7 +6481,6 @@ a1@@min++;
 --a1@@max; q
 a1(0)=a1@@min;
 a1($time.size-1)=a1@@max;
-
 @end example
 
 A @emph{value list} can be used on the RHS of an assign...
@@ -6542,7 +6531,6 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 'b..m1@@c--lost'=23;
 @end example
 
-
 @html
 <a name="ncap_num"></a> <!-- http://nco.sf.net/nco.html#ncap_num -->
 @end html
@@ -6560,7 +6548,6 @@ n3@@a2=-666L;     // attribute will be type @code{NC_INT}
 @end example
 
 A floating point number without a postfix will default to @code{NC_DOUBLE}. An integer without a postfix will default to type @code{NC_INT}. Thre is no postfix for characters. Use a quoted string.
-
 @example
 n4[$rlev]=.1      // n4 will be of type @code{NC_DOUBLE}
 n5[$lon_grd]=2.   // n5 will be of type @code{NC_DOUBLE}
@@ -6569,8 +6556,6 @@ n6@@a1=41;         // attribute will be type @code{NC_INT}
 n6@@a2=-21;        // attribute will be type @code{NC_INT}  
 n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @end example 
-
-
 
 @table @asis
 @item
