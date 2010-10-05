@@ -1,3 +1,5 @@
+// -*-c++-mode-*-
+
 // Purpose: CDL file to generate netCDF test file for NCO
 
 // Usage:
@@ -54,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.117 2010-10-05 05:59:12 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.118 2010-10-05 21:01:48 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -681,12 +683,12 @@ variables:
 	float rec_var_flt_mss_val_dbl(time);
 	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
 	rec_var_flt_mss_val_dbl:_FillValue = 1.0e36f;
-	rec_var_flt_mss_val_dbl:missing_value = 1.0e36;
+	rec_var_flt_mss_val_dbl:missing_value = 1.0e36f;
 	rec_var_flt_mss_val_dbl:note = "The correct average of this variable is 5.0";
 
 	float rec_var_flt_mss_val_int(time);
 	rec_var_flt_mss_val_int:long_name = "record variable, float, with integer missing values";
-	rec_var_flt_mss_val_int:_FillValue = -999.0f;
+	rec_var_flt_mss_val_int:_FillValue = -999;
 	rec_var_flt_mss_val_int:missing_value = -999;
 
 	int rec_var_int_mss_val_int(time);
@@ -695,17 +697,17 @@ variables:
 
 	int rec_var_int_mss_val_flt(time);
 	rec_var_int_mss_val_flt:long_name = "record variable, integer, with float missing values";
-	rec_var_int_mss_val_flt:_FillValue = -999;
+	rec_var_int_mss_val_flt:_FillValue = -999.0f;
 	rec_var_int_mss_val_flt:missing_value = -999.0f;
 
 	int rec_var_int_mss_val_dbl(time);
 	rec_var_int_mss_val_dbl:long_name = "record variable, integer, with double missing values";
-	rec_var_int_mss_val_dbl:_FillValue = -999;
+	rec_var_int_mss_val_dbl:_FillValue = -999.0;
 	rec_var_int_mss_val_dbl:missing_value = -999.0;
 
 	int rec_var_dbl_mss_val_dbl_pck_lng(time);
 	rec_var_dbl_mss_val_dbl_pck_lng:long_name = "record variable, double packed as long, with double missing values";
-	rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) is still a considerable cost savings";
+	rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) offers a considerable space savings";
 	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999;
 	rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999.0;
         rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05 ;
