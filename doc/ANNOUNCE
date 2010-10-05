@@ -1,21 +1,41 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.395 2010-09-30 01:06:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.396 2010-10-05 19:59:44 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This version contains several improvements and a few fixes. New stuff:
+This is a "brown paper bag" release intended to push out one bugfix
 
-fxm
+http://nco.sf.net#bug_ncks_cnk
 
-Work on NCO 4.0.5 is underway. Areas of improvement include
+Work on NCO 4.0.6 is underway. Areas of improvement include
 support for spectral transforms, more chunking rulesets.
 
 "New stuff" in 4.0.5 details:
 
-A. Fix bug triggered by using stride argument when accessing a file
-   through DAP protocol (fxm).
+A. Versions 4.0.3--4.0.4 of ncks contain a bug which triggers a
+core-dump when hyperslabbing (along a non-record dimension) a
+netCDF4-format input file into a netCDF4-format output file, e.g.,
+
+ncks -d 0,1,lat in4.nc out4.nc. 
+
+This bug does not affect netCDF3-format files.
+Two workarounds that do not require NCO upgrades (or downgrades) are 
+to explicitly specify ncks chunking with, e.g., 
+
+ncks --cnk_plc=all -d 0,1,lat in4.nc out4.nc, 
+
+or, to use ncea instead of ncks for hyperslabbing, e.g.,
+
+ncea -d 0,1,lat in4.nc out4.nc 
+
+This works because ncea does a no-op when there is only one input file.
+
+B. There is a known problem triggered by using the stride argument
+   when accessing a file through the DAP protocol. fxm.
+
+   ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
 
 "Sticky" reminders:
 

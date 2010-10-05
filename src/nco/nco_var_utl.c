@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.162 2010-09-23 23:45:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.163 2010-10-05 19:59:45 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -40,7 +40,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   if(rcd == NC_NOERR) return var_out_id;
   /* Is requested variable in input file? */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
-  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
   
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
@@ -106,20 +106,9 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
-    
-    /* Chunking */
-    if(nbr_dim > 0){
-      int srg_typ; /* [enm] Storage type */
-      size_t *cnk_sz; /* [nbr] Chunksize list */
-      cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t));
-      rcd=nco_inq_var_chunking(in_id,var_in_id,&srg_typ,cnk_sz);
-      /* Copy original chunking settings */
-      if(srg_typ == NC_CHUNKED){
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s copying chunking information from input to output for %s\n",prg_nm_get(),fnc_nm,var_nm);
-	(void)nco_def_var_chunking(out_id,var_out_id,srg_typ,cnk_sz);
-      } /* endif */
-      cnk_sz=(size_t *)nco_free(cnk_sz);
-    } /* endif */
+
+    /* NB: Chunking information is copied/set in nco_cnk_sz_set(), not here! */
+
   } /* !NC_FORMAT_NETCDF4 */ 
   
   /* Free space holding dimension IDs */
@@ -219,7 +208,6 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Duplicate netCDF4 settings when possible */
   rcd=nco_inq_format(out_id,&fl_fmt);
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    
     /* Deflation */
     if(nbr_dim > 0){
       int shuffle; /* [flg] Turn on shuffle filter */
@@ -231,17 +219,9 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
-    
-    /* Chunking */
-    if(nbr_dim > 0){
-      int srg_typ; /* [enm] Storage type */
-      size_t *cnk_sz; /* [nbr] Chunksize list */
-      cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t));
-      rcd=nco_inq_var_chunking(in_id,var_in_id,&srg_typ,cnk_sz);
-      /* Copy original chunking settings */
-      if(srg_typ == NC_CHUNKED) (void)nco_def_var_chunking(out_id,var_out_id,srg_typ,cnk_sz);
-      cnk_sz=(size_t *)nco_free(cnk_sz);
-    } /* endif */
+
+    /* NB: Chunking information is copied/set in nco_cnk_sz_set(), not here! */
+
   } /* !NC_FORMAT_NETCDF4 */ 
   
   /* Free space holding dimension IDs */
