@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.79 2010-08-30 23:02:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.80 2010-10-05 23:18:03 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1377,7 +1377,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
     for(jdx=0;jdx<nbr_dim;jdx++){
       for(kdx=0;kdx<nbr_dmn_fl;kdx++){
       if(!strcmp(var[idx]->dim[jdx]->nm,lmt_lst[kdx]->dmn_nm ) ){
-	   lmt_mult[jdx]=lmt_lst[kdx];
+	lmt_mult[jdx]=lmt_lst[kdx];
         break;
        } /* end if */
       } /* end loop over jdx */
@@ -1415,9 +1415,3 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
   } /* end loop over idx */
     
 } /* end nco_msa_var_val_cpy() */
-
-
-
-
-
-
