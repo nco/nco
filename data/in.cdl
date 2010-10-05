@@ -54,7 +54,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.116 2010-09-29 23:08:27 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.117 2010-10-05 05:59:12 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -270,6 +270,11 @@ variables:
 	float val_one_mss(lat);
 	val_one_mss:long_name = "one regular value, one missing value";
 	val_one_mss:_FillValue = 1.0e36f;
+
+	short rec_var_pck_scale_factor_only(time);
+	rec_var_pck_scale_factor_only:long_name = "Array packed with scale factor only";
+	rec_var_pck_scale_factor_only:note = "Original packed value was 1s..10s with scale_factor = 10.0d no add_offset. Unpacked value should be 10.0 = 10.0d*1s + 0.0d through 100 = 10.0d*1s + 0.0d. Average value should be 55.";
+	rec_var_pck_scale_factor_only:scale_factor = 10.0d;
 
 	short pck;
 	pck:long_name = "Packed scalar variable";
@@ -665,7 +670,7 @@ variables:
 	rec_var_dbl_pck:long_name = "record variable, double, packed";
         rec_var_dbl_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly";
         rec_var_dbl_pck:scale_factor = 0.1;
-		rec_var_dbl_pck:add_offset = 100.0;
+	rec_var_dbl_pck:add_offset = 100.0;
 	
 	short non_rec_var_flt_pck(lon);
 		non_rec_var_flt_pck:long_name = "regular variable, float, packed";
@@ -738,12 +743,10 @@ variables:
 	three_dmn_var_sht:units = "watt meter-2";
 	three_dmn_var_sht:_FillValue = -99s ;
 
-
 	int th(time,lat,lon);
 	th:long_name = "three dimensional record variable";
 	th:units = "watt meter-2";
 	th:_FillValue = -99;
-
 
 	float td(time,dgn);
 	td:long_name = "two dimensional record variable stored in td (time,dgn) order (dgn means degenerate, i.e., of size 1)";
@@ -906,6 +909,7 @@ data:
 	one_dmn_int_val_one=1,1;
 	one_dmn_int_val_two=2,2;
 	pck=1;
+	rec_var_pck_scale_factor_only=1,2,3,4,5,6,7,8,9,10;
 	pck_arr=-32767,0,1,32767;
 	pi=3.1415926535897932384626433832795029;
 	upk=3.;

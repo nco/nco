@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.604 2010-10-03 05:51:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.605 2010-10-05 05:59:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6501,7 +6501,8 @@ double a1(time) ;
   a1:triplet = 21., 110., 199. ;
 @end example
 
-The @code{size()} method can be used with attributes -for example to save an attribute text string in a variable..
+The @code{size()} method can be used with attributes---for example, to
+save an attribute text string in a variable.
 @example
 defdim("sng_len", a1@@long_name.size());
 sng_arr[$sng_len]=a1@@long_name;         // sng_arr now contains "Kelvin" 
@@ -6669,7 +6670,7 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint(): three_dmn_var_sht.int(
 @subsection print statement
 @cindex print()@command{ncap}
 @example
-print( variable_name/attribute name/string, format string);
+print(variable_name/attribute name/string, format string);
 @end example  
 
 @noindent The print function takes a variable name or attribute name or a quoted string and prints the contents in a in a similar fashion to @code{ncks -H }. 
@@ -9010,9 +9011,7 @@ name:    (LPH)(LPH|DGT)+
 
 @noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumeric or underscore. ( e.g a1,_23, hell_is_666 )
 
-
 @noindent The valid characters in a quoted name are specified by the regular expressions:
-
 @example
 LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 name:    (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
@@ -9026,14 +9025,12 @@ Quote a dimension: @*
 '$10', '$t1--', '$--odd', c1['$10','$t1--']=23.0d @* 
 
 @sp 1
-The following comments are lifted directly from the netcdf libraries and detail the naming conventions for each release.
-
-
+The following comments are from the netCDF library definitions and
+detail the naming conventions for each release. 
 @noindent netcdf-3.5.1 @*
 netcdf-3.6.0-p1 @*
 netcdf-3.6.1 @*
 netcdf-3.6.2 @*
-
 @example
 /*
  * ( [a-zA-Z]|[0-9]|'_'|'-'|'+'|'.'|'|':'|'@@'|'('|')' )+
@@ -9046,10 +9043,8 @@ netcdf-3.6.2 @*
  */
 @end example
 
-
 @noindent netcdf-3.6.3 @*
 netcdf-4.0 Final  2008/08/28 @*
-
 @example
 /*
  * Verify that a name string is valid syntax.  The allowed name
@@ -9066,7 +9061,6 @@ netcdf-4.0 Final  2008/08/28 @*
  * normalize UTF-8 strings to NFC to facilitate matching and queries.
  */ 
 @end example
-
 @c End HMB documentation
 
 @page
