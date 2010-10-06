@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.606 2010-10-05 19:59:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.607 2010-10-06 18:57:05 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -521,6 +521,7 @@ world peace?
 <li><b>NCO 4.0.5</b>: (<i>In progress</i>)
 netCDF4 compound types?;
 Fix <tt>ncks</tt> <a href="#bug_ncks_cnk">chunking bug</a>;
+Fix <tt>ncra</tt> <a href="#bug_ncra_cf_crd">CF "coordinate" bug</a>;
 Stride works with DAP;
 <li><b>NCO 4.0.4</b>:
 Chunking in all operators; preserve deflation; <tt>ncks</tt> print formatting;
@@ -1419,6 +1420,21 @@ these versions of NCO.
 </ul>
 
 <ul><b>Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncra_cf_crd -->
+<a name="bug_ncra_cf_crd"></a>
+<li><i><tt>ncra</tt> CF "coordinate" bug:</i>
+Versions 4.0.3&mdash;4.0.4 of <tt>ncra</tt> incorrectly treat the
+record variable (usually <tt>time</tt>) as a fixed variable if it 
+is specified in the <tt>coordinates</tt> attribute of any variable in
+a file processed with CCM/CCSM/CF metadata conventions. 
+This bug caused core dumps, and even weirder behavior like 
+creating imaginary time slices in the ouput.
+
+One workaround that does not require NCO upgrades is to remove the
+record coordinate name (usually <tt>time</tt>) from
+the <tt>coordinates</tt> attribute of all variables in CF-compliant
+files before applying <tt>ncra</tt> to the file.
+
 <!-- http://nco.sf.net#bug_ncks_cnk -->
 <a name="bug_ncks_cnk"></a>
 <li><i><tt>ncks</tt> chunking bug:</i>
