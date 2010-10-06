@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.80 2010-10-05 23:18:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.81 2010-10-06 17:51:07 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1353,61 +1353,59 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
   int jdx;
   int kdx;
   int nbr_dim;
-  /* int dmn_idx; */
-  /* long srd_prd=1L; */ /* [nbr] Product of strides */
+  int dmn_idx; 
+  long srd_prd=1L;  /* [nbr] Product of strides */
   
   for(idx=0;idx<nbr_var;idx++){
 
     nbr_dim=var[idx]->nbr_dim;
 
-  /* GET VARIABLE DATA */
+    /* GET VARIABLE DATA */
   
-  /* Deal with scalar var */
-  if(nbr_dim==0){
-   var[idx]->val.vp=nco_malloc(nco_typ_lng(var[idx]->type));
-   (void)nco_get_var1(in_id,var[idx]->id,0L,var[idx]->val.vp,var[idx]->type);
-  }else{
-    lmt_all_sct **lmt_mult;
-	lmt_sct **lmt;
-
-    lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
-    lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
-
-    /* Initialize lmt_mult with multi-limits from lmt_lst limits */
-    for(jdx=0;jdx<nbr_dim;jdx++){
-      for(kdx=0;kdx<nbr_dmn_fl;kdx++){
-      if(!strcmp(var[idx]->dim[jdx]->nm,lmt_lst[kdx]->dmn_nm ) ){
-	lmt_mult[jdx]=lmt_lst[kdx];
-        break;
-       } /* end if */
-      } /* end loop over jdx */
-    } /* end idx */
+    /* Deal with scalar var */
+    if(nbr_dim==0){
+      var[idx]->val.vp=nco_malloc(nco_typ_lng(var[idx]->type));
+      (void)nco_get_var1(in_id,var[idx]->id,0L,var[idx]->val.vp,var[idx]->type);
+    }else{
+      lmt_all_sct **lmt_mult;
+      lmt_sct **lmt;
+      
+      lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+      lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
+      
+      /* Initialize lmt_mult with multi-limits from lmt_lst limits */
+      for(jdx=0;jdx<nbr_dim;jdx++){
+	for(kdx=0;kdx<nbr_dmn_fl;kdx++){
+	  if(!strcmp(var[idx]->dim[jdx]->nm,lmt_lst[kdx]->dmn_nm ) ){
+	    lmt_mult[jdx]=lmt_lst[kdx];
+	    break;
+	  } /* end if */
+	} /* end loop over jdx */
+      } /* end idx */
+      
+      /* Call super-dooper recursive routine */
+      /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
+      var[idx]->val.vp=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var[idx]);
   
-    /* Call super-dooper recursive routine */
-    /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-    var[idx]->val.vp=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var[idx]);
-  
-    (void)nco_free(lmt_mult);
-    (void)nco_free(lmt);
-   } /* end else nbr_dim */
+      (void)nco_free(lmt_mult);
+      (void)nco_free(lmt);
+    } /* end else nbr_dim */
       
     /*(void)nco_msa_var_get(in_id,var[idx],lmt_lst,nbr_dmn_fl); */  
   
-	/* PUT VARIABLE DATA */
+    /* PUT VARIABLE DATA */
 	  		  
     if(var[idx]->nbr_dim == 0)
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->val.vp,var[idx]->type);
     else{ /* end if variable is scalar */
       if(var[idx]->sz > 0){ /* Do nothing for zero-size record variables */
 	/* Is stride > 1? */
-        /*
 	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
 
 	if(srd_prd == 1L)
 	  nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->val.vp,var[idx]->type);
 	else
-        */
-	  (void)nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
+	  nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
 	
       } /* end if var_sz */
     } /* end if variable is an array */

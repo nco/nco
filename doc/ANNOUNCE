@@ -1,13 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.396 2010-10-05 19:59:44 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.397 2010-10-06 17:51:07 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This is a "brown paper bag" release intended to push out one bugfix
+This is a "brown paper bag" release intended to push out two
+separate and important bugfixes affecting ncks and ncra.
 
 http://nco.sf.net#bug_ncks_cnk
+http://nco.sf.net#bug_ncra_cf_crd
 
 Work on NCO 4.0.6 is underway. Areas of improvement include
 support for spectral transforms, more chunking rulesets.
@@ -32,7 +34,13 @@ ncea -d 0,1,lat in4.nc out4.nc
 
 This works because ncea does a no-op when there is only one input file.
 
-B. There is a known problem triggered by using the stride argument
+B. Fix bug where ncra incorrectly treats record variable as a 
+   fixed variable if it is specified in the "coordinates" attribute 
+   of any variable in a file processed with CCM/CCSM/CF metadata
+   conventions. This bug caused core dumps. And even weirder 
+   behavior like creating imaginary time slices in the ouput.
+
+C. There is a known problem triggered by using the stride argument
    when accessing a file through the DAP protocol. fxm.
 
    ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc

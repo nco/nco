@@ -1,10 +1,18 @@
-2010-10-05  Charlie Zender  <zender@uci.edu>
+2010-10-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.5 release procedure:
  	Changes since nco-4_0_4: ncks chunk bug
 	cd ~/nco;cvs tag -d nco-4_0_5;cvs tag -d nco-4_0_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release"
 	cvs tag -c nco-4_0_5;cvs tag -c nco-4_0_5-1
+
+	* Fix bug where ncra incorrectly treats record variable as a 
+	fixed variable if it is specified in the "coordinates" attribute 
+	of any variable	in a file being processed under CCM/CCSM/CF 
+	metadata conventions. This bug caused core dumps. And even 
+	weirder behavior like creating imaginary time slices.
+
+2010-10-05  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncks chunking bug http://nco.sf.net#bug_ncks_cnk
 
