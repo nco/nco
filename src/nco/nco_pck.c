@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.79 2010-09-13 18:06:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.80 2010-10-08 22:02:54 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -18,7 +18,13 @@
    From netCDF User's Guide:
    scale_factor: If present for a variable, the data are to be multiplied by this factor after the data are read by the application that accesses the data
    add_offset: If present for a variable, this number is added to the data after the data are read by the application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
-   When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double. */
+   When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double.
+
+   20101007 Dave Allured says that Unidata says this in NetCDF Best Practices: 
+   "The _FillValue attribute should have the same data type as the variable it describes. If the variable is packed using scale_factor and add_offset attributes, the _FillValue attribute should have the data type of the packed data." 
+   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Missing%20Data%20Values 
+
+   CF conventions say about the same thing. If there is a mismatch between the attribute type and the data type, or if an incorrect value was stored in the _FillValue attribute, then manual intervention is needed. However note that storing -999 in an attribute of type short vs. integer is not much of a problem, because the two are are numerically identical. The important question in this case is whether ncra has an automatic method to exclude missing values from being transformed by averaging, in the face of a packed variable. If so, how is it done, or where in the documentation is it described. */
 
 const char * /* O [sng] Packing map string */
 nco_pck_map_sng_get /* [fnc] Convert packing map enum to string */

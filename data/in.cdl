@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.120 2010-10-08 00:20:20 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.121 2010-10-08 22:02:54 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -279,13 +279,13 @@ variables:
 	rec_var_pck_scale_factor_only:scale_factor = 10.0d;
 
 	short pck;
-	pck:long_name = "Packed scalar variable";
+	pck:long_name = "Scalar variable, double, packed as short";
 	pck:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 3.0 = 2.0d*1s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
 	pck:scale_factor = 2.0d;
 	pck:add_offset = 1.0d;
 
 	short pck_arr(lon);
-	pck_arr:long_name = "Packed array";
+	pck_arr:long_name = "Array variable, double, packed as short";
 	pck_arr:note = "Packed value is -32767s, 0s, 1s, 32767s, unpacked is same in double";
 	pck_arr:scale_factor = 1.0d;
 	pck_arr:add_offset = 0.0d;
@@ -629,16 +629,31 @@ variables:
 
 	double rec_var_dbl_mss_val_dbl_upk(time);
 	rec_var_dbl_mss_val_dbl_upk:long_name = "record variable, double, with double missing values";
-	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its _FillValue should not be too far out of range, i.e., it should be representable by a short. However, the _FillValue should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
+	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its _FillValue should not be out of range, i.e., it should be representable by a short. However, the _FillValue should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
 	rec_var_dbl_mss_val_dbl_upk:_FillValue = -999.;
+	rec_var_dbl_mss_val_dbl_upk:missing_value = -999.;
+
+	double rec_var_dbl_mss_val_sht_upk(time);
+	rec_var_dbl_mss_val_sht_upk:long_name = "record variable, double, with double missing values";
+	rec_var_dbl_mss_val_sht_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_sht_pck, so its _FillValue should not be out of range, i.e., it should be representable by a short. However, the _FillValue should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
+	rec_var_dbl_mss_val_sht_upk:_FillValue = -999s;
+	rec_var_dbl_mss_val_sht_upk:missing_value = -999s;
 
 	short rec_var_dbl_mss_val_dbl_pck(time);
-	rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, with double missing values, packed";
+	rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, packed as short, with double missing values";
 	rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk";
-	rec_var_dbl_mss_val_dbl_pck:_FillValue = -999s;
+	rec_var_dbl_mss_val_dbl_pck:_FillValue = -999.;
 	rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
         rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck:add_offset = 5. ;
+
+	short rec_var_dbl_mss_val_sht_pck(time);
+	rec_var_dbl_mss_val_sht_pck:long_name = "record variable, double, packed as short, with short missing values";
+	rec_var_dbl_mss_val_sht_pck:purpose = "Packed version of rec_var_dbl_mss_val_sht_upk";
+	rec_var_dbl_mss_val_sht_pck:_FillValue = -999s;
+	rec_var_dbl_mss_val_sht_pck:missing_value = -999s;
+        rec_var_dbl_mss_val_sht_pck:scale_factor = -9.15541313801785e-05;
+        rec_var_dbl_mss_val_sht_pck:add_offset = 5. ;
 
 	short scl_dbl_pck;
 	scl_dbl_pck:long_name = "scalar variable, double, packed";
@@ -663,19 +678,19 @@ variables:
 	rec_var_flt_mss_val_flt_all_but_two:_FillValue = 1.0e36f;
 
 	short rec_var_flt_pck(time);
-	rec_var_flt_pck:long_name = "record variable, float, packed";
+	rec_var_flt_pck:long_name = "record variable, float, packed into short";
         rec_var_flt_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly";
         rec_var_flt_pck:scale_factor = 0.1f;
         rec_var_flt_pck:add_offset = 100.0f;
 
 	short rec_var_dbl_pck(time);
-	rec_var_dbl_pck:long_name = "record variable, double, packed";
+	rec_var_dbl_pck:long_name = "record variable, double, packed into short";
         rec_var_dbl_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly";
         rec_var_dbl_pck:scale_factor = 0.1;
 	rec_var_dbl_pck:add_offset = 100.0;
 	
 	short non_rec_var_flt_pck(lon);
-		non_rec_var_flt_pck:long_name = "regular variable, float, packed";
+	non_rec_var_flt_pck:long_name = "regular variable, float, packed into short";
         non_rec_var_flt_pck:purpose = "Demonstrate that non-rec dim packed vars are handled correctly";
         non_rec_var_flt_pck:scale_factor = 0.1f;
         non_rec_var_flt_pck:add_offset = 100.0f;
@@ -708,7 +723,7 @@ variables:
 	int rec_var_dbl_mss_val_dbl_pck_lng(time);
 	rec_var_dbl_mss_val_dbl_pck_lng:long_name = "record variable, double packed as long, with double missing values";
 	rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) offers considerable space savings";
-	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999;
+	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999.0;
 	rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999.0;
         rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05 ;
         rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5. ;
@@ -1027,23 +1042,25 @@ data:
 	Q98=98;
 	Q99=99;
 	Q100=100;
-	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
-	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
-	rec_var_flt_pck=1,2,3,4,5,6,7,8,9,10;
-	rec_var_dbl_pck=1,2,3,4,5,6,7,8,9,10;
 	non_rec_var_flt_pck=1,2,3,4;
+	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_dbl_mss_val_dbl_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
+	rec_var_dbl_mss_val_dbl_pck_lng=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_dbl_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
+	rec_var_dbl_mss_val_sht_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
+	rec_var_dbl_mss_val_sht_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
+	rec_var_dbl_pck=1,2,3,4,5,6,7,8,9,10;
+	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt_all=1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt_all_but_one=1.0e36,1.0e36,1.0e36,1.0e36,5.0,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt_all_but_two=1.0e36,1.0e36,1.0e36,1.0e36,5.0,1.0e36,1.0e36,1.0e36,1.0e36,10.0;
 	rec_var_flt_mss_val_int=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
-	rec_var_int_mss_val_int=-999,2,3,4,5,6,7,8,-999,-999;
-	rec_var_int_mss_val_flt=-999,2,3,4,5,6,7,8,-999,-999;
-	rec_var_dbl_mss_val_dbl_pck_lng=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
+	rec_var_flt_pck=1,2,3,4,5,6,7,8,9,10;
 	rec_var_int_mss_val_dbl=-999,2,3,4,5,6,7,8,-999,-999;
+	rec_var_int_mss_val_flt=-999,2,3,4,5,6,7,8,-999,-999;
+	rec_var_int_mss_val_int=-999,2,3,4,5,6,7,8,-999,-999;
 	rlev=1000,500,100;
 	rz=0,5000,17000;
 	scl_dbl_pck=10922;

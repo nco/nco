@@ -10,6 +10,8 @@
 
 	* Fix typos in comments
 
+	* Improve in.cdl diagnostics for packed variables and _FillValue
+
 2010-10-07  Charlie Zender  <zender@uci.edu>
 
 	* Translate two-character user-input string "\0" to NUL.

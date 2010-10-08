@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.91 2010-10-06 17:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.92 2010-10-08 22:02:54 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -461,14 +461,14 @@ nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Get number of dimensions */
-  (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
+  rcd+=nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
 
   /* ...for each dimension in input file... */
   for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
     /* ...see if it is coordinate dimension... */
-    (void)nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
+    rcd+=nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
      
-    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
+    rcd+=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
     if(rcd == NC_NOERR){ /* Valid coordinate (same name of dimension and variable) */
       /* Is coordinate already on extraction list? */
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
