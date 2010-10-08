@@ -1,4 +1,4 @@
-2010-10-06  Charlie Zender  <zender@uci.edu>
+2010-10-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.5 release procedure:
  	Changes since nco-4_0_4: ncks chunk bug
@@ -6,10 +6,17 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release"
 	cvs tag -c nco-4_0_5;cvs tag -c nco-4_0_5-1
 
-	* Fix bug where ncra incorrectly treats record variable as a 
-	fixed variable if it is specified in the "coordinates" attribute 
-	of any variable	in a file being processed under CCM/CCSM/CF 
-	metadata conventions. This bug caused core dumps. And even 
+	* Translate two-character user-input string "\0" to NUL.
+	This allows ncatted and ncap2 users to insert NUL into strings
+	and to NUL-initialize strings with, e.g., 
+	sng_new[lat,sng_lng]="\0";
+
+2010-10-06  Charlie Zender  <zender@uci.edu>
+
+	* Fix bug where ncra incorrectly treats record variable as a
+	fixed variable if it is specified in the "coordinates" attribute
+	of any variable	in a file being processed under CCM/CCSM/CF
+	metadata conventions. This bug caused core dumps. And even
 	weirder behavior like creating imaginary time slices.
 
 2010-10-05  Charlie Zender  <zender@uci.edu>
@@ -45,7 +52,7 @@
 
 	* Adding string conversion checking to nco_lmt.c, nco_att_utl.c
 	caused one ephemeral new ncrcat regression? Which has mysteriously
-	disappeared.... 
+	disappeared....
 
 	* Fix harmless problem that valgrind flagged where ncap2 relied on
 	an uninitialized value of dmn->cid in nco_var_fll().

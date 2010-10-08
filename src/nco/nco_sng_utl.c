@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.30 2010-07-29 18:49:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.31 2010-10-08 00:20:21 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -99,12 +99,14 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
      The escape sequence for NUL itself, \0, causes a warning and is not translated
      Input string must be NUL-terminated or NULL
      This procedure can only diminish, not lengthen, input string size
-     Therefore it may be performed in place safely, i.e., not string copy is necessary
-     Translation is done in place so copy original prior to calling sng_ascii_trn()!!!
+     Therefore it may safely be performed in-place, i.e., no string copy is necessary
+     Translation is done in-place so copy original prior to calling sng_ascii_trn()!!!
 
      Address pointed to by sng does not change, but memory at that address is altered
      when characters are "moved to the left" if C language escape sequences are embedded.
      Thus string length may shrink */
+
+  const char fnc_nm[]="sng_ascii_trn()"; /* [sng] Function name */
 
   nco_bool trn_flg; /* Translate this escape sequence */
 
@@ -113,6 +115,7 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
 
   int esc_sqn_nbr=0; /* Number of escape sequences found */
   int trn_nbr=0; /* Number of escape sequences translated */
+  int sng_lng_rgn; /* [nbr] Original string length */
   
   /* ncatted allows character attributes of 0 length
      Such "strings" do not have NUL-terminator and so may not safely be tested by strchr() */
@@ -138,12 +141,12 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
     case '\?': *backslash_ptr='\?'; break; /* Unsure why or if this works! */
     case '\'': *backslash_ptr='\''; break; /* Unsure why or if this works! */
     case '\"': *backslash_ptr='\"'; break; /* Unsure why or if this works! */
-      /* Do not translate \0 to NUL since this would "erase" the rest of the string */
     case '0':	
-      /* Do not translate \0 to NUL since this would make the rest of the string invisible to all string functions */
-      /* *backslash_ptr='\0'; *//* 000   0     00    NUL '\0' */
-      (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the rest of the string invisible to all string functions\n",prg_nm_get(),backslash_ptr);
-      trn_flg=False;
+      /* Translating \0 to NUL makes subsequent portion of input string invisible to all string functions */
+      *backslash_ptr='\0'; /* 000   0     00    NUL '\0' */
+      (void)fprintf(stderr,"%s: WARNING translating C language escape code \"\\0\" found in user-supplied string to NUL. This will make the subsequent portion of the string, if any, invisible to C standard library string functions. And that may cause unintended consequences.\n",prg_nm_get(),backslash_ptr);
+      /* (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the rest of the string invisible to all string functions\n",prg_nm_get(),backslash_ptr); */
+      /*	 trn_flg=False;*/
       break;
     default: 
       (void)fprintf(stderr,"%s: WARNING No ASCII equivalent to possible C language escape code %.2s so no action taken\n",prg_nm_get(),backslash_ptr);
@@ -151,19 +154,19 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
       break;
     } /* end switch */
     if(trn_flg){
-      /* Get rid of character after backslash character */
+      /* Remove character after backslash character */
       (void)memmove(backslash_ptr+1,backslash_ptr+2,(strlen(backslash_ptr+2)+1)*sizeof(char));
       /* Count translations performed */
       trn_nbr++;
     } /* end if */
     /* Look for next backslash starting at character following current escape sequence (but remember that not all escape sequences are translated) */
-    if (trn_flg) backslash_ptr=strchr(backslash_ptr+1,backslash_chr); else backslash_ptr=strchr(backslash_ptr+2,backslash_chr);
+    if(trn_flg) backslash_ptr=strchr(backslash_ptr+1,backslash_chr); else backslash_ptr=strchr(backslash_ptr+2,backslash_chr);
     /* Count escape sequences */
     esc_sqn_nbr++;
   } /* end if */
 
   /* Usually there are no escape codes and sng still equals input value */
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG sng_ascii_trn() Found %d C-language escape sequences, translated %d of them\n",prg_nm_get(),esc_sqn_nbr,trn_nbr);
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s Found %d C-language escape sequences, translated %d of them\n",prg_nm_get(),fnc_nm,esc_sqn_nbr,trn_nbr);
 
   return trn_nbr;
 } /* end sng_ascii_trn() */

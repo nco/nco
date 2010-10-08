@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.397 2010-10-06 17:51:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.398 2010-10-08 00:20:21 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
@@ -40,7 +40,12 @@ B. Fix bug where ncra incorrectly treats record variable as a
    conventions. This bug caused core dumps. And even weirder 
    behavior like creating imaginary time slices in the ouput.
 
-C. There is a known problem triggered by using the stride argument
+C. Translate two-character user-input string "\0" to NUL.
+   This allows ncatted and ncap2 users to NUL-initialize strings with, e.g.,
+   sng_new[lat,sng_lng]="\0"; 
+   However, this also makes it easy for users to shoot their feet.
+
+D. There is a known problem triggered by using the stride argument
    when accessing a file through the DAP protocol. fxm.
 
    ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc

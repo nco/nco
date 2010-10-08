@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.605 2010-10-05 05:59:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.606 2010-10-08 00:20:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.5
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 23 September 2010
-@set update-month September 2010
+@set update-date 7 October 2010
+@set update-month October 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -9375,11 +9375,17 @@ Backslashes which precede any other character (e.g., @code{3}, @code{m},
 @cindex @code{0} (NUL)
 Note that the NUL character @code{\0} which terminates @w{C language}
 strings is assumed and need not be explicitly specified.
-If @code{\0} is input, it will not be translated (because it would
-terminate the string in an additional location).
-Because of these context-sensitive rules, if wish to use an attribute of 
-type @code{NC_CHAR} to store data, rather than text strings, you should use
-@command{ncatted} with care.
+@comment If @code{\0} is input, it will not be translated (because it would
+@comment terminate the string in an additional location).
+@comment 20101007 Before today, \0 was not translated to NUL
+@comment 20101007 As of today,  \0 is      translated to NUL
+If @code{\0} is input, it is translated to the NUL character.
+However, this will make the subsequent portion of the string, if any,
+invisible to @w{C standard} library string functions. 
+And that may cause unintended consequences.
+Because of these context-sensitive rules, one must use @command{ncatted}
+with care in order to store data, rather than text strings, in an 
+attribute of type @code{NC_CHAR}.
 
 @noindent
 @html
