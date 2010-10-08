@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.259 2010-09-24 16:21:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.260 2010-10-08 19:02:19 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.259 2010-09-24 16:21:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.259 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.260 2010-10-08 19:02:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.260 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -508,7 +508,7 @@ main(int argc,char **argv)
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
 
-  /* Make sure coordinates associated extracted variables are also on extraction list */
+  /* Make sure coordinates associated with extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
 
   /* Sort extraction list by variable ID for fastest I/O */

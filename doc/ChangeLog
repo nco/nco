@@ -1,4 +1,4 @@
-2010-10-07  Charlie Zender  <zender@uci.edu>
+2010-10-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.5 release procedure:
  	Changes since nco-4_0_4: ncks chunk bug
@@ -6,9 +6,15 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release"
 	cvs tag -c nco-4_0_5;cvs tag -c nco-4_0_5-1
 
+	* Improve debugging messages in nco_lmt.c
+
+	* Fix typos in comments
+
+2010-10-07  Charlie Zender  <zender@uci.edu>
+
 	* Translate two-character user-input string "\0" to NUL.
 	This allows ncatted and ncap2 users to insert NUL into strings
-	and to NUL-initialize strings with, e.g., 
+	and to NUL-initialize strings with, e.g.,
 	sng_new[lat,sng_lng]="\0";
 
 2010-10-06  Charlie Zender  <zender@uci.edu>

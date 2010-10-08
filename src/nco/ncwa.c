@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.285 2010-09-24 17:05:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.286 2010-10-08 19:02:19 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.285 2010-09-24 17:05:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.285 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.286 2010-10-08 19:02:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.286 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -559,7 +559,7 @@ main(int argc,char **argv)
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
 
-  /* Make sure coordinates associated extracted variables are also on extraction list */
+  /* Make sure coordinates associated with extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
 
   /* Sort extraction list by variable ID for fastest I/O */

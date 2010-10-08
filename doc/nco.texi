@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.606 2010-10-08 00:20:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.607 2010-10-08 19:02:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2598,6 +2598,7 @@ precedence.
 @cindex @acronym{URL}
 @cindex @code{ftp}
 @cindex @code{sftp}
+@cindex @code{wget}
 @cindex remote files
 @cindex synchronous file access
 @cindex asynchronous file access
@@ -2706,7 +2707,7 @@ ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
 ncks -l . dust.ess.uci.edu:/home/zender/nco/data/in.nc
 ncks -l . /ZENDER/nco/in.nc 
 ncks -l . mss:/ZENDER/nco/in.nc
-ncks -l . http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc 
+ncks -l . http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc 
 @end example
 @noindent
 The first example works verbatim if your system is connected to the
@@ -2719,7 +2720,8 @@ The fourth and fifth examples work on @acronym{NCAR} computers with
 local access to the @command{msrcp}, @command{msread}, or
 @command{nrnet} commands. 
 The sixth command works if your local version of @acronym{NCO} is
-@acronym{OPeNDAP}-enabled (this is fully described in @ref{OPeNDAP}).  
+@acronym{OPeNDAP}-enabled (this is fully described in @ref{OPeNDAP}),
+or if the remote file is accessible via @command{wget}.
 The above commands can be rewritten using the @samp{-p @var{input-path}} 
 option as follows: 
 @cindex @code{-p @var{input-path}}
@@ -2732,7 +2734,7 @@ ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l . in.nc
 ncks -p dust.ess.uci.edu:/home/zender/nco -l . in.nc
 ncks -p /ZENDER/nco -l . in.nc 
 ncks -p mss:/ZENDER/nco -l . in.nc
-ncks -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \ 
+ncks -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \ 
      -l . in.nc
 @end example
 @noindent
@@ -2882,8 +2884,7 @@ This command tests the basic functionality of @acronym{OPeNDAP}-enabled
 @acronym{NCO} clients: 
 @example
 % ncks -o ~/foo.nc -C -H -v one -l /tmp \
-  -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
-one = 1
+  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
 % ncks -H -v one ~/foo.nc
 one = 1
 @end example
@@ -12759,6 +12760,11 @@ OPeNDAP server examples:
 UCI DAP servers:
 ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
+  -l /tmp in.nc in.nc ~/foo.nc
+
+Unidata DAP servers:
+ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
+ncrcat -O -C -D 3 -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \
   -l /tmp in.nc in.nc ~/foo.nc
 
 NOAA DAP servers:

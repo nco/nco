@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.262 2010-09-30 04:02:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.263 2010-10-08 19:02:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.262 2010-09-30 04:02:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.262 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.263 2010-10-08 19:02:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.263 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -548,7 +548,7 @@ main(int argc,char **argv)
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
 
-  /* Make sure coordinates associated extracted variables are also on extraction list */
+  /* Make sure coordinates associated with extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
 
   /* Sort extraction list alphabetically or by variable ID */

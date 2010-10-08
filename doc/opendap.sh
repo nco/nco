@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.14 2009-05-04 22:11:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.15 2010-10-08 19:02:18 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -28,10 +28,12 @@
 # http://esmf.ess.uci.edu/dodsdata/
 
 # Example DAP-enabled commands:
-# ncks -M http://dust.ess.uci.edu/nco in.nc # fails
-# ncks -M -p http://dust.ess.uci.edu/nco in.nc # fails
-# ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
-# ncra -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+# ncks -M http://dust.ess.uci.edu/nco/in.nc # wget
+# ncks -M -p http://dust.ess.uci.edu/nco in.nc # wget
+# ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP (borken server)
+# ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # DAP
+# ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in_4.nc # DAP
+# ncra -O -C -D 3 -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc in.nc ~/foo.nc
 # ncwa -O -C -D 3 -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
 # ncks -D 3 http://eclipse.ncdc.noaa.gov:9090/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC -d lat,1,2 -d lon,1,2 ~/test.nc 
 # ncks -M -p http://username:password@esgcet.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
