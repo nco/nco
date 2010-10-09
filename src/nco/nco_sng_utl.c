@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.31 2010-10-08 00:20:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.32 2010-10-09 05:51:46 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -115,7 +115,6 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
 
   int esc_sqn_nbr=0; /* Number of escape sequences found */
   int trn_nbr=0; /* Number of escape sequences translated */
-  int sng_lng_rgn; /* [nbr] Original string length */
   
   /* ncatted allows character attributes of 0 length
      Such "strings" do not have NUL-terminator and so may not safely be tested by strchr() */
@@ -144,7 +143,7 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
     case '0':	
       /* Translating \0 to NUL makes subsequent portion of input string invisible to all string functions */
       *backslash_ptr='\0'; /* 000   0     00    NUL '\0' */
-      (void)fprintf(stderr,"%s: WARNING translating C language escape code \"\\0\" found in user-supplied string to NUL. This will make the subsequent portion of the string, if any, invisible to C standard library string functions. And that may cause unintended consequences.\n",prg_nm_get(),backslash_ptr);
+      (void)fprintf(stderr,"%s: WARNING translating C language escape code \"\\0\" found in user-supplied string to NUL. This will make the subsequent portion of the string, if any, invisible to C standard library string functions. And that may cause unintended consequences.\n",prg_nm_get());
       /* (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the rest of the string invisible to all string functions\n",prg_nm_get(),backslash_ptr); */
       /*	 trn_flg=False;*/
       break;

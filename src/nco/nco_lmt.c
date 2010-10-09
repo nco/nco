@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.104 2010-10-08 19:02:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.105 2010-10-09 05:51:46 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -314,8 +314,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     
     /* ncra and ncrcat read the "calendar" attribute in main() 
        Avoid multiple reads of calendar attritbute in multi-file operations */
-    if(!rec_dmn_and_mlt_fl_opr)
+    if(!rec_dmn_and_mlt_fl_opr){
       if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
+    } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
   } /* end rcd */
   
