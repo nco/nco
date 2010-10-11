@@ -1,7 +1,7 @@
 2010-10-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.5 release procedure:
- 	Changes since nco-4_0_4: ncks chunk bug
+ 	Changes since nco-4_0_4: ncks chunk bug, ncra CF bug
 	cd ~/nco;cvs tag -d nco-4_0_5;cvs tag -d nco-4_0_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release"
 	cvs tag -c nco-4_0_5;cvs tag -c nco-4_0_5-1
