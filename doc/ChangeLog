@@ -1,16 +1,20 @@
 2010-10-11  Charlie Zender  <zender@uci.edu>
 
-	* Fix (perhaps) HDF5_LIB_DIR handling in configure.in
-
-	* Daily-build libnetcdf4 fixes problem writing ushort_max=65535us
-
-2010-10-08  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.0.5 release procedure:
  	Changes since nco-4_0_4: ncks chunk bug
 	cd ~/nco;cvs tag -d nco-4_0_5;cvs tag -d nco-4_0_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release"
 	cvs tag -c nco-4_0_5;cvs tag -c nco-4_0_5-1
+
+	* Verify (fxm) Debian builds netCDF4-enabled NCO with libnetcdf6
+
+	* Change from Debian libnetcdf4 to libnetcdf6 thanks to Maverick Meerkat
+
+	* Fix (perhaps) HDF5_LIB_DIR handling in configure.in
+
+	* Daily-build libnetcdf4 fixes problem writing ushort_max=65535us
+
+2010-10-08  Charlie Zender  <zender@uci.edu>
 
 	* Improve debugging messages in nco_lmt.c
 

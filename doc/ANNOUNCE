@@ -1,18 +1,19 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.398 2010-10-08 00:20:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.399 2010-10-11 21:50:38 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This is a "brown paper bag" release intended to push out two
-separate and important bugfixes affecting ncks and ncra.
+This is a "brown paper bag" release intended to deliver
+important bugfixes affecting ncks and ncra.
 
 http://nco.sf.net#bug_ncks_cnk
 http://nco.sf.net#bug_ncra_cf_crd
 
-Work on NCO 4.0.6 is underway. Areas of improvement include
-support for spectral transforms, more chunking rulesets.
+Work on NCO 4.0.6 is underway. 
+Areas of improvement include DAP transparency,
+and more chunking rulesets.
 
 "New stuff" in 4.0.5 details:
 

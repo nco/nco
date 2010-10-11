@@ -42,6 +42,11 @@ else
 	DEB_NETCDF_INC='/usr/include'
 	DEB_NETCDF_LIB='/usr/lib'
 endif
+ifneq (,$(findstring dap-netcdf,$(DEB_BUILD_OPTIONS)))
+	confflags += --enable-dap-netcdf
+else
+	confflags += --disable-dap-netcdf
+endif
 ifneq (,$(findstring netcdf4,$(DEB_BUILD_OPTIONS)))
 	confflags += --enable-netcdf4
 	CPPFLAGS += -DHAVE_NETCDF4_H
@@ -71,7 +76,6 @@ config.status: configure
 		--mandir=/usr/share/man \
 		--enable-gsl \
 		--enable-ncap2 \
-		--disable-dap-netcdf \
 		--disable-dap-opendap \
 		--disable-nco_cplusplus \
 		--disable-udunits \
