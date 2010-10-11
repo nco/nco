@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.330 2010-10-11 20:07:36 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.331 2010-10-11 23:37:13 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -783,8 +783,8 @@ echo "#     Testing for UDUNITS support      #"
 echo "########################################"
 # Begin UDUnits support
 echo "Beginning generic tests for UDUnits"
-AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=yes]]]),enable_udunits=${enableval},enable_udunits=yes)
-AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [[default=no]]]),enable_udunits2=${enableval},enable_udunits2=yes)
+AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=no]]]),enable_udunits=${enableval},enable_udunits=yes)
+AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [[default=yes]]]),enable_udunits2=${enableval},enable_udunits2=yes)
 # Are both UDUnits and UDUnits2 requested?
 echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_udunits2}"
 if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
@@ -858,11 +858,12 @@ if test "${enable_udunits2}" != 'no'; then
     elif test "${NETCDF_INC}"; then
 	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
     else
+# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
 # NB: 20100729 udunits2.xml location seems to have changed from 
 # /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
 # Not sure of location in more recent Fedora systems...
 # Updating patch from Fedora Core 6 nco.spec:
-	for udunits2_data_file in /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml ; do
+	for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml ; do
 	    if test -e "$udunits2_data_file" ; then
 		nco_udunits2_xml="$udunits2_data_file"
 	    fi

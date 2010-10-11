@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.152 2010-10-11 22:32:39 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.153 2010-10-11 23:37:13 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -161,13 +161,13 @@ tar cvzf ./nco_4.0.5.orig.tar.gz --exclude='nco-4.0.5/debian*' --exclude='.cvsig
 /bin/rm -rf ${DATA}/nco-4.0.5 # Remove cvs-exported directory
 tar xvzf ./nco_4.0.5.orig.tar.gz # Untar to get directory without excluded files
 mkdir -p ${DATA}/nco-4.0.5/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.5/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.5/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
-# export DEB_BUILD_OPTIONS='' # Reset to default
-export DEB_BUILD_OPTIONS='dap-netcdf netcdf4'; # Configure local packages to take precedence over Debian-installed
+export DEB_BUILD_OPTIONS='dap-netcdf netcdf4 udunits2'; # Configure optional packages based on available Debian support
 #cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
 #cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
 cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
 sudo dpkg --remove nco
 sudo dpkg --install ${DATA}/nco_4.0.5-1_*.deb
+cd ~/nco/bld;MY_BIN_DIR=/usr/bin ../bm/nco_bm.pl --regress
 # http://lintian.debian.org/full/zender@uci.edu.html
 lintian ${DATA}/nco_4.0.5-1_*.deb
 ls -l ${DATA}/nco_4.0.5*

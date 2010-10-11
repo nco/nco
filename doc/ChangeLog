@@ -6,7 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release"
 	cvs tag -c nco-4_0_5;cvs tag -c nco-4_0_5-1
 
-	* Verify (fxm) Debian builds netCDF4-enabled NCO with libnetcdf6
+	* Alter builds to use Debian-supplied UDUnits2
+
+	* Verify Debian builds netCDF4 and DAP-enabled NCO with libnetcdf6
 
 	* Change from Debian libnetcdf4 to libnetcdf6 thanks to Maverick Meerkat
 
