@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.14 2010-10-05 05:59:12 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.15 2010-10-11 20:07:36 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 // Stress-test netCDF4 atomic types and features
@@ -38,6 +38,7 @@ var_string_arr[char_dmn_lng04]={"Hello, World!"s,"Same to you.\nPunctuation may 
 // Test arithmetic ranges
 var_short_max=32767s;
 var_short_ttl=var_short+var_short;
+var_short_ttl_max=var_short_max+var_short_max; // 20090504: -2 overflow OK
 var_int64_ttl=var_int64+var_int64;
 var_int64_max=9223372036854775807ll;
 var_int64_ttl_max=var_int64_max+var_int64_max; // 20090504: -2 overflow OK
@@ -46,9 +47,8 @@ var_uint64_ttl=0ull+var_int64+var_int64;
 var_uint64_ttl_max=var_uint64_max+var_uint64_max; // 20090504: 18446744073709551614ull overflow OK?
 var_uint64_prd=2*9223372036854775807ull;
 var_uint64_dff=var_uint64_max-1;
-// var_short_ttl_max=var_short_max+var_short_max; // 20090504: -2 overflow OK
-// var_ushort_ngt=-var_ushort; // 20080512: = 65535 overflow OK
-// var_ushort_ngt_2=-1us; // 20080512: = 65535 overflow OK
+var_ushort_ngt=-var_ushort; // 20080512: = 65535 overflow OK
+var_ushort_ngt_2=-1us; // 20080512: = 65535 overflow OK
 var_ushort_max=65535us;
 var_ushort_ttl=var_ushort+var_ushort;
 var_ushort_ttl_max=var_ushort_max+var_ushort_max; // 20090504: 65534 overflow OK

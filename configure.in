@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.329 2010-09-24 18:34:34 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.330 2010-10-11 20:07:36 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -347,9 +347,13 @@ AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
 if test "${enable_netcdf4}" = 'yes'; then
 # Assume HDF5 libraries are in standard places, let user override
     AC_ARG_VAR([HDF5_LIB_DIR],Location of HDF5 libraries (compile-time))
-    if test "${HDF5_LIB_DIR}"; then
-	LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
-    fi
+    if test "${HDF5_LIB_DIR}" != ''; then
+	if test -d "${HDF5_LIB_DIR}"; then
+	    LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
+	else
+	    echo "WARNING: HDF5_LIB_DIR location \"${HDF5_LIB_DIR}\" does not exist!"
+	fi
+    fi # !HDF5_LIB_DIR
     if test "${NETCDF4_ROOT}" != ''; then
 	if test -d "${NETCDF4_ROOT}"; then
 	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
