@@ -62,7 +62,7 @@ endif
 # Thus environment variables that point, e.g., to /usr/local, are unhelpful
 config.status: configure
 	dh_testdir
-	NETCDF_INC='/usr/inc' NETCDF_LIB='/usr/lib' NETCDF_ROOT='/usr' NETCDF4_ROOT='/usr' \
+	LDFLAGS='' NETCDF_INC='/usr/inc' NETCDF_LIB='/usr/lib' NETCDF_ROOT='/usr' NETCDF4_ROOT='/usr' \
 	./configure $(confflags) \
 		--prefix=/usr \
 		--infodir=/usr/share/info \
