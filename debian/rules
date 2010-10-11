@@ -58,6 +58,9 @@ endif
 # In turn this generates linda warnings about hard-coded rpath
 # Since their Debian packages exist, enable GSL and ncap2
 # Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, UDUnits, and UDUnits2
+# Environment variables NETCDF*, defined in Zender's bashrc, often confuse Debian
+# Debian requires that libraries are known by package-manager
+# Thus environment variables that point, e.g., to /usr/local, are unhelpful
 config.status: configure
 	dh_testdir
 	NETCDF_INC='' NETCDF_LIB='' NETCDF_ROOT='' NETCDF4_ROOT='' \

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.400 2010-10-11 22:20:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.401 2010-10-11 22:32:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
@@ -12,7 +12,8 @@ http://nco.sf.net#bug_ncks_cnk
 http://nco.sf.net#bug_ncra_cf_crd
 
 Also worth mentioning is that the latest Debian (Sid) and Ubuntu
-(Meerkat) packages finally support netCDF4 and DAP.
+(Meerkat) packages finally support netCDF4 and DAP. However, they
+still do not support UDUnits.
 
 http://nco.sf.net#debian
 
