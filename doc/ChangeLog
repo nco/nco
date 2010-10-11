@@ -1,6 +1,6 @@
 2010-10-11  Charlie Zender  <zender@uci.edu>
 
-	* Fix HDF5_LIB_DIR handling in configure.in
+	* Fix (perhaps) HDF5_LIB_DIR handling in configure.in
 
 	* Daily-build libnetcdf4 fixes problem writing ushort_max=65535us
 

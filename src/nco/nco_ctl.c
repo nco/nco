@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.279 2010-10-06 17:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.280 2010-10-11 21:07:15 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -778,7 +778,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "The Girl Who Kicked the Hornet's Nest\n";
+  return "Martini\nLast night I poured glacial vodka into a fluted glass\nwith copper rim, and punctuated it with an olive.\nThe odorless ice hole tasted of licorice and napalm.\nThe cocktail wet my tongue luxuriantly, like drowning.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
