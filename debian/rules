@@ -35,13 +35,6 @@ ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 else
 	CFLAGS += -O2
 endif
-ifneq (,$(findstring local,$(DEB_BUILD_OPTIONS)))
-	DEB_NETCDF_INC='/usr/local/include'
-	DEB_NETCDF_LIB='/usr/local/lib'
-else
-	DEB_NETCDF_INC='/usr/include'
-	DEB_NETCDF_LIB='/usr/lib'
-endif
 ifneq (,$(findstring dap-netcdf,$(DEB_BUILD_OPTIONS)))
 	confflags += --enable-dap-netcdf
 else
