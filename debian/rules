@@ -52,8 +52,7 @@ else
 	confflags += --disable-udunits2
 endif
 
-# Set Debian-default netCDF directories to override development netCDF
-# installations in, e.g., /usr/local
+# Make Debian-default netCDF directories override development netCDF installations in, e.g., /usr/local
 # 20070721: This may inadvertently cause libtool to set set rpath
 # In turn this generates linda warnings about hard-coded rpath
 # Since their Debian packages exist, enable GSL and ncap2
@@ -63,7 +62,7 @@ endif
 # Thus environment variables that point, e.g., to /usr/local, are unhelpful
 config.status: configure
 	dh_testdir
-	NETCDF_INC='' NETCDF_LIB='' NETCDF_ROOT='' NETCDF4_ROOT='' \
+	NETCDF_INC='/usr/inc' NETCDF_LIB='/usr/lib' NETCDF_ROOT='/usr' NETCDF4_ROOT='/usr' \
 	./configure $(confflags) \
 		--prefix=/usr \
 		--infodir=/usr/share/info \
