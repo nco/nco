@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.92 2010-10-08 22:02:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.93 2010-10-12 01:26:58 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -462,6 +462,14 @@ nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables 
 
   /* Get number of dimensions */
   rcd+=nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
+
+  /* 20101011: Dimension IDs in netCDF3 files will be 0..N-1 
+     However, in netCDF4 files, dimension IDs may not enumerate consecutively
+     Keep one code path and assume file may be netCDF4 in structure */
+  /* Create space for dimension IDs */
+  /*  int dmn_id_all[NC_MAX_DIMS];
+  dmn_id_all=(int *)nco_malloc(nbr_dim*sizeof(int));
+  (void)nco_inq_dimid(nc_id,dmn_id_all); */
 
   /* ...for each dimension in input file... */
   for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
