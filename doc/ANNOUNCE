@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.403 2010-10-12 00:03:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.404 2010-10-12 00:11:14 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
@@ -14,13 +14,12 @@ http://nco.sf.net#bug_ncra_cf_crd
 Also worth mentioning is that the latest Debian (Sid) and Ubuntu
 (Maverick) packages finally support DAP, netCDF4, and UDUnits2.
 Those executables are now comparable to what the developers use.
-(RedHat/Fedora has supported these features for years,
+(RedHat/Fedora has supported these features for many years).
 
 http://nco.sf.net#debian
 
 Work on NCO 4.0.6 is underway. 
-Areas of improvement include DAP transparency,
-and more chunking rulesets.
+Areas of improvement include DAP transparency, and more chunking rulesets.
 
 "New stuff" in 4.0.5 details:
 
