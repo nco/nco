@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.612 2010-10-12 01:26:57 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.613 2010-10-12 23:45:45 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -967,6 +967,8 @@ infrequently updated. Comments and suggestions are certainly welcomed on the
 <!-- http://nco.sf.net#bld -->
 <dt><a name="Rqr"></a><a name="rqr"></a></dt> <!-- http://nco.sf.net#rqr -->
 <dt><a name="bld"></a></dt> <!-- http://nco.sf.net#bld -->
+<dt><a name="apt"></a></dt> <!-- http://nco.sf.net#apt -->
+<dt><a name="yum"></a></dt> <!-- http://nco.sf.net#yum -->
 <dt><a name="cmp"></a></dt> <!-- http://nco.sf.net#cmp -->
 <h2>Compilation Requirements</h2>
 
@@ -1015,6 +1017,9 @@ modern Debian- and RPM-based systems with (Debian/Ubuntu)
 
 </ul>
 
+<dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->
+<dt><a name="hnt"></a></dt> <!-- http://nco.sf.net#hnt -->
+<dt><a name="bld_hnt"></a></dt> <!-- http://nco.sf.net#bld_hnt -->
 <h2>Hints to Build-from-Source:</h2>
 
 <ul><b>Generic Build Hints:</b>
@@ -1055,7 +1060,18 @@ The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
 contains gory details of successful (and failed) builds for many platforms.  
 <br>
 All platforms continue to work fine with the <tt>nco/bld/Makefile</tt>
-method: <tt>cd ~/nco/bld;make all;make test</tt>. 
+method: 
+<tt>
+<pre class="example">
+export MY_BIN_DIR='/home/username/bin' # Executables installed here
+export MY_OBJ_DIR='/home/username/obj' # Object files placed here
+export MY_LIB_DIR='/home/username/lib' # Libraries built here
+cd ~/nco/bld
+make dir
+make ncap2 all
+make test
+</pre>
+</tt> 
 Disadvantages are that <tt>nco/bld/Makefile</tt> (1)&nbsp;Usually requires
 editing to fix your platforms paths; (2)&nbsp;Does not support shared
 libraries; and (3)&nbsp;Requires a degree from Hogwarts to understand.
@@ -1076,7 +1092,7 @@ The fix is to manually tell NCO that the netCDF4 header
 file <tt>netcdf.h</tt> is in fact being used so that NCO should
 not attempt to define these prototypes.
 Do this, e.g., with <tt>CPPFLAGS='-DHAVE_NETCDF4_H'</tt> or
-<tt>USR_TKN='-DHAVE_NETCDF4_H'</tt> if you use <tt>configure</tt> 
+<tt>USR_TKN='-DHAVE_NETCDF4_H'</tt> if you use <tt>configure</tt>.
 </li>
 
 <!-- http://nco.sf.net#bld_chn -->
@@ -1284,7 +1300,6 @@ Users at NCAR should try the <i>supported</i> executables in
 <ul>
 <li>CGD network (Solaris 2.x): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUXAMD64</tt></li>
 <li>SCD <tt>bluefire.ucar.edu</tt> (AIX 5.3): <tt>~zender/bin/AIX</tt></li>
 </ul>

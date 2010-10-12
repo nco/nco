@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.109 2010-09-23 23:04:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.110 2010-10-12 23:45:45 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -190,11 +190,11 @@ ifndef SZ
 endif
 ifndef UDUNITS
 # Use UDUnits functionality
- UDUNITS := Y
+ UDUNITS := N
 endif
 ifndef UDUNITS2
 # Use UDUnits2 functionality
- UDUNITS2 := N
+ UDUNITS2 := Y
 endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
