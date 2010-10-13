@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.613 2010-10-12 23:45:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.614 2010-10-13 00:36:55 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1068,7 +1068,8 @@ export MY_OBJ_DIR='/home/username/obj' # Object files placed here
 export MY_LIB_DIR='/home/username/lib' # Libraries built here
 cd ~/nco/bld
 make dir
-make ncap2 all
+make all
+make ncap2
 make test
 </pre>
 </tt> 
