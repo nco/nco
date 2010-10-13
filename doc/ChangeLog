@@ -1,3 +1,8 @@
+2010-10-13  Charlie Zender  <zender@uci.edu>
+
+	* Revert to pre-20101007 behavior to NOT-translate two-character
+	user-input string "\0" to NUL. 
+
 2010-10-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.5 release procedure:

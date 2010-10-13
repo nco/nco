@@ -1,22 +1,24 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.404 2010-10-12 00:11:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.405 2010-10-13 23:08:05 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This is a "brown paper bag" release intended to deliver
-important bugfixes affecting ncks and ncra.
+This is a "brown paper bag" release intended to deliver important
+bugfixes affecting ncks and ncra. 
 
-http://nco.sf.net#bug_ncks_cnk
-http://nco.sf.net#bug_ncra_cf_crd
+http://nco.sf.net#bug_ncks_nc4_nc4_hyp_fix
+http://nco.sf.net#bug_ncra_cf_crd_rec_crd
 
 Also worth mentioning is that the latest Debian (Sid) and Ubuntu
 (Maverick) packages finally support DAP, netCDF4, and UDUnits2.
-Those executables are now comparable to what the developers use.
-(RedHat/Fedora has supported these features for many years).
 
 http://nco.sf.net#debian
+http://nco.sf.net#ubuntu
+
+Those executables are now comparable to what the developers use.
+(RedHat/Fedora RPMs have supported these features for many years).
 
 Work on NCO 4.0.6 is underway. 
 Areas of improvement include DAP transparency, and more chunking rulesets.
@@ -47,13 +49,9 @@ B. Fix bug where ncra incorrectly treats record variable as a
    conventions. This bug caused core dumps. And even weirder 
    behavior like creating imaginary time slices in the ouput.
 
-C. Translate two-character user-input string "\0" to NUL.
-   This allows ncatted and ncap2 users to NUL-initialize strings with, e.g.,
-   sng_new[lat,sng_lng]="\0"; 
-   However, this also makes it easy for users to shoot their feet.
-
-D. There is a known problem triggered by using the stride argument
-   when accessing a file through the DAP protocol. fxm.
+C. There is a known problem triggered by using the stride argument
+   when accessing a file through the DAP protocol. We are working
+   to identify and fix the cause of this problem.
 
    ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
 
