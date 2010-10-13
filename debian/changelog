@@ -1,6 +1,10 @@
 nco (4.0.5-1) unstable; urgency=low
 
   * new upstream version (fix ncks hyp NC4 bug, ncra CF crd bug)
+  * debian/control
+    - require libudunits2-0, libudunits2-dev
+  * debian/rules
+    - build with DEB_BUILD_OPTIONS='dap-netcdf netcdf4 udunits2'
 
  -- Charlie Zender <zender@uci.edu>  Fri, 24 Sep 2010 11:30:56 -0700
 
@@ -55,7 +59,7 @@ nco (3.9.9-1) unstable; urgency=low
     - includes everyone now
   * debian/compat
     - change from 4 to 5
-    
+
  -- Charlie Zender <zender@uci.edu>  Tue, 14 Jul 2009 18:31:07 -0700
 
 nco (3.9.8-1) unstable; urgency=low
