@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.155 2010-10-13 23:22:13 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.156 2010-10-13 23:23:38 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -182,31 +182,6 @@ scp ${DATA}/nco_4.0.5* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
 bsrc # Reset shell environment for regular development
 
 # New build system #2
-# This builds NCO with /usr/local packages, and thus includes UDUnits and netCDF4 support
-cd ~/nco;cvc
-sudo /bin/rm -rf ${DATA}/nco-4.0.5 ${DATA}/nco_4.0.5* ${DATA}/debian # Cleanup last build. sudo necessary for removal because dpkg-buildpackage uses sudo?
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-4.0.5 nco # Export most recent
-tar cvzf ./nco_4.0.5.orig.tar.gz --exclude='nco-4.0.5/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-4.0.5 
-/bin/rm -rf ${DATA}/nco-4.0.5 # Remove cvs-exported directory
-tar xvzf ./nco_4.0.5.orig.tar.gz # Untar to get directory without excluded files
-mkdir -p ${DATA}/nco-4.0.5/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.5/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.5/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
-export DEB_BUILD_OPTIONS='local netcdf4 udunits2'; # Configure local packages to take precedence over Debian-installed
-cd ${DATA}/nco-4.0.5;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
-sudo dpkg --remove nco
-sudo dpkg --install ${DATA}/nco_4.0.5-1_*.deb
-lintian ${DATA}/nco_4.0.5-1_*.deb
-ls -l ${DATA}/nco_4.0.5*
-m ~/foo.nco
-# Upload Ubuntu (rather than Debian) packages to websites
-scp ${DATA}/nco_4.0.5* dust.ess.uci.edu:/var/www/html/nco/src
-scp ${DATA}/nco_4.0.5* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
-# NB: Make sure RPMs build before uploading to debian, since changing
-# Debian versions are such a PITA
-# NB: Only upload pbuilder Debian Sid (not personal Ubuntu) .deb builds to Debian mentors
-# cd ${DATA};dupload -t mentors nco_4.0.5-1_*.changes
-bsrc # Reset shell environment for regular development
-
-# New build system #3
 # Pbuilder/chroot system
 # This builds .debs for submission to Debian Sid and ultimately Ubuntu
 # Configuration in ~/.pbuilderrc or /etc/pbuilderrc
