@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.616 2010-10-14 02:40:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.617 2010-10-14 03:38:50 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -119,9 +119,11 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2010 Winter?: NCO 4.0.5 (Soon!)</li>
+<li>2010 Winter?: NCO 4.0.6</li>
 
-<li>2010 Sep&nbsp;24: NCO 4.0.5 (chunking everywhere)</li>
+<li>2010 Oct&nbsp;13: NCO 4.0.5</li>
+
+<li>2010 Sep&nbsp;24: NCO 4.0.4 (chunking everywhere)</li>
 
 <li>2010 Sep&nbsp;02: NCO 4.0.3</li>
 
@@ -516,14 +518,15 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.0.6</b>: (<i>Future</i>) 
-world peace?
-<li><b>NCO 4.0.5</b>: (<i>In progress</i>)
+<li><b>NCO 4.0.7</b>: (<i>Future</i>) 
+<li><b>NCO 4.0.6</b>: (<i>In progress</i>)
+Stride works with DAP?;
 netCDF4 compound types?;
-Fix <tt>ncks</tt> <a href="#bug_ncks_nc4_nc4_hyp_fix">chunking bug</a>;
-Fix <tt>ncra</tt> <a href="#bug_ncra_cf_crd">CF "coordinate" bug</a>;
-Stride works with DAP;
+World peace?
 <li><b>NCO 4.0.5</b>:
+Fix <tt>ncks</tt> <a href="#bug_ncks_nc4_nc4_hyp_fix">hyperslabbing bug</a>;
+Fix <tt>ncra</tt> <a href="#bug_ncra_cf_crd_rec_crd">CF "coordinate" bug</a>;
+<li><b>NCO 4.0.4</b>:
 Chunking in all operators; preserve deflation; <tt>ncks</tt> print formatting;
 Fix <tt>ncrename</tt> <a href="#bug_ncrename_dot">bug</a>;
 Do not pack coordinate variables;
