@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.158 2010-10-14 03:51:04 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.159 2010-10-14 22:09:09 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -118,7 +118,7 @@ http://www.debian.org/devel/join/newmaint
 # Debian mentor FAQ
 http://people.debian.org/~mpalmer/debian-mentors_FAQ.html
 
-Debian Acronyms & Abbreviations:
+Debian Acronyms, Abbreviations, and Jargon:
 BTS Bug Tracking System
 DD  Debian Developer
 DDPO Debian Developer's Packages Overview
@@ -131,6 +131,13 @@ RC  Release Critical
 RFP Request for Package 
 RFS Request for Sponsor 
 WNPP Work-Needing and Prospective Packages 
+r-dep fxm
+experimental fxm (alpha, newer than sid)
+unstable sid (beta)
+sarge Debian 3.1
+etch Debian 4.0
+lenny Debian 5.0
+squeeze Debian 6.0
 
 # NCO orphan/ITA bug
 http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
