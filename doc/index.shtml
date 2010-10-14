@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.617 2010-10-14 03:38:50 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.618 2010-10-14 16:29:09 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -719,13 +719,12 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.0.5</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
-<a href="http://packages.ubuntu.com/lucid/nco">Ubuntu NCO</a> homepages.
+<a href="http://packages.ubuntu.com/maverick/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
-Newer Debian/Ubuntu flavors (i.e., Sid and Lucid) supply the latest numbered NCO release.
+Newer Debian/Ubuntu flavors (i.e., Sid and Maverick) supply the latest numbered NCO release.
 Even newer (pre-release!) packages are available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/prerelease.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.5-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_4.0.5-1_amd64.deb">nco_4.0.5-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.5-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.5-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.0.5-1_i386.deb">nco_4.0.5-1_i386.deb</a> (<!--#fsize file="src/nco_4.0.5-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_4.0.5-1_i386.deb"-->)</li>
 <li><a href="src/nco_4.0.5-1.dsc">nco_4.0.5-1.dsc</a> (<!--#fsize file="src/nco_4.0.5-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.5-1.dsc"-->)</li>
 <li><a href="src/nco_4.0.5-1_amd64.changes">nco_4.0.5-1_amd64.changes</a> (<!--#fsize file="src/nco_4.0.5-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.5-1_amd64.changes"-->)</li>
 <li><a href="src/nco_4.0.5.orig.tar.gz">nco_4.0.5.orig.tar.gz</a> (<!--#fsize file="src/nco_4.0.5.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.0.5.orig.tar.gz"-->)</li>
@@ -789,8 +788,12 @@ Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if
 <a name="windows"></a><a name="ubn"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> running <a href="http://www.cygwin.org">Cygwin</a></h3>
 <ul>
-<li><a href="src/nco-4.0.4.win32.cygwin.tar.gz">nco-4.0.4.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.4.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.4.win32.cygwin.tar.gz"-->)</li>
-Thanks to RedHat Inc. for supporting Cygwin over the years. 
+<li><a href="src/nco-4.0.4.win32.cygwin.tar.gz">nco-4.0.4.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.4.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.4.win32.cygwin.tar.gz"-->).</li>
+First install <tt>curl</tt> (in the "Web" category of Cygwin setup),
+and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the 
+<tt>udunits2.xml</tt> file, e.g., with
+<tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt>. 
+Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin over the years. 
 </ul>
 
 <hr></p>
@@ -1449,6 +1452,7 @@ is specified in the <tt>coordinates</tt> attribute of any variable in
 a file processed with CCM/CCSM/CF metadata conventions. 
 This bug caused core dumps, and even weirder behavior like 
 creating imaginary time slices in the ouput.
+Upgrade recommended if you work with NCAR CCSM/CESM model output.
 
 One workaround that does not require NCO upgrades is to remove the
 record coordinate name (usually <tt>time</tt>) from
