@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.156 2010-10-13 23:23:38 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.157 2010-10-14 03:30:39 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -192,9 +192,15 @@ DIST=sid sudo pbuilder update # Update chroot before building package in it
 # dget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1-1.dsc
 # apt-get source nco # Get package source
 sudo /bin/rm /var/cache/pbuilder/result/nco_4.0.5* # Cleanup prior build
-cd ${DATA};DEB_BUILD_OPTIONS='dap-netcdf netcdf4 udunits2' DIST=sid sudo pbuilder build nco_4.0.5-1.dsc > ~/foo.nco.pbuilder 2>&1
+# To pass DEB_BUILD_OPTIONS to pbuilder while using sudo, one must
+# prevent resetting environment variables by modifying sudoers with visudo 
+export DEB_BUILD_OPTIONS='dap-netcdf netcdf4 udunits2'
+cd ${DATA};DIST=sid sudo pbuilder build nco_4.0.5-1.dsc > ~/foo.nco.pbuilder 2>&1
 cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_4.0.5-1_*.changes
 lintian /var/cache/pbuilder/result/nco_4.0.5-1_*.deb
+sudo dpkg --remove nco
+sudo dpkg --install /var/cache/pbuilder/result/nco_4.0.5-1_*.deb
+cd ~/nco/bld;MY_BIN_DIR=/usr/bin ../bm/nco_bm.pl --regress
 # NB: Upload pbuilder Debian Sid packages to Debian mentors, but not
 # to personal or NCO websites since most people use Ubuntu not Debian
 # NB: Debian versions are a PITA, ensure RPMs build before uploading to Debian

@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.5 release"
 	cvs tag -c nco-4_0_5;cvs tag -c nco-4_0_5-1
 
+	* Make buildpackage and pbuilder scripts use DEB_BUILD_OPTIONS
+
 	* Revert to pre-20101007 behavior to NOT-translate two-character
 	user-input string "\0" to NUL. 
 
