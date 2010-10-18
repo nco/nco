@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.608 2010-10-14 03:51:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.609 2010-10-18 04:49:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,7 +104,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.6
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 13 October 2010
+@set update-date 17 October 2010
 @set update-month October 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -6356,10 +6356,10 @@ od[$time]=@{20,22,24,26,28,30,32,34,36,38@};
 
 od(7);     // 34
 od(7:);    // 34,36,38
-od(:7);    // 20, 22, 24, 26, 28, 30, 32, 34 
-od(::4);   // 20.28,36
-od(1:6:2)  //  22,26,30
-od(:)      //  20,22,24,26,28,30,32,34,36,38 
+od(:7);    // 20,22,24,26,28,30,32,34 
+od(::4);   // 20,28,36
+od(1:6:2)  // 22,26,30
+od(:)      // 20,22,24,26,28,30,32,34,36,38 
 @end example
 
 A more complex 3D example  
@@ -6598,22 +6598,21 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 The synatax of the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
 
 @example
-
 if(exp1)
    stmt1;
 else if(exp2)     
-   stmt2
+   stmt2;
 else
-   stmt3     
+   stmt3;
 
-Can use code blocks as well
+# Can use code blocks as well:
 
 if(exp1)@{
    stmt1;
    stmt1a;
    stmt1b;
 @} else if(exp2)     
-   stmt2
+   stmt2; 
 else @{
    stmt3;
    stmt3a;
@@ -6624,8 +6623,7 @@ else @{
 @noindent For a variable or attribute expression to be logically true all its non-missing value elements must be logically true. (i.e non-zero). The expression can be of any type. Unlike C there is no short-circuiting of an expression with the OR (||) AND (&&) operators. The whole expression is evaluated regardless if one of the AND/OR operands are true/false. 
 
 @example
-A simple example
-
+# Simple example
 if(time>0)
   print("All values of time are greater than zero\n");
 else if( time<0)
@@ -6637,8 +6635,7 @@ else @{
   print("max value of time=");print(time_max,"%f");
 @}
 
-A real example from ddra.nco
-
+# Example from ddra.nco
 if(fl_typ==fl_typ_gcm)@{
   var_nbr_apx=32;
   lmn_nbr=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
@@ -6658,11 +6655,9 @@ if(fl_typ==fl_typ_gcm)@{
 
 @noindent @strong{Conditional Operator @*}
 @example
-// nb you need netCDF4 to run this example
-th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint(): three_dmn_var_sht.int() ); 
-
+// netCDF4 needed for this example
+th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : three_dmn_var_sht.int() ); 
 @end example
-
 
 @html
 <a name="ncap_prn"></a> <!-- http://nco.sf.net/nco.html#ncap_prn -->
@@ -7355,8 +7350,6 @@ Irregular regions are the union of arrays lat/lon_min/max's.
 The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
-
-
 @html
 <a name="bil_int"></a> <!-- http://nco.sf.net/nco.html#bil_int -->
 @end html
@@ -7966,7 +7959,6 @@ From the above variables an X and Y vector both of length 'n' are derived.
 If data_x or data_y is less than type double then it is converted to type @code{double}. 
 It is up to you to do bounds checking on the input data. 
 For example if stride_x=3 and n=8 then the size of data_x must be at least 24
-
 
 @noindent @strong{Output variables}: c0, c1, cov00, cov01, cov11,sumsq @* 
 The '&' prefix indicates that these are call-by-reference variables.

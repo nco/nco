@@ -1,10 +1,14 @@
-2010-10-13  Charlie Zender  <zender@uci.edu>
+2010-10-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.6 release procedure:
  	Changes since nco-4_0_5: fxm
 	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
 	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
+
+	* Fix typos and missing semi-colons in ncap2 docs
+
+2010-10-13  Charlie Zender  <zender@uci.edu>
 
 	* Revert comment mangled by rx in nco_netcdf.c
 
