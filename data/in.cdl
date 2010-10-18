@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.121 2010-10-08 22:02:54 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.122 2010-10-18 23:55:04 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -418,6 +418,15 @@ variables:
 
 	float g;
 	g:long_name = "g";
+
+	float dps_dry;
+	dps_dry:long_name = "Dry Deposition";
+
+	float dps_wet;
+	dps_wet:long_name = "Wet Deposition";
+
+	float dps_ttl;
+	dps_ttl:long_name = "Total Deposition";
 
 	float z(lev);
 	z:long_name = "Height";
@@ -839,6 +848,9 @@ data:
 	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 	double_var=10.;
 	double_var2=10.;
+	dps_dry=73;
+	dps_wet=73;
+	dps_ttl=73;
 	e_dbl=2.71828182846;
 	e_flt=2.71828182846;
 // 	20100809: Single quotes around NC_CHAR coordinates required as of 4.1.2-beta1-snapshot2010080820
