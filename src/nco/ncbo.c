@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.162 2010-10-08 19:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.163 2010-10-20 05:00:58 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -73,6 +73,10 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+#ifdef ENABLE_MPI
+# include <mpi.h> /* MPI definitions */
+# include "nco_mpi.h" /* MPI utilities */
+#endif /* !ENABLE_MPI */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -119,8 +123,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.162 2010-10-08 19:02:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.162 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.163 2010-10-20 05:00:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.163 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -655,10 +659,6 @@ main(int argc,char **argv)
      Order(2*maximum variable size) rather than Order(3*maximum record size) or
      Order(3*file size) */
 
-   /* debug test 
-   nco_close(out_id);
-   exit(1); */
-     
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
   

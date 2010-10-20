@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.16 2010-01-05 20:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.17 2010-10-20 05:00:58 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -72,6 +72,8 @@ extern "C" {
 
   const int nco_spn_lck_us=100; /* [us] Spinlock sleep interval */
   int nco_spn_lck_brk=0; /* [nbr] Break spin lock, resume execution */
+
+  void nco_cnt_run(int signo); /* Signal handler */
   void nco_cnt_run(int signo){nco_spn_lck_brk=1;} /* Signal handler */
 
 #ifdef __cplusplus

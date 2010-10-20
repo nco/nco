@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.100 2010-10-08 19:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.101 2010-10-20 05:00:58 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -75,8 +75,8 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef ENABLE_MPI
-#include <mpi.h> /* MPI definitions */
-#include "nco_mpi.h" /* MPI utilities */
+# include <mpi.h> /* MPI definitions */
+# include "nco_mpi.h" /* MPI utilities */
 #endif /* !ENABLE_MPI */
 
 /* Personal headers */
@@ -98,6 +98,7 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
@@ -105,6 +106,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
+  char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
@@ -122,9 +124,9 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.100 2010-10-08 19:02:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.100 $";
-  const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:xy:-:";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.101 2010-10-20 05:00:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.101 $";
+  const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
 
@@ -151,10 +153,11 @@ main(int argc,char **argv)
   int *in_id_2_arr;
 
   int abb_arg_nbr=0;
-  int dfl_lvl=0; /* [enm] Deflate level */
+  int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
+  int dfl_lvl=0; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
   int fl_in_fmt_1; /* [enm] Input file format */
@@ -162,6 +165,9 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
+  int jdx;
+  int dmn_idx;
+  int dmn_jdx;
   int in_id_1;  
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -185,7 +191,9 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   
-  lmt_sct **lmt;
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
+  lmt_sct **lmt=NULL_CEWI;
+  lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
   nm_id_sct *dmn_lst_1;
   nm_id_sct *dmn_lst_2;
@@ -231,6 +239,9 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */	  
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
@@ -272,8 +283,11 @@ main(int argc,char **argv)
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
       {"suspend", no_argument,0,'S'},
-      {"variable",required_argument,0,'v'},
       {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
+      {"variable",required_argument,0,'v'},
+      {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"operation",required_argument,0,'y'},
@@ -332,6 +346,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
@@ -417,6 +432,11 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr_1=nbr_xtr_2=var_lst_in_nbr;
       break;
+    case 'X': /* Copy auxiliary coordinate argument for later processing */
+      aux_arg[aux_nbr]=(char *)strdup(optarg);
+      aux_nbr++;
+      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */      
+      break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
@@ -457,23 +477,38 @@ main(int argc,char **argv)
   /* Parse filenames */
   fl_idx=0; /* Input file _1 */
   fl_in_1=nco_fl_nm_prs(fl_in_1,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_1);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in_1);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_1=nco_fl_mk_lcl(fl_in_1,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_1);
+  if(dbg_lvl >= nco_dbg_fl && FILE_1_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_1);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_1,NC_NOWRITE,in_id_1_arr+thr_idx);
   in_id_1=in_id_1_arr[0];
   
   fl_idx=1; /* Input file _2 */
   fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_2);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in_2);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_2=nco_fl_mk_lcl(fl_in_2,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_2);
+  if(dbg_lvl >= nco_dbg_fl && FILE_2_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_2);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_2,NC_NOWRITE,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
+  
+  /* Process auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+     aux=nco_aux_evl(in_id_1,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
   
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl_1,&nbr_var_fl_1,(int *)NULL,(int *)NULL);
@@ -514,6 +549,11 @@ main(int argc,char **argv)
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id_1,lmt[idx],0L,FORTRAN_IDX_CNV);
   
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_all_sct *));
+  /* Initialize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr);
+
   /* Find dimensions associated with variables to be extracted */
   dmn_lst_1=nco_dmn_lst_ass_var(in_id_1,xtr_lst_1,nbr_xtr_1,&nbr_dmn_xtr_1);
   dmn_lst_2=nco_dmn_lst_ass_var(in_id_2,xtr_lst_2,nbr_xtr_2,&nbr_dmn_xtr_2);
@@ -526,18 +566,20 @@ main(int argc,char **argv)
   /* Dimension lists no longer needed */
   dmn_lst_1=nco_nm_id_lst_free(dmn_lst_1,nbr_dmn_xtr_1);
   dmn_lst_2=nco_nm_id_lst_free(dmn_lst_2,nbr_dmn_xtr_2);
-  
-  /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim_1,nbr_dmn_xtr_1,lmt,lmt_nbr);
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim_2,nbr_dmn_xtr_2,lmt,lmt_nbr);
-  
+
+  /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
+  (void)nco_dmn_sct_cmp(dim_1,nbr_dmn_xtr_1,dim_2,nbr_dmn_xtr_2,fl_in_1,fl_in_2);    
+	  
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr_1;idx++){
+  for(idx=0;idx<nbr_dmn_xtr_1;idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim_1[idx]);
-    (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]); 
-  } /* end loop over idx */
-  
+    (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]);
+  }
+
+  /* Merge hyperslab limit information into dimension structures */
+  if(nbr_dmn_fl_1 > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr_1,lmt_all_lst,nbr_dmn_fl_1); 
+
   if(dbg_lvl >= nco_dbg_sbr){
     for(idx=0;idx<nbr_xtr_1;idx++) (void)fprintf(stderr,"xtr_lst_1[%d].nm = %s, .id= %d\n",idx,xtr_lst_1[idx].nm,xtr_lst_1[idx].id);
   } /* end if */
@@ -552,14 +594,39 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var_1[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
-  for(idx=0;idx<nbr_xtr_2;idx++){
-    var_2[idx]=nco_var_fll(in_id_2,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim_2,nbr_dmn_xtr_2);
-  } /* end loop over idx */
-  
+  for(idx=0;idx<nbr_xtr_2;idx++) var_2[idx]=nco_var_fll(in_id_2,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim_2,nbr_dmn_xtr_2);
+
   /* Extraction lists no longer needed */
   xtr_lst_1=nco_nm_id_lst_free(xtr_lst_1,nbr_xtr_1);
   xtr_lst_2=nco_nm_id_lst_free(xtr_lst_2,nbr_xtr_2);
   
+  /* Die gracefully on unsupported features... */
+  if(nbr_xtr_1 < nbr_xtr_2){
+    (void)fprintf(fp_stdout,"%s: WARNING First file has fewer extracted variables than second file (%d < %d). This desired feature is TODO nco581.\n",prg_nm,nbr_xtr_1,nbr_xtr_2);
+      nco_exit(EXIT_FAILURE);
+  } /* endif */
+
+  /* Refresh var_out with dim_out data */
+  (void)nco_var_dmn_refresh(var_out,nbr_xtr_1);
+
+  /* Change dimensions in dim_2 to dim_out */
+  for(idx=0;idx<nbr_dmn_xtr_2;idx++){
+    for(jdx=0;jdx<nbr_dmn_xtr_1;jdx++)  
+      if(!strcmp(dim_2[idx]->nm,dmn_out[jdx]->nm)){  
+        /* NB: Copy new dim data but do NOT free original as dimension element is aliased in var_2 array */ 
+	(void)nco_dmn_cpy(dim_2[idx],dmn_out[jdx]);  
+        break;   
+      } /* endif */
+    /* Dimension not found so die gracefully */
+    if(jdx==nbr_dmn_xtr_1){
+      (void)fprintf(fp_stdout,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm,dim_2[idx]->nm,fl_in_2,fl_in_1);
+      nco_exit(EXIT_FAILURE);
+    } /* endif dimension not found */
+  } /* end loop over dimensions */
+       
+  /* Refresh var_2 with the new dim_2 data */
+  (void)nco_var_dmn_refresh(var_2,nbr_xtr_2);
+   
   /* Divide variable lists into lists of fixed variables and variables to be processed
      Create lists from file_1 last so those values remain in *_out arrays */
   (void)nco_var_lst_dvd(var_2,var_out,nbr_xtr_2,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);
@@ -570,13 +637,24 @@ main(int argc,char **argv)
   
   /* Die gracefully on unsupported features... */
   if(nbr_var_fix_1 < nbr_var_fix_2){
-    (void)fprintf(fp_stdout,"%s: ERROR First file has fewer fixed variables than second file (%d < %d). This feature is NCO TODO 581.\n",prg_nm,nbr_var_fix_1,nbr_var_fix_2);
-    nco_exit(EXIT_FAILURE);
+    (void)fprintf(fp_stdout,"%s: ERROR First file has fewer fixed variables than second file (%d < %d). This feature is TODO nco581.\n",prg_nm,nbr_var_fix_1,nbr_var_fix_2);
+      nco_exit(EXIT_FAILURE);
   } /* endif */
   
   /* Merge two variable lists into same order */
   rcd=nco_var_lst_mrg(&var_prc_1,&var_prc_2,&nbr_var_prc_1,&nbr_var_prc_2); 
+
+  /* Make output and input files consanguinous */
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
+
+  /* Verify output file format supports requested actions */
+  (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+
+  /* Open output file */
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
   
+  /* 20101019 fxm got to here merging ncbo 4.0.5 into mpncbo */
+
   /* Assign zero-start and unity-stride vectors to output variables */
   (void)nco_var_srd_srt_set(var_out,nbr_xtr_1);
   
