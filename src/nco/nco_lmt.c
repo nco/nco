@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.105 2010-10-09 05:51:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.106 2010-10-26 20:39:23 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -834,7 +834,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try multislabbing (http://nco.sf.net/nco.html#msa) wrapped dimension using ncks first, and then apply %s to the resulting file\n",prg_nm_get());
   } /* end dbg */
   
-  (void*)nco_free(fl_udu_sng);
+  fl_udu_sng=(char *)nco_free(fl_udu_sng);
   
 } /* end nco_lmt_evl() */
 

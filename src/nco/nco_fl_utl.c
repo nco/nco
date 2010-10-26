@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.125 2010-09-30 04:02:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.126 2010-10-26 20:39:23 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1255,7 +1255,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     while(strcasecmp(usr_rpl,"o") && strcasecmp(usr_rpl,"a") && strcasecmp(usr_rpl,"e")){
       /* int cnv_nbr; *//* [nbr] Number of scanf conversions performed this scan */
       if(nbr_itr++ > USR_RPL_MAX_NBR){
-	(void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
+	(void)fprintf(stdout,"\n%s: ERROR %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());

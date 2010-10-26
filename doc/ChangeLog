@@ -1,3 +1,9 @@
+2010-10-26  Charlie Zender  <zender@uci.edu>
+
+	* NCO compiles and executes error-and-warning-free with clang
+
+	* Small syntax changes for clang-compliance
+
 2010-10-19  Charlie Zender  <zender@uci.edu>
 
 	* Merge first half of ncbo.c 4.0.5 into mpncbo.c

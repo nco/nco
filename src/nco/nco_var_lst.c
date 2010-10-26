@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.93 2010-10-12 01:26:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.94 2010-10-26 20:39:23 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -185,8 +185,8 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
   } /* end loop over variables */
 
   regfree(rx); /* Free regular expression data structure */
-  (void *)nco_free(rx);
-  (void *)nco_free(result);
+  rx=(regex_t *)nco_free(rx);
+  result=(regmatch_t *)nco_free(result);
 
   return nbr_mtch;
 } /* end nco_var_meta_search() */
