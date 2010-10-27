@@ -1,7 +1,19 @@
 2010-10-26  Charlie Zender  <zender@uci.edu>
 
+	* Change nco_cnv_ccm_ccsm_cf_date() to handle date variable 
+	in output var list as either NC_INT or NC_DOUBLE.
+	Necessitated because nco_cnv_ccm_ccsm_cf_date() is called when
+	"date" may be stored as double to facilitate averaging.
+	This has been the case for many years, since packing introduced?
+	So TODO nco998 appears to be an _old_ bug.
+	Now seems to work. Test with
+	ncra -O -v nbdate,date,time -p ~/nco/data in.nc ~/foo.nc
+	ncks -H -m -v 'date.*' ~/foo.nc
+
+	* Change date in in.cdl to better test YYMMDD averaging
+
 	* Change ncra from rank preserving arithmetic operator to not one
-	This allows ncra to average date and fixes TODO nco998
+	This allows ncra to average date and helps fix TODO nco998
 
 	* NCO compiles and executes error-and-warning-free with clang
 

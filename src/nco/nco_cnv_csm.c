@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.51 2010-10-06 17:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.52 2010-10-27 05:11:49 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -90,7 +90,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
     if(!strcmp(var[idx]->nm,"date")) break;
   } /* end loop over idx */
   if(idx == nbr_var) return; else date_idx=idx;
-  if(var[date_idx]->type != NC_INT) return;
+  // if(var[date_idx]->type != NC_INT) return; /* 20101026 TODO nco998 problem is that "date" type is NC_DOUBLE here */
   
   /* Find scalar nbdate variable (NC_INT: base date date as 6 digit integer (YYMMDD)) */
   rcd=nco_inq_varid_flg(nc_id,"nbdate",&nbdate_id);
@@ -105,7 +105,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
     (void)nco_get_var1(nc_id,nbdate_id,0L,&nbdate,NC_INT);
   } /* end potential OpenMP critical */
   
-  /* Find time variable (NC_DOUBLE: current day) */
+  /* Find time variable (NC_DOUBLE: current day since nbdate) */
   for(idx=0;idx<nbr_var;idx++){
     if(!strcmp(var[idx]->nm,"time")) break;
   } /* end loop over idx */
@@ -126,7 +126,13 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
 #else /* !USE_FORTRAN_ARITHMETIC */
   date=nco_newdate(nbdate,day);
 #endif /* !USE_FORTRAN_ARITHMETIC */
-  if(!var[date_idx]->val.ip) return; else var[date_idx]->val.ip[0]=date;
+  if(var[date_idx]->type == NC_INT){
+    if(!var[date_idx]->val.ip) return; else var[date_idx]->val.ip[0]=date;
+  }else if(var[date_idx]->type == NC_DOUBLE){
+    if(!var[date_idx]->val.dp) return; else var[date_idx]->val.dp[0]=date;
+  }else{
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable \"date\" is not NC_INT or NC_DOUBLE\n",prg_nm_get());
+  } /* end else */
   
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_cnv_ccm_ccsm_cf_date */
