@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.281 2010-10-13 23:29:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.282 2010-10-27 04:10:18 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -586,9 +586,11 @@ nco_is_rnk_prv_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? 
      Packer (ncpdq) _is_ arithmetic because it uses floating point arithmetic to re-represent values
      nco_pck_plc flag is required as input and used only to distinguish between ncpdq packing and permuting.
      Attributors (ncrename, ncatted) are not arithmetic because they change metadata, not data
+     Averager ncwa is clearly not rank-preserving
+     Averager ncra technically preserves numeric rank though not record-dimension size and so, for processing purposes, is not considered rank-preserving.
      One use of nco_is_rnk_prv_rth_opr() is to tell which operators should
      not process multidimensional coordinate values.
-     For example, we want ncwa to act of coordinates that are reduced 
+     For example, we want ncwa to act on coordinates that are reduced 
      However, we do not want ncea, ncbo, or ncflint, for example, to load and process single or multi-dimensional coordinate variables.
      Nor do we want ncpdq to pack variables like gaussian weights, or area since that causes a significant loss of arithmetic precision when those are used as weights in re-inflated files.
      Such variables to these operators are best treated as "fixed" variables to be copied directly from the input to the output file. */ 
@@ -597,13 +599,13 @@ nco_is_rnk_prv_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? 
   case ncbo:
   case ncea:
   case ncflint:
-  case ncra:
     return True;
     break;
   case ncatted: 
   case ncecat: 
   case ncks: 
   case ncrcat: 
+  case ncra: /* Process (not fix) time-varying fields like date, datesec */
   case ncrename: 
   case ncwa:
     return False;

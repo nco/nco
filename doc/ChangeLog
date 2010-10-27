@@ -1,5 +1,8 @@
 2010-10-26  Charlie Zender  <zender@uci.edu>
 
+	* Change ncra from rank preserving arithmetic operator to not one
+	This allows ncra to average date and fixes TODO nco998
+
 	* NCO compiles and executes error-and-warning-free with clang
 
 	* Small syntax changes for clang-compliance

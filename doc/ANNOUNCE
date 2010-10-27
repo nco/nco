@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.409 2010-10-27 03:05:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.410 2010-10-27 04:10:18 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -24,8 +24,12 @@ A. (fxm) Known problem triggered by using the stride argument when
 
    ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
 
-A. C/C99 components of NCO (everything except ncap2) are clang-compliant
-   Users may compile NCO with clang and expect correct results.
+A. C/C99 components of NCO (everything except ncap2) are clang-compliant.
+   Compiling NCO with the clang compiler produces correct results.
+
+A. Correctly average YYMMDD-format integer "date" variable in CF/CCSM files.
+   This behavior broke in NCO 4.0.5 and possibly earlier versions.
+   Now it works like it used to. NB: fxm
 
 "Sticky" reminders:
 
