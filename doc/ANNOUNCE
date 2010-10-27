@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.412 2010-10-27 15:33:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.413 2010-10-27 16:02:09 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -27,11 +27,11 @@ A. (fxm) Known problem triggered by using the stride argument when
 A. C/C99 components of NCO (everything except ncap2) are clang-compliant.
    Compiling NCO with the clang compiler produces correct results.
 
-A. Correctly average YYYYMMDD-format integer "date" variable in CCSM/CF files.
+A. Correctly average YYYYMMDD-format integer "date" variables.
    Thanks to Jeff Daily for reporting this problem.
    The bug only affects the "date" variable in CCSM/CF-compliant files
-   with "date", "nbdate", and "time" variables. That's how finicky
-   some metadata conventions are. 
+   with "date", "nbdate", and "time" variables. 
+   That's how finicky some metadata conventions are. 
    http://nco.sf.net#bug_ncra_cf_YYYYMMDD_date
 
 "Sticky" reminders:

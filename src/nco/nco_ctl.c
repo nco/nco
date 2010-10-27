@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.283 2010-10-27 15:33:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.284 2010-10-27 16:02:09 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -780,7 +780,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Martini\nLast night I poured glacial vodka into a fluted glass\nwith copper rim, and punctuated it with an olive.\nAn odorless ice hole tasting of licorice and napalm,\nthe cocktail wet my tongue luxuriantly, like drowning.\n";
+  return "Anahita's surprise\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
