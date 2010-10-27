@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.37 2010-10-06 17:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.38 2010-10-27 15:33:58 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -55,7 +55,7 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id); /* [enm] Program ID */
 
 nco_bool /* [flg] Program does arithmetic and preserves rank */
-nco_is_rnk_prv_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? */
+nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmetic operator? */
 (const int prg_id, /* I [enm] Program ID */
  const int nco_pck_plc); /* I [enm] Packing policy */
 

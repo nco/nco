@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.282 2010-10-27 04:10:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.283 2010-10-27 15:33:58 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -575,20 +575,20 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 } /* end nco_is_rth_opr() */
 
 nco_bool /* [flg] Program does arithmetic and preserves rank */
-nco_is_rnk_prv_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? */
+nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmetic operator? */
 (const int prg_id, /* I [enm] Program ID */
  const int nco_pck_plc) /* I [enm] Packing policy */
 {
-  /* Purpose: Is program rank-preserving arithmetic operator?
+  /* Purpose: Is program size and rank-preserving arithmetic operator?
      For purposes of this function, arithmetic operators change values
      Concatenators (ncrcat, ncecat) are not arithmetic because they just glue data
      Permutor (ncpdq) _is not_ arithmetic because it only re-arranges values
      Packer (ncpdq) _is_ arithmetic because it uses floating point arithmetic to re-represent values
      nco_pck_plc flag is required as input and used only to distinguish between ncpdq packing and permuting.
      Attributors (ncrename, ncatted) are not arithmetic because they change metadata, not data
-     Averager ncwa is clearly not rank-preserving
-     Averager ncra technically preserves numeric rank though not record-dimension size and so, for processing purposes, is not considered rank-preserving.
-     One use of nco_is_rnk_prv_rth_opr() is to tell which operators should
+     Averager ncwa is clearly not size or rank-preserving
+     Averager ncra preserves numeric rank though not record-dimension size and so is so is not size and rank-preserving.
+     One use of nco_is_sz_rnk_prv_rth_opr() is to tell which operators should
      not process multidimensional coordinate values.
      For example, we want ncwa to act on coordinates that are reduced 
      However, we do not want ncea, ncbo, or ncflint, for example, to load and process single or multi-dimensional coordinate variables.
@@ -616,7 +616,7 @@ nco_is_rnk_prv_rth_opr /* [fnc] Is program rank-preserving arithmetic operator? 
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
   return False;
-} /* end nco_is_rnk_prv_rth_opr() */
+} /* end nco_is_sz_rnk_prv_rth_opr() */
 
 void
 nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.94 2010-10-26 20:39:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.95 2010-10-27 15:33:58 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -803,7 +803,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if(CNV_CCM_CCSM_CF){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
       /* NB: all !strcmp()'s except "msk_" which uses strstr() */
-      if(nco_is_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
+      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
       /* Known "multi-dimensional coordinates" in CCSM-like model output:
 	 lat, lon, lev are normally 1-D coordinates
 	 Known exceptions:
@@ -831,11 +831,11 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	 NB: In the above algorithm discussion, "time" is my shorthand 
 	 for "the record variable, if any" */
       /* Check condition #1 from above: */
-      if(nco_is_rnk_prv_rth_opr(prg_id,nco_pck_plc) && nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id)) 
+      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id)) 
 	if(!(prg_id == ncra && var[idx]->is_rec_var)) /* not "time" */
 	   var_op_typ[idx]=fix;
       /* Check condition #3 from above: */
-      if(nco_is_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
+      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
     } /* end if CNV_CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */

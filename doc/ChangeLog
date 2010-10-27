@@ -1,3 +1,9 @@
+2010-10-27  Charlie Zender  <zender@uci.edu>
+
+	* Rename nco_is_rnk_prv_rth_opr() to nco_is_sz_rnk_prv_rth_opr()
+	to reflect actual usage as preserving both size and rank.
+	This makes explicit that ncra is not such an operator.
+
 2010-10-26  Charlie Zender  <zender@uci.edu>
 
 	* Change nco_cnv_ccm_ccsm_cf_date() to handle date variable 

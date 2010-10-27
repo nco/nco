@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.620 2010-10-27 05:20:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.621 2010-10-27 15:33:58 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -519,12 +519,12 @@ You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.0.7</b>: (<i>Future</i>) 
-<li><b>NCO 4.0.6</b>: (<i>In progress</i>)
-<tt>clang</tt>-compliance;
-<tt>ncra</tt> averages YYYYMMDD-format dates;
-Stride works with DAP?;
 netCDF4 compound types?;
 World peace?
+<li><b>NCO 4.0.6</b>: (<i>In progress</i>)
+<tt>clang</tt>-compliance;
+Fix <tt>ncra</tt> YYYYMMDD-<tt>date</tt> <a href="#bug_ncra_cf_YYYYMMDD_date">bug</a>;
+Stride works with DAP?;
 <li><b>NCO 4.0.5</b>:
 Fix <tt>ncks</tt> <a href="#bug_ncks_nc4_nc4_hyp_fix">hyperslabbing bug</a>;
 Fix <tt>ncra</tt> <a href="#bug_ncra_cf_crd_rec_crd">CF "coordinate" bug</a>;
@@ -1460,6 +1460,22 @@ One workaround that does not require NCO upgrades is to remove the
 record coordinate name (usually <tt>time</tt>) from
 the <tt>coordinates</tt> attribute of all variables in CF-compliant
 files before processing the file with <tt>ncra</tt>.
+
+<!-- http://nco.sf.net#bug_ncra_cf_YYYYMMDD_date -->
+<a name="bug_ncra_cf_YYYYMMDD_date"></a>
+<li><i><tt>ncra</tt> bug averaging YYYYMMDD-format <tt>date</tt>
+variables in CCSM/CF-compliant files:</i>
+Versions ???&mdash;4.0.5 of <tt>ncra</tt> contain a bug which
+produces an incorrect average (usually zero) of the <tt>date</tt>
+variable which many CCSM/CF-compliant files use to track model dates
+in the human-readable YYYYMMDD-format.
+Averaging YYYYMMDD-format integers is intrinsically difficult, since
+such dates have calendar assumptions built-in.
+NCO attempts this in CCSM/CF-compliant files by using the
+<tt>nbdate</tt> (beginning date) and <tt>time</tt> (days
+since <tt>nbdate</tt>) variables to find the average date,
+converting that to YYYYMMDD, and writing that as the average value
+of <tt>date</tt>. 
 
 <!-- http://nco.sf.net#bug_ncks_nc4_nc4_hyp_fix -->
 <a name="bug_ncks_nc4_nc4_hyp_fix"></a>

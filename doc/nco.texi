@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.609 2010-10-18 04:49:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.610 2010-10-27 15:33:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5651,11 +5651,11 @@ These variables contain scalar metadata such as the resolution of the
 host geophysical model and it makes no sense to change their values.
 
 @cindex non-coordinate grid properties
-Furthermore, the @dfn{rank-preserving arithmetic operators} try
+Furthermore, the @dfn{size and rank-preserving arithmetic operators} try
 not to operate on certain grid properties.
 These operators are @command{ncap}, @command{ncbo}, @command{ncea},
-@command{ncflint}, @command{ncra}, and @command{ncpdq} (when used for
-packing, not for permutation). 
+@command{ncflint}, and @command{ncpdq} (when used for packing, not for
+permutation).  
 These operators do not operate, by default, on (i.e., add, subtract,
 pack, etc.) the following variables:   
 @code{ORO}, 

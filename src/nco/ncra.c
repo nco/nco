@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.260 2010-10-08 19:02:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.261 2010-10-27 15:33:58 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -37,15 +37,15 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncra.c
 
    Usage:
-   ncra -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
-   ncra -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
-   ncra -n 3,4,1 -p /ZENDER/tmp -l ${HOME}/nco/data h0001.nc ~/foo.nc
+   ncra -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   ncra -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
+   ncra -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME}/nco/data h0001.nc ~/foo.nc
    scp ~/nco/src/nco/ncra.c esmf.ess.uci.edu:nco/src/nco
 
    ncea in.nc in.nc ~/foo.nc
-   ncea -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
-   ncea -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
-   ncea -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
+   ncea -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   ncea -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
+   ncea -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.260 2010-10-08 19:02:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.260 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.261 2010-10-27 15:33:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.261 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
