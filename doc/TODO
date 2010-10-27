@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1090 2010-09-30 01:12:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1091 2010-10-27 03:05:45 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -695,7 +695,10 @@ nco996. ncap2 fails netCDF4 test:
 	ncap2 -O    -D 4 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc # works
 nco997. Bug triggered by using stride argument when accessing a file through DAP protocol
 	ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
-nco998. 
+nco998. ncra averaging CF/CCSM YYMMDD-format 'date' integers broken jeff daily
+	ncra -O -p ~ b30.004.cam2.h0.0001-01.nc b30.004.cam2.h0.0001-02.nc ~/foo.nc.nc
+	ncks -H -v date ~/foo.nc
+nco999. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.408 2010-10-14 21:29:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.409 2010-10-27 03:05:45 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -23,6 +23,9 @@ A. (fxm) Known problem triggered by using the stride argument when
    We are working to identify and fix the cause of this problem. 
 
    ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
+
+A. C/C99 components of NCO (everything except ncap2) are clang-compliant
+   Users may compile NCO with clang and expect correct results.
 
 "Sticky" reminders:
 

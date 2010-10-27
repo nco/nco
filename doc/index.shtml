@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.618 2010-10-14 16:29:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.619 2010-10-27 03:05:46 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -520,6 +520,7 @@ You can also retrieve the source of tagged versions directly
 <ul>
 <li><b>NCO 4.0.7</b>: (<i>Future</i>) 
 <li><b>NCO 4.0.6</b>: (<i>In progress</i>)
+<tt>clang</tt>-compliance;
 Stride works with DAP?;
 netCDF4 compound types?;
 World peace?
