@@ -1,5 +1,8 @@
 2010-10-27  Charlie Zender  <zender@uci.edu>
 
+	* Fix clang C++ warnings about missing parentheses in while loops
+	"while result of assignment is true" (not an equality comparison)
+
 	* NCO 4.0.6 release procedure:
  	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
 	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1

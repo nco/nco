@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.566 2010-10-26 20:39:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.567 2010-10-28 04:52:28 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -364,6 +364,7 @@ ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifndef LINUX_CXX
 # C++ compiler for Linux
  LINUX_CXX := g++
+ #LINUX_CXX := clang
  #LINUX_CXX := como
  #LINUX_CXX := icpc
  #LINUX_CXX := insure
@@ -373,8 +374,8 @@ endif # endif LINUX_CXX
 ifndef LINUX_CC
 # C compiler for Linux
  LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
- #LINUX_CC := como --c99
  #LINUX_CC := clang
+ #LINUX_CC := como --c99
  #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
  #LINUX_CC := insure
  #LINUX_CC := nvcc

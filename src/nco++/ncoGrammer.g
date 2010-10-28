@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.184 2010-09-24 16:21:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.185 2010-10-28 04:52:28 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -949,9 +949,7 @@ public:
    
     ntr=tr;
     do nbr_stmt++; 
-    while(ntr=ntr->getNextSibling());        
-            
-     
+    while((ntr=ntr->getNextSibling())); // 20101027 csz "while result of assignment is true" (not an equality comparison) 
     
     if(nbr_stmt <4 || nbr_dpt>0 ){
         prs_arg->ntl_scn=False;
@@ -961,7 +959,7 @@ public:
           // break if jump statement   
           if(iret==BREAK || iret==CONTINUE) 
            break; 
-        } while(ntr=ntr->getNextSibling());   
+        } while((ntr=ntr->getNextSibling())); // 20101027 csz "while result of assignment is true" (not an equality comparison) 
         goto exit;
     }
   
