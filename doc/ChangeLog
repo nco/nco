@@ -1,7 +1,4 @@
-2010-10-27  Charlie Zender  <zender@uci.edu>
-
-	* Fix clang C++ warnings about missing parentheses in while loops
-	"while result of assignment is true" (not an equality comparison)
+2010-10-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.6 release procedure:
  	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
@@ -9,13 +6,19 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
 	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
 
+2010-10-27  Charlie Zender  <zender@uci.edu>
+
+	* Fix clang C++ warnings about missing parentheses in while loops
+	"while result of assignment is true" (not an equality comparison)
+	Many more of these need fixing, need automated method.
+
 	* Rename nco_is_rnk_prv_rth_opr() to nco_is_sz_rnk_prv_rth_opr()
 	to reflect actual usage as preserving both size and rank.
 	This makes explicit that ncra is not such an operator.
 
 2010-10-26  Charlie Zender  <zender@uci.edu>
 
-	* Change nco_cnv_ccm_ccsm_cf_date() to handle date variable 
+	* Change nco_cnv_ccm_ccsm_cf_date() to handle date variable
 	in output var list as either NC_INT or NC_DOUBLE.
 	Necessitated because nco_cnv_ccm_ccsm_cf_date() is called when
 	"date" may be stored as double to facilitate averaging.
