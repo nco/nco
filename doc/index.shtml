@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.621 2010-10-27 15:33:58 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.622 2010-11-03 15:05:45 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -790,7 +790,7 @@ Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if
 <a name="windows"></a><a name="ubn"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> running <a href="http://www.cygwin.org">Cygwin</a></h3>
 <ul>
-<li><a href="src/nco-4.0.4.win32.cygwin.tar.gz">nco-4.0.4.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.4.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.4.win32.cygwin.tar.gz"-->).</li>
+<li><a href="src/nco-4.0.5.win32.cygwin.tar.gz">nco-4.0.5.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.5.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.5.win32.cygwin.tar.gz"-->).</li>
 First install <tt>curl</tt> (in the "Web" category of Cygwin setup),
 and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the 
 <tt>udunits2.xml</tt> file, e.g., with
