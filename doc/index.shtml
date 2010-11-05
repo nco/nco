@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.622 2010-11-03 15:05:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.623 2010-11-05 00:40:37 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -312,7 +312,7 @@ items.
 Inspired by President Obama's plan to bring more transparency to
 government investment, these homepage donation counters track the
 influence of your monetary donations on NCO development: 
-<dt>Donations received between 20030624 and 20100131: US$80.00. Thank you, donors!</dt>
+<dt>Donations received between 20030624 and 20101102: US$84.55. Thank you, donors!</dt>
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More emoticons in the documentation :)</dt>
 <hr></p>
 
@@ -1001,7 +1001,7 @@ ANTLR&nbsp;3.x C++ interface is incomplete.
 
 It is possible and often preferable to install most of the
 pre-requisite and optional software from pre-compiled packages on
-modern Debian- and RPM-based systems with (Debian/Ubuntu) 
+modern Debian-based systems with
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
 <dt>sudo aptitude install libcurl3-dev libxml2-dev # DAP-prereqs</dt>
@@ -1010,7 +1010,7 @@ modern Debian- and RPM-based systems with (Debian/Ubuntu)
 <dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
 <dt>sudo aptitude install udunits libudunits2-0 libudunits2-dev # UDUnits</dt>
 
-</tt>or (RPM)
+</tt>or, on RPM-based systems, with
 <tt>
 <dt>sudo yum install antlr antlr-c++-devel # ANTLR</dt>
 <dt>sudo yum install curl-devel libxml2-devel # DAP-prereqs</dt>
@@ -1074,6 +1074,7 @@ method:
 export MY_BIN_DIR='/home/username/bin' # Executables installed here
 export MY_OBJ_DIR='/home/username/obj' # Object files placed here
 export MY_LIB_DIR='/home/username/lib' # Libraries built here
+mkdir -p ${MY_BIN_DIR} ${MY_OBJ_DIR} ${MY_LIB_DIR}
 cd ~/nco/bld
 make dir
 make all
