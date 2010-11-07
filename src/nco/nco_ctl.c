@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.284 2010-10-27 16:02:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.285 2010-11-07 02:58:33 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -780,7 +780,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Anahita's surprise\n";
+  return "Great Expectations\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
