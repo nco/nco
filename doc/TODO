@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1092 2010-10-27 05:21:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1093 2010-11-15 14:57:45 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -686,9 +686,7 @@ nco979. UDUnits1: time zone at end of user-specified limit string is ignored (ba
 nco980. UDUnits: offsets/scalefactors in re-basing to handle differences between files like  "hours since 1965-010-01 12:00" and "minutes  since 1968-02-01 12:32"
 nco983. change default to netcdf3 64bit? or compile-time option to do so?
 nco984. remove makeinfo dependency trigger from nco configure build
-nco989. implement nco_sng_cnv_err() checking throughout code-base
 nco991. ncap2 functions to return all variable and dimension names
-nco993. return type of nco_cln_get_cln_typ, tm_typ, does not match lmt.lmt_cln
 nco995. chunking in ncap2
 nco996. ncap2 fails netCDF4 test:
 	ncap2 -O -4 -D 4 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc # fails
