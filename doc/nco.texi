@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.610 2010-10-27 15:33:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.611 2010-11-16 17:31:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.6
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 17 October 2010
-@set update-month October 2010
+@set update-date 9 November 2010
+@set update-month November 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -5878,7 +5878,7 @@ put into maintenance mode in November, 2006.
 This documentation refers to @command{ncap2}, which has a superset of
 the @command{ncap} functionality. 
 Eventually @command{ncap} will be deprecated in favor @command{ncap2}.
-@command{ncap2} may be renamed @command{ncap} in 2010 or 2011.}.
+@command{ncap2} may be renamed @command{ncap} in 2011.}.
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}
@@ -5950,6 +5950,11 @@ on the right hand side of the defining expression.
 This metadata inheritance is called @dfn{attribute propagation}.
 Attribute propagation is intended to facilitate well-documented 
 data analysis, and we welcome suggestions to improve this feature.
+
+The only exception to this rule of attribute propagation is in cases of
+left hand casting (@pxref{Left hand casting}).
+The user must manually define the proper metadata for variables defined
+using left hand casting. 
 
 @html
 <a name="syn"></a> <!-- http://nco.sf.net/nco.html#syn -->
@@ -6837,7 +6842,7 @@ four_time_avg=four_dmn_rec_var($time);
 
 @sp 1
 @noindent @strong{ Packing Methods @* } 
-For more information see @pxref{Packed data} and @pxref{ncpdq netCDF Permute Dimensions Quickly} @* 
+For more information see @pxref{Packed data} and @pxref{ncpdq netCDF Permute Dimensions Quickly}@*
 @table @code
 @item pack() & pack_short()
 @cindex pack()
@@ -6906,7 +6911,6 @@ See @pxref{ncpdq netCDF Permute Dimensions Quickly}
 lat_2D_rrg_new=lat_2D_rrg.permute($lon,$lat).reverse($lon);
 lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 @end example
-
 
 @sp 1
 @noindent @strong{Type Conversion Methods @*}
