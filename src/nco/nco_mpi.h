@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.17 2010-10-20 05:00:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.18 2010-11-23 22:01:26 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -74,7 +74,7 @@ extern "C" {
   int nco_spn_lck_brk=0; /* [nbr] Break spin lock, resume execution */
 
   void nco_cnt_run(int signo); /* Signal handler */
-  void nco_cnt_run(int signo){nco_spn_lck_brk=1;} /* Signal handler */
+  void nco_cnt_run(int signo){nco_spn_lck_brk=1+0*signo;} /* Signal handler, CEWI */
 
 #ifdef __cplusplus
 } /* end extern "C" */

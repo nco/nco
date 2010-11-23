@@ -1,3 +1,8 @@
+2010-11-23  Charlie Zender  <zender@uci.edu>
+
+	* Merge ncbo.c from 4.0.5 into mpncbo.c.
+	Code compiles and links. Behavior is untested.
+
 2010-10-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.6 release procedure:

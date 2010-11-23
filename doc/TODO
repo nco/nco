@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1094 2010-11-16 17:31:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1095 2010-11-23 22:01:26 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -693,7 +693,7 @@ nco996. ncap2 fails netCDF4 test:
 	ncap2 -O    -D 4 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc # works
 nco997. Bug triggered by using stride argument when accessing a file through DAP protocol
 	ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
-nco999. nco: how to replace a character array without RHS padding?
+nco999. nco: replace a character array without RHS padding?
         ncks -v fl_nm ~/nco/data/in.nc
         ncap2 -O -s 'fl_nm(:)="01234567890123456789012345678901234567890123456789012345678901234567890123456789"' ~/nco/data/in.nc ~/foo.nc
 	ncap2 -O -s 'fl_nm[char_dmn_lng80]="01234567890123456789012345678901234567890123456789012345678901234567890123456789"' ~/nco/data/in.nc ~/foo.nc
@@ -702,7 +702,10 @@ nco999. nco: how to replace a character array without RHS padding?
 	ncap2 -O -s 'defdim("string_size",10);fl_nm2[$string_size]="0123456789"' ~/nco/data/in.nc ~/foo.nc
 	ncap2 -O -s 'fl_nm="new string"' ~/nco/data/in.nc ~/foo.nc
 	ncks -v fl_nm ~/foo.nc
-nco1000. 
+nco1000. build/test mpi executables again
+	 cd ~/nco/bld;make MPI=Y
+nco1001. 
+	 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

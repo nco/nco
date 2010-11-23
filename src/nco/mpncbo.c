@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.101 2010-10-20 05:00:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.102 2010-11-23 22:01:26 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.101 2010-10-20 05:00:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.101 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.102 2010-11-23 22:01:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.102 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -688,7 +688,7 @@ main(int argc,char **argv)
     (void)nco_var_dfn(in_id_1,fl_out,out_id,var_out,nbr_xtr_1,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
     
     /* Set chunksize parameters */
-    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl_1,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -901,9 +901,9 @@ main(int argc,char **argv)
 	  if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
 	    rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
 	    /* Set chunksize parameters */
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+	    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl_1,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
-  /* Turn off default filling behavior to enhance efficiency */
+	    /* Turn off default filling behavior to enhance efficiency */
 	    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
