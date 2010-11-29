@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.82 2010-10-08 19:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.83 2010-11-29 22:25:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -97,10 +97,12 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.82 2010-10-08 19:02:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.82 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.83 2010-11-29 22:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.83 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:x-:";
   
+  cnk_sct **cnk=NULL_CEWI;
+
   dmn_sct *rec_dmn;
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -143,6 +145,7 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
+  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
   
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
   
@@ -167,11 +170,6 @@ main(int argc,char **argv)
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
   
   nco_bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
-  
-  const double tkn_wrt_rqs_ntv=0.04; /* [s] Token request interval */
-  
-  const int msg_bfr_lng=3; /* [nbr] Number of elements in msg_bfr */
-  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
   int fl_nm_lng; /* [nbr] Output file name length */
   int msg_bfr[msg_bfr_lng]; /* [bfr] Buffer containing var, idx, tkn_wrt_rsp */

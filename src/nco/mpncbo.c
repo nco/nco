@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.102 2010-11-23 22:01:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.103 2010-11-29 22:25:49 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.102 2010-11-23 22:01:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.102 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.103 2010-11-29 22:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.103 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -709,7 +709,7 @@ main(int argc,char **argv)
     TKN_WRT_FREE=False;
 #endif /* !ENABLE_MPI */
     /* Copy variable data for non-processed variables */
-    (void)nco_var_val_cpy(in_id_1,out_id,var_fix_1,nbr_var_fix_1);
+    (void)nco_msa_var_val_cpy(in_id_1,out_id,var_fix_1,nbr_var_fix_1,lmt_all_lst,nbr_dmn_fl_1);
 #ifdef ENABLE_MPI
     /* Close output file so workers can open it */
     nco_close(out_id);
@@ -816,43 +816,33 @@ main(int argc,char **argv)
 
 	  (void)nco_var_mtd_refresh(in_id_1,var_prc_1[idx]);
 	  has_mss_val=var_prc_1[idx]->has_mss_val; 
-	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-	  (void)nco_var_get(in_id_1,var_prc_1[idx]);
+	  (void)nco_msa_var_get(in_id_1,var_prc_1[idx],lmt_all_lst,nbr_dmn_fl_1);
 	  
 	  /* Find and set variable dmn_nbr, ID, mss_val, type in second file */
 	  (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
 	  
 	  /* Read hyperslab from second file */
-	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-	  (void)nco_var_get(in_id_2,var_prc_2[idx]);
+	  (void)nco_msa_var_get(in_id_2,var_prc_2[idx],lmt_all_lst,nbr_dmn_fl_1);
 	  
-	  /* Determine whether var1 and var2 conform */
-	  if(var_prc_1[idx]->nbr_dim == var_prc_2[idx]->nbr_dim){
-	    int dmn_idx;
-	    /* Do all dimensions match in sequence? */
-	    for(dmn_idx=0;dmn_idx<var_prc_1[idx]->nbr_dim;dmn_idx++){
-	      if(
-		 strcmp(var_prc_1[idx]->dim[dmn_idx]->nm,var_prc_2[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
-		 (var_prc_1[idx]->dim[dmn_idx]->cnt != var_prc_2[idx]->dim[dmn_idx]->cnt) || /* Dimension sizes do not match */
-		 False){
-		(void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,dmn_idx,var_prc_1[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_idx]->sz,var_prc_1[idx]->dim[dmn_idx]->cnt,fl_in_2,var_prc_2[idx]->nm,dmn_idx,var_prc_2[idx]->dim[dmn_idx]->nm,var_prc_2[idx]->dim[dmn_idx]->sz,var_prc_2[idx]->dim[dmn_idx]->cnt);
-		if(var_prc_1[idx]->dim[dmn_idx]->cnt == 1 || var_prc_2[idx]->dim[dmn_idx]->cnt == 1) (void)fprintf(fp_stdout,"%s: HINT If a dimension is present in both files, it must be the same size. %s will not attempt to broadcast a degenerate (i.e., size 1) dimension (e.g., a single timestep) to a non-degenerate size. If one of the dimensions is degenerate, try removing it completely (e.g., by averaging over it with ncwa) before invoking %s\n",prg_nm,prg_nm,prg_nm);
-		nco_exit(EXIT_FAILURE);
-	      } /* endif */
-	    } /* end loop over dmn_idx */
-	  }else{ /* var_prc_out[idx]->nbr_dim != var_prc_1[idx]->nbr_dim) */
-	    /* Number of dimensions do not match, attempt to broadcast variables 
-	       fxm: broadcasting here leads to memory leak later since var_[1,2] does not know */
-	    
-	    /* Die gracefully on unsupported features... */
-	    if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
-	      (void)fprintf(fp_stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
+	  /* Check that all dims in var_prc_2 are in var_prc_1 */
+	  for(dmn_idx=0;dmn_idx<var_prc_2[idx]->nbr_dim;dmn_idx++){
+	    for(dmn_jdx=0;dmn_jdx<var_prc_1[idx]->nbr_dim;dmn_jdx++)  
+	      if(!strcmp(var_prc_2[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_jdx]->nm))
+		break;
+	    if(dmn_jdx==var_prc_1[idx]->nbr_dim){
+	      (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s has dimension %s not present in file %s variable %s\n",prg_nm,fl_in_2,var_prc_2[idx]->nm, var_prc_2[idx]->dim[dmn_idx]->nm,fl_in_1,var_prc_1[idx]->nm);
 	      nco_exit(EXIT_FAILURE);
-	    } /* endif */
-	    
-	    (void)ncap_var_cnf_dmn(&var_prc_1[idx],&var_prc_2[idx]);
-	  } /* end else */
-	  
+	    } /* endif error */
+	  } /* end loop over idx */
+	    		
+	  /* Die gracefully on unsupported features... */
+	  if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
+	    (void)fprintf(fp_stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
+	    nco_exit(EXIT_FAILURE);
+	  } /* endif */
+    
+	  if(var_prc_1[idx]->nbr_dim > var_prc_2[idx]->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_out[idx],&var_prc_2[idx]);
+    
 	  /* var2 now conforms in size to var1, and is in memory */
 	  
 	  /* fxm: TODO 268 allow var1 or var2 to typecast */

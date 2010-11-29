@@ -1,5 +1,7 @@
 2010-11-29  Charlie Zender  <zender@uci.edu>
 
+	* Merge MSA aspects of ncbo.c from 4.0.5 into mpncbo.c
+
 	* Change URLs of NCO forums to, e.g.,
 	http://sourceforge.net/projects/nco/forums/forum/9830
 

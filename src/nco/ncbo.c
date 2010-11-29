@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.163 2010-10-20 05:00:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.164 2010-11-29 22:25:49 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.163 2010-10-20 05:00:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.163 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.164 2010-11-29 22:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.164 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -805,9 +805,9 @@ main(int argc,char **argv)
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-    /* free lmt[] nb is now referenced within lmt_all_lst[idx]  */
-    for(idx=0; idx<nbr_dmn_fl_1;idx++)
-      for(jdx=0 ; jdx< lmt_all_lst[idx]->lmt_dmn_nbr ;jdx++)
+    /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
+    for(idx=0;idx<nbr_dmn_fl_1;idx++)
+      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
          lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 
     if(nbr_dmn_fl_1 > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl_1);   

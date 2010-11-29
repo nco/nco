@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1096 2010-11-29 17:41:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1097 2010-11-29 22:25:49 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -710,7 +710,11 @@ nco1001. ncpdq packing _FillValue
 EOF
 	 ncgen -b -o ~/foo.nc ~/foo.cdl
 	 ncks -H ~/foo.nc
-nco1002. 
+nco1002. andx (from RAM) does ncks-like multiple column printing (window$ only? needs "dislin" package)
+	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/html/alltools.html#andx
+	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/src/andx.tar
+	 andx ~/nco/data/in.nc -o ASCII -delim TAB -time Hh two_dmn_rec_var -zf 2 tz
+nco1003. 
 qrk
 	 
 ************************************************************************
