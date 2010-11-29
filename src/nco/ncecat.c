@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.184 2010-10-08 19:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.185 2010-11-29 23:03:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.184 2010-10-08 19:02:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.184 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.185 2010-11-29 23:03:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.185 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -696,10 +696,11 @@ main(int argc,char **argv)
     /* ncecat-specific memory cleanup */
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
 
-    /* NB: lmt now referenced within lmt_all_lst[idx]  */
+    /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
     for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
 	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
     lmt=(lmt_sct**)nco_free(lmt); 
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
 

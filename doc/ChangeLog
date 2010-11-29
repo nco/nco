@@ -1,5 +1,9 @@
 2010-11-29  Charlie Zender  <zender@uci.edu>
 
+	* Merge ncflint.c (including MSA, AUX) from 4.0.5 into mpncflint.c
+
+	* Merge ncecat.c (including MSA, AUX) from 4.0.5 into mpncecat.c
+
 	* Merge MSA aspects of ncbo.c from 4.0.5 into mpncbo.c
 
 	* Change URLs of NCO forums to, e.g.,
@@ -7,7 +11,7 @@
 
 2010-11-23  Charlie Zender  <zender@uci.edu>
 
-	* Merge ncbo.c from 4.0.5 into mpncbo.c.
+	* Merge ncbo.c from 4.0.5 into mpncbo.c
 	Code compiles and links. Behavior is untested.
 
 2010-10-28  Charlie Zender  <zender@uci.edu>

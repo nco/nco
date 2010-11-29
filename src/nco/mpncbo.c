@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.103 2010-11-29 22:25:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.104 2010-11-29 23:03:23 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.103 2010-11-29 22:25:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.104 2010-11-29 23:03:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.104 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -799,7 +799,7 @@ main(int argc,char **argv)
 	/* OpenMP notes:
 	   shared(): msk and wgt are not altered within loop
 	   private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(ddra_info) private(idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,flg_ddra,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) firstprivate(ddra_info) private(idx,in_id_1,in_id_2,dmn_idx,dmn_jdx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,flg_ddra,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,rcd,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl_1)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */ 
 	for(idx=0;idx<nbr_var_prc_1;idx++){
@@ -970,6 +970,13 @@ main(int argc,char **argv)
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
+    for(idx=0;idx<nbr_dmn_fl_1;idx++)
+      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
+    if(nbr_dmn_fl_1 > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl_1);   
+    lmt=(lmt_sct**)nco_free(lmt); 
+
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
     if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
@@ -986,7 +993,8 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
