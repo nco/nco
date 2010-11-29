@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.623 2010-11-05 00:40:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.624 2010-11-29 17:41:48 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -44,9 +44,9 @@ Try to disable Spammers' machines:
 
 <table width="100%"><tr><td align="left" valign="top">/
 <a href="http://lists.sf.net/mailman/listinfo/nco-announce">Announce</a> /
-<a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a> /
-<a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> /
-<a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> /
+<a href="http://sourceforge.net/projects/nco/forums/forum/9831">Developer</a> /
+<a href="http://sourceforge.net/projects/nco/forums/forum/9829">Discussion</a> /
+<a href="http://sourceforge.net/projects/nco/forums/forum/9830">Help</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://nco.sf.net">Homepage</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
@@ -966,7 +966,7 @@ Source documentation for NCO and NetCDF4(alpha13)</a></li>
 </ul>
 <p>Please be aware that the documentation may be slightly inaccurate and 
 infrequently updated. Comments and suggestions are certainly welcomed on the 
- <a href="http://sf.net/forum/forum.php?forum_id=9829">forums</a>.
+ <a href="http://sourceforge.net/projects/nco/forums/forum/9829">forums</a>.
 </p>
 </ul>
 <hr></p>
@@ -1423,7 +1423,7 @@ file with a non-buggy NCO version.
 <i>Version&nbsp;3.9.5 is buggy and should be upgraded ASAP</i>.
 Be careful with data processed using this NCO version on multi-core CPUs.
 The (one-line!) patch to fix this bug in 3.9.5 is 
-<a href="https://sourceforge.net/forum/message.php?msg_id=6217274">here</a>.
+<a href="http://sourceforge.net/forum/message.php?msg_id=6217274">here</a>.
 </li>
 
 <!-- http://nco.sf.net#bug_idx_hyp -->
@@ -1719,13 +1719,13 @@ Please read the Guide's suggestions for productive
 <a href="./nco.html#help">Help Requests and Bug Reports</a>.
 <ul>
 <li><i>Where should I ask my questions on how to use NCO?</i>
-On the <a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> site.
+On the <a href="http://sourceforge.net/projects/nco/forums/forum/9830">Help</a> site.
 </li>
 <li><i>Where should I post suggestions/comments on NCO features and usage?</i>
-On the <a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> site.
+On the <a href="http://sourceforge.net/projects/nco/forums/forum/9829">Discussion</a> site.
 </li>
 <li><i>Where are NCO development and bug-squashing discussed?</i>
-At the <a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a>
+At the <a href="http://sourceforge.net/projects/nco/forums/forum/9831">Developer</a>
 site.</li>
 </ul>
 <hr></p>
@@ -1735,9 +1735,9 @@ site.</li>
 
 <table width="100%"><tr><td align="left" valign="top">/
 <a href="http://lists.sf.net/mailman/listinfo/nco-announce">Announce</a> /
-<a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a> /
-<a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> /
-<a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> /
+<a href="http://sourceforge.net/projects/nco/forums/forum/9831">Developer</a> /
+<a href="http://sourceforge.net/projects/nco/forums/forum/9829">Discussion</a> /
+<a href="http://sourceforge.net/projects/nco/forums/forum/9830">Help</a> /
 <a href="http://nco.sf.net">Homepage</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /

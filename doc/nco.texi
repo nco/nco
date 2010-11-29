@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.611 2010-11-16 17:31:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.612 2010-11-29 17:41:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1168,7 +1168,7 @@ If you want us to include a new feature in @acronym{NCO}, check first to
 see if that feature is already on the @uref{file:./TODO,TODO} list.
 If it is, why not implement that feature yourself and send us the patch?
 If the feature is not yet on the list, then send a note to the
-@uref{http://sf.net/forum/forum.php?forum_id=9829, NCO Discussion forum}.
+@uref{http://sourceforge.net/projects/nco/forums/forum/9829, NCO Discussion forum}.
 
 Read the manual before reporting a bug or posting a help request.
 Sending questions whose answers are not in the manual is the best
@@ -1190,7 +1190,7 @@ That is, describe what you are trying to do, and include the complete
 commands (run with @samp{-D 5}), error messages, and version of
 @acronym{NCO} (with @samp{-r}).  
 Post your help request to the 
-@uref{http://sf.net/forum/forum.php?forum_id=9830, NCO Help forum}.
+@uref{http://sourceforge.net/projects/nco/forums/forum/9830, NCO Help forum}.
 
 If you think you used the right command when @acronym{NCO} misbehaves,
 then you might have found a bug.  

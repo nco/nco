@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1095 2010-11-23 22:01:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1096 2010-11-29 17:41:48 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -704,7 +704,14 @@ nco999. nco: replace a character array without RHS padding?
 	ncks -v fl_nm ~/foo.nc
 nco1000. build/test mpi executables again
 	 cd ~/nco/bld;make MPI=Y
-nco1001. 
+nco1001. ncpdq packing _FillValue
+	 cat > ~/foo.cdl << EOF
+	 netcdf simple_x { dimensions: x = 4 ; variables: float data(x) ; data: data = -1, 0, 1, nan ; } 
+EOF
+	 ncgen -b -o ~/foo.nc ~/foo.cdl
+	 ncks -H ~/foo.nc
+nco1002. 
+qrk
 	 
 ************************************************************************
 End ncoXXX TODOs
