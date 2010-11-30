@@ -1,5 +1,7 @@
 2010-11-29  Charlie Zender  <zender@uci.edu>
 
+	* Quiet lengthy missing_value != _FillValue message
+
 	* Clean-up and fix order of operations
 
 	* Work to guarantee that _FillValue is within packing range
