@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.81 2010-11-30 00:58:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.82 2010-11-30 01:32:09 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -758,6 +758,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
        ndrv = 256*256*256*256 = 2^32 iff var->typ_pck == NC_INT */
 
     const double max_mns_min_dbl_wrn=1.0e10; /* [frc] Threshold value for warning */
+    double mss_val_dbl; /* [ptr] Missing value of variable expressed in double precision */
     double ndrv_dbl=double_CEWI; /* [frc] Double precision value of number of discrete representable values */
     double max_mns_min_dbl; /* [frc] Maximum value minus minimum value */
 
@@ -812,7 +813,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
       if(min_var->val.dp[0] == ptr_unn_mss_val_dbl.dp[0]) 
 	PURE_MSS_VAL_FLD=True;
 
-    /* fxm TODO nco1003 */
+    /* fxm TODO nco1003 20101129 */
     /* Change value of missing value iff necessary to fit inside packed type */
     if(var->has_mss_val && !PURE_MSS_VAL_FLD){
       double mss_val_dfl_dbl=0.0; /* CEWI */
@@ -832,6 +833,10 @@ nco_var_pck /* [fnc] Pack variable in memory */
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */ 
       if(dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: %s mss_val_dfl = %g\n",prg_nm_get(),fnc_nm,mss_val_dfl_dbl);
+
+      mss_val_dbl=ptr_unn_mss_val_dbl.dp[0];
+      if(mss_val_dbl < mss_val_dfl_dbl) (void)fprintf(stdout,"%s: %s reports mss_val_dbl = %g < NC_MIN_TYPE fxm\n",prg_nm_get(),fnc_nm,mss_val_dbl);
+      
     } /* endif */
 
     if(dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);

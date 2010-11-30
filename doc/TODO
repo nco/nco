@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1098 2010-11-30 00:58:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1099 2010-11-30 01:32:09 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -722,7 +722,8 @@ nco1002. andx (from RAM) does ncks-like multiple column printing (window$ only? 
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/src/andx.tar
 	 andx ~/nco/data/in.nc -o ASCII -delim TAB -time Hh two_dmn_rec_var -zf 2 tz
 nco1003. nco: ncpdq warn when _FillValue outside range of packed type
-nco1004. 
+nco1004. nco: ncpdq force _FillValue to be inside range of packed type
+nco1005. 
 qrk
 	 
 ************************************************************************
