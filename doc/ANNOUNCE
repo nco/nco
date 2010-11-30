@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.413 2010-10-27 16:02:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.414 2010-11-30 00:58:28 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -33,6 +33,13 @@ A. Correctly average YYYYMMDD-format integer "date" variables.
    with "date", "nbdate", and "time" variables. 
    That's how finicky some metadata conventions are. 
    http://nco.sf.net#bug_ncra_cf_YYYYMMDD_date
+
+A. Lengthy messages about setting threads have been quieted
+
+A. MPI executables mpncbo, mpncecat, mpnflint have been updated to
+   the same feature set as the normal, non-MPI executables. (fxm)
+
+A. ncpdq warns when _FillValue is outside range of packed type (fxm)
 
 "Sticky" reminders:
 

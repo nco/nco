@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.80 2010-10-08 22:02:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.81 2010-11-30 00:58:28 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -812,6 +812,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
       if(min_var->val.dp[0] == ptr_unn_mss_val_dbl.dp[0]) 
 	PURE_MSS_VAL_FLD=True;
 
+    /* fxm TODO nco1003 */
     /* Change value of missing value iff necessary to fit inside packed type */
     if(var->has_mss_val && !PURE_MSS_VAL_FLD){
       double mss_val_dfl_dbl=0.0; /* CEWI */

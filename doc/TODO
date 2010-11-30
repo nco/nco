@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1097 2010-11-29 22:25:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1098 2010-11-30 00:58:28 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -706,15 +706,23 @@ nco1000. build/test mpi executables again
 	 cd ~/nco/bld;make MPI=Y
 nco1001. ncpdq packing _FillValue
 	 cat > ~/foo.cdl << EOF
-	 netcdf simple_x { dimensions: x = 4 ; variables: float data(x) ; data: data = -1, 0, 1, nan ; } 
+	 netcdf foo { dimensions: dmn = 4 ; variables: float var(dmn) ; var:_FillValue = 1.0e36f ; data: var = -1, 0, 1, 1.0e36 ; }
+EOF
+	 cat > ~/foo.cdl << EOF
+	 netcdf foo { dimensions: dmn = 4 ; variables: float var(dmn) ; var:_FillValue = -999s ; data: var = -1, 0, 1, -999 ; }
 EOF
 	 ncgen -b -o ~/foo.nc ~/foo.cdl
-	 ncks -H ~/foo.nc
+	 ncks -m -H ~/foo.nc
+	 ncpdq -D 1 -O ~/foo.nc ~/foo_pck.nc
+	 ncks -m -H ~/foo_pck.nc
+	 ncpdq -O -U ~/foo_pck.nc ~/foo_upk.nc
+	 ncks -m -H ~/foo_upk.nc
 nco1002. andx (from RAM) does ncks-like multiple column printing (window$ only? needs "dislin" package)
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/html/alltools.html#andx
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/src/andx.tar
 	 andx ~/nco/data/in.nc -o ASCII -delim TAB -time Hh two_dmn_rec_var -zf 2 tz
-nco1003. 
+nco1003. nco: ncpdq warn when _FillValue outside range of packed type
+nco1004. 
 qrk
 	 
 ************************************************************************

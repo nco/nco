@@ -1,5 +1,7 @@
 2010-11-29  Charlie Zender  <zender@uci.edu>
 
+	* Quiet lengthy thread messages
+
 	* Merge ncflint.c (including MSA, AUX) from 4.0.5 into mpncflint.c
 
 	* Merge ncecat.c (including MSA, AUX) from 4.0.5 into mpncecat.c
