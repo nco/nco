@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.126 2010-10-26 20:39:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.127 2010-11-30 06:21:49 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -345,7 +345,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   /* If input files are required but have not been obtained yet from stdin */
   if(!*FL_LST_IN_FROM_STDIN){
-    /* Fill in input file list from positional arguments */
+    /* Fill-in input file list from positional arguments */
     /* fxm: valgrind unfree'd memory in nco_fl_lst_mk() (nco_fl_utl.c:264) */
     fl_lst_in=(char **)nco_malloc((psn_arg_nbr-1+psn_arg_fst)*sizeof(char *));
     while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
@@ -593,7 +593,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rmt_fch_cmd_sct http={"wget -r --output-document=%s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
-    /* Fill in ftp structure fmt element dynamically later */
+    /* Fill-in ftp structure fmt element dynamically later */
     rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
     /* Why did stat() command fail? */

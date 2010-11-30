@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.95 2010-10-27 15:33:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.96 2010-11-30 06:21:49 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -650,7 +650,7 @@ nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID 
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
 
-  /* Fill in variable structure list for all extracted variables */
+  /* Fill-in variable structure list for all extracted variables */
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=nco_var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=nco_var_dpl(var[idx]);

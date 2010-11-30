@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.165 2010-11-29 23:03:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.166 2010-11-30 06:21:49 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.165 2010-11-29 23:03:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.165 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.166 2010-11-30 06:21:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.166 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -525,7 +525,7 @@ main(int argc,char **argv)
   dmn_lst_1=nco_dmn_lst_ass_var(in_id_1,xtr_lst_1,nbr_xtr_1,&nbr_dmn_xtr_1);
   dmn_lst_2=nco_dmn_lst_ass_var(in_id_2,xtr_lst_2,nbr_xtr_2,&nbr_dmn_xtr_2);
   
-  /* Fill in dimension structure for all extracted dimensions */
+  /* Fill-in dimension structure for all extracted dimensions */
   dim_1=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
   dim_2=(dmn_sct **)nco_malloc(nbr_dmn_xtr_2*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr_1;idx++) dim_1[idx]=nco_dmn_fll(in_id_1,dmn_lst_1[idx].id,dmn_lst_1[idx].nm);
@@ -551,7 +551,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr_1;idx++) (void)fprintf(stderr,"xtr_lst_1[%d].nm = %s, .id= %d\n",idx,xtr_lst_1[idx].nm,xtr_lst_1[idx].id);
   } /* end if */
   
-  /* Fill in variable structure list for all extracted variables */
+  /* Fill-in variable structure list for all extracted variables */
   var_1=(var_sct **)nco_malloc(nbr_xtr_1*sizeof(var_sct *));
   var_2=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr_1*sizeof(var_sct *));

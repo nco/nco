@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.106 2010-09-24 00:24:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.107 2010-11-30 06:21:49 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -485,7 +485,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     if(!strcasecmp(att_nm,sng_history)) break;
   } /* end loop over att */
 
-  /* Fill in history string */
+  /* Fill-in history string */
   if(idx == glb_att_nbr){
     /* Global attribute "[hH]istory" does not yet exist */
 
@@ -609,7 +609,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     aed_lst[idx].sz=-1L;
     aed_lst[idx].id=-1;
 
-    /* Fill in structure */
+    /* Fill-in structure */
     if(arg_lst[0]) aed_lst[idx].att_nm=strdup(arg_lst[0]);
     if(arg_lst[1]) aed_lst[idx].var_nm=strdup(arg_lst[1]);
 

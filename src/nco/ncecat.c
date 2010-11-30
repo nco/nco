@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.185 2010-11-29 23:03:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.186 2010-11-30 06:21:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.185 2010-11-29 23:03:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.185 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.186 2010-11-30 06:21:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.186 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -472,7 +472,7 @@ main(int argc,char **argv)
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
-  /* Fill in dimension structure for all extracted dimensions */
+  /* Fill-in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
 
@@ -490,7 +490,7 @@ main(int argc,char **argv)
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
 
-  /* Fill in variable structure list for all extracted variables */
+  /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){

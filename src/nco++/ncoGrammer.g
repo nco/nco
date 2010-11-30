@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.185 2010-10-28 04:52:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.186 2010-11-30 06:21:49 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -819,21 +819,19 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
      /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
      lmt_ptr->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
     
-    
-    /* Fill in structure */
+    /* Fill-in structure */
     if( lcl_ind[0] >= 0){ 
            lmt_ptr->is_usr_spc_min=True;
            lmt_ptr->srt=lcl_ind[0]; 
     }    
 
-
-    /* Fill in structure */
+    /* Fill-in structure */
     if( lcl_ind[1] >= 0) {
            lmt_ptr->is_usr_spc_max=True;
            lmt_ptr->end=lcl_ind[1];
     }    
 
-    /* Fill in structure */
+    /* Fill-in structure */
     if( lcl_ind[2] > 0) {
            lmt_ptr->srd_sng=strdup("~fill_in");
            lmt_ptr->srd=lcl_ind[2];
@@ -845,16 +843,11 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
           lmt_ptr->end=lcl_ind[0]; 
     }    
 
-
     lmt_vtr.push_back(lmt_ptr);
-
-
    } // end idx
 
    return nbr_dmn;
-
 } /* end lmt_mk */
-
 
 /* Legacy run -- will remove soon
 public:

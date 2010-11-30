@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.106 2010-10-26 20:39:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.107 2010-11-30 06:21:49 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -128,7 +128,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
     long cnt;
     int max_sng_sz;
     
-    /* Fill in limits with default parsing information */
+    /* Fill-in limits with default parsing information */
     rcd=nco_inq_dim_flg(nc_id,dmn_id,dmn_nm,&cnt);
     
     if(rcd == NC_EBADDIM){
@@ -895,7 +895,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
     lmt[idx]->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
     
-    /* Fill in structure */
+    /* Fill-in structure */
     lmt[idx]->nm=arg_lst[0];
     lmt[idx]->min_sng=arg_lst[1];
     /* Setting min_sng and max_sng to same pointer would lead to dangerous double-free() condition */

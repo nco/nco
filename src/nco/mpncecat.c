@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.84 2010-11-29 23:03:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.85 2010-11-30 06:21:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -99,8 +99,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.84 2010-11-29 23:03:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.84 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.85 2010-11-30 06:21:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.85 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -495,7 +495,7 @@ main(int argc,char **argv)
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
   
-  /* Fill in dimension structure for all extracted dimensions */
+  /* Fill-in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   /* Dimension list no longer needed */
@@ -511,7 +511,7 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
   
-  /* Fill in variable structure list for all extracted variables */
+  /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){

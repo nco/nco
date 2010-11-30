@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.163 2010-10-05 19:59:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.164 2010-11-30 06:21:49 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1203,7 +1203,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
 
-  /* Fill in known fields */
+  /* Fill-in known fields */
   /* Make sure var_free() frees names when variable is destroyed */
   var->nm=(char *)strdup(var_nm);
   var->id=var_id;
