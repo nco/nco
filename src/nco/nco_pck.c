@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.83 2010-12-01 05:14:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.84 2010-12-01 06:35:00 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -897,13 +897,13 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     /* ndrv is 2^{bits per packed value} where bppv = 8 for NC_CHAR and bppv = 16 for NC_SHORT
        Subtract one to leave slop for rounding errors
-       Subtract two to leave room for missing_value? */
+       20101130 Subtract two to leave room for missing_value */
     if(nc_typ_pck == NC_BYTE || nc_typ_pck == NC_CHAR){
-      ndrv_dbl=256.0-1.0; /* [sct] Double precision value of number of discrete representable values */
+      ndrv_dbl=256.0-2.0; /* [sct] Double precision value of number of discrete representable values */
     }else if(nc_typ_pck == NC_SHORT){
-      ndrv_dbl=65536.0-1.0; /* [sct] Double precision value of number of discrete representable values */
+      ndrv_dbl=65536.0-2.0; /* [sct] Double precision value of number of discrete representable values */
     }else if(nc_typ_pck == NC_INT){
-      ndrv_dbl=4294967295.0-1.0; /* [sct] Double precision value of number of discrete representable values */
+      ndrv_dbl=4294967295.0-2.0; /* [sct] Double precision value of number of discrete representable values */
     } /* end else */
     ndrv_unn.d=ndrv_dbl; /* Generic container for number of discrete representable values */
     ndrv_var=scl_mk_var(ndrv_unn,NC_DOUBLE); /* [sct] Variable structure for number of discrete representable values */

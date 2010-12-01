@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.612 2010-11-29 17:41:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.613 2010-12-01 06:35:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,7 +104,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.6
 @set copyright-years 1995--2010
 @set update-year 2010
-@set update-date 9 November 2010
+@set update-date 30 November 2010
 @set update-month November 2010
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -4795,13 +4795,13 @@ Thus if the variable is packed into type @code{NC_SHORT}, a two-byte
 datatype, then there are at most @math{2^16 = 65536} distinct values
 representible.
 In practice, the number of discretely representible values is taken
-to be one less than the theoretical maximum.
-This leaves extra space and solves potential problems with rounding
-which can occur during the unpacking of the variable.
-Thus for @code{NC_SHORT}, @math{ndrv = 65536 - 1 = 65535}.
+to be two less than the theoretical maximum.
+This leaves space for a missing value and solves potential problems with
+rounding that may occur during the unpacking of the variable.
+Thus for @code{NC_SHORT}, @math{ndrv = 65536 - 2 = 65534}.
 Less often, the variable may be packed into type @code{NC_CHAR}, 
-where @math{ndrv = 256 - 1 = 255}, or type @code{NC_INT} where
-where @math{ndrv = 4294967295 - 1 = 4294967294}.
+where @math{ndrv = 256 - 2 = 254}, or type @code{NC_INT} where
+where @math{ndrv = 4294967295 - 2 = 4294967293}.
 One useful feature of (lossy) netCDF packing algorithm is that
 additional, loss-less packing algorithms perform well on top of it. 
 

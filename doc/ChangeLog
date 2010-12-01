@@ -1,5 +1,7 @@
 2010-11-30  Charlie Zender  <zender@uci.edu>
 
+	* Subtract two from ndrv to leave room in packing for missing_value
+
 	* Warn when missing value outside pack range
 
 2010-11-29  Charlie Zender  <zender@uci.edu>
