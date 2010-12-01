@@ -1,3 +1,7 @@
+2010-11-30  Charlie Zender  <zender@uci.edu>
+
+	* Warn when missing value outside pack range
+
 2010-11-29  Charlie Zender  <zender@uci.edu>
 
 	* Quiet lengthy missing_value != _FillValue message

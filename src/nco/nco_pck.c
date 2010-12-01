@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.82 2010-11-30 01:32:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.83 2010-12-01 05:14:05 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -817,26 +817,73 @@ nco_var_pck /* [fnc] Pack variable in memory */
     /* Change value of missing value iff necessary to fit inside packed type */
     if(var->has_mss_val && !PURE_MSS_VAL_FLD){
       double mss_val_dfl_dbl=0.0; /* CEWI */
+      double pck_rng_min_dbl=0.0; /* CEWI */
+      double pck_rng_max_dbl=0.0; /* CEWI */
       switch(nc_typ_pck){ 
-      case NC_FLOAT: mss_val_dfl_dbl=NC_FILL_FLOAT; break; 
-      case NC_DOUBLE: mss_val_dfl_dbl=NC_FILL_DOUBLE; break; 
-      case NC_INT: mss_val_dfl_dbl=NC_FILL_INT; break;
-      case NC_SHORT: mss_val_dfl_dbl=NC_FILL_SHORT; break;
-      case NC_USHORT: mss_val_dfl_dbl=NC_FILL_USHORT; break;
-      case NC_UINT: mss_val_dfl_dbl=NC_FILL_UINT; break;
-      case NC_INT64: mss_val_dfl_dbl=NC_FILL_INT64; break;
-      case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
-      case NC_BYTE: mss_val_dfl_dbl=NC_FILL_BYTE; break;
-      case NC_UBYTE: mss_val_dfl_dbl=NC_FILL_UBYTE; break;
-      case NC_CHAR: mss_val_dfl_dbl=NC_FILL_CHAR; break;
+      case NC_FLOAT:
+	mss_val_dfl_dbl=NC_FILL_FLOAT; 
+	pck_rng_min_dbl=NC_MIN_FLOAT;
+	pck_rng_max_dbl=NC_MAX_FLOAT;
+	break; 
+      case NC_DOUBLE:
+	mss_val_dfl_dbl=NC_FILL_DOUBLE; 
+	pck_rng_min_dbl=NC_MIN_DOUBLE;
+	pck_rng_max_dbl=NC_MAX_DOUBLE;
+	break; 
+      case NC_INT:
+	mss_val_dfl_dbl=NC_FILL_INT; 
+	pck_rng_min_dbl=NC_MIN_INT;
+	pck_rng_max_dbl=NC_MAX_INT;
+	break;
+      case NC_SHORT:
+	mss_val_dfl_dbl=NC_FILL_SHORT; 
+	pck_rng_min_dbl=NC_MIN_SHORT;
+	pck_rng_max_dbl=NC_MAX_SHORT;
+	break;
+      case NC_USHORT:
+	mss_val_dfl_dbl=NC_FILL_USHORT;
+	pck_rng_min_dbl=0.0;
+	pck_rng_max_dbl=NC_MAX_USHORT;
+	break;
+      case NC_UINT:
+	mss_val_dfl_dbl=NC_FILL_UINT;
+	pck_rng_min_dbl=0.0;
+	pck_rng_max_dbl=NC_MAX_UINT;
+	break;
+      case NC_INT64:
+	mss_val_dfl_dbl=NC_FILL_INT64; 
+	pck_rng_min_dbl=NC_MIN_INT64;
+	pck_rng_max_dbl=NC_MAX_INT64;
+	break;
+      case NC_UINT64:
+	mss_val_dfl_dbl=NC_FILL_UINT64;
+	pck_rng_min_dbl=0.0;
+	pck_rng_max_dbl=NC_MAX_UINT64;
+	break;
+      case NC_BYTE:
+	mss_val_dfl_dbl=NC_FILL_BYTE; 
+	pck_rng_min_dbl=NC_MIN_BYTE;
+	pck_rng_max_dbl=NC_MAX_BYTE;
+	break;
+      case NC_UBYTE:
+	mss_val_dfl_dbl=NC_FILL_UBYTE;
+	pck_rng_min_dbl=0.0;
+	pck_rng_max_dbl=NC_MAX_UBYTE;
+	break;
+      case NC_CHAR:
+	mss_val_dfl_dbl=NC_FILL_CHAR;
+	pck_rng_min_dbl=0.0;
+	pck_rng_max_dbl=NC_MAX_CHAR;
+	break;
       case NC_STRING: break; /* Do nothing */
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */ 
-      if(dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: %s mss_val_dfl = %g\n",prg_nm_get(),fnc_nm,mss_val_dfl_dbl);
+      if(dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: %s mss_val_dfl_dbl = %g, pck_rng_min_dbl = %g, pck_rng_max_dbl = %g, \n",prg_nm_get(),fnc_nm,mss_val_dfl_dbl,pck_rng_min_dbl,pck_rng_max_dbl);
 
       mss_val_dbl=ptr_unn_mss_val_dbl.dp[0];
-      if(mss_val_dbl < mss_val_dfl_dbl) (void)fprintf(stdout,"%s: %s reports mss_val_dbl = %g < NC_MIN_TYPE fxm\n",prg_nm_get(),fnc_nm,mss_val_dbl);
-      
+      if(nc_typ_pck != NC_STRING && (mss_val_dbl < pck_rng_min_dbl || mss_val_dbl > pck_rng_max_dbl)){ 
+	(void)fprintf(stdout,"%s: WARNING %s reports mss_val_dbl (= %g) is outside range (%g <= x <= %g) represented by packed data type (= %s). Conversion of missing values is unpredictable and could lead to erroneous results. Workaround is to set _FillValue to be within packed range with, e.g.,\nncatted -O -a _FillValue,,o,f,%g inout.nc\nFor more information on this workaround, see\nhttp://nco.sf.net/nco.html#mss_val\n",prg_nm_get(),fnc_nm,mss_val_dbl,pck_rng_min_dbl,pck_rng_max_dbl,nco_typ_sng(nc_typ_pck),mss_val_dfl_dbl);
+      } /* NC_STRING */
     } /* endif */
 
     if(dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);

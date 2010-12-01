@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.414 2010-11-30 00:58:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.415 2010-12-01 05:16:46 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -39,7 +39,7 @@ A. Lengthy messages about setting threads have been quieted
 A. MPI executables mpncbo, mpncecat, mpnflint have been updated to
    the same feature set as the normal, non-MPI executables. (fxm)
 
-A. ncpdq warns when _FillValue is outside range of packed type (fxm)
+A. ncpdq warns when _FillValue is outside range of packed type
 
 "Sticky" reminders:
 

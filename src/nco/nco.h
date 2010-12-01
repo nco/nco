@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.158 2010-09-24 16:21:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.159 2010-12-01 05:14:05 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -222,6 +222,63 @@ extern "C" {
 #endif
 #ifndef NC_FORMAT_NETCDF4_CLASSIC
 # define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+#endif
+
+  /* NCO began using MIN/MAX tokens in nco_pck.c on 20101130
+     Not sure when these tokens were introduced to netcdf.h */
+#ifndef NC_MAX_BYTE
+# define NC_MAX_BYTE
+#endif
+#ifndef NC_MAX_BYTE
+# define NC_MAX_BYTE 127
+#endif
+#ifndef NC_MIN_BYTE
+# define NC_MIN_BYTE (-NC_MAX_BYTE-1)
+#endif
+#ifndef NC_MAX_CHAR
+# define NC_MAX_CHAR 255
+#endif
+#ifndef NC_MAX_SHORT
+# define NC_MAX_SHORT 32767
+#endif
+#ifndef NC_MIN_SHORT
+# define NC_MIN_SHORT (-NC_MAX_SHORT - 1)
+#endif
+#ifndef NC_MAX_INT
+# define NC_MAX_INT 2147483647
+#endif
+#ifndef NC_MIN_INT
+# define NC_MIN_INT (-NC_MAX_INT - 1)
+#endif
+#ifndef NC_MAX_FLOAT
+# define NC_MAX_FLOAT 3.402823466e+38f
+#endif
+#ifndef NC_MIN_FLOAT
+# define NC_MIN_FLOAT (-NC_MAX_FLOAT)
+#endif
+#ifndef NC_MAX_DOUBLE
+# define NC_MAX_DOUBLE 1.7976931348623157e+308 
+#endif
+#ifndef NC_MIN_DOUBLE
+# define NC_MIN_DOUBLE (-NC_MAX_DOUBLE)
+#endif
+#ifndef NC_MAX_UBYTE
+# define NC_MAX_UBYTE NC_MAX_CHAR
+#endif
+#ifndef NC_MAX_USHORT
+# define NC_MAX_USHORT 65535U
+#endif
+#ifndef NC_MAX_UINT
+# define NC_MAX_UINT 4294967295U
+#endif
+#ifndef NC_MAX_INT64
+# define NC_MAX_INT64 (9223372036854775807LL)
+#endif
+#ifndef NC_MIN_INT64
+# define NC_MIN_INT64 (-9223372036854775807LL-1)
+#endif
+#ifndef NC_MAX_UINT64
+# define NC_MAX_UINT64 (18446744073709551615ULL)
 #endif
 /* Endif older netcdf.h */
 
