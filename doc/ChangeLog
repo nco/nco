@@ -1,3 +1,16 @@
+2010-12-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.0.6 release procedure:
+ 	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
+	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
+	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
+
+	* Change comment line 866 of nco_pck.c to not break PGI pgcc
+	From "If max-min = 0 then variable is constant..."
+	  to "If max-min == 0 then variable is constant..."
+	pgcc is garbage. pgCC is too (cannot compile ncap2).
+
 2010-11-30  Charlie Zender  <zender@uci.edu>
 
 	* Subtract two from ndrv to leave room in packing for missing_value
@@ -27,14 +40,6 @@
 
 	* Merge ncbo.c from 4.0.5 into mpncbo.c
 	Code compiles and links. Behavior is untested.
-
-2010-10-28  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.6 release procedure:
- 	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
-	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
-	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
 
 2010-10-27  Charlie Zender  <zender@uci.edu>
 

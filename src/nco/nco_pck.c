@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.84 2010-12-01 06:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.85 2010-12-06 17:10:58 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -909,8 +909,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
     ndrv_var=scl_mk_var(ndrv_unn,NC_DOUBLE); /* [sct] Variable structure for number of discrete representable values */
 
     /* scale_factor is (max-min)/ndrv
-       If max-min = 0 then variable is constant value so scale_factor=0.0 and add_offset=var
-       If max-min > ndrv then precision is worse than 1.0
+       If max-min == 0 then variable is constant value so scale_factor=0.0 and add_offset=var
+       If max-min > ndrv then precision is worse  than 1.0
        If max-min < ndrv then precision is better than 1.0 */
     (void)nco_var_sbt((nc_type)NC_DOUBLE,1L,var->has_mss_val,ptr_unn_mss_val_dbl,min_var->val,max_var_dpl->val);
     /* max-min is currently stored in max_var_dpl */
