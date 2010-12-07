@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.613 2010-12-01 06:35:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.614 2010-12-07 17:27:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6037,29 +6037,35 @@ Consider @emph{var1 'op' var2}
 
 @strong{Precision}
 @itemize @bullet
-@item When both operands are variables, the result has the precision of the higher precision operand
+@item When both operands are variables, the result has the precision of the higher precision operand.
 @item When one operand is a variable and the other an attribute, the result has the precision of the variable. 
 @item When both operands are attributes, the result has the precision of the more precise attribute.
-@item The exponentiation operator ``^'' is an exception to the above
-rules. 
+@item The exponentiation operator ``^'' is an exception to the above rules. 
 When both operands have type less than @code{NC_FLOAT}, the result is @code{NC_FLOAT}. 
 When either type is @code{NC_DOUBLE}, the result is also @code{NC_DOUBLE}. 
 @end itemize
 @c csz got to here editing
 
 @strong{Rank}
-        @itemize @bullet 
-	@item The Rank of the result is generally equal to Rank of the operand that has the greatest number of dimensions.
-        @item  If the dimensions in var2 are a subset of the dimensions in var1 then its possible to  make var2 conform to var1 through broadcasting and or dimension reordering. 
-       @item Broadcasting a variable means creating data in non-existing dimensions from the data in existing dimensions.
- 
-       @item More specifically: If the numbers of dimensions in var1 is greater than or equal to the number of dimensions in var2 then an attempt is made to make var2 conform to var1 ,else var1 is made to conform to var2. If conformance  is not possible then an error message will be emitted and script execution will cease.@*
-	
-        @end itemize
+@itemize @bullet 
+@item The Rank of the result is generally equal to Rank of the operand
+that has the greatest number of dimensions.  
+@item If the dimensions in var2 are a subset of the dimensions in var1
+then its possible to  make var2 conform to var1 through broadcasting and
+or dimension reordering.  
+@item Broadcasting a variable means creating data in non-existing
+dimensions from the data in existing dimensions. 
+@item More specifically: If the numbers of dimensions in var1 is greater
+than or equal to the number of dimensions in var2 then an attempt is
+made to make var2 conform to var1 ,else var1 is made to conform to
+var2. If conformance  is not possible then an error message will be
+emitted and script execution will cease.@* 
+@end itemize
 
-@noindent Even though the logical operators return True(1) or False(0) they are treated in the same way as the arithmetic operators with regard to precision and rank. @*
-
-examples:
+@noindent Even though the logical operators return True(1) or False(0)
+they are treated in the same way as the arithmetic operators with regard
+to precision and rank.@* 
+Examples:
 
 @example
 dimensions: time=10, lat=2, lon=4
@@ -6094,12 +6100,15 @@ Consider now
                                   // start@@n1=5329 and is type int 
 @end example
 
-
 @noindent @strong{Binary Operators} @* 
 @cindex binary Operators
-Unlike C the binary operators return an array of values. There is no such thing as short circuiting  with the AND/OR operators. Missing values are carried into the result in the same way they are with the arithmetic operators. When an expression is evaluated in an if() the missing values are treated as true.@*
-The Binary operators are,in order of precedence: 
-
+Unlike C the binary operators return an array of values. 
+There is no such thing as short circuiting with the AND/OR operators. 
+Missing values are carried into the result in the same way they are with
+the arithmetic operators. 
+When an expression is evaluated in an if() the missing values are
+treated as true.@*  
+The binary operators are, in order of precedence: 
 @example
 	
 !   Logical Not
@@ -6119,23 +6128,17 @@ The Binary operators are,in order of precedence:
 ----------------------------
 ||  Logical OR
 ----------------------------
-
 @end example
 
 To see all operators: @pxref{Operators precedence and associativity} 
-
-	
-examples:
-
+Examples:
 @example
 tm1= time>2 && time <7;  // tm1 = 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 ; type double;
 tm2= time==3 || time>=6; // tm2 = 0, 0, 1, 0, 0, 1, 1, 1, 1, 1 ; type double
 tm3= int(!tm1);          // tm3=  1, 1, 0, 0, 0, 0, 1, 1, 1, 1 ; type int 
 tm4= tm1 && tm2;         // tm4=  0, 0, 1, 0, 0, 1, 0, 0, 0, 0 ; type double;
 tm5= !tm4;               // tm5=  1, 1, 0, 1, 1, 0, 1, 1, 1, 1 ; type double;
-
 @end example
-
 	
 @noindent @strong{Regular Assign Operator} @*
 @noindent @emph{var1 '=' exp1} @*
@@ -6157,8 +6160,7 @@ time-=2          // time= -1,0,1,2,3,4,5,6,7,8
 @noindent @strong{Increment/ Decrement Operators @* } 
 These work in a similar fashion to their regular C counterparts. If say the variable "four" is input only then the statement "++four" effectively means -read four from input increment each element by one , then write the new values to Output;
 
-example:
-
+Example:
 @example
 n2=++four;   n2=5, four=5 
 n3=one--+20; n3=21  one=0;	 
@@ -6168,17 +6170,16 @@ n4=--time;   n4=time=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.;
 @noindent @strong{Conditional Operator ?: } @*
 @cindex conditional Operator
 @noindent @emph{exp1 ? exp2 : exp3 } @*
-The conditional operator ( or ternary Operator) is nice and succinct way of writing an if/then/else. If exp1 evaluates to true then exp2 is returned else exp3 is returned.
+The conditional operator (or ternary Operator) is a succinct way
+of writing an if/then/else. If exp1 evaluates to true then exp2 is
+returned else exp3 is returned. 
 
-example
+Example:
 @example
 weight_avg= weight.avg();
 weight_avg@@units= (weight_avg ==1 ? "kilo" : "kilos");  
-
 PS_nw= PS - (PS.min() >100000 ? 100000 : 0 );
 @end example
-
-
 
 @noindent @strong{Clipping Operators}
 @cindex clipping operators
@@ -6600,8 +6601,9 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
 @cindex if() 
-The synatax of the if statement is similar to its C counterpart. The @emph{Conditional Operator (ternary operator)} has also been implemented.
-
+The synatax of the if statement is similar to its C counterpart. 
+The @emph{Conditional Operator (ternary operator)} has also been
+implemented. 
 @example
 if(exp1)
    stmt1;
@@ -6611,7 +6613,6 @@ else
    stmt3;
 
 # Can use code blocks as well:
-
 if(exp1)@{
    stmt1;
    stmt1a;
@@ -6625,8 +6626,15 @@ else @{
 @}     
 @end example
 
-@noindent For a variable or attribute expression to be logically true all its non-missing value elements must be logically true. (i.e non-zero). The expression can be of any type. Unlike C there is no short-circuiting of an expression with the OR (||) AND (&&) operators. The whole expression is evaluated regardless if one of the AND/OR operands are true/false. 
-
+@comment Truth
+@noindent For a variable or attribute expression to be logically true
+all its non-missing value elements must be logically true, i.e.,
+non-zero. 
+The expression can be of any type. 
+Unlike C there is no short-circuiting of an expression with the OR (||)
+AND (&&) operators. 
+The whole expression is evaluated regardless if one of the AND/OR
+operands are true/false.   
 @example
 # Simple example
 if(time>0)
@@ -6708,22 +6716,26 @@ This function is 	  monotonic
 @cindex missing values ncap2
 Missing values operate slightly differently in @command{ncap2} 
 Consider the expression where op is any of the following operators (excluding '=')
- 
 @example
 Arithmetic operators ( * / % + - ^ )
 Binary Operators     ( >, >= <, <= ==, !=,==,||,&&, >>,<< ) 
 Assign Operators     ( +=,-=,/=, *= ) 
 
 var1 'op' var2
-
 @end example
 
-
-@noindent if var1 has a missing value then this is the value used in the operation else the missing value for var2 is used. if during the element by element operation an element from either operand is equal to the missing value then the missing value is carried through. In this way missing values 'percolate' through an expression. @*
-Missing values associated with Output variables are stored in memory and are written to disk after the script finishes. During script execution its possible (and legal) for the missing value of a variable to take on  several different values.
- 
+@noindent If var1 has a missing value then this is the value used in the
+operation else the missing value for var2 is used. 
+If during the element by element operation an element from either
+operand is equal to the missing value then the missing value is carried
+through. 
+In this way missing values 'percolate' through an expression.@* 
+Missing values associated with Output variables are stored in memory and
+are written to disk after the script finishes. 
+During script execution its possible (and legal) for the missing value
+of a variable to take on several different values. 
 @example 
-Consider the variable:
+# Consider the variable:
 int rec_var_int_mss_val_int(time); =-999,2,3,4,5,6,7,8,-999,-999;
 rec_var_int_mss_val_int:_FillValue = -999;
 
@@ -6732,39 +6744,38 @@ n2=rec_var_int_mss_val_int + rec_var_int_mss_val_int.reverse($time);
 n2=-999,-999,11,11,11,11,11,11,999,-999;
 @end example
 
-The following methods are used to edit the missing value associated with a variable. They only work on variables in Output.
-
-
+The following methods are used to edit the missing value associated with
+a variable. 
+They only work on variables in Output. 
 @table @code
 @item set_miss(expr)
 @cindex set_miss()
- Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
+ Takes one argument the missing value. 
+ Sets or overwrites the existing missing value. 
+ The argument given is converted if necessary to the variable type 
 @item change_miss(expr)
 @cindex change_miss()
- Changes the missing value elements of the variable to the new missing value (nb an expensive function).
+ Changes the missing value elements of the variable to the new missing
+ value (nb an expensive function). 
 @item get_miss() 
 @cindex get_miss()
- Returns the missing value of a variable. If the variable exists in Input and Output then the missing value of the variable in Output is returned. If the variable has no missing value then an error is returned.  
+ Returns the missing value of a variable. 
+ If the variable exists in Input and Output then the missing value of
+ the variable in Output is returned. 
+ If the variable has no missing value then an error is returned.   
 @item delete_miss()
 @cindex delete_miss()
  Deletes the missing value associated with a variable.
 @end table
 
-
-
-
-
 @example
-
 th=three_dmn_var_dbl;
 th.change_miss(-1e10d);
 /* set values less than 0 or greater than 50 to missing value */
 where( th <0.0 || th > 50.0)
   th=th.get_miss();
 
-
-Another example
-
+# Another example:
 new[$time,$lat,$lon]=1.0;
 new.set_miss(-997.0);
 
@@ -6773,17 +6784,13 @@ where ( three_dmn_var_dbl%3 == 0 )
      new=three_dmn_var_dbl; 
 elsewhere
      new=new.get_miss();   
-
-
 @end example
-
 
 @html
 <a name="ncap_mtd"></a> <!-- http://nco.sf.net/nco.html#ncap_mtd -->
 @end html
 @node Methods and functions, RAM variables, Missing values ncap2, ncap2 netCDF Arithmetic Processor
 @subsection Methods and functions
-
 
 The convention within this document is that methods can be used as 
 functions. 
