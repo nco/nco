@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.568 2010-11-05 00:40:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.569 2010-12-07 17:27:23 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -48,7 +48,7 @@
 # cd ~/nco/bld;make sys;cd -         # Install in /usr/local (must sudo)
 # cd ~/nco/bld;make SZ=Y;cd -	     # Szip support
 # cd ~/nco/bld;make UDUNITS=Y;cd -   # UDUnits support
-# cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 supportXF
+# cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
 # cd ${HOME}/nco/bld;make cln all ncap2;cd - # New default for most machines
