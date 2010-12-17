@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1102 2010-12-07 17:27:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1103 2010-12-17 07:03:24 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -717,14 +717,13 @@ EOF
 	 ncks -m -H ~/foo_pck.nc
 	 ncpdq -O -U ~/foo_pck.nc ~/foo_upk.nc
 	 ncks -m -H ~/foo_upk.nc
-nco1002. andx (from RAM) does ncks-like multiple column printing (window$ only? needs "dislin" package)
+nco1002. andx (from ARM) does ncks-like multiple column printing (window$ only? needs "dislin" package)
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/html/alltools.html#andx
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/src/andx.tar
 	 andx ~/nco/data/in.nc -o ASCII -delim TAB -time Hh two_dmn_rec_var -zf 2 tz
 nco1004. nco: ncpdq force _FillValue to be inside range of packed type ?
 nco1006. 
 qrk
-	 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
