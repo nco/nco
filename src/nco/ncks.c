@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.263 2010-10-08 19:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.264 2010-12-21 20:12:07 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
 /* Purpose: Extract (subsets of) variables from a netCDF file 
    Print them to screen, or copy them to a new file, or both */
 
-/* Copyright (C) 1995--2010 Charlie Zender
+/* Copyright (C) 1995--2011 Charlie Zender
 
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.263 2010-10-08 19:02:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.263 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.264 2010-12-21 20:12:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.264 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;

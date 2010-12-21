@@ -1,8 +1,8 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.15 2010-01-05 20:02:18 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.16 2010-12-21 20:12:07 zender Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco++
 
-/* Copyright (C) 2006--2010 Charlie Zender
+/* Copyright (C) 2006--2011 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

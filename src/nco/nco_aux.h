@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.10 2010-08-04 23:48:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.11 2010-12-21 20:12:07 zender Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
-/* Copyright (C) 1995--2010 Charlie Zender
+/* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

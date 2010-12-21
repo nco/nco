@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.147 2010-09-19 01:01:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.148 2010-12-21 20:12:07 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
-/* Copyright (C) 1995--2010 Charlie Zender
+/* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

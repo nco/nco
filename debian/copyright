@@ -40,7 +40,7 @@ On January 26, 2010, Charlie Zender removed John Burkhardt from this
 copyright file after removing his gamma function code (nco_gmm.c)
 from the source. 
 
-NCO is copyright (C) 1995--2010 Charlie Zender
+NCO is copyright (C) 1995--2011 Charlie Zender
 Portions of the following NCO files are copyright by others:
 nco_getopt.c: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
 nco_getopt.h: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler

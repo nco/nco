@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.167 2010-11-30 06:21:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.168 2010-12-21 20:12:07 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
 /* Purpose: Pack, re-dimension, query single netCDF file and output to a single file */
 
-/* Copyright (C) 1995--2010 Charlie Zender
+/* Copyright (C) 1995--2011 Charlie Zender
 
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.167 2010-11-30 06:21:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.167 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.168 2010-12-21 20:12:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.168 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;

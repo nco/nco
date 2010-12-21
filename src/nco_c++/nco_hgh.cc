@@ -1,8 +1,8 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.15 2010-01-05 20:02:18 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.16 2010-12-21 20:12:07 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to high-level NCO utilities
 
-/* Copyright (C) 2001--2010 Charlie Zender
+/* Copyright (C) 2001--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
