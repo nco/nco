@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.289 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.290 2010-12-29 02:26:16 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1038,7 +1038,7 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"1. Concrete %s examples: http://nco.sf.net/nco.html#xmp_%s\n",prg_nm_get(),prg_nm_get());
   (void)fprintf(stdout,"2. Reference manual for %s: http://nco.sf.net/nco.html#%s\n",prg_nm_get(),prg_nm_get());
   (void)fprintf(stdout,"3. User's Guide: http://nco.sf.net#RTFM\n");
-  (void)fprintf(stdout,"4. Man pages: \'man %s\', \'man nco\'\n",prg_nm_get());
+  (void)fprintf(stdout,"4. Man pages: \'man %s\', \'man nco\', ...\n",prg_nm_get());
   (void)fprintf(stdout,"5. Homepage: http://nco.sf.net\n");
   (void)fprintf(stdout,"6. FAQ: http://nco.sf.net#FAQ\n");
   (void)fprintf(stdout,"7. Help Forum: http://sourceforge.net/projects/nco/forums/forum/9830\n");
