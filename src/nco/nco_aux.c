@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.27 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.28 2011-01-01 19:16:52 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -135,8 +135,8 @@ nco_aux_evl
      Uses lat/lon centers rather than cell_bounds to detect matches
      Code assumes units must be degrees if they are not radians */
   
-  char *units=0; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
-  char buf[100]; /* buffer for making user-assigned limit names */
+  char *units=NULL; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
+  char bfr[100]; /* buffer for making user-assigned limit names */
   char dmn_nm[NC_MAX_NAME+1];
   char var_nm_lat[NC_MAX_NAME+1];
   char var_nm_lon[NC_MAX_NAME+1];
@@ -145,23 +145,23 @@ nco_aux_evl
   dmn_sct lon;
   
   double clat;              /* current cell lat */
-  
-  float clon;               /* current cell lon */
+  double clon;               /* current cell lon */
+
   float lllat;                /* lower left lat of bounding rectangle */
   float lllon;                /* lower left lon of bounding rectangle */
   float urlat;                /* upper right lon of bounding rectangle */
   float urlon;                /* upper right lat of bounding rectangle */
   
-  int cell;                 /* cell iterator */
-  int consec=0;           /* current number matching consecutive cells */
-  int curit;                /* iterator over user -X options */
+  int aux_idx;                /* iterator over user -X options */
+  int cll_itr;                 /* cell iterator */
+  int cll_nbr_cns=0;           /* current number matching consecutive cells */
+  int cll_idx_min=-1;           /* min. index of cell in consecutive cell set */
   int dmn_id=int_CEWI;
   int lat_id;
   int lon_id;
-  int mincell=-1;           /* min. index of cell in consecutive cell set */
   int rcd=NC_NOERR;
   
-  lmt_sct **lmts=0;         /* return structure */
+  lmt_sct **lmt=0;         /* return structure */
   
   long dmn_sz=0;
   
@@ -213,62 +213,61 @@ nco_aux_evl
   base.cnt=0;
   base.srd=1;
   
-  /* malloc() the return lmt structure
-     No way to know exact size in advance but maximum is about dimsz/2 */
-  int MAXDMN=dmn_sz/2;
+  /* malloc() lmt structure to return
+     No way to know exact size in advance though maximum is about dim_sz/2 */
+  int MAX_DMN=dmn_sz/2;
   
-  if(aux_nbr > 0) lmts=(lmt_sct **)nco_malloc(MAXDMN*sizeof(lmt_sct *));
+  if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_DMN*sizeof(lmt_sct *));
   
-  for(curit=0;curit<aux_nbr;curit++){
+  for(aux_idx=0;aux_idx<aux_nbr;aux_idx++){
     /* Parse into lllong,lllat,urlon,urlon, accounting for units */
-    nco_aux_prs(aux_arg[curit],units,&lllon,&lllat,&urlon,&urlat);
+    nco_aux_prs(aux_arg[aux_idx],units,&lllon,&lllat,&urlon,&urlat);
     /* printf("Box is %f %f %f %f\n",lllon,lllat,urlon,urlat); */
     
-    mincell=-1;
-    consec=0;
-    for(cell=0; cell<dmn_sz; cell++){
-      if(lat.type == NC_FLOAT) clat=((float *)vp_lat)[cell]; else clat=((double *)vp_lat)[cell];
-      if(lon.type == NC_FLOAT) clon=((float *)vp_lon)[cell]; else clon=((double *)vp_lon)[cell];
+    cll_idx_min=-1;
+    cll_nbr_cns=0;
+    for(cll_itr=0;cll_itr<dmn_sz;cll_itr++){
+      if(lat.type == NC_FLOAT) clat=((float *)vp_lat)[cll_itr]; else clat=((double *)vp_lat)[cll_itr];
+      if(lon.type == NC_FLOAT) clon=((float *)vp_lon)[cll_itr]; else clon=((double *)vp_lon)[cll_itr];
       if(clon >= lllon && clon <= urlon &&
 	 clat >= lllat && clat <= urlat){
 	/*printf("match %lf %lf %lf/ %lf %lf %lf\n",clon,lllon,urlon,clat,lllat,urlat); */
-	if(mincell == -1){
-	  mincell=cell;
-	  consec=1;
-	}else if(cell == mincell + consec){
-	  consec++;
+	if(cll_idx_min == -1){
+	  cll_idx_min=cll_itr;
+	  cll_nbr_cns=1;
+	}else if(cll_itr == cll_idx_min + cll_nbr_cns){
+	  cll_nbr_cns++;
 	}else{
 	} /* end found matching cell */
-      }else if(mincell != -1){
-	sprintf(buf,"%d",mincell);
-	base.min_sng=(char *)strdup(buf);
-	base.min_idx=base.srt=mincell;
-	sprintf(buf,"%d",mincell+consec-1);
-	base.max_sng=(char *)strdup(buf);
-	base.max_idx=base.end=mincell+consec-1;
-	base.cnt=consec;
+      }else if(cll_idx_min != -1){
+	sprintf(bfr,"%d",cll_idx_min);
+	base.min_sng=(char *)strdup(bfr);
+	base.min_idx=base.srt=cll_idx_min;
+	sprintf(bfr,"%d",cll_idx_min+cll_nbr_cns-1);
+	base.max_sng=(char *)strdup(bfr);
+	base.max_idx=base.end=cll_idx_min+cll_nbr_cns-1;
+	base.cnt=cll_nbr_cns;
 	(*lmt_nbr)++;
-	if(*lmt_nbr > MAXDMN){
-	  /*printf("Number of slabs exceeds allocated mamory %d\n",MAXDMN);*/
+	if(*lmt_nbr > MAX_DMN){
+	  /*printf("Number of slabs exceeds allocated mamory %d\n",MAX_DMN);*/
 	  nco_err_exit(-1,"nco_aux_evl: Number of slabs exceeds allocated mamory.");
 	} /* end if too many slabs */
-	lmts[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-	*lmts[(*lmt_nbr)-1]=base;
-	mincell=-1;
+	lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+	*lmt[(*lmt_nbr)-1]=base;
+	cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
     
   } /* end loop over user supplied -X options */
 
-  /* fxm: this is weird */
-  if(units != 0) units=(char *)nco_free(units);
+  if(units) units=(char *)nco_free(units);
   vp_lat=nco_free(vp_lat);
   vp_lon=nco_free(vp_lon);
   
   /* printf ("returning structure %d\n",*lmt_nbr);
-    for (curit=0; curit<(*lmt_nbr); curit++)
-    printf("LIMIT %ld %ld \n",lmts[curit]->min_idx,lmts[curit]->max_idx); */
-  return lmts;
+    for (aux_idx=0; aux_idx<(*lmt_nbr); aux_idx++)
+    printf("LIMIT %ld %ld \n",lmt[aux_idx]->min_idx,lmt[aux_idx]->max_idx); */
+  return lmt;
 } /* nco_aux_evl */
 
 void 
