@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.165 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.166 2011-01-01 07:43:58 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -17,7 +17,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-     Routine does not take into account any user-specified limits
+     Routine does not take into account user-specified limits
      It just copies what it finds
      Routine copies_variable by variable, old-style, used only by ncks */
 
@@ -107,7 +107,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
-    /* NB: Chunking information is copied/set in nco_cnk_sz_set(), not here! */
+    /* NB: Copy/set chunking information in nco_cnk_sz_set(), not here! */
 
   } /* !NC_FORMAT_NETCDF4 */ 
   
@@ -154,10 +154,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
 
-
   /* Get unlimited dimension in output */
   (void)nco_inq(out_id,(int*)NULL,(int*)NULL,(int*)NULL,&rec_dmn_out_id);
-
   
   /* Recall:
      1. Dimensions must be defined before variable
@@ -183,10 +181,10 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     
     /* If dimension has not been defined, copy it */
     if(rcd_lcl != NC_NOERR){
-      if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm) ){
+      if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
 	int lmt_all_idx;
 
-	/* Does dimension have any user-specified limits? */
+	/* Does dimension have user-specified limits? */
 	for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
 	  if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
 	    dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
@@ -220,7 +218,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
-    /* NB: Chunking information is copied/set in nco_cnk_sz_set(), not here! */
+    /* NB: Copy/set chunking information in nco_cnk_sz_set(), not here! */
 
   } /* !NC_FORMAT_NETCDF4 */ 
   
@@ -409,7 +407,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     dmn_srd[dmn_idx]=1L;
     dmn_map[dmn_idx]=1L;
 
-    /* Decide whether this dimension has any user-specified limits */
+    /* Decide whether this dimension has user-specified limits */
     for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
       if(lmt[lmt_idx].id == dmn_id[dmn_idx]){
 	dmn_cnt[dmn_idx]=lmt[lmt_idx].cnt;

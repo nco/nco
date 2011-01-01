@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1105 2011-01-01 02:32:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1106 2011-01-01 07:43:58 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -90,7 +90,7 @@ nco146. Allow proxies for coordinate variables so that, e.g., hyperslabs
 nco147. Use builtin mkstemp() so file is built in fast directory rather than, say, NFS-mounted directory like /fs/cgd  
 nco148. Put in more useful error diagnostics for Schweitzer's data holes
         These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
-        Must define a consistent convention here
+        Define a convention consistent between ncks and ncra!
         cd ~/nco/data
         ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
         ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
@@ -108,14 +108,14 @@ nco159. Add capability to handle superfluous intermediate files to ncra,
         for example, every other file was not needed. This capability is already
         implemented for lmt_typ = crd_val. 
         This is an issue only when stride is non-unity.
-        Does multislabbing algorithm fix this?
+        Does MSA multislabbing algorithm fix this?
 nco162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
 nco166. Document 'make test' so people know it exists and use it
 nco173. Add switch to ncra which allows user to remove degenerate time dimension from result
 nco174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 nco182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
 nco190. Make typ_pck et al. use nc_type enum or something sane for default
-nco192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
+nco192. ncdiff sometimes subtracts files of incommensurate size without complaint
         ncks -O -v one_dmn_rec_var -d time,0,1 in.nc foo1.nc
         ncks -O -v one_dmn_rec_var -d time,0,2 in.nc foo2.nc
         ncdiff -O foo1.nc foo2.nc foo3.nc
@@ -456,12 +456,11 @@ nco717. Averaging empty record variable creates an element in output!:
 nco722. mpncwa: DDRA diagnostics should work in MPI mode, not just SMP mode
 nco725. Add attribute propagation regression test
         ncap2 -v -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon(0)" -p ~/nco/data in.nc ~/foo.nc
-nco726. attribute propagation: document
 nco737. Add regression for regex'ing consecutive Q's?
 	ncks -O -v 'Q[0-1][0-9]|2[0-3]' ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 	ncks -O -v 'Q[0-9][0-9]$' ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 nco738. nco_cnv_cf_cll_mth_add() CF cell methods
-nco744. Add option to eliminate degenerate dimensions in ncra
+nco744. Add option to eliminate degenerate dimensions in ncra (like ncwa -b)
 nco745. Add regression test for ncwa --rdd
 nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
 nco754. Make sure private/firstprivate aspects of ddra_info are correct
@@ -724,9 +723,9 @@ nco1002. andx (from ARM) does ncks-like multiple column printing (window$ only? 
 nco1004. nco: ncpdq force _FillValue to be inside range of packed type ?
 nco1007. nco: -X auxiliary coordinate bug found by jeff daily
       ncks -O -v gds_3dvar -X 0.,180.,-30.,30. ~/nco/data/in.nc ~/foo.nc # works---returns values within range
-      ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---returns all values
-      ncks -O -v three_dmn_var -d lon,0.,180. -d lat,20.,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
-      ncks -O -v three_dmn_var -d lon,0.,180. -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns all values
+      ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---returns all values should return only nearest
+      ncks -O -v lat -d lat,20.,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
+      ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns all values should return none
       ncks -H ~/foo.nc
 nco1008. 
 qrk

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.83 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.84 2011-01-01 07:43:58 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -68,17 +68,14 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
       cp_sz[idx]=vara->sz;
     } /* end loop over idx */
     
-    for(idx=0;idx<dpt_crr_max;idx++) 
-      var_sz*=(idx<dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
+    for(idx=0;idx<dpt_crr_max;idx++) var_sz*=(idx<dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
     
     vp=(void *)nco_calloc((size_t)var_sz,nco_typ_lng(vara->type));
     
     lcnt=nco_typ_lng(vara->type);
-    for(idx=dpt_crr+1;idx<dpt_crr_max;idx++) 
-      lcnt*=lmt_lst[idx]->dmn_cnt;
+    for(idx=dpt_crr+1;idx<dpt_crr_max;idx++) lcnt*=lmt_lst[idx]->dmn_cnt;
     
     cp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
-    
     cp_max=(ptrdiff_t)(var_sz*nco_typ_lng(vara->type));
     
     for(idx=0;idx<nbr_slb;idx++) indices[idx]=lmt_lst[dpt_crr]->lmt_dmn[idx]->srt;
@@ -86,7 +83,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     cp_fst=0L;
     
     /* Deal first with wrapped dimensions
-       True if wrapped dims or slabs DONT Overlap or user specified order */
+       True if wrapped dims or slabs DO NOT overlap or user-specified order */
     if(lmt_lst[dpt_crr]->WRP || lmt_lst[dpt_crr]->MSA_USR_RDR){
       
       for(slb_idx=0;slb_idx<nbr_slb;slb_idx++){
@@ -1205,7 +1202,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
 } /* end nco_msa_prn_var_val() */
 
-void         /* Initilaize lmt_all_sct's */ 
+void /* Initilaize lmt_all_sct's */ 
 nco_msa_lmt_all_int
 (int in_id,
  nco_bool MSA_USR_RDR,
@@ -1224,9 +1221,6 @@ nco_msa_lmt_all_int
   lmt_all_sct * lmt_all_crr;
   
   (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
-  
-  /* Unlimited dimensions are stored in */
-  // lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
   
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
@@ -1257,6 +1251,7 @@ nco_msa_lmt_all_int
     lmt_rgl->srd_sng=NULL;
     lmt_rgl->re_bs_sng=NULL;
     lmt_rgl->origin=0.0;
+
     /* A hack so we know structure has been initialized */
     lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
@@ -1264,12 +1259,12 @@ nco_msa_lmt_all_int
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
-    for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
       if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
 	lmt_all_crr=lmt_all_lst[jdx];
 	lmt_all_crr->BASIC_DMN=False;
 	if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
-          /* free defualt limit set above structure first */
+          /* Free defualt limit set above structure first */
           lmt_all_crr->lmt_dmn[0]=(lmt_sct*)nco_lmt_free(lmt_all_crr->lmt_dmn[0]);
 	  lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
 	}else{ 
@@ -1288,12 +1283,11 @@ nco_msa_lmt_all_int
   
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   for(idx=0;idx<nbr_dmn_fl;idx++){
-    nco_bool bovl;
+    nco_bool flg_ovl;
     
-	/* nb progs ncra/ncrcat only one limit for the record dimension so skip evaluation*/
-	/* otherwise this messes up multi-file operation */
-	if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get()==ncra || prg_get()==ncrcat))
-	  continue;
+    /* NB: ncra/ncrcat have only one limit for record dimension so skip 
+       evaluation otherwise this messes up multi-file operation */
+    if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
 	
     /* Split-up wrapped limits */   
     (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
@@ -1323,13 +1317,13 @@ nco_msa_lmt_all_int
     /* Sort limits */
     (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
     /* Check for overlap */
-    bovl=nco_msa_ovl(lmt_all_lst[idx]);  
-    if(bovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
+    flg_ovl=nco_msa_ovl(lmt_all_lst[idx]);  
+    if(flg_ovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
     
     /* Find and store size of output dimension */  
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-    if(dbg_lvl_get() >1 ) {
-      if(bovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
+    if(dbg_lvl_get() > 1){
+      if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
     } /* endif */
     
   } /* end idx */    

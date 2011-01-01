@@ -1,9 +1,15 @@
 2010-12-31  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.6 release procedure:
+ 	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
+	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
+	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
+
 	* Fix nco_var_lst_crd_ass_add() to reset rcd inside loop.
 	This fixes TODO nco1006: associated coordinates not found.
 	Symptom was that associated coordinates were not added to
-	extraction list if they were declared after any non-coordinate 
+	extraction list if they were declared after any non-coordinate
 	dimensions.
 
 2010-12-28  Charlie Zender  <zender@uci.edu>
@@ -11,12 +17,6 @@
 	* Tidy help messages
 
 2010-12-21  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.6 release procedure:
- 	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
-	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
-	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
 
 	* Update copyright to 2011
 
