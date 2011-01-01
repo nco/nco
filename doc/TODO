@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1103 2010-12-17 07:03:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1104 2011-01-01 01:05:44 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -722,7 +722,16 @@ nco1002. andx (from ARM) does ncks-like multiple column printing (window$ only? 
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/src/andx.tar
 	 andx ~/nco/data/in.nc -o ASCII -delim TAB -time Hh two_dmn_rec_var -zf 2 tz
 nco1004. nco: ncpdq force _FillValue to be inside range of packed type ?
-nco1006. 
+nco1006. nco: ncks does not return all associated coordinates by default anymore
+      ncks -O -v three_dmn_var -d lon,0.,180. -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns only three_dmn_var, not lat, lon, or time
+      ncks -H ~/foo.nc
+nco1007. nco: -X auxiliary coordinate bug found by jeff daily
+      ncks -O -v gds_3dvar -X 0.,180.,-30.,30. ~/nco/data/in.nc ~/foo.nc # works---returns values within range
+      ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---returns all values
+      ncks -O -v three_dmn_var -d lon,0.,180. -d lat,20.,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
+      ncks -O -v three_dmn_var -d lon,0.,180. -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns all values
+      ncks -H ~/foo.nc
+nco1008. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
