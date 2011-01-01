@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.626 2010-12-21 20:12:07 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.627 2011-01-01 02:32:43 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -524,6 +524,7 @@ World peace?
 <li><b>NCO 4.0.6</b>: (<i>In progress</i>)
 <tt>clang</tt>-compliance;
 Fix <tt>ncra</tt> YYYYMMDD-<tt>date</tt> <a href="#bug_ncra_cf_YYYYMMDD_date">bug</a>;
+Extract all associated coordinates;
 Stride works with DAP?;
 <tt>ncpdq</tt> warns when _FillValue outside packing range;
 <li><b>NCO 4.0.5</b>:

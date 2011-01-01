@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.115 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.116 2011-01-01 02:28:48 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -139,8 +139,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.115 2010-12-21 20:12:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.115 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.116 2011-01-01 02:28:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.116 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -738,7 +738,7 @@ main(int argc,char **argv)
     } /* end loop over idx */	      
   } /* end if */ 
   
-  /* Is this an CCM/CCSM/CF-format history tape? */
+  /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
   
   /* Add coordinates defined by CF convention */

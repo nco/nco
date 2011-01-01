@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.49 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.50 2011-01-01 02:28:48 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -74,7 +74,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
  const int var_trg_id); /* I [id] Variable ID */
 
 nm_id_sct * /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables to extraction list */
+nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const nbr_xtr, /* I/O number of variables in current extraction list */

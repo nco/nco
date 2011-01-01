@@ -2,7 +2,7 @@
 
 	* Fix nco_var_lst_crd_ass_add() to reset rcd inside loop.
 	This fixes TODO nco1006: associated coordinates not found.
-	Symptom was that associates coordinates were not added to
+	Symptom was that associated coordinates were not added to
 	extraction list if they were declared after any non-coordinate 
 	dimensions.
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.53 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.54 2011-01-01 02:28:48 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -29,7 +29,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
 
   nc_type att_typ;
 
-  /* Look for signature of an CCM/CCSM/CF-format file */
+  /* Look for signature of a CCM/CCSM/CF-format file */
   cnv_sng=cnv_sng_UC;
   rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
   if(rcd != NC_NOERR){

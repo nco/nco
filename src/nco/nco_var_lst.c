@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.97 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.98 2011-01-01 02:28:48 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -441,7 +441,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 } /* end nco_var_lst_crd_add() */
 
 nm_id_sct * /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables to extraction list */
+nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const nbr_xtr, /* I/O number of variables in current extraction list */
@@ -473,17 +473,16 @@ nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables 
 
   /* ...for each dimension in input file... */
   for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-    /* ...see if it is coordinate dimension... */
-    rcd+=nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
-     
-    rcd+=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
+    /* ...check name to see if it is a coordinate dimension... */
+    (void)nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
+    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
     if(rcd == NC_NOERR){ /* Valid coordinate (same name of dimension and variable) */
       /* Is coordinate already on extraction list? */
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	if(crd_id == xtr_lst[idx_var].id) break;
       } /* end loop over idx_var */
       if(idx_var == *nbr_xtr){
-	/* ...coordinate is not on list, is it associated with any variables?... */
+	/* ...coordinate is not on list, is it associated with any extracted variables?... */
 	for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	  /* Get number of dimensions and dimension IDs for variable */
 	  (void)nco_inq_var(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
