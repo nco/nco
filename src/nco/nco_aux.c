@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.28 2011-01-01 19:16:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.29 2011-01-02 08:10:44 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -264,9 +264,9 @@ nco_aux_evl
   vp_lat=nco_free(vp_lat);
   vp_lon=nco_free(vp_lon);
   
-  /* printf ("returning structure %d\n",*lmt_nbr);
-    for (aux_idx=0; aux_idx<(*lmt_nbr); aux_idx++)
-    printf("LIMIT %ld %ld \n",lmt[aux_idx]->min_idx,lmt[aux_idx]->max_idx); */
+  /* fprintf("returning structure %d\n",*lmt_nbr);
+    for(aux_idx=0;aux_idx<(*lmt_nbr);aux_idx++)
+    fprintf("min,max = %ld,%ld\n",lmt[aux_idx]->min_idx,lmt[aux_idx]->max_idx); */
   return lmt;
 } /* nco_aux_evl */
 
