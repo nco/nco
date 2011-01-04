@@ -1,16 +1,18 @@
 2011-01-03  Charlie Zender  <zender@uci.edu>
 
-	* Tidy error messages in nco_dmn_utl.c and nco_var_lst.c prior to
-	fixing false positive WARNING with ncbo operating on a coordinate
-	and the scalar-average of the coordinate.
-
-2010-12-31  Charlie Zender  <zender@uci.edu>
+	* Be excruciatingly precise about variable list merging
 
 	* NCO 4.0.6 release procedure:
  	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
 	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
 	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
+
+	* Tidy error messages in nco_dmn_utl.c and nco_var_lst.c prior to
+	fixing false positive WARNING with ncbo operating on a coordinate
+	and the scalar-average of the coordinate.
+
+2010-12-31  Charlie Zender  <zender@uci.edu>
 
 	* Fix nco_var_lst_crd_ass_add() to reset rcd inside loop.
 	This fixes TODO nco1006: associated coordinates not found.

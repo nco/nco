@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.99 2011-01-04 02:21:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.100 2011-01-04 02:42:17 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -982,9 +982,9 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 
   /* Asymmetric lists */
   if(*var_nbr_2 > *var_nbr_1){
-    (void)fprintf(stderr,"%s: INFO %s detects that file two contains more variables than file one. The following variable(s), present only in file two, will not be present in the output file: ",prg_nm_get(),fnc_nm);
     int orphan_nbr=*var_nbr_2-*var_nbr_1;
     int orphan_idx=0;
+    (void)fprintf(stderr,"%s: INFO %s detects that file two contains more \"process-able\" (e.g., difference-able) variables than file one. The following variable%s present and/or process-able only in file two: ",prg_nm_get(),fnc_nm,(orphan_nbr > 1) ? "s are" : " is");
     for(idx_2=0;idx_2<*var_nbr_2;idx_2++){ 
       for(idx_1=0;idx_1<*var_nbr_1;idx_1++)
         if(!strcmp(var_out[idx_1]->nm,var_2[idx_2]->nm)) break;
@@ -994,7 +994,7 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 	(void)fprintf(stderr,"%s%s",var_2[idx_2]->nm,(orphan_idx < orphan_nbr) ? ", " : ".");
       } /* end if orphan */
     } /* end loop over idx_2 */ 
-    (void)fprintf(stderr,"\n");
+    (void)fprintf(stderr," This notice is to be expected and may therefore be safely ignored if %s in file one as would be created, e.g., by ncwa. Otherwise, %s will not appear in the output file and the user is advised to ensure that all desired variables do appear in the output file.\n",(orphan_nbr > 1) ? "these variables are all scalar averages of the corresponding coordinate variables" : "this variable is a scalar-average of the corresponding coordinate variable",(orphan_nbr > 1) ? "these variables" : "this variable");
     *var_nbr_2=*var_nbr_1;
   } /* end if asymmetric */
 
