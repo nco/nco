@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.417 2011-01-04 06:36:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.418 2011-01-04 07:02:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -17,6 +17,12 @@ Work on NCO 4.0.7 is underway.
 Areas of improvement include DAP transparency, and more chunking rulesets.
 
 "New stuff" in 4.0.6 details:
+
+A. Fix hyperslabs returned for bounding boxes specified with
+   -d or -X that do not include at least one point. Instead of
+   returning no data, sometimes hyperslabs would return all data.
+   Thanks to Jeff Daily for reporting this. fxm.
+   http://nco.sf.net#bug_hyp_dgn
 
 A. Eliminate false positive warning produced by ncbo when operating
    on a variable that is a coordinate in one file not both files.

@@ -6,6 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
 	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
 
+	* Define and document, but do not solve, degenerate hyperslabbing
+	bug reported by Jeff Daily.
+
 	* Be excruciatingly precise about variable list merging
 
 	* Tidy error messages in nco_dmn_utl.c and nco_var_lst.c prior to

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.628 2011-01-04 06:36:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.629 2011-01-04 07:02:11 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -525,7 +525,8 @@ World peace?
 <tt>clang</tt>-compliance;
 Fix <tt>ncra</tt> YYYYMMDD-<tt>date</tt> <a href="#bug_ncra_cf_YYYYMMDD_date">bug</a>;
 Extract all associated coordinates;
-Eliminate <tt>ncbo</tt> warning;
+Tighten <tt>ncbo</tt> warnings;
+Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a>;
 Stride works with DAP?;
 <tt>ncpdq</tt> warns when _FillValue outside packing range;
 <li><b>NCO 4.0.5</b>:
@@ -1413,6 +1414,15 @@ Bug-fixes:
 Problems with older releases:
 
 <ul><b>Generic Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_hyp_dgn -->
+<a name="bug_hyp_dgn"></a>
+<li><i>Degenerate hyperslabbing bug:</i>
+Versions 4.0.5 and earlier could return incorrect hyperslabs when
+the user-specified bounding box did not include at least one point.
+Instead of returning no data, for instance, sometimes hyperslabs would
+return all data. 
+</li>
+
 <!-- http://nco.sf.net#bug_thr_msa -->
 <a name="bug_thr_msa"></a>
 <li><i>Threading problems with MSA:</i>

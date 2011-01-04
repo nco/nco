@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1107 2011-01-04 06:43:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1108 2011-01-04 07:02:11 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -721,7 +721,7 @@ nco1002. andx (from ARM) does ncks-like multiple column printing (window$ only? 
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/src/andx.tar
 	 andx ~/nco/data/in.nc -o ASCII -delim TAB -time Hh two_dmn_rec_var -zf 2 tz
 nco1004. nco: ncpdq force _FillValue to be inside range of packed type ?
-nco1007. nco: -X auxiliary coordinate bug found by jeff daily
+nco1007. nco: -X and -d hyperslab bug found by jeff daily
       ncks -O -v gds_3dvar -X 0.,180.,-30.,30. ~/nco/data/in.nc ~/foo.nc # works---returns values within range
       ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---returns all values but should return only nearest value to lat=20
       ncks -O -v lat -d lat,20.,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
