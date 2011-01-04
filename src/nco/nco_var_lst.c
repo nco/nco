@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.100 2011-01-04 02:42:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.101 2011-01-04 06:36:20 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -982,21 +982,23 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 
   /* Asymmetric lists */
   if(*var_nbr_2 > *var_nbr_1){
-    int orphan_nbr=*var_nbr_2-*var_nbr_1;
-    int orphan_idx=0;
-    (void)fprintf(stderr,"%s: INFO %s detects that file two contains more \"process-able\" (e.g., difference-able) variables than file one. The following variable%s present and/or process-able only in file two: ",prg_nm_get(),fnc_nm,(orphan_nbr > 1) ? "s are" : " is");
-    for(idx_2=0;idx_2<*var_nbr_2;idx_2++){ 
-      for(idx_1=0;idx_1<*var_nbr_1;idx_1++)
-        if(!strcmp(var_out[idx_1]->nm,var_2[idx_2]->nm)) break;
-      /* Print name of variable in list two and not in var_out */  
-      if(idx_1 == *var_nbr_1){
-	orphan_idx++;
-	(void)fprintf(stderr,"%s%s",var_2[idx_2]->nm,(orphan_idx < orphan_nbr) ? ", " : ".");
-      } /* end if orphan */
-    } /* end loop over idx_2 */ 
-    (void)fprintf(stderr," This notice is to be expected and may therefore be safely ignored if %s in file one as would be created, e.g., by ncwa. Otherwise, %s will not appear in the output file and the user is advised to ensure that all desired variables do appear in the output file.\n",(orphan_nbr > 1) ? "these variables are all scalar averages of the corresponding coordinate variables" : "this variable is a scalar-average of the corresponding coordinate variable",(orphan_nbr > 1) ? "these variables" : "this variable");
+    if(dbg_lvl_get() > nco_dbg_quiet){
+      const int orphan_nbr=*var_nbr_2-*var_nbr_1;
+      int orphan_idx=0;
+      (void)fprintf(stderr,"%s: INFO %s detects that file two contains %d more \"process-able\" (e.g., difference-able) variable%s than file one. Processable variables exclude those (often coordinates) that are intended to pass through an operator unchanged. The following variable%s present and/or process-able only in file two: ",prg_nm_get(),fnc_nm,orphan_nbr,(orphan_nbr > 1) ? "s" : "",(orphan_nbr > 1) ? "s are" : " is");
+      for(idx_2=0;idx_2<*var_nbr_2;idx_2++){ 
+	for(idx_1=0;idx_1<*var_nbr_1;idx_1++)
+	  if(!strcmp(var_out[idx_1]->nm,var_2[idx_2]->nm)) break;
+	/* Print name of variable in list two and not in var_out */  
+	if(idx_1 == *var_nbr_1){
+	  orphan_idx++;
+	  (void)fprintf(stderr,"%s%s",var_2[idx_2]->nm,(orphan_idx < orphan_nbr) ? ", " : ".");
+	} /* end if orphan */
+      } /* end loop over idx_2 */ 
+      (void)fprintf(stderr," If %s in file one then this notice may be safely ignored. Otherwise, %s will do no harm and will not appear in the output file.\n",(orphan_nbr > 1) ? "these variables are all scalar averages of the coordinate variables with the same names" : "this variable is a scalar-average of the coordinate variable with the same name",(orphan_nbr > 1) ? "these variables appear to be orphans. They" : "this variable appears to be an orphan. It");
+    } /* endif dbg */
     *var_nbr_2=*var_nbr_1;
-  } /* end if asymmetric */
+  } /* end if asymmetric and debug */
 
   /* Free un-merged list before overwriting with merged list */
   var_2=(var_sct **)nco_free(var_2);

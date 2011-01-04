@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.416 2011-01-01 02:32:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.417 2011-01-04 06:36:20 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -17,6 +17,10 @@ Work on NCO 4.0.7 is underway.
 Areas of improvement include DAP transparency, and more chunking rulesets.
 
 "New stuff" in 4.0.6 details:
+
+A. Eliminate false positive warning produced by ncbo when operating
+   on a variable that is a coordinate in one file not both files.
+   Thanks to Phil Rasch for reporting this.
 
 A. Fix problem where associated coordinates were sometimes not output.
    In particular, associated coordinates were not extracted if they
