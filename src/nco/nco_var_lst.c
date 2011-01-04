@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.98 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.99 2011-01-04 02:21:13 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -982,16 +982,18 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 
   /* Asymmetric lists */
   if(*var_nbr_2 > *var_nbr_1){
-    (void)fprintf(stderr,"%s: WARNING %s detects that file two has more variables than file one. The following variables, present only in file two, will not be present in the output file: ",prg_nm_get(),fnc_nm);
-       
+    (void)fprintf(stderr,"%s: INFO %s detects that file two contains more variables than file one. The following variable(s), present only in file two, will not be present in the output file: ",prg_nm_get(),fnc_nm);
+    int orphan_nbr=*var_nbr_2-*var_nbr_1;
+    int orphan_idx=0;
     for(idx_2=0;idx_2<*var_nbr_2;idx_2++){ 
       for(idx_1=0;idx_1<*var_nbr_1;idx_1++)
         if(!strcmp(var_out[idx_1]->nm,var_2[idx_2]->nm)) break;
-      if(idx_1==*var_nbr_1) 
-        /* print out var name of var in list 2 but not var_out */  
-        (void)fprintf(stderr,"%s, ",var_2[idx_2]->nm);
-    }  /* end loop over idx_2 */ 
-
+      /* Print name of variable in list two and not in var_out */  
+      if(idx_1 == *var_nbr_1){
+	orphan_idx++;
+	(void)fprintf(stderr,"%s%s",var_2[idx_2]->nm,(orphan_idx < orphan_nbr) ? ", " : ".");
+      } /* end if orphan */
+    } /* end loop over idx_2 */ 
     (void)fprintf(stderr,"\n");
     *var_nbr_2=*var_nbr_1;
   } /* end if asymmetric */

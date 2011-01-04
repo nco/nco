@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.42 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.43 2011-01-04 02:21:13 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -342,8 +342,6 @@ nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
   dmn_2->xrf=dmn_1;
 } /* end nco_dmn_xrf() */
 
-
-
 void 
 nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
 (dmn_sct ** const dim_1, /* I [sct] Dimension list 1 */
@@ -353,33 +351,24 @@ nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and 
  const char *const fl_sng_1, /* I [sng] Name of first file */
  const char *fl_sng_2)       /* I [sng] Name of second file */
 {
-
   int idx;
   int jdx;
 
-  for(idx=0 ; idx<nbr_dmn_2 ; idx++ ){
-    for(jdx=0 ; jdx<nbr_dmn_1 ; jdx++) 
-       if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm))
-	     break;
+  for(idx=0;idx<nbr_dmn_2;idx++ ){
+    for(jdx=0;jdx<nbr_dmn_1;jdx++) 
+      if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm)) break;
 		 		
-	if(jdx==nbr_dmn_1) {	 	   
-     (void)fprintf(stderr,"%s: ERROR dim \"%s\" in second file %s - not present in first file %s\n",prg_nm_get(),dim_2[idx]->nm,fl_sng_2,fl_sng_1);
-       nco_exit(EXIT_FAILURE);
-    }  
+    if(jdx == nbr_dmn_1){
+      (void)fprintf(stderr,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm_get(),dim_2[idx]->nm,fl_sng_2,fl_sng_1);
+      nco_exit(EXIT_FAILURE);
+    } /* end if missing dimension */
 	
-	if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
-	   if(dim_1[jdx]->is_rec_dmn)    
-	     (void)fprintf(stderr,"%s: ERROR record dimension mismatch : record dim file in %s is %li : record dim file in %s is %li\n",prg_nm_get(),fl_sng_1,dim_1[jdx]->cnt, fl_sng_2,dim_2[idx]->cnt);     
-	   else	      
-		 (void)fprintf(stderr,"%s: ERROR dimension mismatch :  dim \"%s\" in file %s is %li : in file  %s it is %li\n",prg_nm_get(),dim_1[jdx]->nm, fl_sng_1,dim_1[jdx]->cnt, fl_sng_2,dim_2[idx]->cnt);
-		nco_exit(EXIT_FAILURE); 
-	}	
-				
-
-  } 
- 
-
-} /* end nco_dmn_sct_cmp */
+    if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
+      (void)fprintf(stderr,"%s: ERROR %sdimension size mismatch: dimension %s in file %s is size %li while dimension %s in file %s is size %li\n",prg_nm_get(),(dim_1[jdx]->is_rec_dmn) ? "record " : "",dim_1[jdx]->nm,fl_sng_1,dim_1[jdx]->cnt,dim_2[idx]->nm,fl_sng_2,dim_2[idx]->cnt);
+      nco_exit(EXIT_FAILURE); 
+    } /* endif size mismatch */
+  } /* end loop over dimensions */
+} /* end nco_dmn_sct_cmp() */
 
 
 

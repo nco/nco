@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.615 2010-12-21 20:12:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.616 2011-01-04 02:21:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5196,7 +5196,7 @@ Note the use of @samp{-y rmssdn} (rather than @samp{-y rms}) in the
 final step. 
 This ensures the standard deviation is correctly normalized by one fewer
 than the number of time samples.
-The procedure to compute the variance is identical except for the use of
+The procedure to compute the variance is identical except for the use of 
 @samp{-y var} instead of @samp{-y rmssdn} in the final step.
 
 @command{ncap2} can also compute statistics like standard deviations.
@@ -5205,7 +5205,7 @@ Brute-force implementation of formulae is one option, e.g.,
 ncap2 -s 'prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time))/($time.size-1)'
       in.nc out.nc
 @end example
-The operation may, of course, be broken into multiple steps in order 
+The operation may, of course, be broken into multiple steps in order  
 to archive intermediate quantities, such as the time-anomalies
 @example
 ncap2 -s 'prs_sfc_anm=prs_sfc-prs_sfc.avg($time)' \
@@ -5254,12 +5254,12 @@ collected into one file.
 @example
 ncrcat -O -v tpt in.nc in.nc foo1.nc
 ncwa -O -a time foo1.nc foo2.nc
-ncbo -O -v tpt foo1.nc foo2.nc foo2.nc
-ncra -O -y rmssdn foo2.nc out.nc
+ncbo -O -v tpt foo1.nc foo2.nc foo3.nc
+ncra -O -y rmssdn foo3.nc out.nc
 @end example
 The first step assembles all the data into a single file.
-This may require a lot of temporary disk space, but is more or less
-required by the @command{ncbo} operation in the third step.
+Though this may consume a lot of temporary disk space, it is more or
+less required by the @command{ncbo} operation in the third step.
 
 @html
 <a name="typ_cnv"></a> <!-- http://nco.sf.net/nco.html#typ_cnv -->
@@ -6144,7 +6144,6 @@ tm5= !tm4;               // tm5=  1, 1, 0, 1, 1, 0, 1, 1, 1, 1 ; type double;
 @noindent @emph{var1 '=' exp1} @*
 If var1 doesn't already exist in Output then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
 
-
 @noindent @strong{ Other Assign Operators +=,-=,*=./= } @*
         @noindent  @emph{var1 'ass_op' exp1 }@*
 if exp1 is a variable and it doesn't conform to var1 then an attempt is made to make it conform to var1. If exp1 is an attribute it must have unity size or else have the same number of elements as var1. If expr1 has a different type to var1 the it is converted to the var1 type.
@@ -6155,7 +6154,6 @@ example:
 z1=four+=one*=10 // z1=14 four=14 one=10;	
 time-=2          // time= -1,0,1,2,3,4,5,6,7,8
 @end example
-
 
 @noindent @strong{Increment/ Decrement Operators @* } 
 These work in a similar fashion to their regular C counterparts. If say the variable "four" is input only then the statement "++four" effectively means -read four from input increment each element by one , then write the new values to Output;
@@ -6724,12 +6722,13 @@ Assign Operators     ( +=,-=,/=, *= )
 var1 'op' var2
 @end example
 
-@noindent If var1 has a missing value then this is the value used in the
-operation else the missing value for var2 is used. 
-If during the element by element operation an element from either
-operand is equal to the missing value then the missing value is carried
+@noindent If var1 has a missing value then this is the value used in the 
+operation, otherwise the missing value for var2 is used. 
+If during the element-by-element operation an element from either
+operand is equal to the missing value then the missing value is carried 
 through. 
-In this way missing values 'percolate' through an expression.@* 
+In this way missing values 'percolate' or propagate through an
+expression.@*  
 Missing values associated with Output variables are stored in memory and
 are written to disk after the script finishes. 
 During script execution its possible (and legal) for the missing value
@@ -6771,16 +6770,15 @@ They only work on variables in Output.
 @example
 th=three_dmn_var_dbl;
 th.change_miss(-1e10d);
-/* set values less than 0 or greater than 50 to missing value */
-where( th <0.0 || th > 50.0)
-  th=th.get_miss();
+/* Set values less than 0 or greater than 50 to missing value */
+where(th < 0.0 || th > 50.0) th=th.get_miss();
 
 # Another example:
 new[$time,$lat,$lon]=1.0;
 new.set_miss(-997.0);
 
-/* extract only elements divisible by 3 */
-where ( three_dmn_var_dbl%3 == 0 )
+// Extract only elements divisible by 3
+where (three_dmn_var_dbl%3 == 0)
      new=three_dmn_var_dbl; 
 elsewhere
      new=new.get_miss();   
@@ -6795,26 +6793,27 @@ elsewhere
 The convention within this document is that methods can be used as 
 functions. 
 However, functions are not and cannot be used as methods.
-Methods can be daisy changed together and their synatax is cleaner than
+Methods can be daisy changed together and their syntax is cleaner than
 functions. 
 Method names are reserved words and CANNOT be used as variable names.  
 The command @code{ncap2 -f} shows the complete list of methods available
 on your build. 
-
 @example
-n2=sin(theta) or n2=theta.sin() 
-n2=sin(theta)^2 +cos(theta)^2 or  n2=theta.sin().pow(2) + theta.cos()^2
+n2=sin(theta) 
+n2=theta.sin() 
+n2=sin(theta)^2 + cos(theta)^2 
+n2=theta.sin().pow(2) + theta.cos()^2
 @end example
 
-The below statement converts three_dmn_var_sht to type double, finds the
-average, then converts this average back to type short. 
+This statement chains methods together to convert three_dmn_var_sht to
+type double, average it, then convert this back to type short: 
 @example
 three_avg=three_dmn_var_sht.double().avg().short();
 @end example
 
 @sp 1
-@noindent @strong{ Aggregate Methods @* } 
-@noindent These methods mirror the averaging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifying no dimensions is equivalent to specifying all dimensions i.e.  averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
+@noindent @strong{Aggregate Methods @*} 
+@noindent These methods mirror the averaging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifying no dimensions is equivalent to specifying all dimensions i.e., averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
 
 @table @code
 @item avg()
@@ -6832,10 +6831,10 @@ Maximum value
 @cindex min()
 Minimum value
 @item rms()
-Root-mean-square (normalized by @var{N})
+Root-mean-square (normalize by @var{N})
 @item rmssdn()
 @cindex rmssdn()
-Root-mean square (normalized by @var{N-1})
+Root-mean square (normalize by @var{N-1})
 @item ttl() or total()
 @cindex ttl()
 Sum of values
@@ -6845,7 +6844,6 @@ Sum of values
 // Average a variable over time
 four_time_avg=four_dmn_rec_var($time);
 @end example
-
 
 @sp 1
 @noindent @strong{ Packing Methods @* } 
@@ -6867,7 +6865,6 @@ Variable is packed to @code{NC_INT}
 @cindex unpack()
 The standard unpacking algorithm is applied. 
 @end table
-
 
 @noindent @strong{Basic Methods @*}
 These methods work with variables and attributes. They have no arguments
@@ -7021,25 +7018,23 @@ A @code{where()} combines the definition and application of a mask all in one go
 The full syntax of a @code{where()} statement is as follows:
 
 @example
-// Single assign (nb the else block is optional)
-where (mask) 
+// Single assign (the 'elsewhere' block is optional)
+where(mask) 
    var1=expr1;
 elsewhere
    var1=expr2;	   	
 
-
 // Multiple assigns
-where( mask) @{
+where(mask)@{
     var1=expr1;
     var2=expr2;
     ...
-    @} elsewhere @{
+@}elsewhere@{
     var1=expr3
     var2=expr4
     var3=expr5;
     ...
-    @}
-
+@}
 @end example
 
 @itemize @bullet
@@ -7051,51 +7046,40 @@ where( mask) @{
 
 @end itemize
 
+Example:
 
-example:
-
-Consider the variables:@*
-@code{float lon_2D_rct(lat,lon);@*}
-@code{float var_msk(lat,lon);@*}
-Suppose we want to multiply by two the elements for which var_msk is equal to 1;
-
+Consider the variables @code{float lon_2D_rct(lat,lon);@*} and
+@code{float var_msk(lat,lon);@*}. 
+Suppose we want to multiply by two the elements for which var_msk 
+@w{equals 1}: 
 @example
-where(var_msk==1)
-  lon_2D_rct=2*lon_2D_rct;
+where(var_msk==1) lon_2D_rct=2*lon_2D_rct;
 @end example
-
-Another example @*
-Suppose we have the variable@*
-@code{int RDM(time);} @*
-And we want to set the values less than 8 or greater than 80 to 0.
+Suppose that we have the variable @code{int RDM(time)} and that we want
+to set its values less than 8 or greater than 80 to 0: 
 @example
-where(RDM <8 || RDM >80)
-  RDM=0;          
+where(RDM < 8 || RDM > 80) RDM=0;          
 @end example
-
 
 @noindent A more complex example.@*
-Consider the situation where we have irregularly gridded data, described using rank 2 variables:@*
-
+Consider the situation where we have irregularly gridded data, described
+using @w{rank 2} coordinates:@* 
 @noindent @code{
 double lat(south_north,east_west)@*
 double lon(south_north,east_west)@* 
-double temperature(south_north,east west)@*
+double temperature(south_north,east_west)@*
 }
-@noindent To find the average temperature in a region [lat_min,lat_max] and [lon_min,lon_max]:
-
+@noindent To find the average temperature in a region [lat_min,lat_max] 
+and [lon_min,lon_max]: 
 @example
-
 temperature_msk[$south_north,$east_west]=0.0;
-
-where(lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max)
+where(lat >= lat_min && lat <= lat_max) && (lon >= lon_min && lon <= lon_max)
   temperature_msk=temperature;	
 elsewhere
   temperature_msk=temperature@@_FillValue;
 
 temp_avg=temperature_msk.avg();
 temp_max=temperature.max();
-
 @end example
 
 @html
@@ -12255,7 +12239,7 @@ lon = 135
 % ncks -C -H -v lon out2.nc
 lon[0] = 135
 @end example
-In either case the tally is simply the size of @code{lon}, i.e.,
+In either case the tally is simply the size of @code{lon}, i.e., 180
 for the @file{85_0112.nc} file described by the sample header above.
 
 @cindex @code{gw}
@@ -12310,7 +12294,7 @@ ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon in.nc out.nc
 It is considerably simpler to specify the complete @var{mask_cond} with
 the single string argument to @samp{-B} than with the three separate
 switches @samp{-m}, @samp{-T}, and @samp{-M}.
-If in doubt, enclose the @var{mask_cond} with double quotes since some
+If in doubt, enclose the @var{mask_cond} within quotes since some
 of the comparators have special meanings to the shell.
 
 Assuming 70% of the gridpoints are maritime, then here the tally is
