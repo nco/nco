@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.25 2011-01-04 02:21:12 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.26 2011-01-06 06:56:14 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -434,18 +434,18 @@ nbr_err_ttl=0;
 }
 
 // Check hyperslab normalization
-// n.b This is where a limit in a hyperslab collapses to a single index 
-// or the slab specified is equal to all the indixes in the dimension
-// e.g three_d  mn_var_dbl(1,:,:), 
+// NB: This is where a limit in a hyperslab collapses to a single index 
+// or the slab specified is equal to all the indices in the dimension
+// e.g three_dmn_var_dbl(1,:,:), 
 //     three_dmn_var_dbl(0:9,:,1);
 //     three_dmn_var_dbl(:,0,:);
 {
 
-  i1=three_dmn_var_int(0,:,:) + three_dmn_var_int(1,:,:).reverse($lat,$lon);
+  i1=three_dmn_var_int(0,:,:)+three_dmn_var_int(1,:,:).reverse($lat,$lon);
 
   i2=three_dmn_var_int(0,0,0)+three_dmn_var_int(1,1,3);
 
-    // NB: RHS is cast correctly  
+  // NB: RHS is cast correctly  
   i3[$time,$lat,$lon]=three_dmn_var_int(1,:,:);
     
   i4=i3.avg($time); //nb i4 has dims $lat,$lon   
@@ -453,10 +453,10 @@ nbr_err_ttl=0;
   // Check that missing value is preserved in a hyperslab
   i5=three_dmn_var_sht(:,:,:);
 
-  // check size of a un-nomalizable hyperslab
+  // Check size of an un-normalizable hyperslab
   i5@size=three_dmn_var_sht(0,:,0:1).size();
 
-  // check min and max
+  // Check min and max
   i6=three_dmn_var_sht(:,1,3); 
 
   if(fabs(i1.avg()-17L)>0.001){

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.616 2011-01-04 02:21:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.617 2011-01-06 06:56:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6985,7 +6985,6 @@ RAM variables are used in place of regular variables to speed things up. For exa
 To delete a RAM variable (recover some memory) use  the ram_delete() method. To convert a RAM variable to a regular disk variable in output use ram_write() method.@*
 
 The following is valid:
-
 @example
 *temp[$time,$lat,lon]=10.0;     // Cast
 *temp_avg=temp.avg($time);      // Regular assign
@@ -6996,20 +6995,18 @@ temp_avg.ram_write();           // Write Variable to output
 @end example
 
 Other Assigns
-
 @example
-// Create a RAM variable from the variable "one" in Input and increment its elements 
+// Create and increment a RAM variable from "one" in Input
 *one++;   
-
-// Create a RAM variable from the variable three in Input and multiply its contents by 10
-// Create a RAM variable from the variable four in Input and then add the variable "three" to
-// its contents.
-*four+=*three*=10;   // three=30, four=34 
-
+// Create RAM variables from the variables three and four in Input.
+// Multiply three by 10 and add it to four. 
+*four+=*three*=10; // three=30, four=34 
 @end example
 
 @html
+<a name="where"></a> <!-- http://nco.sf.net/nco.html#where -->
 <a name="ncap_whr"></a> <!-- http://nco.sf.net/nco.html#ncap_whr -->
+<a name="ncap_where"></a> <!-- http://nco.sf.net/nco.html#ncap_where -->
 @end html
 @node Where statement, Loops, RAM variables, ncap2 netCDF Arithmetic Processor
 @subsection Where statement
@@ -7038,19 +7035,32 @@ where(mask)@{
 @end example
 
 @itemize @bullet
-@item The only expression allowed within a where is the assign 'var=expr'. This is different from a regular @command{ncap2} assign. The LHS var must already exist in Input or Output. The expression on the RHS must evaluate to a scalar or a variable/attribute of the same size as the LHS variable. 
-@item Taking the general case of a variable on the LHS side and RHS. For every element of the mask which is True , the corresponding LHS variable element  is re-assigned with its partner element on the RHS. In the elsewhere part the mask is logically inverted and the assign process continues
-
-@item if the mask dimensions are a subset of the LHS variable's dimensions , then it is made to conform; if it  can't be made to conform then script execution halts.  
-@item Missing values in the mask evaluate to False in the  first code/block statement and True in the elsewhere block/statement. LHS variable elements set to missing value are not re-assigned  
-
+@item The only expression allowed in the predicate of a where is assign,
+i.e., 'var=expr'. 
+This assign differs from a regular @command{ncap2} assign. 
+The LHS var must already exist in Input or Output. 
+The RHS expression must evaluate to a scalar or a variable/attribute of
+the same size as the LHS variable.
+@item Consider when both the LHS and RHS are variables: 
+For every element where mask condition is True, the corresponding LHS
+variable element is re-assigned to its partner element on the RHS. 
+In the elsewhere part the mask is logically inverted and the assign
+process proceeds as before.
+@item If the mask dimensions are a subset of the LHS variable's
+dimensions, then it is made to conform; if it cannot be made to conform 
+then script execution halts.   
+@item Missing values in the mask evaluate to False in the where 
+code/block statement and to True in the elsewhere block/statement. 
+LHS variable elements set to missing value are not re-assigned.
+For these reasons, do not explicitly reference missing values in the
+masking condition, e.g., @code{where(foo=foo.get_missing()) foo=1;}
+will not work as expected.
 @end itemize
 
 Example:
-
-Consider the variables @code{float lon_2D_rct(lat,lon);@*} and
-@code{float var_msk(lat,lon);@*}. 
-Suppose we want to multiply by two the elements for which var_msk 
+Consider the variables @code{float lon_2D_rct(lat,lon);} and
+@code{float var_msk(lat,lon);}. 
+Suppose we wish to multiply by two the elements for which var_msk 
 @w{equals 1}: 
 @example
 where(var_msk==1) lon_2D_rct=2*lon_2D_rct;
@@ -7061,15 +7071,13 @@ to set its values less than 8 or greater than 80 to 0:
 where(RDM < 8 || RDM > 80) RDM=0;          
 @end example
 
-@noindent A more complex example.@*
-Consider the situation where we have irregularly gridded data, described
-using @w{rank 2} coordinates:@* 
-@noindent @code{
-double lat(south_north,east_west)@*
-double lon(south_north,east_west)@* 
-double temperature(south_north,east_west)@*
-}
-@noindent To find the average temperature in a region [lat_min,lat_max] 
+Consider irregularly gridded data, described using @w{rank 2}
+coordinates: 
+@code{
+double lat(south_north,east_west),
+double lon(south_north,east_west), 
+double temperature(south_north,east_west)}.
+To find the average temperature in a region [lat_min,lat_max] 
 and [lon_min,lon_max]: 
 @example
 temperature_msk[$south_north,$east_west]=0.0;
