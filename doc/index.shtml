@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.629 2011-01-04 07:02:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.630 2011-01-10 23:58:05 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -519,6 +519,8 @@ You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.0.7</b>: (<i>Future</i>) 
+Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a>?;
+Stride works with DAP?;
 netCDF4 compound types?;
 World peace?
 <li><b>NCO 4.0.6</b>: (<i>In progress</i>)
@@ -526,8 +528,6 @@ World peace?
 Fix <tt>ncra</tt> YYYYMMDD-<tt>date</tt> <a href="#bug_ncra_cf_YYYYMMDD_date">bug</a>;
 Extract all associated coordinates;
 Tighten <tt>ncbo</tt> warnings;
-Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a>;
-Stride works with DAP?;
 <tt>ncpdq</tt> warns when _FillValue outside packing range;
 <li><b>NCO 4.0.5</b>:
 Fix <tt>ncks</tt> <a href="#bug_ncks_nc4_nc4_hyp_fix">hyperslabbing bug</a>;
@@ -1417,10 +1417,17 @@ Problems with older releases:
 <!-- http://nco.sf.net#bug_hyp_dgn -->
 <a name="bug_hyp_dgn"></a>
 <li><i>Degenerate hyperslabbing bug:</i>
-Versions 4.0.5 and earlier could return incorrect hyperslabs when
-the user-specified bounding box did not include at least one point.
-Instead of returning no data, for instance, sometimes hyperslabs would
-return all data. 
+Versions ???&mdash;4.0.5 could return incorrect hyperslabs when
+user-specified bounding box do not include at least one point.  
+Instead of returning no data, for instance, sometimes hyperslabs 
+may return all data. 
+To determine whether your NCO is affected by this bug, run these commands:
+<tt>ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc</tt>
+If the returned hyperslab contains any data, then your NCO is buggy
+(because that hyperslab should be empty).
+This can lead to incorrect answers.
+A notice will be posted when a fix is available, and all users
+are urged to upgrade.
 </li>
 
 <!-- http://nco.sf.net#bug_thr_msa -->
@@ -1749,7 +1756,7 @@ site.</li>
 <hr></p>
 <!-- End Contacts -->
 
-<a href="http://sf.net"><img src="http://sf.net/sflogo.php?group_id=3331&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo"></a>
+<a href="http://sourceforge.net/projects/nco"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=3331&amp;type=12" width="120" height="30" alt="Get NCO netCDF Operators at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
 
 <table width="100%"><tr><td align="left" valign="top">/
 <a href="http://lists.sf.net/mailman/listinfo/nco-announce">Announce</a> /
