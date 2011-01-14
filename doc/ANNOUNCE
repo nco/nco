@@ -1,76 +1,144 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.418 2011-01-04 07:02:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.419 2011-01-14 22:14:46 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release 
+This release fixes a few annoying bugs that crept in after 4.0.0.
+Fix A. (below) is likely to help the most people.
+Fix B. (below) improves "date"-variable handling.
 
-Also worth mentioning is that the latest Debian (Sid) and Ubuntu
-(Maverick) packages finally support DAP, netCDF4, and UDUnits2.
+This is an "interim" release in that one important and known bug,
+http://nco.sf.net#bug_hyp_dgn, has not yet been fixed. However, fixing
+it is taking longer than anticipated and has delayed too long the
+release of these other improvements. 4.0.7 will be released very
+soon after this bug is fixed. So upgrade to 4.0.6 if it makes life
+better for you, otherwise you might hold off until 4.0.7.
+
+Also worth mentioning is that, as of the last version, 4.0.5, the
+latest Debian (Sid) and Ubuntu (Maverick) NCO packages support DAP,
+netCDF4, and UDUnits2.  
 
 http://nco.sf.net#debian
 http://nco.sf.net#ubuntu
 
-Work on NCO 4.0.7 is underway. 
-Areas of improvement include DAP transparency, and more chunking rulesets.
+Work on NCO 4.0.7 is underway, focused on issued described in the new 
+KNOWN BUGS NOT YET FIXED section below.
+
+Enjoy,
+Charlie
 
 "New stuff" in 4.0.6 details:
-
-A. Fix hyperslabs returned for bounding boxes specified with
-   -d or -X that do not include at least one point. Instead of
-   returning no data, sometimes hyperslabs would return all data.
-   Thanks to Jeff Daily for reporting this. fxm.
-   http://nco.sf.net#bug_hyp_dgn
-
-A. Eliminate false positive warning produced by ncbo when operating
-   on a variable that is a coordinate in one file not both files.
-   Thanks to Phil Rasch for reporting this.
 
 A. Fix problem where associated coordinates were sometimes not output.
    In particular, associated coordinates were not extracted if they
    were declared after any non-coordinate dimensions. 
+   The symptom is the loss of coordinates in the output file.
+   This bug affected NCO 4.0.5 and possibly a few earlier versions.
 
-A. (fxm) Known problem triggered by using the stride argument when
-   accessing some files through some DAP servers. 
-   We are working to identify and fix the cause of this problem. 
-
-   ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc
-
-A. C/C99 components of NCO (everything except ncap2) are clang-compliant.
-   Compiling NCO with the clang compiler produces correct results.
-
-A. Correctly average YYYYMMDD-format integer "date" variables.
+B. Correctly average YYYYMMDD-format integer "date" variables.
    Thanks to Jeff Daily for reporting this problem.
    The bug only affects the "date" variable in CCSM/CF-compliant files
    with "date", "nbdate", and "time" variables. 
    That's how finicky some metadata conventions are. 
    http://nco.sf.net#bug_ncra_cf_YYYYMMDD_date
 
-A. Lengthy messages about setting threads have been quieted
+C. Lengthy messages about setting threads have been quieted
 
-A. MPI executables mpncbo, mpncecat, mpnflint have been updated to
-   the same feature set as the normal, non-MPI executables. (fxm)
+D. ncpdq warns when _FillValue is outside range of packed type
+   In future versions of NCO, this warning may be accompanied by
+   automatic action to place the _FillValue inside the range.
 
-A. ncpdq warns when _FillValue is outside range of packed type
+E. Eliminate false positive warning produced by ncbo when operating
+   on a variable that is a coordinate in one file not both files.
+   Thanks to Phil Rasch for reporting this.
+
+F. MPI executables mpncbo, mpncecat, mpnflint have been updated to
+   the same feature set as the normal, non-MPI executables.
+   We hope to restore all MPI executables by the next release.
+
+G. C/C99 components of NCO (everything except ncap2) are clang-compliant.
+   Compiling NCO with the clang compiler produces correct results.
+
+KNOWN BUGS NOT YET FIXED:
+
+   This is a new section of the ANNOUNCE file intended to make clear
+   the existence and severity of known, but not fixed, problems
+
+A. NOT YET FIXED
+   Return correct hyperslabs returned for bounding boxes specified with
+   -d or -X that do not include at least one point. Instead of
+   returning no data, sometimes hyperslabs would return all data. 
+   Thanks to Jeff Daily for reporting this. 
+   This is a serious problem and users should upgrade when fix is available.
+   http://nco.sf.net#bug_hyp_dgn
+
+   Demonstration:
+   ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns all values but should return none
+
+   20110114: Verified problem still exists
+   Bug report: TODO nco1007.
+
+B. NOT YET FIXED
+   Correctly handle stride argument when accessing some files through some DAP servers.  
+   Works on local but not DAP files so appears to be a DAP non-transparency.
+
+   Demonstration:
+   ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc # Fails as of 20110114, old DAP server?
+   ncks -O -F -D 9 -v three_dmn_rec_var -d time,1,10,5 http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc ~/foo.nc # Works as of 20110114
+
+   20110114: Verified problem still exists
+   Bug report not filed: Suggest users upgrade DAP servers?
+
+C. NOT YET FIXED
+   Correctly handle NC_CHAR coordinates (like fl_dmn) on DAP files.
+   Works on local but not DAP files so appears to be a DAP non-transparency.
+
+   Demonstration:
+   ncks -D 4 -v fl_dmn -O http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc ~/foo.nc
+
+   20110114: Fixed in Unidata DAP server? Need confirmation works elsewhere
+   Bug report filed: netCDF #JZN-949284 NC_CHAR coordinate via DAP
+
+D. NOT YET FIXED
+   Correctly average NC_CHAR coordinates from DAP files.
+   Works on local but not DAP files so appears to be a DAP non-transparency.
+
+   Demonstration:
+   ncra -O -C -D 3 -p
+   http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc in.nc ~/foo.nc # Breaks with "NetCDF: DAP server error"
+
+   20110114: Verified problem still exists
+   Bug report filed: netCDF #JZN-949284 NC_CHAR coordinate via DAP
+
+E. NOT YET FIXED
+   Correctly read netCDF4 input over DAP, write netCDF4 output, then read resulting file.
+   Replacing netCDF4 with netCDF3 in either location of preceding sentence leads to success.
+   Works on local but not DAP files so appears to be a DAP non-transparency.
+
+   Demonstration:
+   ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
+   ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
+
+   20110114: Verified problem still exists
+   Bug report filed: netCDF #QUN-641037 : dimention ID ordering assumptions
 
 "Sticky" reminders:
 
-J. All operators support netCDF4 chunking options:
+A. All operators support netCDF4 chunking options:
    These options can improve performance on large datasets.
    Large file users: Send us suggestions on useful chunking patterns!
-   More useful chunking patterns may be implemented in NCO 4.0.6.
    ncks -O -4 --cnk_plc=all in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
-K. Pre-built, up-to-date Debian Sid & Ubuntu Lucid packages:
+B. Pre-built, up-to-date Debian Sid & Ubuntu Lucid packages:
    http://nco.sf.net#debian
 
-L. Pre-built Fedora and CentOS RPMs:
+C. Pre-built Fedora and CentOS RPMs:
    http://nco.sf.net#rpm
 
-M. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
+D. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    SWAMP efficiently schedules/executes NCO scripts on remote servers:  
 
    http://swamp.googlecode.com
@@ -79,7 +147,7 @@ M. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    If you must transfer lots of data from a server to your client
    before you analyze it, then SWAMP will likely speed things up. 
 
-N. NCO support for netCDF4 features is tracked at
+E. NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
@@ -94,14 +162,8 @@ N. NCO support for netCDF4 features is tracked at
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
 
-O. Have you seen the NCO logo candidates by Tony Freeman, Rich
+F. Have you seen the NCO logo candidates by Tony Freeman, Rich
    Signell, Rob Hetland, and Andrea Cimatoribus?
    http://nco.sf.net
    Tell us what you think...
 
-Enjoy,
-Charlie
- 
-GSL functions added to ncap2 in 4.0.6: 
-    none!
-(Most desired GSL functions have been merged)
