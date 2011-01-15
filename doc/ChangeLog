@@ -1,7 +1,7 @@
 2011-01-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.6 release procedure:
- 	Changes since nco-4_0_5: clang, YYYYMMDD-averaging
+ 	Changes since nco-4_0_5: clang, YYYYMMDD-averaging, xtr ass crd
 	cd ~/nco;cvs tag -d nco-4_0_6;cvs tag -d nco-4_0_6-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
 	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1

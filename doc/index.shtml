@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.630 2011-01-10 23:58:05 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.631 2011-01-15 05:47:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -521,6 +521,7 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO 4.0.7</b>: (<i>Future</i>) 
 Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a>?;
 Stride works with DAP?;
+<tt>NC_CHAR</tt> with DAP?;
 netCDF4 compound types?;
 World peace?
 <li><b>NCO 4.0.6</b>: (<i>In progress</i>)

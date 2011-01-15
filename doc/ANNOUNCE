@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.420 2011-01-15 01:06:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.421 2011-01-15 05:47:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -82,18 +82,18 @@ A. NOT YET FIXED
 
 B. NOT YET FIXED
    Correctly handle stride argument when accessing some files through some DAP servers.  
-   Works on local but not DAP files so appears to be a DAP non-transparency.
+   DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
    ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc # Fails as of 20110114, old DAP server?
    ncks -O -F -D 9 -v three_dmn_rec_var -d time,1,10,5 http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc ~/foo.nc # Works as of 20110114
 
-   20110114: Verified problem still exists
+   20110114: Verified problem still exists on NOAA DAP server
    Bug report not filed: Suggest users upgrade DAP servers?
 
 C. NOT YET FIXED
    Correctly handle NC_CHAR coordinates (like fl_dmn) on DAP files.
-   Works on local but not DAP files so appears to be a DAP non-transparency.
+   DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
    ncks -D 4 -v fl_dmn -O http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc ~/foo.nc
@@ -103,7 +103,7 @@ C. NOT YET FIXED
 
 D. NOT YET FIXED
    Correctly average NC_CHAR coordinates from DAP files.
-   Works on local but not DAP files so appears to be a DAP non-transparency.
+   DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
    ncra -O -C -D 3 -p
@@ -115,14 +115,14 @@ D. NOT YET FIXED
 E. NOT YET FIXED
    Correctly read netCDF4 input over DAP, write netCDF4 output, then read resulting file.
    Replacing netCDF4 with netCDF3 in either location of preceding sentence leads to success.
-   Works on local but not DAP files so appears to be a DAP non-transparency.
+   DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
    ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
    ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
 
    20110114: Verified problem still exists
-   Bug report filed: netCDF #QUN-641037 : dimention ID ordering assumptions
+   Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
 
 "Sticky" reminders:
 

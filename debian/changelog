@@ -1,6 +1,6 @@
 nco (4.0.6-1) unstable; urgency=low
 
-  * new upstream version (fix ncks hyp NC4 bug, ncra CF crd bug)
+  * new upstream version (clang, YYYYMMDD-averaging, xtr ass crd)
 
  -- Charlie Zender <zender@uci.edu>  Fri, 14 Oct 2010 11:30:56 -0700
 
