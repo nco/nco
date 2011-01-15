@@ -1,65 +1,32 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.421 2011-01-15 05:47:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.422 2011-01-15 06:30:20 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.0.6 are ready. 
+The netCDF operators NCO version 4.0.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes a few annoying bugs that crept in after 4.0.0.
-Fix A. (below) is likely to help the most people.
-Fix B. (below) improves "date"-variable handling.
+This release fixes one important and known bug,
+http://nco.sf.net#bug_hyp_dgn.
 
-This is an "interim" release in that one important and known bug,
-http://nco.sf.net#bug_hyp_dgn, has not yet been fixed. However, fixing
-it is taking longer than anticipated and has delayed too long the
-release of these other improvements. 4.0.7 will be released very
-soon after this bug is fixed. So upgrade to 4.0.6 if it makes life
-better for you, otherwise you might hold off until 4.0.7.
-
-Also worth mentioning is that, as of the last version, 4.0.5, the
-latest Debian (Sid) and Ubuntu (Maverick) NCO packages support DAP,
-netCDF4, and UDUnits2.  
+Also worth mentioning again is that the latest Debian (Sid) and Ubuntu
+(Maverick) NCO packages support DAP, netCDF4, and UDUnits2.  
 
 http://nco.sf.net#debian
 http://nco.sf.net#ubuntu
 
-Work on NCO 4.0.7 is underway, focused on issued described in the new 
+Work on NCO 4.0.7 is underway, focused on issued described in the new  
 KNOWN BUGS NOT YET FIXED section below.
 
 Enjoy,
 Charlie
 
-"New stuff" in 4.0.6 summary (full details always in ChangeLog):
+"New stuff" in 4.0.7 summary (full details always in ChangeLog):
 
-A. Correctly output associated coordinates.
-   In particular, associated coordinates were not extracted if they
-   were declared after any non-coordinate dimensions. 
-   The symptom is the loss of coordinates in the output file.
-   This bug affected NCO 4.0.5 (and possibly a few earlier versions?)
+A. Hi
 
-B. Correctly average YYYYMMDD-format integer "date" variables.
-   Thanks to Jeff Daily for reporting this problem.
-   The bug only affects the "date" variable in CCSM/CF-compliant files
-   with "date", "nbdate", and "time" variables. 
-   That's how finicky some metadata conventions are. 
-   http://nco.sf.net#bug_ncra_cf_YYYYMMDD_date
-
-C. Lengthy messages about setting threads have been quieted
-
-D. ncpdq warns when _FillValue is outside range of packed type
-   In future versions of NCO, this warning may be accompanied by
-   automatic action to place the _FillValue inside the range.
-
-E. Eliminate false positive warning produced by ncbo when operating
-   on a variable that is a coordinate in one file not both files.
-   Thanks to Phil Rasch for reporting this.
-
-F. MPI executables mpncbo, mpncecat, mpnflint have been updated to
+A. MPI executables mpncpdq, mpncra, mpncwa have been updated to
    the same feature set as the normal, non-MPI executables.
-   We hope to restore all MPI executables by the next release.
-
-G. C/C99 components of NCO (everything except ncap2) are clang-compliant.
-   Compiling NCO with the clang compiler produces correct results.
+   Now all MPI executables are feature-equivalent to serial codes. fxm
 
 KNOWN BUGS NOT YET FIXED:
 
@@ -152,10 +119,10 @@ E. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.0.6 with was built and tested with HDF5 hdf5-1.8.4-patch1 and with
+   NCO 4.0.7 with was built and tested with HDF5 hdf5-1.8.4-patch1 and with
    4.1.2-beta2-snapshot2010101108
    NCO may not build with earlier, and should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.0.6 takes advantage of an
+   This is particularly true since NCO 4.0.7 takes advantage of an
    internal change to the netCDF nc_def_var_chunking() API in June 2009. 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location

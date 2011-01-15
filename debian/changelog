@@ -1,10 +1,16 @@
+nco (4.0.7-1) unstable; urgency=low
+
+  * new upstream version (fix bug_hyp_dgn, srd w/dap)
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 21 Jan 2011 11:30:56 -0700
+
 nco (4.0.6-1) unstable; urgency=low
 
   * new upstream version (clang, YYYYMMDD-averaging, xtr ass crd)
   * debian/rules
     - build with dap-netcdf netcdf4 udunits2 by default
 
- -- Charlie Zender <zender@uci.edu>  Fri, 14 Oct 2010 11:30:56 -0700
+ -- Charlie Zender <zender@uci.edu>  Fri, 14 Jan 2011 11:30:56 -0700
 
 nco (4.0.5-1) unstable; urgency=low
 
