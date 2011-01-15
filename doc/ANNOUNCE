@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.419 2011-01-14 22:14:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.420 2011-01-15 01:06:57 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.6 are ready. 
 
@@ -29,13 +29,13 @@ KNOWN BUGS NOT YET FIXED section below.
 Enjoy,
 Charlie
 
-"New stuff" in 4.0.6 details:
+"New stuff" in 4.0.6 summary (full details always in ChangeLog):
 
-A. Fix problem where associated coordinates were sometimes not output.
+A. Correctly output associated coordinates.
    In particular, associated coordinates were not extracted if they
    were declared after any non-coordinate dimensions. 
    The symptom is the loss of coordinates in the output file.
-   This bug affected NCO 4.0.5 and possibly a few earlier versions.
+   This bug affected NCO 4.0.5 (and possibly a few earlier versions?)
 
 B. Correctly average YYYYMMDD-format integer "date" variables.
    Thanks to Jeff Daily for reporting this problem.
@@ -71,7 +71,7 @@ A. NOT YET FIXED
    -d or -X that do not include at least one point. Instead of
    returning no data, sometimes hyperslabs would return all data. 
    Thanks to Jeff Daily for reporting this. 
-   This is a serious problem and users should upgrade when fix is available.
+   This problem is serious and users should upgrade once fix arrives:
    http://nco.sf.net#bug_hyp_dgn
 
    Demonstration:
