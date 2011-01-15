@@ -35,28 +35,29 @@ ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 else
 	CFLAGS += -O2
 endif
-ifneq (,$(findstring dap-netcdf,$(DEB_BUILD_OPTIONS)))
-	confflags += --enable-dap-netcdf
-else
+# 20110114 Enable dap-netcdf netcdf4 udunits2 build options by default
+# Allow them to be turned off by putting disable-XXX in DEB_BUILD_OPTIONS
+ifneq (,$(findstring disable-dap-netcdf,$(DEB_BUILD_OPTIONS)))
 	confflags += --disable-dap-netcdf
+else
+	confflags += --enable-dap-netcdf
 endif
-ifneq (,$(findstring netcdf4,$(DEB_BUILD_OPTIONS)))
+ifneq (,$(findstring disable-netcdf4,$(DEB_BUILD_OPTIONS)))
+	confflags += --disable-netcdf4
+else
 	confflags += --enable-netcdf4
 	CPPFLAGS += -DHAVE_NETCDF4_H
-else
-	confflags += --disable-netcdf4
 endif
-ifneq (,$(findstring udunits2,$(DEB_BUILD_OPTIONS)))
-	confflags += --enable-udunits2
-else
+ifneq (,$(findstring disable-udunits2,$(DEB_BUILD_OPTIONS)))
 	confflags += --disable-udunits2
+else
+	confflags += --enable-udunits2
 endif
 
 # Make Debian-default netCDF directories override development netCDF installations in, e.g., /usr/local
 # 20070721: This may inadvertently cause libtool to set set rpath
 # In turn this generates linda warnings about hard-coded rpath
-# Since their Debian packages exist, enable GSL and ncap2
-# Until their Debian packages exist, disable DAP-netCDF, DAP-OPeNDAP, netCDF4, UDUnits, and UDUnits2
+# Since their Debian packages exist, always enable GSL and ncap2
 # Environment variables NETCDF*, defined in Zender's bashrc, often confuse Debian
 # Debian requires that libraries are known by package-manager
 # Thus environment variables that point, e.g., to /usr/local, are unhelpful

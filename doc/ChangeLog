@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.6 release"
 	cvs tag -c nco-4_0_6;cvs tag -c nco-4_0_6-1
 
+	* Debian rules: Build with dap-netcdf netcdf4 udunits2 by default
+
 	* Update NCO ANNOUNCE to clarify outstanding bugs
 
 2011-01-03  Charlie Zender  <zender@uci.edu>
