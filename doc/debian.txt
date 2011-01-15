@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.160 2011-01-15 06:03:00 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.161 2011-01-15 06:10:27 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -168,7 +168,7 @@ tar cvzf ./nco_4.0.6.orig.tar.gz --exclude='nco-4.0.6/debian*' --exclude='.cvsig
 /bin/rm -rf ${DATA}/nco-4.0.6 # Remove cvs-exported directory
 tar xvzf ./nco_4.0.6.orig.tar.gz # Untar to get directory without excluded files
 mkdir -p ${DATA}/nco-4.0.6/debian/source;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-4.0.6/debian;cd ~/nco/debian/source;/bin/cp format ${DATA}/nco-4.0.6/debian/source # Replace debian directory with _CURRENT_ (main trunk) settings
-export DEB_BUILD_OPTIONS='dap-netcdf netcdf4 udunits2'; # Configure optional packages based on available Debian support
+#export DEB_BUILD_OPTIONS='disable-dap-netcdf disable-netcdf4 disable-udunits2'; # Disable optional packages based on available Debian support
 #cd ${DATA}/nco-4.0.6;dpkg-buildpackage -rsudo -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
 #cd ${DATA}/nco-4.0.6;dpkg-buildpackage -rsudo -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
 cd ${DATA}/nco-4.0.6;dpkg-buildpackage -rsudo > ~/foo.nco 2>&1
@@ -201,7 +201,7 @@ DIST=sid sudo pbuilder update # Update chroot before building package in it
 sudo /bin/rm /var/cache/pbuilder/result/nco_4.0.6* # Cleanup prior build
 # To pass DEB_BUILD_OPTIONS to pbuilder while using sudo, one must first
 # modify sudoers with visudo to prevent sudo from resetting environment
-export DEB_BUILD_OPTIONS='dap-netcdf netcdf4 udunits2'
+#export DEB_BUILD_OPTIONS='disable-dap-netcdf disable-netcdf4 disable-udunits2'; # Disable optional packages based on available Debian support
 cd ${DATA};DIST=sid sudo pbuilder build nco_4.0.6-1.dsc > ~/foo.nco.pbuilder 2>&1
 cd /var/cache/pbuilder/result;debsign -k6F635D10 nco_4.0.6-1_*.changes
 lintian /var/cache/pbuilder/result/nco_4.0.6-1_*.deb
