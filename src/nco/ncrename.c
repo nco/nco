@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.126 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.127 2011-01-17 07:21:50 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.126 2010-12-21 20:12:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.126 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.127 2011-01-17 07:21:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.127 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -385,7 +385,7 @@ main(int argc,char **argv)
 	  } /* end if */
 	  if(rcd == NC_NOERR){
 	    if(att_rnm_lst[idx].old_nm[0] == '.'){
-	      /* Preceding '.' means attribute may not be present */
+	      /* Preceding '.' means attribute need not be present */
 	      rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm+1,&att_rnm_lst[idx].id);	  
 	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.422 2011-01-15 06:30:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.423 2011-01-17 07:21:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.7 are ready. 
 
@@ -31,7 +31,7 @@ A. MPI executables mpncpdq, mpncra, mpncwa have been updated to
 KNOWN BUGS NOT YET FIXED:
 
    This is a new section of the ANNOUNCE file intended to make clear
-   the existence and severity of known, but not fixed, problems
+   the existence and severity of known, and not yet fixed, problems.
 
 A. NOT YET FIXED
    Return correct hyperslabs returned for bounding boxes specified with

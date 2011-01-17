@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.134 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.135 2011-01-17 07:21:50 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.134 2010-12-21 20:12:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.134 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.135 2011-01-17 07:21:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.135 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -363,16 +363,13 @@ main(int argc,char **argv)
       for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
     }else if(strpbrk(aed_lst[idx].var_nm,".*^$\\[]()<>+?|{}")){
       /* Variable name contains a "regular expression" (rx) ... */
-        int nbr_xtr=1;
-        nm_id_sct *xtr_lst=NULL;
-
-        xtr_lst=nco_var_lst_mk(nc_id,nbr_var_fl,&aed_lst[idx].var_nm,False,False,&nbr_xtr);
-        /* edit list of attributes */
-        for(idx_var=0 ; idx_var<nbr_xtr ; idx_var++)
-          (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
-
-          /* Free Extraction list  */
-        xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+      int nbr_xtr=1;
+      nm_id_sct *xtr_lst=NULL;
+      xtr_lst=nco_var_lst_mk(nc_id,nbr_var_fl,&aed_lst[idx].var_nm,False,False,&nbr_xtr);
+      /* Edit attribute for each matching variable */
+      for(idx_var=0;idx_var<nbr_xtr;idx_var++) (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
+      /* Free Extraction list  */
+      xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
     }else if(!strcmp(aed_lst[idx].var_nm,"global")){
       /* Variable name indicates a global attribute ... */
       (void)nco_aed_prc(nc_id,NC_GLOBAL,aed_lst[idx]);

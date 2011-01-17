@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.619 2011-01-15 06:34:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.620 2011-01-17 07:21:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,7 +104,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.7
 @set copyright-years 1995--2011
 @set update-year 2011
-@set update-date 14 January 2011
+@set update-date 15 January 2011
 @set update-month January 2011
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -4343,7 +4343,7 @@ with the token definition
 
 @findex ncrename
 @findex ncatted
-It has been and remains most advisable to create both @code{_FillValue}
+It has been and remains most advisable to create both @code{_FillValue} 
 and @code{missing_value} attributes with identical values in datasets.
 Many legacy datasets contain only @code{missing_value} attributes.
 @acronym{NCO} can help migrating datasets between these conventions.
@@ -7101,22 +7101,22 @@ In @command{ncap} there are for() loops and while() loops. They are currently co
 
 @example
 // Follwing sets elements in variable double temp(time,lat) 
-// If element < 0 set to 0, if element >100 set to 100		
+// If element < 0 set to 0, if element > 100 set to 100
 
 *sz_idx=$time.size;
 *sz_jdx=$lat.size;
 
-  for(*idx=0 ; idx<sz_idx ; idx++)
-   for(*jdx=0 ; jdx<sz_jdx; jdx++)
-    if(  temp(idx,jdx) >100 ) temp(idx,jdx)=100.0;
-    else if(  temp(idx,jdx) <0 ) temp(idx,jdx)=0.0;
+for(*idx=0 ; idx<sz_idx ; idx++)
+  for(*jdx=0 ; jdx<sz_jdx; jdx++)
+    if(temp(idx,jdx) > 100) temp(idx,jdx)=100.0;
+    else if(temp(idx,jdx) < 0) temp(idx,jdx)=0.0;
 
-// See if values of of a co-ordinate variable double lat(lat) are monotonic
-*sz=$lat.size;
+// Are values of co-ordinate variable double lat(lat) monotonic?
+   *sz=$lat.size;
 
-   for(*idx=1 ; idx<sz;idx++)
-     if( lat(idx)-lat(idx-1) < 0.0) 
-	break;
+   for(*idx=1;idx<sz;idx++)
+     if(lat(idx)-lat(idx-1) < 0.0) 
+       break;
 
    if(idx==sz) 
      print("lat co-ordinate is monotonic\n");
@@ -7128,16 +7128,13 @@ In @command{ncap} there are for() loops and while() loops. They are currently co
 *sz=$lat_nw.size;
 *sum=0.0;
   while(idx<sz)@{
-   if( lat(idx) % 2) sum+=lat(idx);
+   if(lat(idx) % 2) sum+=lat(idx);
    idx++;
   @}
 
 ram_write(sum);
 print("Total of odd elements ");print(sum);print("\n"); 
-
 @end example
-
-
 
 @html
 <a name="ncap_inc"></a> <!-- http://nco.sf.net/nco.html#ncap_inc -->
@@ -7147,26 +7144,35 @@ print("Total of odd elements ");print(sum);print("\n");
 @cindex include ncap
 The synatax of an include file is:
 @example
-#include "script"       
+#include "script.nco"
 @end example
-
-@noindent The script filename is searched relative to the run directory. Its possible to nest include files to an arbitrary depth. A handy use of inlcude files is to store often used constants. Use RAM variables of you don't want these constants written to Output.  
-
+The script filename is searched relative to the run directory. 
+It is possible to nest include files to an arbitrary depth. 
+A handy use of inlcude files is to store often used constants. 
+Use RAM variables if you do not want these constants written to Output. 
 @example
-*pi=3.1415926535;
-*h=6.62607095e-34;
-e=2.71828;
+// script.nco
+// Sample file that could be #include'd in ncap2 script
+*pi=3.1415926535; // Not written to Output
+*h=6.62607095e-34; // Not written to Output
+e=2.71828; // Written to Output
 @end example
-
-
 
 @html
 <a name="ncap_srt"></a> <!-- http://nco.sf.net/nco.html#ncap_srt -->
 @end html
 @node sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
 @subsection sort methods
-In @acronym{ncap} there are two ways to sort. The first is a regular sort. This sorts ALL the elements of a variable or attribute without regard to any dimensions. The second method applies a sort map to a variable. To apply this sort map the size of the variable must be exactly divisible by the size of the sort map. The method @code{sort(var_in,&var_map) } is overloaded. The second optional argument is a call_by_ref variable which will hold the sort map.
-
+In @acronym{ncap} there are two ways to sort. 
+The first is a regular sort. 
+This sorts ALL the elements of a variable or attribute without
+regard to any dimensions. 
+The second method applies a sort map to a variable. 
+To apply this sort map the size of the variable must be exactly
+divisible by the size of the sort map. 
+The method @code{sort(var_in,&var_map) } is overloaded. 
+The second optional argument is a call_by_ref variable which will hold
+the sort map.  
 @example
 a1[$time]=@{10,2,3,4,6,5,7,3,4,1@};
 a1_sort=sort(a1);
@@ -7181,8 +7187,12 @@ print(a2_map);
 // 1, 0, 3, 2 ;
 @end example  
 
-If the map variable doesn't exist prior to the sort call, then it will be created with the same shape as the input variable and be of type @code{NC_INT}. If the map variable already exists, then the only restriction is that it be of at least the same size as the input variable. To apply a map use @code{ dsort(var_in,var_map)}.
-
+If the map variable does not exist prior to the sort call, then it will
+be created with the same shape as the input variable and be of type
+@code{NC_INT}. 
+If the map variable already exists, then the only restriction is that it
+be of at least the same size as the input variable. 
+To apply a map use @code{dsort(var_in,var_map)}. 
 @example
 defdim("nlat",5);
 
@@ -7216,15 +7226,14 @@ print(a5_sort2);
 // 13,15,14,12,11, 
 // 18,20,19,17,16
 @end example
- 
-As in the above example you a free to create your own mask. If you wish to sort in decending order then use the @code{reverse()} method after the sort. 
-
-
+As in the above example you a free to create your own mask. 
+To sort in descending order, use @code{reverse()} after the sort.   
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
+
 @node Irregular grids, bilinear interpolation, sort methods, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
@@ -9114,8 +9123,9 @@ concatenated together, e.g., by @command{ncrcat}, without losing any
 information.   
 @xref{Missing Values}, for more information.
 
-The key to mastering @command{ncatted} is understanding the meaning of the
-structure describing the attribute modification, @var{att_dsc} specified by the required option @samp{-a} or @samp{--attribute}.
+The key to mastering @command{ncatted} is understanding the meaning of
+the structure that describes the attribute modification, @var{att_dsc}
+specified by the required option @samp{-a} or @samp{--attribute}. 
 Each @var{att_dsc} contains five elements, which makes using
 @command{ncatted} somewhat complicated, but powerful.
 The @var{att_dsc} argument structure contains five arguments in the
@@ -9155,10 +9165,11 @@ arguments.
 The description of these arguments follows in their order of
 appearance. 
 
-The value of @var{att_nm} is the name of the attribute you want to edit.
-This meaning of this should be clear to all users of the @command{ncatted}
-operator. 
-If @var{att_nm} is omitted (i.e., left blank) and @dfn{Delete} mode is
+The value of @var{att_nm} is the name of the attribute you want to
+edit. 
+This meaning of this should be clear to all users of the
+@command{ncatted} operator. 
+If @var{att_nm} is omitted (i.e., left blank) and @dfn{Delete} mode is 
 selected, then all attributes associated with the specified variable
 will be deleted. 
 
@@ -9167,11 +9178,12 @@ will be deleted.
 The value of @var{var_nm} is the name of the variable containing the
 attribute (named @var{att_nm}) that you want to edit.
 There are three very important and useful exceptions to this rule.
-The value of @var{var_nm} can also be used to direct @command{ncatted} to
-edit global attributes, or to repeat the editing operation for every
+The value of @var{var_nm} can also be used to direct @command{ncatted}
+to edit global attributes, or to repeat the editing operation for every 
 variable in a file.
-@w{A value} of @var{var_nm} of ``global'' indicates that @var{att_nm} refers
-to a global attribute, rather than a particular variable's attribute.
+@w{A value} of @var{var_nm} of ``global'' indicates that @var{att_nm}
+refers to a global attribute, rather than a particular variable's
+attribute. 
 This is the method @command{ncatted} supports for editing global
 attributes.
 If @var{var_nm} is left blank, on the other hand, then @command{ncatted} 
@@ -9450,7 +9462,7 @@ ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
 @cindex wildcards
 As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
 to @command{ncatted} may contain @dfn{extended regular expressions}.
-Create @code{isotope} attributes for all variables containing @samp{H2O}
+Create @code{isotope} attributes for all variables containing @samp{H2O} 
 in their names.
 @example
 ncatted -O -a isotope,'^H2O*',c,s,"18" in.nc

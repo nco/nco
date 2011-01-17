@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.108 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.109 2011-01-17 07:21:50 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -43,6 +43,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
+
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_aed_prc() examining variable %s\n",prg_nm_get(),var_nm);
 
   /* Query attribute metadata when attribute name was specified */
   if(aed.att_nm) rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
