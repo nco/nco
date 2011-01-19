@@ -1,10 +1,14 @@
-2011-01-16  Charlie Zender  <zender@uci.edu>
+2011-01-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.7 release procedure:
  	Changes since nco-4_0_6: 
 	cd ~/nco;cvs tag -d nco-4_0_7;cvs tag -d nco-4_0_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.7 release"
 	cvs tag -c nco-4_0_7;cvs tag -c nco-4_0_7-1
+
+	* Fix NC_MAX_BYTE typo in nco.h which affected nco_pck.c
+
+2011-01-16  Charlie Zender  <zender@uci.edu>
 
 	* Tidy ncatted.c, ncrename.c
 

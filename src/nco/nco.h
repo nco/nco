@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.160 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.161 2011-01-19 07:58:21 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -226,9 +226,6 @@ extern "C" {
 
   /* NCO began using MIN/MAX tokens in nco_pck.c on 20101130
      Not sure when these tokens were introduced to netcdf.h */
-#ifndef NC_MAX_BYTE
-# define NC_MAX_BYTE
-#endif
 #ifndef NC_MAX_BYTE
 # define NC_MAX_BYTE 127
 #endif
