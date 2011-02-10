@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.632 2011-01-15 06:03:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.633 2011-02-10 20:10:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -798,7 +798,7 @@ Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if
 <a name="windows"></a><a name="ubn"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> running <a href="http://www.cygwin.org">Cygwin</a></h3>
 <ul>
-<li><a href="src/nco-4.0.5.win32.cygwin.tar.gz">nco-4.0.5.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.5.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.5.win32.cygwin.tar.gz"-->).</li>
+<li><a href="src/nco-4.0.6.win32.cygwin.tar.gz">nco-4.0.6.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.6.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.6.win32.cygwin.tar.gz"-->).</li>
 First install <tt>curl</tt> (in the "Web" category of Cygwin setup),
 and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the 
 <tt>udunits2.xml</tt> file, e.g., with
@@ -1421,7 +1421,7 @@ Problems with older releases:
 <!-- http://nco.sf.net#bug_hyp_dgn -->
 <a name="bug_hyp_dgn"></a>
 <li><i>Degenerate hyperslabbing bug:</i>
-Versions ???&mdash;4.0.5 could return incorrect hyperslabs when
+Versions ???&mdash;4.0.6 could return incorrect hyperslabs when
 user-specified bounding box do not include at least one point.  
 Instead of returning no data, for instance, sometimes hyperslabs 
 may return all data. 
