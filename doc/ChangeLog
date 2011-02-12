@@ -1,3 +1,7 @@
+2011-02-03  Charlie Zender  <zender@uci.edu>
+
+	* Change ndrv from 65534 to 65532 as per Griffith Young
+
 2011-01-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.7 release procedure:

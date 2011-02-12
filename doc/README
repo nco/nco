@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.16 2005-04-08 17:59:59 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.17 2011-02-12 03:05:20 zender Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
@@ -20,9 +20,11 @@ The NCO homepage is http://nco.sf.net.
 
 Installation:
 NCO runs on all major UNIX systems and MS Windows.
-NCO requires only an ANSI-compliant C99 compiler.
+NCO (except ncap2) requires only an ANSI-compliant C99 compiler.
 NCO can be built and installed with the standard GNU autotools
 ./configure mechanism or with a custom Makefile.
+ncap2 requires an C++ compiler and can be hard to build.
+Please submit patches to help simplify the build system!
 
 Newer Autotools Configure Build Procedure:
 Try the newer ./configure mechanism first by using the configure

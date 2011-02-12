@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.633 2011-02-10 20:10:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.634 2011-02-12 03:05:20 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -314,7 +314,7 @@ items.
 Inspired by President Obama's plan to bring more transparency to
 government investment, these homepage donation counters track the
 influence of your monetary donations on NCO development: 
-<dt>Donations received between 20030624 and 20101102: US$84.55. Thank you, donors!</dt>
+<dt>Donations received between 20030624 and 20101102: US$94.55. Thank you, donors!</dt>
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More emoticons in the documentation :)</dt>
 <hr></p>
 
@@ -944,16 +944,16 @@ This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves and places NCO version <tt>4.0.6</tt> (which is
-tagged as <tt>nco-4_0_5</tt> due to CVS rules) into local directory
+tagged as <tt>nco-4_0_6</tt> due to CVS rules) into local directory
 <tt>nco-4.0.6</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_5 -d nco-4.0.6 nco</tt></p>
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_6 -d nco-4.0.6 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_0_5</tt>) and the development version is that the
+(e.g., <tt>nco-4_0_6</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
 <tt>4.0.6</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).

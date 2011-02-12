@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.620 2011-01-17 07:21:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.621 2011-02-12 03:05:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6680,12 +6680,14 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : three_dmn_var_sht.int
 print(variable_name/attribute name/string, format string);
 @end example  
 
-@noindent The print function takes a variable name or attribute name or a quoted string and prints the contents in a in a similar fashion to @code{ncks -H }. 
+@noindent The print function takes a variable name or attribute name or
+a quoted string and prints the contents in a in a similar fashion to
+@code{ncks -H}.
 There is also an optional C style format string argument. 
-Currently the print function cannot print RAM variables or expressions
+Currently the print function cannot print RAM variables or expressions 
 such as @code{'print(var_msk*3+4)'}. 
-If you want to print an expression, first evaluate the expression
-and save the result to a (non-RAM) variable, and then print the variable. 
+To print an expression, first evaluate it as a non-RAM variable (so it
+will be saved and can be printed), and then print the variable.
 
 @noindent examples
 @example
@@ -6703,7 +6705,6 @@ mss_val_fst@@_FillValue, size = 1 NC_FLOAT, value = -999
 
 print("This function \t is monotonic\n");
 This function is 	  monotonic
-
 @end example
 
 @html

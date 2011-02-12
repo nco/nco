@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.86 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.87 2011-02-12 03:05:20 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -901,7 +901,12 @@ nco_var_pck /* [fnc] Pack variable in memory */
     if(nc_typ_pck == NC_BYTE || nc_typ_pck == NC_CHAR){
       ndrv_dbl=256.0-2.0; /* [sct] Double precision value of number of discrete representable values */
     }else if(nc_typ_pck == NC_SHORT){
-      ndrv_dbl=65536.0-2.0; /* [sct] Double precision value of number of discrete representable values */
+      /* 20110203 Griffith Young reports: 
+	 "I have noticed some small inconsistencies with the _FillValue values.
+	 short int is [32767, -32768].  The default _FillValue is -32767.  
+	 Therefore a reasonable range would be [32766, -32766] and a reasonable
+	 scale_factor becomes (max - min) -> 32766 - (-32766) -> 65532." */
+      ndrv_dbl=65536.0-4.0; /* [sct] Double precision value of number of discrete representable values */
     }else if(nc_typ_pck == NC_INT){
       ndrv_dbl=4294967295.0-2.0; /* [sct] Double precision value of number of discrete representable values */
     } /* end else */
