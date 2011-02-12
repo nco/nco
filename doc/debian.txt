@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.162 2011-01-15 06:30:20 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.163 2011-02-12 13:58:03 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -181,7 +181,7 @@ ls -l ${DATA}/nco_4.0.7*
 m ~/foo.nco
 # Upload Ubuntu (rather than Debian) packages to websites
 scp ${DATA}/nco_4.0.7* dust.ess.uci.edu:/var/www/html/nco/src
-scp ${DATA}/nco_4.0.7* zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+scp ${DATA}/nco_4.0.7* zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # NB: Make sure RPMs build before uploading to debian, since changing
 # Debian versions are such a PITA
 # NB: Only upload pbuilder Debian Sid (not personal Ubuntu) .deb builds to Debian mentors
@@ -244,7 +244,7 @@ ${rpm_root}/RPMS/i386/nco-4.0.7-?.i386.rpm \
 ${rpm_root}/RPMS/i386/nco-debuginfo-4.0.7-?.i386.rpm \
 ${rpm_root}/RPMS/i386/nco-devel-4.0.7-?.i386.rpm \
 ${rpm_root}/SRPMS/nco-4.0.7-?.src.rpm \
-zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 
 # RPM builds as user
 # http://myy.helia.fi/~karte/linux/doc/rpm-build-as-user.html
@@ -281,4 +281,4 @@ ${rpm_root}/*/nco-4.0.7-?.*.rpm \
 ${rpm_root}/*/nco-debuginfo-4.0.7-?.*.rpm \
 ${rpm_root}/*/nco-devel-4.0.7-?.*.rpm \
 ${rpm_root}/nco-4.0.7-?.*.src.rpm \
-zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+zender,nco@web.sf.net:/home/project-web/nco/htdocs/src

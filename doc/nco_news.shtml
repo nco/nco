@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.20 2010-11-29 17:41:48 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.21 2011-02-12 13:58:03 zender Exp $
 
 Purpose: NCO news archive
 
@@ -8,7 +8,7 @@ file:/home/zender/nco/doc/nco_news.shtml
 /bin/cp -f ~/nco/doc/nco_news.shtml /web/web-data/cms/nco/nco_news.shtml
 
 scp -p ~/nco/doc/nco_news.shtml dust.ess.uci.edu:/var/www/html/nco/nco_news.shtml
-scp -p ~/nco/doc/nco_news.shtml nco.sf.net:/home/groups/n/nc/nco/htdocs/nco_news.shtml
+scp -p ~/nco/doc/nco_news.shtml nco.sf.net:/home/project-web/nco/htdocs/nco_news.shtml
 -->
 
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">

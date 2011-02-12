@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.634 2011-02-12 03:05:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.635 2011-02-12 13:58:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -7,9 +7,9 @@ http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
 scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png dust.ess.uci.edu:/var/www/html/nco
-scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:/var/www/html/nco/src
 -->
 
@@ -782,7 +782,7 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <ul>
 <!-- Copy DMG files from http://ps.uci.edu/~pscsg/nco
 wget http://ps.uci.edu/~pscsg/nco/nco-4.0.6_x86_10.5.dmg -O /tmp/nco-4.0.6_x86_10.5.dmg
-/usr/bin/scp /tmp/nco-4.0.6_x86_10.5.dmg zender,nco@web.sf.net:/home/groups/n/nc/nco/htdocs/src
+/usr/bin/scp /tmp/nco-4.0.6_x86_10.5.dmg zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp /tmp/nco-4.0.6_x86_10.5.dmg dust.ess.uci.edu:/var/www/html/nco/src
 -->
 Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if you do not have MacPorts installed. You may need to add <tt>/opt/local/bin</tt> to your executable path to access the operators.

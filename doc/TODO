@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1110 2011-01-14 22:14:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1111 2011-02-12 13:58:03 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -6,7 +6,7 @@ $Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1110 2011-01-14 22:14:46 zen
 http://nco.sf.net/TODO
 
 # Usage: Upload to homepage:
-/usr/bin/scp ~/nco/doc/TODO nco.sf.net:/home/groups/n/nc/nco/htdocs
+/usr/bin/scp ~/nco/doc/TODO nco.sf.net:/home/project-web/nco/htdocs
 /usr/bin/scp ~/nco/doc/TODO dust.ess.uci.edu:/var/www/html/nco
 
 ******************************************************************************

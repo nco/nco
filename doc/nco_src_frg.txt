@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.63 2010-11-29 17:41:48 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.64 2011-02-12 13:58:03 zender Exp $ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
@@ -6,7 +6,7 @@ Project Full Name:  NCO netCDF Operators
 Project Unix Name:  nco
 CVS Server:         cvs.sf.net
 Shell/Web Server:   nco.sf.net:/home/users/z/ze/zender
-		    nco.sf.net:/home/groups/n/nc/nco
+		    nco.sf.net:/home/project-web/nco
 Project Websites:   http://nco.sf.net
 		    http://sf.net/projects/nco
 		    http://sf.net/project/?group_id=3331
@@ -39,7 +39,7 @@ ncftpput upload.sf.net /incoming /var/www/html/nco/sf.tar.gz
 scp upload.sf.net:/incoming/sf.tar.gz .
 
 # Copy docs from compile farm to NCO websites
-cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@nco.sf.net:/home/groups/n/nc/nco/htdocs
+cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@nco.sf.net:/home/project-web/nco/htdocs
 cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@dust.ess.uci.edu:/var/www/html/nco
 
 # Copy netCDF library to HP account
@@ -53,9 +53,9 @@ CC='/bin/c89' CPPFLAGS='-D_HPUX_SOURCE' CXX='aCC' FC='/opt/fortran/bin/fort77' F
 make;make install
 
 # Copy netCDF library to NCO group account
-scp -C /data/zender/tmp/netcdf-3.5.1-beta10.tar.Z zender@nco.sf.net:/home/groups/n/nc/nco
+scp -C /data/zender/tmp/netcdf-3.5.1-beta10.tar.Z zender@nco.sf.net:/home/project-web/nco
 # Copy netCDF library from NCO group account to compile farm
-scp -C nco.sf.net:/home/groups/n/nc/nco/netcdf-3.5.1-beta10.tar.Z ~
+scp -C nco.sf.net:/home/project-web/nco/netcdf-3.5.1-beta10.tar.Z ~
 # Build netCDF library on compile farm
 mkdir -f -p ${HOME}/bin/${GNU_TRP}
 mkdir -f -p ${HOME}/lib/${GNU_TRP}
@@ -97,13 +97,13 @@ cd ${HOME}/nco/src/nco_c++
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} MY_INC_DIR=. gmake
 
 Building group NCO: 
-export MY_BIN_DIR='/home/groups/n/nc/nco/nco/bin'
-export MY_LIB_DIR='/home/groups/n/nc/nco/nco/lib'
-export MY_OBJ_DIR='/home/groups/n/nc/nco/nco/obj'
-export NETCDF_INC='/home/groups/n/nc/nco/include'
-export NETCDF_LIB='/home/groups/n/nc/nco/lib/LINUX'
-cd /home/groups/n/nc/nco/nco/bld;make;cd -
-export PATH="${PATH}\:/home/groups/n/nc/nco/nco/bin"
+export MY_BIN_DIR='/home/project-web/nco/nco/bin'
+export MY_LIB_DIR='/home/project-web/nco/nco/lib'
+export MY_OBJ_DIR='/home/project-web/nco/nco/obj'
+export NETCDF_INC='/home/project-web/nco/include'
+export NETCDF_LIB='/home/project-web/nco/lib/LINUX'
+cd /home/project-web/nco/nco/bld;make;cd -
+export PATH="${PATH}\:/home/project-web/nco/nco/bin"
 
 The purpose of this project is to create and improve tools for data
 analysis by using Open Source development strategy. The starting
@@ -126,7 +126,7 @@ and analysis. The NCO homepage is currently
 http://nco.sf.net
 
 To build NCO on SourceForge, 
-make NETCDF_LIB=/home/groups/n/nc/nco/lib/LINUX NETCDF_INC=/home/groups/n/nc/nco/include
+make NETCDF_LIB=/home/project-web/nco/lib/LINUX NETCDF_INC=/home/project-web/nco/include
 
 To make a new release of NCO on SourceForge:
 ncftpput upload.sf.net /incoming /var/www/html/nco/nco-2.7.1.tar.gz
