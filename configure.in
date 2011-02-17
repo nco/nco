@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.334 2011-01-15 06:30:20 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.335 2011-02-17 21:21:46 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -16,7 +16,7 @@
 # Distribution:
 # scp ~/nco/configure virga.ess.uci.edu:nco
 # scp ~/nco/configure esmf.ess.uci.edu:nco
-# scp ~/nco/configure greenplanet.ess.uci.edu:nco
+# scp ~/nco/configure gplogin2.ess.uci.edu:nco
 
 # NB: Different GNU toolchain versions produce different (though equivalent)
 # configure scripts from the same autotools inputs.

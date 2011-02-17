@@ -1,3 +1,7 @@
+2011-02-17  Charlie Zender  <zender@uci.edu>
+
+	* Change scp paths from greenplanet to gplogin2
+
 2011-02-12  Charlie Zender  <zender@uci.edu>
 
 	* Migrate from old sourceforge (SF) paths, e.g.,
