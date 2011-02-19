@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.108 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.109 2011-02-19 02:28:37 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -153,7 +153,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
        arguments with strings as if they had been read from keyboard.
        An alternate solution is to add flag to lmt_sct indicating whether this
        limit struct had been automatically generated and then act accordingly. */
-    /* Decrement cnt to C index value if necessary */
+    /* Decrement cnt to C-index value if necessary */
     if(!FORTRAN_IDX_CNV) cnt--; 
     if(cnt < 0L){
       if(cnt == -1L) (void)fprintf(stdout,"%s: ERROR nco_lmt_sct_mk() reports record variable exists and is size zero, i.e., has no records yet.\n",prg_nm_get());
@@ -417,8 +417,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     lmt.max_val=dmn_val_dp[max_idx];
     
     /* Convert UDUnits strings if necessary */
-    /* If we are here then either min_sng is set or max_sng is set or both set */  
-    
+    /* If we are here then either min_sng or max_sng or both are set */
     if(lmt.lmt_typ == lmt_udu_sng){
       
       if(!fl_udu_sng){ 
@@ -437,15 +436,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(lmt.max_sng) lmt.max_val=strtod(lmt.max_sng,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.max_sng,"strtod",sng_cnv_rcd);
       
-      /* re-base co-ordinates as necessary in multi-file operatators 
+      /* Re-base co-ordinates as necessary in multi-file operatators (MFOs)
          lmt.origin has been calculated earlier in file */
       if(rec_dmn_and_mlt_fl_opr){ 
         if(lmt.min_sng) lmt.min_val-=lmt.origin;
         if(lmt.max_sng) lmt.max_val-=lmt.origin;   
-      }  
-    }
+      }  /* endif MFO */
+    } /* end UDUnits conversion */
     
-    /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
+    /* Warn when min_val > max_val (i.e., wrapped coordinate) */
     if(dbg_lvl_get() > nco_dbg_std && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
     /* Fail when... */
@@ -753,16 +752,16 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      (lmt.srt > lmt.end) && /* WRP */
      (lmt.cnt == (1L+(dmn_sz-lmt.srt-1L)/lmt.srd)) && /* dmn_cnt_1 == cnt -> dmn_cnt_2 == 0 */
      True){
-    long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
-    long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */
-    /* long left_over_idx_1st_hyp_slb;*/ /* # elements from first hyperslab to count towards current stride */
-    long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */
+    long greatest_srd_multiplier_1st_hyp_slb; /* Greatest integer m such that srt+m*srd < dmn_sz */
+    long last_good_idx_1st_hyp_slb; /* C-index of last valid member of 1st hyperslab (= srt+m*srd) */
+    /* long left_over_idx_1st_hyp_slb;*/ /* # of elements from first hyperslab that count towards current stride */
+    long first_good_idx_2nd_hyp_slb; /* C-index of first valid member of 2nd hyperslab, if any */
     
     /* NB: Perform these operations with integer arithmetic or else! */
     /* Wrapped dimensions with stride may not start at idx 0 on second read */
     greatest_srd_multiplier_1st_hyp_slb=(dmn_sz-lmt.srt-1L)/lmt.srd;
     last_good_idx_1st_hyp_slb=lmt.srt+lmt.srd*greatest_srd_multiplier_1st_hyp_slb;
-    /*    left_over_idx_1st_hyp_slb=dmn_sz-last_good_idx_1st_hyp_slb-1L;*/
+    /* left_over_idx_1st_hyp_slb=dmn_sz-last_good_idx_1st_hyp_slb-1L;*/
     first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt.srd)%dmn_sz;
     
     /* Conditions causing dmn_cnt_2 == 0 */
@@ -826,7 +825,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"srt = %li\n",lmt.srt);
     (void)fprintf(stderr,"end = %li\n",lmt.end);
     (void)fprintf(stderr,"cnt = %li\n",lmt.cnt);
-    (void)fprintf(stderr,"srd = %li\n\n",lmt.srd);
+    (void)fprintf(stderr,"srd = %li\n",lmt.srd);
+    (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
+    (void)fprintf(stderr,"SRD = %s\n\n",lmt.srd != 1L ? "YES" : "NO");
   } /* end dbg */
   
   if(lmt.srt > lmt.end && !flg_no_data){

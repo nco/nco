@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.166 2011-01-01 07:43:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.167 2011-02-19 02:28:37 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -475,9 +475,9 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 	    WRP=True;
 	    if(lmt[lmt_idx].srd != 1L){ /* SRD true for this dimension */
 	      long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
-	      long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */
+	      long last_good_idx_1st_hyp_slb; /* C-index of last valid member of 1st hyperslab (= srt+m*srd) */
 	      long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
-	      /* long first_good_idx_2nd_hyp_slb; *//* C index of first valid member of 2nd hyperslab, if any */
+	      /* long first_good_idx_2nd_hyp_slb; *//* C-index of first valid member of 2nd hyperslab, if any */
 
 	      /* NB: Perform these operations with integer arithmetic or else! */
 	      dmn_cnt_1[dmn_idx]=1L+(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd; 
