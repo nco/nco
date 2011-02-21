@@ -1,5 +1,8 @@
 2011-02-21  Charlie Zender  <zender@uci.edu>
 
+	* Remove two ncks tests from NCO_rgr.pm.
+	Should add them back once script allows error exit to be intended result.
+
 	* Threaded the needle with new fix so wrapped hyperslabs keep working as before
 
 	* Added fix to TODO nco1007 that now breaks double-wrapped hypserslab test

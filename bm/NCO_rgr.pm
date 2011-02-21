@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.103 2011-02-21 05:41:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.104 2011-02-21 05:46:05 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -81,8 +81,7 @@ sub tst_rgr {
     }
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
-    if (0) {} #################  SKIP THESE #####################
-    
+    if(0){} #################  SKIP THESE #####################
     
 ####################
 #### ncap2 tests ####
@@ -601,13 +600,15 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat -d lat,20.,20.001 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v lat %tmp_fl_00%";
-    $dsc_sng="No data in domain (OK. TODO nco1007. ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid)";
-    $tst_cmd[2]="ncks: ERROR Domain 20 <= lat <= 20.001 brackets no coordinate values.";
-    $tst_cmd[3]="SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    if(0){ # fxm use this test once script allows error exits to be intended result
+	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat -d lat,20.,20.001 $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -H -s '%4.1f,' -v lat %tmp_fl_00%";
+	$dsc_sng="No data in domain (OK. TODO nco1007. ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid)";
+	$tst_cmd[2]="ncks: ERROR Domain 20 <= lat <= 20.001 brackets no coordinate values.";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0;  # Reset array
+    } # endif 0
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
@@ -636,7 +637,6 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
-
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat_cal -d lat_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
 
     $tst_cmd[1]="ncap2 -O -v -C -s 'lat_cln_ttl=lat_cal.total();print(lat_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
@@ -646,8 +646,6 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
-    
-
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' $in_pth_arg in.nc";
     $dsc_sng="dimension slice using UDUnit conversion (fails without UDUnits library support)";
@@ -674,13 +672,15 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -C -d time,2, %tmp_fl_00%";
-    $dsc_sng="Offset past end of file (OK. TODO nco693. ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid)";
-    $tst_cmd[2]="ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1";
-    $tst_cmd[3]="SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    if(0){ # fxm use this test once script allows error exits to be intended result
+	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -C -H -s '%g' -C -d time,2, %tmp_fl_00%";
+	$dsc_sng="Offset past end of file (OK. TODO nco693. ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid)";
+	$tst_cmd[2]="ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0;  # Reset array
+    } # endif 0
     
     $tst_cmd[0]="ncks -C -H -s '%d' -v byte_var $in_pth_arg in.nc";
     $dsc_sng="Print byte value";
