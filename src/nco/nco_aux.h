@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.11 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.12 2011-02-21 21:25:00 zender Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
@@ -34,11 +34,9 @@ nco_aux_evl
 (int in_id, 
  int aux_nbr, 
  char *aux_arg[],
- int *lmt_nbr
- );
+ int *lmt_nbr);
 
-
-int 
+int
 nco_find_lat_lon
 (int ncid, 
  char var_nm_lat[], 
@@ -46,9 +44,7 @@ nco_find_lat_lon
  char **units,
  int *lat_id,
  int *lon_id,
- nc_type *crd_typ
- );
-
+ nc_type *crd_typ);
 
 int
 nco_get_dmn_info
@@ -56,18 +52,16 @@ nco_get_dmn_info
  int varid,
  char dimname[],
  int *dimid,
- long *dmn_sz
-);
+ long *dmn_sz);
 
 void 
 nco_aux_prs
 (const char *args, 
  const char *units, 
- float *lllon, 
- float *lllat, 
- float *urlon, 
- float *urlat
- );
+ float *lon_ll, 
+ float *lon_ur, 
+ float *lat_ll, 
+ float *lat_ur);
 
 #ifdef __cplusplus
 } /* end extern "C" */

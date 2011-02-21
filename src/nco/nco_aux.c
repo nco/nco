@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.31 2011-02-21 20:44:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.32 2011-02-21 21:25:00 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -158,31 +158,31 @@ nco_aux_evl
   dmn_sct lat;
   dmn_sct lon;
   
-  double clat;              /* current cell lat */
-  double clon;               /* current cell lon */
+  double lat_crr; /* [dgr] Current cell latitude */
+  double lon_crr; /* [dgr] Current cell longitude */
 
-  float lllat;                /* lower left lat of bounding rectangle */
-  float lllon;                /* lower left lon of bounding rectangle */
-  float urlat;                /* upper right lon of bounding rectangle */
-  float urlon;                /* upper right lat of bounding rectangle */
+  float lat_ll; /* [dgr] Lower left latitude of bounding rectangle */
+  float lat_ur; /* [dgr] Upper right longitude of bounding rectangle */
+  float lon_ll; /* [dgr] Lower left longitude of bounding rectangle */
+  float lon_ur; /* [dgr] Upper right latitude of bounding rectangle */
   
-  int aux_idx;                /* iterator over user -X options */
-  int cll_itr;                 /* cell iterator */
-  int cll_nbr_cns=0;           /* current number matching consecutive cells */
-  int cll_idx_min=-1;           /* min. index of cell in consecutive cell set */
+  int aux_idx; /* [idx] Index over user -X options */
+  int cll_idx; /* [idx] Cell index */
+  int cll_nbr_cns=0; /* [nbr] Current number matching consecutive cells */
+  int cll_idx_min=-1; /* [idx] Minimum index of cell in consecutive cell set */
   int dmn_id=int_CEWI;
   int lat_id;
   int lon_id;
   int rcd=NC_NOERR;
   
-  lmt_sct **lmt=0;         /* return structure */
+  lmt_sct **lmt=0; /* [sct] List of returned lmt structures */
   
   long dmn_sz=0;
   
   nc_type crd_typ;
   
-  void *vp_lat;                /* lat coordinate array; float or double only */
-  void *vp_lon;                /* lon coordinate array; float or double only */
+  void *vp_lat; /* [dgr] Latitude coordinate array, float or double */
+  void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
   
   /* Obtain lat/lon variable names */
   rcd=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
@@ -193,58 +193,53 @@ nco_aux_evl
   /* Load latitude/longitude variables needed to search for region matches */
   lat.type=crd_typ;
   lat.sz=dmn_sz;
-  lat.srt=0;
+  lat.srt=0L;
   vp_lat=(void *)nco_malloc(dmn_sz*nco_typ_lng(lat.type));
   lon.type=crd_typ;
   lon.sz=dmn_sz;
-  lon.srt=0;
+  lon.srt=0L;
   vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
   rcd=nco_get_vara(in_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
-  if(rcd != NC_NOERR) nco_err_exit(-1,fnc_nm);
   rcd=nco_get_vara(in_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
-  if(rcd != NC_NOERR) nco_err_exit(-1,fnc_nm);
   
   *lmt_nbr=0;
   
   lmt_sct base;
   base.nm=(char *)strdup(dmn_nm);
   base.lmt_typ=lmt_dmn_idx;
-  base.is_usr_spc_lmt=1; 
-  base.is_usr_spc_min=1; 
-  base.is_usr_spc_max=1;
+  base.is_usr_spc_lmt=True; 
+  base.is_usr_spc_min=True; 
+  base.is_usr_spc_max=True;
   base.srd_sng=(char *)strdup("1");
   base.is_rec_dmn=0;
   base.id=dmn_id;
   base.min_idx=0;
   base.max_idx=0;
-  base.srt=0;
-  base.end=0;
-  base.cnt=0;
-  base.srd=1;
+  base.srt=0L;
+  base.end=0L;
+  base.cnt=0L;
+  base.srd=1L;
   
   /* malloc() lmt structure to return
      No way to know exact size in advance though maximum is about dim_sz/2 */
-  int MAX_DMN=dmn_sz/2;
+  int MAX_LMT_NBR=dmn_sz/2;
   
-  if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_DMN*sizeof(lmt_sct *));
+  if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_LMT_NBR*sizeof(lmt_sct *));
   
   for(aux_idx=0;aux_idx<aux_nbr;aux_idx++){
-    /* Parse into lllong,lllat,urlon,urlon, accounting for units */
-    nco_aux_prs(aux_arg[aux_idx],units,&lllon,&lllat,&urlon,&urlat);
-    /* printf("Box is %f %f %f %f\n",lllon,lllat,urlon,urlat); */
-    
+    /* Parse into lon_ll,lat_ll,lon_ur,lon_ur, accounting for units */
+    nco_aux_prs(aux_arg[aux_idx],units,&lon_ll,&lon_ur,&lat_ll,&lat_ur);
     cll_idx_min=-1;
     cll_nbr_cns=0;
-    for(cll_itr=0;cll_itr<dmn_sz;cll_itr++){
-      if(lat.type == NC_FLOAT) clat=((float *)vp_lat)[cll_itr]; else clat=((double *)vp_lat)[cll_itr];
-      if(lon.type == NC_FLOAT) clon=((float *)vp_lon)[cll_itr]; else clon=((double *)vp_lon)[cll_itr];
-      if(clon >= lllon && clon <= urlon &&
-	 clat >= lllat && clat <= urlat){
-	/*printf("match %lf %lf %lf/ %lf %lf %lf\n",clon,lllon,urlon,clat,lllat,urlat); */
+    for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
+      if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
+      if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
+      if(lon_crr >= lon_ll && lon_crr <= lon_ur &&
+	 lat_crr >= lat_ll && lat_crr <= lat_ur){
 	if(cll_idx_min == -1){
-	  cll_idx_min=cll_itr;
+	  cll_idx_min=cll_idx;
 	  cll_nbr_cns=1;
-	}else if(cll_itr == cll_idx_min + cll_nbr_cns){
+	}else if(cll_idx == cll_idx_min+cll_nbr_cns){
 	  cll_nbr_cns++;
 	}else{
 	} /* end found matching cell */
@@ -257,25 +252,19 @@ nco_aux_evl
 	base.max_idx=base.end=cll_idx_min+cll_nbr_cns-1;
 	base.cnt=cll_nbr_cns;
 	(*lmt_nbr)++;
-	if(*lmt_nbr > MAX_DMN){
-	  /*printf("Number of slabs exceeds allocated mamory %d\n",MAX_DMN);*/
-	  nco_err_exit(-1,"%s: Number of slabs exceeds allocated mamory.");
-	} /* end if too many slabs */
+	if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(-1,"%s: Number of slabs exceeds allocated mamory");
 	lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 	*lmt[(*lmt_nbr)-1]=base;
 	cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
     
-  } /* end loop over user supplied -X options */
+  } /* end loop over user supplied -X arguments */
 
   if(units) units=(char *)nco_free(units);
-  vp_lat=nco_free(vp_lat);
-  vp_lon=nco_free(vp_lon);
+  if(vp_lat) vp_lat=nco_free(vp_lat);
+  if(vp_lon) vp_lon=nco_free(vp_lon);
   
-  /* fprintf("returning structure %d\n",*lmt_nbr);
-    for(aux_idx=0;aux_idx<(*lmt_nbr);aux_idx++)
-    fprintf("min,max = %ld,%ld\n",lmt[aux_idx]->min_idx,lmt[aux_idx]->max_idx); */
   return lmt;
 } /* end nco_aux_evl() */
 
@@ -283,10 +272,10 @@ void
 nco_aux_prs
 (const char *args,
  const char *units,
- float *lllon,
- float *lllat,
- float *urlon,
- float *urlat)
+ float *lon_ll,
+ float *lon_ur,
+ float *lat_ll,
+ float *lat_ur)
 {
   /* Purpose: Parse command-line arguments of form:
      min_lon,max_lon,min_lat,max_lat */
@@ -295,15 +284,15 @@ nco_aux_prs
   
   tmp_args=strdup(args);
   
-  sscanf(args,"%f,%f,%f,%f",lllon,urlon,lllat,urlat);
+  sscanf(args,"%f,%f,%f,%f",lon_ll,lon_ur,lat_ll,lat_ur);
   token=strtok(tmp_args,", ");
-  if(token) sscanf(token,"%f",lllon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",lon_ll); else nco_err_exit(-1,"nco_aux_prs(): Problem with LL longitude string");
   token=strtok(NULL,", ");
-  if(token) sscanf(token,"%f",urlon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",lon_ur); else nco_err_exit(-1,"nco_aux_prs(): Problem with UR longitude string");
   token=strtok(NULL,", ");
-  if(token) sscanf(token,"%f",lllat); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",lat_ll); else nco_err_exit(-1,"nco_aux_prs(): Problem with LL latitude string");
   token=strtok(NULL,", ");
-  if(token) sscanf(token,"%f",urlat); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
+  if(token) sscanf(token,"%f",lat_ur); else nco_err_exit(-1,"nco_aux_prs(): Problem with UR latitude string");
   
   if(tmp_args) tmp_args=(char *)nco_free(tmp_args);
   
@@ -312,9 +301,9 @@ nco_aux_prs
 #ifndef M_PI
 # define M_PI		3.14159265358979323846
 #endif /* M_PI */
-    *lllon*=M_PI/180.0;
-    *lllat*=M_PI/180.0;
-    *urlon*=M_PI/180.0;
-    *urlat*=M_PI/180.0;
+    *lon_ll*=M_PI/180.0;
+    *lon_ur*=M_PI/180.0;
+    *lat_ll*=M_PI/180.0;
+    *lat_ur*=M_PI/180.0;
   } /* endif radians */
 } /* nco_aux_prs */
