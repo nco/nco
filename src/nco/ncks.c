@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.265 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.266 2011-02-21 20:44:42 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.265 2011-01-01 02:28:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.265 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.266 2011-02-21 20:44:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.266 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -343,21 +343,16 @@ main(int argc,char **argv)
 	char *cp;
         char **args;
         double crr_val;
-       
-        #ifndef ENABLE_UDUNITS
-        (void)fprintf(stdout,"%s: To use this option nco must be built with udunits support\n",prg_nm_get());
-        nco_exit(EXIT_SUCCESS);
-        #endif 
-               
+#ifndef ENABLE_UDUNITS
+        (void)fprintf(stdout,"%s: Build NCO with UDUnits support to use this option\n",prg_nm_get());
+        nco_exit(EXIT_FAILURE);
+#endif 
         cp=strdup(optarg); 
         args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
-        
-        nco_cln_clc_org(args[0],args[1],(lmt_nbr>2 ? nco_cln_get_cln_typ(args[2]):cln_nil) ,&crr_val);        
-        (void)fprintf(stdout,"units in=%s units out=%s difference=%f\n",args[0],args[1],crr_val);
-
-        nco_free(cp);
+        nco_cln_clc_org(args[0],args[1],(lmt_nbr > 2 ? nco_cln_get_cln_typ(args[2]) : cln_nil),&crr_val);        
+        (void)fprintf(stdout,"Units in=%s, units out=%s, difference=%f\n",args[0],args[1],crr_val);
+        if(cp) cp=(char *)nco_free(cp);
         nco_exit(EXIT_SUCCESS);
-
       } /* endif "tst_udunits" */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
 	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nTest udunits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
@@ -476,7 +471,7 @@ main(int argc,char **argv)
     case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);
       aux_nbr++;
-      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */      
+      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -513,7 +508,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
 
-  /* Process auxiliary coordinates */
+  /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);

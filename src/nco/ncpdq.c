@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.169 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.170 2011-02-21 20:44:42 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.169 2011-01-01 02:28:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.169 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.170 2011-02-21 20:44:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.170 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -452,7 +452,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Process auxiliary coordinates */
+  /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);

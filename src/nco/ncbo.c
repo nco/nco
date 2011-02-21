@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.168 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.169 2011-02-21 20:44:42 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.168 2011-01-01 02:28:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.168 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.169 2011-02-21 20:44:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.169 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -464,7 +464,7 @@ main(int argc,char **argv)
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_2,NC_NOWRITE,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
   
-  /* Process auxiliary coordinates */
+  /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
      aux=nco_aux_evl(in_id_1,aux_nbr,aux_arg,&aux_idx_nbr);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.30 2011-02-21 06:13:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.31 2011-02-21 20:44:42 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -35,21 +35,26 @@ nco_find_lat_lon
      Caller responsible for memory management for variable names
      Memory for unit strings must be freed by caller */
   
+  const char fnc_nm[]="nco_find_lat_lon()";
+
+  char var_nm[NC_MAX_NAME];
+  char value[NC_MAX_NAME];
+
   int idx;
-  long lenp;
-  char name[NC_MAX_NAME+1];
   int nvars=0;
   int rcd=NC_NOERR;
   int ret=0;
-  char value[NC_MAX_NAME+1];
-  int var_dimids[NC_MAX_VAR_DIMS];  /* dimension ids */
-  int var_natts;             /* number of attributes */
-  int var_ndims;                      /* number of dims */
-  nc_type var_type;                    /* variable type */
+  int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
+  int var_att_nbr; /* [nbr] Number of attributes */
+  int var_dmn_nbr; /* [nbr] Number of dimensions */
+
+  long lenp;
+
+  nc_type var_type; /* [enm] variable type */
   
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
-    (void)fprintf(stderr,"%s: WARNING nco_find_lat_lon() reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",prg_nm_get(),fnc_nm);
   } /* !CF */
   
   /* Get number of variables */
@@ -57,23 +62,23 @@ nco_find_lat_lon
   
   /* For each variable, see if standard name is latitude or longitude */
   for(idx=0;idx<nvars && ret<2;idx++){
-    nco_inq_var(nc_id,idx,name,&var_type,&var_ndims,var_dimids,&var_natts);
+    nco_inq_var(nc_id,idx,var_nm,&var_type,&var_dmn_nbr,var_dimid,&var_att_nbr);
     lenp=0;
     if(!nco_inq_attlen_flg(nc_id,idx,"standard_name",&lenp)){
       NCO_GET_ATT_CHAR(nc_id,idx,"standard_name",value);
       value[lenp]='\0';
       if(strcmp(value,"latitude") == 0){
-	strcpy(var_nm_lat,name);
+	strcpy(var_nm_lat,var_nm);
 	*lat_id=idx;
 	
 	/* Get units; assume same for both lat and lon */
 	rcd=nco_inq_attlen(nc_id,idx,"units",&lenp);
-	if(rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl: CF convention requires \"latitude\" to have units attribute\n");
+	if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
 	*units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
 	NCO_GET_ATT_CHAR(nc_id,idx,"units",*units);
 	units[lenp]='\0';
 	
-	if(var_ndims > 1) (void)fprintf(stderr,"%s: WARNING nco_aux_evl() reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",prg_nm_get(),name,var_ndims);
+	if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
 
 	/* Assign type; assumed same for both lat and lon */
 	*crd_typ=var_type;
@@ -81,7 +86,7 @@ nco_find_lat_lon
       } /* end if var is lattitude */
       
       if(strcmp(value,"longitude") == 0){
-	strcpy(var_nm_lon,name);
+	strcpy(var_nm_lon,var_nm);
 	*lon_id=idx;
 	ret++;
       } /* end if var is longitude */
@@ -90,14 +95,18 @@ nco_find_lat_lon
     
   } /* end loop over vars */
   
-  return ret == 2;  // True if both found
-} /* nco_find_lat_lon */
+  // Die if both not found
+  if(ret != 2) nco_err_exit(rcd,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.");
+ 
+ return rcd;
+
+} /* end nco_find_lat_lon() */
 
 int  /* status code */
 nco_get_dmn_info
 (int nc_id,
- int varid,
- char dimname[],
+ int var_id,
+ char dmn_nm[],
  int *dimid,
  long *dmn_sz)
 {
@@ -107,19 +116,22 @@ nco_get_dmn_info
   int rcd=NC_NOERR;
   
   nc_type var_type;                   /* variable type */
-  int var_dimids[NC_MAX_VAR_DIMS];    /* dimension ids */
-  int var_natts;                      /* number of attributes */
-  int var_ndims;                      /* number of dims */
+  int var_dimid[NC_MAX_VAR_DIMS];    /* dimension ids */
+  int var_att_nbr;                      /* number of attributes */
+  int var_dmn_nbr;                      /* number of dims */
   
   /* Get dimension information */
-  rcd=nco_inq_var(nc_id,varid,0,&var_type,&var_ndims,var_dimids,&var_natts);
-  if(rcd == NC_NOERR) {
-    *dimid=var_dimids[0];
-    rcd=nco_inq_dimlen(nc_id,var_dimids[0],dmn_sz);
-    rcd=nco_inq_dimname(nc_id,var_dimids[0],dimname);
-  }
+  rcd=nco_inq_var(nc_id,var_id,0,&var_type,&var_dmn_nbr,var_dimid,&var_att_nbr);
+  if(rcd == NC_NOERR){
+    *dimid=var_dimid[0];
+    rcd=nco_inq_dimlen(nc_id,var_dimid[0],dmn_sz);
+    rcd=nco_inq_dimname(nc_id,var_dimid[0],dmn_nm);
+  } /* endif */
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_dmn_info() unable to get dimension information");
+
   return rcd;
-} /* nco_get_dmn_info */
+} /* end nco_get_dmn_info() */
 
 lmt_sct **
 nco_aux_evl
@@ -129,17 +141,19 @@ nco_aux_evl
  int *lmt_nbr
  ){
   /* Purpose: Create lmt structure of slabs of continguous cells that
-     match the rectangular region specified with -X options.
+     match rectangular region specified by -X arguments.
      Intended for use with non-monotonic grids
      Requires CF-1.0 conventions
      Uses lat/lon centers rather than cell_bounds to detect matches
-     Code assumes units must be degrees if they are not radians */
+     Code assumes units are degrees if they are not radians */
   
+  const char fnc_nm[]="nco_aux_evl()"; /* [sng] Function name */
+
   char *units=NULL; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
-  char bfr[100]; /* buffer for making user-assigned limit names */
-  char dmn_nm[NC_MAX_NAME+1];
-  char var_nm_lat[NC_MAX_NAME+1];
-  char var_nm_lon[NC_MAX_NAME+1];
+  char bfr[100]; /* Buffer for user-assigned limit names */
+  char dmn_nm[NC_MAX_NAME];
+  char var_nm_lat[NC_MAX_NAME];
+  char var_nm_lon[NC_MAX_NAME];
   
   dmn_sct lat;
   dmn_sct lon;
@@ -171,15 +185,10 @@ nco_aux_evl
   void *vp_lon;                /* lon coordinate array; float or double only */
   
   /* Obtain lat/lon variable names */
-  if(!nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ)){
-    nco_err_exit(-1,"nco_aux_evl: Unable to identify lat/lon auxiliary coordinate variables.");
-  } /* !nco_find_lat_lon() */
+  rcd=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
   
-  if(nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz) != NC_NOERR){
-    nco_err_exit(-1,"nco_aux_evl: Unable to get dimension information");
-  } /* !nco_get_dmn_info() */
-  
-  /*printf("coords are: %s %s; units are: %s; %s %ld\n",var_nm_lat,var_nm_lon,units,dmn_nm,dmn_sz); */
+  /* Obtain dimension information of lat/lon coordinates */
+  rcd=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
   
   /* Load latitude/longitude variables needed to search for region matches */
   lat.type=crd_typ;
@@ -191,9 +200,9 @@ nco_aux_evl
   lon.srt=0;
   vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
   rcd=nco_get_vara(in_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
-  if(rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
+  if(rcd != NC_NOERR) nco_err_exit(-1,fnc_nm);
   rcd=nco_get_vara(in_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
-  if(rcd != NC_NOERR) nco_err_exit(-1,"nco_aux_evl");
+  if(rcd != NC_NOERR) nco_err_exit(-1,fnc_nm);
   
   *lmt_nbr=0;
   
@@ -250,7 +259,7 @@ nco_aux_evl
 	(*lmt_nbr)++;
 	if(*lmt_nbr > MAX_DMN){
 	  /*printf("Number of slabs exceeds allocated mamory %d\n",MAX_DMN);*/
-	  nco_err_exit(-1,"nco_aux_evl: Number of slabs exceeds allocated mamory.");
+	  nco_err_exit(-1,"%s: Number of slabs exceeds allocated mamory.");
 	} /* end if too many slabs */
 	lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 	*lmt[(*lmt_nbr)-1]=base;
@@ -268,7 +277,7 @@ nco_aux_evl
     for(aux_idx=0;aux_idx<(*lmt_nbr);aux_idx++)
     fprintf("min,max = %ld,%ld\n",lmt[aux_idx]->min_idx,lmt[aux_idx]->max_idx); */
   return lmt;
-} /* nco_aux_evl */
+} /* end nco_aux_evl() */
 
 void 
 nco_aux_prs

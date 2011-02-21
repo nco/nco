@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.188 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.189 2011-02-21 20:44:42 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.188 2011-01-01 02:28:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.188 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.189 2011-02-21 20:44:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.189 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -423,7 +423,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Process auxiliary coordinates */
+  /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);

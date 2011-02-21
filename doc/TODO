@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1113 2011-02-21 06:00:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1114 2011-02-21 20:44:42 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -731,7 +731,8 @@ nco1007. nco: -X and -d hyperslab bug found by jeff daily
       ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # works as of 20110221 (exits with domain error)
       ncks -H ~/foo.nc
 nco1008. nco: ncap2 ismissing() and isvalid() methods
-nco1009. 
+nco1009. nco: replace allocations of NC_MAX_NAME by NC_MAX_NAME+1 to allow for NUL character
+nco1010. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

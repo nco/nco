@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.264 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.265 2011-02-21 20:44:42 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.264 2011-01-01 02:28:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.264 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.265 2011-02-21 20:44:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.265 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -479,7 +479,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
 
-  /* Process auxiliary coordinates */
+  /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
