@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1112 2011-02-21 05:41:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1113 2011-02-21 06:00:31 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -724,14 +724,12 @@ nco1002. andx (from ARM) does ncks-like multiple column printing (window$ only? 
 nco1004. nco: ncpdq force _FillValue to be inside range of packed type ?
 nco1007. nco: -X and -d hyperslab bug found by jeff daily
       ncks -O -v gds_3dvar -X 0.,180.,-30.,30. ~/nco/data/in.nc ~/foo.nc # works---returns values within range
-      ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---returns all values but should return only nearest value to lat=20
+      ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---returns all values but should return only value nearest lat=20
+      ncks -O -v gds_3dvar -X 0.,180.,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns all values but should exit with domain error
+      ncks -O -v lat -d lat,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
       ncks -O -v lat -d lat,20.,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
-      ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns all values but should return none
+      ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # works as of 20110221 (exits with domain error)
       ncks -H ~/foo.nc
-      Putative fix breaks "double-wrapped hyperslap test"
-      ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,200.,800. -d lon,270.,0. ~/nco/data/in.nc ~/foo.nc
-      ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. ~/nco/data/in.nc ~/foo.nc
-      ncks -O -C -d lon,270.,0. ~/nco/data/in.nc ~/foo.nc
 nco1008. nco: ncap2 ismissing() and isvalid() methods
 nco1009. 
 qrk

@@ -1,11 +1,13 @@
 2011-02-21  Charlie Zender  <zender@uci.edu>
 
+	* TODO nco1007 now mitigated so that failure occurs only with auxiliary coordinates
+
 	* Remove two ncks tests from NCO_rgr.pm.
 	Should add them back once script allows error exit to be intended result.
 
-	* Threaded the needle with new fix so wrapped hyperslabs keep working as before
+	* Threaded needle with new fix so wrapped hyperslabs work as before
 
-	* Added fix to TODO nco1007 that now breaks double-wrapped hypserslab test
+	* Added partial fix to TODO nco1007 that now breaks double-wrapped hypserslab test
 
 	* Replace nco_get_vara() with nc_get_vara_double() in nco_lmt_evl()
 
