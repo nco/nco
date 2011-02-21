@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.73 2010-12-21 20:12:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.74 2011-02-21 05:41:29 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -422,24 +422,24 @@ sub tst_run {
     
     my %fl_nm_lcl = ( # fl_nm_lcl = local_file_name
 		'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
-		'%tempf_00%'    => "$drc_dat/tempf_00.nc", # Default replacement for $fl_out
-		'%tempf_01%'    => "$drc_dat/tempf_01.nc",
-		'%tempf_02%'    => "$drc_dat/tempf_02.nc",
-		'%tempf_03%'    => "$drc_dat/tempf_03.nc",
-		'%tempf_04%'    => "$drc_dat/tempf_04.nc",
-		'%tempf_05%'    => "$drc_dat/tempf_05.nc",
+		'%tmp_fl_00%'    => "$drc_dat/tmp_fl_00.nc", # Default replacement for $fl_out
+		'%tmp_fl_01%'    => "$drc_dat/tmp_fl_01.nc",
+		'%tmp_fl_02%'    => "$drc_dat/tmp_fl_02.nc",
+		'%tmp_fl_03%'    => "$drc_dat/tmp_fl_03.nc",
+		'%tmp_fl_04%'    => "$drc_dat/tmp_fl_04.nc",
+		'%tmp_fl_05%'    => "$drc_dat/tmp_fl_05.nc",
 # Currently no use for more than 05
-		'%tempf_06%'    => "$drc_dat/tempf_06.nc",
-		'%tempf_07%'    => "$drc_dat/tempf_07.nc",
-		'%tempf_08%'    => "$drc_dat/tempf_08.nc",
-		'%tempf_09%'    => "$drc_dat/tempf_09.nc",
-		'%tempf_10%'    => "$drc_dat/tempf_10.nc",
-		'%tempf_11%'    => "$drc_dat/tempf_11.nc",
-		'%tempf_12%'    => "$drc_dat/tempf_12.nc",
+		'%tmp_fl_06%'    => "$drc_dat/tmp_fl_06.nc",
+		'%tmp_fl_07%'    => "$drc_dat/tmp_fl_07.nc",
+		'%tmp_fl_08%'    => "$drc_dat/tmp_fl_08.nc",
+		'%tmp_fl_09%'    => "$drc_dat/tmp_fl_09.nc",
+		'%tmp_fl_10%'    => "$drc_dat/tmp_fl_10.nc",
+		'%tmp_fl_11%'    => "$drc_dat/tmp_fl_11.nc",
+		'%tmp_fl_12%'    => "$drc_dat/tmp_fl_12.nc",
 		);
     
 # If executign on client side, replace special purpose
-# filenames with names like $fl_nm_lcl{'%tempf_00%'}
+# filenames with names like $fl_nm_lcl{'%tmp_fl_00%'}
     
     # fxm: WTF do these vars require this treatment?!??
     *dbg_lvl = *main::dbg_lvl;
@@ -448,9 +448,9 @@ sub tst_run {
     
     if ($dbg_lvl > 0) {
 	print "\n\n\n### New tst_run() cycle [$opr_nm: $dsc_sng] ###\n";
-	    if ($fl_nm_lcl{'%tempf_00%'} eq "") {
+	    if ($fl_nm_lcl{'%tmp_fl_00%'} eq "") {
 		print "fl_out undefined!\n";
-	    } # else {	print "\$fl_nm_lcl{'%tempf_00%'} = [$fl_nm_lcl{'%tempf_00%'}] \n";}
+	    } # else {	print "\$fl_nm_lcl{'%tmp_fl_00%'} = [$fl_nm_lcl{'%tmp_fl_00%'}] \n";}
     }
 
 # tst_run() requires regression tests provide expected values
@@ -672,12 +672,12 @@ sub tst_run {
 	    
 	    #and here, check results by md5 checksum for each step - insert guts of rsl_chk_MD5_wc()
 	    # have to mod the input string -  suffix with the cycle#
-	    # follow check only if the MD5 module is present, there's a foo.nc to check ($fl_nm_lcl{'%tempf_00%'} = 'foo.nc')
+	    # follow check only if the MD5 module is present, there's a foo.nc to check ($fl_nm_lcl{'%tmp_fl_00%'} = 'foo.nc')
 	    # & non-terminal cmd (the terminal command is ncks which is expected to return a single value or string)
 # 			dbg_msg(3,"rsl_chk_MD5_wc(): \$md5 = $md5, \$md5_chk = $md5_chk, \$cmd_lst_cnt ($cmd_lst_cnt) < \$lst_cmd ($lst_cmd)");
 # 			if ($md5 && $md5_chk && $cmd_lst_cnt < $lst_cmd) {
-# 				dbg_msg(2,"Entering rsl_chk_MD5_wc() with \$fl_nm_lcl{'%tempf_00%'}=$fl_nm_lcl{'%tempf_00%'}");
-# 				rsl_chk_MD5_wc($fl_nm_lcl{'%tempf_00%'}, $md5_dsc_sng);
+# 				dbg_msg(2,"Entering rsl_chk_MD5_wc() with \$fl_nm_lcl{'%tmp_fl_00%'}=$fl_nm_lcl{'%tmp_fl_00%'}");
+# 				rsl_chk_MD5_wc($fl_nm_lcl{'%tmp_fl_00%'}, $md5_dsc_sng);
 # 			}
 # 			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sng .= "WARN: No MD5/wc check on intermediate file.\n";}
 	    
@@ -759,7 +759,7 @@ sub tst_run {
     if ($wnt_log) {print LOG $dbg_sng;}
     @cmd_lst =(); # Clear test
     if (!$bm) { $prsrv_fl = 0; } # reset so files will be deleted unless doing benchmarks
-    if (-e $fl_nm_lcl{'%tempf_00%'} && -w $fl_nm_lcl{'%tempf_00%'}) { unlink $fl_nm_lcl{'%tempf_00%'};	}
+    if (-e $fl_nm_lcl{'%tmp_fl_00%'} && -w $fl_nm_lcl{'%tmp_fl_00%'}) { unlink $fl_nm_lcl{'%tmp_fl_00%'};	}
 } # end tst_run()
 
 ####################
@@ -798,7 +798,7 @@ sub SS_init {
 # if SS_OK && the user requests a SS attempt ..
 # this needs to be functionized to:
 # -  breathe in the cmd_lst,
-# - replace the fl_out with the %tempfile% params (most '$fl_out's -> '%temp_00%'
+# - replace the fl_out with the %tmp_flile% params (most '$fl_out's -> '%temp_00%'
 # - change the in_pth arg to look for files in the dodsdata dir (replace -p xxx to -p dodsdata)
 # - write that block to disk,
 # - execute the scriptwrap cmd and breathe back in the returned value, currently just the ncks single value

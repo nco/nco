@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1111 2011-02-12 13:58:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1112 2011-02-21 05:41:29 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -728,6 +728,10 @@ nco1007. nco: -X and -d hyperslab bug found by jeff daily
       ncks -O -v lat -d lat,20.,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
       ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # broken---returns all values but should return none
       ncks -H ~/foo.nc
+      Putative fix breaks "double-wrapped hyperslap test"
+      ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,200.,800. -d lon,270.,0. ~/nco/data/in.nc ~/foo.nc
+      ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. ~/nco/data/in.nc ~/foo.nc
+      ncks -O -C -d lon,270.,0. ~/nco/data/in.nc ~/foo.nc
 nco1008. nco: ncap2 ismissing() and isvalid() methods
 nco1009. 
 qrk

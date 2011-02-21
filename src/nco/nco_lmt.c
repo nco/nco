@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.110 2011-02-21 03:20:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.111 2011-02-21 05:41:29 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -190,6 +190,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      maxima strings and find appropriate indices into dimensions 
      for formulation of dimension start and count vectors, or fail trying. */
   
+  nco_bool flg_no_data_error=False; /* True if domain brackets no data (and not an MFO/record coord) */
   nco_bool flg_no_data=False; /* True if file contains no data for hyperslab */
   nco_bool rec_dmn_and_mlt_fl_opr=False; /* True if record dimension in multi-file operator */
   
@@ -416,7 +417,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be
 	  treated differently than single point hyperslabs in other
 	  coordinates. Multifile operators will skip files if single point
-	  hyperslabs in record coordinate lays outside record coordinate
+	  hyperslabs in record coordinate lay outside record coordinate
 	  range of file. For non-record coordinates (and for all operators
 	  besides ncra and ncrcat on record coordinates), single point
 	  hyperslabs will choose the closest value rather than skip the file
@@ -431,7 +432,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       /* Allow for possibility that current file is superfluous */
       if(rec_dmn_and_mlt_fl_opr){
 	flg_no_data=True;
-	goto no_data;
+	goto no_data_ok;
       }else{
 	(void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid coordinate range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dmn_min,lmt.nm,dmn_max);
 	nco_exit(EXIT_FAILURE);
@@ -462,16 +463,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     }else{ /* min_val != max_val */
       
       /* Bracket specified extrema:
-	 Should no coordinate values match the given criteria, flag that index with -1L
+	 Should no coordinate values match the given criteria, flag the index with -1L
 	 We defined the valid syntax such that single half range with -1L is not an error
-	 This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] because one
-	 of the specified half-ranges is valid (there are coordinates < -100.0).
+	 This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] 
+	 because one of the specified half-ranges is valid (there are coordinates < -100.0).
 	 However, "-d lon,100.0,-200.0" should fail when lon=[-180.0,-90.0,0.0,90.0] because both 
 	 of the specified half-ranges are invalid (no coordinate is > 100.0 or < -200.0).
-	 The -1L flags are replaced with the correct indices (0L or dmn_sz-1L) following the search loop block
-	 Overwriting the -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
-	 since 0L is valid search result.
-      */
+	 -1L flags are replaced with correct indices (0L or dmn_sz-1L) following search loop block.
+	 Overwriting -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
+	 since 0L is valid search result. */
       if(monotonic_direction == increasing){
 	if(lmt.min_sng){
 	  /* Find index of smallest coordinate greater than min_val */
@@ -490,8 +490,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	   This returned all values but should have returned none
 	   Algorithm was broken because, although valid min and max indices existed,
 	   they contained the empty set. 
-	   Now when this happens, set no_data flag and exit.
-	   If valid indices were found for both bracketing points... */
+	   Now when this happens, set flg_no_data_error block */
+	if( /* Points are not wrapped ... */
+	   (lmt.min_val < lmt.max_val) && 
+	   /* ... and valid indices were found for both bracketing points... */
+	   (lmt.min_idx != -1L && lmt.max_idx != -1L) &&
+	   /* ...and indices contain empty set, i.e., min_idx > max_idx for increasing data... */
+   	   lmt.min_idx > lmt.max_idx) flg_no_data_error=True;
 	/* end if monotonic_direction == increasing */
       }else{ /* monotonic_direction == decreasing */
 	if(lmt.min_sng){
@@ -506,6 +511,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx < dmn_sz)) tmp_idx++;
 	  if(tmp_idx != dmn_sz) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
 	} /* end if */
+	if( /* Points are not wrapped ... */
+	   (lmt.min_val > lmt.max_val) && 
+	   /* ... and valid indices were found for both bracketing points... */
+	   (lmt.min_idx != -1L && lmt.max_idx != -1L) &&
+	   /* ...and indices contain empty set, i.e., min_idx < max_idx for decreasing data... */
+   	   lmt.min_idx < lmt.max_idx) flg_no_data_error=True;
       } /* end else monotonic_direction == decreasing */
       
       /* Case where both min_idx and max_idx = -1 was flagged as error above
@@ -535,7 +546,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if((monotonic_direction == increasing && lmt.min_val > lmt.max_val) ||
 	 (monotonic_direction == decreasing && lmt.min_val < lmt.max_val)){
 	flg_no_data=True; 
-	goto no_data;   
+	goto no_data_ok;   
       } /* endif */
       
       if(cnt_crr == 0){
@@ -547,7 +558,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	if(lmt.srt>lmt.end){
 	  /* Do not allow record dimension wrapping in MFOs */
 	  flg_no_data=True;
-	  goto no_data;
+	  goto no_data_ok;
 	} /* endif  */
       } /* endif */
       
@@ -631,7 +642,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.srt=lmt.min_idx;
       lmt.end=lmt.max_idx;
     }else{
-      
       /* Initialize rec_skp_vld_prv to 0L on first call to nco_lmt_evl() 
 	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
 	 rec_skp_vld_prv is used only by multi-file operators
@@ -660,13 +670,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  /* Are we passed max_lcl? */
           if(max_lcl < lmt.rec_skp_nsh_spf){
 	    flg_no_data=True;
-	    goto no_data;
+	    goto no_data_ok;
 	  } /* endif passed max_lcl */
 
           /* Is min_idx in current record? */
           if(min_lcl > lmt.rec_skp_nsh_spf+dmn_sz-1L){
 	    flg_no_data=True;
-	    goto no_data;
+	    goto no_data_ok;
 	  } /* endif min_idx in current record */
 	  
 	  if(cnt_crr == 0L)
@@ -677,7 +687,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  
           if(lmt.srt > dmn_sz-1L){
 	    flg_no_data=True;
-	    goto no_data;
+	    goto no_data_ok;
 	  } /* endif */
 	  
           lmt.end=(max_lcl < lmt.rec_skp_nsh_spf+dmn_sz) ? max_lcl-lmt.rec_skp_nsh_spf : dmn_sz-1L;
@@ -697,14 +707,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	/* rec_skp_vld_prv for next file is stride minus number of unused records
 	   at end of this file (dmn_sz-1L-lmt.end) minus one */
 	lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
-	/*      assert(lmt.rec_skp_vld_prv >= 0);*/
+	/*  assert(lmt.rec_skp_vld_prv >= 0);*/
       
     } /* endif user-specified limits to record dimension */
     
   } /* end else limit arguments are hyperslab indices */
   
   /* Compute cnt from srt, end, and srd
-     This is fine for multi-file record dimensions since those operators read in one
+     This is fine for multi-file record dimensions since those operators read-in one
      record at a time and thus never actually use lmt.cnt for record dimension. */
   if(lmt.srd == 1L){
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
@@ -717,10 +727,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      such that no values are selected in the second read. 
      e.g., "-d lon,60,0,10" if sz(lon)=128 has dmn_cnt_2 == 0
      Since netCDF library reports an error reading and writing cnt=0 dimensions, kludge is necessary
-     Syntax ensures it is always the second read, not the first, which is obviated
+     Syntax ensures that it is always the second read, not the first, which is obviated
      Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by single read 
-     For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx]
-  */
+     For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx] */
   if(
      (lmt.srd != 1L) && /* SRD */
      (lmt.srt > lmt.end) && /* WRP */
@@ -741,8 +750,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Conditions causing dmn_cnt_2 == 0 */
     if(first_good_idx_2nd_hyp_slb > lmt.end) lmt.end=last_good_idx_1st_hyp_slb;
   } /* end if */
-  
-  /* Exit when valid bracketed range contains no coordinates */
+
+  /* Cases where domain bracketed no data, in error have counts reset to zero here
+     This kludge allows codepaths for both WRP and out-of-domain to flow without goto statements
+     Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
+  if(flg_no_data_error) lmt.cnt=0L;
+
+  /* Exit when valid bracketed range contains no coordinates and that is not legal,
+     i.e., this is not a superfluous file in an MFO */
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",prg_nm_get(),lmt.nm); 
@@ -751,7 +766,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
      Index-valued limits with no values in current file flow here naturally */
- no_data: /* end goto */
+ no_data_ok: /* end goto */
   if(flg_no_data){
     /* File is superfluous (contributes no data) to specified hyperslab
        Set output parameters to well-defined state
