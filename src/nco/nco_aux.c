@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.33 2011-02-21 22:38:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.34 2011-02-21 23:20:20 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -161,10 +161,10 @@ nco_aux_evl
   double lat_crr; /* [dgr] Current cell latitude */
   double lon_crr; /* [dgr] Current cell longitude */
 
-  float lat_ll; /* [dgr] Lower left latitude of bounding rectangle */
-  float lat_ur; /* [dgr] Upper right longitude of bounding rectangle */
-  float lon_ll; /* [dgr] Lower left longitude of bounding rectangle */
-  float lon_ur; /* [dgr] Upper right latitude of bounding rectangle */
+  float lat_min; /* [dgr] Lower left latitude of bounding rectangle */
+  float lat_max; /* [dgr] Upper right longitude of bounding rectangle */
+  float lon_min; /* [dgr] Lower left longitude of bounding rectangle */
+  float lon_max; /* [dgr] Upper right latitude of bounding rectangle */
   
   int aux_idx; /* [idx] Index over user -X options */
   int cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
@@ -230,8 +230,8 @@ nco_aux_evl
 
   /* Loop over user-specified bounding boxes */
   for(aux_idx=0;aux_idx<aux_nbr;aux_idx++){
-    /* Parse into lon_ll,lat_ll,lon_ur,lon_ur, accounting for units */
-    nco_aux_prs(aux_arg[aux_idx],units,&lon_ll,&lon_ur,&lat_ll,&lat_ur);
+    /* Parse into lon_min,lat_min,lon_max,lon_max, accounting for units */
+    nco_aux_prs(aux_arg[aux_idx],units,&lon_min,&lon_max,&lat_min,&lat_max);
     /* Current cell assumed to lay outside current bounding box */
     cll_idx_min=-1;
     /* Initialize number of consecutive cells inside current bounding box */
@@ -242,8 +242,8 @@ nco_aux_evl
     for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
       if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
       if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
-      if(lon_crr >= lon_ll && lon_crr <= lon_ur &&
-	 lat_crr >= lat_ll && lat_crr <= lat_ur){
+      if(lon_crr >= lon_min && lon_crr <= lon_max &&
+	 lat_crr >= lat_min && lat_crr <= lat_max){
 	if(cll_idx_min == -1){
 	  /* First cell within current bounding box */
 	  cll_idx_min=cll_idx;
@@ -262,7 +262,7 @@ nco_aux_evl
 	base.max_idx=base.end=cll_idx_min+cll_nbr_cns-1;
 	base.cnt=cll_nbr_cns;
 	(*lmt_nbr)++;
-	if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(-1,"%s: Number of slabs exceeds allocated mamory");
+	if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated mamory");
 	lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 	*lmt[(*lmt_nbr)-1]=base;
 	cll_grp_nbr++;
@@ -271,7 +271,7 @@ nco_aux_evl
 	cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
-    if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",prg_nm_get(),fnc_nm,lon_ll,var_nm_lon,lon_ur,lat_ll,var_nm_lat,lat_ur,cll_grp_nbr,cll_nbr_ttl); 
+    if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
   } /* end loop over user supplied -X options */
 
   /* Free allocated memory */
@@ -292,40 +292,40 @@ nco_aux_evl
 
 void 
 nco_aux_prs
-(const char *args,
+(const char *bnd_bx_sng,
  const char *units,
- float *lon_ll,
- float *lon_ur,
- float *lat_ll,
- float *lat_ur)
+ float *lon_min,
+ float *lon_max,
+ float *lat_min,
+ float *lat_max)
 {
   /* Purpose: Parse command-line arguments of form:
-     min_lon,max_lon,min_lat,max_lat */
-  char *tmp_args;
-  char *token;
+     lon_min,lon_max,lat_min,lat_max */
+  char *bnd_bx_sng_tmp;
+  char *crd_tkn;
   
-  tmp_args=strdup(args);
+  bnd_bx_sng_tmp=strdup(bnd_bx_sng);
   
-  sscanf(args,"%f,%f,%f,%f",lon_ll,lon_ur,lat_ll,lat_ur);
-  token=strtok(tmp_args,", ");
-  if(token) sscanf(token,"%f",lon_ll); else nco_err_exit(-1,"nco_aux_prs(): Problem with LL longitude string");
-  token=strtok(NULL,", ");
-  if(token) sscanf(token,"%f",lon_ur); else nco_err_exit(-1,"nco_aux_prs(): Problem with UR longitude string");
-  token=strtok(NULL,", ");
-  if(token) sscanf(token,"%f",lat_ll); else nco_err_exit(-1,"nco_aux_prs(): Problem with LL latitude string");
-  token=strtok(NULL,", ");
-  if(token) sscanf(token,"%f",lat_ur); else nco_err_exit(-1,"nco_aux_prs(): Problem with UR latitude string");
+  sscanf(bnd_bx_sng,"%f,%f,%f,%f",lon_min,lon_max,lat_min,lat_max);
+  crd_tkn=strtok(bnd_bx_sng_tmp,", ");
+  if(crd_tkn) sscanf(crd_tkn,"%f",lon_min); else nco_err_exit(0,"nco_aux_prs(): Problem with LL longitude string");
+  crd_tkn=strtok(NULL,", ");
+  if(crd_tkn) sscanf(crd_tkn,"%f",lon_max); else nco_err_exit(0,"nco_aux_prs(): Problem with UR longitude string");
+  crd_tkn=strtok(NULL,", ");
+  if(crd_tkn) sscanf(crd_tkn,"%f",lat_min); else nco_err_exit(0,"nco_aux_prs(): Problem with LL latitude string");
+  crd_tkn=strtok(NULL,", ");
+  if(crd_tkn) sscanf(crd_tkn,"%f",lat_max); else nco_err_exit(0,"nco_aux_prs(): Problem with UR latitude string");
   
-  if(tmp_args) tmp_args=(char *)nco_free(tmp_args);
+  if(bnd_bx_sng_tmp) bnd_bx_sng_tmp=(char *)nco_free(bnd_bx_sng_tmp);
   
   if(strcmp(units,"radians") == 0){
     /* WIN32 math.h does not define M_PI */
 #ifndef M_PI
 # define M_PI		3.14159265358979323846
 #endif /* M_PI */
-    *lon_ll*=M_PI/180.0;
-    *lon_ur*=M_PI/180.0;
-    *lat_ll*=M_PI/180.0;
-    *lat_ur*=M_PI/180.0;
+    *lon_min*=M_PI/180.0;
+    *lon_max*=M_PI/180.0;
+    *lat_min*=M_PI/180.0;
+    *lat_max*=M_PI/180.0;
   } /* endif radians */
 } /* nco_aux_prs */

@@ -1,5 +1,7 @@
 2011-02-22  Charlie Zender  <zender@uci.edu>
 
+	* Yet more nco_aux.c clean-up
+
 	* Exit with error when nco_aux_evl() finds no coordinates in bounding-box
 	This fixes most the rest of TODO nco1007. Only remaining task is
 	to (like regular hyperslabs) return nearest point when
