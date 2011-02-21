@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.32 2011-02-21 21:25:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.33 2011-02-21 22:38:42 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -150,7 +150,7 @@ nco_aux_evl
   const char fnc_nm[]="nco_aux_evl()"; /* [sng] Function name */
 
   char *units=NULL; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
-  char bfr[100]; /* Buffer for user-assigned limit names */
+  char cll_idx_sng[100]; /* Buffer for user-assigned limit names */
   char dmn_nm[NC_MAX_NAME];
   char var_nm_lat[NC_MAX_NAME];
   char var_nm_lon[NC_MAX_NAME];
@@ -167,9 +167,11 @@ nco_aux_evl
   float lon_ur; /* [dgr] Upper right latitude of bounding rectangle */
   
   int aux_idx; /* [idx] Index over user -X options */
+  int cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
   int cll_idx; /* [idx] Cell index */
-  int cll_nbr_cns=0; /* [nbr] Current number matching consecutive cells */
   int cll_idx_min=-1; /* [idx] Minimum index of cell in consecutive cell set */
+  int cll_nbr_cns=0; /* [nbr] Number of consecutive cells within current group */
+  int cll_nbr_ttl=0; /* [nbr] Total number of cells within this bounding box */
   int dmn_id=int_CEWI;
   int lat_id;
   int lon_id;
@@ -225,45 +227,65 @@ nco_aux_evl
   int MAX_LMT_NBR=dmn_sz/2;
   
   if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_LMT_NBR*sizeof(lmt_sct *));
-  
+
+  /* Loop over user-specified bounding boxes */
   for(aux_idx=0;aux_idx<aux_nbr;aux_idx++){
     /* Parse into lon_ll,lat_ll,lon_ur,lon_ur, accounting for units */
     nco_aux_prs(aux_arg[aux_idx],units,&lon_ll,&lon_ur,&lat_ll,&lat_ur);
+    /* Current cell assumed to lay outside current bounding box */
     cll_idx_min=-1;
-    cll_nbr_cns=0;
+    /* Initialize number of consecutive cells inside current bounding box */
+    cll_nbr_cns=0; /* [nbr] Number of consecutive cells within current group */
+    cll_nbr_ttl=0; /* [nbr] Total number of cells within this bounding box */
+    cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
+    /* Loop over auxiliary coordinate cells */
     for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
       if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
       if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
       if(lon_crr >= lon_ll && lon_crr <= lon_ur &&
 	 lat_crr >= lat_ll && lat_crr <= lat_ur){
 	if(cll_idx_min == -1){
+	  /* First cell within current bounding box */
 	  cll_idx_min=cll_idx;
 	  cll_nbr_cns=1;
 	}else if(cll_idx == cll_idx_min+cll_nbr_cns){
+	  /* Later, contiguous cell within current bounding box */
 	  cll_nbr_cns++;
-	}else{
 	} /* end found matching cell */
       }else if(cll_idx_min != -1){
-	sprintf(bfr,"%d",cll_idx_min);
-	base.min_sng=(char *)strdup(bfr);
+	/* Current cell is not within bounding box though immediately previous cell is */
+	sprintf(cll_idx_sng,"%d",cll_idx_min);
+	base.min_sng=(char *)strdup(cll_idx_sng);
 	base.min_idx=base.srt=cll_idx_min;
-	sprintf(bfr,"%d",cll_idx_min+cll_nbr_cns-1);
-	base.max_sng=(char *)strdup(bfr);
+	sprintf(cll_idx_sng,"%d",cll_idx_min+cll_nbr_cns-1);
+	base.max_sng=(char *)strdup(cll_idx_sng);
 	base.max_idx=base.end=cll_idx_min+cll_nbr_cns-1;
 	base.cnt=cll_nbr_cns;
 	(*lmt_nbr)++;
 	if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(-1,"%s: Number of slabs exceeds allocated mamory");
 	lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 	*lmt[(*lmt_nbr)-1]=base;
+	cll_grp_nbr++;
+	cll_nbr_ttl+=cll_nbr_cns;
+	/* Indicate that next cell, if any, in this bounding box requires new limit structure */
 	cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
-    
-  } /* end loop over user supplied -X arguments */
+    if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",prg_nm_get(),fnc_nm,lon_ll,var_nm_lon,lon_ur,lat_ll,var_nm_lat,lat_ur,cll_grp_nbr,cll_nbr_ttl); 
+  } /* end loop over user supplied -X options */
 
+  /* Free allocated memory */
   if(units) units=(char *)nco_free(units);
   if(vp_lat) vp_lat=nco_free(vp_lat);
   if(vp_lon) vp_lon=nco_free(vp_lon);
+  
+  /* With some loss of generality, we assume cell-based coordinates are not 
+     record coordinates spanning multiple files. Thus finding no cells within
+     any bounding box constitutes a domain error. */
+  if(*lmt_nbr == 0){
+    (void)fprintf(stdout,"%s: ERROR %s reports that none of the %d specified auxiliary-coordinate bounding-box(es) contain any latitude/longitude coordinate pairs. This condition was not flagged as an error until 20110221. Prior to that, when no coordinates were in any of the user-specified auxiliary-coordinate hyperslab(s), NCO mistakenly returned the entire coordinate range as being within the hyperslab(s).\n",prg_nm_get(),fnc_nm,aux_nbr);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
   
   return lmt;
 } /* end nco_aux_evl() */

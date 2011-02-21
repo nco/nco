@@ -1,5 +1,10 @@
 2011-02-22  Charlie Zender  <zender@uci.edu>
 
+	* Exit with error when nco_aux_evl() finds no coordinates in bounding-box
+	This fixes most the rest of TODO nco1007. Only remaining task is
+	to (like reguarl hyperslabs) return nearest point when
+	lat_min=lat_max and/or lon_min=lon_max.
+
 	* Clean-up nco_aux.c and most of its functional interfaces
 
 2011-02-21  Charlie Zender  <zender@uci.edu>

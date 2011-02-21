@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.161 2011-01-19 07:58:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.162 2011-02-21 22:38:42 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -413,7 +413,7 @@ extern "C" {
     char *max_sng; /* User-specified string for dimension maximum */
     char *min_sng; /* User-specified string for dimension minimum */
     char *nm; /* [sng] Dimension name */
-    char *re_bs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
+    char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
     char *srd_sng; /* User-specified string for dimension stride */
     cln_typ lmt_cln; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
     double max_val; /* Double precision representation of maximum value of coordinate requested or implied */

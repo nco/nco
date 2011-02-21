@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.622 2011-02-12 13:58:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.623 2011-02-21 22:38:42 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.7
 @set copyright-years 1995--2011
 @set update-year 2011
-@set update-date 15 January 2011
-@set update-month January 2011
+@set update-date 21 February 2011
+@set update-month February 2011
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -3963,7 +3963,7 @@ The @code{coordinates} attribute is recommended though optional.
 With it, the user can immediately identify which variables contain
 the latitude and longitude coordinates.
 Without a @code{coordinates} attribute it would be unclear at first
-glance whether a variable is on a cell-based grid.
+glance whether a variable resides on a cell-based grid.
 In this example, @code{time} is a normal record dimension and
 @code{gds_crd} is the cell-based dimension.
 
@@ -4002,7 +4002,7 @@ longitude and between plus and minus @w{30 degress} latitude, we use
 @example
 ncra -O -X 0.,180.,-30.,30. -v gds_3dvar in.nc out.nc
 @end example
-@acronym{NCO} accepts multiple @samp{-X} arguments for cell-based grids
+@acronym{NCO} accepts multiple @samp{-X} arguments for cell-based grid
 multi-slabs, just as it accepts multiple @samp{-d} arguments for 
 multi-slabs of regular coordinates.
 @example

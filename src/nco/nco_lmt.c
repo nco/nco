@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.111 2011-02-21 05:41:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.112 2011-02-21 22:38:42 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -18,7 +18,7 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   lmt->min_sng=(char *)nco_free(lmt->min_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
-  lmt->re_bs_sng=(char*)nco_free(lmt->re_bs_sng);   
+  lmt->rbs_sng=(char*)nco_free(lmt->rbs_sng);   
   
   lmt=(lmt_sct *)nco_free(lmt);
   
@@ -235,9 +235,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   /* Logic on whether to allow skipping current file depends on whether limit
      is specified for record dimension in multi-file operators.
-     This information is not used in single-file operators, but whether
+     This information is not used in single-file operators, though whether
      the limit is a record limit may be tested.
-     Best to program defensively and define this flag in all cases. */
+     Program defensively and define this flag in all cases. */
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mlt_fl_opr=True; else rec_dmn_and_mlt_fl_opr=False;
@@ -305,10 +305,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"units"); /* units attribute of co-ordinate var */
     cln_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* calendar attribute */
     
-    if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.re_bs_sng){ 
+    if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-      if(nco_cln_clc_org(fl_udu_sng,lmt.re_bs_sng,lmt.lmt_cln,&lmt.origin) != EXIT_SUCCESS) lmt.origin=0.0;
+      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != EXIT_SUCCESS) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
     
@@ -899,7 +899,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     
     /* Initialize types used to re-base coordinate variables */
     lmt[idx]->origin=0.0;
-    lmt[idx]->re_bs_sng=NULL_CEWI;
+    lmt[idx]->rbs_sng=NULL_CEWI;
     lmt[idx]->lmt_cln=cln_nil;
     
     /* Free current pointer array to strings, leaving untouched the strings themselves

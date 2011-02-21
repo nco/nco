@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.265 2011-02-21 20:44:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.266 2011-02-21 22:38:42 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.265 2011-02-21 20:44:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.265 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.266 2011-02-21 22:38:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.266 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -559,7 +559,7 @@ main(int argc,char **argv)
       int var_id;
       char *cln_att_sng=(char*)NULL;
 
-      lmt_rec->re_bs_sng=(char *)NULL;
+      lmt_rec->rbs_sng=(char *)NULL;
       lmt_rec->lmt_cln=cln_nil; 
 
 
@@ -567,7 +567,7 @@ main(int argc,char **argv)
 
 
       if(rcd == NC_NOERR){ 
-       lmt_rec->re_bs_sng=nco_lmt_get_udu_att(in_id,var_id,"units"); 
+       lmt_rec->rbs_sng=nco_lmt_get_udu_att(in_id,var_id,"units"); 
        cln_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
        lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
       }
