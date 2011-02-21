@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.109 2011-02-19 02:28:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.110 2011-02-21 03:20:21 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -206,12 +206,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   int min_lmt_typ=int_CEWI;
   int max_lmt_typ=int_CEWI;
-  int monotonic_direction;
+  int monotonic_direction=decreasing; /* CEWI */
   int prg_id; /* Program ID */
   int rcd=NC_NOERR; /* [enm] Return code */
   int rec_dmn_id; /* [idx] Variable ID of record dimension, if any */
   
-  long idx;
   long dmn_sz;
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
   long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
@@ -295,7 +294,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end if */
   lmt.lmt_typ=min_lmt_typ;
   
-  /* Coordinate rebasing code */
+  /* Coordinate re-basing code */
   lmt.origin=0.0;
   /* Get variable ID of coordinate */
   rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
@@ -331,9 +330,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     long tmp_idx;
     long dmn_srt=0L;
     
-    /* Get variable ID of coordinate 
-       rcd=nco_inq_varid(nc_id,lmt.nm,&dim.cid); */
-    
     /* Get coordinate type */
     (void)nco_inq_vartype(nc_id,dim.cid,&dim.type);
     
@@ -341,7 +337,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(dim.type == NC_BYTE || dim.type == NC_UBYTE || dim.type == NC_CHAR || dim.type == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
     
     /* Allocate enough space to hold coordinate */
-    dim.val.vp=(void *)nco_malloc(dmn_sz*nco_typ_lng(dim.type));
+    dmn_val_dp=(double *)nco_malloc(dmn_sz*nco_typ_lng(NC_DOUBLE));
     
 #ifdef _OPENMP
 #pragma omp critical
@@ -349,49 +345,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     { /* begin OpenMP critical */
       /* Block is critical for identical in_id's
 	 Block is thread-safe for distinct in_id's */
+      /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
-      nco_get_vara(nc_id,dim.cid,&dmn_srt,&dmn_sz,dim.val.vp,dim.type);
+      nc_get_vara_double(nc_id,dim.cid,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
     } /* end OpenMP critical */
     
-    /* Convert coordinate to double-precision if neccessary */
-    if(dim.type != NC_DOUBLE){
-      ptr_unn old_val;
-      
-      old_val=dim.val;
-      dim.val.vp=(void *)nco_malloc(dmn_sz*nco_typ_lng(NC_DOUBLE));
-      /* Typecast old coordinate pointer union to correct type before access */
-      (void)cast_void_nctype(dim.type,&old_val);
-      
-      /* Shortcut to avoid indirection */
-      dmn_val_dp=dim.val.dp;
-      switch(dim.type){
-      case NC_FLOAT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.fp[idx];} break; 
-      case NC_DOUBLE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.dp[idx];} break; 
-      case NC_INT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.ip[idx];} break;
-      case NC_SHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.sp[idx];} break;
-      case NC_USHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.usp[idx];} break;
-      case NC_UINT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.uip[idx];} break;
-      case NC_INT64: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.i64p[idx];} break;
-      case NC_UINT64: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.ui64p[idx];} break;
-      case NC_BYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.bp[idx];} break;
-      case NC_UBYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.ubp[idx];} break;
-      case NC_CHAR: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.cp[idx];} break;
-      case NC_STRING: break; /* Do nothing */
-      default: nco_dfl_case_nc_type_err(); break;
-      } /* end switch */
-      
-      /* Un-typecast pointer to values after access */
-      (void)cast_nctype_void(dim.type,&old_val);
-      
-      /* Free original space allocated for dimension */
-      old_val.vp=nco_free(old_val.vp);
-      
-      /* Officially change type */
-      dim.type=NC_DOUBLE;
-    } /* end type conversion */
-    
-    /* Shortcut to avoid indirection */
-    dmn_val_dp=dim.val.dp;
+    /* Officially change type */
+    dim.type=NC_DOUBLE;
     
     /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */
     if(dmn_sz == 1){
@@ -412,7 +372,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     dmn_min=dmn_val_dp[min_idx];
     dmn_max=dmn_val_dp[max_idx];
     
-    /* set defaults */  
+    /* Set defaults */  
     lmt.min_val=dmn_val_dp[min_idx]; 
     lmt.max_val=dmn_val_dp[max_idx];
     
@@ -437,7 +397,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.max_sng,"strtod",sng_cnv_rcd);
       
       /* Re-base co-ordinates as necessary in multi-file operatators (MFOs)
-         lmt.origin has been calculated earlier in file */
+         lmt.origin was calculated earlier in routine */
       if(rec_dmn_and_mlt_fl_opr){ 
         if(lmt.min_sng) lmt.min_val-=lmt.origin;
         if(lmt.max_sng) lmt.max_val-=lmt.origin;   
@@ -501,8 +461,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       
     }else{ /* min_val != max_val */
       
-      /* Find brackets to specified extrema */
-      /* Should no coordinate values match the given criteria, flag that index with -1L
+      /* Bracket specified extrema:
+	 Should no coordinate values match the given criteria, flag that index with -1L
 	 We defined the valid syntax such that single half range with -1L is not an error
 	 This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] because one
 	 of the specified half-ranges is valid (there are coordinates < -100.0).
@@ -525,6 +485,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx > -1L)) tmp_idx--;
 	  if(tmp_idx != -1L) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
 	} /* end if */
+	/* 20110221: csz fix hyperslab bug TODO nco1007 triggered by
+	   ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc
+	   This returned all values but should have returned none
+	   Algorithm was broken because, although valid min and max indices existed,
+	   they contained the empty set. 
+	   Now when this happens, set no_data flag and exit.
+	   If valid indices were found for both bracketing points... */
 	/* end if monotonic_direction == increasing */
       }else{ /* monotonic_direction == decreasing */
 	if(lmt.min_sng){
@@ -560,30 +527,29 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.end=lmt.min_idx;
     }  /* end else */
     
-    /* Un-typecast pointer to values after access */
-    (void)cast_nctype_void((nc_type)NC_DOUBLE,&dim.val);
-    
     /* Free space allocated for dimension */
-    dim.val.vp=nco_free(dim.val.vp);
+    dmn_val_dp=nco_free(dmn_val_dp);
     
     if(rec_dmn_and_mlt_fl_opr){ 
       /* No wrapping with multi-file operators */ 
       if((monotonic_direction == increasing && lmt.min_val > lmt.max_val) ||
 	 (monotonic_direction == decreasing && lmt.min_val < lmt.max_val)){
-	flg_no_data=True; goto no_data;   
-      }
+	flg_no_data=True; 
+	goto no_data;   
+      } /* endif */
       
       if(cnt_crr == 0){
-	/* Reset all flags */
+	/* If no valid records yet processed, initialize skipped records to zero */
 	lmt.rec_skp_vld_prv=0L;  
-      }else if(cnt_crr >0L){
-
+      }else if(cnt_crr > 0L){
+	/* Otherwise, account for previous records in strides across file boundaries */
         lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
-
-	if(lmt.srt>lmt.end) 
-         {flg_no_data=True;goto no_data;}
-
-      }
+	if(lmt.srt>lmt.end){
+	  /* Do not allow record dimension wrapping in MFOs */
+	  flg_no_data=True;
+	  goto no_data;
+	} /* endif  */
+      } /* endif */
       
       /* If we are here then there are valid records in current files */ 
        
@@ -603,8 +569,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 at end of this file (dmn_sz-1L-lmt.end) minus one */
       lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
       /*      assert(lmt.rec_skp_vld_prv >= 0);*/
-    } /* end if rec_muli_file_op */
-    
+    } /* end if rec_dmn_and_mlt_fl_opr */
     
   }else{ /* end if limit arguments were coordinate values */
     /* Convert limit strings to zero-based indicial offsets */
@@ -685,17 +650,24 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	   and for ncra and ncrcat (record dimension only) */
 	if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
 	
-	{  
+	{ /* Block to hide scope of local internal variables */
           long min_lcl;
           long max_lcl; 
 	  
-          min_lcl=( lmt.is_usr_spc_min ? lmt.min_idx :0L); 
-          max_lcl=( lmt.is_usr_spc_max ? lmt.max_idx :lmt.rec_skp_nsh_spf+dmn_sz-1L); 
+          min_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : 0L); 
+          max_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_skp_nsh_spf+dmn_sz-1L); 
 	  
-	  /* see if we are passed max_lcl  */
-          if(max_lcl < lmt.rec_skp_nsh_spf) {flg_no_data=True;goto no_data;} 
-          /* see if min_idx is in current record */
-          if(min_lcl > lmt.rec_skp_nsh_spf+dmn_sz-1L) {flg_no_data=True;goto no_data;}    
+	  /* Are we passed max_lcl? */
+          if(max_lcl < lmt.rec_skp_nsh_spf){
+	    flg_no_data=True;
+	    goto no_data;
+	  } /* endif passed max_lcl */
+
+          /* Is min_idx in current record? */
+          if(min_lcl > lmt.rec_skp_nsh_spf+dmn_sz-1L){
+	    flg_no_data=True;
+	    goto no_data;
+	  } /* endif min_idx in current record */
 	  
 	  if(cnt_crr == 0L)
 	    /* Start index is min_idx adjusted for any skipped initial superfluous files */  
@@ -703,17 +675,19 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
           else
             lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
 	  
-          if(lmt.srt >dmn_sz-1L) {flg_no_data=True;goto no_data;}  
+          if(lmt.srt > dmn_sz-1L){
+	    flg_no_data=True;
+	    goto no_data;
+	  } /* endif */
 	  
           lmt.end=(max_lcl < lmt.rec_skp_nsh_spf+dmn_sz) ? max_lcl-lmt.rec_skp_nsh_spf : dmn_sz-1L;
-	  /* integer arithmetic */
+	  /* Integer arithmetic */
 	  cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;
 	  lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
-	}
+	} /* end block to hide scope of local internal variables */
 	
-        /* hmb fix 12-2-2010 set stride to one */
-	if(lmt.end==lmt.srt)
-	  lmt.srd=1;
+        /* 20101202: hmb set stride to one */
+	if(lmt.end == lmt.srt) lmt.srd=1;
 	
 	lmt.rec_skp_nsh_spf+=dmn_sz;	
 	/* Compute diagnostic count for this file only */
@@ -796,7 +770,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     lmt.rec_skp_vld_prv+=dmn_sz;  
     /* Set variables to preserve utility of diagnostic routines at end of routine */
     cnt_rmn_crr=rec_skp_vld_prv_dgn=0L;
-    
   } /* endif */
   
   /* Place contents of working structure in location of returned structure */
@@ -818,6 +791,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"min_sng = %s\n",lmt.min_sng == NULL ? "NULL" : lmt.min_sng);
     (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
     (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
+    (void)fprintf(stderr,"monotonic_direction = %s\n",monotonic_direction == increasing ? "increasing" : "decreasing");
     (void)fprintf(stderr,"min_val = %g\n",lmt.min_val);
     (void)fprintf(stderr,"max_val = %g\n",lmt.max_val);
     (void)fprintf(stderr,"min_idx = %li\n",lmt.min_idx);
@@ -827,7 +801,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"cnt = %li\n",lmt.cnt);
     (void)fprintf(stderr,"srd = %li\n",lmt.srd);
     (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
-    (void)fprintf(stderr,"SRD = %s\n\n",lmt.srd != 1L ? "YES" : "NO");
+    (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
+    (void)fprintf(stderr,"no_data = %s\n\n",flg_no_data ? "True" : "False");
   } /* end dbg */
   
   if(lmt.srt > lmt.end && !flg_no_data){

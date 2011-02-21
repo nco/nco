@@ -1,3 +1,9 @@
+2011-02-21  Charlie Zender  <zender@uci.edu>
+
+	* Replace nco_get_vara() with nc_get_vara_double() in nco_lmt_evl()
+
+	* Clean-up, add diagnostics to nco_lmt_evl() while working to fix TODO nco1007
+
 2011-02-17  Charlie Zender  <zender@uci.edu>
 
 	* Change scp paths from greenplanet to gplogin2
