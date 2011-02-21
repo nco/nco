@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.29 2011-01-02 08:10:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.30 2011-02-21 06:13:58 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -279,15 +279,15 @@ nco_aux_prs
  float *urlon,
  float *urlat)
 {
-  /* Purpose: Parse command-line arguments of the form:
-     <min_lon,max_lon,min_lat,max_lat> */
-  char *tmpargs;
+  /* Purpose: Parse command-line arguments of form:
+     min_lon,max_lon,min_lat,max_lat */
+  char *tmp_args;
   char *token;
   
-  tmpargs=strdup(args);
+  tmp_args=strdup(args);
   
   sscanf(args,"%f,%f,%f,%f",lllon,urlon,lllat,urlat);
-  token=strtok(tmpargs,", ");
+  token=strtok(tmp_args,", ");
   if(token) sscanf(token,"%f",lllon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
   token=strtok(NULL,", ");
   if(token) sscanf(token,"%f",urlon); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
@@ -296,7 +296,7 @@ nco_aux_prs
   token=strtok(NULL,", ");
   if(token) sscanf(token,"%f",urlat); else nco_err_exit(-1,"nco_aux_prs: please specify four points for the slab");
   
-  free(tmpargs);
+  if(tmp_args) tmp_args=(char *)nco_free(tmp_args);
   
   if(strcmp(units,"radians") == 0){
     /* WIN32 math.h does not define M_PI */
@@ -307,5 +307,5 @@ nco_aux_prs
     *lllat*=M_PI/180.0;
     *urlon*=M_PI/180.0;
     *urlat*=M_PI/180.0;
-  }
+  } /* endif radians */
 } /* nco_aux_prs */
