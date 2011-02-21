@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1115 2011-02-21 22:38:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1116 2011-02-21 23:38:00 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -722,17 +722,12 @@ nco1002. andx (from ARM) does ncks-like multiple column printing (window$ only? 
 	 http://science.arm.gov/~cflynn/ARM_Tested_Tools/src/andx.tar
 	 andx ~/nco/data/in.nc -o ASCII -delim TAB -time Hh two_dmn_rec_var -zf 2 tz
 nco1004. nco: ncpdq force _FillValue to be inside range of packed type ?
-nco1007. nco: -X and -d hyperslab bug found by jeff daily
-      ncks -O -v gds_3dvar -X 0.,180.,-30.,30. ~/nco/data/in.nc ~/foo.nc # works---returns values within range
-      ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---exits with domain error but should return only value nearest lat=20
-      ncks -O -v gds_3dvar -X 0.,180.,20.,20.001 ~/nco/data/in.nc ~/foo.nc # works as of 20110221 (exits with domain error)
-      ncks -O -v lat -d lat,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
-      ncks -O -v lat -d lat,20.,20. ~/nco/data/in.nc ~/foo.nc # works---returns nearest value to lat=20
-      ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc # works as of 20110221 (exits with domain error)
-      ncks -H ~/foo.nc
 nco1008. nco: ncap2 ismissing() and isvalid() methods
 nco1009. nco: replace allocations of NC_MAX_NAME by NC_MAX_NAME+1 to allow for NUL character
-nco1010. 
+nco1010. nco: support degenerate auxiliary hyperslabs. Related to nco1007 posted by Jeff Daily. Requires lots of code to compute minimum distance of each point to specified point. And what if both lat and lon are degenerate? PITA
+	 ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---exits with domain error but should return only value nearest lat=20
+	 ncks -H ~/foo.nc
+nco1011. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

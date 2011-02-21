@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.34 2011-02-21 23:20:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.35 2011-02-21 23:38:00 zender Exp $ */
 
 /* Copyright (C) 1995--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -238,6 +238,14 @@ nco_aux_evl
     cll_nbr_cns=0; /* [nbr] Number of consecutive cells within current group */
     cll_nbr_ttl=0; /* [nbr] Total number of cells within this bounding box */
     cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
+    if(lon_min == lon_max){
+      (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lon_min = lon_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",prg_nm_get(),fnc_nm,lon_min);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */
+    if(lat_min == lat_max){
+      (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lat_min = lat_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",prg_nm_get(),fnc_nm,lat_min);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */
     /* Loop over auxiliary coordinate cells */
     for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
       if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];

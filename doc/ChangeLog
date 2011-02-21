@@ -1,5 +1,7 @@
 2011-02-22  Charlie Zender  <zender@uci.edu>
 
+	* Marknco1007 as fixed and opening nco1010 specifically for degenerate auxiliary hyperslabs
+
 	* Yet more nco_aux.c clean-up
 
 	* Exit with error when nco_aux_evl() finds no coordinates in bounding-box
