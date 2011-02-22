@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.638 2011-02-22 04:05:01 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.639 2011-02-22 06:51:50 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -121,7 +121,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <ul>
 <li>2011 Spring? NCO 4.0.8</li>
 
-<li>2011 Feb&nbsp;21: NCO 4.0.7</li>
+<li>2011 Feb&nbsp;21: NCO 4.0.7 (<i>upgrade recommended</i>)</li>
 
 <li>2011 Jan&nbsp;15: NCO 4.0.6</li>
 
@@ -143,7 +143,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 
 <li>2009 Mar&nbsp;18: NCO 3.9.7</li>
 
-<li>2009 Jan&nbsp;22: NCO 3.9.6 (GSL special functions)</li>
+<li>2009 Jan&nbsp;22: NCO 3.9.6 (GSL special functions) (<i>upgrade highly recommended</i>)</li>
 
 <li>2008 Sep&nbsp;24: <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a></li>
 
@@ -528,7 +528,7 @@ World peace?
 <li><b>NCO 4.0.8</b>: (<i>In Progress</i>) 
 Stride works with DAP?;
 <li><b>NCO 4.0.7</b>: (<i>Current Stable Release</i>)
-Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a>?;
+Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a> (<i>upgrade recommended</i>);
 <li><b>NCO 4.0.6</b>: 
 <tt>clang</tt>-compliance;
 Fix <tt>ncra</tt> YYYYMMDD-<tt>date</tt> <a href="#bug_ncra_cf_YYYYMMDD_date">bug</a>;
