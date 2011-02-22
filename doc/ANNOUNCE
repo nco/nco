@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.424 2011-02-22 03:28:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.425 2011-02-22 03:43:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.7 are ready. 
 
@@ -63,10 +63,9 @@ C. NOT YET FIXED
    DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
-   ncra -O -C -D 3 -p
-   http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc in.nc ~/foo.nc # Breaks with "NetCDF: DAP server error"
+   ncra -O -C -D 3 -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc in.nc ~/foo.nc # Breaks with "NetCDF: DAP server error"
 
-   20110114: Verified problem still exists
+   20110221: Verified problem still exists
    Bug report filed: netCDF #JZN-949284 NC_CHAR coordinate via DAP
 
 D. NOT YET FIXED
