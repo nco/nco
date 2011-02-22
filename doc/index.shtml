@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.635 2011-02-12 13:58:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.636 2011-02-22 00:01:09 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1422,16 +1422,16 @@ Problems with older releases:
 <a name="bug_hyp_dgn"></a>
 <li><i>Degenerate hyperslabbing bug:</i>
 Versions ???&mdash;4.0.6 could return incorrect hyperslabs when
-user-specified bounding box do not include at least one point.  
-Instead of returning no data, for instance, sometimes hyperslabs 
-may return all data. 
+a user-specified bounding box did not include at least one point.  
+In such cases, instead of returning no data, hyperslabs could return all data. 
 To determine whether your NCO is affected by this bug, run these commands:
 <tt>ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc</tt>
 If the returned hyperslab contains any data, then your NCO is buggy
 (because that hyperslab should be empty).
-This can lead to incorrect answers.
-A notice will be posted when a fix is available, and all users
-are urged to upgrade.
+This can lead to incorrect answers for hyperslabs that should be empty.
+Analogous problems would occur with empty auxiliary coordinate hyperslabs.
+Although most users do not specify empty hyperslabs, we urge all users
+to upgrade to NCO 4.0.7+ just to be safe.
 </li>
 
 <!-- http://nco.sf.net#bug_thr_msa -->
