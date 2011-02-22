@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.108 2011-02-21 20:44:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.109 2011-02-22 03:28:07 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -31,26 +31,26 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncbo -O in.nc in.nc ~/foo.nc
-   ncbo -O -v mss_val in.nc in.nc ~/foo.nc
-   ncbo -p /data/zender/tmp h0001.nc ~/foo.nc
-   ncbo -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
-   ncbo -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
-   ncbo -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc h0002.nc ~/foo.nc
+   mpncbo -O -p ~/nco/data in.nc in.nc ~/foo.nc
+   mpncbo -O -v mss_val in.nc in.nc ~/foo.nc
+   mpncbo -p /data/zender/tmp h0001.nc ~/foo.nc
+   mpncbo -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
+   mpncbo -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
+   mpncbo -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc h0002.nc ~/foo.nc
    
    Test type conversion:
    ncks -O -C -v float_var in.nc foo1.nc
    ncrename -v float_var,double_var foo1.nc
    ncks -O -C -v double_var in.nc foo2.nc
-   ncbo -O -C -v double_var foo1.nc foo2.nc foo3.nc
-   ncbo -O -C -v double_var foo2.nc foo1.nc foo4.nc
+   mpncbo -O -C -v double_var foo1.nc foo2.nc foo3.nc
+   mpncbo -O -C -v double_var foo2.nc foo1.nc foo4.nc
    ncks -H -m foo1.nc
    ncks -H -m foo2.nc
    ncks -H -m foo3.nc
    ncks -H -m foo4.nc
    
    Test nco_var_cnf_dmn:
-   ncks -O -v scalar_var in.nc ~/foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbo -O -v four_dmn_rec_var in.nc ~/foo.nc foo2.nc */
+   ncks -O -v scalar_var in.nc ~/foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; mpncbo -O -v four_dmn_rec_var in.nc ~/foo.nc foo2.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.108 2011-02-21 20:44:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.108 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.109 2011-02-22 03:28:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;

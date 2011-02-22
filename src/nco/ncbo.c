@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.169 2011-02-21 20:44:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.170 2011-02-22 03:28:07 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -31,8 +31,8 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncbo -O in.nc in.nc ~/foo.nc
-   ncbo -O -v mss_val in.nc in.nc ~/foo.nc
+   ncbo -O -p ~/nco/data in.nc in.nc ~/foo.nc
+   ncbo -O -v mss_val -p ~/nco/data in.nc in.nc ~/foo.nc
    ncbo -p /data/zender/tmp h0001.nc ~/foo.nc
    ncbo -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
    ncbo -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.169 2011-02-21 20:44:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.169 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.170 2011-02-22 03:28:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.170 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
