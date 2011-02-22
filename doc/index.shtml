@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.637 2011-02-22 03:28:07 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.638 2011-02-22 04:05:01 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -66,7 +66,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is 4.0.6 last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is 4.0.7 last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 
@@ -119,7 +119,9 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2011 Winter?: NCO 4.0.7</li>
+<li>2011 Spring? NCO 4.0.8</li>
+
+<li>2011 Feb&nbsp;21: NCO 4.0.7</li>
 
 <li>2011 Jan&nbsp;15: NCO 4.0.6</li>
 
@@ -520,13 +522,13 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.0.8</b>: (<i>Future</i>) 
+<li><b>NCO 4.0.9</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 World peace?
-<li><b>NCO 4.0.7</b>: (<i>In progress</i>)
-Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a>?;
+<li><b>NCO 4.0.8</b>: (<i>In Progress</i>) 
 Stride works with DAP?;
-<tt>NC_CHAR</tt> with DAP?;
+<li><b>NCO 4.0.7</b>: (<i>Current Stable Release</i>)
+Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a>?;
 <li><b>NCO 4.0.6</b>: 
 <tt>clang</tt>-compliance;
 Fix <tt>ncra</tt> YYYYMMDD-<tt>date</tt> <a href="#bug_ncra_cf_YYYYMMDD_date">bug</a>;
@@ -944,16 +946,16 @@ This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves and places NCO version <tt>4.0.6</tt> (which is
-tagged as <tt>nco-4_0_6</tt> due to CVS rules) into local directory
+tagged as <tt>nco-4_0_7</tt> due to CVS rules) into local directory
 <tt>nco-4.0.6</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_6 -d nco-4.0.6 nco</tt></p>
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_7 -d nco-4.0.6 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_0_6</tt>) and the development version is that the
+(e.g., <tt>nco-4_0_7</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
 <tt>4.0.6</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
