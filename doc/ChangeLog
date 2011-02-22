@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.7 release"
 	cvs tag -c nco-4_0_7;cvs tag -c nco-4_0_7-1
 
+	* Add libcurl4-gnutls-dev to debian/control
+
 	* Still need to update MPI executables mpncpdq, mpncra, mpncwa
 	to the same feature set as the normal, non-MPI executables so that
 	all MPI executables are feature-equivalent to serial codes.
