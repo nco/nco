@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.623 2011-02-21 22:38:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.624 2011-02-22 04:48:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2883,7 +2883,7 @@ accessible by a @acronym{OPeNDAP} server.
 This command tests the basic functionality of @acronym{OPeNDAP}-enabled  
 @acronym{NCO} clients: 
 @example
-% ncks -o ~/foo.nc -C -H -v one -l /tmp \
+% ncks -O -o ~/foo.nc -C -H -v one -l /tmp \
   -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
 % ncks -H -v one ~/foo.nc
 one = 1
@@ -2891,6 +2891,22 @@ one = 1
 The @code{one = 1} outputs confirm (first) that @command{ncks} correctly
 retrieved data via the  @acronym{OPeNDAP} protocol and (second) that 
 @command{ncks} created a valid local copy of the subsetted remote file.
+With minor changes to the above command, netCDF4 can be used as both the
+input and output file format:
+@example
+% ncks -4 -O -o ~/foo.nc -C -H -v one -l /tmp \
+  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in_4.nc
+% ncks -H -v one ~/foo.nc
+one = 1
+@end example
+And, of course, @acronym{OPeNDAP}-enabled @acronym{NCO} clients continue
+to support other, orthogonal features such as UDUnits 
+(@pxref{UDUnits Support}):
+@example
+% ncks -u -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' \
+  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in_4.nc
+% wvl[0]=5e-07 meter
+@end example
 
 The next command is a more advanced example which demonstrates the real
 power of @acronym{OPeNDAP}-enabled @acronym{NCO} clients.
