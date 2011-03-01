@@ -1,6 +1,6 @@
 2011-03-01  Charlie Zender  <zender@uci.edu>
 
-	* Use %lu instead of %li for printf() formatting of size_t
+	* Use %zu instead of %li for printf() format of size_t
 
 2011-02-22  Charlie Zender  <zender@uci.edu>
 
