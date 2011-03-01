@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.64 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.65 2011-03-01 23:11:27 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -274,10 +274,10 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(rcd == NC_NOERR){
       /* Dimension is a coordinate. Which storage type is the coordinate? */
       (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %li, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %lu, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
     }else{
       /* Dimension is not a coordinate */
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,dim[idx].id);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %lu, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,dim[idx].id);
     } /* end else */
     if(dim[idx].id == rec_dmn_id) (void)fprintf(stdout,"(REC)"); 
     (void)fprintf(stdout,"\n"); 

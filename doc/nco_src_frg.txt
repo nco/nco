@@ -1,10 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.64 2011-02-12 13:58:03 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.65 2011-03-01 23:11:27 zender Exp $ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
 Project Full Name:  NCO netCDF Operators
 Project Unix Name:  nco
-CVS Server:         cvs.sf.net
+CVS Server:         nco.cvs.sf.net
 Shell/Web Server:   nco.sf.net:/home/users/z/ze/zender
 		    nco.sf.net:/home/project-web/nco
 Project Websites:   http://nco.sf.net
@@ -14,17 +14,17 @@ Project Websites:   http://nco.sf.net
 Project FTP:        ftp://nco.sf.net/pub/nco
 		    nco.sf.net:/home/groups/ftp/pub/nco
 CVS:		    Anonymous check out:
-		    cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco login 
-		    cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk nco
+		    cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login 
+		    cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco
 		    Developer check out (note absence of pserver protocol allows ssh to be used)
 		    export CVS_RSH=ssh 
-		    export CVSROOT=zender@cvs.sf.net:/cvsroot/nco
-		    cvs -z3 -dzender@cvs.sf.net:/cvsroot/nco co -kk nco
-		    cvs -z3 -dzender@cvs.sf.net:/cvsroot/nco co -kk -r netcdf3 -d nco-1_3 nco 
+		    export CVSROOT=zender@nco.cvs.sf.net:/cvsroot/nco
+		    cvs -z3 -dzender@nco.cvs.sf.net:/cvsroot/nco co -kk nco
+		    cvs -z3 -dzender@nco.cvs.sf.net:/cvsroot/nco co -kk -r netcdf3 -d nco-1_3 nco 
 		    Checkouts inside sourceforge firewall:
 		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
 Daily tarballs of entire CVS tree for mirroring:
-		    http://cvs.sf.net/cvstarballs/nco-cvsroot.tar.gz
+		    http://nco.cvs.sf.net/cvstarballs/nco-cvsroot.tar.gz
 Compile Farm:       ssh cf.sf.net cf.sf.net
 HP Testdrive:       telnet 192.233.54.169
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.573 2011-02-17 21:21:46 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.574 2011-03-01 23:11:27 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -63,7 +63,7 @@
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # grele
 # cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNCO_GSL_MINOR_VERSION=4' allinone;cd - # sand, tephra
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # silt, clay
-# cd ${HOME}/nco/bld;NETCDF_INC='/usr/include/netcdf-3' NETCDF_LIB='/usr/lib64' make GSL=N OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS=N  allinone;cd - # snow
+# cd ${HOME}/nco/bld;NETCDF_INC='/usr/include/netcdf-3' NETCDF_LIB='/usr/lib64' make GSL=N OMP=N DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS=N allinone;cd - # snow
 # cd ${HOME}/nco/bld;make OMP=N DAP_OPENDAP=Y OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd - # snow w/OPeNDAP
 # cd ${HOME}/nco/bld;make OPTS=D USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 64-bit ABI on UCI MPC:
