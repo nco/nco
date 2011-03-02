@@ -1,14 +1,14 @@
 2011-03-01  Charlie Zender  <zender@uci.edu>
 
-	* Use %zu instead of %li for printf() format of size_t
-
-2011-02-22  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.0.7 release procedure:
  	Changes since nco-4_0_6: fix bug_hyp_dgn
 	cd ~/nco;cvs tag -d nco-4_0_7;cvs tag -d nco-4_0_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.7 release"
 	cvs tag -c nco-4_0_7;cvs tag -c nco-4_0_7-1
+
+	* Use %zu instead of %li for printf() format of size_t
+
+2011-02-22  Charlie Zender  <zender@uci.edu>
 
 	* Add libcurl4-gnutls-dev to debian/control
 

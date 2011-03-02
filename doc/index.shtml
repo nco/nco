@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.639 2011-02-22 06:51:50 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.640 2011-03-02 20:15:19 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -718,8 +718,8 @@ the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
-<ul> <!-- http://nco.sf.net/src/nco-4.0.5.aix53.tar.gz -->
-<li><a href="src/nco-4.0.5.aix53.tar.gz">nco-4.0.5.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.0.5.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.5.aix53.tar.gz"-->)</li>
+<ul> <!-- http://nco.sf.net/src/nco-4.0.7.aix53.tar.gz -->
+<li><a href="src/nco-4.0.7.aix53.tar.gz">nco-4.0.7.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.0.7.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.7.aix53.tar.gz"-->)</li>
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
 
@@ -783,9 +783,9 @@ Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs ove
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
 <!-- Copy DMG files from http://ps.uci.edu/~pscsg/nco
-wget http://ps.uci.edu/~pscsg/nco/nco-4.0.6_x86_10.5.dmg -O /tmp/nco-4.0.6_x86_10.5.dmg
-/usr/bin/scp /tmp/nco-4.0.6_x86_10.5.dmg zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
-scp /tmp/nco-4.0.6_x86_10.5.dmg dust.ess.uci.edu:/var/www/html/nco/src
+wget http://ps.uci.edu/~pscsg/nco/nco-4.0.7_x86_10.5.dmg -O /tmp/nco-4.0.7_x86_10.5.dmg
+/usr/bin/scp /tmp/nco-4.0.7_x86_10.5.dmg zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+scp /tmp/nco-4.0.7_x86_10.5.dmg dust.ess.uci.edu:/var/www/html/nco/src
 -->
 Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if you do not have MacPorts installed. You may need to add <tt>/opt/local/bin</tt> to your executable path to access the operators.
 <li><a href="src/nco-4.0.3_x86_10.6.dmg">nco-4.0.3_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.3_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.3_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
