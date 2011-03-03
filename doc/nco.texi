@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.624 2011-02-22 04:48:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.625 2011-03-03 20:13:15 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -100,12 +100,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.0.7
-@set doc-edition 4.0.7
+@set nco-edition 4.0.8
+@set doc-edition 4.0.8
 @set copyright-years 1995--2011
 @set update-year 2011
-@set update-date 21 February 2011
-@set update-month February 2011
+@set update-date 3 March 2011
+@set update-month March 2011
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -10167,7 +10167,8 @@ ncwa -a record in.nc out.nc # Remove new degenerate record dimension
 @end example
 @noindent
 The second step removes the degenerate record dimension.
-See @ref{ncpdq netCDF Permute Dimensions Quickly} for other methods
+See @ref{ncpdq netCDF Permute Dimensions Quickly} and
+@ref{ncks netCDF Kitchen Sink} for other methods of
 of changing variable dimensionality, including the record dimension.
 
 @page
@@ -10601,7 +10602,8 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 @cindex @code{--no_rec_dmn}
 @item --fix_rec_dmn
 Change all record dimensions in the input file into fixed dimensions
-in the output file.
+in the output file. 
+Also @samp{--no_rec_dmn}.
 
 @html
 <a name="dmn_rec_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rec_mk -->
@@ -10610,8 +10612,11 @@ in the output file.
 @cindex record dimension
 @cindex fixed dimension
 @cindex @code{--mk_rec_dmn @var{dim}}
-@item --mk_rec_dmn
-Change dimension @var{dim} to a record dimension in the output file.
+@item --mk_rec_dmn @var{dim}
+Change existing dimension @var{dim} to a record dimension in the output file.
+See @ref{ncecat netCDF Ensemble Concatenator} and 
+@ref{ncpdq netCDF Permute Dimensions Quickly} for other methods of
+changing variable dimensionality, including the record dimension. 
 
 @html
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->
@@ -11466,7 +11471,8 @@ The third step averages over this degenerate @code{record} dimension.
 Averaging over a degenerate dimension does not alter the data.
 The ordering of other dimensions in the file (@code{lat}, @code{lon},
 etc.) is immaterial to this procedure. 
-See @ref{ncecat netCDF Ensemble Concatenator} for other methods of
+See @ref{ncecat netCDF Ensemble Concatenator} and 
+@ref{ncks netCDF Kitchen Sink} for other methods of
 changing variable dimensionality, including the record dimension. 
 
 @page
