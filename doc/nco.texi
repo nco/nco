@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.625 2011-03-03 20:13:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.626 2011-03-03 23:33:45 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11444,15 +11444,30 @@ lat[1]=-90 lev[2]=100 lon[3]=0 three_dmn_var[23]=0
 @html
 <a name="dmn_rcd_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rcd_mk -->
 @end html
+Creating a record dimension named, e.g., @code{time}, in a file which
+has no existing record dimension is simple with @command{ncecat}:
+@example
+ncecat -O -u time in.nc out.nc # Create degenerate record dimension named "time"
+@end example
+
 @cindex record dimension
-Consider a file with all dimensions, including @code{time}, fixed
+Now consider a file with all dimensions, including @code{time}, fixed
 (non-record).
 Suppose the user wishes to convert @code{time} from a fixed dimension to  
 a record dimension. 
 This may be useful, for example, when the user wishes to append
 additional time slices to the data.
-The procedure is to use @command{ncecat} followed by @command{ncpdq}
-and then @command{ncwa}:
+As of @acronym{NCO} version 4.0.1 (April, 2010) the preferred method for
+doing this is with @command{ncks}:
+@example
+ncks -O --mk_rec_dmn time in.nc out.nc # Change "time" to record dimension
+@end example
+
+Prior to 4.0.1, the procedure to change an existing fixed dimension into
+a record dimension required three separate commands,
+@command{ncecat} followed by @command{ncpdq}, and then @command{ncwa}.
+It is still instructive to present the original procedure, as it shows
+how multiple operators can achieve the same ends by different means:
 @cindex degenerate dimension
 @example
 ncecat -O in.nc out.nc # Add degenerate record dimension named "record"
