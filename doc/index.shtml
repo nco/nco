@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.641 2011-03-03 20:23:05 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.642 2011-03-03 22:58:08 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1020,7 +1020,6 @@ modern Debian-based systems with
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
 <dt>sudo aptitude install libcurl4-gnutls-dev libxml2-dev # DAP-prereqs</dt>
-<dt>sudo aptitude install libcurl3-dev libxml2-dev # DAP-prereqs</dt>
 <dt>sudo aptitude install bison flex gcc g++ # GNU toolchain</dt>
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
 <dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>

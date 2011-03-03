@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.8 release"
 	cvs tag -c nco-4_0_8;cvs tag -c nco-4_0_8-1
 
+	* Complete debian-required change from libcurl3-dev to libcurl4-gnutls-dev
+
 	* Tag first 4.0.8 beta version
 
 2011-03-01  Charlie Zender  <zender@uci.edu>
