@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.643 2011-03-03 23:33:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.644 2011-03-04 21:42:38 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -526,6 +526,7 @@ You can also retrieve the source of tagged versions directly
 netCDF4 compound types?;
 World peace?
 <li><b>NCO 4.0.8</b>: (<i>In Progress</i>) 
+Support CF <tt>bounds</tt> attribute;
 Stride works with DAP?;
 <li><b>NCO 4.0.7</b>: (<i>Current Stable Release</i>)
 Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a> (<i>upgrade recommended</i>);

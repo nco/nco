@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1116 2011-02-21 23:38:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1117 2011-03-04 21:42:38 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -727,7 +727,11 @@ nco1009. nco: replace allocations of NC_MAX_NAME by NC_MAX_NAME+1 to allow for N
 nco1010. nco: support degenerate auxiliary hyperslabs. Related to nco1007 posted by Jeff Daily. Requires lots of code to compute minimum distance of each point to specified point. And what if both lat and lon are degenerate? PITA
 	 ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---exits with domain error but should return only value nearest lat=20
 	 ncks -H ~/foo.nc
-nco1011. 
+nco1011. nco: support CF "bounds" convention for Andrew Schurer 
+	 http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
+	 ncks -v lev ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+	 ncks -v gds_crd ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+nco1012. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.101 2011-01-04 06:36:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.102 2011-03-04 21:42:38 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -313,6 +313,79 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
   
   return IS_SPC_IN_CRD_ATT; /* [flg] Variable is listed in a "coordinates" attribute  */
 } /* end nco_is_spc_in_crd_att() */
+
+nco_bool /* [flg] Variable is listed in a "bounds" attribute */
+nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int var_trg_id) /* I [id] Variable ID */
+{
+  /* Purpose: Is variable specified in a "bounds" attribute?
+     If so, it may be a "multi-dimensional coordinate" that should
+     undergo special treatment by arithmetic operators.
+     Routine based on nco_is_spc_in_crd_att() */
+  nco_bool IS_SPC_IN_BND_ATT=False; /* [flg] Variable is listed in a "bounds" attribute  */
+
+  const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  const char fnc_nm[]="nco_is_spc_in_bnd_att()"; /* [sng] Function name */
+  char **bnd_lst; /* [sng] 1D array of list elements */
+  char *att_val;
+  char att_nm[NC_MAX_NAME];
+  char var_nm[NC_MAX_NAME];
+  char var_trg_nm[NC_MAX_NAME];
+  int idx_att;
+  int idx_bnd;
+  int idx_var;
+  int nbr_att;
+  int nbr_bnd; /* [nbr] Number of coordinates specified in "bounds" attribute */
+  int nbr_var; /* [nbr] Number of variables in file */
+  int rcd;
+  int var_id; /* [id] Variable ID */
+  long att_sz;
+  nc_type att_typ;
+  
+  /* May need variable name for later comparison to "bounds" attribute */
+  rcd=nco_inq_varname(nc_id,var_trg_id,var_trg_nm);
+  rcd=nco_inq_nvars(nc_id,&nbr_var);
+
+  for(idx_var=0;idx_var<nbr_var;idx_var++){
+    /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
+    var_id=idx_var;
+    
+    /* Find number of attributes */
+    rcd+=nco_inq_varnatts(nc_id,var_id,&nbr_att);
+    for(idx_att=0;idx_att<nbr_att;idx_att++){
+      rcd+=nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+      /* Is attribute part of CF convention? */
+      if(!strcmp(att_nm,"bounds")){
+	/* Yes, get list of specified attributes */
+	rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+	if(att_typ != NC_CHAR){
+	  rcd=nco_inq_varname(nc_id,var_id,var_nm);
+	  (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+	  return IS_SPC_IN_BND_ATT;
+	} /* end if */
+	att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+	if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+	/* NUL-terminate attribute */
+	att_val[att_sz]='\0';
+	/* Split list into separate coordinate names
+	   Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
+	/* ...for each coordinate in "bounds" attribute... */
+	for(idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
+	  /* Does variable match name specified in coordinate list? */
+	  if(!strcmp(var_trg_nm,bnd_lst[idx_bnd])) break;
+	} /* end loop over coordinates in list */
+	if(idx_bnd!=nbr_bnd) IS_SPC_IN_BND_ATT=True;
+	/* Free allocated memory */
+	att_val=(char *)nco_free(att_val);
+	bnd_lst=nco_sng_lst_free(bnd_lst,nbr_bnd);
+      } /* !coordinates */
+    } /* end loop over attributes */
+  } /* end loop over idx_var */
+  
+  return IS_SPC_IN_BND_ATT; /* [flg] Variable is listed in a "bounds" attribute  */
+} /* end nco_is_spc_in_bnd_att() */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
@@ -835,6 +908,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	   var_op_typ[idx]=fix;
       /* Check condition #3 from above: */
       if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
+
+      /* Debugging TODO nco1011 */
+      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id)) 
+	if(!(prg_id == ncra && var[idx]->is_rec_var)) /* not "time" */
+	  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is specified in a bounds attribute\n",prg_nm_get(),var[idx]->nm);
+
     } /* end if CNV_CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */
