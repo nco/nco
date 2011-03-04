@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.427 2011-03-04 21:42:38 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.428 2011-03-04 23:35:29 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -27,8 +27,9 @@ Charlie
 Other "New stuff" in 4.0.8 summary (full details always in ChangeLog):
 
 
-A. Support CF bounds attribute fxm
+A. Support CF convention for bounds attribute for cell boundaries.
    Thanks to Andrew Schurer for this suggestion.
+   http://nco.sf.net/nco.html#bnd
 
 KNOWN BUGS NOT YET FIXED:
 

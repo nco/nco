@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.626 2011-03-03 23:33:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.627 2011-03-04 23:35:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3454,7 +3454,7 @@ Short options: @samp{-C}, @samp{-c}@*
 Long options: @samp{--no-coords}, @samp{--no-crd}, @samp{--crd}, @samp{--coords}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
-in the @var{input-file} will also appear in the @var{output-file}, even
+in the @var{input-file} will be placed in the @var{output-file}, even
 if they are not explicitly specified, e.g., with the @samp{-v} switch.
 Thus variables with a latitude coordinate @code{lat} always carry the
 values of @code{lat} with them into the @var{output-file}.
@@ -3470,8 +3470,12 @@ automatically specifying that @emph{all} coordinate variables in the
 Thus @samp{-c} allows the user to select all the coordinate variables
 without having to know their names.
 @cindex @acronym{CF} conventions
-Both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
+As of @acronym{NCO} version 3.9.6 (January, 2009) 
+both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
 convention described in @ref{CF Conventions}.
+As of @acronym{NCO} version 4.0.8 (March, 2011) 
+both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{bounds}
+convention described in @ref{CF Conventions}. 
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
@@ -5707,6 +5711,27 @@ For example rename the variables first with @command{ncrename},
 or alter the @code{Conventions} attribute.
 
 @html
+<a name="cnv_CF_bnd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_bnd -->
+<a name="bnd"></a> <!-- http://nco.sf.net/nco.html#bnd -->
+@end html
+@cindex @code{bounds}
+@cindex bounds convention
+As of @acronym{NCO} version 4.0.8 (March, 2011), @acronym{NCO} 
+supports the @acronym{CF} @code{bounds} convention for cell boundaries
+described 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries, here}.
+This convention allows coordinate variables
+(including multidimensional coordinates) to describe the boundaries of
+their cells.
+This is done by naming the variable which contains the bounds in
+in the @code{bounds} attribute. 
+Note that coordinates of rank @math{N} have bounds of rank @math{N+1}.
+NCO-generated subsets of @acronym{CF}-compliant files with @code{bounds}
+attributes will include the coordinates specified by the @code{bounds}
+attribute, if any.  
+Hence the subsets will themselves be @acronym{CF}-compliant.
+
+@html
 <a name="cnv_CF_crd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_crd -->
 @end html
 @cindex @code{coordinates}
@@ -5720,7 +5745,8 @@ or alter the @code{Conventions} attribute.
 @cindex @code{--no-crd}
 @cindex @code{--coords}
 @cindex @code{--crd}
-NCO supports the @acronym{CF} @code{coordinates} convention described
+As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}
+supports the @acronym{CF} @code{coordinates} convention described 
 @uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
 (including multidimensional coordinates) in a space-separated string

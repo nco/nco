@@ -51,16 +51,17 @@
 
 netcdf in {
 dimensions:
-	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,lon_cal=10,lat_cal=10,time=unlimited;
+	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.123 2010-10-27 05:11:49 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.124 2011-03-04 23:35:29 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
 	lat:units = "degrees_north";
+	lat:bounds = "lat_bnd";
 
 	float lat_grd(lat_grd);
 	lat_grd:long_name = "Latitude grid (typically interfaces)";
@@ -120,6 +121,9 @@ variables:
 	lev:P0_var = "P0";
 	lev:PS_var = "PS";
 	lev:bounds = "ilev";
+
+	float ilev(lev,vrt_nbr);
+	ilev:purpose = "Cell boundaries for lev coordinate";
 
 	float rlev(rlev);
 	rlev:purpose = "Monotonically decreasing coordinate pressure";
@@ -897,6 +901,7 @@ data:
 	lat_T42=-88.240089,-85.092445,-82.311981,-79.525253,-76.736732,-73.947418,-71.157700,-68.367722,-65.577576,-62.787331,-59.997005,-57.206619,-54.416191,-51.625729,-48.835236,-46.044724,-43.254192,-40.463646,-37.673088,-34.882519,-32.091942,-29.301357,-26.510769,-23.720173,-20.929573,-18.138969,-15.348364,-12.557755,-9.767145,-6.976533,-4.185921,-1.395307,1.395307,4.185921,6.976533,9.767145,12.557755,15.348364,18.138969,20.929573,23.720173,26.510769,29.301357,32.091942,34.882519,37.673088,40.463646,43.254192,46.044724,48.835236,51.625729,54.416191,57.206619,59.997005,62.787331,65.577576,68.367722,71.157700,73.947418,76.736732,79.525253,82.311981,85.092445,88.240089;
 	lsmlev=0.05,0.1,0.2,0.5,1.0,3.0;
 	lev=100,500,1000;
+	ilev=0,300,300,750,750,1013.25;
 	lev_cpy=100,500,1000;
 	lev_var=100.,500.,1000.;
 	lev_wgt=10,2,1;

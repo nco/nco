@@ -1,5 +1,9 @@
 2011-03-04  Charlie Zender  <zender@uci.edu>
 
+	* Document CF "bounds" support, including -c and -C compliance
+
+	* Implement CF "bounds" support, including -c and -C compliance
+
 	* Add CF "bounds" support to TODO and add some bounds infrastructure
 
 2011-03-03  Charlie Zender  <zender@uci.edu>
