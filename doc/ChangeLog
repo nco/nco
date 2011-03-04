@@ -1,5 +1,7 @@
 2011-03-04  Charlie Zender  <zender@uci.edu>
 
+	* NB: "bounds" support re-exposes bug TODO nco111 triggered by ncap.in test script
+
 	* Document CF "bounds" support, including -c and -C compliance
 
 	* Implement CF "bounds" support, including -c and -C compliance
