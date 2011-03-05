@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.644 2011-03-04 21:42:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.645 2011-03-05 18:02:25 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -518,14 +518,14 @@ San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
 <h2>Version Summary</h2>
 Releases receive unique CVS tags and their tarballs are stored  
 <a href="http://nco.sf.net/src">here</a> on SourceForge and
-<a href="http://dust.ess.uci.edu/nco/src">here</a> on my server.
+<a href="http://dust.ess.uci.edu/nco/src">here</a> on our server at UCI.
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.0.9</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 World peace?
-<li><b>NCO 4.0.8</b>: (<i>In Progress</i>) 
+<li><b>NCO 4.0.8</b>: (<i>In Progress, features already in beta include the following</i>) 
 Support CF <tt>bounds</tt> attribute;
 Stride works with DAP?;
 <li><b>NCO 4.0.7</b>: (<i>Current Stable Release</i>)
@@ -711,7 +711,7 @@ and in our high-end scientific computing environments
 We also attempt to provide (theoretically) platform-independent sources
 in the most common UNIX packaging formats (Debian and RPM).
 Below are links to these and to packages created by volunteers who
-port NCO to other platforms.  
+port NCO to other platforms.   
 Volunteers willing to perform regular regression testing and porting
 of NCO to other platforms are welcome.  
 Previous versions of these binaries are still available by searching
@@ -735,7 +735,8 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <a href="http://packages.ubuntu.com/maverick/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 Newer Debian/Ubuntu flavors (i.e., Sid and Maverick) supply the latest numbered NCO release.
-Even newer (pre-release!) packages are available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/prerelease.txt">here</a>.
+<a name="beta"></a></a> <!-- http://nco.sf.net#beta -->
+Even newer (beta- or pre-release) packages are available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/prerelease.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.7-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_4.0.7-1_amd64.deb">nco_4.0.7-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.deb"-->)</li>
 <li><a href="src/nco_4.0.7-1.dsc">nco_4.0.7-1.dsc</a> (<!--#fsize file="src/nco_4.0.7-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.7-1.dsc"-->)</li>
