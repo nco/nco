@@ -1,6 +1,6 @@
 ************************************************************************
 Begin Debian/Ubuntu beta- or pre-release explanation:
-Posted to NCO groups in Spring 2010
+Posted to NCO groups in Spring 2010; updated March 2011.
 ************************************************************************
 Debian/Ubuntu users who want the latest NCO features before official
 releases, without building from source, take heed: Bleeding-edge NCO
@@ -47,5 +47,5 @@ Or one can use NCO with netCDF4 in RPMs (e.g., from Fedora) though
 those are not built until after official NCO releases so one cannot
 preview features with pre-built RPMs.   
 ************************************************************************
-End Debian/Ubuntu pre-release explanation:
+End Debian/Ubuntu pre-release explanation
 ************************************************************************

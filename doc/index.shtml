@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.646 2011-03-05 18:05:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.647 2011-03-05 18:43:13 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -735,7 +735,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <a href="http://packages.ubuntu.com/maverick/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 Newer Debian/Ubuntu flavors (i.e., Sid and Maverick) supply the latest numbered NCO release.
-<a name="beta"></a><a name="prerelease">a> <!-- http://nco.sf.net#beta -->
+<a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Even newer (beta- or pre-release) packages are available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.7-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_4.0.7-1_amd64.deb">nco_4.0.7-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.deb"-->)</li>
