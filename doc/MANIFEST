@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.42 2011-03-05 18:02:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.43 2011-03-05 18:03:48 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -97,6 +97,7 @@ nco/doc/README_Fedora	Short instructions for Fedora users
 nco/doc/TAG		CVS tag for this version 
 nco/doc/TODO		List of tasks for future releases
 nco/doc/VERSION		NCO version 
+nco/doc/beta.txt	Availability of beta- or pre-release Debian packages
 nco/doc/debian.txt	Creating and updating Debian NCO .deb packages
 nco/doc/dir		Example Info file to load nco.info
 nco/doc/dods.sh		Install OPeNDAP 3.4.X for NCO DAP-enabled clients
@@ -115,7 +116,6 @@ nco/doc/nco.png		NCO Webpage icon (PNG format)
 nco/doc/nco_news.shtml	NCO news archive
 nco/doc/netcdf4.sh	Install latest netcdf4 and HDF libraries for NCO
 nco/doc/opendap.sh	Install OPeNDAP 3.5.X for NCO DAP-enabled clients
-nco/doc/prerelease.txt	Availability of beta- or pre-release Debian packages
 nco/doc/surfit.txt	Summer research project advertisement
 nco/doc/tags_doc.sh	Generate Emacs tags for all NCO documents
 nco/doc/valgrind.txt	Valgrind suppressions file for debugging NCO 
