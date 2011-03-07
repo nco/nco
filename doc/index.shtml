@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.647 2011-03-05 18:43:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.648 2011-03-07 18:47:56 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -751,17 +751,19 @@ NCO for Debian over the years.
 <a name="redhat"></a><a name="rhl"></a><a name="rpm"></a> <!-- http://nco.sf.net#redhat --> <!-- http://nco.sf.net#rhl --> <!-- http://nco.sf.net#rpm -->
 <a name="fedora"></a><a name="fdr"></a><a name="fc"></a> <!-- http://nco.sf.net#fedora --> <!-- http://nco.sf.net#fdr --> <!-- http://nco.sf.net#fc -->
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
-<h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
+<h3><a href="http://fedora.redhat.com">Fedora</a>, RedHat Enterprise Linux (<a href="http://www.redhat.com/rhel">RHEL</a>), and Community ENTerprise Operating System (<a href="http://www.centos.org">CentOS</a>) GNU/Linux</h3>
 <ul>
-<dt>The <a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> RPMs are usually quite up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; might install, e.g., 
+<dt>The <a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; might install, e.g., 
 <li><a href="http://rpmfind.net/linux/RPM/fedora/devel/x86_64/nco-3.9.8-1.fc11.x86_64.html">nco-3.9.8-1.fc11.x86_64.rpm</a>: Executables for x86_64/Fedora Core&nbsp;11-compatible environments</li></dt>
 <dt>If not, try our own most recent self-built NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
-<li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a></li>
+<li>Scripts for generating executables for recent (4.0.x, ~2011) versions of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5 platforms are described <a href="http://sourceforge.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.</li>
+<li>Older information on building x86_64 RPMs is available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a>.</li>
 Volunteers have updated and maintained fairly up-to-date NCO packages in Fedora since it was added by Ed Hill in about 2004.
 Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs over the years.
+Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL and CentOS.
 </ul>
 
 <a name="gentoo"></a>
@@ -1083,7 +1085,13 @@ Please contribute patches required to get the <tt>configure</tt>
 mechanism working properly for NCO on your platform.
 The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
 contains gory details of successful (and failed) builds for many platforms.  
+
+Scripts for generating executables for recent (4.0.x, ~2011) versions
+of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5
+platforms are described 
+<a href="http://sourceforge.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.
 <br>
+
 All platforms continue to work fine with the <tt>nco/bld/Makefile</tt>
 method: 
 <tt>
