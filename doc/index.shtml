@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.648 2011-03-07 18:47:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.649 2011-03-11 19:37:28 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -721,6 +721,7 @@ the directory index <a href="src">here</a>.
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
 <ul> <!-- http://nco.sf.net/src/nco-4.0.7.aix53.tar.gz -->
 <li><a href="src/nco-4.0.7.aix53.tar.gz">nco-4.0.7.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.0.7.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.7.aix53.tar.gz"-->)</li>
+Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
 
@@ -734,9 +735,9 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/maverick/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
-Newer Debian/Ubuntu flavors (i.e., Sid and Maverick) supply the latest numbered NCO release.
+NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Maverick) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
-Even newer (beta- or pre-release) packages are available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
+Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.7-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_4.0.7-1_amd64.deb">nco_4.0.7-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.deb"-->)</li>
 <li><a href="src/nco_4.0.7-1.dsc">nco_4.0.7-1.dsc</a> (<!--#fsize file="src/nco_4.0.7-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.7-1.dsc"-->)</li>

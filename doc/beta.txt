@@ -1,5 +1,5 @@
 ************************************************************************
-Begin Debian/Ubuntu beta- or pre-release explanation:
+Begin Debian/Ubuntu and AIX beta- or pre-release explanation:
 Posted to NCO groups in Spring 2010; updated March 2011.
 ************************************************************************
 Debian/Ubuntu users who want the latest NCO features before official
@@ -19,10 +19,10 @@ they are rebuilt and replaced as each new feature is added. When the
 release is official, the package is frozen and a package with the next 
 version number 
 
-http://nco.sourceforge.net/src/nco_4.0.8-1_amd64.deb
+http://nco.sourceforge.net/src/nco_4.0.9-1_amd64.deb
 
-is created. This is not announced until it stabilizes a few months
-later. So, with judicious use of dpkg, Debian/Ubuntu users can easily
+is created. This is announced once it stabilizes a few months later. 
+And so on. With judicious use of dpkg, Debian/Ubuntu users can easily 
 track NCO feature development more closely than official releases.
 Just remove your existing NCO package and replace it with the latest
 (unannounced) package that has the feature you want with, e.g., 
@@ -30,6 +30,11 @@ Just remove your existing NCO package and replace it with the latest
 wget http://nco.sourceforge.net/src/nco_4.0.8-1_amd64.deb .
 sudo dpkg --remove nco
 sudo dpkg --install nco_4.0.8-1_*.deb
+
+or, for AIX,
+
+wget http://nco.sourceforge.net/src/nco-4.0.8.aix53.tar.gz .
+tar xvzf nco-4.0.8.aix53.tar.gz .
 
 Caveats: 
 1. .debs for amd64 (my development machine) are available early. Savvy

@@ -1,14 +1,20 @@
-2011-03-05  Charlie Zender  <zender@uci.edu>
+2011-03-11  Charlie Zender  <zender@uci.edu>
 
-	* Change prerelease.txt to beta.txt and update it for TAGS
+	* Include instructions for beta-releases of executables for AIX
 
-2011-03-04  Charlie Zender  <zender@uci.edu>
+2011-03-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.8 release procedure:
  	Changes since nco-4_0_7: CF bounds
 	cd ~/nco;cvs tag -d nco-4_0_8;cvs tag -d nco-4_0_8-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.8 release"
 	cvs tag -c nco-4_0_8;cvs tag -c nco-4_0_8-1
+
+2011-03-05  Charlie Zender  <zender@uci.edu>
+
+	* Change prerelease.txt to beta.txt and update it for TAGS
+
+2011-03-04  Charlie Zender  <zender@uci.edu>
 
 	* NB: "bounds" support re-exposes bug TODO nco111 triggered by ncap.in test script
 
