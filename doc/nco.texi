@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.629 2011-03-07 18:47:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.630 2011-03-18 20:42:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12577,7 +12577,7 @@ Autoconf/M4 help
 @cindex Gavin Burris
 @cindex Kyle Wilcox
 @item Gavin Burris, Kyle Wilcox
-RHEL and CentOS build scripts
+RHEL and CentOS build scripts and bug reports.
 @end table
 Please let me know if your name was omitted!
 

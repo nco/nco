@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.649 2011-03-11 19:37:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.650 2011-03-18 20:42:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -527,6 +527,7 @@ netCDF4 compound types?;
 World peace?
 <li><b>NCO 4.0.8</b>: (<i>In Progress, features already in beta include the following</i>) 
 Support CF <tt>bounds</tt> attribute;
+<tt>ncatted</tt> overwrite-mode bug-fix;
 Stride works with DAP?;
 <li><b>NCO 4.0.7</b>: (<i>Current Stable Release</i>)
 Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a> (<i>upgrade recommended</i>);

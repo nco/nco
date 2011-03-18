@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.110 2011-03-18 20:13:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.111 2011-03-18 20:42:03 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -21,6 +21,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for name hack with netCDF4 */
   nco_bool flg_netCDF4=False; /* [flg] File format is netCDF4 */
+  nco_bool flg_used_netCDF4_rename_trick=False; /* [flg] Re-named _FillValue in order to modify it */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
   char att_nm[NC_MAX_NAME];
@@ -207,8 +208,9 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
      aed.mode != aed_delete){ /* ... we are not deleting attribute */
     /* Rename existing attribute to netCDF4-safe name 
        After modifying missing value attribute with netCDF4-safe name below, 
-       we will rename attribute to original missing value name */
+       we will rename attribute to original missing value name. */
     (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
+    flg_used_netCDF4_rename_trick=True; /* [flg] Re-named _FillValue in order to modify it */
     strcpy(aed.att_nm,att_nm_tmp); 
   } /* endif libnetCDF may have netCDF4 restrictions */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
@@ -262,11 +264,11 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   } /* end switch */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-    if(flg_netCDF4 && !strcmp(aed.att_nm,att_nm_tmp) && aed.mode != aed_delete){
-      (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
-      /* Restore original name (space already allocated) */
-      strcpy(aed.att_nm,nco_mss_val_sng_get()); 
-    } /* !flg_netCDF4 */
+  if(flg_used_netCDF4_rename_trick){
+    (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
+    /* Restore original name (space already allocated) */
+    strcpy(aed.att_nm,nco_mss_val_sng_get()); 
+  } /* !flg_netCDF4 */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
 } /* end nco_aed_prc() */

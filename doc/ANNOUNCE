@@ -1,16 +1,12 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.428 2011-03-04 23:35:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.429 2011-03-18 20:42:03 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements support for the CF "bounds" convention.
-Now NCO-generated subsets of CF-compliant files with "bounds" will
-include the coordinates specified by the "bounds" attribute, if any. 
-Hence the subsets will themselves be CF-compliant.
-
-http://nco.sf.net/nco.html#bnd
+This release implements support for the CF "bounds" convention,
+fixes a bug in ncatted overwrite-mode. 
 
 Also worth mentioning again is that the latest Debian (Sid) and Ubuntu
 (Maverick) NCO packages support DAP, netCDF4, and UDUnits2.  
@@ -26,10 +22,17 @@ Charlie
 
 Other "New stuff" in 4.0.8 summary (full details always in ChangeLog):
 
-
 A. Support CF convention for bounds attribute for cell boundaries.
    Thanks to Andrew Schurer for this suggestion.
+   Now NCO-generated subsets of CF-compliant files with "bounds" will
+   include the coordinates specified by the "bounds" attribute, if any. 
+   Hence the subsets will themselves be CF-compliant.
+
    http://nco.sf.net/nco.html#bnd
+
+B. Fix bug in ncatted where using overwrite-mode to create a new
+   (rather than replace an old) _FillValue attribute failed.
+   Thanks to Kyle Wilcox for reporting this. fxm
 
 KNOWN BUGS NOT YET FIXED:
 
