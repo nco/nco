@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1118 2011-03-04 23:35:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1119 2011-03-18 20:13:39 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -731,9 +731,14 @@ nco1011. nco: support CF "bounds" convention for Andrew Schurer
 	 http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
 	 ncks -O -D 1 -v lev ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 	 ncks -O -D 1 -v gds_crd ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-nco1012. nco: nco_aed_prc() is called often (by nco_att_cpy()) to copy _FillValue attributes
+nco1012. nco: nco_aed_prc() is called (too?) often (by nco_att_cpy()) to copy _FillValue attributes
 	 ncks -O -D 5 ~/nco/data/in.nc ~/foo.nc
-nco1013. 
+nco1013. nco: 
+	 ncatted -O -a _FillValue,fll_val,o,f,-999 ~/nco/data/in.nc ~/foo.nc   # Works on netCDF3 file when attribute already exists
+	 ncatted -O -a _FillValue,lon,o,f,-999     ~/nco/data/in.nc ~/foo.nc   # Works on netCDF3 file when attribute does not yet exist
+	 ncatted -O -a _FillValue,fll_val,o,f,-999 ~/nco/data/in_4.nc ~/foo.nc # Works on netCDF4 file when attribute already exists
+	 ncatted -O -a _FillValue,lon,o,f,-999     ~/nco/data/in_4.nc ~/foo.nc # Fails on netCDF4 file when attribute does not yet exist
+nco1014. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.109 2011-01-17 07:21:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.110 2011-03-18 20:13:39 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -193,14 +193,22 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   /* Check if file is netCDF3 classic with netCDF4 library
      If so, do not kludge. NB: create global variable for output file format? */
-  { /* scope for fl_fmt temporary */
+  { /* Temporary scope for fl_fmt */
     int fl_fmt; 
     (void)nco_inq_format(nc_id,&fl_fmt);
     flg_netCDF4=(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC);
   } /* end scope */
 
-  if(flg_netCDF4 && !strcmp(aed.att_nm,nco_mss_val_sng_get()) && aed.mode != aed_delete){
-    if(aed.mode != aed_create) (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
+  if(
+     flg_netCDF4 && /* Output file is netCDF4 and ... */
+     !strcmp(aed.att_nm,nco_mss_val_sng_get()) && /* ... attribute is missing value and ... */
+     rcd == NC_NOERR && /* ... attribute already exists and ... */
+     aed.mode != aed_create && /* ... we are not trying to create attribute (redundant with above?) and ... */
+     aed.mode != aed_delete){ /* ... we are not deleting attribute */
+    /* Rename existing attribute to netCDF4-safe name 
+       After modifying missing value attribute with netCDF4-safe name below, 
+       we will rename attribute to original missing value name */
+    (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
     strcpy(aed.att_nm,att_nm_tmp); 
   } /* endif libnetCDF may have netCDF4 restrictions */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
