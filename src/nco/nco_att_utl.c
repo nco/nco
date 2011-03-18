@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.111 2011-03-18 20:42:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.112 2011-03-18 23:11:13 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -18,10 +18,12 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   
   /* If var_id == NC_GLOBAL ( = -1) then global attribute will be edited */
 
+  const char fnc_nm[]="nco_aed_prc()"; /* [sng] Function name */
+
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for name hack with netCDF4 */
-  nco_bool flg_netCDF4=False; /* [flg] File format is netCDF4 */
-  nco_bool flg_used_netCDF4_rename_trick=False; /* [flg] Re-named _FillValue in order to modify it */
+  nco_bool flg_fmt_netCDF4=False; /* [flg] File format is netCDF4 */
+  nco_bool flg_netCDF4_rename_trick=False; /* [flg] Re-name _FillValue in order to create/modify/overwrite it */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
   char att_nm[NC_MAX_NAME];
@@ -30,6 +32,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   /* NB: netCDF2 specifies att_sz is type int, netCDF3 and netCDF4 use size_t */
   int nbr_att; /* [nbr] Number of attributes */
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int rcd_inq_att=NC_NOERR; /* [rcd] Return code from nco_inq_att() */
   long att_sz;
      
   nc_type att_typ;
@@ -48,7 +51,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_aed_prc() examining variable %s\n",prg_nm_get(),var_nm);
 
   /* Query attribute metadata when attribute name was specified */
-  if(aed.att_nm) rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
+  if(aed.att_nm) rcd_inq_att=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
 
   /* Before changing metadata, change missing values to new missing value if warranted 
      This capability is add-on feature not implemented too cleanly or efficiently
@@ -62,7 +65,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
      && strcmp(aed.att_nm,nco_mss_val_sng_get()) == 0 /* Current attribute is "_FillValue" */
      && var_id != NC_GLOBAL /* Current attribute is not global */
      && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
-     && rcd == NC_NOERR /* Only when existing _FillValue attribute is modified */
+     && rcd_inq_att == NC_NOERR /* Only when existing _FillValue attribute is modified */
      && att_sz == 1L /* Old _FillValue attribute must be of size 1 */
      && aed.sz == 1L /* New _FillValue attribute must be of size 1 */
      ){
@@ -188,36 +191,43 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   /* Change metadata (as written, this must be done after _FillValue data is replaced) */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
+  /* According to netCDF4 C Reference Manual:
+     "Fill values must be written while the file is still in initial define mode, that
+     is, after the file is created, but before it leaves define mode for the first time.
+     NC EFILLVALUE is returned when the user attempts to set the fill value after
+     it is too late." 
+     The netCDF4/_FillValue code (and rename trick) works around that limitation. */
+
   /* Bold hack which gets around problem of modifying netCDF4 "_FillValue" attributes
      netCDF4 does not allow this by default, though netCDF3 does
      Change attribute name to att_nm_tmp, modify value, then restore name */
 
   /* Check if file is netCDF3 classic with netCDF4 library
-     If so, do not kludge. NB: create global variable for output file format? */
+     If so, do not employ rename trick 
+     NB: create global- rather than local-scope variable for output file format? */
   { /* Temporary scope for fl_fmt */
-    int fl_fmt; 
+    int fl_fmt;
     (void)nco_inq_format(nc_id,&fl_fmt);
-    flg_netCDF4=(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC);
+    flg_fmt_netCDF4=(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC);
   } /* end scope */
 
   if(
-     flg_netCDF4 && /* Output file is netCDF4 and ... */
+     flg_fmt_netCDF4 && /* Output file is netCDF4 and ... */
      !strcmp(aed.att_nm,nco_mss_val_sng_get()) && /* ... attribute is missing value and ... */
-     rcd == NC_NOERR && /* ... attribute already exists and ... */
-     aed.mode != aed_create && /* ... we are not trying to create attribute (redundant with above?) and ... */
      aed.mode != aed_delete){ /* ... we are not deleting attribute */
     /* Rename existing attribute to netCDF4-safe name 
        After modifying missing value attribute with netCDF4-safe name below, 
        we will rename attribute to original missing value name. */
-    (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
-    flg_used_netCDF4_rename_trick=True; /* [flg] Re-named _FillValue in order to modify it */
+    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports creating, modifying, or overwriting %s attribute %s in netCDF4 file requires re-name trick\n",prg_nm_get(),fnc_nm,var_nm,aed.att_nm);
+    if(rcd_inq_att == NC_NOERR) (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
+    flg_netCDF4_rename_trick=True; /* [flg] Re-name _FillValue in order to create/modify/overwrite it */
     strcpy(aed.att_nm,att_nm_tmp); 
   } /* endif libnetCDF may have netCDF4 restrictions */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
   switch(aed.mode){
   case aed_append:	
-    if(rcd == NC_NOERR){
+    if(rcd_inq_att == NC_NOERR){
       /* Append to existing attribute value */
       if(aed.type != att_typ){
 	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nco_typ_sng(att_typ),nco_typ_sng(aed.type));
@@ -233,42 +243,42 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       att_val_new=nco_free(att_val_new);
     }else{
       /* Create new attribute */
-      (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+      rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     } /* end else */
     break;
   case aed_create:	
-    if(rcd != NC_NOERR) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    if(rcd_inq_att != NC_NOERR) rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   case aed_delete:	
     /* Delete specified attribute if attribute name was specified... */
     if(aed.att_nm){
       /* ...and if attribute is known to exist from previous inquire call... */
-      if(rcd == NC_NOERR) (void)nco_del_att(nc_id,var_id,aed.att_nm);
+      if(rcd_inq_att == NC_NOERR) rcd=nco_del_att(nc_id,var_id,aed.att_nm);
     }else{
       /* ...else delete all attributes for this variable... */
       while(nbr_att){
-	(void)nco_inq_attname(nc_id,var_id,nbr_att-1,att_nm);
-	(void)nco_del_att(nc_id,var_id,att_nm);
+	rcd=nco_inq_attname(nc_id,var_id,nbr_att-1,att_nm);
+	rcd=nco_del_att(nc_id,var_id,att_nm);
 	nbr_att--;
       } /* end while */
     } /* end else */
     break;
   case aed_modify:	
-    if(rcd == NC_NOERR) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+    if(rcd_inq_att == NC_NOERR) rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     break;
   case aed_overwrite:	
-    (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   default: 
     break;
   } /* end switch */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-  if(flg_used_netCDF4_rename_trick){
-    (void)nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
+  if(flg_netCDF4_rename_trick){
+    rcd=nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
     /* Restore original name (space already allocated) */
     strcpy(aed.att_nm,nco_mss_val_sng_get()); 
-  } /* !flg_netCDF4 */
+  } /* !flg_netCDF4_rename_trick */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
 } /* end nco_aed_prc() */

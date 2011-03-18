@@ -1,10 +1,10 @@
 2011-03-18  Charlie Zender  <zender@uci.edu>
 
 	* Fix netCDF4/_FillValue/overwrite-create code path in nco_aed_prc()
-	Unfortunately, core dump now triggered by nc_close()
+	Solves TODO nco1011
 
 	* Fix nco_aed_prc() so that it does not attempt nco_att_rename()
-	on non-existent netCDF4 missing value attributes. 
+	on non-existent netCDF4 missing value attributes.
 	Helps, though does not fix, TODO nco1011 reported by Kyle Wilcox.
 	Bug still triggered elsewhere in the code.
 

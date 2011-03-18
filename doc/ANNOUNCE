@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.429 2011-03-18 20:42:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.430 2011-03-18 23:11:13 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -31,8 +31,8 @@ A. Support CF convention for bounds attribute for cell boundaries.
    http://nco.sf.net/nco.html#bnd
 
 B. Fix bug in ncatted where using overwrite-mode to create a new
-   (rather than replace an old) _FillValue attribute failed.
-   Thanks to Kyle Wilcox for reporting this. fxm
+   (rather than replace an old) _FillValue attribute in a netCDF4 file 
+   failed. Thanks to Kyle Wilcox for reporting this. 
 
 KNOWN BUGS NOT YET FIXED:
 
