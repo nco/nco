@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.630 2011-03-18 20:42:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.631 2011-03-21 22:53:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3936,7 +3936,7 @@ ranges.
 This works on datasets that associate coordinate variables to
 grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
 @code{coordinates} and @code{standard_name} attributes described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system, here}. 
 Currently, @acronym{NCO} understands auxiliary coordinate variables 
 pointed to by the @code{standard_name} attributes for @var{latitude} and 
 @var{longitude}.   
@@ -4216,7 +4216,7 @@ As of version 4.0.0 (January, 2010), @acronym{NCO} supports some
 calendar attributes specified by the CF conventions. 
 @table @asis
 @item @strong{Supported types:  } 
- "365_day"/"no_leap", "360_day", "gregorian", "standard" 
+ "365_day"/"noleap", "360_day", "gregorian", "standard" 
 @item  @strong{Unsupported types:} 
 "366_day"/"all_leap","proleptic_gregorian","julian","none" 
 @end table
@@ -5625,7 +5625,7 @@ We refer to all such data collectively as @acronym{CF} data.
 Skip this section if you never work with @acronym{CF} data.
 
 The @acronym{CF} netCDF conventions are described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system, here}. 
 Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}  
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
@@ -5747,7 +5747,7 @@ Hence the subsets will themselves be @acronym{CF}-compliant.
 @cindex @code{--crd}
 As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}
 supports the @acronym{CF} @code{coordinates} convention described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
 (including multidimensional coordinates) in a space-separated string
 attribute named @code{coordinates}. 

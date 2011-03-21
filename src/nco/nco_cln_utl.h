@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.28 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.29 2011-03-21 22:53:48 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -92,7 +92,7 @@ nco_cln_get_cln_typ( /* [fnc] Calendar type or cln_nil if not found */
 const char *ud_sng); /* I [ptr] units string  */      
 
 int                /* O [int] number of days */
-nco_cln_mths2days( /* [fnc] number of days in months */
+nco_cln_mth2day( /* [fnc] number of days in months */
 cln_typ lmt_cln,   /* [enum] calendar type */
 int months);       /* I [int] month */ 
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.430 2011-03-18 23:11:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.431 2011-03-21 22:53:46 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -6,7 +6,7 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release implements support for the CF "bounds" convention,
-fixes a bug in ncatted overwrite-mode. 
+the CF "noleap" convention, and fixes a bug in ncatted overwrite-mode. 
 
 Also worth mentioning again is that the latest Debian (Sid) and Ubuntu
 (Maverick) NCO packages support DAP, netCDF4, and UDUnits2.  
@@ -30,7 +30,10 @@ A. Support CF convention for bounds attribute for cell boundaries.
 
    http://nco.sf.net/nco.html#bnd
 
-B. Fix bug in ncatted where using overwrite-mode to create a new
+B. Change "no_leap" to "noleap" for CF-compliance in re-basing code.
+   Thanks to Patrick Brockman for reporting this.
+
+C. Fix bug in ncatted where using overwrite-mode to create a new
    (rather than replace an old) _FillValue attribute in a netCDF4 file 
    failed. Thanks to Kyle Wilcox for reporting this. 
 

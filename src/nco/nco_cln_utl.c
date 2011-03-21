@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.28 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.29 2011-03-21 22:53:48 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -472,7 +472,7 @@ tm_typ ret_typ;
     ret_typ=tm_sec;
 
   return ret_typ;
-}
+} /* end nco_cln_get_tm_typ() */
 
 cln_typ               /* [enum] Calendar type */    
 nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
@@ -502,16 +502,16 @@ cln_typ ret_typ;
     ret_typ=cln_jul;
   else if(!strcmp(lcl_sng, "360_day"))
     ret_typ=cln_360;
-  else if(!strcmp(lcl_sng, "no_leap") || !strcmp(lcl_sng,"365_day" ))
+  else if(!strcmp(lcl_sng, "noleap") || !strcmp(lcl_sng,"365_day" ))
     ret_typ=cln_365;
   else if(!strcmp(lcl_sng, "all_leap") || !strcmp(lcl_sng,"366_day" ))
     ret_typ=cln_366;
 
   return ret_typ;
-}
+} /* end nco_cln_get_cln_typ() */
 
 int                /* O [int] number of days */
-nco_cln_mths2days( /* [fnc] number of days in months */
+nco_cln_mth2day( /* [fnc] number of days in months */
 cln_typ lmt_cln,   /* [enum] calendar type */
 int months){       /* I [int] month */ 
 int *days=NULL_CEWI;
@@ -541,7 +541,7 @@ int idays=0;
    idays+=days[idx];
   
  return idays;
-}
+} /* end nco_cln_mth2day() */
 
 void
 nco_cln_pop_val(     /* [fnc] Calculate value in cln_sct */ 
@@ -563,7 +563,7 @@ double *data;
    case cln_365:  
      data=DATA_365;    
      cln_sct->value=data[0]*(cln_sct->year-1)+
-                    data[2]*nco_cln_mths2days(cln_365,cln_sct->month)+
+                    data[2]*nco_cln_mth2day(cln_365,cln_sct->month)+
                     data[2]*(cln_sct->day-1)+
                     data[3]*cln_sct->hour+
                     data[4]*cln_sct->min+
