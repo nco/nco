@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.632 2011-03-21 23:15:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.633 2011-04-08 17:52:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7406,6 +7406,7 @@ The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
 @html
+<a name="bln_ntp"></a> <!-- http://nco.sf.net/nco.html#bln_ntp -->
 <a name="bil_int"></a> <!-- http://nco.sf.net/nco.html#bil_int -->
 @end html
 @node bilinear interpolation, GSL special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
