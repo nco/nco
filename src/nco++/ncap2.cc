@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.117 2011-04-12 03:19:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.118 2011-04-12 03:37:29 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.117 2011-04-12 03:19:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.117 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.118 2011-04-12 03:37:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.118 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -572,8 +572,11 @@ main(int argc,char **argv)
 
   /* Open output file */
   if(OUTPUT_TO_NEW_NETCDF_FILE){
+    /* Normal case, like rest of NCO, where writes are made to temporary file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
   }else{ /* Existing file */
+    /* ncap2, like ncrename and ncatted, directly modifies fl_in if fl_out is omitted
+       If fl_out resolves to _same name_ as fl_in, method above is employed */
     fl_out_tmp=(char *)strdup(fl_out);
     rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
     (void)nco_redef(out_id);
@@ -856,7 +859,7 @@ main(int argc,char **argv)
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
   
   /* Close output file and move it from temporary to permanent location */
-  if(OUTPUT_TO_NEW_NETCDF_FILE) (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id); else nco_close(nc_id);
+  if(OUTPUT_TO_NEW_NETCDF_FILE) (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id); else nco_close(out_id);
   
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
