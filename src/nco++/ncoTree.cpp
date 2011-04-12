@@ -3809,7 +3809,7 @@ var_sct * ncoTree::var_lmt_one(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			// variable in output and defined
 			if(Nvar && Nvar->flg_stt==2) {
 			#ifdef _OPENMP
-			fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
+			fl_id=( omp_in_parallel() ? prs_arg->out_id_readonly : prs_arg->out_id );
 			#else    
 			fl_id=prs_arg->out_id;  
 			#endif      
@@ -4241,9 +4241,9 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			}else{
 			
 			// variable in output 
-			if(Nvar) {
+			if(Nvar){
 			#ifdef _OPENMP
-			fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
+			fl_id=( omp_in_parallel() ? prs_arg->out_id_readonly : prs_arg->out_id);
 			#else    
 			fl_id=prs_arg->out_id;  
 			#endif      

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.22 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.23 2011-04-12 03:19:47 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -94,7 +94,7 @@ bool bfll){
       var=Nvar->cpyVarNoData();
 
 #ifdef _OPENMP
-      fl_id= ( omp_in_parallel() ? r_out_id : out_id );
+      fl_id= ( omp_in_parallel() ?out_id_readonly : out_id );
 #else    
       fl_id=out_id;  
 #endif
@@ -130,7 +130,7 @@ bool bfll){
   if(rcd == NC_NOERR && !bskp_npt){
 
 #ifdef _OPENMP
-    fl_id= ( omp_in_parallel() ? r_out_id : out_id );
+    fl_id= ( omp_in_parallel() ?out_id_readonly : out_id );
 #else    
     fl_id=out_id;  
 #endif

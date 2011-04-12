@@ -97,7 +97,7 @@ static ncoTree** wlk_ptr;
    // do an nc_sync for all output threads
    (void)nco_sync(wlk_ptr[0]->prs_arg->out_id);      
    for(mdx=0; mdx<nbr_wlk; mdx++)
-     (void)nco_sync(wlk_ptr[mdx]->prs_arg->r_out_id); 
+     (void)nco_sync(wlk_ptr[mdx]->prs_arg->out_id_readonly); 
 
    
    inn_vtr=all_ast_vtr[idx+1];
@@ -132,7 +132,7 @@ static ncoTree** wlk_ptr;
    // do an nc_sync for all output threads
    (void)nco_sync(wlk_ptr[0]->prs_arg->out_id);      
    for(mdx=0; mdx<nbr_wlk; mdx++)
-     (void)nco_sync(wlk_ptr[mdx]->prs_arg->r_out_id); 
+     (void)nco_sync(wlk_ptr[mdx]->prs_arg->out_id_readonly); 
 
 
  } // end for idx

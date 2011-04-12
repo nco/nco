@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.187 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.188 2011-04-12 03:19:47 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2819,7 +2819,7 @@ var_sct *var_nbr;
                 // variable in output and defined
                 if(Nvar && Nvar->flg_stt==2) {
 #ifdef _OPENMP
-                  fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
+                  fl_id=( omp_in_parallel() ? prs_arg->out_id_readonly : prs_arg->out_id );
 #else    
                   fl_id=prs_arg->out_id;  
 #endif      
@@ -3177,9 +3177,9 @@ var=NULL_CEWI;
           }else{
  
             // variable in output 
-           if(Nvar) {
+           if(Nvar){
 #ifdef _OPENMP
-             fl_id=( omp_in_parallel() ? prs_arg->r_out_id : prs_arg->out_id );
+             fl_id=( omp_in_parallel() ? prs_arg->out_id_readonly : prs_arg->out_id);
 #else    
              fl_id=prs_arg->out_id;  
 #endif      

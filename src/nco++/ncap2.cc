@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.116 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.117 2011-04-12 03:19:47 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -112,6 +112,7 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   nco_bool PRN_FNC_TBL=False; /* Option f */  
   nco_bool PROCESS_ALL_VARS=True; /* Option v */  
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -139,8 +140,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.116 2011-01-01 02:28:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.116 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.117 2011-04-12 03:19:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.117 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -527,13 +528,14 @@ main(int argc,char **argv)
     for(idx=0;idx<(signed int)fmc_vtr.size();idx++)
       std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
-  }
+  } /* !PRN_FNC_TBL */
   
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
+  if(fl_out) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=(char *)strdup(fl_lst_in[0]);
   
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
@@ -569,11 +571,17 @@ main(int argc,char **argv)
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+  if(OUTPUT_TO_NEW_NETCDF_FILE){
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+  }else{ /* Existing file */
+    fl_out_tmp=(char *)strdup(fl_out);
+    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+    (void)nco_redef(out_id);
+  } /* Existing file */
   
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-  
+
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   
@@ -588,8 +596,8 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
-  //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_arg.r_out_id); /* Read Output file */
-  rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_arg.r_out_id); /* Read Output file */
+  //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_arg.out_id_readonly); /* Read Output file */
+  rcd=nco_open(fl_out_tmp,NC_NOWRITE,&prs_arg.out_id_readonly); /* Read Output file */
   
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
@@ -616,8 +624,8 @@ main(int argc,char **argv)
     rcd=nco_open(fl_in,NC_NOWRITE,&prs_tmp.in_id);
     
     // Handle to read output only
-    //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_tmp.r_out_id);
-    rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_tmp.r_out_id);
+    //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_tmp.out_id_readonly);
+    rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_tmp.out_id_readonly);
     
     // only one handle for reading & writing 
     prs_tmp.out_id=out_id;
@@ -838,17 +846,17 @@ main(int argc,char **argv)
   /* Close input netCDF file */
   rcd=nco_close(in_id);
   
-  /* Close all files in threads --except main thread */
-  for( idx=1; idx<thr_nbr; idx++){
+  /* Close files in all threads except main thread */
+  for(idx=1;idx<thr_nbr;idx++){
     rcd=nco_close(prs_vtr[idx].in_id);
-    rcd=nco_close(prs_vtr[idx].r_out_id);
-  }
+    rcd=nco_close(prs_vtr[idx].out_id_readonly);
+  } /* end loop over threads */
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
   
   /* Close output file and move it from temporary to permanent location */
-  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+  if(OUTPUT_TO_NEW_NETCDF_FILE) (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id); else nco_close(nc_id);
   
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){

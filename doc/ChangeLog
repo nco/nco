@@ -1,10 +1,14 @@
-2011-04-03  Charlie Zender  <zender@uci.edu>
+2011-04-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.8 release procedure:
  	Changes since nco-4_0_7: CF bounds, ncatted
 	cd ~/nco;cvs tag -d nco-4_0_8;cvs tag -d nco-4_0_8-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.8 release"
 	cvs tag -c nco-4_0_8;cvs tag -c nco-4_0_8-1
+
+	* Kludgy fixes to bld/Makefile for AIX which lacks nc-config
+
+2011-04-03  Charlie Zender  <zender@uci.edu>
 
 	* Alter bld/Makefile link line to use nc-config --libs
 

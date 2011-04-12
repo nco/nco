@@ -5,8 +5,8 @@
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-#ifndef INC_PRS_CLS_hh_
-#define INC_PRS_CLS_hh_
+#ifndef PRS_CLS_HH
+#define PRS_CLS_HH
 
 #include <vector>
 #include <string>
@@ -16,7 +16,7 @@
 #include "NcapVarVector.hh"
 #include "NcapVar.hh"
 
-//forward declaration
+// Forward declaration
 class fmc_cls;
 
  class prs_cls{ /* prs_cls */
@@ -25,7 +25,7 @@ class fmc_cls;
   int in_id; /* [id] Input data file ID */
   char *fl_out; /* [sng] Output data file */
   int out_id;   /* [id] Output data file ID -Handle for reading & writing */
-  int r_out_id; /* [id] Output data file ID -Handle for reading only */
+  int out_id_readonly; /* [id] Output data file ID -Handle for reading only */
   NcapVector<dmn_sct*> &dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
   NcapVector<dmn_sct*> &dmn_out_vtr;       //Vector of dimensions in output file file
   std::vector<fmc_cls> &fmc_vtr;         //List of functions/methods nb doesn't change 
@@ -67,7 +67,7 @@ class fmc_cls;
      in_id=prs_cpy.in_id;
      fl_out=prs_cpy.fl_out;
      out_id=prs_cpy.out_id;         
-     r_out_id=prs_cpy.r_out_id;         
+     out_id_readonly=prs_cpy.out_id_readonly;         
 
      ntl_scn=prs_cpy.ntl_scn;
      FORTRAN_IDX_CNV=prs_cpy.FORTRAN_IDX_CNV;
@@ -77,14 +77,10 @@ class fmc_cls;
      NCAP4_FILL=prs_cpy.NCAP4_FILL;
      dfl_lvl=prs_cpy.dfl_lvl;
      cnk_sz=prs_cpy.cnk_sz;     
-
    }
 
    // = operator
    prs_cls& operator= (const prs_cls &prs_cpy)  {
-
-
-     
       
      *this=prs_cpy;
      return *this;  
@@ -93,22 +89,19 @@ class fmc_cls;
      // check for self-assignment    
      if( &prs_cpy == this) 
        return *this;
-      
-     
   
      fmc_vtr=prs_cpy.fmc_vtr;      
      dmn_out_vtr=prs_cpy.dmn_out_vtr;  
      fmc_vtr=prs_cpy.fmc_vtr;      
      var_vtr=prs_cpy.var_vtr;            
      int_vtr=prs_cpy.int_vtr;       
-       
      */
        
      fl_in=prs_cpy.fl_in;
      in_id=prs_cpy.in_id;
      fl_out=prs_cpy.fl_out;
      out_id=prs_cpy.out_id;         
-     r_out_id=prs_cpy.r_out_id;     
+     out_id_readonly=prs_cpy.out_id_readonly;     
 
      ntl_scn=prs_cpy.ntl_scn;
      FORTRAN_IDX_CNV=prs_cpy.FORTRAN_IDX_CNV;
@@ -119,7 +112,6 @@ class fmc_cls;
      dfl_lvl=prs_cpy.dfl_lvl;      
 
      return *this;
-
    }
 
 var_sct *                  /* O [sct] initialized variable */
@@ -127,25 +119,20 @@ ncap_var_init(
 const std::string &snm,    /* I [sng] variable name constant */
 bool bfll);                /* if true fill var with data */ 
 
-
 int                        /* O [flg] non-zero if var is in Input or Ouptut or int_vtr*/
 ncap_var_init_chk(         
 const std::string &snm     /* I [sng] variable name constant */
 );                       
-
 
 int                        /* O  [bool] bool - true if sucessful */
 ncap_var_write             /*    [fnc] Write var to output file prs_arg->fl_out */ 
 (var_sct *var,             /* I  [sct] variable to be written - freed at end */  
  bool bram);               /* I  [bool] true if a ram only variable */
 
-
 int                        /* O  [bool] bool - true if sucessful */
 ncap_var_write_slb(        /*    [fnc] Write hyperslab to O var already exists in O */ 
 var_sct *var               /* I  [bool] var contains data + hyperslab limits */   
 );
-
-
                               
 int                         /* O  [bool] bool - true if sucessful */
 ncap_var_write_wrp(         /*    [fnc] Write hyperslab or regular var */ 
@@ -153,18 +140,14 @@ var_sct *var,               /* I  [sct] data + limits if needed   */
 bool bram,                  /* I  [flg] true if ram variable */     
 bool bslb);                 /* I  [flg] true if slab to write */      
 
-
 int 
 ncap_var_write_omp(
 var_sct *var,
 bool bram);
 
-
 void 
 ncap_def_ntl_scn           /* define variables captured on first parse */
 (void); 
-
  };
 
-
-#endif
+#endif // PRS_CLS_HH

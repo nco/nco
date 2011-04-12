@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.127 2011-01-17 07:21:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.128 2011-04-12 03:19:47 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.127 2011-01-17 07:21:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.128 2011-04-12 03:19:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -288,7 +288,7 @@ main(int argc,char **argv)
 	    (void)fprintf(stdout,"\n%s: ERROR %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	    nco_exit(EXIT_FAILURE);
 	  } /* end if */
-          (void)fprintf(stdout,"ncrename: overwrite %s (y/n)? ",fl_out);
+          (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",prg_nm,fl_out);
 	  (void)fflush(stdout);
           usr_reply=(char)fgetc(stdin);
 	  /* Allow one carriage return per response free of charge */

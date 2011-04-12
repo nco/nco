@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1122 2011-04-08 18:51:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1123 2011-04-12 03:19:47 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -733,7 +733,8 @@ nco1011. nco: support CF "bounds" convention for Andrew Schurer
 	 ncks -O -D 1 -v gds_crd ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 nco1012. nco: nco_aed_prc() is called (too?) often (by nco_att_cpy()) to copy _FillValue attributes
 	 ncks -O -D 5 ~/nco/data/in.nc ~/foo.nc
-nco1014. nco: option to eliminate intermediate tmp file writing
+nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
+	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
 nco1015. nco: eliminate ncap2 -A option from documentation
 nco1016. 
 qrk

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.128 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.129 2011-04-12 03:19:47 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -216,8 +216,9 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* end if */
 
   switch(prg_id){
-  case ncks:
+  case ncap:
   case ncatted:
+  case ncks:
   case ncrename:
     /* Operators with single fl_in and optional fl_out */
     if(psn_arg_nbr > 2-psn_arg_fst){
@@ -240,7 +241,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       nco_exit(EXIT_FAILURE);
     } /* end if */
     break;
-  case ncap:
   case ncpdq:
   case ncwa:
     /* Operators with single fl_in and required fl_out */
@@ -1118,6 +1118,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   int nccreate_mode; /* [enm] Mode flag for nco_create() call */
   int rcd; /* [rcd] Return code */
+  int rcd_stt; /* [rcd] Return code */
 
   long fl_out_tmp_lng; /* [nbr] Length of temporary file name */
   long pid_sng_lng; /* [nbr] Theoretical length of decimal representation of this PID */
@@ -1168,7 +1169,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
   if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: nco_fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
-  rcd=stat(fl_out_tmp,&stat_sct);
+  rcd_stt=stat(fl_out_tmp,&stat_sct);
 
   /* Free temporary memory */
   pid_sng=(char *)nco_free(pid_sng);
@@ -1185,8 +1186,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
      Many sysadmins do not make /tmp large enough for huge temporary data files
      tempnam(), however, allows $TMPDIR or drc to be set to override /tmp
-     We tried tempnam() but as of 20001010 GCC 2.96 this causes a warning: "the use of `tempnam' is dangerous, better use `mkstemp'"
-   */
+     20001010 Tried tempnam() 20001010 but GCC 2.96 warns: "the use of `tempnam' is dangerous, better use `mkstemp'" */
     int fl_out_hnd; /* Temporary file */
     char *fl_out_tmp_sys; /* System-generated unique temporary filename */
     fl_out_tmp_sys=(char *)nco_malloc((strlen(fl_out)+7)*sizeof(char));
@@ -1205,7 +1205,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* endif dbg */
 
   /* If temporary file already exists, prompt user to remove temporary files and exit */
-  if(rcd != -1){
+  if(rcd_stt != -1){
     (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",prg_nm_get(),fl_out_tmp);
     nco_exit(EXIT_FAILURE);
   } /* end if */
@@ -1227,10 +1227,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     } /* end if */
   } /* end if false */
 
-  rcd=stat(fl_out,&stat_sct);
+  rcd_stt=stat(fl_out,&stat_sct);
 
   /* If permanent file already exists, query user whether to overwrite, append, or exit */
-  if(rcd != -1){
+  if(rcd_stt != -1){
     char *rcd_fgets=NULL; /* Return code from fgets */
 #define USR_RPL_MAX_LNG 10 /* [nbr] Maximum length for user reply */
 #define USR_RPL_MAX_NBR 10 /* [nbr] Maximum number of chances for user to reply */
