@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.131 2011-04-19 21:27:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.132 2011-04-19 21:43:12 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -588,7 +588,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     rmt_fch_cmd_sct *rmt_cmd=NULL;
     /* fxm: Initialize structure contents as const */
-    rmt_fch_cmd_sct hsiget={"hsi get %s : %s",4,synchronous,rmt_lcl};
+    rmt_fch_cmd_sct hsiget={"hsi get %s : %s",4,synchronous,lcl_rmt};
     /* rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};*/ /* Deprecated 20110419 */
     /* rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};*/ /* Deprecated 20110419 */
     /* rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};*/ /* Deprecated 20110419 */

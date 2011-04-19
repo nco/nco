@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.634 2011-04-19 21:27:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.635 2011-04-19 21:43:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2706,7 +2706,8 @@ ncks -l . ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
 ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
 ncks -l . dust.ess.uci.edu:/home/zender/nco/data/in.nc
 ncks -l . /ZENDER/nco/in.nc 
-ncks -l . mss:/ZENDER/nco/in.nc # Deprecated in NCO 4.0.8 20110419
+ncks -l . /home/zender/in.nc # HPSS
+ncks -l . mss:/ZENDER/nco/in.nc # MSS deprecated in NCO 4.0.8 20110419
 ncks -l . http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc 
 @end example
 @noindent
@@ -2732,8 +2733,9 @@ option as follows:
 ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l . in.nc
 ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l . in.nc
 ncks -p dust.ess.uci.edu:/home/zender/nco -l . in.nc
-ncks -p /ZENDER/nco -l . in.nc # Deprecated in NCO 4.0.8 20110419
-ncks -p mss:/ZENDER/nco -l . in.nc # Deprecated in NCO 4.0.8 20110419
+ncks -p /ZENDER/nco -l . in.nc
+ncks -p /home/zender -l . in.nc # HPSS
+ncks -p mss:/ZENDER/nco -l . in.nc # MSS deprecated in NCO 4.0.8 20110419
 ncks -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \ 
      -l . in.nc
 @end example
