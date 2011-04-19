@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1123 2011-04-12 03:19:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1124 2011-04-19 23:49:54 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -736,7 +736,12 @@ nco1012. nco: nco_aed_prc() is called (too?) often (by nco_att_cpy()) to copy _F
 nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
 nco1015. nco: eliminate ncap2 -A option from documentation
-nco1016. 
+nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
+nco1017. nco: ncks hpss compatibility
+nco1018. nco: deprecate MSS mentioning in nco.texi
+nco1019. nco: ncks fails with OPTS=D on Linux, AIX
+         ncks -v att_var ~/nco/data/in.nc
+nco1020. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

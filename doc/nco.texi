@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.635 2011-04-19 21:43:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.636 2011-04-19 23:49:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.8
 @set copyright-years 1995--2011
 @set update-year 2011
-@set update-date 21 March 2011
-@set update-month March 2011
+@set update-date 19 April 2011
+@set update-month April 2011
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -2676,28 +2676,29 @@ to the remote machine.
 This means that @file{~/.rhosts} or @file{~/ssh/authorized_keys} must
 be set accordingly on both local and remote machines.   
 
+@cindex @acronym{HPSS}
+@cindex @command{hsi}
 @cindex @command{msrcp}
 @cindex @command{msread}
 @cindex @command{nrnet}
 @html
-<a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
+<a name="hpss"></a> <!-- http://nco.sf.net/nco.html#hpss -->
+<a name="HPSS"></a> <!-- http://nco.sf.net/nco.html#HPSS -->
+<a name="hsi"></a> <!-- http://nco.sf.net/nco.html#hsi -->
 <a name="msrcp"></a> <!-- http://nco.sf.net/nco.html#msrcp -->
 <a name="msread"></a> <!-- http://nco.sf.net/nco.html#msread -->
 <a name="nrnet"></a> <!-- http://nco.sf.net/nco.html#nrnet -->
 @end html
-To access a file on @acronym{NCAR}'s @acronym{MSS}, specify the full
-@acronym{MSS} pathname of the remote file. 
+To access a file on @acronym{NCAR}'s High Performance Storage System
+(@acronym{HPSS}), specify the full @acronym{HPSS} pathname of the remote
+file.  
 @acronym{NCO} will attempt to detect whether the local machine has direct
-(synchronous) @acronym{MSS} access. 
-In this case, @acronym{NCO} attempts to use the @acronym{NCAR}
-@command{msrcp} command 
-@footnote{The @command{msrcp} command must be in the user's path and
-located in one of the following directories: @code{/usr/local/bin},
-@code{/usr/bin}, @code{/opt/local/bin}, or @code{/usr/local/dcs/bin}.
-}, or, failing that, @code{/usr/local/bin/msread}.
-Otherwise @acronym{NCO} attempts to retrieve the @acronym{MSS} file
-through the (asynchronous) Masnet Interface Gateway System
-(@acronym{MIGS}) using the @command{nrnet} command. 
+(synchronous) @acronym{HPSS} access. 
+In this case, @acronym{NCO} attempts to use the @acronym{HPSS}
+@command{hsi get} command 
+@footnote{The @command{hsi} command must be in the user's path and
+located in the following directory: @code{/usr/local/bin}.
+}.
 
 The following examples show how one might analyze files stored on  
 remote systems.
@@ -2705,9 +2706,8 @@ remote systems.
 ncks -l . ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
 ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
 ncks -l . dust.ess.uci.edu:/home/zender/nco/data/in.nc
-ncks -l . /ZENDER/nco/in.nc 
-ncks -l . /home/zender/in.nc # HPSS
-ncks -l . mss:/ZENDER/nco/in.nc # MSS deprecated in NCO 4.0.8 20110419
+ncks -l . /ZENDER/nco/in.nc
+ncks -l . /home/zender/nco/in.nc
 ncks -l . http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc 
 @end example
 @noindent
@@ -2718,8 +2718,16 @@ machine @code{dust.ess.uci.edu}.
 The third example works if you have @command{rcp} or @command{scp}
 access to the machine @code{dust.ess.uci.edu}. 
 The fourth and fifth examples work on @acronym{NCAR} computers with
-local access to the @command{msrcp}, @command{msread}, or
-@command{nrnet} commands. 
+local access to the @acronym{HPSS} @command{hsi get} command
+@footnote{@acronym{NCO} supported the old @acronym{NCAR} Mass Storage
+System (@acronym{MSS}) until version 4.0.7 in April, 2011.
+@acronym{NCO} supported @acronym{MSS}-retrievals via a variety of
+mechanisms including the @command{msread}, @command{msrcp}, and
+@command{nrnet} commands invoked either automatically or with sentinels
+like @command{ncks -p mss:/ZENDER/nco -l . in.nc}.
+Once the @acronym{MSS} was decommissioned in March, 2011, support for
+these retrieval mechanisms was removed from @acronym{NCO}.
+}.
 The sixth command works if your local version of @acronym{NCO} is
 @acronym{OPeNDAP}-enabled (this is fully described in @ref{OPeNDAP}),
 or if the remote file is accessible via @command{wget}.
@@ -2734,8 +2742,7 @@ ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l . in.nc
 ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l . in.nc
 ncks -p dust.ess.uci.edu:/home/zender/nco -l . in.nc
 ncks -p /ZENDER/nco -l . in.nc
-ncks -p /home/zender -l . in.nc # HPSS
-ncks -p mss:/ZENDER/nco -l . in.nc # MSS deprecated in NCO 4.0.8 20110419
+ncks -p /home/zender/nco -l . in.nc # HPSS
 ncks -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \ 
      -l . in.nc
 @end example
@@ -2758,7 +2765,7 @@ If @samp{-l} is not specified then @acronym{NCO} internally generates an
 @var{output-path} by simply setting @var{output-path} equal to
 @var{input-path} stripped of any machine names.
 If @samp{-l} is not specified and the remote file resides on the
-@acronym{NCAR} @acronym{MSS} system, then the leading character of
+@acronym{NCAR} @acronym{HPSS} system, then the leading character of
 @var{input-path}, @samp{/}, is also stripped from @var{output-path}.
 Specifying @var{output-path} as @samp{-l ./} tells @acronym{NCO} to
 store the remotely retrieved file and the output file in the current

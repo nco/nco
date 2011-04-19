@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.66 2011-03-01 23:13:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.67 2011-04-19 23:49:54 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -84,9 +84,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
       break;
     case NC_BYTE:
       /*      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.bp[att_lmn]);*/
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++){
-	(void)fprintf(stdout,att_sng,((signed char *)att[idx].val.bp)[att_lmn]);
-      }
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,((signed char *)att[idx].val.bp)[att_lmn]);
       break;
     case NC_UBYTE:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ubp[att_lmn]);
