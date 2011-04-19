@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.129 2011-04-12 03:19:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.130 2011-04-19 21:05:37 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -392,7 +392,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   const char ftp_url_sng[]="ftp://";
   const char http_url_sng[]="http://";
   const char sftp_url_sng[]="sftp://";
-  int rcd;
+  int rcd; /* [rcd] Return code */
+  int rcd_stt=0; /* [rcd] Return code for stat() */
+  int rcd_sys; /* [rcd] Return code for system() */
+  int rcd_frd; /* [rcd] Return code for fread() and fclose() */
   size_t url_sng_lng=0L; /* CEWI */
   struct stat stat_sct;
   int prg_id; /* Program ID */
@@ -507,16 +510,16 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* end if */
 
   /* Does file exist on local system? */
-  if(!DAP_URL) rcd=stat(fl_nm_lcl,&stat_sct);
-  if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #1 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
+  if(!DAP_URL) rcd_stt=stat(fl_nm_lcl,&stat_sct);
+  if(rcd_stt == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #1 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
-  if(rcd == -1){
+  if(rcd_stt == -1){
     if(fl_nm_lcl[0] == '/'){
-      rcd=stat(fl_nm_lcl+1UL,&stat_sct);
-      if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #2 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl+1UL);
+      rcd_stt=stat(fl_nm_lcl+1UL,&stat_sct);
+      if(rcd_stt == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #2 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl+1UL);
     } /* end if */
-    if(rcd == 0){
+    if(rcd_stt == 0){
       /* NB: Adding one to filename pointer is like deleting initial slash on filename
 	 Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
 	 Hence must copy new name into its own memory space */
@@ -529,7 +532,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   /* Finally, check if file exists locally in directory for remotely retrieved files
      This occurs when previous program invocations have already retrieved some files */
-  if(rcd == -1){
+  if(rcd_stt == -1){
     /* Where does filename stub begin? 
        NB: Assume local filename has a slash (because remote file system always has a slash) */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
@@ -547,13 +550,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     } /* end if */
 
     /* At last, check for file in local storage directory */
-    rcd=stat(fl_nm_lcl,&stat_sct);
-    if(rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
-    if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #3 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
+    rcd_stt=stat(fl_nm_lcl,&stat_sct);
+    if(rcd_stt != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
+    if(rcd_stt == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #3 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
   } /* end if */
 
   /* File was not found locally and is not DAP-accessible, try to fetch file from remote filesystem */
-  if(rcd == -1){
+  if(rcd_stt == -1){
 
     typedef struct{ /* [enm] Remote fetch command structure */
       const char *fmt; /* [] Format */
@@ -585,6 +588,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     rmt_fch_cmd_sct *rmt_cmd=NULL;
     /* fxm: Initialize structure contents as const */
+    rmt_fch_cmd_sct hsiget={"hsi get %s : %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
@@ -653,8 +657,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	/* Create space for full path to ${HOME}/.netrc */
 	fl_nm_netrc=(char *)nco_realloc(fl_nm_netrc,(strlen(fl_nm_netrc)+strlen(fl_stb_netrc)+2UL)*sizeof(char));
 	fl_nm_netrc=(char *)strcat(fl_nm_netrc,fl_stb_netrc);
-	rcd=stat(fl_nm_netrc,&stat_sct);
-	if(!rcd){
+	rcd_stt=stat(fl_nm_netrc,&stat_sct);
+	if(!rcd_stt){
 	  /* Search .netrc file for remote host name */
 	  char *host_nm_rmt_psn;
 	  char *fl_netrc_bfr;
@@ -669,23 +673,23 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	  fl_netrc_bfr=(char *)nco_malloc((1UL+stat_sct.st_size)*sizeof(char));
 	  /* NUL-terminate buffer */
 	  fl_netrc_bfr[stat_sct.st_size]='\0';
-	  rcd=fread((void *)fl_netrc_bfr,stat_sct.st_size,1,fp_netrc);
-	  if(rcd <= 0){
+	  rcd_frd=fread((void *)fl_netrc_bfr,stat_sct.st_size,1,fp_netrc);
+	  if(rcd_frd <= 0){
 	    (void)fprintf(stderr,"%s: ERROR reading %s\n",prg_nm_get(),fl_nm_netrc);
 	    /* Why did fread() command fail? */
 	    (void)perror(prg_nm_get());
 	    /* Check for feof() vs. ferror() here? */
-	    rcd=fclose(fp_netrc);
+	    rcd_frd=fclose(fp_netrc);
 	    nco_exit(EXIT_FAILURE);
 	  } /* end if */
-	  rcd=fclose(fp_netrc);
+	  rcd_frd=fclose(fp_netrc);
 	  host_nm_rmt_psn=strstr(fl_netrc_bfr,host_nm_rmt);
 	  if(host_nm_rmt_psn){
 	    FTP_NETRC=True;
 	    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s() will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
 	  } /* endif host_nm_rmt_psn */
 	  fl_netrc_bfr=(char *)nco_free(fl_netrc_bfr);
-	} /* endif rcd */
+	} /* endif rcd_stt */
 
 	if(!FTP_NETRC){
 	  /* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
@@ -769,23 +773,29 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     if(rmt_cmd == NULL){
       /* Does msrcp command exist on local system? */
-      rcd=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
-      if(rcd != 0) rcd=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
-      if(rcd != 0) rcd=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
-      if(rcd != 0) rcd=stat("/usr/local/dcs/bin/msrcp",&stat_sct); /* ACD */
-      if(rcd == 0) rmt_cmd=&msrcp;
+      rcd_stt=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
+      if(rcd_stt != 0) rcd_stt=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
+      if(rcd_stt != 0) rcd_stt=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
+      if(rcd_stt != 0) rcd_stt=stat("/usr/local/dcs/bin/msrcp",&stat_sct); /* ACD */
+      if(rcd_stt == 0) rmt_cmd=&msrcp;
+    } /* end if */
+
+    if(rmt_cmd == NULL){
+      /* Does hsi command exist on local system? */
+      rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire */
+      if(rcd_stt == 0) rmt_cmd=&hsiget;
     } /* end if */
 
     if(rmt_cmd == NULL){
       /* Does msread command exist on local system? */
-      rcd=stat("/usr/local/bin/msread",&stat_sct);
-      if(rcd == 0) rmt_cmd=&msread;
+      rcd_stt=stat("/usr/local/bin/msread",&stat_sct);
+      if(rcd_stt == 0) rmt_cmd=&msread;
     } /* end if */
 
     if(rmt_cmd == NULL){
       /* Does nrnet command exist on local system? */
-      rcd=stat("/usr/local/bin/nrnet",&stat_sct);
-      if(rcd == 0) rmt_cmd=&nrnet;
+      rcd_stt=stat("/usr/local/bin/nrnet",&stat_sct);
+      if(rcd_stt == 0) rmt_cmd=&nrnet;
     } /* end if */
 
     /* Before we look for file on remote system, make sure
@@ -828,16 +838,16 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     } /* fl_pth_lcl */
     
     /* Does local filepath exist already on local system? */
-    rcd=stat(fl_pth_lcl_tmp,&stat_sct);
+    rcd_stt=stat(fl_pth_lcl_tmp,&stat_sct);
     /* If not, then create local filepath */
-    if(rcd != 0){
+    if(rcd_stt != 0){
       /* Allocate enough room for joining space ' ' and terminating NUL */
       cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2UL)*sizeof(char));
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
       (void)strcat(cmd_sys,fl_pth_lcl_tmp);
-      rcd=system(cmd_sys);
-      if(rcd != 0){
+      rcd_sys=system(cmd_sys);
+      if(rcd_sys != 0){
 	(void)fprintf(stderr,"%s: ERROR Unable to create local directory %s\n",prg_nm_get(),fl_pth_lcl_tmp);
 	if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
 	nco_exit(EXIT_FAILURE);
@@ -860,7 +870,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",prg_nm_get(),cmd_sys);
     (void)fflush(stderr);
     /* Fetch file from remote file system */
-    rcd=system(cmd_sys);
+    rcd_sys=system(cmd_sys);
     /* Free local command space */
     cmd_sys=(char *)nco_free(cmd_sys);
 
@@ -868,7 +878,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(rmt_cmd == &ftp) fmt_ftp=(char *)nco_free(fmt_ftp);
 
     if(rmt_cmd->transfer_mode == synchronous){
-      if(rcd != 0){
+      if(rcd_sys != 0){
 	(void)fprintf(stderr,"%s: ERROR Synchronous fetch command failed\n",prg_nm_get());
 	nco_exit(EXIT_FAILURE);
       } /* end if */
@@ -884,8 +894,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
       /* Asynchronous retrieval uses sleep-and-poll technique */
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
-	rcd=stat(fl_nm_lcl,&stat_sct);
-	if(rcd == 0){
+	rcd_stt=stat(fl_nm_lcl,&stat_sct);
+	if(rcd_stt == 0){
 	  /* What is current size of file? */
 	  fl_sz_ntl=fl_sz_crr;
 	  fl_sz_crr=stat_sct.st_size;
@@ -951,15 +961,15 @@ nco_fl_mv /* [fnc] Move first file to second */
   char *mv_cmd;
   const char mv_cmd_fmt[]="mv -f %s %s";
 
-  int rcd;
+  int rcd_sys; /* [rcd] Return code for system() */
   const int fmt_chr_nbr=4;
 
   /* Construct and execute copy command */
   mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
   if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
-  rcd=system(mv_cmd);
-  if(rcd == -1){
+  rcd_sys=system(mv_cmd);
+  if(rcd_sys == -1){
     (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
     nco_exit(EXIT_FAILURE);
   } /* end if */
