@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.130 2011-04-19 21:05:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.131 2011-04-19 21:27:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -589,10 +589,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rmt_fch_cmd_sct *rmt_cmd=NULL;
     /* fxm: Initialize structure contents as const */
     rmt_fch_cmd_sct hsiget={"hsi get %s : %s",4,synchronous,rmt_lcl};
-    rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};
-    rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
-    rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
-    /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
+    /* rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};*/ /* Deprecated 20110419 */
+    /* rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};*/ /* Deprecated 20110419 */
+    /* rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};*/ /* Deprecated 20110419 */
+    /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/ /* Deprecated ~2000 */
     /* wget -r: re-download file (clobber existing file of same name, if any) */
     rmt_fch_cmd_sct http={"wget -r --output-document=%s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
@@ -771,6 +771,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* end if colon */
     } /* end if rmt_cmd */
 
+#if 0
+    /* NB: MSS commands deprecated 20110419 */
     if(rmt_cmd == NULL){
       /* Does msrcp command exist on local system? */
       rcd_stt=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
@@ -778,12 +780,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(rcd_stt != 0) rcd_stt=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
       if(rcd_stt != 0) rcd_stt=stat("/usr/local/dcs/bin/msrcp",&stat_sct); /* ACD */
       if(rcd_stt == 0) rmt_cmd=&msrcp;
-    } /* end if */
-
-    if(rmt_cmd == NULL){
-      /* Does hsi command exist on local system? */
-      rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire */
-      if(rcd_stt == 0) rmt_cmd=&hsiget;
     } /* end if */
 
     if(rmt_cmd == NULL){
@@ -805,6 +801,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	(void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",prg_nm_get(),fl_nm_rmt);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
+    } /* end if */
+#endif /* endif False */
+
+    /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
+    if(rmt_cmd == NULL){
+      /* Does hsi command exist on local system? */
+      rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire */
+      if(rcd_stt == 0) rmt_cmd=&hsiget;
     } /* end if */
 
     if(rmt_cmd == NULL){
