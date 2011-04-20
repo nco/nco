@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1124 2011-04-19 23:49:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1125 2011-04-20 02:36:43 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -739,8 +739,9 @@ nco1015. nco: eliminate ncap2 -A option from documentation
 nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
 nco1017. nco: ncks hpss compatibility
 nco1018. nco: deprecate MSS mentioning in nco.texi
-nco1019. nco: ncks fails with OPTS=D on Linux, AIX
-         ncks -v att_var ~/nco/data/in.nc
+nco1019. ncks dies when printing NC_BYTE attributes unless nco_prn.c compiled with OPTS=D on Linux, AIX
+         ncks -v att_var ~/nco/data/in.nc # fails
+         ncks -x -v att_var,bnd_var ~/nco/data/in.nc # works
 nco1020. 
 qrk
 ************************************************************************

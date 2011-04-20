@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.114 2011-04-12 03:19:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.115 2011-04-20 02:36:43 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -422,7 +422,7 @@ ifneq (${UDUNITS_LIB},${NETCDF_LIB})
  NC_LDFLAGS += -L${UDUNITS_LIB}
 endif # end if
 ifeq (${UDUNITS2},Y)
- NC_LIBS += -ludunits2
+ NC_LIBS += -ludunits2 -lexpat
 else
  NC_LIBS += -ludunits
 endif # end if UDUNITS2
