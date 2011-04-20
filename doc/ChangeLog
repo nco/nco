@@ -1,5 +1,9 @@
 2011-04-19  Charlie Zender  <zender@uci.edu>
 
+	* Tweak NC_BYTE printing routines (again!)
+
+	* Migrate to netCDF 4.1.2. Test suite passes.
+
 	* Append -lexpat to -ludunits2 to satisfy netCDF 4.1.2
 	libudunits2.so dependencies in Debian/Ubuntu systems
 
