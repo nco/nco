@@ -47,7 +47,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.8 2009-11-01 17:23:33 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.9 2011-04-20 16:59:08 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -305,6 +305,9 @@ variables:
 	non_nul_trm_char_two_dmn:long_name = "Variable contains a two-dimensional array of characters that are not NUL-terminated";
 	non_nul_trm_char_two_dmn:units = "[chr]";
 
+	ubyte ubyte_var;
+	ubyte_var:long_name = "ubyte";
+
 	byte byte_var;
 	byte_var:long_name = "byte";
 
@@ -360,7 +363,7 @@ variables:
 	int one_dmn_int_val_two(lat);
 
 	float att_var;
-	att_var:byte_att = '\0';
+	att_var:byte_att = '\000','\001','\002','\177','\200','\201','\376','\377';
 	att_var:char_att = "Sentence one.\nSentence two.\n";
 	att_var:short_att = 37s;
 	att_var:int_att = 73l;
@@ -700,6 +703,7 @@ variables:
 data:
 	att_var=10.;
 	bnd_var=1,2,3,4,5,6;
+	ubyte_var='z';
 	byte_var='z';
 	byte_var_neg=-122;
 	char_var="z";

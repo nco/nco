@@ -1,3 +1,7 @@
+2011-04-20  Charlie Zender  <zender@uci.edu>
+
+	* Fix NC_BYTE and NC_UBYTE printing for attributes
+
 2011-04-19  Charlie Zender  <zender@uci.edu>
 
 	* Tweak NC_BYTE printing routines (again!)

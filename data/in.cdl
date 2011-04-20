@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.125 2011-04-20 05:10:24 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.126 2011-04-20 16:59:08 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -445,7 +445,7 @@ variables:
 	int one_dmn_int_val_two(lat);
 
 	float att_var;
-	att_var:byte_att = '\000','\001','\002';
+	att_var:byte_att = '\000','\001','\002','\177','\200','\201','\376','\377';
 	att_var:char_att = "Sentence one.\nSentence two.\n";
 	att_var:short_att = 37s;
 	att_var:int_att = 73l;
