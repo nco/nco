@@ -1,5 +1,13 @@
 2011-04-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.8 release procedure:
+ 	Changes since nco-4_0_7: CF bounds, ncatted
+	cd ~/nco;cvs tag -d nco-4_0_8;cvs tag -d nco-4_0_8-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.8 release"
+	cvs tag -c nco-4_0_8;cvs tag -c nco-4_0_8-1
+
+	* Built NCO on NCAR Mirage and GLADE filesystem. Seems OK.
+
 	* Fix NC_BYTE and NC_UBYTE printing for attributes
 
 2011-04-19  Charlie Zender  <zender@uci.edu>
@@ -10,12 +18,6 @@
 
 	* Append -lexpat to -ludunits2 to satisfy netCDF 4.1.2
 	libudunits2.so dependencies in Debian/Ubuntu systems
-
-	* NCO 4.0.8 release procedure:
- 	Changes since nco-4_0_7: CF bounds, ncatted
-	cd ~/nco;cvs tag -d nco-4_0_8;cvs tag -d nco-4_0_8-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.8 release"
-	cvs tag -c nco-4_0_8;cvs tag -c nco-4_0_8-1
 
 	* Remove msrcp, msread, nrnet functionality
 

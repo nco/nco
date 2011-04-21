@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.132 2011-04-19 21:43:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.133 2011-04-21 03:22:51 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -807,7 +807,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
     if(rmt_cmd == NULL){
       /* Does hsi command exist on local system? */
-      rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire */
+      rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
+      if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
       if(rcd_stt == 0) rmt_cmd=&hsiget;
     } /* end if */
 

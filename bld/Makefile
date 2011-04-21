@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.580 2011-04-20 02:36:42 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.581 2011-04-21 03:22:50 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -74,6 +74,9 @@
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 DAP_OPENDAP=N OPTS=D UDUNITS2=N allinone ABI=64;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' HDF5_ROOT='/contrib/hdf5-1.8.4-patch1_sequential' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf-4.1.1_sequential' SZ_LIB='/contrib/szip/lib' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make --jobs=1 NETCDF4=Y OPTS=D SZ=Y UDUNITS2=N allinone ABI=64;cd -
+# netCDF4 on NCAR Linux cluster systems (mirage):
+# cd ~/nco/bld;make OPTS=D allinone;cd -
+# 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
 # cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.0.8.aix53.tar.gz nc*;scp ~/nco-4.0.8.aix53.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -

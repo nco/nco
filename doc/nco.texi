@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.636 2011-04-19 23:49:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.637 2011-04-21 03:22:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2685,6 +2685,7 @@ be set accordingly on both local and remote machines.
 <a name="hpss"></a> <!-- http://nco.sf.net/nco.html#hpss -->
 <a name="HPSS"></a> <!-- http://nco.sf.net/nco.html#HPSS -->
 <a name="hsi"></a> <!-- http://nco.sf.net/nco.html#hsi -->
+<a name="HSI"></a> <!-- http://nco.sf.net/nco.html#HSI -->
 <a name="msrcp"></a> <!-- http://nco.sf.net/nco.html#msrcp -->
 <a name="msread"></a> <!-- http://nco.sf.net/nco.html#msread -->
 <a name="nrnet"></a> <!-- http://nco.sf.net/nco.html#nrnet -->
@@ -2694,14 +2695,16 @@ To access a file on @acronym{NCAR}'s High Performance Storage System
 file.  
 @acronym{NCO} will attempt to detect whether the local machine has direct
 (synchronous) @acronym{HPSS} access. 
-In this case, @acronym{NCO} attempts to use the @acronym{HPSS}
-@command{hsi get} command 
-@footnote{The @command{hsi} command must be in the user's path and
-located in the following directory: @code{/usr/local/bin}.
+In this case, @acronym{NCO} attempts to use the Hierarchical Storage
+Interface (@acronym{HSI}) command @command{hsi get}
+@footnote{The @command{hsi} command must be in the user's path in one of
+the following directories: @code{/usr/local/bin} or
+@code{/opt/hpss/bin}. 
 }.
 
 The following examples show how one might analyze files stored on  
 remote systems.
+@c HPSS syntax at http://www2.cisl.ucar.edu/docs/hpss/hsi
 @example
 ncks -l . ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
 ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
