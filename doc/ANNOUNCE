@@ -1,16 +1,16 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.432 2011-04-21 03:22:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.433 2011-04-22 05:09:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements support for the CF "bounds" convention,
-the CF "noleap" convention, fixes a bug in ncatted overwrite-mode,
-fixes printing of NC_[U]BYTE attributes, and supports retrieving input
-files from HPSS storage systems, such as that used at NCAR.
+This release implements support for retrieving files from HPSS storage
+systems, such as that now used at NCAR. It also supports the CF
+"bounds" convention, the CF "noleap" convention, fixes a bug in
+ncatted overwrite-mode, fixes printing of NC_[U]BYTE attributes. 
 
-Also worth mentioning again is that the latest Debian (Sid) and Ubuntu 
+Worth mentioning again is that the latest Debian (Sid) and Ubuntu 
 (Maverick) NCO packages support DAP, netCDF4, and UDUnits2.  
 
 http://nco.sf.net#debian
