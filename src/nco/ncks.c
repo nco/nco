@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.267 2011-04-22 18:57:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.268 2011-04-25 20:57:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.267 2011-04-22 18:57:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.267 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.268 2011-04-25 20:57:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.268 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -632,7 +632,7 @@ main(int argc,char **argv)
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     
     /* Turn off default filling behavior to enhance efficiency */
-    /*    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);*/
+    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
     
     /* Take output file out of define mode */
     if(hdr_pad == 0UL){
