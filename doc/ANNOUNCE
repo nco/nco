@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.433 2011-04-22 05:09:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.434 2011-04-25 20:52:15 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -99,6 +99,26 @@ D. NOT YET FIXED
 
    20110114: Verified problem still exists
    Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
+
+E. NOT YET FIXED
+   Creating files on filesystems with large block size (e.g., Lustre)
+   results in silent file corruption. This appears to be a generic
+   netCDF problem that NCO triggers by operating in NC_NOFILL mode.
+
+   Demonstration:
+   ncks -O -d time,603.75,603.875 -v Q,RELHUM \
+   /glade/scratch/sghosh/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-04-29-64800.nc \
+   /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc
+   ncks -C -H -v Q -d time,603.75 -d lev,25 -d lat,0.0 -d lon,180.0 \
+   /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc
+
+   Workaround: 
+   1. Bug affects only netCDF3 files, so create netCDF4 files instead (e.g., ncks -4 ...)
+   2. Do not create netCDF3 files on Lustre filesystems
+   3. Patch NCO to avoid use of NC_NOFILL mode (results in slower writes)
+
+   20110422: Verified problem exists on NCAR /glade bluefire /ptmp 
+   Bug report filed: netCDF #VRU-236841: Large block size, silent file corruption
 
 "Sticky" reminders:
 
