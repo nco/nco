@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.118 2011-04-12 03:37:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.119 2011-04-26 22:56:28 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.118 2011-04-12 03:37:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.119 2011-04-26 22:56:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.119 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -838,7 +838,7 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_all_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
-  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+  /*rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);*/
   
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
