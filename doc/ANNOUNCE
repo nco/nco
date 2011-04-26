@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.434 2011-04-25 20:52:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.435 2011-04-26 22:43:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -45,11 +45,11 @@ A. Change "no_leap" to "noleap" for CF-compliance in re-basing code.
    Thanks to Patrick Brockman for reporting this.
 
 A. Fix bug in ncatted where using overwrite-mode to create a new
-   (rather than replace an old) _FillValue attribute in a netCDF4 file 
+   (rather than replace an old) _FillValue attribute in a netCDF4 file  
    failed. Thanks to Kyle Wilcox for reporting this. 
 
-A. Fix bug in printing NC_[U]BYTE attributes. Attempting this caused a
-   core dump when NCO was compiled with -O optimization. Bytes now
+A. Fix bug printing NC_[U]BYTE attributes. Attempting this caused a
+   core dump when NCO was compiled with -O optimization. Bytes now 
    printed with more-or-less the same convention used by ncgen.
 
 KNOWN BUGS NOT YET FIXED:

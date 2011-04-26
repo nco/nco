@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1126 2011-04-21 03:22:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1127 2011-04-26 22:43:26 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -727,22 +727,12 @@ nco1009. nco: replace allocations of NC_MAX_NAME by NC_MAX_NAME+1 to allow for N
 nco1010. nco: support degenerate auxiliary hyperslabs. Related to nco1007 posted by Jeff Daily. Requires lots of code to compute minimum distance of each point to specified point. And what if both lat and lon are degenerate? PITA
 	 ncks -O -v gds_3dvar -X 0.,180.,20.,20. ~/nco/data/in.nc ~/foo.nc # broken---exits with domain error but should return only value nearest lat=20
 	 ncks -H ~/foo.nc
-nco1011. nco: support CF "bounds" convention for Andrew Schurer 
-	 http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
-	 ncks -O -D 1 -v lev ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-	 ncks -O -D 1 -v gds_crd ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 nco1012. nco: nco_aed_prc() is called (too?) often (by nco_att_cpy()) to copy _FillValue attributes
 	 ncks -O -D 5 ~/nco/data/in.nc ~/foo.nc
 nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
 nco1015. nco: eliminate ncap2 -A option from documentation
 nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
-nco1017. nco: ncks hpss compatibility
-	 ncks -D 3 -v att_var /home/zender/nco/in.nc
-nco1018. nco: deprecate MSS mentioning in nco.texi
-nco1019. ncks dies when printing NC_BYTE attributes unless nco_prn.c compiled with OPTS=D on Linux, AIX
-         ncks -v att_var ~/nco/data/in.nc # fails
-         ncks -x -v att_var,bnd_var ~/nco/data/in.nc # works
 nco1020. 
 qrk
 ************************************************************************
