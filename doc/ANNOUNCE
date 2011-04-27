@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.437 2011-04-27 03:07:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.438 2011-04-27 04:08:58 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -9,8 +9,12 @@ This release implements support for retrieving files from HPSS storage
 systems, such as that now used at NCAR. It also supports the CF
 "bounds" convention, the CF "noleap" convention, fixes a bug in
 ncatted overwrite-mode, fixes printing of NC_[U]BYTE attributes. 
-It also contains a workaround for the NC_NOFILL bug recently found
-to be present in all versions of netCDF since 1999.
+
+4.0.8 also contains a workaround for the NOFILL bug recently found
+to be present in all versions of netCDF since 1999. NCO 4.0.8 works
+around the NOFILL bug whether or not the underlying netCDF library 
+has been patched to fix the bug. For this reason, upgrading to NCO
+4.0.8 is recommended.
 
 Worth mentioning again is that the latest Debian (Sid) and Ubuntu 
 (Maverick) NCO packages support DAP, netCDF4, and UDUnits2.  
@@ -26,24 +30,26 @@ Charlie
 
 Other "New stuff" in 4.0.8 summary (full details always in ChangeLog):
 
-A. Support retrieving input files from the High Performance Storage
-   System (HPSS). NCAR moved from MSS to HPSS in March so NCO 4.0.8
+A. Support retrieving input files from High Performance Storage
+   Systems (HPSS). NCAR moved from MSS to HPSS in March so NCO 4.0.8
    dropped support for MSS (msrcp, msread, nrnet commands) and now
    supports the 'hsi get' command, transparently to the user, e.g., 
    
    ncks -l . /home/zender/nco/in.nc
 
-   See http://nco.sf.net/nco.html#hpss for more information.
+   See http://nco.sf.net/nco.html#hpss for more information, and for
+   what to do if your site stores the 'hsi' executable in a
+   non-standard location.
 
-B. Workaround netCDF NC_NOFILL bug: 
-   Abandon use of NC_NOFILL mode until netCDF 4.1.3 is released.
+B. Workaround netCDF NOFILL bug: 
+   Abandon use of NOFILL mode until netCDF 4.1.3 is released.
    This avoids the (rare, but nasty) bug that can silently corrupt
    writes of netCDF3 files. However, this workaround patch slows
    the writing of netCDF3 files. If write speed is important to you
    you can revert the patch by uncommenting all the lines containing
    NC_NOFILL in the NCO source code.
 
-A. Support CF convention for "bounds" attribute for cell boundaries.
+C. Support CF convention for "bounds" attribute for cell boundaries.
    Thanks to Andrew Schurer for this suggestion.
    Now NCO-generated subsets of CF-compliant files with "bounds" will
    include the coordinates specified by the "bounds" attribute, if any. 
@@ -51,14 +57,14 @@ A. Support CF convention for "bounds" attribute for cell boundaries.
 
    http://nco.sf.net/nco.html#bnd
 
-A. Change "no_leap" to "noleap" for CF-compliance in re-basing code.
+D. Change "no_leap" to "noleap" for CF-compliance in re-basing code.
    Thanks to Patrick Brockman for reporting this.
 
-A. Fix bug in ncatted where using overwrite-mode to create a new
+E. Fix bug in ncatted where using overwrite-mode to create a new
    (rather than replace an old) _FillValue attribute in a netCDF4 file  
    failed. Thanks to Kyle Wilcox for reporting this. 
 
-A. Fix bug printing NC_[U]BYTE attributes. Attempting this caused a
+F. Fix bug printing NC_[U]BYTE attributes. Attempting this caused a
    core dump when NCO was compiled with -O optimization. Bytes now 
    printed with more-or-less the same convention used by ncgen.
 
@@ -112,11 +118,11 @@ D. NOT YET FIXED
 
 E. NOT YET FIXED
    netCDF3 files created under certain conditions are corrupt.
-   The corruption occurs silently and can be difficult to detect.
-   The problem has only been seen "in the wild" on filesystems with
-   large block size (e.g., Lustre), although it could be more widespread.
+   The corruption occurs silently (without warning or error messages). 
+   The problem has been seen "in the wild" only on filesystems with
+   large block sizes (e.g., Lustre), although it may be more widespread. 
    It is caused by a netCDF bug that NCO triggers by invoking
-   NC_NOFILL mode for faster writes.   
+   NOFILL mode for faster writes. Hence it is called the NOFILL bug.  
 
    Demonstration:
    ncks -O -d time,603.75,603.875 -v Q,RELHUM \
@@ -126,13 +132,13 @@ E. NOT YET FIXED
    /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc
 
    Workarounds: 
-   1. Avoid creating netCDF3 files on large blocksize (e.g., Lustre) filesystems
-   2. Create only netCDF4 files (e.g., ncks -4 ...) on large block-size filesystems
-   3. Patch NCO to avoid use of NC_NOFILL mode (results in slower writes):
+   1. Avoid creating netCDF3 files
+   2. Create only netCDF4 files (e.g., ncks -4 ...)
+   3. Patch NCO to avoid use of NOFILL mode (results in slower writes):
       Simply comment-out all lines containing NC_NOFILL in NCO source code.
       This patch is used by default in NCO 4.0.8. It will be removed
-      at a future date TBD when netCDF 4.1.3, which fixes the
-      underlying bug, has been released and been determined to be stable.
+      at a future date TBD after netCDF 4.1.3, which fixes the
+      underlying bug, has been released and is stable.
       Executables in ~zender/bin/*/nc* on NCAR bluefire and /glade
       have already been patched and will not trigger this bug.
 

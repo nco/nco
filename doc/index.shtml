@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.653 2011-04-27 02:50:25 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.654 2011-04-27 04:08:58 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -122,7 +122,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <ul>
 <li>2011 Summer? NCO 4.0.9</li>
 
-<li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support)</li>
+<li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL bug)</li>
 
 <li>2011 Feb&nbsp;21: NCO 4.0.7 (<i>upgrade recommended</i>)</li>
 
@@ -528,13 +528,14 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO 4.0.9</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 World peace?
+Stride works with DAP?;
 <li><b>NCO 4.0.8</b>: (<i>In Progress, features already in beta include the following</i>) 
-Support HPSS;
+Support <a href="http://nco.sf.net/nco.html#hpss">HPSS</a>;
+Workaround netCDF <tt>NOFILL</tt> <a href="#bug_nofill">bug</a> (<i>upgrade recommended</i>);
 Support CF <tt>bounds</tt>;
 CF <tt>noleap</tt> not <tt>no_leap</tt>;
 Fix <tt>ncatted</tt> overwrite-mode;
 Fix <tt>NC_BYTE</tt> printing;
-Stride works with DAP?;
 <li><b>NCO 4.0.7</b>: (<i>Current Stable Release</i>)
 Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a> (<i>upgrade recommended</i>);
 <li><b>NCO 4.0.6</b>: 

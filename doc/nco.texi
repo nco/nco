@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.637 2011-04-21 03:22:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.638 2011-04-27 04:08:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2690,9 +2690,10 @@ be set accordingly on both local and remote machines.
 <a name="msread"></a> <!-- http://nco.sf.net/nco.html#msread -->
 <a name="nrnet"></a> <!-- http://nco.sf.net/nco.html#nrnet -->
 @end html
-To access a file on @acronym{NCAR}'s High Performance Storage System
-(@acronym{HPSS}), specify the full @acronym{HPSS} pathname of the remote
-file.  
+To access a file on a High Performance Storage System (@acronym{HPSS}) 
+(such as that at @acronym{NCAR}, @acronym{ECMWF}, @acronym{LANL},
+@acronym{DKRZ}, @acronym{LLNL}) specify the full @acronym{HPSS} pathname
+of the remote file.  
 @acronym{NCO} will attempt to detect whether the local machine has direct
 (synchronous) @acronym{HPSS} access. 
 In this case, @acronym{NCO} attempts to use the Hierarchical Storage
@@ -2700,6 +2701,9 @@ Interface (@acronym{HSI}) command @command{hsi get}
 @footnote{The @command{hsi} command must be in the user's path in one of
 the following directories: @code{/usr/local/bin} or
 @code{/opt/hpss/bin}. 
+Tell us if the @acronym{HPSS} installation at your site places the
+@command{hsi} command in a different location, and we will add that
+location to the list of acceptable paths to search for @command{hsi}.
 }.
 
 The following examples show how one might analyze files stored on  
