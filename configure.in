@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.336 2011-03-03 20:13:14 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.337 2011-04-27 04:51:31 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -344,30 +344,14 @@ fi # !netCDF4
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
 if test "${enable_netcdf4}" = 'yes'; then
-# Assume HDF5 libraries are in standard places, let user override
-    AC_ARG_VAR([HDF5_LIB_DIR],Location of HDF5 libraries (compile-time))
-    if test "${HDF5_LIB_DIR}" != ''; then
-	if test -d "${HDF5_LIB_DIR}"; then
-	    LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
-	else
-	    echo "WARNING: HDF5_LIB_DIR location \"${HDF5_LIB_DIR}\" does not exist!"
-	fi
-    fi # !HDF5_LIB_DIR
-    if test "${NETCDF4_ROOT}" != ''; then
-	if test -d "${NETCDF4_ROOT}"; then
-	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
-	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
-	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
-	else
-	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
-	    enable_netcdf4='no'
-	fi
+    if test -z "${NETCDF_ROOT}"; then
+	NETCDF_CONFIG='nc-config'
+	NETCDF_ROOT="`nc-config --prefix`"
     else
-	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
-	echo "Assuming netCDF4 is on standard path...";
+	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
     fi
-# Check libnetcdf for netCDF4 function
-    AC_CHECK_LIB([netcdf],[nc4_enddef_netcdf4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
+    LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
+    CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
 fi
 echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 

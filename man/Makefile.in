@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.71 2010-09-14 00:43:07 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.72 2011-04-27 04:51:31 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -105,7 +105,6 @@ FGREP = @FGREP@
 GREP = @GREP@
 HAVE_ANTLR = @HAVE_ANTLR@
 HAVE_MPI_H = @HAVE_MPI_H@
-HDF5_LIB_DIR = @HDF5_LIB_DIR@
 I18N_SHARE = @I18N_SHARE@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@

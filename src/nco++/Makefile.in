@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.57 2010-09-14 00:43:07 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.58 2011-04-27 04:51:31 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -112,7 +112,6 @@ FGREP = @FGREP@
 GREP = @GREP@
 HAVE_ANTLR = @HAVE_ANTLR@
 HAVE_MPI_H = @HAVE_MPI_H@
-HDF5_LIB_DIR = @HDF5_LIB_DIR@
 I18N_SHARE = @I18N_SHARE@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@

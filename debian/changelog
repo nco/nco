@@ -1,6 +1,6 @@
 nco (4.0.8-1) unstable; urgency=low
 
-  * new upstream version (HPSS, CF bounds & noleap, ncatted, NC_BYTE)
+  * new upstream version (HPSS, NOFILL, CF bounds & noleap, ncatted, NC_BYTE)
 
  -- Charlie Zender <zender@uci.edu>  Thu, 21 Apr 2011 12:06:41 -0800
 
