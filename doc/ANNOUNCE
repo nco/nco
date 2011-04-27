@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.438 2011-04-27 04:08:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.439 2011-04-27 17:38:36 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -11,10 +11,12 @@ systems, such as that now used at NCAR. It also supports the CF
 ncatted overwrite-mode, fixes printing of NC_[U]BYTE attributes. 
 
 4.0.8 also contains a workaround for the NOFILL bug recently found
-to be present in all versions of netCDF since 1999. NCO 4.0.8 works
+to be present in all netCDF versions since 1999. NCO 4.0.8 works
 around the NOFILL bug whether or not the underlying netCDF library 
 has been patched to fix the bug. For this reason, upgrading to NCO
 4.0.8 is recommended.
+
+http://nco.sf.net#bug_nofill
 
 Worth mentioning again is that the latest Debian (Sid) and Ubuntu 
 (Maverick) NCO packages support DAP, netCDF4, and UDUnits2.  
@@ -35,11 +37,12 @@ A. Support retrieving input files from High Performance Storage
    dropped support for MSS (msrcp, msread, nrnet commands) and now
    supports the 'hsi get' command, transparently to the user, e.g., 
    
-   ncks -l . /home/zender/nco/in.nc
+   ncks -l . /YO/MAMA/LOVES/HPSS/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-04-29-64800.nc
 
-   See http://nco.sf.net/nco.html#hpss for more information, and for
-   what to do if your site stores the 'hsi' executable in a
-   non-standard location.
+   More information, and what to do if your site stores the 'hsi'
+   executable in a non-standard location, is at 
+
+   http://nco.sf.net/nco.html#hpss
 
 B. Workaround netCDF NOFILL bug: 
    Abandon use of NOFILL mode until netCDF 4.1.3 is released.
@@ -48,6 +51,8 @@ B. Workaround netCDF NOFILL bug:
    the writing of netCDF3 files. If write speed is important to you
    you can revert the patch by uncommenting all the lines containing
    NC_NOFILL in the NCO source code.
+
+   http://nco.sf.net#bug_nofill
 
 C. Support CF convention for "bounds" attribute for cell boundaries.
    Thanks to Andrew Schurer for this suggestion.

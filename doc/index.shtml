@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.654 2011-04-27 04:08:58 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.655 2011-04-27 17:38:36 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -67,7 +67,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is 4.0.7 last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is 4.0.8 last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 
@@ -122,7 +122,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <ul>
 <li>2011 Summer? NCO 4.0.9</li>
 
-<li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL bug)</li>
+<li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL workaround)</li>
 
 <li>2011 Feb&nbsp;21: NCO 4.0.7 (<i>upgrade recommended</i>)</li>
 
@@ -525,11 +525,12 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.0.9</b>: (<i>Future</i>) 
+<li><b>NCO 4.1.0</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
-<li><b>NCO 4.0.8</b>: (<i>In Progress, features already in beta include the following</i>) 
+<li><b>NCO 4.0.9</b>: (<i>In Progress, features already in beta include the following</i>) 
+<li><b>NCO 4.0.8</b>: 
 Support <a href="http://nco.sf.net/nco.html#hpss">HPSS</a>;
 Workaround netCDF <tt>NOFILL</tt> <a href="#bug_nofill">bug</a> (<i>upgrade recommended</i>);
 Support CF <tt>bounds</tt>;
@@ -727,8 +728,8 @@ the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
-<ul> <!-- http://nco.sf.net/src/nco-4.0.7.aix53.tar.gz -->
-<li><a href="src/nco-4.0.7.aix53.tar.gz">nco-4.0.7.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.0.7.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.7.aix53.tar.gz"-->)</li>
+<ul> <!-- http://nco.sf.net/src/nco-4.0.8.aix53.tar.gz -->
+<li><a href="src/nco-4.0.8.aix53.tar.gz">nco-4.0.8.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.0.8.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.8.aix53.tar.gz"-->)</li>
 Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
@@ -738,7 +739,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.0.7</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.0.8</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/maverick/nco">Ubuntu NCO</a> homepages.
@@ -746,7 +747,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Maverick) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.7-1_i386.deb</tt>&rsquo;):</dt>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.8-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_4.0.7-1_amd64.deb">nco_4.0.7-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.deb"-->)</li>
 <li><a href="src/nco_4.0.7-1.dsc">nco_4.0.7-1.dsc</a> (<!--#fsize file="src/nco_4.0.7-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.7-1.dsc"-->)</li>
 <li><a href="src/nco_4.0.7-1_amd64.changes">nco_4.0.7-1_amd64.changes</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.changes"-->)</li>
@@ -934,10 +935,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
-<a href="src/nco-4.0.7.tar.gz">nco-4.0.7.tar.gz</a> 
-(<!--#fsize file="src/nco-4.0.7.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.0.7.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.0.7.tar.gz"--> 
+<a href="src/nco-4.0.8.tar.gz">nco-4.0.8.tar.gz</a> 
+(<!--#fsize file="src/nco-4.0.8.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.0.8.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.0.8.tar.gz"--> 
 </li>
 </ul>
 
@@ -958,19 +959,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>4.0.7</tt> (which is
-tagged as <tt>nco-4_0_7</tt> due to CVS rules) into local directory
-<tt>nco-4.0.7</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_7 -d nco-4.0.7 nco</tt></p>
+This command retrieves and places NCO version <tt>4.0.8</tt> (which is
+tagged as <tt>nco-4_0_8</tt> due to CVS rules) into local directory
+<tt>nco-4.0.8</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_0_8 -d nco-4.0.8 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_0_7</tt>) and the development version is that the
+(e.g., <tt>nco-4_0_8</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.0.7</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.0.8</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1440,6 +1441,22 @@ Bug-fixes:
 Problems with older releases:
 
 <ul><b>Generic Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_nofill -->
+<a name="bug_nofill"></a>
+All NCO versions except 4.0.8 may create corrupt netCDF3 files.
+The corruption occurs silently (without warning or error messages). 
+The problem has been seen "in the wild" only on filesystems with
+large block sizes (e.g., Lustre), although it may be more widespread. 
+It is caused by a netCDF bug that NCO triggers by invoking
+NOFILL mode for faster writes. Hence it is called the NOFILL bug.  
+The bug is hard to trigger, it depends on a rare interaction of
+filesystem block-size, hyperslab size, and order-of-variable writing.
+One workaround is to use NCO version 4.0.8, which disables NOFILL
+mode (and thus writes files more slowly). The real solution is to
+re-build (any version of) NCO against netCDF version 4.1.3+, which,
+when released, will contain the necessary netCDF library fix.
+</li>
+
 <!-- http://nco.sf.net#bug_hyp_dgn -->
 <a name="bug_hyp_dgn"></a>
 <li><i>Degenerate hyperslabbing bug:</i>
