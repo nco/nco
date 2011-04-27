@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.436 2011-04-27 02:50:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.437 2011-04-27 03:07:25 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -111,9 +111,12 @@ D. NOT YET FIXED
    Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
 
 E. NOT YET FIXED
-   Creating netCDF3 files filesystems with large block size (e.g., Lustre)
-   results in silent file corruption. This is a generic netCDF problem
-   that NCO triggers by operating in NC_NOFILL mode. 
+   netCDF3 files created under certain conditions are corrupt.
+   The corruption occurs silently and can be difficult to detect.
+   The problem has only been seen "in the wild" on filesystems with
+   large block size (e.g., Lustre), although it could be more widespread.
+   It is caused by a netCDF bug that NCO triggers by invoking
+   NC_NOFILL mode for faster writes.   
 
    Demonstration:
    ncks -O -d time,603.75,603.875 -v Q,RELHUM \
@@ -122,15 +125,18 @@ E. NOT YET FIXED
    ncks -C -H -v Q -d time,603.75 -d lev,25 -d lat,0.0 -d lon,180.0 \
    /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc
 
-   Workaround: 
-   1. Bug affects only netCDF3 files, so create netCDF4 files instead (e.g., ncks -4 ...)
-   2. Do not create netCDF3 files on Lustre filesystems
-   3. Patch NCO to avoid use of NC_NOFILL mode (results in slower writes)
+   Workarounds: 
+   1. Avoid creating netCDF3 files on large blocksize (e.g., Lustre) filesystems
+   2. Create only netCDF4 files (e.g., ncks -4 ...) on large block-size filesystems
+   3. Patch NCO to avoid use of NC_NOFILL mode (results in slower writes):
+      Simply comment-out all lines containing NC_NOFILL in NCO source code.
       This patch is used by default in NCO 4.0.8. It will be removed
       at a future date TBD when netCDF 4.1.3, which fixes the
       underlying bug, has been released and been determined to be stable.
+      Executables in ~zender/bin/*/nc* on NCAR bluefire and /glade
+      have already been patched and will not trigger this bug.
 
-   20110422: Verified problem exists on NCAR /glade bluefire /ptmp 
+   20110422: Verified problem exists on NCAR /glade and bluefire /ptmp 
    Bug report filed: netCDF #VRU-236841: Large block size, silent file corruption
 
 "Sticky" reminders:
