@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.439 2011-04-27 17:38:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.440 2011-04-27 23:30:35 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -127,7 +127,10 @@ E. NOT YET FIXED
    The problem has been seen "in the wild" only on filesystems with
    large block sizes (e.g., Lustre), although it may be more widespread. 
    It is caused by a netCDF bug that NCO triggers by invoking
-   NOFILL mode for faster writes. Hence it is called the NOFILL bug.  
+   NOFILL mode for faster writes. Hence it is called the NOFILL bug.
+   More information at:
+
+   http://nco.sf.net#bug_nofill
 
    Demonstration:
    ncks -O -d time,603.75,603.875 -v Q,RELHUM \
@@ -141,10 +144,14 @@ E. NOT YET FIXED
    2. Create only netCDF4 files (e.g., ncks -4 ...)
    3. Patch NCO to avoid use of NOFILL mode (results in slower writes):
       Simply comment-out all lines containing NC_NOFILL in NCO source code.
-      This patch is used by default in NCO 4.0.8. It will be removed
-      at a future date TBD after netCDF 4.1.3, which fixes the
-      underlying bug, has been released and is stable.
-      Executables in ~zender/bin/*/nc* on NCAR bluefire and /glade
+      This patch is used by default in NCO 4.0.8, and will workaround
+      the NOFILL bug on all versions of netCDF (i.e., 4.1.2 and earlier).
+      Hence NCO 4.0.8 will always correctly write netCDF3 files.
+      The NOFILL patch included in NCO 4.0.8 will probably be removed
+      in NCO 4.0.9, assuming netCDF 4.1.3, which fixes the underlying
+      bug, has been released and is stable. At that time the netCDF3
+      write speed of NCO will increase to what it once was.
+      Executables at NCAR in ~zender/bin/*/nc* on bluefire and /glade
       have already been patched and will not trigger this bug.
 
    20110422: Verified problem exists on NCAR /glade and bluefire /ptmp 

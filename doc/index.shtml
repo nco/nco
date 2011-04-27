@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.655 2011-04-27 17:38:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.656 2011-04-27 23:30:35 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1451,10 +1451,23 @@ It is caused by a netCDF bug that NCO triggers by invoking
 NOFILL mode for faster writes. Hence it is called the NOFILL bug.  
 The bug is hard to trigger, it depends on a rare interaction of
 filesystem block-size, hyperslab size, and order-of-variable writing.
-One workaround is to use NCO version 4.0.8, which disables NOFILL
-mode (and thus writes files more slowly). The real solution is to
-re-build (any version of) NCO against netCDF version 4.1.3+, which,
-when released, will contain the necessary netCDF library fix.
+The bug exists in all versions of netCDF through 4.1.2.
+
+The recommended temporary workaround is to use NCO version 4.0.8,
+which disables NOFILL mode (and thus writes files more slowly). 
+NCO 4.0.8 and will workaround the NOFILL bug on all versions of netCDF
+(i.e., 4.1.2 and earlier). 
+Hence NCO 4.0.8 will always correctly write netCDF3 files.
+The NOFILL patch included in NCO 4.0.8 will probably be removed
+in NCO 4.0.9, assuming netCDF 4.1.3, which fixes the underlying
+bug, has been released and is stable. At that time the netCDF3
+write speed of NCO will increase to what it once was.
+Other temporary workarounds include creating only netCDF4 files 
+(e.g., <tt>ncks -4 ...</tt>) instead of netCDF3 files.
+
+The real, long-term solution to the NOFILL bug is to re-build (any
+version of) NCO against netCDF version 4.1.3+, which, when released,
+will contain the necessary netCDF library fix. 
 </li>
 
 <!-- http://nco.sf.net#bug_hyp_dgn -->

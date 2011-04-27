@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.133 2011-04-21 03:22:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.134 2011-04-27 23:30:36 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -459,7 +459,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       rcd=0;
 
     }else{ /* DAP-access failed */
-      (void)fprintf(stderr,"%s: INFO DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
+      (void)fprintf(stderr,"%s: INFO DAP-access to %s failed with error code %d. ",prg_nm_get(),fl_nm_lcl,rcd);
+      (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
     } /* DAP-access failed */
 
 #else /* !ENABLE_DAP */
@@ -473,7 +474,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
 	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP */
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
       
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
 	 Later we will attempt to wget file to local system */

@@ -1,3 +1,7 @@
+2011-04-27  Charlie Zender  <zender@uci.edu>
+
+	* Report netCDF error strings on DAP-failures in fl_mk_lcl()
+
 2011-04-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.8 release procedure:
