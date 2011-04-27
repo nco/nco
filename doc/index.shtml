@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.652 2011-04-22 04:16:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.653 2011-04-27 02:50:25 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1344,7 +1344,8 @@ Users at NCAR should try the <i>supported</i> executables in
 <li>CGD network (Solaris 2.x): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUXAMD64</tt></li>
-<li>SCD <tt>bluefire.ucar.edu</tt> (AIX 5.3): <tt>~zender/bin/AIX</tt></li>
+<li>CISL <tt>bluefire.ucar.edu</tt> (AIX 5.3): <tt>~zender/bin/AIX</tt></li>
+<li>CISL <tt>mirage0.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#NCAR -->

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.119 2011-04-26 22:56:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.120 2011-04-27 02:50:25 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.119 2011-04-26 22:56:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.119 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.120 2011-04-27 02:50:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.120 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -782,15 +782,14 @@ main(int argc,char **argv)
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
     /* write misssing value contained inside var */
-    if(var_vtr[idx]->xpr_typ == ncap_var) {
+    if(var_vtr[idx]->xpr_typ == ncap_var){
       var_sct *var_ref;
       
       var_ref=var_vtr[idx]->var;
       rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
       
       /* skip RAM vars and orphaned vars */
-      if(rcd!=NC_NOERR|| !var_ref->has_mss_val)
-        continue;  
+      if(rcd!=NC_NOERR|| !var_ref->has_mss_val) continue;  
       
       /* Do netdf4 name hack */
       if(prs_arg.NCAP4_FILL){
@@ -802,10 +801,8 @@ main(int argc,char **argv)
       continue;
     }
     
-    
-    /* Skip misssing values for now !!! */
-    if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) 
-      continue;     
+    /* Skip missing values for now !!! */
+    if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;     
     
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
     att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
@@ -826,8 +823,6 @@ main(int argc,char **argv)
       goto cln_up;
     }
     /* NB: These attributes should probably be written prior to last data mode */
-    
-    
     (void)nco_aed_prc(out_id,var_id,att_item);
     
   cln_up: att_item.var_nm=(char*)nco_free(att_item.var_nm);
