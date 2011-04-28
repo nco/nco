@@ -1,14 +1,16 @@
-2011-04-27  Charlie Zender  <zender@uci.edu>
-
-	* Report netCDF error strings on DAP-failures in fl_mk_lcl()
-
-2011-04-26  Charlie Zender  <zender@uci.edu>
+2011-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.8 release procedure:
  	Changes since nco-4_0_7: HPSS, NOFILL, CF bounds & noleap, ncatted, NC_BYTE
 	cd ~/nco;cvs tag -d nco-4_0_8;cvs tag -d nco-4_0_8-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.8 release"
 	cvs tag -c nco-4_0_8;cvs tag -c nco-4_0_8-1
+
+2011-04-27  Charlie Zender  <zender@uci.edu>
+
+	* Report netCDF error strings on DAP-failures in fl_mk_lcl()
+
+2011-04-26  Charlie Zender  <zender@uci.edu>
 
 	* Simplifying configure.in to work with netCDF4 on neige
 	Assume that nc-config exists and is findable

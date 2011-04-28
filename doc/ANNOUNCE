@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.440 2011-04-27 23:30:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.441 2011-04-28 21:32:01 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements support for retrieving files from HPSS storage
+This release implements support for retrieving files from HPSS storage 
 systems, such as that now used at NCAR. It also supports the CF
 "bounds" convention, the CF "noleap" convention, fixes a bug in
 ncatted overwrite-mode, fixes printing of NC_[U]BYTE attributes. 
@@ -13,16 +13,12 @@ ncatted overwrite-mode, fixes printing of NC_[U]BYTE attributes.
 4.0.8 also contains a workaround for the NOFILL bug recently found
 to be present in all netCDF versions since 1999. NCO 4.0.8 works
 around the NOFILL bug whether or not the underlying netCDF library 
-has been patched to fix the bug. For this reason, upgrading to NCO
-4.0.8 is recommended.
+has been patched to fix the bug. Often users can re-install
+application software (e.g., NCO in RPM or .deb format) more quickly 
+than they can upgrade base system software (e.g., netCDF).
+For these reasons, upgrading to NCO 4.0.8 is recommended.
 
 http://nco.sf.net#bug_nofill
-
-Worth mentioning again is that the latest Debian (Sid) and Ubuntu 
-(Maverick) NCO packages support DAP, netCDF4, and UDUnits2.  
-
-http://nco.sf.net#debian
-http://nco.sf.net#ubuntu
 
 Work on NCO 4.0.9 is underway, focused on issues described in the 
 KNOWN BUGS NOT YET FIXED section below.
@@ -45,7 +41,7 @@ A. Support retrieving input files from High Performance Storage
    http://nco.sf.net/nco.html#hpss
 
 B. Workaround netCDF NOFILL bug: 
-   Abandon use of NOFILL mode until netCDF 4.1.3 is released.
+   Abandon NOFILL mode until netCDF 4.1.3 is released.
    This avoids the (rare, but nasty) bug that can silently corrupt
    writes of netCDF3 files. However, this workaround patch slows
    the writing of netCDF3 files. If write speed is important to you

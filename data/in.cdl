@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.126 2011-04-20 16:59:08 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.127 2011-04-28 21:32:01 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -655,7 +655,7 @@ variables:
 	rec_var_dbl_mss_val_dbl_pck:_FillValue = -999.;
 	rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
         rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
-        rec_var_dbl_mss_val_dbl_pck:add_offset = 5. ;
+        rec_var_dbl_mss_val_dbl_pck:add_offset = 5.;
 
 	short rec_var_dbl_mss_val_sht_pck(time);
 	rec_var_dbl_mss_val_sht_pck:long_name = "record variable, double, packed as short, with short missing values";
@@ -663,13 +663,13 @@ variables:
 	rec_var_dbl_mss_val_sht_pck:_FillValue = -999s;
 	rec_var_dbl_mss_val_sht_pck:missing_value = -999s;
         rec_var_dbl_mss_val_sht_pck:scale_factor = -9.15541313801785e-05;
-        rec_var_dbl_mss_val_sht_pck:add_offset = 5. ;
+        rec_var_dbl_mss_val_sht_pck:add_offset = 5.;
 
 	short scl_dbl_pck;
 	scl_dbl_pck:long_name = "scalar variable, double, packed";
 	scl_dbl_pck:purpose = "Packed version of number with ncdiff subtraction bug";
         scl_dbl_pck:scale_factor = -9.15541313801785e-05;
-        scl_dbl_pck:add_offset = 5. ;
+        scl_dbl_pck:add_offset = 5.;
 
 	float rec_var_flt_mss_val_flt(time);
 	rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values";
@@ -735,8 +735,8 @@ variables:
 	rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) offers considerable space savings";
 	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999.0;
 	rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999.0;
-        rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05 ;
-        rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5. ;
+        rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05;
+        rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5.;
 
 	char one_dmn_rec_var_sng(time);
 	one_dmn_rec_var_sng:long_name = "one dimensional record variable of string";
@@ -758,17 +758,17 @@ variables:
 	double three_dmn_var_dbl(time,lat,lon);
 	three_dmn_var_dbl:long_name = "three dimensional record variable of type double";
 	three_dmn_var_dbl:units = "watt meter-2";
-	three_dmn_var_dbl:_FillValue = -99. ;
+	three_dmn_var_dbl:_FillValue = -99.;
 
 	int three_dmn_var_int(time,lat,lon);
 	three_dmn_var_int:long_name = "three dimensional record variable of type int";
 	three_dmn_var_int:units = "watt meter-2";
-	three_dmn_var_int:_FillValue = -99 ;
+	three_dmn_var_int:_FillValue = -99;
 	
 	short three_dmn_var_sht(time,lat,lon);
 	three_dmn_var_sht:long_name = "three dimensional record variable";
 	three_dmn_var_sht:units = "watt meter-2";
-	three_dmn_var_sht:_FillValue = -99s ;
+	three_dmn_var_sht:_FillValue = -99s;
 
 	int th(time,lat,lon);
 	th:long_name = "three dimensional record variable";
@@ -1084,7 +1084,7 @@ data:
 	three_dmn_var=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,21.,22.,23.;
 	three_dmn_var_crd=0.,1.,2.,3.,12.,13.,14.,15.,4.,5.,6.,7.,16.,17.,18.,19.,8.,9.,10.,11.,20.,21.,22.,23.;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
-	od=20,22,24,26,28,30,32,34,36,38 ;
+	od=20,22,24,26,28,30,32,34,36,38;
 	tpt=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,274.0;
 	two=2.;
 	two_dmn_var=1.5,5.5,9.5,13.5,17.5,21.5;

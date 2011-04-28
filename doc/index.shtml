@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.656 2011-04-27 23:30:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.657 2011-04-28 21:34:17 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -122,7 +122,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <ul>
 <li>2011 Summer? NCO 4.0.9</li>
 
-<li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL workaround)</li>
+<li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL workaround, <i>upgrade recommended</i>)</li>
 
 <li>2011 Feb&nbsp;21: NCO 4.0.7 (<i>upgrade recommended</i>)</li>
 
@@ -530,14 +530,14 @@ netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
 <li><b>NCO 4.0.9</b>: (<i>In Progress, features already in beta include the following</i>) 
-<li><b>NCO 4.0.8</b>: 
+<li><b>NCO 4.0.8</b>: (<i>Current Stable Release</i>) 
 Support <a href="http://nco.sf.net/nco.html#hpss">HPSS</a>;
 Workaround netCDF <tt>NOFILL</tt> <a href="#bug_nofill">bug</a> (<i>upgrade recommended</i>);
 Support CF <tt>bounds</tt>;
 CF <tt>noleap</tt> not <tt>no_leap</tt>;
 Fix <tt>ncatted</tt> overwrite-mode;
 Fix <tt>NC_BYTE</tt> printing;
-<li><b>NCO 4.0.7</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.0.7</b>:
 Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a> (<i>upgrade recommended</i>);
 <li><b>NCO 4.0.6</b>: 
 <tt>clang</tt>-compliance;
@@ -748,11 +748,11 @@ NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Maverick) generall
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.8-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.0.7-1_amd64.deb">nco_4.0.7-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.0.7-1.dsc">nco_4.0.7-1.dsc</a> (<!--#fsize file="src/nco_4.0.7-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.7-1.dsc"-->)</li>
-<li><a href="src/nco_4.0.7-1_amd64.changes">nco_4.0.7-1_amd64.changes</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.0.7.orig.tar.gz">nco_4.0.7.orig.tar.gz</a> (<!--#fsize file="src/nco_4.0.7.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.0.7.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.0.7-1.diff.gz">nco_4.0.7-1.diff.gz</a> (<!--#fsize file="src/nco_4.0.7-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.0.7-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.0.8-1_amd64.deb">nco_4.0.8-1_amd64.deb</a> (<!--#fsize file="src/nco_4.0.8-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.0.8-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.0.8-1.dsc">nco_4.0.8-1.dsc</a> (<!--#fsize file="src/nco_4.0.8-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.0.8-1.dsc"-->)</li>
+<li><a href="src/nco_4.0.8-1_amd64.changes">nco_4.0.8-1_amd64.changes</a> (<!--#fsize file="src/nco_4.0.8-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.0.8-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.0.8.orig.tar.gz">nco_4.0.8.orig.tar.gz</a> (<!--#fsize file="src/nco_4.0.8.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.0.8.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.0.8-1.diff.gz">nco_4.0.8-1.diff.gz</a> (<!--#fsize file="src/nco_4.0.8-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.0.8-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
