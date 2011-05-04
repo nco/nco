@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.171 2011-04-26 22:56:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.172 2011-05-04 00:29:27 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.171 2011-04-26 22:56:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.171 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.172 2011-05-04 00:29:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.172 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -508,14 +508,13 @@ main(int argc,char **argv)
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
+  for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   }
 
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
-
   
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
@@ -598,8 +597,6 @@ main(int argc,char **argv)
   
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,nbr_xtr);
-
-  
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
@@ -834,14 +831,14 @@ main(int argc,char **argv)
     (void)nco_xrf_dmn(var_prc[idx]);
     var_tmp=var_prc[idx];
 
-    for(jdx=0 ; jdx<var_tmp->nbr_dim ; jdx++){
+    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
       var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
       var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
       var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
       var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
       sz*=var_tmp->dim[jdx]->cnt;
       if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
-     }/* end loop over jdx */
+     } /* end loop over jdx */
      var_tmp->sz=sz; 
      var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
