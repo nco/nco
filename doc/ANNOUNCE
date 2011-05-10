@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.441 2011-04-28 21:32:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.442 2011-05-10 21:56:20 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.8 are ready. 
 
@@ -133,7 +133,8 @@ E. NOT YET FIXED
    /glade/scratch/sghosh/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-04-29-64800.nc \
    /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc
    ncks -C -H -v Q -d time,603.75 -d lev,25 -d lat,0.0 -d lon,180.0 \
-   /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc
+   /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc #
+   (Contents equaling zero means NCO is affected by the bug)
 
    Workarounds: 
    1. Avoid creating netCDF3 files
@@ -152,6 +153,17 @@ E. NOT YET FIXED
 
    20110422: Verified problem exists on NCAR /glade and bluefire /ptmp 
    Bug report filed: netCDF #VRU-236841: Large block size, silent file corruption
+
+F. NOT YET FIXED
+   Unable to retrieve contents of variables with period '.' in name
+   Metadata is returned successfully, data is not.
+   DAP non-transparency: Works locally, fails through DAP server.
+
+   Demonstration:
+   ncks -O -C -D 3 -v var_nm.dot -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # Breaks with "NetCDF: DAP server error"
+
+   20110506: Verified problem still exists
+   Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
 "Sticky" reminders:
 

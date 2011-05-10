@@ -1,10 +1,15 @@
-2011-05-03  Charlie Zender  <zender@uci.edu>
+2011-05-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:
- 	Changes since nco-4_0_8: 
+ 	Changes since nco-4_0_8:
 	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
+	* Webpage updates
+
+	* NB: Debian pbuilder has been broken on Ubuntu Natty Narwhal for weeks
+	This prevents serious work on a 4.0.9 release, improving configure, etc.
 
 2011-04-28  Charlie Zender  <zender@uci.edu>
 

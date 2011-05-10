@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.657 2011-04-28 21:34:17 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.658 2011-05-10 21:56:20 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -742,9 +742,9 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.0.8</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
-<a href="http://packages.ubuntu.com/maverick/nco">Ubuntu NCO</a> homepages.
+<a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
 &lsquo;<tt>aptitude install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
-NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Maverick) generally lag the packages distributed here by 6&ndash;12 months.
+NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Natty) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.0.8-1_i386.deb</tt>&rsquo;):</dt>
@@ -1033,7 +1033,7 @@ pre-requisite and optional software from pre-compiled packages on
 modern Debian-based systems with
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
-<dt>sudo aptitude install libcurl4-gnutls-dev libxml2-dev # DAP-prereqs</dt>
+<dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs</dt>
 <dt>sudo aptitude install bison flex gcc g++ # GNU toolchain</dt>
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
 <dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
@@ -1392,58 +1392,12 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 
 Problems with recent releases:
 
-<ul><b>Operator-specific Run-time Problems:</b>
-<!-- http://nco.sf.net#bug_ncks_m -->
-<a name="bug_ncks_m"></a>
-<li><i>Core dump with <tt>ncks</tt>:</i>
-Printing variables to screen with <tt>ncks</tt> can trigger a segfault
-in NCO 3.9.9&mdash;4.0.3. 
-Users may upgrade, downgrade, or apply this one-line patch to 3.9.9 sources:
-Remove this line
-&ldquo;<tt>*cnk_sz=(size_t)NULL;</tt>&rdquo;
-&mdash;near line&nbsp;751 of <tt>nco/src/nco/nco_netcdf.c</tt>&mdash;
-should fix the problem.
-The problem in later NCO versions is due to a different bug and this
-patch will not work.
-</li>
-
-</ul>
-
-<ul><b>Platform-specific Run-time Problems:</b>
-<a name="bug_ncap_flt_fnc_aix"></a>
-<li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-<tt>ncap</tt> versions through 4.0.4 have a bug that causes all float-valued
-intrinsic math functions to fail under AIX.
-Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
-<tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
-The user does not invoke these functions directly&mdash;
-the user always specifies the <i>generic function name</i>, e.g.,
-<tt>cos()</tt>, <tt>abs()</tt>, <tt>log()</tt>.
-NCO automatically calls the native single precision (i.e.,
-float-valued) math functions when the generic function argument 
-is a native float (e.g., naked constants like <tt>1.0f</tt> or
-variables stored as <tt>NC_FLOAT</tt>).
-Double precision arguments cause NCO to invoke the standard
-(double-valued) form of the generic function, e.g., <tt>cos()</tt>, 
-<tt>fabs()</tt>, <tt>log()</tt>. 
-<!-- Whevnever this bug is fixed, here is some text
-Version info:
-<tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
-ANNOUNCE info:
-First, AIX NCO installations should upgrade to this version to get the
-AIX-specific ncap bug-fix.
-Bug-fixes:
-1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
--->
-</li>
-</ul>
-
-Problems with older releases:
-
-<ul><b>Generic Run-time Problems:</b>
+<ul><b>Recent Generic Run-time Problems:</b>
 <!-- http://nco.sf.net#bug_nofill -->
 <a name="bug_nofill"></a>
-All NCO versions except 4.0.8 may create corrupt netCDF3 files.
+<li><i><tt>NOFILL</tt> bug:</i>
+All NCO versions except 4.0.8 may create corrupt netCDF3 files
+when linked to any netCDF version prior to 4.1.3.
 The corruption occurs silently (without warning or error messages). 
 The problem has been seen "in the wild" only on filesystems with
 large block sizes (e.g., Lustre), although it may be more widespread. 
@@ -1469,7 +1423,21 @@ The real, long-term solution to the NOFILL bug is to re-build (any
 version of) NCO against netCDF version 4.1.3+, which, when released,
 will contain the necessary netCDF library fix. 
 </li>
+</ul>
 
+<ul><b>Recent Operator-specific Run-time Problems:</b>
+No known operator-specific problems with recent releases.
+</ul>
+
+<ul><b>Recent Platform-specific Run-time Problems:</b>
+No known platform-specific problems with recent releases.
+</ul>
+
+</ul>
+
+Problems with older releases:
+
+<ul><b>Older Generic Run-time Problems:</b>
 <!-- http://nco.sf.net#bug_hyp_dgn -->
 <a name="bug_hyp_dgn"></a>
 <li><i>Degenerate hyperslabbing bug:</i>
@@ -1525,7 +1493,7 @@ these versions of NCO.
 </li>
 </ul>
 
-<ul><b>Operator-specific Run-time Problems:</b>
+<ul><b>Older Operator-specific Run-time Problems:</b>
 <!-- http://nco.sf.net#bug_ncra_cf_crd_rec_crd -->
 <a name="bug_ncra_cf_crd_rec_crd"></a>
 <li><i><tt>ncra</tt> bug handling CF <tt>coordinates</tt> attributes   
@@ -1574,6 +1542,20 @@ to explicitly specify chunking with, e.g.,
 when there is only one input file), or to write to a netCDF3 file,
 <tt>ncks -3 -d 0,1,lat in4.nc out3.nc</tt>.
 
+<!-- http://nco.sf.net#bug_ncks_m -->
+<a name="bug_ncks_m"></a>
+<li><i>Core dump with <tt>ncks</tt>:</i>
+Printing variables to screen with <tt>ncks</tt> can trigger a segfault
+in NCO 3.9.9&mdash;4.0.3. 
+Users may upgrade, downgrade, or apply this one-line patch to 3.9.9 sources:
+Remove this line
+&ldquo;<tt>*cnk_sz=(size_t)NULL;</tt>&rdquo;
+&mdash;near line&nbsp;751 of <tt>nco/src/nco/nco_netcdf.c</tt>&mdash;
+should fix the problem.
+The problem in later NCO versions is due to a different bug and this
+patch will not work.
+</li>
+
 <!-- http://nco.sf.net#bug_ncrename_dot -->
 <a name="bug_ncrename_dot"></a>
 <li><i><tt>ncrename</tt> erroneous error exit:</i>
@@ -1604,7 +1586,7 @@ dates, leading to segmentation faults and core dumps.
 variables to variable powers (<tt>V^V</tt>).
 We recommend that all <tt>ncap</tt> users upgrade.<br>
   
-  <tt>ncap</tt> versions up to 2.9.1 incorrectly handle division,
+<tt>ncap</tt> versions up to 2.9.1 incorrectly handle division,
 modulo, and exponentiation operations of the form <tt>S/V</tt>,
 <tt>S%V</tt>, and <tt>S^V</tt> where first operand (<tt>S</tt>) is 
 scalar (i.e., either typed directly in the <tt>ncap</tt> script or 
@@ -1692,6 +1674,34 @@ intrinsic packing function <tt>pack()</tt> to fail.
 Version&nbsp;2.8.7 fixes this problem.
 </li>
 </ul>
+
+<ul><b>Older Platform-specific Run-time Problems:</b>
+<a name="bug_ncap_flt_fnc_aix"></a>
+<li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
+<tt>ncap</tt> versions through 4.0.4 have a bug that causes all float-valued
+intrinsic math functions to fail under AIX.
+Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
+<tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
+The user does not invoke these functions directly&mdash;
+the user always specifies the <i>generic function name</i>, e.g.,
+<tt>cos()</tt>, <tt>abs()</tt>, <tt>log()</tt>.
+NCO automatically calls the native single precision (i.e.,
+float-valued) math functions when the generic function argument 
+is a native float (e.g., naked constants like <tt>1.0f</tt> or
+variables stored as <tt>NC_FLOAT</tt>).
+Double precision arguments cause NCO to invoke the standard
+(double-valued) form of the generic function, e.g., <tt>cos()</tt>, 
+<tt>fabs()</tt>, <tt>log()</tt>. 
+<!-- Whevnever this bug is fixed, here is some text
+Version info:
+<tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
+ANNOUNCE info:
+First, AIX NCO installations should upgrade to this version to get the
+AIX-specific ncap bug-fix.
+Bug-fixes:
+1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
+-->
+</li>
 
 </ul>
 <p><hr></p>
