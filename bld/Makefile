@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.584 2011-04-27 02:50:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.585 2011-05-10 22:03:04 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -75,12 +75,12 @@
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
 # cd ~/nco/bld;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/7.21.2/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' HDF5_ROOT='/contrib/hdf5-1.8.6_seq' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf-4.1.2_seq' SZ_LIB='/contrib/szip/lib' UDUNITS_LIB='/contrib/zlib/lib' make --jobs=1 OPTS=D SZ=Y allinone ABI=64;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
-# cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.0.8.aix53.tar.gz nc*;scp ~/nco-4.0.8.aix53.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+# cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.0.9.aix53.tar.gz nc*;scp ~/nco-4.0.9.aix53.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # netCDF4 on NCAR Linux cluster systems (mirage):
 # cd ~/nco/bld;make OPTS=D allinone;cd -
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
-# cd ~/bin/WIN32;tar cvzf ~/nco-4.0.8.win32.cygwin.tar.gz nc* ; scp ~/nco-4.0.8.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+# cd ~/bin/WIN32;tar cvzf ~/nco-4.0.9.win32.cygwin.tar.gz nc* ; scp ~/nco-4.0.9.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP_OPENDAP=Y
@@ -1677,7 +1677,7 @@ libnco_c++_tst:   ${MY_BLD_DIR}/libnco_c++_tst
 ${MY_BLD_DIR}/libnco_c++_tst:	${MY_BLD_DIR}/libnco_c++_tst.o lib
 	${CXX} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=4.0.8 rpm
+rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=4.0.9 rpm
 # 	Building NCO RPM requires following packages
 #       rpm -q bison flex netcdf-devel libtool automake autoconf udunits udunits-devel curl-devel libxml2 libxml2-devel librx-devel 
 #       sudo yum install bison flex netcdf-devel libtool automake autoconf udunits udunits-devel curl-devel libxml2 libxml2-devel librx-devel

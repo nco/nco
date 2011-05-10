@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.639 2011-05-10 21:56:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.640 2011-05-10 22:03:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -100,8 +100,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.0.8
-@set doc-edition 4.0.8
+@set nco-edition 4.0.9
+@set doc-edition 4.0.9
 @set copyright-years 1995--2011
 @set update-year 2011
 @set update-date 10 May 2011
@@ -3489,7 +3489,7 @@ without having to know their names.
 As of @acronym{NCO} version 3.9.6 (January, 2009) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
 convention described in @ref{CF Conventions}.
-As of @acronym{NCO} version 4.0.8 (March, 2011) 
+As of @acronym{NCO} version 4.0.8 (April, 2011) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{bounds}
 convention described in @ref{CF Conventions}. 
 
@@ -5732,7 +5732,7 @@ or alter the @code{Conventions} attribute.
 @end html
 @cindex @code{bounds}
 @cindex bounds convention
-As of @acronym{NCO} version 4.0.8 (March, 2011), @acronym{NCO} 
+As of @acronym{NCO} version 4.0.8 (April, 2011), @acronym{NCO} 
 supports the @acronym{CF} @code{bounds} convention for cell boundaries
 described 
 @uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries, here}.

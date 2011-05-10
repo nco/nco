@@ -9,9 +9,9 @@ releases. New features are built into pre-release .deb packages as the
 features are introduced.  Once an (arbritrary) number of new features
 seems stable, we simply announce that the current pre-release code is
 the official (stable) release code. For example, .deb packages with
-the 4.0.8 release name have been at the expected location
+the 4.0.9 release name have been at the expected location
 
-http://nco.sourceforge.net/src/nco_4.0.8-1_amd64.deb
+http://nco.sourceforge.net/src/nco_4.0.9-1_amd64.deb
 
 for many months, but the NCO homepage for binary package download
 only points to this location once the release is official. Until then,
@@ -27,14 +27,14 @@ track NCO feature development more closely than official releases.
 Just remove your existing NCO package and replace it with the latest
 (unannounced) package that has the feature you want with, e.g., 
 
-wget http://nco.sourceforge.net/src/nco_4.0.8-1_amd64.deb .
+wget http://nco.sourceforge.net/src/nco_4.0.9-1_amd64.deb .
 sudo dpkg --remove nco
-sudo dpkg --install nco_4.0.8-1_*.deb
+sudo dpkg --install nco_4.0.9-1_*.deb
 
 or, for AIX,
 
-wget http://nco.sourceforge.net/src/nco-4.0.8.aix53.tar.gz .
-tar xvzf nco-4.0.8.aix53.tar.gz .
+wget http://nco.sourceforge.net/src/nco-4.0.9.aix53.tar.gz .
+tar xvzf nco-4.0.9.aix53.tar.gz .
 
 Caveats: 
 1. .debs for amd64 (my development machine) are available early. Savvy

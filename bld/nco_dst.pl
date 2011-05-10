@@ -6,17 +6,17 @@
 # Usage:
 # Export tagged, public versions
 
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_0_8 # Build, do not install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_0_8 # Install, do not build
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_0_8 # Build and install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_0_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_0_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_0_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_0_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_0_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_0_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_0_8
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_0_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_0_9 # Build, do not install
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_0_9 # Install, do not build
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_0_9 # Build and install
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_0_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_0_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_0_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_0_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_0_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_0_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_0_9
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_0_9
 
 # Export daily snapshot
 # ${HOME}/nco/bld/nco_dst.pl --dbg=2 
@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.185 2011-03-03 20:13:14 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.186 2011-05-10 22:03:04 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2011-03-03 20:13:14 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.185 2011-03-03 20:13:14 zender Exp $';
-my $CVS_Revision='$Revision: 1.185 $';
+my $CVS_Date='$Date: 2011-05-10 22:03:04 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.186 2011-05-10 22:03:04 zender Exp $';
+my $CVS_Revision='$Revision: 1.186 $';
 my $CVSROOT='zender@nco.cvs.sf.net:/cvsroot/nco'; # CVS repository
 my $DATA=$ENV{'DATA'};
 my $HOME=$ENV{'HOME'};
@@ -248,7 +248,7 @@ if($bld){
 
 # Set up FTP server
     chdir $dst_pth_pfx or die "$prg_nm: ERROR unable to chdir to $dst_pth_pfx: $!\n"; # $! is system error string
-    cmd_prc("$tar_cmd cvzf $dst_fl --exclude='nco-4.0.8/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude=ncap_yacc.[ch] ./$dst_vrs"); # Create gzipped tarfile
+    cmd_prc("$tar_cmd cvzf $dst_fl --exclude='nco-4.0.9/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude=ncap_yacc.[ch] ./$dst_vrs"); # Create gzipped tarfile
     cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/src/$dst_fl"); # Remove any distribution with same name
     if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/src/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server
     cmd_prc("$rcp_cmd $dst_fl $www_mch:$www_drc/src"); # Copy local tarfile to WWW server
