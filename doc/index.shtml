@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.658 2011-05-10 21:56:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.659 2011-05-13 03:09:11 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -138,9 +138,9 @@ Keep the size &lt;250&times;250 pixels.<br>
 
 <li>2010 Apr&nbsp;05: NCO 4.0.1</li>
 
-<li>2010 Jan&nbsp;05: NCO 4.0.0 (bilinear interpolation, calendar attribute)</li>
+<li>2010 Jan&nbsp;05: NCO 4.0.0 (bilinear interpolation, calendar attributes)</li>
 
-<li>2009 Jul&nbsp;15: NCO 3.9.9 (chunking, rebasing, GSL stats/interp)</li>
+<li>2009 Jul&nbsp;15: NCO 3.9.9 (chunking, re-basing, GSL stats/interp)</li>
 
 <li>2009 Apr&nbsp;29: NCO 3.9.8 (GSL RNG/PDF functions)</li>
 
@@ -238,38 +238,41 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>What is NCO?</h2>
 <p>The <a
 href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-Operators (NCO) are a suite of standalone, command-line programs like,
-e.g., <tt>ls</tt> or <tt>mkdir</tt>.
-Each operator takes <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
-files as input, then operates (e.g., derives new data, averages, 
-hyperslabs, manipulates metadata) and produces a 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-output file.  
-NCO primarily aids manipulation and analysis of gridded scientific data. 
-The single-command style of NCO allows users to manipulate and analyze
+Operators (NCO) comprise a dozen standalone, command-line programs
+that take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
+files as input, then operate (e.g., derive new data, average, print,
+hyperslab, manipulate metadata) and output the results to screen or 
+files in text, binary, or 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
+formats.
+NCO aids manipulation and analysis of gridded scientific data.  
+The shell-command style of NCO allows users to manipulate and analyze
 files interactively, or with simple scripts that avoid some overhead
 (and power) of higher level programming environments.  
-The <a href="./nco.html">NCO User's Guide</a> illustrates their use
-with examples from the field of climate modeling and analysis.
-Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 
-are misnamed because they perform many non-linear operations as well,
-e.g., total, minimum, maximum, RMS: 
+The <a href="./nco.html">NCO User's Guide</a> illustrates their use 
+with examples of climate data analysis:
 <ul>
 <li><a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
-<li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF Attribute Editor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
+<li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF ATTribute EDitor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
 <li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
 <li><a href="./nco.html#ncea"><tt>ncea</tt></a> netCDF Ensemble Averager (<a href="./nco.html#xmp_ncea">examples</a>)</li>
-<li><a href="./nco.html#ncecat"><tt>ncecat</tt></a> netCDF Ensemble Concatenator (<a href="./nco.html#xmp_ncecat">examples</a>)</li>
-<li><a href="./nco.html#ncflint"><tt>ncflint</tt></a> netCDF File Interpolator (<a href="./nco.html#xmp_ncflint">examples</a>)</li>
+<li><a href="./nco.html#ncecat"><tt>ncecat</tt></a> netCDF Ensemble conCATenator (<a href="./nco.html#xmp_ncecat">examples</a>)</li>
+<li><a href="./nco.html#ncflint"><tt>ncflint</tt></a> netCDF FiLe INTerpolator (<a href="./nco.html#xmp_ncflint">examples</a>)</li>
 <li><a href="./nco.html#ncks"><tt>ncks</tt></a> netCDF Kitchen Sink (<a href="./nco.html#xmp_ncks">examples</a>)</li>
 <li><a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> netCDF Permute Dimensions Quickly, Pack Data Quietly (<a href="./nco.html#xmp_ncpdq">examples</a>)</li>
 <li><a href="./nco.html#ncra"><tt>ncra</tt></a> netCDF Record Averager (<a href="./nco.html#xmp_ncra">examples</a>)</li>
-<li><a href="./nco.html#ncrcat"><tt>ncrcat</tt></a> netCDF Record Concatenator (<a href="./nco.html#xmp_ncrcat">examples</a>)</li>
-<li><a href="./nco.html#ncrename"><tt>ncrename</tt></a> netCDF Renamer (<a href="./nco.html#xmp_ncrename">examples</a>)</li>
+<li><a href="./nco.html#ncrcat"><tt>ncrcat</tt></a> netCDF Record conCATenator (<a href="./nco.html#xmp_ncrcat">examples</a>)</li>
+<li><a href="./nco.html#ncrename"><tt>ncrename</tt></a> netCDF RENAMEer (<a href="./nco.html#xmp_ncrename">examples</a>)</li>
 <li><a href="./nco.html#ncwa"><tt>ncwa</tt></a></td> netCDF Weighted Averager (<a href="./nco.html#xmp_ncwa">examples</a>)</li>
 </ul>
 
-<p>The operators are as general as 
+<p>
+Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 
+(<tt>ncea</tt> and <tt>ncra</tt>) are misnamed because they perform
+many non-linear operations as well, e.g., total, minimum, maximum, RMS.
+Moreover, <tt>ncap2</tt> implements a powerful domain language which
+handles arbitrarily complex operations.
+The operators are as general as 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
 itself: there are no restrictions on the contents of the 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
@@ -280,10 +283,8 @@ NCO is designed to be used both interactively and with large batch jobs.
 The default operator behavior is often sufficient for everyday needs, 
 and there are numerous command line (i.e., run-time) options, for
 special cases.
-NCO works well on most modern operating systems, including:
-Apple OS&nbsp;X, *BSD, Cray UNICOS, DEC Tru64, IBM AIX, HPUX,
-Linux, Microsoft Windows, NEC Super&nbsp;UX, SGI IRIX, and Sun
-Solaris.</p>
+NCO works well and is used on most modern operating systems.
+</p>
 
 <p><hr width="100%"></p>
 
