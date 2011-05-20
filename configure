@@ -913,10 +913,10 @@ with_gnu_ld
 enable_libtool_lock
 enable_maintainer_mode
 enable_largefile
-enable_dap_netcdf
-enable_dap_opendap
 enable_netcdf4
 enable_netcdf_4
+enable_dap_netcdf
+enable_dap_opendap
 enable_ncoxx
 enable_ncap2
 enable_mpi
@@ -1587,14 +1587,14 @@ Optional Features:
   --enable-maintainer-mode  enable make rules and dependencies not useful
 			  (and sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
-  --enable-dap-netcdf     Build DAP-enabled NCO with netCDF-provided DAP
-                          [[default=yes]]
-  --enable-dap-opendap    Build DAP-enabled NCO with OPeNDAP-provided DAP
-                          [[default=no]]
   --enable-netcdf4        Enable netCDF Version 4 features (same as
                           enable-netcdf-4) [[default=yes]]
   --enable-netcdf-4       Enable netCDF Version 4 features (same as
                           enable-netcdf4) [[default=yes]]
+  --enable-dap-netcdf     Build DAP-enabled NCO with netCDF-provided DAP
+                          [[default=yes]]
+  --enable-dap-opendap    Build DAP-enabled NCO with OPeNDAP-provided DAP
+                          [[default=no]]
   --enable-ncoxx          Build libnco++ and ncap2 (same as enable-ncap2)
                           [[default=yes]]
   --enable-ncap2          Build ncap2 and libnco++ (same as enable-ncoxx)
@@ -16618,6 +16618,264 @@ rm -rf conftest*
 fi
 
 
+# Begin mandatory link test with libnetcdf.a
+# Make precious variables for ./configure --help
+
+
+
+# User-specified netCDF locations, if any, take precedence
+if test "${NETCDF_ROOT}" != ''; then
+    if test -d "${NETCDF_ROOT}"; then
+	CPPFLAGS="-I${NETCDF_ROOT}/include ${CPPFLAGS}";
+	LDFLAGS="-L${NETCDF_ROOT}/lib ${LDFLAGS}";
+    else
+	echo "WARNING: NETCDF_ROOT location \"${NETCDF_ROOT}\" does not exist!"
+    fi
+fi # !NETCDF_ROOT
+if test "${NETCDF_LIB}"; then
+    if test -d "${NETCDF_LIB}"; then
+	LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
+    else
+	echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
+    fi
+fi # !NETCDF_LIB
+if test "${NETCDF_INC}"; then
+    if test -d "${NETCDF_INC}"; then
+	CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
+    else
+	echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
+    fi
+fi # !NETCDF_INC
+
+# NCO no longer supports netCDF2
+for ac_header in netcdf.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "netcdf.h" "ac_cv_header_netcdf_h" "$ac_includes_default"
+if test "x$ac_cv_header_netcdf_h" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_NETCDF_H 1
+_ACEOF
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot find netCDF header
+See \`config.log' for more details" "$LINENO" 5 ; }
+fi
+
+done
+
+
+$as_echo "#define NO_NETCDF_2 1" >>confdefs.h
+
+
+echo "#################################"
+echo "#  Test for netCDF4 support     #"
+echo "#################################"
+# Check whether --enable-netcdf4 was given.
+if test "${enable_netcdf4+set}" = set; then :
+  enableval=$enable_netcdf4; enable_netcdf4=${enableval}
+else
+  enable_netcdf4=no
+fi
+
+# 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
+if test "x${enable_netcdf4}" = 'xno' ; then
+    # Check whether --enable-netcdf-4 was given.
+if test "${enable_netcdf_4+set}" = set; then :
+  enableval=$enable_netcdf_4; enable_netcdf4=${enableval}
+else
+  enable_netcdf4=no
+fi
+
+fi # !netCDF4
+
+# Test if user set NETCDF4_ROOT and it exists
+if test "${enable_netcdf4}" = 'yes'; then
+    if test -z "${NETCDF_ROOT}"; then
+	NETCDF_CONFIG='nc-config'
+	NETCDF_ROOT="`nc-config --prefix`"
+    else
+	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
+    fi
+    LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
+    CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
+fi
+echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
+
+# ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
+# ENABLE_NETCDF4 implies HAVE_NETCDF4_H
+# The converse is not true! Some distributions (e.g., Debian stable)
+# build _only_ netCDF3 library from netCDF4 source code
+header_defines_nc_chunked='no'
+if test "x${enable_netcdf4}" = 'xyes' ; then
+    header_defines_nc_chunked='yes'
+else
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <netcdf.h>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "NC_CHUNKED" >/dev/null 2>&1; then :
+  header_defines_nc_chunked='yes'
+fi
+rm -f conftest*
+
+fi
+if test "x${header_defines_nc_chunked}" = 'xyes' ; then
+
+$as_echo "#define HAVE_NETCDF4_H 1" >>confdefs.h
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: netcdf.h contains netCDF4 definitions" >&5
+$as_echo "$as_me: netcdf.h contains netCDF4 definitions" >&6;}
+fi
+echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${head_defines_nc_chunked}"
+
+if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
+# Nothing fancy requested, so verify regular old libnetCDF3 works
+# Check for 'nc_open()' using default compiler flags
+# If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
+# [nc_open() is cached---checking for it twice does not work]
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Checking default compiler flags" >&5
+$as_echo "$as_me: Checking default compiler flags" >&6;}
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc_open in -lnetcdf" >&5
+$as_echo_n "checking for nc_open in -lnetcdf... " >&6; }
+if test "${ac_cv_lib_netcdf_nc_open+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnetcdf  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char nc_open ();
+int
+main ()
+{
+return nc_open ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_netcdf_nc_open=yes
+else
+  ac_cv_lib_netcdf_nc_open=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdf_nc_open" >&5
+$as_echo "$ac_cv_lib_netcdf_nc_open" >&6; }
+if test "x$ac_cv_lib_netcdf_nc_open" = x""yes; then :
+
+	    LIBS="-lnetcdf ${LIBS}"
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
+$as_echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&6;}
+	    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
+		echo "Great! This build will support some netCDF4 features."
+	    fi
+
+else
+
+# Linking failed so add 64-bit compiler flags and try again
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&5
+$as_echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&6;}
+
+	    case ${host} in
+# fxm csz: Test for existance of user-defined vars before overwriting
+		mips*-sgi-irix* )
+
+		    case ${CC} in
+			cc* ) CFLAGS="${CFLAGS} -64 -mips4" ; LDFLAGS="${LDFLAGS} -64" ; ;;
+			    gcc* ) CFLAGS="${CFLAGS} -mabi=64" ; LDFLAGS="${LDFLAGS} -mips4 -L/usr/local/lib/mabi=64" ; ;;
+		    esac
+		    ;;
+		powerpc-ibm-aix* )
+		    case ${CC} in
+# Pass -X 64 to symbol extractor or libtool fails
+			gcc* ) CFLAGS="${CFLAGS} -maix64" ; ;;
+			    xlc* ) CFLAGS="${CFLAGS} -q64" ; CXXFLAGS="${CXXFLAGS} -q64"; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
+		    esac
+		    ;;
+		sparc-sun-solaris2* )
+		    case ${CC} in
+			cc* ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
+		    esac
+		    ;;
+		x86_64*-linux* )
+		    case ${CC} in
+			gcc* ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
+		    esac
+		    ;;
+	    esac
+
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc_close in -lnetcdf" >&5
+$as_echo_n "checking for nc_close in -lnetcdf... " >&6; }
+if test "${ac_cv_lib_netcdf_nc_close+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnetcdf  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char nc_close ();
+int
+main ()
+{
+return nc_close ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_netcdf_nc_close=yes
+else
+  ac_cv_lib_netcdf_nc_close=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdf_nc_close" >&5
+$as_echo "$ac_cv_lib_netcdf_nc_close" >&6; }
+if test "x$ac_cv_lib_netcdf_nc_close" = x""yes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: Adding 64-bit ABI compiler flags" >&5
+$as_echo "$as_me: Adding 64-bit ABI compiler flags" >&6;}
+else
+
+		    echo "ERROR: Unable to compile and link executable with \"libnetcdf.a\" with LDFLAGS=${LDFLAGS}"
+		    echo "1. If netCDF is not installed, then download and install it:"
+		    echo "http://www.unidata.ucar.edu/packages/netcdf"
+		    echo "2. If netCDF is installed correctly, set NETCDF_LIB to directory with libnetcdf.a"
+		    echo "3. If configure fails here with NETCDF_LIB set correctly, try changing CC and/or CFLAGS until compilation and linking to libnetcdf.a works"
+		    echo "Currently CC=\"${CC}\" and CFLAGS=\"${CFLAGS}\" do not work with libnetcdf.a"
+		    echo "Set environment variables CC and CFLAGS to working values and then re-run ./configure"
+		    as_fn_error $? "Mandatory netCDF link test failed" "$LINENO" 5
+fi
+
+
+fi
+
+# End Mandatory Link Test with libnetcdf.a
+fi # enable_netCDF3
+echo "DEBUG: After netCDF3 section LIBS = ${LIBS}"
+
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
@@ -16833,264 +17091,6 @@ $as_echo "$as_me: DAP support enabled" >&6;}
 fi
 # End DAP (all flavors)
 
-# Begin mandatory link test with libnetcdf.a
-# Make precious variables for ./configure --help
-
-
-
-# User-specified netCDF locations, if any, take precedence
-if test "${NETCDF_ROOT}" != ''; then
-    if test -d "${NETCDF_ROOT}"; then
-	CPPFLAGS="-I${NETCDF_ROOT}/include ${CPPFLAGS}";
-	LDFLAGS="-L${NETCDF_ROOT}/lib ${LDFLAGS}";
-    else
-	echo "WARNING: NETCDF_ROOT location \"${NETCDF_ROOT}\" does not exist!"
-    fi
-fi # !NETCDF_ROOT
-if test "${NETCDF_LIB}"; then
-    if test -d "${NETCDF_LIB}"; then
-	LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
-    else
-	echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
-    fi
-fi # !NETCDF_LIB
-if test "${NETCDF_INC}"; then
-    if test -d "${NETCDF_INC}"; then
-	CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
-    else
-	echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
-    fi
-fi # !NETCDF_INC
-
-# NCO no longer supports netCDF2
-for ac_header in netcdf.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "netcdf.h" "ac_cv_header_netcdf_h" "$ac_includes_default"
-if test "x$ac_cv_header_netcdf_h" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_NETCDF_H 1
-_ACEOF
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot find netCDF header
-See \`config.log' for more details" "$LINENO" 5 ; }
-fi
-
-done
-
-
-$as_echo "#define NO_NETCDF_2 1" >>confdefs.h
-
-
-# fxm: move this to be first? before DAP?
-echo "#################################"
-echo "#  Test for netCDF4 support     #"
-echo "#################################"
-# Check whether --enable-netcdf4 was given.
-if test "${enable_netcdf4+set}" = set; then :
-  enableval=$enable_netcdf4; enable_netcdf4=${enableval}
-else
-  enable_netcdf4=no
-fi
-
-# 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
-if test "x${enable_netcdf4}" = 'xno' ; then
-    # Check whether --enable-netcdf-4 was given.
-if test "${enable_netcdf_4+set}" = set; then :
-  enableval=$enable_netcdf_4; enable_netcdf4=${enableval}
-else
-  enable_netcdf4=no
-fi
-
-fi # !netCDF4
-
-# Test if user set NETCDF4_ROOT and it exists
-if test "${enable_netcdf4}" = 'yes'; then
-    if test -z "${NETCDF_ROOT}"; then
-	NETCDF_CONFIG='nc-config'
-	NETCDF_ROOT="`nc-config --prefix`"
-    else
-	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
-    fi
-    LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
-    CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
-fi
-echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
-
-# ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
-# ENABLE_NETCDF4 implies HAVE_NETCDF4_H
-# The converse is not true! Some distributions (e.g., Debian stable)
-# build _only_ netCDF3 library from netCDF4 source code
-header_defines_nc_chunked='no'
-if test "x${enable_netcdf4}" = 'xyes' ; then
-    header_defines_nc_chunked='yes'
-else
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <netcdf.h>
-
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "NC_CHUNKED" >/dev/null 2>&1; then :
-  header_defines_nc_chunked='yes'
-fi
-rm -f conftest*
-
-fi
-if test "x${header_defines_nc_chunked}" = 'xyes' ; then
-
-$as_echo "#define HAVE_NETCDF4_H 1" >>confdefs.h
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: netcdf.h contains netCDF4 definitions" >&5
-$as_echo "$as_me: netcdf.h contains netCDF4 definitions" >&6;}
-fi
-echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${head_defines_nc_chunked}"
-
-if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
-# Nothing fancy requested, so verify regular old libnetCDF3 works
-# Check for 'nc_open()' using default compiler flags
-# If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
-# [nc_open() is cached---checking for it twice does not work]
-    { $as_echo "$as_me:${as_lineno-$LINENO}: Checking default compiler flags" >&5
-$as_echo "$as_me: Checking default compiler flags" >&6;}
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc_open in -lnetcdf" >&5
-$as_echo_n "checking for nc_open in -lnetcdf... " >&6; }
-if test "${ac_cv_lib_netcdf_nc_open+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char nc_open ();
-int
-main ()
-{
-return nc_open ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_netcdf_nc_open=yes
-else
-  ac_cv_lib_netcdf_nc_open=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdf_nc_open" >&5
-$as_echo "$ac_cv_lib_netcdf_nc_open" >&6; }
-if test "x$ac_cv_lib_netcdf_nc_open" = x""yes; then :
-
-	    LIBS="-lnetcdf ${LIBS}"
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
-$as_echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&6;}
-	    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
-		echo "Great! This build will support some netCDF4 features."
-	    fi
-
-else
-
-# Linking failed so add 64-bit compiler flags and try again
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&5
-$as_echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&6;}
-
-	    case ${host} in
-# fxm csz: Test for existance of user-defined vars before overwriting
-		mips*-sgi-irix* )
-
-		    case ${CC} in
-			cc* ) CFLAGS="${CFLAGS} -64 -mips4" ; LDFLAGS="${LDFLAGS} -64" ; ;;
-			    gcc* ) CFLAGS="${CFLAGS} -mabi=64" ; LDFLAGS="${LDFLAGS} -mips4 -L/usr/local/lib/mabi=64" ; ;;
-		    esac
-		    ;;
-		powerpc-ibm-aix* )
-		    case ${CC} in
-# Pass -X 64 to symbol extractor or libtool fails
-			gcc* ) CFLAGS="${CFLAGS} -maix64" ; ;;
-			    xlc* ) CFLAGS="${CFLAGS} -q64" ; CXXFLAGS="${CXXFLAGS} -q64"; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
-		    esac
-		    ;;
-		sparc-sun-solaris2* )
-		    case ${CC} in
-			cc* ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
-		    esac
-		    ;;
-		x86_64*-linux* )
-		    case ${CC} in
-			gcc* ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
-		    esac
-		    ;;
-	    esac
-
-	    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc_close in -lnetcdf" >&5
-$as_echo_n "checking for nc_close in -lnetcdf... " >&6; }
-if test "${ac_cv_lib_netcdf_nc_close+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char nc_close ();
-int
-main ()
-{
-return nc_close ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_netcdf_nc_close=yes
-else
-  ac_cv_lib_netcdf_nc_close=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_netcdf_nc_close" >&5
-$as_echo "$ac_cv_lib_netcdf_nc_close" >&6; }
-if test "x$ac_cv_lib_netcdf_nc_close" = x""yes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Adding 64-bit ABI compiler flags" >&5
-$as_echo "$as_me: Adding 64-bit ABI compiler flags" >&6;}
-else
-
-		    echo "ERROR: Unable to compile and link executable with \"libnetcdf.a\" with LDFLAGS=${LDFLAGS}"
-		    echo "1. If netCDF is not installed, then download and install it:"
-		    echo "http://www.unidata.ucar.edu/packages/netcdf"
-		    echo "2. If netCDF is installed correctly, set NETCDF_LIB to directory with libnetcdf.a"
-		    echo "3. If configure fails here with NETCDF_LIB set correctly, try changing CC and/or CFLAGS until compilation and linking to libnetcdf.a works"
-		    echo "Currently CC=\"${CC}\" and CFLAGS=\"${CFLAGS}\" do not work with libnetcdf.a"
-		    echo "Set environment variables CC and CFLAGS to working values and then re-run ./configure"
-		    as_fn_error $? "Mandatory netCDF link test failed" "$LINENO" 5
-fi
-
-
-fi
-
-# End Mandatory Link Test with libnetcdf.a
-fi # enable_netCDF3
-echo "DEBUG: After netCDF3 section LIBS = ${LIBS}"
 
 ##################################################
 # Check libraries, add to link path if found
@@ -19116,6 +19116,51 @@ echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 # Begin UDUnits2
 # Check for UDUnits2 libraries unless told not to
 if test "${enable_udunits2}" != 'no'; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XML_ParserCreate in -lexpat" >&5
+$as_echo_n "checking for XML_ParserCreate in -lexpat... " >&6; }
+if test "${ac_cv_lib_expat_XML_ParserCreate+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lexpat  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char XML_ParserCreate ();
+int
+main ()
+{
+return XML_ParserCreate ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_expat_XML_ParserCreate=yes
+else
+  ac_cv_lib_expat_XML_ParserCreate=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_expat_XML_ParserCreate" >&5
+$as_echo "$ac_cv_lib_expat_XML_ParserCreate" >&6; }
+if test "x$ac_cv_lib_expat_XML_ParserCreate" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBEXPAT 1
+_ACEOF
+
+  LIBS="-lexpat $LIBS"
+
+fi
+
     if test "${UDUNITS2_PATH}"; then
 # Add ${UDUNITS2_PATH}/lib to search path if present
 	nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml

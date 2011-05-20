@@ -1,10 +1,14 @@
-2011-05-10  Charlie Zender  <zender@uci.edu>
+2011-05-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:
  	Changes since nco-4_0_8:
 	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
+	* configure.in modifications as per ocehugo suggestions
+
+2011-05-10  Charlie Zender  <zender@uci.edu>
 
 	* Webpage updates
 

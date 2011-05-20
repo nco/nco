@@ -141,6 +141,9 @@
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
 
+/* Define to 1 if you have the `expat' library (-lexpat). */
+#undef HAVE_LIBEXPAT
+
 /* Define to 1 if you have the `f95' library (-lf95). */
 #undef HAVE_LIBF95
 
