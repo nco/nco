@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.339 2011-05-20 17:04:45 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.340 2011-05-20 17:19:13 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -482,6 +482,7 @@ echo "DEBUG: After library checks LIBS=$LIBS"
 echo "#################################"
 echo "#  Testing for ANTLR support    #"
 echo "#################################"
+AC_ARG_VAR(ANTLR_ROOT,Location of ANTLR version 2.7.x installation (compile-time))
 AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build libnco++ and ncap2 (same as enable-ncap2) [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
 AC_ARG_ENABLE(ncap2,AS_HELP_STRING([--enable-ncap2],[Build ncap2 and libnco++ (same as enable-ncoxx) [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
 if test "${C_INC}"; then

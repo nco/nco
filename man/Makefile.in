@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.72 2011-04-27 04:51:31 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.73 2011-05-20 17:19:13 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -77,6 +77,7 @@ MANS = $(man_MANS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+ANTLR_ROOT = @ANTLR_ROOT@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
