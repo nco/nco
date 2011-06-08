@@ -1,3 +1,7 @@
+2011-06-08  Charlie Zender  <zender@uci.edu>
+
+	* #define NCO_XLC_LIKELY when xlc compiler probably used
+
 2011-06-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:

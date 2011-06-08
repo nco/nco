@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.305 2011-05-10 22:41:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.306 2011-06-08 15:26:11 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -14,6 +14,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   /* Purpose: Return string containing compiler and version */
   const char fnc_nm[]="nco_cmp_get()";
 #if defined(_AIX) && !defined(__GNUC__) && !defined(__xlC__)
+#define NCO_XLC_LIKELY
   static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token _AIX defined in nco_cmp_get(), probably compiled with AIX xlc_r or xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
@@ -54,7 +55,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
 #endif /* !PGI_CC */
 
   /* In case none of the above tokens matched */
-#if !defined(_AIX) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
+#if !defined(NCO_XLC_LIKELY) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Unknown compiler */
   static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
