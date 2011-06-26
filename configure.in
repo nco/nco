@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.341 2011-06-26 19:15:13 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.342 2011-06-26 22:46:05 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -269,16 +269,12 @@ echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 # The converse is not true! Some distributions (e.g., Debian stable)
 # build _only_ netCDF3 library from netCDF4 source code
 header_defines_nc_chunked='no'
-if test "x${enable_netcdf4}" = 'xyes' ; then
-    header_defines_nc_chunked='yes'
-else
-    AC_CHECK_DECL(NC_CHUNKED,netcdf.h,header_defines_nc_chunked='yes')
-fi
+AC_CHECK_DECL(NC_CHUNKED,netcdf.h,header_defines_nc_chunked='yes')
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
     AC_DEFINE([HAVE_NETCDF4_H],[1],[netcdf.h contains netCDF4 definitions])
     AC_MSG_NOTICE([netcdf.h contains netCDF4 definitions])
 fi
-echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${head_defines_nc_chunked}"
+echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${header_defines_nc_chunked}"
 
 if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 # Nothing fancy requested, so verify regular old libnetCDF3 works

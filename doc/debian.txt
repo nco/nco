@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.166 2011-05-10 22:03:04 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.167 2011-06-26 22:46:05 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -159,7 +159,7 @@ Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal 
 # New build system #1
 # This builds NCO with debian packages, and thus lacks UDUnits and netCDF4 support
 # Non-native debian builds Rod05 p. 46
-# sudo aptitude install antlr bison flex gsl-bin libgsl0-dev libantlr-dev netcdf-bin libnetcdf6 libnetcdf-dev texinfo libcurl4-gnutls-dev libxml2-dev udunits libudunits2-0 libudunits2-dev
+# sudo aptitude install antlr bison flex gsl-bin libgsl0-dev libantlr-dev netcdf-bin libnetcdf6 libnetcdf-dev texinfo libcurl4-gnutls-dev libexpat1-dev libxml2-dev udunits libudunits2-0 libudunits2-dev
 cd ~/nco;cvc
 sudo /bin/rm -rf ${DATA}/nco-4.0.9 ${DATA}/nco_4.0.9* ${DATA}/debian # Cleanup last build. sudo necessary for removal because dpkg-buildpackage uses sudo?
 # cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-4_0_9-1 -d nco-4.0.9 nco # Export based on tag

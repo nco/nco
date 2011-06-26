@@ -4,7 +4,7 @@ nco (4.0.9-1) unstable; urgency=low
   * debian/rules
     - remove CPPFLAGS += -DHAVE_NETCDF4_H hack
 
- -- Charlie Zender <zender@uci.edu>  Tue, 10 May 2011 15:49:48 -0700
+ -- Charlie Zender <zender@uci.edu>  Tue, 26 Jun 2011 15:49:48 -0700
 
 nco (4.0.7-1.1) unstable; urgency=low
 

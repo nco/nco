@@ -16757,17 +16757,13 @@ echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 # The converse is not true! Some distributions (e.g., Debian stable)
 # build _only_ netCDF3 library from netCDF4 source code
 header_defines_nc_chunked='no'
-if test "x${enable_netcdf4}" = 'xyes' ; then
-    header_defines_nc_chunked='yes'
-else
-    ac_fn_c_check_decl "$LINENO" "NC_CHUNKED" "ac_cv_have_decl_NC_CHUNKED" "$ac_includes_default"
+ac_fn_c_check_decl "$LINENO" "NC_CHUNKED" "ac_cv_have_decl_NC_CHUNKED" "$ac_includes_default"
 if test "x$ac_cv_have_decl_NC_CHUNKED" = x""yes; then :
   netcdf.h
 else
   header_defines_nc_chunked='yes'
 fi
 
-fi
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
 
 $as_echo "#define HAVE_NETCDF4_H 1" >>confdefs.h
@@ -16775,7 +16771,7 @@ $as_echo "#define HAVE_NETCDF4_H 1" >>confdefs.h
     { $as_echo "$as_me:${as_lineno-$LINENO}: netcdf.h contains netCDF4 definitions" >&5
 $as_echo "$as_me: netcdf.h contains netCDF4 definitions" >&6;}
 fi
-echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${head_defines_nc_chunked}"
+echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${header_defines_nc_chunked}"
 
 if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 # Nothing fancy requested, so verify regular old libnetCDF3 works
