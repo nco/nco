@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.342 2011-06-26 22:46:05 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.343 2011-06-26 23:02:12 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -268,8 +268,7 @@ echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
 # The converse is not true! Some distributions (e.g., Debian stable)
 # build _only_ netCDF3 library from netCDF4 source code
-header_defines_nc_chunked='no'
-AC_CHECK_DECL(NC_CHUNKED,netcdf.h,header_defines_nc_chunked='yes')
+AC_CHECK_DECL([NC_CHUNKED],[header_defines_nc_chunked='yes'],[header_defines_nc_chunked='no'],[[#include <netcdf.h>]])
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
     AC_DEFINE([HAVE_NETCDF4_H],[1],[netcdf.h contains netCDF4 definitions])
     AC_MSG_NOTICE([netcdf.h contains netCDF4 definitions])

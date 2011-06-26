@@ -16756,12 +16756,12 @@ echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
 # The converse is not true! Some distributions (e.g., Debian stable)
 # build _only_ netCDF3 library from netCDF4 source code
-header_defines_nc_chunked='no'
-ac_fn_c_check_decl "$LINENO" "NC_CHUNKED" "ac_cv_have_decl_NC_CHUNKED" "$ac_includes_default"
+ac_fn_c_check_decl "$LINENO" "NC_CHUNKED" "ac_cv_have_decl_NC_CHUNKED" "#include <netcdf.h>
+"
 if test "x$ac_cv_have_decl_NC_CHUNKED" = x""yes; then :
-  netcdf.h
-else
   header_defines_nc_chunked='yes'
+else
+  header_defines_nc_chunked='no'
 fi
 
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
