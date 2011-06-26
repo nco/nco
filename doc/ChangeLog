@@ -1,5 +1,10 @@
 2011-06-26  Charlie Zender  <zender@uci.edu>
 
+	* Use AC_CHECK_DECL() instead of AC_EGREP_HEADER() to find
+	NC_CHUNKED in test to define HAVE_NETCDF4_H. Suggested by
+	anonymous poster on Bug tracker, may improve netCDF4 configure
+	problems considerably.
+
 	* Add lat_bnd, time_bnds to in.cdl to improve CF "bounds" handling
 
 	* Do not ship .la files in Debian (Closes: #622527) by Luk Claes
@@ -729,12 +734,12 @@
 
 	* Various cleanups of ncoGrammer.g, nco_mss_val.c, ncks.c, nco_var_utl.c
 
-2010-03-11  Henry Butowsky  <henryb@hush.com> 
+2010-03-11  Henry Butowsky  <henryb@hush.com>
 
 	* Add '--no_rec_dmn' switch to ncks: causes record dimension in
 	input to be converted to a regular dimension in output.
 
-2010-03-01  Henry Butowsky  <henryb@hush.com> 
+2010-03-01  Henry Butowsky  <henryb@hush.com>
 
 	* Added to manual chapter on Re-basing Time Coordinate
 
@@ -742,13 +747,13 @@
 
 	* Cleanup nco_lmt.c
 
-2010-02-16  Henry Butowsky  <henryb@hush.com> 
+2010-02-16  Henry Butowsky  <henryb@hush.com>
 
 	* Add ncrcat tests for modifications below
-	
-2010-02-15  Henry Butowsky  <henryb@hush.com> 
 
-	* Hyperslab limits of type lmt_crd_val/lmt_udu_sng with 
+2010-02-15  Henry Butowsky  <henryb@hush.com>
+
+	* Hyperslab limits of type lmt_crd_val/lmt_udu_sng with
 	stride > 1 now work with multifile operators, e.g.,
 	ncrcat -v time -d time,3.0,30.0,8 t1.nc t2.nc out.nc
 
@@ -761,7 +766,7 @@
 
 	* Cleanup ncbo.c
 
-2010-01-29  Henry Butowsky  <henryb@hush.com> 
+2010-01-29  Henry Butowsky  <henryb@hush.com>
 
 	* Tidy-up value_list action in tree parser.
 	  Added value_list_string for NC_STRING
@@ -788,14 +793,14 @@
 	identical to comparing the pointer to NULL.
 	Hence code now has, e.g., if(cmd_ln) ... instead of if(cmd_ln != NULL)
 	Could/should also replace "foo == NULL" with !foo?
-	
+
 2010-01-19  Charlie Zender  <zender@uci.edu>
 
-	* Workaround ncoGrammer.g dependence on NC_MAX_INT which DNE 
+	* Workaround ncoGrammer.g dependence on NC_MAX_INT which DNE
 	in netcdf.h until ~2009
 
-2010-01-19  Henry Butowsky  <henryb@hush.com> 
-	
+2010-01-19  Henry Butowsky  <henryb@hush.com>
+
 	* Add chapter on "GSL Least-Squares Fitting" to ncap2 manual
 
 2010-01-18  Charlie Zender  <zender@uci.edu>
@@ -804,7 +809,7 @@
 
 2010-01-14  Charlie Zender  <zender@uci.edu>
 
-	* Patch configure.in for broken GSL installations like bluefire's, 
+	* Patch configure.in for broken GSL installations like bluefire's,
 	where GSL exists though gsl-config does not
 
 	* Only attempt duplicating netCDF4 settings when output is netCDF4
@@ -830,7 +835,7 @@
 	leverage information now in netcdf.h about correct API.
 	Required for successful .deb builds with netCDF3.
 
-2009-12-10  Henry Butowsky  <henryb@hush.com> 
+2009-12-10  Henry Butowsky  <henryb@hush.com>
 
 	* Added initialization to NULL of chunk sizes prs_arg.cnk_sz in
 	ncap2.cc. This was causing a bug on CentOS builds.

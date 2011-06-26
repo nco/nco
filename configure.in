@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.340 2011-05-20 17:19:13 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.341 2011-06-26 19:15:13 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -35,11 +35,13 @@
 # Autotools glossary:
 # AC_ARG_ENABLE(foo,...) Create configure option --enable-foo
 # AC_ARG_VAR Add token TKN to environment variables ingested by configure
+# AC_CHECK_DECL Find token TKN defined in header, define ${flg} accordingly
 # AC_CHECK_FUNC Find fnc_nm() in libXXX.a, define ${flg} accordingly
 # AC_CHECK_HEADER Find XXX.h and define HAVE_XXX_H
 # AC_CHECK_LIB Find libXXX.a, prepend -lXXX to LIBS, define HAVE_LIBXXX
 # AC_CHECK_PROG Find whether prg_nm is on ${PATH}, define ${flg} accordingly
 # AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
+# AC_EGREP_HEADER Search CPP output of header.h (NB: CPP outputs C-code only), define ${flg} accordingly
 # AC_MSG_NOTICE Print MSG to output
 # AC_MSG_WARN Print MSG to output
 # AC_SUBST fxm
@@ -270,7 +272,7 @@ header_defines_nc_chunked='no'
 if test "x${enable_netcdf4}" = 'xyes' ; then
     header_defines_nc_chunked='yes'
 else
-    AC_EGREP_HEADER(NC_CHUNKED,netcdf.h,header_defines_nc_chunked='yes')
+    AC_CHECK_DECL(NC_CHUNKED,netcdf.h,header_defines_nc_chunked='yes')
 fi
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
     AC_DEFINE([HAVE_NETCDF4_H],[1],[netcdf.h contains netCDF4 definitions])
