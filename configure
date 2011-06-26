@@ -16765,6 +16765,7 @@ else
 fi
 
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
+    HAVE_NETCDF4_H='yes'
 
 $as_echo "#define HAVE_NETCDF4_H 1" >>confdefs.h
 

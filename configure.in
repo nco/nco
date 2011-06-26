@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.344 2011-06-26 23:26:17 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.345 2011-06-26 23:28:52 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -270,6 +270,7 @@ echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 # build _only_ netCDF3 library from netCDF4 source code
 AC_CHECK_DECL([NC_CHUNKED],[header_defines_nc_chunked='yes'],[header_defines_nc_chunked='no'],[[#include <netcdf.h>]])
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
+    HAVE_NETCDF4_H='yes'
     AC_DEFINE([HAVE_NETCDF4_H],[1],[Define to 1 if netcdf.h contains netCDF4 definitions])
     AC_MSG_NOTICE([netcdf.h contains netCDF4 definitions])
 fi

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.112 2011-03-18 23:11:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.113 2011-06-26 23:26:17 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -48,7 +48,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
 
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_aed_prc() examining variable %s\n",prg_nm_get(),var_nm);
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s examining variable %s\n",prg_nm_get(),fnc_nm,var_nm);
 
   /* Query attribute metadata when attribute name was specified */
   if(aed.att_nm) rcd_inq_att=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
@@ -110,7 +110,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       
     /* Place nco_var_get() code inline since var struct is not truly complete */
     if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes in nco_aed_prc()\n",prg_nm_get(),var->sz,(unsigned long)nco_typ_lng(var->type));
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes in %s\n",prg_nm_get(),var->sz,(unsigned long)nco_typ_lng(var->type),fnc_nm);
       nco_exit(EXIT_FAILURE); 
     } /* end if */
     if(var->sz > 1L){
@@ -125,7 +125,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
     /* Sanity check */
     if(var->has_mss_val == False){
-      (void)fprintf(stdout,"%s: ERROR variable %s does not have \"%s\" attribute in nco_aed_prc()\n",prg_nm_get(),var_nm,nco_mss_val_sng_get());
+      (void)fprintf(stdout,"%s: ERROR variable %s does not have \"%s\" attribute in %s\n",prg_nm_get(),var_nm,nco_mss_val_sng_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
