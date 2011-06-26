@@ -107,6 +107,7 @@ install-arch:
 	dh_installdirs -a
 # Commands to install architecture part of package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/nco
+	rm `find $(CURDIR)/debian -name '*.la'`
 # NCO installs header files by default, which Debian does not want (yet)
 	dh_install -a --exclude="*.h *.hh"
 

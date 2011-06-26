@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.29 2011-03-21 22:53:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.30 2011-06-26 18:23:14 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -138,12 +138,12 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
 /******************** UDUNITS 2 *********************************************************************/
 /****************************************************************************************************/
 
-int   /* O  difference between two co-ordinate units */      
-nco_cln_clc_dff(
-		const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
-		const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-		double crr_val,
-		double *og_val)         /* O difference between two units string */
+int   /* O difference between two co-ordinate units */      
+nco_cln_clc_dff
+(const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
+ const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
+ double crr_val,
+ double *og_val)         /* O difference between two units string */
 {
   int ut_rcd; /* [enm] UDUnits2 status */
   
@@ -153,7 +153,7 @@ nco_cln_clc_dff(
   ut_unit *ut_sct_out; /* UDUnits structure, output units */
   
   /* Quick return if units identical */
-  if(!strcmp(fl_unt_sng,fl_bs_sng) ){
+  if(!strcmp(fl_unt_sng,fl_bs_sng)){
     *og_val=crr_val;  
     return EXIT_SUCCESS;
   }
@@ -174,36 +174,34 @@ nco_cln_clc_dff(
     if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: empty units attribute string\n");
     if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: units attribute \"%s\" has a syntax error\n",fl_unt_sng);
     if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is not listed in UDUnits2 SI system database\n",fl_unt_sng);
-
     return EXIT_FAILURE; /* Failure */
   } /* endif coordinate on disk has no units attribute */
 
-  /* units string to convert to */
+  /* Units string to convert to */
   ut_sct_out=ut_parse(ut_sys,fl_bs_sng,UT_ASCII); 
   if(ut_sct_out == NULL){ /* Problem with 'units' attribute */
     ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
     if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: Empty units attribute string\n");
     if(ut_rcd == UT_SYNTAX) (void)fprintf(stderr,"ERROR: units attribute  \"%s\" has a syntax error\n",fl_bs_sng);
     if(ut_rcd == UT_UNKNOWN) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is not listed in UDUnits2 SI system database\n",fl_bs_sng);
-
-      return EXIT_FAILURE; /* Failure */
+    return EXIT_FAILURE; /* Failure */
   } /* endif */
 
-  /* Create a converter */
+  /* Create converter */
   ut_cnv=ut_get_converter(ut_sct_in,ut_sct_out); /* UDUnits converter */
   if(ut_cnv == NULL){
     ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
     if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: One of units is NULL\n");
     if(ut_rcd == UT_NOT_SAME_SYSTEM) (void)fprintf(stderr,"ERROR: Units belong to different unit systems\n");
-    if(ut_rcd == UT_MEANINGLESS) (void)fprintf(stderr,"ERROR: Conversion between user specified unit \"%s\" and file units \"%s\" is  is meaningless\n",fl_bs_sng,fl_unt_sng);
+    if(ut_rcd == UT_MEANINGLESS) (void)fprintf(stderr,"ERROR: Conversion between user specified unit \"%s\" and file units \"%s\" is meaningless\n",fl_bs_sng,fl_unt_sng);
     return EXIT_FAILURE; /* Failure */
   } /* endif */
 
   /* Finally do the conversion  */
   *og_val=cv_convert_double(ut_cnv,crr_val);
   
-  if(dbg_lvl_get() >nco_dbg_std) {
-    fprintf(stderr, "%s : nco_cln_clc_dff: difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fl_unt_sng,fl_bs_sng, *og_val);
+  if(dbg_lvl_get() > nco_dbg_std){
+    fprintf(stderr, "%s : nco_cln_clc_dff: difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fl_unt_sng,fl_bs_sng,*og_val);
   }
 
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
@@ -630,12 +628,12 @@ double scl=double_CEWI;
  return offset/scl;
 }
 
-int                 /* [rcd] Successful conversion returns 0 */
-nco_cln_clc_tm(    /* [fnc] Difference between two co-ordinate units */      
-const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
-const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-cln_typ lmt_cln,        /* [enum] Calendar type of coordinate var */ 
-double *og_val){        /* O [ptr]                                   */
+int /* [rcd] Successful conversion returns 0 */
+nco_cln_clc_tm /* [fnc] Difference between two co-ordinate units */
+(const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
+ const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
+ cln_typ lmt_cln, /* [enum] Calendar type of coordinate var */ 
+ double *og_val){ /* O [ptr] */
 
 int rcd;
 int year;
@@ -663,7 +661,7 @@ tm_cln_sct bs_cln_sct;
 
  /* Temporary until we handle more calendar types */
  if(lmt_cln != cln_360 && lmt_cln != cln_365 ) {
-   rcd= nco_cln_clc_dff(lcl_unt_sng,fl_bs_sng,0.0,og_val);
+   rcd=nco_cln_clc_dff(lcl_unt_sng,fl_bs_sng,0.0,og_val);
    lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
    return rcd;
  }

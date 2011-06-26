@@ -1,3 +1,9 @@
+2011-06-26  Charlie Zender  <zender@uci.edu>
+
+	* Add lat_bnd, time_bnds to in.cdl to improve CF "bounds" handling
+
+	* Do not ship .la files in Debian (Closes: #622527) by Luk Claes
+
 2011-06-10  Charlie Zender  <zender@uci.edu>
 
 	* #define NCO_XLC_LIKELY when xlC compiler probably used

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.640 2011-05-10 22:03:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.641 2011-06-26 18:23:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12570,7 +12570,8 @@ Proof-read the ncap documentation
 @cindex Barry deFreese
 @cindex Francesco Lovergine
 @cindex Matej Vela
-@item Daniel Baumann, Barry deFreese, Francesco Lovergine, Matej Vela
+@cindex Luk Claes
+@item Daniel Baumann, Barry deFreese, Francesco Lovergine, Matej Vela, Luk Claes
 Debian packaging
 @cindex Patrice Dumas
 @cindex Ed Hill
