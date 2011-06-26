@@ -225,7 +225,7 @@
 /* Define to 1 if compiler finds external `nearbyintf' function */
 #undef HAVE_NEARBYINTF
 
-/* netcdf.h contains netCDF4 definitions */
+/* Define to 1 if netcdf.h contains netCDF4 definitions */
 #undef HAVE_NETCDF4_H
 
 /* Define to 1 if you have the <netcdf.h> header file. */

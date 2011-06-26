@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.343 2011-06-26 23:02:12 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.344 2011-06-26 23:26:17 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -252,7 +252,7 @@ if test "x${enable_netcdf4}" = 'xno' ; then
 fi # !netCDF4
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
-if test "${enable_netcdf4}" = 'yes'; then
+if test "x${enable_netcdf4}" = 'xyes'; then
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
@@ -262,7 +262,7 @@ if test "${enable_netcdf4}" = 'yes'; then
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
 fi
-echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
+echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
@@ -270,7 +270,7 @@ echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
 # build _only_ netCDF3 library from netCDF4 source code
 AC_CHECK_DECL([NC_CHUNKED],[header_defines_nc_chunked='yes'],[header_defines_nc_chunked='no'],[[#include <netcdf.h>]])
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
-    AC_DEFINE([HAVE_NETCDF4_H],[1],[netcdf.h contains netCDF4 definitions])
+    AC_DEFINE([HAVE_NETCDF4_H],[1],[Define to 1 if netcdf.h contains netCDF4 definitions])
     AC_MSG_NOTICE([netcdf.h contains netCDF4 definitions])
 fi
 echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${header_defines_nc_chunked}"

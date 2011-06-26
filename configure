@@ -16740,7 +16740,7 @@ fi
 fi # !netCDF4
 
 # Test if user set NETCDF4_ROOT and it exists
-if test "${enable_netcdf4}" = 'yes'; then
+if test "x${enable_netcdf4}" = 'xyes'; then
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
@@ -16750,7 +16750,7 @@ if test "${enable_netcdf4}" = 'yes'; then
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
 fi
-echo "DEBUG: After netCDF4 section LIBS = ${LIBS}"
+echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
