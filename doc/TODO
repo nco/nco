@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1128 2011-06-26 19:15:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1129 2011-06-26 22:47:29 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -734,7 +734,8 @@ nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 nco1015. nco: eliminate ncap2 -A option from documentation
 nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
 nco1020. nco: re-base record bounds variables (e.g., time_bnds) in ncrcat
-nco1021. 
+nco1021. nco: use owner axes for printing CF-time in bounds attributes 
+nco1022. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
