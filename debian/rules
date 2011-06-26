@@ -46,7 +46,6 @@ ifneq (,$(findstring disable-netcdf4,$(DEB_BUILD_OPTIONS)))
 	confflags += --disable-netcdf4
 else
 	confflags += --enable-netcdf4
-	CPPFLAGS += -DHAVE_NETCDF4_H
 endif
 ifneq (,$(findstring disable-udunits2,$(DEB_BUILD_OPTIONS)))
 	confflags += --disable-udunits2

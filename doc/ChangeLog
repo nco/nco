@@ -1,5 +1,7 @@
 2011-06-26  Charlie Zender  <zender@uci.edu>
 
+	* Remove non-working CPPFLAGS += -DHAVE_NETCDF4_H hack from debian/rules
+
 	* Use AC_CHECK_DECL() instead of AC_EGREP_HEADER() to find
 	NC_CHUNKED in test to define HAVE_NETCDF4_H. Suggested by
 	anonymous poster on Bug tracker, may improve netCDF4 configure
