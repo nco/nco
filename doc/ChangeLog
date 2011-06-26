@@ -1,5 +1,11 @@
 2011-06-26  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.9 release procedure:
+ 	Changes since nco-4_0_8:
+	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
+	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
 	* Remove non-working CPPFLAGS += -DHAVE_NETCDF4_H hack from debian/rules
 
 	* Use AC_CHECK_DECL() instead of AC_EGREP_HEADER() to find
@@ -20,12 +26,6 @@
 	* #define NCO_XLC_LIKELY when xlc compiler probably used
 
 2011-06-02  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.9 release procedure:
- 	Changes since nco-4_0_8:
-	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
-	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
 	* Add include ncra -Y, --pseudonym to ncks --secret output
 
