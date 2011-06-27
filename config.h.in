@@ -24,8 +24,8 @@
 /* Enable Large File Support (LFS) */
 #undef ENABLE_LARGEFILE
 
-/* Enable special compilation for MPI with mpicc */
-#undef ENABLE_MPI
+/* Define to 1 if libnetcdf.a contains netCDF4 functions */
+#undef ENABLE_NETCDF4
 
 /* Fastest possible execution (slowest compilation) */
 #undef ENABLE_OPTIMIZE_CUSTOM
@@ -386,9 +386,6 @@
 
 /* Compatibility pvmgetarch token for Apple Mac OSX */
 #undef MACOSX
-
-/* Location of mpich2 src root */
-#undef MPICH2_ROOT
 
 /* GSL minor version number */
 #undef NCO_GSL_MINOR_VERSION

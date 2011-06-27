@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
+	* Remove MPI section of configure.in because it was nasty and unsupported
+
 	* Remove non-working CPPFLAGS += -DHAVE_NETCDF4_H hack from debian/rules
 
 	* Use AC_CHECK_DECL() instead of AC_EGREP_HEADER() to find

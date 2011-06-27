@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.345 2011-06-26 23:28:52 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.346 2011-06-27 00:15:14 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -270,11 +270,18 @@ echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 # build _only_ netCDF3 library from netCDF4 source code
 AC_CHECK_DECL([NC_CHUNKED],[header_defines_nc_chunked='yes'],[header_defines_nc_chunked='no'],[[#include <netcdf.h>]])
 if test "x${header_defines_nc_chunked}" = 'xyes' ; then
-    HAVE_NETCDF4_H='yes'
     AC_DEFINE([HAVE_NETCDF4_H],[1],[Define to 1 if netcdf.h contains netCDF4 definitions])
     AC_MSG_NOTICE([netcdf.h contains netCDF4 definitions])
 fi
 echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${header_defines_nc_chunked}"
+if (test "${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" = 'xyes') ; then
+    AC_CHECK_LIB([netcdf],[nc_def_var_chunking],[LIBS="-lnetcdf ${LIBS}"
+	    AC_DEFINE([ENABLE_NETCDF4],[1],[Define to 1 if libnetcdf.a contains netCDF4 functions])
+	    AC_MSG_NOTICE([Good news: Simple program compiles and links to netCDF4 library])
+	    ],[
+	    AC_MSG_NOTICE([Bad news: Simple program does not compile and link with netCDF4 library])
+	    ])
+fi
 
 if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 # Nothing fancy requested, so verify regular old libnetCDF3 works
@@ -285,9 +292,6 @@ if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
     AC_CHECK_LIB([netcdf],[nc_open],[
 	    LIBS="-lnetcdf ${LIBS}"
 	    AC_MSG_NOTICE([Good news: Simple program compiles and links to libnetcdf.a with default compiler flags])
-	    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
-		echo "Great! This build will support some netCDF4 features."
-	    fi
 	    ],[
 # Linking failed so add 64-bit compiler flags and try again
 	    AC_MSG_NOTICE([Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags...])
@@ -534,92 +538,9 @@ fi
 AC_LANG_POP([C++])
 # end ANTLR
 
-# Begin MPI
-echo "DEBUG: enable_mpi = '${enable_mpi}'"
-if test "${enable_mpi}" = 'yes'; then
-    echo "##################################################"
-    echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
-    echo "#        (only works on Linux so far)            #"
-    echo "##################################################"
-#	AC_ARG_VAR([BIN_MPI_PROGRAMS],[List of MPI NCOs - not user configurable])
-    AC_ARG_VAR([DEFS],[List of MPI NCOs: not user-configurable])
-    AC_ARG_VAR([HAVE_MPI_H],[configure finds mpi.h: not user-configurable])
-#	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h: not user-configurable])
-    
-# If MPI_CC is defined, include <mpi.h> and include mpnc* build targets for MPI_CC
-# Rest can be made with ${CC} as usual
-    AC_ARG_VAR([MPICH2_ROOT],[Root of non-standard MPICH2 installation] (compile-time))
-    AC_ARG_VAR([LAM_ROOT],[Root of non-standard LAM installation] (compile-time))
-#	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
-    if test "${MPICH2_ROOT}" != ""; then
-#	echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
-	CPPFLAGS="-I${MPICH2_ROOT}/include ${CPPFLAGS}"
-	LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
-    fi
-    
-# Following may have to AC_DEFINE ENABLE_MPI to pass to Makefile
-    AC_ARG_ENABLE(mpi,AS_HELP_STRING([--enable-mpi],[Build NCOs for Message Passing Interface (detects LAM or MPICH2) [[default=no]]]),enable_mpi=${enableval},enable_mpi=no)
-    
-# Is mpicc (Linux) or mpcc (AIX) present?
-    AC_CHECK_PROGS(MPI_CC,[mpicc  mpcc],'None',${PATH})
-    
-# If MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
-    
-    if test "${MPI_CC}" = "mpicc"; then
-# Is there an mpi.h?
-	AC_CHECK_HEADER(mpi.h,[AC_DEFINE([ENABLE_MPI],[1],[Enable special compilation for MPI with mpicc])])
-	AC_CHECK_HEADER(mpi.h,[HAVE_MPI_H='yes'],[HAVE_MPI_H='no'],[])
-	if test "${HAVE_MPI_H}" = 'yes'; then
-# Define for src/nco/Makefile.in
-	    CC='mpicc'
-	    CPP='mpicc'
-	    AC_MSG_NOTICE([MPI enabled])
-	else
-	    AC_MSG_NOTICE([MPI disabled])
-	fi
-	
-# Test for MPICH2 1st and, if found, skip LAM test
-	if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = 'yes'); then
-			# Test for diagnostic libraries, 1st MPICH2
-	    AC_SEARCH_LIBS(aio_write64,rt,[])  # automatically add libray to ${LIBS}
-	    AC_CHECK_LIB([mpich],[MPIDU_Sock_get_sock_id],enable_mpich2=yes,enable_mpich2=no,[])
-	    if test "${enable_mpich2}" = 'yes'; then
-		LIBS="-lmpich ${LIBS}";
-	    else
-		echo "MISSING libmpich. Will test for LAM-MPI";
-	    fi
-	fi
-	
-		# test for LAM-MPI
-	if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = 'yes' && test "${enable_mpich2}" = 'no'); then
-			# test for diagnostic libs, 1st LAM_ROOT
-	    AC_CHECK_LIB([lam],[lam_F_free_hdl],enable_lam=yes,enable_lam=no,[])
-	    if test "${enable_lam}" = 'yes'; then
-		LIBS="-llam -lmpi ${LIBS}";
-		AC_MSG_NOTICE([Found liblam - MPI-LAM enabled])
-	    else
-		AC_MSG_NOTICE([MISSING liblam - could not find a liblam.[a|so].])
-	    fi
-	fi
-    fi
-    
-	# Finish MPI section by echoing MPI-related variables
-    if (test "${enable_mpich2}" = 'yes' || test "${enable_lam}" = 'yes'); then
-	echo "MPI: Using MPI_CC=${MPI_CC} and LIBS=${LIBS}"
-	echo "MPI: Building shared libs conflicts with MPI; shared libs have been disabled."
-# 'enable_shared' value is passed to build system via AC_DEFINE below
-	enable_shared='no'
-    fi
-# Delete following three lines when ncap2 is MPI-ready
-# Currently there is no MPI version of ncap2
-    echo "INFO: Cannnot currently build ncap2 with MPI - disabling ncap2 build."
-    enable_ncoxx='no'
-    echo "### End MPI Checks ###"
-fi
+# Begin MPI (deprecated)
+AC_ARG_ENABLE(mpi,AS_HELP_STRING([--enable-mpi],[Build NCO for Message Passing Interface (NB: Do not use, this is not yet supported) [[default=no]]]),enable_mpi=${enableval},enable_mpi=no)
 AM_CONDITIONAL(ENABLE_MPI,[test "${enable_mpi}" = 'yes'])
-AM_CONDITIONAL(ENABLE_LAM,[test "${enable_lam}" = 'yes'])
-AM_CONDITIONAL(ENABLE_MPICH2,[test "${enable_mpich2}" = 'yes'])
-AC_DEFINE_UNQUOTED([MPICH2_ROOT],["$MPICH2_ROOT"],[Location of mpich2 src root])
 # End MPI
 
 # Begin Fortran (obsolete)
@@ -1280,12 +1201,11 @@ echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP_OPENDAP... ${enable_dap_opendap}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
-echo "ENABLE_MPI........... ${enable_mpi}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
-echo "HAVE_NETCDF4_H....... ${HAVE_NETCDF4_H}"
+echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
