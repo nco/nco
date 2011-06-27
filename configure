@@ -16756,7 +16756,7 @@ $as_echo "#define HAVE_NETCDF4_H 1" >>confdefs.h
 $as_echo "$as_me: netcdf.h contains netCDF4 definitions" >&6;}
 fi
 echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${header_defines_nc_chunked}"
-if (test "${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" = 'xyes') ; then
+if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" = 'xyes') ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc_def_var_chunking in -lnetcdf" >&5
 $as_echo_n "checking for nc_def_var_chunking in -lnetcdf... " >&6; }
 if test "${ac_cv_lib_netcdf_nc_def_var_chunking+set}" = set; then :
