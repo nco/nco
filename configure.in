@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.347 2011-06-27 00:22:51 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.348 2011-06-27 00:39:39 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -283,76 +283,11 @@ if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" =
 	    ])
 fi
 
-if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
-# Nothing fancy requested, so verify regular old libnetCDF3 works
-# Check for 'nc_open()' using default compiler flags
-# If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
-# [nc_open() is cached---checking for it twice does not work]
-    AC_MSG_NOTICE([Checking default compiler flags])
-    AC_CHECK_LIB([netcdf],[nc_open],[
-	    LIBS="-lnetcdf ${LIBS}"
-	    AC_MSG_NOTICE([Good news: Simple program compiles and links to libnetcdf.a with default compiler flags])
-	    ],[
-# Linking failed so add 64-bit compiler flags and try again
-	    AC_MSG_NOTICE([Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags...])
-	    
-	    case ${host} in
-# fxm csz: Test for existance of user-defined vars before overwriting
-		mips*-sgi-irix* )
-		    
-		    case ${CC} in
-			cc* ) CFLAGS="${CFLAGS} -64 -mips4" ; LDFLAGS="${LDFLAGS} -64" ; ;;
-			    gcc* ) CFLAGS="${CFLAGS} -mabi=64" ; LDFLAGS="${LDFLAGS} -mips4 -L/usr/local/lib/mabi=64" ; ;;
-		    esac
-		    ;;
-		powerpc-ibm-aix* )
-		    case ${CC} in
-# Pass -X 64 to symbol extractor or libtool fails
-			gcc* ) CFLAGS="${CFLAGS} -maix64" ; ;;
-			    xlc* ) CFLAGS="${CFLAGS} -q64" ; CXXFLAGS="${CXXFLAGS} -q64"; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
-		    esac
-		    ;;
-		sparc-sun-solaris2* )
-		    case ${CC} in
-			cc* ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
-		    esac
-		    ;;
-		x86_64*-linux* )
-		    case ${CC} in
-			gcc* ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
-		    esac
-		    ;;
-	    esac
-	    
-	    AC_CHECK_LIB([netcdf],[nc_close],AC_MSG_NOTICE([Adding 64-bit ABI compiler flags]),[
-		    echo "ERROR: Unable to compile and link executable with \"libnetcdf.a\" with LDFLAGS=${LDFLAGS}"
-		    echo "1. If netCDF is not installed, then download and install it:"
-		    echo "http://www.unidata.ucar.edu/packages/netcdf"
-		    echo "2. If netCDF is installed correctly, set NETCDF_LIB to directory with libnetcdf.a"
-		    echo "3. If configure fails here with NETCDF_LIB set correctly, try changing CC and/or CFLAGS until compilation and linking to libnetcdf.a works"
-		    echo "Currently CC=\"${CC}\" and CFLAGS=\"${CFLAGS}\" do not work with libnetcdf.a"
-		    echo "Set environment variables CC and CFLAGS to working values and then re-run ./configure"
-		    AC_MSG_ERROR([Mandatory netCDF link test failed]) ] ) ]
-    )
-# End Mandatory Link Test with libnetcdf.a
-fi # enable_netCDF3
-echo "DEBUG: After netCDF3 section LIBS = ${LIBS}"
-
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
 AC_ARG_ENABLE(dap-netcdf,AS_HELP_STRING([--enable-dap-netcdf],[Build DAP-enabled NCO with netCDF-provided DAP [[default=yes]]]),enable_dap_netcdf=${enableval},enable_dap_netcdf=yes)
-AC_ARG_ENABLE(dap-opendap,AS_HELP_STRING([--enable-dap-opendap],[Build DAP-enabled NCO with OPeNDAP-provided DAP [[default=no]]]),enable_dap_opendap=${enableval},enable_dap_opendap=no)
-
-# Are both DAP-netCDF and DAP-OPeNDAP requested?
-echo "DEBUG: enable_dap_netcdf = ${enable_dap_netcdf} and enable_dap_opendap = ${enable_dap_opendap}"
-if (test "${enable_dap_netcdf}" != 'no' && test "${enable_dap_opendap}" != 'no'); then
-# Override OPeNDAP request
-    echo "WARNING: Requested both DAP-netCDF and DAP-OPeNDAP support---overriding OPeNDAP"
-    echo "Will attempt to build NCO with DAP support from netCDF4, not from OPeNDAP"
-    enable_dap_opendap='no'
-fi # End test for DAP duplication
 
 # Begin DAP-netCDF
 # Check for DAP-netCDF libraries unless told not to
@@ -365,62 +300,10 @@ if test "${enable_dap_netcdf}" != 'no'; then
 fi
 # End DAP-netCDF
 
-# Begin DAP-OPeNDAP
-# Check for DAP-OPeNDAP libraries unless told not to
-if test "${enable_dap_opendap}" != 'no'; then
-    echo "Testing for DAP-OPeNDAP support (is DAP in libnc-dap.a and libdap++?)..."
-    if which ncdap-config > /dev/null; then
-# Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
-
-# DAP_OPENDAP_ROOT is value of "${prefix}" set to build OPeNDAP
-# Scripts dap-config and ncdap-config are in ${prefix}/bin
-# Use them to find how to link this particular build. jhrg 20050525
-
-# Place DAP netcdf.h path ahead of system netcdf.h path
-	CPPFLAGS="`ncdap-config --cflags` ${CPPFLAGS}"
-# Grab libraries DAP-OPeNDAP requires
-	LIBS="`ncdap-config --libs` ${LIBS}"
-	nc_dap_vrs=`ncdap-config --version`
-	nc_dap_vrs_mjr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\1@'`
-	nc_dap_vrs_mnr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\2@'`
-	nc_dap_vrs_pch=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\3@'`
-# libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
-# definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
-# Sorry about version numbers being confusing... jhrg 20050603
-	if test ${nc_dap_vrs_mjr} -le 3 -a ${nc_dap_vrs_mnr} -le 6 -a ${nc_dap_vrs_pch} -le 1 ; then
-# OPeNDAP versions <= 3.6.1 do not support netCDF 3.6 
-	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
-# libtool cleans-up duplicate library links (e.g., dap, nc-dap) unless told not to
-# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
-	    LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
-	fi
-    else
-# ncdap-config not found
-	enable_dap_opendap='no'
-    fi
-    AC_LANG_PUSH([C++])
-    AC_CHECK_LIB([nc-dap],[nc_open],,enable_dap_opendap=no)
-    AC_LANG_POP([C++])
-    if test "${enable_dap_opendap}" = 'no'; then
-	AC_MSG_WARN([DAP-OPeNDAP support disabled (missing OPeNDAP libraries)])
-	LIBS="${nco_LIBS_no_DAP}"
-    fi
-fi
-# End DAP-OPeNDAP
-
 # Begin DAP (all flavors)
-# Perform elaborate "or" test since autoconf dislikes [ -o ] syntax
-ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='no'
 enable_dap='no'
 if (test "x${enable_dap_netcdf}" = 'xyes'); then
-    ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='yes'
     AC_DEFINE([ENABLE_DAP_NETCDF],[1],[DAP support is from libnetcdf])
-fi
-if (test "x${enable_dap_opendap}" = 'xyes'); then
-    ENABLE_DAP_NETCDF_OR_DAP_OPENDAP='yes'
-    AC_DEFINE([ENABLE_DAP_NETCDF],[1],[DAP support is from libdap])
-fi
-if test "x${ENABLE_DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
     enable_dap='yes'
     AC_DEFINE([ENABLE_DAP],[1],[Compile operators with DAP support])
     AC_MSG_NOTICE([DAP support enabled])
@@ -429,7 +312,6 @@ if test "x${ENABLE_DAP_NETCDF_OR_DAP_OPENDAP}" = 'xyes' ; then
 #    AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 fi
 # End DAP (all flavors)
-
 
 ##################################################
 # Check libraries, add to link path if found
@@ -1198,7 +1080,6 @@ echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
-echo "ENABLE_DAP_OPENDAP... ${enable_dap_opendap}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"

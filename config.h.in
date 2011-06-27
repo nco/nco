@@ -9,7 +9,7 @@
 /* Compile operators with DAP support */
 #undef ENABLE_DAP
 
-/* DAP support is from libdap */
+/* DAP support is from libnetcdf */
 #undef ENABLE_DAP_NETCDF
 
 /* Custom debugging: Pedantic, bounds checking (slowest execution) */
@@ -158,9 +158,6 @@
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
-
-/* Define to 1 if you have the `nc-dap' library (-lnc-dap). */
-#undef HAVE_LIBNC_DAP
 
 /* Define to 1 if you have the `netcdf' library (-lnetcdf). */
 #undef HAVE_LIBNETCDF

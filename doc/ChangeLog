@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
+	* Remove DAP-OPENDAP section of configure.in because it was overly complex
+
 	* Re-introduce ENABLE_NETCDF4
 
 	* Remove MPI section of configure.in because it was nasty and unsupported
