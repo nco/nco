@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.134 2011-04-27 23:30:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.135 2011-06-27 21:20:55 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -461,6 +461,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     }else{ /* DAP-access failed */
       (void)fprintf(stderr,"%s: INFO DAP-access to %s failed with error code %d. ",prg_nm_get(),fl_nm_lcl,rcd);
       (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
+      /* Error codes explained by Dennis Heimbigner in e-mail on 20110627 */
+      if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT Error code indicates URL does not exist. Is there a typo in the URL? Please verify the file is accessible on the DAP-server at the specified location.",prg_nm_get());
+      if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT Error code indicates URL does exist, and that error may be in DAP server.",prg_nm_get());
+      /* Error codes NC_EDDS, NC_EDAS, etc. are self-explanatory with nc_strerror() */
     } /* DAP-access failed */
 
 #else /* !ENABLE_DAP */
