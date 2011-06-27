@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.30 2011-06-26 18:23:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.31 2011-06-27 23:07:22 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -138,12 +138,12 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
 /******************** UDUNITS 2 *********************************************************************/
 /****************************************************************************************************/
 
-int   /* O difference between two co-ordinate units */      
+int /* O difference between two co-ordinate units */      
 nco_cln_clc_dff
-(const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
- const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
+(const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
+ const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
  double crr_val,
- double *og_val)         /* O difference between two units string */
+ double *og_val) /* O difference between two units strings */
 {
   int ut_rcd; /* [enm] UDUnits2 status */
   
@@ -156,7 +156,7 @@ nco_cln_clc_dff
   if(!strcmp(fl_unt_sng,fl_bs_sng)){
     *og_val=crr_val;  
     return EXIT_SUCCESS;
-  }
+  } /* end if */
   
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
@@ -191,18 +191,16 @@ nco_cln_clc_dff
   ut_cnv=ut_get_converter(ut_sct_in,ut_sct_out); /* UDUnits converter */
   if(ut_cnv == NULL){
     ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
-    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: One of units is NULL\n");
-    if(ut_rcd == UT_NOT_SAME_SYSTEM) (void)fprintf(stderr,"ERROR: Units belong to different unit systems\n");
-    if(ut_rcd == UT_MEANINGLESS) (void)fprintf(stderr,"ERROR: Conversion between user specified unit \"%s\" and file units \"%s\" is meaningless\n",fl_bs_sng,fl_unt_sng);
+    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"WARNING: One of units, %s or %s, is NULL\n",fl_bs_sng,fl_unt_sng);
+    if(ut_rcd == UT_NOT_SAME_SYSTEM) (void)fprintf(stderr,"WARNING: Units %s and %s belong to different unit systems\n",fl_bs_sng,fl_unt_sng);
+    if(ut_rcd == UT_MEANINGLESS) (void)fprintf(stderr,"WARNING: Conversion between user-specified unit \"%s\" and file units \"%s\" is meaningless\n",fl_bs_sng,fl_unt_sng);
     return EXIT_FAILURE; /* Failure */
   } /* endif */
 
   /* Finally do the conversion  */
   *og_val=cv_convert_double(ut_cnv,crr_val);
   
-  if(dbg_lvl_get() > nco_dbg_std){
-    fprintf(stderr, "%s : nco_cln_clc_dff: difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fl_unt_sng,fl_bs_sng,*og_val);
-  }
+  if(dbg_lvl_get() > nco_dbg_std) fprintf(stderr, "%s: INFO nco_cln_clc_dff() reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fl_unt_sng,fl_bs_sng,*og_val);
 
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
   ut_free(ut_sct_in);
@@ -212,10 +210,11 @@ nco_cln_clc_dff
   return EXIT_SUCCESS;
 }  /* end nco_cln_clc_dff() */
 
-int                  /* [rcd] Successful conversion returns 0 */     
-nco_cln_prs_tm(      /* Extract time stamp from a parsed udunits string */
-const char *unt_sng, /* I [ptr] units attribute string   */            
-tm_cln_sct *tm_in){ /*  O [sct] struct to be populated   */             
+int /* [rcd] Successful conversion returns 0 */
+nco_cln_prs_tm /* Extract time stamp from parsed UDUnits string */
+(const char *unt_sng, /* I [ptr] units attribute string */
+ tm_cln_sct *tm_in) /*  O [sct] struct to be populated */             
+{
   int ut_rcd; /* [enm] UDUnits2 status */
   char buf[200];
   char *bptr;
@@ -243,21 +242,18 @@ tm_cln_sct *tm_in){ /*  O [sct] struct to be populated   */
     return EXIT_FAILURE; /* Failure */
   } /* endif coordinate on disk has no units attribute */
 
-  /* this prints out the timestamp to buf in a standard dependable format */
+  /* Print timestamp to buffer in standard, dependable format */
   ut_format(ut_sct_in,buf,sizeof(buf), UT_ASCII|UT_NAMES);
 
-  /*its a bit sloppy but this is the only way to extract the parsed units */
-  /* extract time info from print string */
+  /* Extract parsed time units from print string (kludgy) */
   bptr=strstr(buf,"since");  
-  sscanf( bptr,"%*s %d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
+  sscanf(bptr,"%*s %d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
 
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
   ut_free(ut_sct_in);
 
-
-return EXIT_SUCCESS;
-
-} /* end nco_cln_prs_tm */
+  return EXIT_SUCCESS;
+} /* end nco_cln_prs_tm() */
 
 # else /* !HAVE_UDUNITS2_H */
 
@@ -413,8 +409,7 @@ utUnit udu_sct_in; /* UDUnits structure, input units */
 /******************** NO UDUNITS  *******************************************************************/
 /****************************************************************************************************/
 
-/* nb we need dummy functions here so that compilation possible 
-   without udunits 1/2 */
+/* Stubs to enable compilation without UDUnits */
 
 int                 /* [rcd] Successful conversion returns 0 */
 nco_cln_clc_dff(    /* [fnc] Difference between two co-ordinate units */      
