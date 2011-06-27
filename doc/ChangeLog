@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
+	* Re-introduce ENABLE_NETCDF4
+
 	* Remove MPI section of configure.in because it was nasty and unsupported
 
 	* Remove non-working CPPFLAGS += -DHAVE_NETCDF4_H hack from debian/rules
