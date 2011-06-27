@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.348 2011-06-27 00:39:39 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.349 2011-06-27 03:55:45 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -575,61 +575,10 @@ echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_u
 if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
 # Override UDUnits request
     echo "WARNING: Requested both UDUnits and UDUnits2 support---overriding UDUnits"
+
     echo "Will attempt to build NCO with UDUnits support from libudunits2, not from libudunits"
     enable_udunits='no'
 fi # End test for UDUnits duplication
-
-# Begin UDUnits
-# MacOS X requires libudport for threaded functions
-AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
-# Check for UDUnits libraries unless told not to
-if test "${enable_udunits}" != 'no'; then
-    nco_udunits_dat='/usr/local/etc/udunits.dat'
-    if test "${UDUNITS_PATH}"; then
-# Add ${UDUNITS_PATH}/lib to search path if present
-	nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
-	LDFLAGS="${LDFLAGS} -L${UDUNITS_PATH}/lib"
-	CPPFLAGS="${CPPFLAGS} -I${UDUNITS_PATH}/include"
-#    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
-    elif test "${NETCDF_INC}"; then
-	nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
-    else
-# Patch from Fedora Core 6 nco.spec:
-	for udunits_data_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
-	    if test -e "$udunits_data_file" ; then
-		nco_udunits_dat="$udunits_data_file"
-	    fi
-	done
-    fi
-# Warn if udunits.dat is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    AC_CHECK_FILE([$nco_udunits_dat],,AC_WARN([file $nco_udunits_dat was not found but will still attempt to build NCO with UDUnits support.]))
-# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
-    AC_DEFINE_UNQUOTED([UDUNITS_PATH],["$nco_udunits_dat"],[Location of UDUnits data file])
-# MacOS X requires libudport for threaded functions
-    AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
-    AC_MSG_NOTICE([NB: Following tests of UDUnits library and header must succeed for UDUnits support:])
-    AC_CHECK_LIB([udunits],[utInit],,enable_udunits=no)
-    if test "${UDUNITS_PATH}"; then
-	AC_CHECK_FILE([${UDUNITS_PATH}/include/udunits.h],AC_DEFINE([HAVE_UDUNITS_H],1,[Define to 1 if <udunits.h> is present]),enable_udunits=no)
-    else
-	AC_CHECK_HEADER([udunits.h],AC_DEFINE([HAVE_UDUNITS_H],1,[Define to 1 if <udunits.h> is present]),enable_udunits=no)
-    fi
-    if test "${enable_udunits}" = 'no'; then
-	AC_MSG_WARN([UDUnits support disabled (missing/unusable library or header file)])
-    elif test "${enable_udunits}" = 'yes'; then
-	LIBS="${LIBS} -ludunits"
-	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits support)
-	AC_MSG_NOTICE([UDUnits support enabled])
-    fi
-# When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
-# Thus UDUNITS_PATH need not be known at compile time
-#   AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
-    AC_ARG_VAR([UDUNITS_PATH],Root directory of UDUnits (normally contains [bin, etc, include, lib] subdirectories))
-fi
-echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
-# This would activate conditional UDUnits tests, if there were any
-# AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
-# End UDUnits
 
 # Begin UDUnits2
 # Check for UDUnits2 libraries unless told not to

@@ -6,7 +6,11 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
-	* Remove DAP-OPENDAP section of configure.in because it was overly complex
+	* Remove UDUNITS section of configure.in because it was overly
+	complex to maintain it at same time as UDUNITS2 which supercedes it
+
+	* Remove DAP-OPENDAP section of configure.in because it was overly 
+	complex to maintain it at same time as DAP-NETCDF which supercedes it
 
 	* Re-introduce ENABLE_NETCDF4
 

@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.60 2011-06-27 00:15:14 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.61 2011-06-27 03:55:46 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -160,7 +160,6 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 UDUNITS2_PATH = @UDUNITS2_PATH@
-UDUNITS_PATH = @UDUNITS_PATH@
 VERSION = @VERSION@
 YACC = @YACC@
 YFLAGS = @YFLAGS@

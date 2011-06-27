@@ -753,7 +753,6 @@ NCOXX
 NCO_CXX
 PATH_TO_NCGEN
 UDUNITS2_PATH
-UDUNITS_PATH
 ENABLE_GSL_FALSE
 ENABLE_GSL_TRUE
 I18N_SHARE
@@ -943,7 +942,6 @@ NETCDF_LIB
 NETCDF4_ROOT
 ANTLR_ROOT
 I18N_SHARE
-UDUNITS_PATH
 UDUNITS2_PATH'
 
 
@@ -1639,9 +1637,6 @@ Some influential environment variables:
   ANTLR_ROOT  Location of ANTLR version 2.7.x installation (compile-time)
   I18N_SHARE  Root of internationalization (i18n) locale directories
               (run-time)
-  UDUNITS_PATH
-              Root directory of UDUnits (normally contains bin, etc, include,
-              lib subdirectories)
   UDUNITS2_PATH
               Root directory of UDUnits2 (normally contains bin, include, lib,
               share subdirectories)
@@ -6440,13 +6435,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:6443: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:6438: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6446: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:6441: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6449: output\"" >&5)
+  (eval echo "\"\$as_me:6444: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -7640,7 +7635,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7643 "configure"' > conftest.$ac_ext
+  echo '#line 7638 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9555,11 +9550,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9558: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9553: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9562: \$? = $ac_status" >&5
+   echo "$as_me:9557: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9894,11 +9889,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9897: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9892: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9901: \$? = $ac_status" >&5
+   echo "$as_me:9896: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9999,11 +9994,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10002: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9997: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10006: \$? = $ac_status" >&5
+   echo "$as_me:10001: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10054,11 +10049,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10057: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10052: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10061: \$? = $ac_status" >&5
+   echo "$as_me:10056: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12438,7 +12433,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12441 "configure"
+#line 12436 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12534,7 +12529,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12537 "configure"
+#line 12532 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14490,11 +14485,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14493: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14488: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14497: \$? = $ac_status" >&5
+   echo "$as_me:14492: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14589,11 +14584,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14592: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14587: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14596: \$? = $ac_status" >&5
+   echo "$as_me:14591: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14641,11 +14636,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14644: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14639: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14648: \$? = $ac_status" >&5
+   echo "$as_me:14643: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18352,272 +18347,10 @@ echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_u
 if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
 # Override UDUnits request
     echo "WARNING: Requested both UDUnits and UDUnits2 support---overriding UDUnits"
+
     echo "Will attempt to build NCO with UDUnits support from libudunits2, not from libudunits"
     enable_udunits='no'
 fi # End test for UDUnits duplication
-
-# Begin UDUnits
-# MacOS X requires libudport for threaded functions
-ac_fn_c_check_func "$LINENO" "tdelete" "ac_cv_func_tdelete"
-if test "x$ac_cv_func_tdelete" = x""yes; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tdelete in -ludport" >&5
-$as_echo_n "checking for tdelete in -ludport... " >&6; }
-if test "${ac_cv_lib_udport_tdelete+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ludport  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char tdelete ();
-int
-main ()
-{
-return tdelete ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_udport_tdelete=yes
-else
-  ac_cv_lib_udport_tdelete=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_udport_tdelete" >&5
-$as_echo "$ac_cv_lib_udport_tdelete" >&6; }
-if test "x$ac_cv_lib_udport_tdelete" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBUDPORT 1
-_ACEOF
-
-  LIBS="-ludport $LIBS"
-
-fi
-
-fi
-
-# Check for UDUnits libraries unless told not to
-if test "${enable_udunits}" != 'no'; then
-    nco_udunits_dat='/usr/local/etc/udunits.dat'
-    if test "${UDUNITS_PATH}"; then
-# Add ${UDUNITS_PATH}/lib to search path if present
-	nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
-	LDFLAGS="${LDFLAGS} -L${UDUNITS_PATH}/lib"
-	CPPFLAGS="${CPPFLAGS} -I${UDUNITS_PATH}/include"
-#    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
-    elif test "${NETCDF_INC}"; then
-	nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
-    else
-# Patch from Fedora Core 6 nco.spec:
-	for udunits_data_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
-	    if test -e "$udunits_data_file" ; then
-		nco_udunits_dat="$udunits_data_file"
-	    fi
-	done
-    fi
-# Warn if udunits.dat is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    as_ac_File=`$as_echo "ac_cv_file_$nco_udunits_dat" | $as_tr_sh`
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $nco_udunits_dat" >&5
-$as_echo_n "checking for $nco_udunits_dat... " >&6; }
-if eval "test \"\${$as_ac_File+set}\"" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "$nco_udunits_dat"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-eval ac_res=\$$as_ac_File
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: file $nco_udunits_dat was not found but will still attempt to build NCO with UDUnits support." >&5
-$as_echo "$as_me: WARNING: file $nco_udunits_dat was not found but will still attempt to build NCO with UDUnits support." >&2;}
-fi
-
-# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
-
-cat >>confdefs.h <<_ACEOF
-#define UDUNITS_PATH "$nco_udunits_dat"
-_ACEOF
-
-# MacOS X requires libudport for threaded functions
-    ac_fn_c_check_func "$LINENO" "tdelete" "ac_cv_func_tdelete"
-if test "x$ac_cv_func_tdelete" = x""yes; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tdelete in -ludport" >&5
-$as_echo_n "checking for tdelete in -ludport... " >&6; }
-if test "${ac_cv_lib_udport_tdelete+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ludport  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char tdelete ();
-int
-main ()
-{
-return tdelete ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_udport_tdelete=yes
-else
-  ac_cv_lib_udport_tdelete=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_udport_tdelete" >&5
-$as_echo "$ac_cv_lib_udport_tdelete" >&6; }
-if test "x$ac_cv_lib_udport_tdelete" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBUDPORT 1
-_ACEOF
-
-  LIBS="-ludport $LIBS"
-
-fi
-
-fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: NB: Following tests of UDUnits library and header must succeed for UDUnits support:" >&5
-$as_echo "$as_me: NB: Following tests of UDUnits library and header must succeed for UDUnits support:" >&6;}
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for utInit in -ludunits" >&5
-$as_echo_n "checking for utInit in -ludunits... " >&6; }
-if test "${ac_cv_lib_udunits_utInit+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ludunits  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char utInit ();
-int
-main ()
-{
-return utInit ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_udunits_utInit=yes
-else
-  ac_cv_lib_udunits_utInit=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_udunits_utInit" >&5
-$as_echo "$ac_cv_lib_udunits_utInit" >&6; }
-if test "x$ac_cv_lib_udunits_utInit" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBUDUNITS 1
-_ACEOF
-
-  LIBS="-ludunits $LIBS"
-
-else
-  enable_udunits=no
-fi
-
-    if test "${UDUNITS_PATH}"; then
-	as_ac_File=`$as_echo "ac_cv_file_${UDUNITS_PATH}/include/udunits.h" | $as_tr_sh`
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ${UDUNITS_PATH}/include/udunits.h" >&5
-$as_echo_n "checking for ${UDUNITS_PATH}/include/udunits.h... " >&6; }
-if eval "test \"\${$as_ac_File+set}\"" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "${UDUNITS_PATH}/include/udunits.h"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-eval ac_res=\$$as_ac_File
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
-
-$as_echo "#define HAVE_UDUNITS_H 1" >>confdefs.h
-
-else
-  enable_udunits=no
-fi
-
-    else
-	ac_fn_c_check_header_mongrel "$LINENO" "udunits.h" "ac_cv_header_udunits_h" "$ac_includes_default"
-if test "x$ac_cv_header_udunits_h" = x""yes; then :
-
-$as_echo "#define HAVE_UDUNITS_H 1" >>confdefs.h
-
-else
-  enable_udunits=no
-fi
-
-
-    fi
-    if test "${enable_udunits}" = 'no'; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: UDUnits support disabled (missing/unusable library or header file)" >&5
-$as_echo "$as_me: WARNING: UDUnits support disabled (missing/unusable library or header file)" >&2;}
-    elif test "${enable_udunits}" = 'yes'; then
-	LIBS="${LIBS} -ludunits"
-
-$as_echo "#define ENABLE_UDUNITS 1" >>confdefs.h
-
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: UDUnits support enabled" >&5
-$as_echo "$as_me: UDUnits support enabled" >&6;}
-    fi
-# When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
-# Thus UDUNITS_PATH need not be known at compile time
-#   AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
-
-fi
-echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
-# This would activate conditional UDUnits tests, if there were any
-# AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
-# End UDUnits
 
 # Begin UDUnits2
 # Check for UDUnits2 libraries unless told not to
