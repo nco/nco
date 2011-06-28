@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.168 2011-03-04 23:35:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.169 2011-06-28 00:00:47 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -72,17 +72,17 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     
     /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
-      if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm))
+      if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
 	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
-      else{
+      }else{
 	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
         rec_dmn_out_id=dmn_out_id[idx];
       } /* end else */ 
 
     } /* end if */
 
-    /* Die if record dimension is not the first dimension */
-    if(idx>0 && dmn_out_id[idx]==rec_dmn_out_id ){
+    /* Die if record dimension is not first dimension */
+    if(idx>0 && dmn_out_id[idx]==rec_dmn_out_id){
       (void)fprintf(stdout,"%s: ERROR You defined the output record dimension to be \"%s\". Yet in the input variable \"%s\" the record dimension is dimension number %d. NCO (and the netCDF3 API) only supports the record dimension beging the first dimension. Consider using ncpdq to permute the location of the record dimension in the input file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if */

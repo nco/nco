@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.31 2011-06-27 23:07:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.32 2011-06-28 00:00:47 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -138,13 +138,15 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
 /******************** UDUNITS 2 *********************************************************************/
 /****************************************************************************************************/
 
-int /* O difference between two co-ordinate units */      
-nco_cln_clc_dff
+int /* [rcd] Return code */
+nco_cln_clc_dff /* [fnc] Compute difference between two co-ordinate units */
 (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
  double crr_val,
  double *og_val) /* O difference between two units strings */
 {
+  const char fnc_nm[]="nco_cln_clc_dff()"; /* [sng] Function name */
+
   int ut_rcd; /* [enm] UDUnits2 status */
   
   cv_converter *ut_cnv; /* UDUnits converter */
@@ -163,7 +165,7 @@ nco_cln_clc_dff
   if(dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
-    (void)fprintf(stdout,"%s: nco_udu_lmt_cnv() failed to initialize UDUnits2 library\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: %s() failed to initialize UDUnits2 library\n",prg_nm_get(),fnc_nm);
     return EXIT_FAILURE; /* Failure */
   } /* end if err */ 
 
@@ -200,7 +202,7 @@ nco_cln_clc_dff
   /* Finally do the conversion  */
   *og_val=cv_convert_double(ut_cnv,crr_val);
   
-  if(dbg_lvl_get() > nco_dbg_std) fprintf(stderr, "%s: INFO nco_cln_clc_dff() reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fl_unt_sng,fl_bs_sng,*og_val);
+  if(dbg_lvl_get() > nco_dbg_std) fprintf(stderr, "%s: INFO %s() reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
 
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
   ut_free(ut_sct_in);
