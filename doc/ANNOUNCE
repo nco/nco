@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.442 2011-05-10 21:56:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.443 2011-07-11 18:42:58 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.0.8 are ready. 
+The netCDF operators NCO version 4.0.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -10,13 +10,13 @@ systems, such as that now used at NCAR. It also supports the CF
 "bounds" convention, the CF "noleap" convention, fixes a bug in
 ncatted overwrite-mode, fixes printing of NC_[U]BYTE attributes. 
 
-4.0.8 also contains a workaround for the NOFILL bug recently found
-to be present in all netCDF versions since 1999. NCO 4.0.8 works
+4.0.9 also contains a workaround for the NOFILL bug recently found
+to be present in all netCDF versions since 1999. NCO 4.0.9 works
 around the NOFILL bug whether or not the underlying netCDF library 
 has been patched to fix the bug. Often users can re-install
 application software (e.g., NCO in RPM or .deb format) more quickly 
 than they can upgrade base system software (e.g., netCDF).
-For these reasons, upgrading to NCO 4.0.8 is recommended.
+For these reasons, upgrading to NCO 4.0.9 is recommended.
 
 http://nco.sf.net#bug_nofill
 
@@ -26,19 +26,7 @@ KNOWN BUGS NOT YET FIXED section below.
 Enjoy,
 Charlie
 
-Other "New stuff" in 4.0.8 summary (full details always in ChangeLog):
-
-A. Support retrieving input files from High Performance Storage
-   Systems (HPSS). NCAR moved from MSS to HPSS in March so NCO 4.0.8
-   dropped support for MSS (msrcp, msread, nrnet commands) and now
-   supports the 'hsi get' command, transparently to the user, e.g., 
-   
-   ncks -l . /YO/MAMA/LOVES/HPSS/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-04-29-64800.nc
-
-   More information, and what to do if your site stores the 'hsi'
-   executable in a non-standard location, is at 
-
-   http://nco.sf.net/nco.html#hpss
+Other "New stuff" in 4.0.9 summary (full details always in ChangeLog):
 
 B. Workaround netCDF NOFILL bug: 
    Abandon NOFILL mode until netCDF 4.1.3 is released.
@@ -57,17 +45,6 @@ C. Support CF convention for "bounds" attribute for cell boundaries.
    Hence the subsets will themselves be CF-compliant.
 
    http://nco.sf.net/nco.html#bnd
-
-D. Change "no_leap" to "noleap" for CF-compliance in re-basing code.
-   Thanks to Patrick Brockman for reporting this.
-
-E. Fix bug in ncatted where using overwrite-mode to create a new
-   (rather than replace an old) _FillValue attribute in a netCDF4 file  
-   failed. Thanks to Kyle Wilcox for reporting this. 
-
-F. Fix bug printing NC_[U]BYTE attributes. Attempting this caused a
-   core dump when NCO was compiled with -O optimization. Bytes now 
-   printed with more-or-less the same convention used by ncgen.
 
 KNOWN BUGS NOT YET FIXED:
 
@@ -193,10 +170,10 @@ E. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.0.8 with was built and tested with HDF5 hdf5-1.8.5-patch1 and with
+   NCO 4.0.9 with was built and tested with HDF5 hdf5-1.8.5-patch1 and with
    4.1.2-snapshot2011041822.
    NCO may not build with earlier, and should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.0.8 takes advantage of an
+   This is particularly true since NCO 4.0.9 takes advantage of an
    internal change to the netCDF nc_def_var_chunking() API in June 2009. 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
