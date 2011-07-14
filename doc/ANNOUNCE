@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.443 2011-07-11 18:42:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.444 2011-07-14 18:58:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.9 are ready. 
 
@@ -141,6 +141,19 @@ F. NOT YET FIXED
 
    20110506: Verified problem still exists
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
+
+G. NOT YET FIXED
+   netCDF4 library fails when renaming dimension and variable using
+   that dimension, in either order. Works fine with netCDF3.
+   Problem with netCDF4 library implementation.
+
+   Demonstration:
+   ncks -O -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
+   ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc
+   ncks -m ~/foo.nc
+
+   20110708: Verified problem still exists
+   Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 "Sticky" reminders:
 

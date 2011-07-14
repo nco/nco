@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1130 2011-06-27 23:07:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1131 2011-07-14 18:58:49 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -737,7 +737,10 @@ nco1020. nco: re-base record bounds variables (e.g., time_bnds) in ncrcat
 nco1021. nco: use owner axes for printing CF-time in bounds attributes 
 nco1022. nco: ncrcat core-dumps with double-free() error when concatenating record dimensions with non-time units
 	 ncrcat -D 3 -O -h ~/foo_1.nc ~/foo_2.nc ~/foo.nc
-nco1023. 
+nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without asking, e.g.,
+	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
+	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
+nco1024. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

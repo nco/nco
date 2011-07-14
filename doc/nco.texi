@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.642 2011-06-27 21:39:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.643 2011-07-14 18:58:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -757,7 +757,7 @@ to the GNU Scientific Library (@acronym{GSL}).
 @acronym{NCO}, in particular @command{ncap2}, uses the @acronym{GSL}
 special function library to evaluate geoscience-relevant mathematics
 such as Bessel functions, Legendre polynomials, and incomplete gamma
-functions (@pxref{GSL special functions}).
+functions (@pxref{@acronym{GSL} special functions}).
  
 @cindex @var{gamma}
 In June 2005, @acronym{NCO} version 3.0.1 began to take advantage
@@ -5983,11 +5983,11 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * sort methods::                
 * Irregular grids::             
 * bilinear interpolation::      
-* GSL special functions::       
-* GSL interpolation::           
-* GSL least-squares fitting::   
-* GSL statistics::              
-* GSL random number generation::  
+* @acronym{GSL} special functions::  
+* @acronym{GSL} interpolation::  
+* @acronym{GSL} least-squares fitting::  
+* @acronym{GSL} statistics::    
+* @acronym{GSL} random number generation::  
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity ::  
@@ -7119,25 +7119,23 @@ will not work as expected.
 Example:
 Consider the variables @code{float lon_2D_rct(lat,lon);} and
 @code{float var_msk(lat,lon);}. 
-Suppose we wish to multiply by two the elements for which var_msk 
+Suppose we wish to multiply by two the elements for which @code{var_msk} 
 @w{equals 1}: 
 @example
 where(var_msk==1) lon_2D_rct=2*lon_2D_rct;
 @end example
 Suppose that we have the variable @code{int RDM(time)} and that we want
-to set its values less than 8 or greater than 80 to 0: 
+to set its values less than 8 or greater than 80 @w{to 0}:
 @example
 where(RDM < 8 || RDM > 80) RDM=0;          
 @end example
 
-Consider irregularly gridded data, described using @w{rank 2}
-coordinates: 
-@code{
-double lat(south_north,east_west),
-double lon(south_north,east_west), 
-double temperature(south_north,east_west)}.
-To find the average temperature in a region [lat_min,lat_max] 
-and [lon_min,lon_max]: 
+Consider irregularly gridded data, described using @w{rank 2} coordinates: 
+@code{double lat(south_north,east_west)},
+@code{double lon(south_north,east_west)}, 
+@code{double temperature(south_north,east_west)}.
+To find the average temperature in a region bounded by
+[@var{lat_min},@var{lat_max}] and [@var{lon_min},@var{lon_max}]:
 @example
 temperature_msk[$south_north,$east_west]=0.0;
 where(lat >= lat_min && lat <= lat_max) && (lon >= lon_min && lon <= lon_max)
@@ -7156,7 +7154,11 @@ temp_max=temperature.max();
 @subsection Loops
 @cindex while()
 @cindex for()
-In @command{ncap} there are for() loops and while() loops. They are currently completely unoptimized So use them with  RAM variables unless you want thrash your disk to death. To break out of a loop use "break" command. To iterate to the next cycle use the "continue" command.
+@command{ncap} supplies @command{for()} loops and @command{while()} loops. 
+They are completely unoptimized so use them only with RAM 
+variables unless you want thrash your disk to death. 
+To break out of a loop use the @command{break} command. 
+To iterate to the next cycle use the @command{continue} command. 
 
 @example
 // Follwing sets elements in variable double temp(time,lat) 
@@ -7425,7 +7427,7 @@ The mask procedure is identical for all @var{R}.
 <a name="bln_ntp"></a> <!-- http://nco.sf.net/nco.html#bln_ntp -->
 <a name="bil_int"></a> <!-- http://nco.sf.net/nco.html#bil_int -->
 @end html
-@node bilinear interpolation, GSL special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
+@node bilinear interpolation, @acronym{GSL} special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
 @subsection bilinear interpolation
 @noindent As of version 4.0.0 @acronym{NCO} has internal routines to perform bilinear interpolation on gridded data sets.@* @* 
 @noindent In mathematics, bilinear interpolation is an extension of linear interpolation for interpolating functions of two variables on a regular grid. The idea is to perform linear interpolation first in one direction, and then again in the other direction. @* @*
@@ -7551,7 +7553,7 @@ print(T_out);
 @html
 <a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
 @end html
-@node GSL special functions, GSL interpolation, bilinear interpolation, ncap2 netCDF Arithmetic Processor
+@node @acronym{GSL} special functions, @acronym{GSL} interpolation, bilinear interpolation, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} special functions
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
@@ -7645,22 +7647,33 @@ export GSL_PREC_MODE=1 // GSL_PREC_SINGLE
 export GSL_PREC_MODE=2 // GSL_PREC_APPROX
 @end example
 
-@noindent The @command{ncap} wrappers to the array functions are slightly different. Lets consider the following gsl prototype @*
+@noindent The @command{ncap} wrappers to the array functions are
+slightly different. 
+Consider the following @acronym{GSL} prototype @* 
 @code{int gsl_sf_bessel_Jn_array(int nmin, int nmax, double x, double *result_array)}
-
 @example
 b1=lon.double();
 x=0.5;
 status=gsl_sf_bessel_Jn_array(1,4,x,&b1);
 print(status);
-b1=0.24226, 0.0306, 0.00256, 0.00016 ;
-
+b1=0.24226,0.0306,0.00256,0.00016;
 @end example
-@noindent This calculates the bessel function of x=0.5 for n=1 to 4. The first three arguments are scalar values. if a non-scalar variable is supplied as an argument then only the first value is used.The final argument is the variable where the results go ( note the '&' this indicates a call by reference). This final argument must be of type @code{double} and must be of least size (nmax-nmin+1). If either of these conditions are not met then then the function will blow out with an error message. The function/wrapper returns a status flag. Zero indicates success.
+@noindent This calculates the Bessel function of @var{x}=0.5 for
+@var{n}=1 to 4. 
+The first three arguments are scalar values. 
+If a non-scalar variable is supplied as an argument then only the first
+value is used. 
+The final argument is the variable where the results are stored (NB: the
+@code{&} indicates this is a call by reference). 
+This final argument must be of type @code{double} and must be of least
+size @var{nmax-nmin+1}. 
+If either of these conditions is not met then then the function 
+returns an error message. 
+The function/wrapper returns a status flag. 
+Zero indicates success. 
 
-@noindent Lets look at another array function @* 
+@noindent Consider another array function @* 
 @code{int gsl_sf_legendre_Pl_array( int lmax, double x, double *result_array);}
-
 @cindex Legendre polynomial
 @findex gsl_sf_legendre_Pl
 @example
@@ -7669,10 +7682,18 @@ x=0.3;
 status=gsl_sf_legendre_Pl_array(a1.size()-1, x,&a1);  
 print(status);
 @end example
+@noindent This call calculates @var{P_l}(0.3) for @var{l}=0..9. 
+Note that @var{|x|<=1}, otherwise there will be a domain error. 
+See the @acronym{GSL} 
+documentation for more details.  
 
-@noindent This call calculates P_l(0.3) for l=0..9. Note |x|<=1, otherwise there will be a domain error. See the @acronym{GSL} documentation for more details. 
-
-@noindent Below is table detailing what GSL functions have been implemented. This table is correct for @acronym{GSL} version 1.10. To see what functions are available on your build run the command @command{ncap2 -f |grep ^gsl} . To see this table along with the @acronym{GSL} C function prototypes look at the spreadsheet @strong{doc/nco_gsl.ods}. @* @*
+@noindent The @acronym{GSL} functions implemented in @acronym{NCO} are 
+listed in the table below. 
+This table is correct for @acronym{GSL} version 1.10. 
+To see what functions are available on your build run the command
+@command{ncap2 -f |grep ^gsl} . 
+To see this table along with the @acronym{GSL} @w{C-function}
+prototypes look at the spreadsheet @strong{doc/nco_gsl.ods}. @* @* 
 
 @multitable @columnfractions .35 .05 .60 
 @item @strong{GSL NAME} @tab @strong{I} @tab @strong{NCAP FUNCTION CALL}
@@ -7959,19 +7980,17 @@ print(status);
 @item gsl_sf_eta_e @tab Y @tab gsl_sf_eta(dbl_expr)
 @end multitable
 
-
-
 @html
 <a name="gsl_int"></a> <!-- http://nco.sf.net/nco.html#gsl_int -->
 @end html
-@node GSL interpolation, GSL least-squares fitting, GSL special functions, ncap2 netCDF Arithmetic Processor
+@node @acronym{GSL} interpolation, @acronym{GSL} least-squares fitting, @acronym{GSL} special functions, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} interpolation
 @cindex @acronym{GSL}
-@noindent As of version 3.9.9 (released July, 2009), @acronym{NCO} has wrappers to the GSL interpolation functions.
+@noindent As of version 3.9.9 (released July, 2009), @acronym{NCO} has wrappers to the @acronym{GSL} interpolation functions.
 
-@noindent  Given a set of data points (x1,y1)...(xn, yn) the GSL functions computes a continuous interpolating function @acronym{Y(x)} such that @acronym{Y(xi) = yi}. The interpolation is piecewise smooth, and its behavior at the end-points is determined by the type of interpolation used. For more information consult the GSL manual. 
+@noindent  Given a set of data points (x1,y1)...(xn, yn) the @acronym{GSL} functions computes a continuous interpolating function @acronym{Y(x)} such that @acronym{Y(xi) = yi}. The interpolation is piecewise smooth, and its behavior at the end-points is determined by the type of interpolation used. For more information consult the @acronym{GSL} manual. 
 
-@noindent Interpolation with @command{ncap2} is a two stage process. In the first stage, a ram variable is created from the chosen interpolating function and the data set. This ram variable holds in memory a GSL interpolation object. In the second stage, points along the interpolating function are calculated. If you have a very large data set or are interpolating many sets then consider deleting the ram variable when it is redundant. Use the command @command{ram_delete(var_nm)}.   
+@noindent Interpolation with @command{ncap2} is a two stage process. In the first stage, a ram variable is created from the chosen interpolating function and the data set. This ram variable holds in memory a @acronym{GSL} interpolation object. In the second stage, points along the interpolating function are calculated. If you have a very large data set or are interpolating many sets then consider deleting the ram variable when it is redundant. Use the command @command{ram_delete(var_nm)}.   
 
 @noindent A simple example
 
@@ -7997,7 +8016,7 @@ print(y3);      // '_'
 
 @noindent Note in the above example y3 is set to 'missing value' because 0.0 isn't within the input X range.  
 
-@strong{ GSL Interpolation Types } @*
+@strong{ @acronym{GSL} Interpolation Types } @*
 @noindent All the interpolation functions have been implemented. These are: @*
 gsl_interp_linear() @* gsl_interp_polynomial() @* gsl_interp_cspline()@*
 gsl_interp_cspline_periodic()@* gsl_interp_akima() @* gsl_interp_akima_periodic() @*
@@ -8014,11 +8033,11 @@ gsl_spline_integ() @*
 @html
 <a name="ncap_lsqf"></a> <!-- http://nco.sf.net/nco.html#ncap_lsqf -->
 @end html
-@node GSL least-squares fitting, GSL statistics, GSL interpolation, ncap2 netCDF Arithmetic Processor
-@subsection  GSL least-squares fitting       
+@node @acronym{GSL} least-squares fitting, @acronym{GSL} statistics, @acronym{GSL} interpolation, ncap2 netCDF Arithmetic Processor
+@subsection  @acronym{GSL} least-squares fitting       
 @noindent Least Squares fitting is a method of calculating a straight line through a set of experimental data points in the XY plane. The data maybe weighted or unweighted. For more information please refer to the @acronym{GSL} manual.
 
-@noindent These GSL functions fall into three categories:@*
+@noindent These @acronym{GSL} functions fall into three categories:@*
 @strong{A)} Fitting data to Y=c0+c1*X@*
 @strong{B)} Fitting data (through the origin) Y=c1*X@*
 @strong{C)} Multi-parameter fitting (not yet implemented)@* 
@@ -8093,12 +8112,12 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 <a name="ncap_stat"></a> <!-- http://nco.sf.net/nco.html#ncap_stat -->
 @end html
 
-@node GSL statistics, GSL random number generation, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
+@node @acronym{GSL} statistics, @acronym{GSL} random number generation, @acronym{GSL} least-squares fitting, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} statistics
 
-@noindent Wrappers for most of the GSL Statistical functions have been implemented. The GSL function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate GSL function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in GSL for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
+@noindent Wrappers for most of the @acronym{GSL} Statistical functions have been implemented. The @acronym{GSL} function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate @acronym{GSL} function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in @acronym{GSL} for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
 
-@noindent GSL Functions
+@noindent @acronym{GSL} Functions
 @example
 short gsl_stats_max (short data[], size_t stride, size_t n);
 double gsl_stats_int_mean (int data[], size_t stride, size_t n);
@@ -8117,7 +8136,7 @@ double gsl_stats_wmean (var_weight, weight_stride, var_data, data_stride, n, var
 double gsl_stats_quantile_from_sorted_data (var_sorted_data, data_stride, n, var_f) ;
 @end example
 
-@noindent GSL has no notion of missing values or dimensionality beyond one. If your data has missing values which you want ignored in the calculations then use the @command{ncap2} built in aggregate functions( @ref{Methods and functions} ). The GSL functions operate on a vector of values created from the var_data/stride/n arguments. The ncap wrappers check that there is no bounding error with regard to the size of the data and the final value in the vector. 
+@noindent @acronym{GSL} has no notion of missing values or dimensionality beyond one. If your data has missing values which you want ignored in the calculations then use the @command{ncap2} built in aggregate functions( @ref{Methods and functions} ). The @acronym{GSL} functions operate on a vector of values created from the var_data/stride/n arguments. The ncap wrappers check that there is no bounding error with regard to the size of the data and the final value in the vector. 
 
 Some examples
 
@@ -8187,7 +8206,7 @@ print(dmin);print(dmax);
 <a name="ncap_rng"></a> <!-- http://nco.sf.net/nco.html#ncap_rng -->
 @end html
 
-@node GSL random number generation, Examples ncap2, GSL statistics, ncap2 netCDF Arithmetic Processor
+@node @acronym{GSL} random number generation, Examples ncap2, @acronym{GSL} statistics, ncap2 netCDF Arithmetic Processor
 @subsection @acronym{GSL} random number generation
 The @acronym{GSL} library has a large number of random number generators. In addition there are a large set of functions for turning uniform random numbers into discrete or continuous probabilty distributions. The random number generator algorithms vary in terms of quality numbers output, speed of execution and maximium number output. For more information see the @acronym{GSL} documentation. The algorithm and seed are set via environment variables, these are picked up by the @code{ncap2} code.
 
@@ -8289,7 +8308,7 @@ print(b6_avg);
 @html
 <a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
 @end html
-@node Examples ncap2, Intrinsic mathematical methods, GSL random number generation, ncap2 netCDF Arithmetic Processor
+@node Examples ncap2, Intrinsic mathematical methods, @acronym{GSL} random number generation, ncap2 netCDF Arithmetic Processor
 @subsection Examples ncap2
 
 See the @file{ncap.in} and @file{ncap2.in} scripts released with @acronym{NCO} 
