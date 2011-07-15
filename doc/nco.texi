@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.643 2011-07-14 18:58:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.644 2011-07-15 16:45:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6657,7 +6657,7 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @node if statement, print statement, Number literals, ncap2 netCDF Arithmetic Processor
 @subsection if statement
 @cindex if() 
-The synatax of the if statement is similar to its C counterpart. 
+The syntax of the if statement is similar to its C counterpart. 
 The @emph{Conditional Operator (ternary operator)} has also been
 implemented. 
 @example
@@ -7202,38 +7202,39 @@ print("Total of odd elements ");print(sum);print("\n");
 @end html
 @node Include files, sort methods, Loops, ncap2 netCDF Arithmetic Processor
 @subsection Include files
-@cindex include ncap
-The synatax of an include file is:
+@cindex @command{include}
+The syntax of an @var{include-file} is:
 @example
 #include "script.nco"
 @end example
 The script filename is searched relative to the run directory. 
 It is possible to nest include files to an arbitrary depth. 
 A handy use of inlcude files is to store often used constants. 
-Use RAM variables if you do not want these constants written to Output. 
+Use RAM variables if you do not want these constants written to
+@var{output-file}.  
 @example
 // script.nco
-// Sample file that could be #include'd in ncap2 script
-*pi=3.1415926535; // Not written to Output
-*h=6.62607095e-34; // Not written to Output
-e=2.71828; // Written to Output
+// Sample file to #include in ncap2 script
+*pi=3.1415926535; // RAM variable, not written to output-file
+*h=6.62607095e-34; // RAM variable, not written to outpuf-file
+e=2.71828; // Regular (disk) variable, written to output-file
 @end example
 
 @html
 <a name="ncap_srt"></a> <!-- http://nco.sf.net/nco.html#ncap_srt -->
 @end html
 @node sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
-@subsection sort methods
-In @acronym{ncap} there are two ways to sort. 
-The first is a regular sort. 
+@subsection @command{sort} methods
+In @acronym{ncap} there are two ways to sort data. 
+The first is a regular @command{sort}. 
 This sorts ALL the elements of a variable or attribute without
 regard to any dimensions. 
 The second method applies a sort map to a variable. 
 To apply this sort map the size of the variable must be exactly
 divisible by the size of the sort map. 
-The method @code{sort(var_in,&var_map) } is overloaded. 
-The second optional argument is a call_by_ref variable which will hold
-the sort map.  
+The method @code{sort(var_in,&var_map)} is overloaded. 
+The second optional argument is to supply a call-by-reference variable
+to hold the returned sort map.  
 @example
 a1[$time]=@{10,2,3,4,6,5,7,3,4,1@};
 a1_sort=sort(a1);
@@ -7248,7 +7249,7 @@ print(a2_map);
 // 1, 0, 3, 2 ;
 @end example  
 
-If the map variable does not exist prior to the sort call, then it will
+If the map variable does not exist prior to the @command{sort} call, then it will
 be created with the same shape as the input variable and be of type
 @code{NC_INT}. 
 If the map variable already exists, then the only restriction is that it
@@ -7288,7 +7289,7 @@ print(a5_sort2);
 // 18,20,19,17,16
 @end example
 As in the above example you a free to create your own mask. 
-To sort in descending order, use @code{reverse()} after the sort.   
+To sort in descending order, use @code{reverse()} after the @command{sort}.   
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
