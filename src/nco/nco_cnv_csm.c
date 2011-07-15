@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.54 2011-01-01 02:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.55 2011-07-15 17:57:50 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -121,11 +121,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
   day=(nco_int)(var[time_idx]->val.dp[0]);
   
   /* Recompute date variable based on new (averaged) day number */
-#ifdef USE_FORTRAN_ARITHMETIC
-  date=FORTRAN_newdate(&nbdate,&day);
-#else /* !USE_FORTRAN_ARITHMETIC */
   date=nco_newdate(nbdate,day);
-#endif /* !USE_FORTRAN_ARITHMETIC */
   if(var[date_idx]->type == NC_INT){
     if(!var[date_idx]->val.ip) return; else var[date_idx]->val.ip[0]=date;
   }else if(var[date_idx]->type == NC_DOUBLE){
