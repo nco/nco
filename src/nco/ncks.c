@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.270 2011-06-02 16:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.271 2011-07-23 00:40:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -118,14 +118,15 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *grp_arg[NC_MAX_VARS]; /* Option g */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.270 2011-06-02 16:52:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.270 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.271 2011-07-23 00:40:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.271 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -153,6 +154,7 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
+  int grp_nbr=0; /* Option g. NB: grp_nbr gets incremented */
   int idx;
   int in_id;  
   int jdx;
@@ -355,7 +357,7 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "tst_udunits" */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest udunits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest udunits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -405,6 +407,10 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      break;
+    case 'g': /* Copy group argument for later processing */
+      grp_arg[grp_nbr]=(char *)strdup(optarg);
+      grp_nbr++;
       break;
     case 'H': /* Toggle printing data to screen */
       PRN_VAR_DATA_TGL=True;
@@ -620,6 +626,9 @@ main(int argc,char **argv)
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     if(True) (void)nco_vrs_att_cat(out_id);
     
+    /* Define groups in output file */
+    if(grp_nbr > 0) rcd+=nco_grp_dfn(in_id,out_id,grp_lst,grp_nbr);
+
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
 
@@ -737,6 +746,8 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free groups */
+    for(idx=0;idx<grp_nbr;idx++) grp_arg[idx]=(char *)nco_free(grp_arg[idx]);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     /* NB: lmt[idx] was free()'d earlier
