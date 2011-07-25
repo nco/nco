@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.110 2011-04-26 22:56:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.111 2011-07-25 03:38:41 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.110 2011-04-26 22:56:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.110 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.111 2011-07-25 03:38:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.111 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -691,7 +691,7 @@ main(int argc,char **argv)
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl_1,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
     /* Turn off default filling behavior to enhance efficiency */
-    /*rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);*/
+    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
     
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
@@ -894,7 +894,7 @@ main(int argc,char **argv)
 	    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl_1,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
 	    /* Turn off default filling behavior to enhance efficiency */
-	    /*rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);*/
+	    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical

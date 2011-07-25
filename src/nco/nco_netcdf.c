@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.139 2011-07-23 00:40:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.140 2011-07-25 03:38:42 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -565,7 +565,7 @@ nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
   /* Purpose: Wrapper for nc_inq_ncid() */
   int rcd;
-  rcd=nc_inq_ncid(nc_id,grp_nm,&grp_id);
+  rcd=nc_inq_ncid(nc_id,grp_nm,grp_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ncid()");
   return rcd;
 } /* end nco_inq_ncid */
@@ -614,14 +614,32 @@ nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
 
 /* Begin Group routines (_grp) */
 #ifdef ENABLE_NETCDF4
-int nco_def_grp(const int prn_id,const char * const grp_nm,int * const grp_id)
+int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
   /* Purpose: Wrapper for nc_def_grp() */
   int rcd;
-  rcd=nc_def_grp(prn_id,grp_nm,&grp_id);
+  rcd=nc_def_grp(nc_id,grp_nm,grp_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_grp()");
   return rcd;
 } /* end nco_def_grp() */
+
+int nco_inq_grpname(const int nc_id,char * const grp_nm)
+{
+  /* Purpose: Wrapper for nc_inq_grpname() */
+  int rcd;
+  rcd=nc_inq_grpname(nc_id,grp_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grpname()");
+  return rcd;
+} /* end nco_inq_grpname() */
+
+int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_id)
+{
+  /* Purpose: Wrapper for nc_inq_grps() */
+  int rcd;
+  rcd=nc_inq_grps(nc_id,grp_nbr,grp_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grps()");
+  return rcd;
+} /* end nco_inq_grps() */
 #endif /* !ENABLE_NETCDF4 */
 /* End Group routines */
 

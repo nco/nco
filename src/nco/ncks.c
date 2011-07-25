@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.271 2011-07-23 00:40:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.272 2011-07-25 03:38:42 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,6 +105,7 @@ main(int argc,char **argv)
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
+  char **grp_lst_in=NULL;
   char **var_lst_in=NULL;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
@@ -118,15 +119,14 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
-  char *grp_arg[NC_MAX_VARS]; /* Option g */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.271 2011-07-23 00:40:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.271 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.272 2011-07-25 03:38:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.272 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -154,7 +154,8 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
-  int grp_nbr=0; /* Option g. NB: grp_nbr gets incremented */
+  int grp_nbr=0; /* [nbr] Number of groups to extract */
+  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int idx;
   int in_id;  
   int jdx;
@@ -171,6 +172,7 @@ main(int argc,char **argv)
   lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
 
+  nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -409,8 +411,12 @@ main(int argc,char **argv)
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
     case 'g': /* Copy group argument for later processing */
-      grp_arg[grp_nbr]=(char *)strdup(optarg);
-      grp_nbr++;
+      /* Replace commas with hashes when within braces (convert back later) */
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_lst_comma2hash(optarg_lcl);
+      grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      grp_nbr=grp_lst_in_nbr;
       break;
     case 'H': /* Toggle printing data to screen */
       PRN_VAR_DATA_TGL=True;
@@ -473,7 +479,7 @@ main(int argc,char **argv)
       var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
-       break;
+      break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);
       aux_nbr++;
@@ -627,6 +633,7 @@ main(int argc,char **argv)
     if(True) (void)nco_vrs_att_cat(out_id);
     
     /* Define groups in output file */
+    if(grp_nbr > 0) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
     if(grp_nbr > 0) rcd+=nco_grp_dfn(in_id,out_id,grp_lst,grp_nbr);
 
     for(idx=0;idx<nbr_xtr;idx++){
@@ -641,7 +648,7 @@ main(int argc,char **argv)
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     
     /* Turn off default filling behavior to enhance efficiency */
-    /*rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);*/
+    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
     
     /* Take output file out of define mode */
     if(hdr_pad == 0UL){
@@ -745,9 +752,8 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-    /* Free groups */
-    for(idx=0;idx<grp_nbr;idx++) grp_arg[idx]=(char *)nco_free(grp_arg[idx]);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     /* NB: lmt[idx] was free()'d earlier

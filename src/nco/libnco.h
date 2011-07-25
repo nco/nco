@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.46 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.47 2011-07-25 03:38:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) library */
 
@@ -32,6 +32,7 @@
 #include "nco_dbg.h" /* Debugging */
 #include "nco_dmn_utl.h" /* Dimension utilities */
 #include "nco_fl_utl.h" /* File manipulation */
+#include "nco_grp_utl.h" /* Group utilities */
 #include "nco_lmt.h" /* Hyperslab limits */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */

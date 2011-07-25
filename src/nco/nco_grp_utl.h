@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.1 2011-07-24 18:39:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.2 2011-07-25 03:38:42 zender Exp $ */
 
 /* Purpose: Group utilities */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 2011--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -37,6 +37,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
+nm_id_sct * /* O [sct] Group extraction list */
+nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions */
+(const int nc_id, /* I [enm] netCDF file ID */
+ char * const * const grp_lst_in, /* I [sng] User-specified list of group names and rx's */
+ const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
+ int * const grp_nbr); /* I/O [nbr] Number of groups in current extraction list */
+
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
 (const int in_id, /* I [enm] netCDF input-file ID */
@@ -48,8 +55,8 @@ int /* [rcd] Return code */
 nco_def_grp_rcr
 (const int in_id, /* I [enm] netCDF input-file ID */
  const int out_id, /* I [enm] netCDF output-file ID */
- const int prn_id, /* [enm] Parent group ID */
- int * const grp_nbr); /* I [nbr] Number of sub-groups that were defined */
+ const char * const prn_nm, /* I [sng] Parent group name */
+ const int rcr_lvl); /* I [nbr] Recursion level */
 
 #ifdef __cplusplus
 } /* end extern "C" */

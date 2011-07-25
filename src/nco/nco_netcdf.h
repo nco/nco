@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.75 2011-07-23 00:40:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.76 2011-07-25 03:38:42 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -118,7 +118,9 @@ int nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id);
 
 /* Begin Group routines (_grp) */
 #ifdef ENABLE_NETCDF4
-int nco_def_grp(const int prn_id,const char * const grp_nm,int * const grp_id);
+int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id);
+int nco_inq_grpname(const int nc_id,char * const grp_nm);
+int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_id);
 #endif /* !ENABLE_NETCDF4 */
 /* End Group routines */
 
