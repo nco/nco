@@ -1,10 +1,18 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.4 2011-07-25 17:11:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.5 2011-07-25 17:40:24 zender Exp $ */
 
 /* Purpose: Group utilities */
 
 /* Copyright (C) 2011--2011 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
+
+/* Testing:
+   eos52nc4 ~/nco/data/in.he5 ~/in.nc4
+   export HDF5_DISABLE_VERSION_CHECK=1
+   ncdump -h ~/in.nc4
+   ncks -D 1 -m ~/in.nc4
+   ncks -O -D 3 -g HIRDLS -m ~/in.nc4 ~/foo.nc
+ */
 
 #include "nco_grp_utl.h" /* Group utilities */
 
