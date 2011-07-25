@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.2 2011-07-25 03:38:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.3 2011-07-25 06:38:30 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -13,44 +13,51 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 (const int nc_id, /* I [enm] netCDF file ID */
  char * const * const grp_lst_in, /* I [sng] User-specified list of group names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const grp_nbr) /* I/O [nbr] Number of groups in current extraction list */
+ int * const grp_nbr_xtr) /* I/O [nbr] Number of groups in current extraction list */
 {
-  /* Purpose: Create group extraction list with or without regular expressions */
+  /* Purpose: Create group extraction list with or without regular expressions
+     Code adapted from nco_var_lst_mk() and nearly identical in all respects */
   
-  char *grp_sng;
+  char *grp_sng; /* User-specified group name or regular expression */
   char grp_nm[NC_MAX_NAME];
   
+  int grp_in_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
+  int grp_nbr_top; /* [nbr] Number of top-level groups */
   int idx;
   int jdx;
-  int nbr_tmp;
+  int grp_nbr_tmp;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
   
   nm_id_sct *grp_lst=NULL; /* grp_lst may be alloc()'d from NULL with -c option */
-  nm_id_sct *fl_in_grp_lst=NULL; /* [sct] All groups in input file */
+  nm_id_sct *grp_lst_all=NULL; /* [sct] All groups in input file */
   nco_bool *grp_xtr_rqs=NULL; /* [flg] Group specified in extraction list */
-  
+
+  /* Find number of top-level groups */
+  rcd+=nco_inq_grps(nc_id,&grp_nbr_top,grp_in_id);
+
   /* Create list of all groups in input file */
-  fl_in_grp_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
-  for(idx=0;idx<nbr_var;idx++){
+  grp_lst_all=(nm_id_sct *)nco_malloc(grp_nbr_top*sizeof(nm_id_sct));
+  for(idx=0;idx<grp_nbr_top;idx++){
     /* Get name of each group */
-    (void)nco_inq_varname(nc_id,idx,grp_nm);
-    fl_in_grp_lst[idx].nm=(char *)strdup(grp_nm);
-    fl_in_grp_lst[idx].id=idx;
+    (void)nco_inq_grpname(grp_in_id[idx],grp_nm);
+    grp_lst_all[idx].nm=(char *)strdup(grp_nm);
+    grp_lst_all[idx].id=grp_in_id[idx];
   } /* end loop over idx */
   
-  /* Return all groups if .. */
-  if(*nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
-    *nbr_xtr=nbr_var;
-    return fl_in_grp_lst;
+  /* Return all top-level groups if none were specified ... */
+  if(*grp_nbr_xtr == 0){
+    *grp_nbr_xtr=grp_nbr_top;
+    return grp_lst_all;
   } /* end if */
   
-  /* Initialize and allocacte nco_bool array to all False */
-  grp_xtr_rqs=(nco_bool *)nco_calloc((size_t)nbr_var,sizeof(nco_bool));
+  /* Initialize and allocate extraction flag array to all False */
+  grp_xtr_rqs=(nco_bool *)nco_calloc((size_t)grp_nbr_top,sizeof(nco_bool));
   
-  /* Loop through grp_lst_in */
-  for(idx=0;idx<*nbr_xtr;idx++){
+  /* Loop through user-specified group list */
+  for(idx=0;idx<*grp_nbr_xtr;idx++){
     grp_sng=grp_lst_in[idx];
     
     /* Convert pound signs (back) to commas */
@@ -60,11 +67,11 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
     } /* end while */
     grp_sng=grp_lst_in[idx];
     
-    /* If grp_sng is regular expression... */
+    /* If grp_sng is regular expression ... */
     if(strpbrk(grp_sng,".*^$\\[]()<>+?|{}")){
-      /* ...and regular expression library is present */
+      /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-      rx_mch_nbr=nco_var_meta_search(nbr_var,fl_in_grp_lst,grp_sng,grp_xtr_rqs);
+      rx_mch_nbr=nco_lst_meta_search(grp_nbr_top,grp_lst_all,grp_sng,grp_xtr_rqs);
       if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any groups\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),grp_sng); 
       continue;
 #else
@@ -74,19 +81,19 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
     } /* end if regular expression */
     
     /* Normal group so search through group array */
-    for(jdx=0;jdx<nbr_var;jdx++)
-      if(!strcmp(grp_sng,fl_in_grp_lst[jdx].nm)) break;
+    for(jdx=0;jdx<grp_nbr_top;jdx++)
+      if(!strcmp(grp_sng,grp_lst_all[jdx].nm)) break;
 
-    if(jdx != nbr_var){
+    if(jdx != grp_nbr_top){
       /* Mark this group as requested for inclusion by user */
       grp_xtr_rqs[jdx]=True;
     }else{
       if(EXCLUDE_INPUT_LIST){ 
-	/* Group need not be present if list will be excluded later... */
+	/* Group need not be present if list will be excluded later ... */
 	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_grp_lst_mk() reports explicitly excluded group \"%s\" is not in input file anyway\n",prg_nm_get(),grp_sng); 
       }else{ /* !EXCLUDE_INPUT_LIST */
 	/* Group should be included but no matches found so die */
-	(void)fprintf(stdout,"%s: ERROR nco_grp_lst_mk() reports user-specified group \"%s\" is not in input file\n",prg_nm_get(),grp_sng); 
+	(void)fprintf(stdout,"%s: ERROR nco_grp_lst_mk() reports user-specified top-level group \"%s\" is not in input file\n",prg_nm_get(),grp_sng); 
 	nco_exit(EXIT_FAILURE);
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
@@ -95,26 +102,26 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   
   /* Create final group list using bool array */
   
-  /* malloc() grp_lst to maximium size(nbr_var) */
-  grp_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
-  nbr_tmp=0; /* nbr_tmp is incremented */
-  for(idx=0;idx<nbr_var;idx++){
-    /* Copy var to output array */
+  /* malloc() grp_lst to maximium size(grp_nbr_top) */
+  grp_lst=(nm_id_sct *)nco_malloc(grp_nbr_top*sizeof(nm_id_sct));
+  grp_nbr_tmp=0; /* grp_nbr_tmp is incremented */
+  for(idx=0;idx<grp_nbr_top;idx++){
+    /* Copy group to extraction list */
     if(grp_xtr_rqs[idx]){
-      grp_lst[nbr_tmp].nm=(char *)strdup(fl_in_grp_lst[idx].nm);
-      grp_lst[nbr_tmp].id=fl_in_grp_lst[idx].id;
-      nbr_tmp++;
+      grp_lst[grp_nbr_tmp].nm=(char *)strdup(grp_lst_all[idx].nm);
+      grp_lst[grp_nbr_tmp].id=grp_lst_all[idx].id;
+      grp_nbr_tmp++;
     } /* end if */
-    (void)nco_free(fl_in_grp_lst[idx].nm);
+    (void)nco_free(grp_lst_all[idx].nm);
   } /* end loop over var */
   
   /* realloc() list to actual size */  
-  grp_lst=(nm_id_sct *)nco_realloc(grp_lst,nbr_tmp*sizeof(nm_id_sct));
+  grp_lst=(nm_id_sct *)nco_realloc(grp_lst,grp_nbr_tmp*sizeof(nm_id_sct));
 
-  (void)nco_free(fl_in_grp_lst);
+  (void)nco_free(grp_lst_all);
   (void)nco_free(grp_xtr_rqs);
 
-  *nbr_xtr=nbr_tmp;    
+  *grp_nbr_xtr=grp_nbr_tmp;    
   return grp_lst;
 } /* end nco_grp_lst_mk() */
 
@@ -134,7 +141,7 @@ nco_grp_dfn /* [fnc] Define groups in output file */
   for(idx=0;idx<grp_nbr;idx++){
     int grp_out_id;
     /* Define group and all subgroups */
-    rcd+=nco_def_grp_rcr(in_id,out_id,prn_id,rcr_lvl)
+    rcd+=nco_def_grp_rcr(in_id,out_id,grp_xtr_lst[idx].nm,rcr_lvl)
   } /* end loop over top-level groups */
 
   return rcd;
@@ -153,8 +160,8 @@ nco_def_grp_rcr
   int idx;
   int grp_nbr; /* I [nbr] Number of sub-groups */
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int *grp_in_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
-  int *grp_out_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in output file */
+  int grp_in_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
+  int grp_out_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in output file */
 
   /* How many and which sub-groups are in this group? */
   rcd+=nco_inq_grps(in_id,grp_nbr,grp_in_id);

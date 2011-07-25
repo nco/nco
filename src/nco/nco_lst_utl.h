@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.38 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.39 2011-07-25 06:38:30 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -17,6 +17,13 @@
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, qsort */
 #include <string.h> /* strcmp. . . */
 
+#ifdef HAVE_REGEX_H
+#ifdef MACOSX
+#include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
+#endif /* !MACOSX */
+#include <regex.h> /* POSIX regular expressions library */
+#endif /* HAVE_REGEX_H */
+
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
@@ -30,6 +37,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+int /* O [nbr] Number of matches found */
+nco_lst_meta_search /* [fnc] Search for pattern matches in var string list */
+(int var_nbr_all, /* I [nbr] Size of var_lst_all and var_xtr_rqs */
+ nm_id_sct *var_lst_all, /* I [sct] All variables in input file (with IDs) */
+ char *rx_sng, /* I [sng] Regular expression pattern */
+ nco_bool *var_xtr_rqs); /* O [flg] Matched vars holder */
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */

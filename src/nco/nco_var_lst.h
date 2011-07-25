@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.51 2011-03-04 21:42:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.52 2011-07-25 06:38:30 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -46,11 +46,11 @@ extern "C" {
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var_lst_mk /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
- const int nbr_var, /* I [nbr] Number of variables in input file */
+ const int var_nbr_all, /* I [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
+ int * const var_nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
@@ -125,13 +125,6 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
  var_sct *** var_2_ptr, /* I/O [sct] Variable list 2 */
  int * const var_nbr_1, /* I/O [nbr] Number of variables in list 1 */
  int * const var_nbr_2); /* I/O [nbr] Number of variables in list 2 */
-
-int /* O [nbr] Number of matches found */
-nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
-(int nbr_var, /* I [nbr] number of vars in srch_sng and size of var_xtr_rqs */
- nm_id_sct *fl_in_var_lst, /* I [sct] All variables in input file (with IDs) */
- char *rexp, /* I [sng] Regular expression pattern */
- nco_bool *var_xtr_rqs); /* O [flg] Matched vars holder */
 
 #ifdef __cplusplus
 } /* end extern "C" */

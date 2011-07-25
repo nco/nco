@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.57 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.58 2011-07-25 06:38:30 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -12,6 +12,80 @@
    http://www.pci.uni-heidelberg.de/tc/usr/joerg
    are faster than ANSI system qsort() in all cases 
    See code in ${DATA}/tmp/testsort */
+
+/* Compile following routines only if regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+
+int /* O [nbr] Number of matches found */
+nco_lst_meta_search /* [fnc] Search for pattern matches in var string list */
+(int var_nbr_all, /* I [nbr] Size of var_lst_all and var_xtr_rqs */
+ nm_id_sct *var_lst_all, /* I [sct] All variables in input file (with IDs) */
+ char *rx_sng, /* I [sng] Regular expression pattern */
+ nco_bool *var_xtr_rqs) /* O [flg] Matched variable holder */
+{
+  /* Purpose: Match regular expressions to members of list */
+
+  int idx;
+  int err_id;
+  int flg_cmp; /* Comparison flags */
+  int flg_exe; /* Execution flages */
+  int mch_nbr=0;
+  size_t nbr_sub_xpr;
+  
+  regmatch_t *result;
+  regex_t *rx;
+
+  rx=(regex_t *)nco_malloc(sizeof(regex_t));
+
+  /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
+  flg_cmp=(REG_EXTENDED | REG_NEWLINE);
+  /* Set execution flags */
+  flg_exe=0;
+
+  /* Compile regular expression */
+  if((err_id=regcomp(rx,rx_sng,flg_cmp)) != 0){ /* Compile regular expression */
+    char const * rx_err_sng;  
+    /* POSIX regcomp return error codes */
+    switch(err_id){
+    case REG_BADPAT: rx_err_sng="Invalid pattern."; break;  
+    case REG_ECOLLATE: rx_err_sng="Not implemented."; break;
+    case REG_ECTYPE: rx_err_sng="Invalid character class name."; break;
+    case REG_EESCAPE: rx_err_sng="Trailing backslash."; break;
+    case REG_ESUBREG: rx_err_sng="Invalid back reference."; break;
+    case REG_EBRACK: rx_err_sng="Unmatched left bracket."; break;
+    case REG_EPAREN: rx_err_sng="Parenthesis imbalance."; break;
+    case REG_EBRACE: rx_err_sng="Unmatched {."; break;
+    case REG_BADBR: rx_err_sng="Invalid contents of { }."; break;
+    case REG_ERANGE: rx_err_sng="Invalid range end."; break;
+    case REG_ESPACE: rx_err_sng="Ran out of memory."; break;
+    case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
+    default: rx_err_sng="Invalid pattern."; break;  
+    } /* end switch */
+    (void)fprintf(stdout,"%s: ERROR nco_lst_meta_search() error in regular expression \"%s\" %s \n",prg_nm_get(),rx_sng,rx_err_sng); 
+    nco_exit(EXIT_FAILURE);
+  } /* end if err */
+
+  nbr_sub_xpr=rx->re_nsub+1; /* How many matches are there in line? */
+
+  /* Search string */
+  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*nbr_sub_xpr);
+
+  /* Search each variable string for matches */
+  for(idx=0;idx<var_nbr_all;idx++){  
+    if(!regexec(rx,var_lst_all[idx].nm,nbr_sub_xpr,result,flg_exe)){
+      var_xtr_rqs[idx]=True;
+      mch_nbr++;
+    } /* end if */
+  } /* end loop over variables */
+
+  regfree(rx); /* Free regular expression data structure */
+  rx=(regex_t *)nco_free(rx);
+  result=(regmatch_t *)nco_free(result);
+
+  return mch_nbr;
+} /* end nco_lst_meta_search() */
+
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */
