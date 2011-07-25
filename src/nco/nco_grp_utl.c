@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.3 2011-07-25 06:38:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.4 2011-07-25 17:11:58 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7,6 +7,64 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_grp_utl.h" /* Group utilities */
+
+int /* [rcd] Return code */
+nco_grp_dfn /* [fnc] Define groups in output file */
+(const int in_id, /* I [enm] netCDF input-file ID */
+ const int out_id, /* I [enm] netCDF output-file ID */
+ nm_id_sct *grp_xtr_lst, /* [grp] Groups to be defined */
+ const int grp_nbr) /* I [nbr] Number of groups to be defined */
+{
+  /* Purpose: Define groups in output file */
+  int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rcr_lvl=0; /* [nbr] Recursion level */
+
+  /* For each (possibly user-specified) top-level group ... */
+  for(idx=0;idx<grp_nbr;idx++){
+    /* Define group and all subgroups */
+    rcd+=nco_def_grp_rcr(in_id,out_id,grp_xtr_lst[idx].nm,rcr_lvl);
+  } /* end loop over top-level groups */
+
+  return rcd;
+} /* end nco_grp_dfn() */
+
+int /* [rcd] Return code */
+nco_def_grp_rcr
+(const int in_id, /* I [enm] netCDF input-file ID */
+ const int out_id, /* I [enm] netCDF output-file ID */
+ const char * const prn_nm, /* I [sng] Parent group name */
+ const int rcr_lvl) /* I [nbr] Recursion level */
+{
+  /* Purpose: Recursively define parent group and all subgroups in output file */
+  char grp_nm[NC_MAX_NAME];
+
+  int idx;
+  int grp_nbr; /* I [nbr] Number of sub-groups */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int grp_in_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
+  int grp_out_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in output file */
+
+  /* How many and which sub-groups are in this group? */
+  rcd+=nco_inq_grps(in_id,&grp_nbr,grp_in_id);
+
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports recursion level = %d parent group = %s has %d sub-groups\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr);
+
+  /* Define each group, recursively, in output file */
+  for(idx=0;idx<grp_nbr;idx++){
+
+    /* Obtain name of current group in input file */
+    rcd+=nco_inq_grpname(grp_in_id[idx],grp_nm);
+
+    /* Define group of same name in output file */
+    rcd+=nco_def_grp(out_id,grp_nm,grp_out_id+idx);
+
+    /* Define group and all sub-groups */
+    rcd+=nco_def_grp_rcr(grp_in_id[idx],grp_out_id[idx],grp_nm,rcr_lvl+1);
+  } /* end loop over sub-groups groups */
+
+  return rcd;
+} /* end nco_grp_dfn_rcr() */
 
 nm_id_sct * /* O [sct] Group extraction list */
 nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions */
@@ -124,63 +182,3 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   *grp_nbr_xtr=grp_nbr_tmp;    
   return grp_lst;
 } /* end nco_grp_lst_mk() */
-
-int /* [rcd] Return code */
-nco_grp_dfn /* [fnc] Define groups in output file */
-(const int in_id, /* I [enm] netCDF input-file ID */
- const int out_id, /* I [enm] netCDF output-file ID */
- nm_id_sct *grp_xtr_lst, /* [grp] Groups to be defined */
- const int grp_nbr) /* I [nbr] Number of groups to be defined */
-{
-  /* Purpose: Define groups in output file */
-  int idx;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcr_lvl=0; /* [nbr] Recursion level */
-
-  /* For each (possibly user-specified) top-level group ... */
-  for(idx=0;idx<grp_nbr;idx++){
-    int grp_out_id;
-    /* Define group and all subgroups */
-    rcd+=nco_def_grp_rcr(in_id,out_id,grp_xtr_lst[idx].nm,rcr_lvl)
-  } /* end loop over top-level groups */
-
-  return rcd;
-} /* end nco_grp_dfn() */
-
-int /* [rcd] Return code */
-nco_def_grp_rcr
-(const int in_id, /* I [enm] netCDF input-file ID */
- const int out_id, /* I [enm] netCDF output-file ID */
- const char * const prn_nm, /* I [sng] Parent group name */
- const int rcr_lvl) /* I [nbr] Recursion level */
-{
-  /* Purpose: Recursively define parent group and all subgroups in output file */
-  char *grp_nm[NC_MAX_NAME];
-
-  int idx;
-  int grp_nbr; /* I [nbr] Number of sub-groups */
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int grp_in_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
-  int grp_out_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in output file */
-
-  /* How many and which sub-groups are in this group? */
-  rcd+=nco_inq_grps(in_id,grp_nbr,grp_in_id);
-
-  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports recursion level = %d parent group = %s has %d sub-groups\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr);
-
-  /* Define each group, recursively, in output file */
-  for(idx=0;idx<grp_nbr;idx++){
-
-    /* Obtain name of current group in input file */
-    rcd+=nco_inq_grpname(grp_in_id[idx],grp_nm);
-
-    /* Define group of same name in output file */
-    rcd+=nco_def_grp(out_id,grp_nm,grp_out_id+idx);
-
-    /* Define group and all sub-groups */
-    rcd+=nco_def_grp_rcr(grp_in_id[idx],grp_out_id[idx],grp_nm,rcr_lvl+1);
-  } /* end loop over sub-groups groups */
-
-  return rcd;
-} /* end nco_grp_dfn_rcr() */
-

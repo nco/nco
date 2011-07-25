@@ -1,3 +1,7 @@
+2011-07-25  Charlie Zender  <zender@uci.edu>
+
+	* Group stubs compile, build, and cause no regressions
+
 2011-07-24  Charlie Zender  <zender@uci.edu>
 
 	* Integrate nco_grp_utl.[ch] into build system
