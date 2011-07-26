@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.6 2011-07-26 00:46:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.7 2011-07-26 01:14:20 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -26,12 +26,14 @@ nco_grp_dfn /* [fnc] Define groups in output file */
   /* Purpose: Define groups in output file */
   int idx;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcr_lvl=0; /* [nbr] Recursion level */
+  int rcr_lvl=1; /* [nbr] Recursion level */
+
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_grp_dfn() reports file level = 0 parent group = / (root group) will have %d sub-group%s\n",prg_nm_get(),grp_nbr,(grp_nbr == 1) ? "" : "s");
 
   /* For each (possibly user-specified) top-level group ... */
   for(idx=0;idx<grp_nbr;idx++){
     /* Define group and all subgroups */
-    rcd+=nco_def_grp_rcr(in_id,out_id,grp_xtr_lst[idx].nm,rcr_lvl);
+    rcd+=nco_def_grp_rcr(grp_xtr_lst[idx].id,out_id,grp_xtr_lst[idx].nm,rcr_lvl);
   } /* end loop over top-level groups */
 
   return rcd;
@@ -56,7 +58,7 @@ nco_def_grp_rcr
   /* How many and which sub-groups are in this group? */
   rcd+=nco_inq_grps(in_id,&grp_nbr,grp_in_id);
 
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports recursion level = %d parent group = %s has %d sub-group%s\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr,(grp_nbr == 1) ? "" : "s");
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports file level = %d parent group = %s will have %d sub-group%s\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr,(grp_nbr == 1) ? "" : "s");
 
   /* Define each group, recursively, in output file */
   for(idx=0;idx<grp_nbr;idx++){
@@ -82,7 +84,11 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
  int * const grp_nbr_xtr) /* I/O [nbr] Number of groups in current extraction list */
 {
   /* Purpose: Create group extraction list with or without regular expressions
-     Code adapted from nco_var_lst_mk() and nearly identical in all respects */
+     Code adapted from nco_var_lst_mk() and nearly identical in all respects
+     Routine is currently (20110775) intended to be called either with 
+     1. no user-specified groups (same as specifying all top-level groups), or,
+     2. a list of user-specified (possibly regular expressions) of top-level groups
+     Routine returns list of structures of all top-level groups matching input expression(s) */
   
   char *grp_sng; /* User-specified group name or regular expression */
   char grp_nm[NC_MAX_NAME];
