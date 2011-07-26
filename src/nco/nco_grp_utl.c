@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.7 2011-07-26 01:14:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.8 2011-07-26 06:45:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -15,6 +15,121 @@
  */
 
 #include "nco_grp_utl.h" /* Group utilities */
+
+nm_id_sct * /* O [sct] Variable extraction list */
+nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
+(const int nc_id, /* I [enm] netCDF file ID */
+ char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
+ const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
+ const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ int * const var_nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
+{
+  /* Purpose: Create variable extraction list with or without regular expressions */
+  
+  char *var_sng; /* User-specified variable name or regular expression */
+  char var_nm[NC_MAX_NAME];
+  
+  int idx;
+  int jdx;
+  int var_nbr_tmp;
+  int var_nbr_all; /* [nbr] Number of variables in input file */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  int rx_mch_nbr;
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+  
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+  nm_id_sct *var_lst_all=NULL; /* [sct] All variables in input file */
+  nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
+  
+  /* Find maximum size of extraction list */
+  var_nbr_all=0; /* fxm: compute this by recursion */
+
+  /* Create list of all variables in input file */
+  var_lst_all=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
+  for(idx=0;idx<var_nbr_all;idx++){
+    /* Get name of each variable */
+    (void)nco_inq_varname(nc_id,idx,var_nm);
+    var_lst_all[idx].nm=(char *)strdup(var_nm);
+    var_lst_all[idx].id=idx;
+  } /* end loop over idx */
+  
+  /* Return all variables if none were specified and not -c ... */
+  if(*var_nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
+    *var_nbr_xtr=var_nbr_all;
+    return var_lst_all;
+  } /* end if */
+  
+  /* Initialize and allocate extraction flag array to all False */
+  var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
+  
+  /* Loop through user-specified variable list */
+  for(idx=0;idx<*var_nbr_xtr;idx++){
+    var_sng=var_lst_in[idx];
+    
+    /* Convert pound signs (back) to commas */
+    while(*var_sng){
+      if(*var_sng == '#') *var_sng=',';
+      var_sng++;
+    } /* end while */
+    var_sng=var_lst_in[idx];
+    
+    /* If var_sng is regular expression ... */
+    if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+      /* ... and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+      rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
+      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+      continue;
+#else
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+      nco_exit(EXIT_FAILURE);
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+    } /* end if regular expression */
+    
+    /* Normal variable so search through variable array */
+    for(jdx=0;jdx<var_nbr_all;jdx++)
+      if(!strcmp(var_sng,var_lst_all[jdx].nm)) break;
+
+    if(jdx != var_nbr_all){
+      /* Mark this variable as requested for inclusion by user */
+      var_xtr_rqs[jdx]=True;
+    }else{
+      if(EXCLUDE_INPUT_LIST){ 
+	/* Variable need not be present if list will be excluded later ... */
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+      }else{ /* !EXCLUDE_INPUT_LIST */
+	/* Variable should be included but no matches found so die */
+	(void)fprintf(stdout,"%s: ERROR nco_var4_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+	nco_exit(EXIT_FAILURE);
+      } /* !EXCLUDE_INPUT_LIST */
+    } /* end else */
+
+  } /* end loop over var_lst_in */
+  
+  /* Create final variable list using bool array */
+  
+  /* malloc() xtr_lst to maximium size(var_nbr_all) */
+  xtr_lst=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
+  var_nbr_tmp=0; /* var_nbr_tmp is incremented */
+  for(idx=0;idx<var_nbr_all;idx++){
+    /* Copy variable to extraction list */
+    if(var_xtr_rqs[idx]){
+      xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
+      xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
+      var_nbr_tmp++;
+    } /* end if */
+    (void)nco_free(var_lst_all[idx].nm);
+  } /* end loop over var */
+  
+  /* realloc() list to actual size */  
+  xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
+
+  (void)nco_free(var_lst_all);
+  (void)nco_free(var_xtr_rqs);
+
+  *var_nbr_xtr=var_nbr_tmp;    
+  return xtr_lst;
+} /* end nco_var4_lst_mk() */
 
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
@@ -52,25 +167,24 @@ nco_def_grp_rcr
   int idx;
   int grp_nbr; /* I [nbr] Number of sub-groups */
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int grp_in_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
-  int grp_out_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in output file */
+  int grp_in_ids[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
+  int grp_out_ids[NC_MAX_DIMS]; /* [ID] Sub-group IDs in output file */
 
   /* How many and which sub-groups are in this group? */
-  rcd+=nco_inq_grps(in_id,&grp_nbr,grp_in_id);
+  rcd+=nco_inq_grps(in_id,&grp_nbr,grp_in_ids);
 
   if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports file level = %d parent group = %s will have %d sub-group%s\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr,(grp_nbr == 1) ? "" : "s");
 
   /* Define each group, recursively, in output file */
   for(idx=0;idx<grp_nbr;idx++){
-
     /* Obtain name of current group in input file */
-    rcd+=nco_inq_grpname(grp_in_id[idx],grp_nm);
+    rcd+=nco_inq_grpname(grp_in_ids[idx],grp_nm);
 
     /* Define group of same name in output file */
-    rcd+=nco_def_grp(out_id,grp_nm,grp_out_id+idx);
+    rcd+=nco_def_grp(out_id,grp_nm,grp_out_ids+idx);
 
     /* Define group and all sub-groups */
-    rcd+=nco_def_grp_rcr(grp_in_id[idx],grp_out_id[idx],grp_nm,rcr_lvl+1);
+    rcd+=nco_def_grp_rcr(grp_in_ids[idx],grp_out_ids[idx],grp_nm,rcr_lvl+1);
   } /* end loop over sub-groups groups */
 
   return rcd;
@@ -93,7 +207,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   char *grp_sng; /* User-specified group name or regular expression */
   char grp_nm[NC_MAX_NAME];
   
-  int grp_in_id[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
+  int grp_in_ids[NC_MAX_DIMS]; /* [ID] Sub-group IDs in input file */ /* fxm: NC_MAX_GRPS? */
   int grp_nbr_top; /* [nbr] Number of top-level groups */
   int idx;
   int jdx;
@@ -108,15 +222,15 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   nco_bool *grp_xtr_rqs=NULL; /* [flg] Group specified in extraction list */
 
   /* Find number of top-level groups */
-  rcd+=nco_inq_grps(nc_id,&grp_nbr_top,grp_in_id);
+  rcd+=nco_inq_grps(nc_id,&grp_nbr_top,grp_in_ids);
 
   /* Create list of all groups in input file */
   grp_lst_all=(nm_id_sct *)nco_malloc(grp_nbr_top*sizeof(nm_id_sct));
   for(idx=0;idx<grp_nbr_top;idx++){
     /* Get name of each group */
-    (void)nco_inq_grpname(grp_in_id[idx],grp_nm);
+    (void)nco_inq_grpname(grp_in_ids[idx],grp_nm);
     grp_lst_all[idx].nm=(char *)strdup(grp_nm);
-    grp_lst_all[idx].id=grp_in_id[idx];
+    grp_lst_all[idx].id=grp_in_ids[idx];
   } /* end loop over idx */
   
   /* Return all top-level groups if none were specified ... */
