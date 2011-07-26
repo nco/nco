@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.5 2011-07-25 17:40:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.6 2011-07-26 00:46:17 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -56,7 +56,7 @@ nco_def_grp_rcr
   /* How many and which sub-groups are in this group? */
   rcd+=nco_inq_grps(in_id,&grp_nbr,grp_in_id);
 
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports recursion level = %d parent group = %s has %d sub-groups\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr);
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports recursion level = %d parent group = %s has %d sub-group%s\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr,(grp_nbr == 1) ? "" : "s");
 
   /* Define each group, recursively, in output file */
   for(idx=0;idx<grp_nbr;idx++){

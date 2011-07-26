@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.272 2011-07-25 03:38:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.273 2011-07-26 00:46:17 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -125,9 +125,9 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.272 2011-07-25 03:38:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.272 $";
-  const char * const opt_sht_lst="346aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.273 2011-07-26 00:46:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.273 $";
+  const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -244,6 +244,8 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
+      {"grp",required_argument,0,'g'},
+      {"group",required_argument,0,'g'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"hieronymus",no_argument,0,'H'}, /* fxm: need better mnemonic for -H */
@@ -632,8 +634,8 @@ main(int argc,char **argv)
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     if(True) (void)nco_vrs_att_cat(out_id);
     
-    /* Define groups in output file */
-    if(grp_nbr > 0) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
+    /* Define requested/necessary input groups in output file */
+    if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
     if(grp_nbr > 0) rcd+=nco_grp_dfn(in_id,out_id,grp_lst,grp_nbr);
 
     for(idx=0;idx<nbr_xtr;idx++){
