@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.645 2011-07-26 07:02:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.646 2011-07-27 06:00:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3943,7 +3943,7 @@ Short options: @samp{-X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}
 Long options: 
 @samp{--auxiliary @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}@*
 @end cartouche
-Utilize auxiliary coordinates specified in values of coordinate
+Utilize auxiliary coordinates specified in values of the coordinate
 variable's @code{standard_name} attributes, if any, when interpreting 
 hyperslab and multi-slab options. 
 Also @samp{--auxiliary}.
@@ -6240,22 +6240,27 @@ PS_nw= PS - (PS.min() >100000 ? 100000 : 0 );
 @noindent @strong{Clipping Operators}
 @cindex clipping operators
 @table @asis
-@item << Less Than Selection @*
-For arrays, the less-than selection operator selects all values in the left operand that are less than the corresponding value in the right operand. If the value of the left side is greater than or equal to the corresponding value of the right side, then the right side value is placed in the result	
-@item >> Greater Than Selection @*
-For arrays, the greater-than selection operator selects all values in the left operand that are greater than the corresponding value in the right operand. If the value of the left side is less than or equal to the corresponding value of the right side, then the right side value is placed in the result.
+@item << Less-than Clipping@*
+For arrays, the less-than selection operator selects all values in the
+left operand that are less than the corresponding value in the right
+operand. 
+If the value of the left side is greater than or equal to the
+corresponding value of the right side, then the right side value is 
+placed in the result	 
+@item >> Greater-than Clipping@*
+For arrays, the greater-than selection operator selects all values in
+the left operand that are greater than the corresponding value in the
+right operand. 
+If the value of the left side is less than or equal to the corresponding
+value of the right side, then the right side value is placed in the
+result.  
 @end table
 
-
-example:@*
-
+Example:
 @example
-
-RDM2= RDM >>100.0;   RDM2=100,100,100,100,126,126,100,100,100, 100 ;  // type double
-RDM2= RDM <<90s;     RDM3=1, 9, 36, 84, 90, 90, 84, 36, 9, 1 ;        // type int
-
+RDM2= RDM >>100.0; RDM2=100,100,100,100,126,126,100,100,100, 100; // type double
+RDM2= RDM << 90s ; RDM3=  1,  9, 36, 84, 90, 90, 84, 36,  9,   1; // type int
 @end example
-
 
 @html
 <a name="ncap_dims"></a> <!-- http://nco.sf.net/nco.html#ncap_dims -->
@@ -6264,37 +6269,38 @@ RDM2= RDM <<90s;     RDM3=1, 9, 36, 84, 90, 90, 84, 36, 9, 1 ;        // type in
 @subsection Dimensions
 @cindex dimensions@command{ncap}
 @cindex defdim()
-Dimensions can be defined in Output using the @code{defdim()} function.
+Dimensions are defined in Output using the @code{defdim()} function.
 @example
 defdim("cnt",10);
 @end example
 
-This dimension can then be subsequently referred to in method  arguments and a left hand cast by prefixing it with a dollar e.g
+This dimension name must then be prefixed with a dollar-sign @samp{$}
+when referred to in method arguments or left-hand-casting, e.g.,
 @example
 new_var[$cnt]=time;
 temperature[$time,$lat,$lon]=35.5;
 temp_avg=temperature.avg($time);
 @end example
 
-To refer to the dimension size in an expression use the @code{size} method. 
+The @code{size} method allows the dimension size to be used in an
+arithmetic expression:
 @example
 time_avg=time.total() / $time.size;
 @end example
 
-Increase size of new var by one and set new member to zero;
+Increase the size of a new variable by one and set new member to zero:
 @example
-defdim("cnt_grw", $cnt.size+1);
-new_var_grw[$cnt_grw]=0.0;
-new_var_grw( 0:($cnt_grw.size-2))=new_var;
+defdim("cnt_new",$cnt.size+1);
+new_var[$cnt_new]=0.0;
+new_var(0:($cnt_new.size-2))=old_var;
 @end example
 
 @noindent @strong{Dimension Abbreviations @*}
-@noindent Its possible to use dimension abbreviations as method arguments. @*
-@code{$0} is the first dimension of the variable @*
-@code{$1} is the second dimension of the variable @*
-@code{$n} is the n+1 dimension of the variable @*
+It is possible to use dimension abbreviations as method arguments:@*
+@code{$0} is the first dimension of a variable@*
+@code{$1} is the second dimension of a variable@*
+@code{$n} is the n+1 dimension of a variable@*
 
-@noindent consider the variables:@*
 @example
 float four_dmn_rec_var(time,lat,lev,lon);
 double three_dmn_var_dbl(time,lat,lon);
@@ -6310,7 +6316,8 @@ three_mw=three_dmn_var_dbl.permute($0,$2,$1);
 @end example
 
 @noindent @strong{ID Quoting @*}
-If the dim name contains non-regular characters use ID quoting. See @pxref{ID Quoting}
+If the dimension name contains non-regular characters use ID quoting. 
+See @pxref{ID Quoting}
 @example
 defdim("a--list.A",10);
 A1['$a--list.A']=30.0;
@@ -6424,7 +6431,7 @@ od(1:6:2)  // 22,26,30
 od(:)      // 20,22,24,26,28,30,32,34,36,38 
 @end example
 
-A more complex 3D example  
+A more complex three dimensional example:
 @example
 ($lat.size=2, $lon.size=4 )
 th[$time,$lat,$lon]=      
@@ -6443,79 +6450,83 @@ th(1,1,3);        // 16
 th(2,0,:);        // @{ 17, 18, 19, 20 @};
 th(:,1,3);        // 8, 16, 24, -99, 40, 48, 56, 64, 72, -99 
 th(::5 ,:,0:3:2); // 1, 3, 5, 7, 41, 43, 45, 47 ;
-
 @end example
 
-If any of the hyperslab arguments collapse to a single value ( a cross-section has been specified), then that dimension is removed from the returned variable. If all the values collapse then a scalar variable is returned
-
+If hyperslab arguments collapse to a single value (a cross-section has
+been specified), then that dimension is removed from the returned
+variable. 
+If all the values collapse then a scalar variable is returned.
 So, for example, the following is valid: 
 @example
 th_nw=th(0,:,:) +th(9,:,:); 
-th_nw  has dimensions $lon,$lat 
-nb the time dim has become degenerate
+// th_nw has dimensions $lon,$lat 
+// NB: the time dimension has become degenerate
 @end example
 
-The following is not valid:
+The following is invalid:
 @example
-th_nw=th(0,:,0:1) +th(9,:,0:1);
+th_nw=th(0,:,0:1)+th(9,:,0:1);
 @end example
-
-As the @emph{$lon} now only has two elements.
-The above can be calculated by using a LHS cast with @emph{$lon_nw} as replacement dim for @emph{$lon}.
+because the @code{$lon} dimension now only has two elements.
+The above can be calculated by using a LHS cast with 
+@code{$lon_nw} as replacement dim for @code{$lon}: 
 @example
 defdim("lon_nw",2);
 th_nw[$lat,$lon_nw]=th(0,:,0:1) +th(9,:,0:1);
 @end example
 
 @noindent @strong{Hyperslabs on the Left Hand Side of an assign@*}
-@noindent When hyperslabing on the LHS ,the expression on the RHS must evaluate to a scalar or a variable/attribute with the same number of elements as the LHS hyperslab
-
-Sets all elements of the last record to zero.
+@noindent When hyperslabing on the LHS, the expression on the RHS must 
+evaluate to a scalar or a variable/attribute with the same number of 
+elements as the LHS hyperslab.
+Set all elements of the last record to zero:
 @example
 th(9,:,:)=0.0;
 @end example
-
-Set first element of each lon element to 1.0.
+Set first element of each lon element to 1.0:
 @example
 th(:,:,0)=1.0;
 @end example
-  
-Can hyperslab on both sides of an assign.@* 
-Sets the last record to the same as the first record @*
+One may hyperslab on both sides of an assign.
+For example, this sets the last record to the first record:
 @example
 th(9,:,:)=th(0,:,:);
 @end example
-
-th0 represents pressure at height=0 @*
-th1 represents pressure at height=1 @*
-Then its possible to hyperslab in the records @*
+Say @var{th0} represents pressure at height=0 and 
+@var{th1} represents pressure at height=1.
+Then it is possible to insert these hyperslabs into the records
 @example
-P[$time,$height,$lat,$lon]=0.0;
-P(:,0,:,:)=th0;
-P(:,1,:,:)=th1
+prs[$time,$height,$lat,$lon]=0.0;
+prs(:,0,:,:)=th0;
+prs(:,1,:,:)=th1
 @end example
 
 @noindent @strong{Reverse method} @*
 @cindex reverse()
-If you want to reverse a dimension's elements in an variable use the @code{reverse()} method
-with at least one dimension argument (this is equivalent to applying a negative stride)
-e.g 
+Use the @code{reverse()} method to reverse a dimension's elements in a
+variable with at least one dimension.
+This is equivalent to a negative stride, e.g., 
 @example 
-th_rv=th(1 ,:,:).reverse($lon); // @{ 12,11,10,9 @} ,@{16,15,14,13 @}
-od_rv=od.reverse($time);        // @{38, 36, 34, 32, 30, 28, 26, 24, 22, 20 @}
+th_rv=th(1 ,:,:).reverse($lon); // @{12,11,10,9 @}, @{16,15,14,13@}
+od_rv=od.reverse($time);        // @{38,36,34,32,30,28,26,24,22,20@}
 @end example
 
 @noindent @strong{Permute method} @*
 @cindex permute()
-If you want to swap about the dimensions of a variable use the the @code{permute()} method. The number and names of  dimension arguments must match the dimensions in the variable. If the first dimension  in the variable is of record type then this must remain the first dimension. If you want to change the record dimension consider using @command{ncpdq} . 
+Use the @code{permute()} method to swap the dimensions of a variable.
+The number and names of dimension arguments must match the dimensions in
+the variable. 
+If the first dimension in the variable is of record type then this must
+remain the first dimension. 
+If you want to change the record dimension then consider using
+@command{ncpdq}. 
 
 Consider the variable:
 @example
 float three_dmn_var(lat,lev,lon);
-
-three_dmn_var_pm=three_dmn_var.permute($lon,$lat,$lev);
-
-three_dmn_var_pm= 
+three_dmn_var_prm=three_dmn_var.permute($lon,$lat,$lev);
+// The permuted values are
+three_dmn_var_prm= 
   0,4,8,
   12,16,20,
   1,5,9,
@@ -6535,7 +6546,7 @@ three_dmn_var_pm=
 @noindent Attributes are referred to by @emph{var_nm@@att_nm} @*
 All the following are valid statements:
 @example
-global@@text="Test Attributes";  /* Assign a global variable attribute */
+global@@text="Test Attributes"; /* Assign a global variable attribute */
 a1[$time]=time*20;
 a1@@long_name="Kelvin";
 a1@@min=a1.min();
@@ -6549,12 +6560,13 @@ a1($time.size-1)=a1@@max;
 A @emph{value list} can be used on the RHS of an assign...
 @cindex value list
 @example
-a1@@trip1=@{ 1,2,3 @} ;
-a1@@triplet=@{ a1@@min, (a1@@min+a1@@max)/2, a1@@max @}; 
+a1@@trip1=@{1,2,3@} ;
+a1@@triplet=@{a1@@min,(a1@@min+a1@@max)/2,a1@@max@}; 
 @end example
-
-The netcdf specification allows all attribute types to have a size greater than one. The maximum is defined by @code{NC_MAX_ATTRS} -The following is an ncdump of the meta-data for variable a1
-
+The netCDF specification allows all attribute types to have a size
+greater than one. 
+The maximum is defined by @code{NC_MAX_ATTRS}.
+The following is an @command{ncdump} of the metadata for variable @var{a1} 
 @example 
 double a1(time) ;
   a1:long_name = "Kelvin" ;
@@ -6564,15 +6576,14 @@ double a1(time) ;
   a1:triplet = 21., 110., 199. ;
 @end example
 
-The @code{size()} method can be used with attributes---for example, to
-save an attribute text string in a variable.
+The @code{size()} method can be used with attributes.
+For example, to save an attribute text string in a variable,
 @example
 defdim("sng_len", a1@@long_name.size());
-sng_arr[$sng_len]=a1@@long_name;         // sng_arr now contains "Kelvin" 
+sng_arr[$sng_len]=a1@@long_name; // sng_arr now contains "Kelvin" 
 @end example
-
 Attributes defined in a script are stored in memory and are written to Output after script completion.
-To stop the attribute being  written use the ram_delete() method or use a bogus variable name 
+To stop the attribute being written use the ram_delete() method or use a bogus variable name.
 
 @noindent @strong{Attribute Propagation & Inheritance}
 @cindex attribute propagation
@@ -6586,8 +6597,8 @@ To stop the attribute being  written use the ram_delete() method or use a bogus 
 @end itemize
 
 @example
-prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS;      //prs_mdp get attributes from PO
-th_min=1.0 + 2*three_dmn_var_dbl.min($time);    //th_min get attributes from three_dmn_var_dbl
+prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS;   // prs_mdp gets attributes from PO
+th_min=1.0 + 2*three_dmn_var_dbl.min($time); // th_min  gets attributes from three_dmn_var_dbl
 @end example
 
 If the attribute name contains non-regular characters use ID quoting. See @pxref{ID Quoting}
@@ -6604,11 +6615,11 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 The table below lists the postfix character(s) to add to a number literal for type cohesion. To use the new netCDF4 types @acronym{NCO} must be compiled/linked to the netCDF4 library and the output file must be HDF5.
 
 @example
-n1[$time]=1UL;   // n1 will now by type @code{NC_UINT}
-n2[$lon]=4b;     // n2 will be of type @code{NC_BYTE}
-n3[$lat]=5ull;   // n3 will be of type @code{NC_UINT64}  
-n3@@a1=6.0d;      // attribute will be type @code{NC_DOUBLE}
-n3@@a2=-666L;     // attribute will be type @code{NC_INT}
+n1[$time]=1UL; // n1 will now by type @code{NC_UINT}
+n2[$lon]=4b;   // n2 will be of type @code{NC_BYTE}
+n3[$lat]=5ull; // n3 will be of type @code{NC_UINT64}  
+n3@@a1=6.0d;   // attribute will be type @code{NC_DOUBLE}
+n3@@a2=-666L;  // attribute will be type @code{NC_INT}
 @end example
 
 A floating point number without a postfix will default to @code{NC_DOUBLE}. An integer without a postfix will default to type @code{NC_INT}. Thre is no postfix for characters. Use a quoted string.
@@ -7163,12 +7174,11 @@ To iterate to the next cycle use the @command{continue} command.
 @example
 // Follwing sets elements in variable double temp(time,lat) 
 // If element < 0 set to 0, if element > 100 set to 100
-
 *sz_idx=$time.size;
 *sz_jdx=$lat.size;
 
-for(*idx=0 ; idx<sz_idx ; idx++)
-  for(*jdx=0 ; jdx<sz_jdx; jdx++)
+for(*idx=0;idx<sz_idx;idx++)
+  for(*jdx=0;jdx<sz_jdx;jdx++)
     if(temp(idx,jdx) > 100) temp(idx,jdx)=100.0;
     else if(temp(idx,jdx) < 0) temp(idx,jdx)=0.0;
 
@@ -7179,7 +7189,7 @@ for(*idx=0 ; idx<sz_idx ; idx++)
      if(lat(idx)-lat(idx-1) < 0.0) 
        break;
 
-   if(idx==sz) 
+   if(idx == sz) 
      print("lat co-ordinate is monotonic\n");
    else 
      print("lat co-ordinate is NOT monotonic\n");
@@ -7189,7 +7199,7 @@ for(*idx=0 ; idx<sz_idx ; idx++)
 *sz=$lat_nw.size;
 *sum=0.0;
   while(idx<sz)@{
-   if(lat(idx) % 2) sum+=lat(idx);
+   if(lat(idx)%2) sum+=lat(idx);
    idx++;
   @}
 
@@ -7267,19 +7277,18 @@ a4[$nlat,$lon]=@{
  17,18,19,20@};
 
 a3_sort=sort(a3,&a3_map);
-
 print(a3_map);
 // 0, 2, 1, 3 ;
 
 a5_sort=dsort(a5,a3_map);
 print(a5_sort);
-//  1, 3, 2, 4,
-//  5, 7, 6, 8,
-//  9,11,10,12,
-//  13,15,14,16,
-//  17,19,18,20 ;
+// 1, 3, 2, 4,
+// 5, 7, 6, 8,
+// 9,11,10,12,
+// 13,15,14,16,
+// 17,19,18,20 ;
 
-a3_map2[$nlat]=@{4,3,0,2,1 @};
+a3_map2[$nlat]=@{4,3,0,2,1@};
 
 a5_sort2=dsort(a5,a3_map2);
 print(a5_sort2);
@@ -7288,7 +7297,7 @@ print(a5_sort2);
 // 13,15,14,12,11, 
 // 18,20,19,17,16
 @end example
-As in the above example you a free to create your own mask. 
+As in the above example you may create your own mask. 
 To sort in descending order, use @code{reverse()} after the @command{sort}.   
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
@@ -7537,7 +7546,7 @@ lat_in[$lat_in]=@{-80,-40,0,30,60.0,85.0@};
 lon_in[$lon_in]=@{30, 110, 190, 270, 350.0@};
 
 T_in[$lat_in,$lon_in]=
-  @{ 10,40,50,30,15,   
+  @{10,40,50,30,15,   
     12,43,52,31,16,   
     14,46,54,32,17,   
     16,49,56,33,18,   
@@ -7548,8 +7557,8 @@ defdim("lat_out",4);
 defdim("lon_out",3);
 
 // Coordinate variables
-lat_out[$lat_out]=@{ -90, 0, 70, 88.0 @};   
-lon_out[$lon_out]=@{ 0, 190, 355.0 @};
+lat_out[$lat_out]=@{-90,0,70,88.0@};   
+lon_out[$lon_out]=@{0,190,355.0@};
 
 T_out[$lat_out,$lon_out]=0.0;
 

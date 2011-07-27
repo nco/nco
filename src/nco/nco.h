@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.162 2011-02-21 22:38:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.163 2011-07-27 06:00:07 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -121,6 +121,9 @@ extern "C" {
   
   /* Argument to strtol() and strtoul() indicating base-10 conversions */
 #define NCO_SNG_CNV_BASE10 10
+
+  /* netCDF provides no guidance on maximum nesting of groups */
+#define NCO_MAX_GRP_DEPTH 10
 
   /* Debugging level that quiets all non-requested informational messages
      This value is compared against user-selected dbg_lvl 
@@ -449,7 +452,10 @@ extern "C" {
   
   /* Name ID structure */
   typedef struct{ /* nm_id_sct */
-    char *nm;
+    char *grp_nm; /* Group (stub name) where variable resides */
+    char *grp_nm_fll; /* Fully qualified group where variable resides */
+    char *var_nm_fll; /* Fully qualified variable name */
+    char *nm; /* Variable (stub name) */
     int id;
   } nm_id_sct;
   

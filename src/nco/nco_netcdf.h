@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.77 2011-07-26 06:45:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.78 2011-07-27 06:00:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -121,8 +121,8 @@ int nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id);
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn);
 int nco_inq_grpname(const int nc_id,char * const grp_nm);
-int nco_inq_grpname_full(const int nc_id,size_t * nm_lng,char * const grp_nm_fll);
-int nco_inq_grpname_len(const int nc_id,size_t * const nm_lng);
+int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll);
+int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng);
 int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids);
 int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id);
 int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id);

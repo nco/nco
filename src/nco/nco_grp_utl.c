@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.8 2011-07-26 06:45:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.9 2011-07-27 06:00:07 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -18,7 +18,20 @@
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
+nco_var4_trv_drv /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [enm] netCDF file ID */
+ char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
+ const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
+ const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ int * const var_nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
+{
+  /* Driver to traverse group hierarchy and generate variable extraction list */
+  
+}
+
+nm_id_sct * /* O [sct] Variable extraction list */
+nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
+(const int nc_id, /* I [enm] netCDF group ID (root ID of input file) */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
@@ -27,22 +40,97 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Purpose: Create variable extraction list with or without regular expressions */
   
   char *var_sng; /* User-specified variable name or regular expression */
+  char *grp_nm_fll; /* [sng] Fully qualified group name */
+  char *grp_nm_fll_sls; /* [sng] Fully qualified group name plus terminating '/' */
+  char *grp_nm_fll_sls_ptr; /* [sng] Pointer to first character following last slash */
+  char *var_nm_fll_sls_ptr; /* Pointer to first character following last slash */
+  char grp_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
+  char var_nm_fll[NC_MAX_NAME*NCO_MAX_GROUP_DEPTH]; /* [sng] Fully qualified variable name */
   
+  int *var_ids;
   int idx;
   int jdx;
+  int var_idx;
+  int grp_idx;
   int var_nbr_tmp;
+  int grp_nbr_all; /* [nbr] Number of groups in input file */
   int var_nbr_all; /* [nbr] Number of variables in input file */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
   
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-  nm_id_sct *var_lst_all=NULL; /* [sct] All variables in input file */
   nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
-  
-  /* Find maximum size of extraction list */
-  var_nbr_all=0; /* fxm: compute this by recursion */
+
+  nm_id_sct *var_lst_all=NULL; /* [sct] All variables in input file */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+
+  size_t grp_nm_lng;
+
+  static short FIRST_INVOCATION=True;
+
+  /* Free any old space */
+  fl_nm=(char *)nco_free(fl_nm);
+
+  /* Initialize accumulators for file contents */
+  if(FIRST_INVOCATION){
+    /* Top-level (root group) counts as group */
+    grp_nbr_all=1; /* [nbr] Total number of groups in file */
+    var_nbr_all=0; /* [nbr] Total number of variables in file */
+    nc_id=grp_id_root; /* [enm] netCDF ID of current group */
+    fl_lvl_crr=0; /* [nbr] Depth of current group */
+  }else{ /* end if FIRST_INVOCATION */
+    ;
+  } /* end if not FIRST_INVOCATION */
+
+  /* Create list of all variables in input file */
+
+  while(grp_nbr_rmn > 0 && fl_lvl != 0){
+  }
+
+  /* Allocate space for and obtain full name of current group */
+  rcd+=nco_inq_grpname(nc_id,grp_nm);
+  rcd+=nco_inq_grpname_len(nc_id,&grp_nm_lng);
+  grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
+  rcd+=nco_inq_grpname_full(nc_id,&grp_nm_lng,grp_nm_fll);
+
+  grp_nm_fll_sls=(char *)nco_malloc((grp_nm_lng+2L)*sizeof(char)); /* Add space for a '/' character */
+  grp_nm_fll_sls=strcpy(grp_nm_fll_sls,grp_nm_fll);
+  grp_nm_fll_sls=strcat(grp_nm_fll_sls,"/");
+  var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
+  var_nm_fll_sls_ptr=var_nm_fll+grp_nm_lng+1; /* [ptr] Pointer to first character following last slash */
+  grp_nm_fll_sls_ptr=grp_nm_fll+grp_nm_lng+1; /* [ptr] Pointer to first character following last slash */
+
+  /* Allocate space for and obtain variable IDs in current group */
+  rcd+=nco_inq_varids(nc_id,&var_nbr_crr,(int *)NULL);
+  var_ids=(int *)nco_malloc(var_nbr_crr*sizeof(int));
+  rcd+=nco_inq_varids(nc_id,&var_nbr_crr,var_ids);
+
+  var_nbr_all+=var_nbr_crr; /* [nbr] Total number of variables in file */
+
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports group %s, %s has %d variables:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr_crr);
+
+  for(var_idx=0;var_idx<var_nbr_crr;var_idx++){
+    /* Get name of each variable in current group */
+    (void)nco_inq_varname(nc_id,var_idx,var_nm);
+
+    /* Tack variable name onto slash following group name */
+    var_nm_fll_sls_ptr=(char *)strcat(var_nm_fll_sls_ptr,var_nm);
+
+    /* Create full name of each variable */
+    var_lst_all[var_idx].grp_nm=(char *)strdup(grp_nm);
+    var_lst_all[var_idx].var_nm_fll=(char *)strdup(var_nm_fll);
+    var_lst_all[var_idx].nm=(char *)strdup(var_nm);
+    var_lst_all[var_idx].id=var_ids[var_idx];
+
+    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports var_nm=%s, var_nm_fll=%s\n",prg_nm_get(),var_nm,var_nm_fll);
+  } /* end loop over var_idx */
+
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports file has %d named groups and %d total variables\n",prg_nm_get(),grp_nm,grp_nm_fll,grp_nbr_all,var_nbr_all);
+
+  /* Memory management after current group */
+  var_ids=(int *)nco_free(var_ids);
+  grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
   /* Create list of all variables in input file */
   var_lst_all=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
@@ -124,8 +212,8 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* realloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
 
-  (void)nco_free(var_lst_all);
-  (void)nco_free(var_xtr_rqs);
+  var_lst_all=(nm_id_sct *)nco_free(var_lst_all);
+  var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
   *var_nbr_xtr=var_nbr_tmp;    
   return xtr_lst;
@@ -304,8 +392,8 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   /* realloc() list to actual size */  
   grp_lst=(nm_id_sct *)nco_realloc(grp_lst,grp_nbr_tmp*sizeof(nm_id_sct));
 
-  (void)nco_free(grp_lst_all);
-  (void)nco_free(grp_xtr_rqs);
+  grp_lst_all=(nm_id_sct *)nco_free(grp_lst_all);
+  grp_xtr_rqs=(nco_bool *)nco_free(grp_xtr_rqs);
 
   *grp_nbr_xtr=grp_nbr_tmp;    
   return grp_lst;

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.26 2011-01-06 06:56:14 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.27 2011-07-27 06:00:02 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -7,7 +7,6 @@
    ncks ~/foo.nc | /bin/more */
 
 // Check methods first
-// scalar
 
 // Count number of errors
 nbr_err=0;
@@ -55,12 +54,10 @@ nbr_err_ttl=0;
     nbr_err++;
   }
 
-
   if(fabs(a2-2208.145d) > 0.01){
    print("ERROR: a2:method test\n");
    nbr_err++;
   }
-
 
   if(a3 != 79L){
     print("ERROR: a3:method test\n");
@@ -87,7 +84,6 @@ nbr_err_ttl=0;
     nbr_err++;
   }
 
-
   if(fabs(b2-3095.591d)>0.01){
     print("ERROR: b2:method test\n");
     nbr_err++;
@@ -98,12 +94,10 @@ nbr_err_ttl=0;
     nbr_err++;
   }
 
-
   if(b4 !=8L){
     print("ERROR: b4:method test\n");
     nbr_err++;
   }
-
 
   if(fabs(b5-4149.576d)>0.01){
    print("ERROR: b5:method test\n");
@@ -113,34 +107,27 @@ nbr_err_ttl=0;
   if(fabs(b6-155.667d)>0.01){
   print("ERROR: b6:method test\n");
   nbr_err++;
- }
-
+  }
 
   if(b10.total() !=44L){
   print("ERROR: b10:method test\n");
   nbr_err++;
- }
-
+  }
 
   if(b11.total() !=1s){
   print("ERROR: b11:method test\n");
   nbr_err++;
- }
+  }
 
   if(fabs(b12.total() -80.0d) >0.01){
   print("ERROR: b12:method test\n");
   nbr_err++;
- }
-
-
+  }
 
   print("RESULTS block a,b: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-} //End Method test
-
-
+} // End Method test
 
 // Scott's wind speed test 
 {
@@ -197,7 +184,6 @@ nbr_err_ttl=0;
  nbr_err=0;
 } // End Scott's Test
 
-
 // More RAM var Testing
 {
   *d1[$time,$lat,$lon]=three_dmn_var_dbl;
@@ -221,11 +207,11 @@ nbr_err_ttl=0;
    if(fabs(d1.total()-3800d)>0.01){ 
     print("ERROR: d1:ram test\n");
     nbr_err++;   
-  }
+   }
  
    //Repeat exersise with ints;
 
-  *d3[$time,$lat,$lon]=three_dmn_var_int;
+   *d3[$time,$lat,$lon]=three_dmn_var_int;
 
    // value list on RHS
    d3(0,0,:)={9,11,13,15};
@@ -256,7 +242,6 @@ nbr_err_ttl=0;
    
    ram_delete(d3);
    ram_delete(d4);
-
 }
 
 // Test LHS casting - Regular var
@@ -280,27 +265,27 @@ nbr_err_ttl=0;
    if(fabs(e1.avg()-5.5d) > 0.01){
     print("ERROR: e1: LHS cast test\n");
     nbr_err++;
-  }
+   }
 
    if(fabs(e2.avgsqr()-7.5f) > 0.01){
     print("ERROR: e2: LHS cast test\n");
     nbr_err++;
-  }
+   }
 
    if(e3.rmssdn() != 66L){
     print("ERROR: e3: LHS cast test\n");
     nbr_err++;
-  }
+   }
    
    if(fabs(e4.total()-396d)>0.01){
     print("ERROR: e4: LHS cast test\n");
     nbr_err++;
-  }
+   }
 
    if(fabs(e5.min()-9929.21f) > 0.001f || fabs(e5.avg()-53743.6f) > 0.01f){
     print("ERROR: e5: LHS cast test\n");
     nbr_err++;
-  }
+   }
 
    print("RESULTS block e: Num errors="); print(nbr_err,"%d");
    nbr_err_ttl+=nbr_err;
@@ -309,7 +294,6 @@ nbr_err_ttl=0;
 
 // Check var/att/dim quoting
 {
-
   'u---u'=10L;
   'v...v'=20L;
   'w...w'='u---u'*'v...v';
@@ -350,8 +334,8 @@ nbr_err_ttl=0;
 // Check Loops 
 {
 
- *idx=0L;
- *jdx=0L;
+  *idx=0L;
+  *jdx=0L;
   *g1=0;
   *g2=0.0;
 
@@ -363,7 +347,6 @@ nbr_err_ttl=0;
    }
    if(idx==12) break;
   }
-
  
    if(g1 !=180L){
     print("ERROR: g1: LHS loop test\n");
@@ -380,13 +363,11 @@ nbr_err_ttl=0;
     nbr_err++;
   }
 
-
   ram_write(g2);
 
   ram_delete(idx);
   ram_delete(jdx);
   ram_delete(g1);
-
 
   print("RESULTS block g: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
@@ -395,9 +376,8 @@ nbr_err_ttl=0;
 
 // Check missing value functions and masking
 {
-
   h1=txyz;
-  //change all values less than 20 or greater than 80 to 2;
+  // Change all values less than 20 or greater than 80 to 2;
   *hmask= h1<20 || h1>80;
 
   h1=hmask*2 +!hmask*h1;
@@ -424,7 +404,6 @@ nbr_err_ttl=0;
     print("ERROR: h4: get_miss() test\n");
     nbr_err++;
   }
-
   
   ram_delete(hmask);
 
@@ -436,11 +415,8 @@ nbr_err_ttl=0;
 // Check hyperslab normalization
 // NB: This is where a limit in a hyperslab collapses to a single index 
 // or the slab specified is equal to all the indices in the dimension
-// e.g three_dmn_var_dbl(1,:,:), 
-//     three_dmn_var_dbl(0:9,:,1);
-//     three_dmn_var_dbl(:,0,:);
+// e.g., three_dmn_var_dbl(1,:,:), three_dmn_var_dbl(0:9,:,1), three_dmn_var_dbl(:,0,:)
 {
-
   i1=three_dmn_var_int(0,:,:)+three_dmn_var_int(1,:,:).reverse($lat,$lon);
 
   i2=three_dmn_var_int(0,0,0)+three_dmn_var_int(1,1,3);
@@ -472,7 +448,7 @@ nbr_err_ttl=0;
   if(i4.min()!=9 || i4.max()!=16){
         print("ERROR: i3: hyperslab normalization test \n");
         nbr_err++;
-    } 
+  } 
 
   if(i5.total()-three_dmn_var_sht.total() !=0){
         print("ERROR: i5: hyperslab normalization test \n");
@@ -531,7 +507,6 @@ nbr_err_ttl=0;
     nbr_err++;
   }
   
-
   if(fabs(j4_ttl-338d)>0.01){
     print("ERROR: j4: where test with blocks\n");
     nbr_err++;
@@ -540,10 +515,9 @@ nbr_err_ttl=0;
   print("RESULTS block j: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
 }
 
-// check if /else construct
+// Check if /else construct
 {
   k1=0;
   k2=0;
@@ -613,7 +587,7 @@ nbr_err_ttl=0;
   }
 
   if(one==1) 
-  {k7=7; }
+  {k7=7;}
   else{k7=-7;}
 
   if(k7!=7){
@@ -653,7 +627,6 @@ nbr_err_ttl=0;
   m8=m7(0:1,0,0:1).total(); //22 
   
   ram_delete(m7); 
-   
   ram_delete(m6a);
 
   if(m1 != 74L){
@@ -697,32 +670,29 @@ nbr_err_ttl=0;
 }
 
 // Check sorting functions
-// at present only two sort functions 
-// sort(var_exp,&sort_map?)
-// dsort(var_exp, sort_map)
+// At present only two sort functions: sort(var_exp,&sort_map), dsort(var_exp,sort_map)
 {
-  // check basic sort
+  // Check basic sort
   n1[lat,lon]={200L,100,3,8,-10,-5,0,-9L};
   n1_st=n1.sort();
   
-  // create a map from first row of elements
+  // Create map from first row of elements
   sort(n1(0,:),&n1_map);
 
   n2[lat,lon]={-1.0,0.0,2.0,3.0,10.0,20.0,30.0,40.0};
 
   n2=dsort(n2,n1_map);
 
-  // create map larger variable
+  // Create map larger variable
   n3=dsort(three_dmn_var_dbl,n1_map);
 
   if(n1.min() != n1_st(0,0) || n1.max()!=n1_st(7)){
         print("ERROR: n1: Basic sort test\n");
         nbr_err++;
-
   }
      
   *n_tmp[lon]={3,2,0,1L};
-  if(n1_map !=n_tmp){
+  if(n1_map != n_tmp){
         print("ERROR: n2: Create mapping sort test\n");
         nbr_err++;
   }

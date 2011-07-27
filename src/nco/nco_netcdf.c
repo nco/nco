@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.141 2011-07-26 06:45:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.142 2011-07-27 06:00:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -641,20 +641,20 @@ int nco_inq_grpname(const int nc_id,char * const grp_nm)
   return rcd;
 } /* end nco_inq_grpname() */
 
-int nco_inq_grpname_full(const int nc_id,size_t * nm_lng,char * const grp_nm_full)
+int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_full)
 {
   /* Purpose: Wrapper for nc_inq_grpname_full() */
   int rcd;
-  rcd=nc_inq_grpname_full(nc_id,nm_lng,grp_nm_full);
+  rcd=nc_inq_grpname_full(nc_id,grp_nm_lng,grp_nm_full);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grpname_full()");
   return rcd;
 } /* end nco_inq_grpname_full() */
 
-int nco_inq_grpname_len(const int nc_id,size_t * const nm_lng)
+int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng)
 {
   /* Purpose: Wrapper for nc_inq_grpname_len() */
   int rcd;
-  rcd=nc_inq_grpname(nc_id,nm_lng);
+  rcd=nc_inq_grpname(nc_id,grp_nm_lng);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grpname_len()");
   return rcd;
 } /* end nco_inq_grpname_len() */
