@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.27 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.28 2011-07-29 04:06:03 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -20,7 +20,9 @@
 #ifdef MACOSX
 # include <sys/time.h> /* machine time (needed by Mac OS X for struct rusage) */ 
 #endif /* !MACOSX */
-#include <sys/resource.h> /* Resource usage and limits */
+#ifdef HAVE_GETRUSAGE
+# include <sys/resource.h> /* Resource usage and limits */
+#endif /* !HAVE_GETRUSAGE */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
