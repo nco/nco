@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.27 2011-07-27 06:00:02 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.28 2011-07-31 21:49:55 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -188,14 +188,14 @@ nbr_err_ttl=0;
 {
   *d1[$time,$lat,$lon]=three_dmn_var_dbl;
 
-   // value list on RHS
+   // Value list on RHS
    d1(0,0,:)={10d,20d,30d,40d};
 
-   //Attribute on RHS
+   // Attribute on RHS
    d1@n1={2d,4d,8d,16d};
    d1(0,1,:)=d1@n1;
     
-   //Scalar on RHS
+   // Scalar on RHS
    d1(:,:,3)=88.0;
 
    // RAM Var on RHS
@@ -210,24 +210,23 @@ nbr_err_ttl=0;
    }
  
    //Repeat exersise with ints;
-
    *d3[$time,$lat,$lon]=three_dmn_var_int;
 
-   // value list on RHS
+   // Value list on RHS
    d3(0,0,:)={9,11,13,15};
 
-   //Attribute on RHS
+   // Attribute on RHS
    d3@n1={2,4,8,16};
    d3(0,1,:)=d1@n1;
     
-   //Scalar on RHS
+   // Scalar on RHS
    d3(:,:,3)=100L;
 
    // RAM Var on RHS
    *d4[$lon]={1,3,27,81};
    d3(2,0,:)=d4;
 
-   //Regular var On RHS
+   // Regular var On RHS
    d5[$lon]={1,2,3,4};
    d3(8,1,:)=d5;
 

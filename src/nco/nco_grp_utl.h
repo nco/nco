@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.4 2011-07-27 06:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.5 2011-07-31 21:50:27 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -32,6 +32,12 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
+
+/* Dynamic array implementation of group stack */
+typedef struct {
+  int sz; /* [nbr] Number of items in stack = number of elements in grp_id array */
+  int *grp_id; /* [ID] */
+} grp_stk_sct; 
 
 #ifdef __cplusplus
 extern "C" {

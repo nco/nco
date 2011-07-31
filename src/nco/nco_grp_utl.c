@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.9 2011-07-27 06:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.10 2011-07-31 21:50:27 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -16,18 +16,10 @@
 
 #include "nco_grp_utl.h" /* Group utilities */
 
-nm_id_sct * /* O [sct] Variable extraction list */
-nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
-nco_var4_trv_drv /* [fnc] Create variable extraction list using regular expressions */
-(const int nc_id, /* I [enm] netCDF file ID */
- char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const var_nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
-{
-  /* Driver to traverse group hierarchy and generate variable extraction list */
-  
-}
+void
+nco_stk_arr_tst
+(grp_stk_sct *grp_stk,)
+{}
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
