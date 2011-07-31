@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.10 2011-07-31 21:50:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.11 2011-07-31 23:56:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -16,10 +16,46 @@
 
 #include "nco_grp_utl.h" /* Group utilities */
 
+grp_stk_sct * /* O [sct] Pointer to stack */
+nco_grp_stk_ntl /* [fnc] Initialize group stack */
+(void)
+{
+  /* Purpose: Initialize dynamic array implementation of group stack */
+  grp_stk_sct *grp_stk; /* O [sct] Pointer to stack */
+  grp_stk=(grp_stk_sct *)nco_malloc(sizeof(grp_stk)); /* O [sct] Pointer to stack */
+  grp_stk->grp_nbr=0; /* [nbr] Number of items in stack = number of elements in grp_id array */
+  grp_stk->grp_id=NULL; /* [ID] Group ID */
+  return grp_stk;
+} /* end nco_grp_stk_ntl() */
+
 void
-nco_stk_arr_tst
-(grp_stk_sct *grp_stk,)
-{}
+nco_grp_stk_psh /* [fnc] Push group ID onto stack */
+(grp_stk_sct * const grp_stk, /* I/O [sct] Pointer to top of group stack */
+ const int grp_id) /* I [ID] Group ID to push */
+{
+  /* Purpose: Push group ID onto dynamic array implementation of stack */
+  grp_stk->grp_nbr++; /* [nbr] Number of items in stack = number of elements in grp_id array */
+  grp_stk->grp_id=(int *)nco_realloc(grp_stk,(grp_stk->grp_nbr)*sizeof(int)); /* O [sct] Pointer to group IDs */
+  grp_stk->grp_id[grp_stk->grp_nbr-1]=grp_id; /* [ID] Group ID */
+} /* end nco_grp_stk_psh() */
+
+int /* O [ID] Group ID that was popped */
+nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
+(grp_stk_sct * const grp_stk) /* I/O [sct] Pointer to top of stack */
+{
+  /* Purpose: Remove and return group ID from dynamic array implementation of stack */
+  int grp_id;
+  grp_id=grp_stk->grp_id[grp_stk->grp_nbr]; /* [ID] Group ID that was popped */
+
+  if(grp_stk->grp_nbr == 0){
+    (void)fprintf(stderr,"%s: ERROR nco_grp_stk_pop() asked to pop empty stack\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+  grp_stk->grp_nbr--; /* [nbr] Number of items in stack = number of elements in grp_id array */
+  grp_stk->grp_id=(int *)nco_realloc(grp_stk,(grp_stk->grp_nbr)*sizeof(int)); /* O [sct] Pointer to group IDs */
+
+  return grp_id;
+} /* end nco_grp_stk_pop() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.5 2011-07-31 21:50:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.6 2011-07-31 23:56:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -35,13 +35,29 @@
 
 /* Dynamic array implementation of group stack */
 typedef struct {
-  int sz; /* [nbr] Number of items in stack = number of elements in grp_id array */
-  int *grp_id; /* [ID] */
+  int grp_nbr; /* [nbr] Number of items in stack = number of elements in grp_id array */
+  int *grp_id; /* [ID] Group ID */
 } grp_stk_sct; 
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+grp_stk_sct * /* O [sct] Pointer to stack */
+nco_grp_stk_ntl /* [fnc] Initialize group stack */
+(void); 
+/* end nco_grp_stk_ntl() */
+
+void
+nco_grp_stk_psh /* [fnc] Push group ID onto stack */
+(grp_stk_sct * const grp_stk, /* I/O [sct] Pointer to top of group stack */
+ const int grp_id); /* I [ID] Group ID to push */
+/* end nco_grp_stk_psh() */
+
+int /* O [ID] Group ID that was popped */
+nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
+(grp_stk_sct * const grp_stk); /* I/O [sct] Pointer to top of stack */
+/* end nco_grp_stk_pop() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */

@@ -1,3 +1,7 @@
+2011-07-31  Charlie Zender  <zender@uci.edu>
+
+	* Finish dynamic array implementation of group stack
+
 2011-07-28  Charlie Zender  <zender@uci.edu>
 
 	* Embed include <sys/resource.h> within #ifdef HAVE_GETRUSAGE for
