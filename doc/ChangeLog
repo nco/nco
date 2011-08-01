@@ -1,5 +1,11 @@
 2011-07-31  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.9 release procedure:
+ 	Changes since nco-4_0_8:
+	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
+	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
 	* Finish group iterators and nco_var4_lst_mk() compiles
 
 	* Finish dynamic array implementation of group stack
@@ -26,12 +32,6 @@
 	* Add nco_grp_utl.[ch] and get to compile
 
 2011-07-22  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.9 release procedure:
- 	Changes since nco-4_0_8:
-	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
-	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
 	* Add secret hooks to ncks -g flag for group sub-setting
 

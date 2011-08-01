@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.58 2011-07-25 06:38:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.59 2011-08-01 06:49:30 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -637,7 +637,10 @@ nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list *
   int idx;
 
   for(idx=0;idx<nm_id_nbr;idx++){
-    nm_id_lst[idx].nm=(char *)nco_free(nm_id_lst[idx].nm);
+    if(nm_id_lst[idx].nm) nm_id_lst[idx].nm=(char *)nco_free(nm_id_lst[idx].nm);
+    if(nm_id_lst[idx].var_nm_fll) nm_id_lst[idx].var_nm_fll=(char *)nco_free(nm_id_lst[idx].var_nm_fll);
+    if(nm_id_lst[idx].grp_nm) nm_id_lst[idx].grp_nm=(char *)nco_free(nm_id_lst[idx].grp_nm);
+    if(nm_id_lst[idx].grp_nm_fll) nm_id_lst[idx].grp_nm_fll=(char *)nco_free(nm_id_lst[idx].grp_nm_fll);
   } /* end loop over idx */
 
   /* Free structure pointer last */
