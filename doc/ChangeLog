@@ -1,3 +1,7 @@
+2011-08-01  Charlie Zender  <zender@uci.edu>
+
+	* Add in_grp.cdl to test group functionality
+
 2011-07-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:

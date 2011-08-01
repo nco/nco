@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.44 2011-07-25 03:38:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.45 2011-08-01 22:48:50 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -73,6 +73,7 @@ nco/data/bin_cnt.nco 	ncap2 sample script that bins wind speeds
 nco/data/ddra.nco	Sample ncap2 script that computes DDRA statistics
 nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
 nco/data/in_4.cdl 	CDL file to generate netCDF4 test file in_4.nc
+nco/data/in_grp.cdl 	CDL file to test netCDF4 group functionality
 nco/data/in_rec_zero.cdl 	CDL file to test zero-record files
 nco/data/ncap.in	Sample ncap input script
 nco/data/netcdf4.nco	Sample input script for netCDF4-enabled ncap2

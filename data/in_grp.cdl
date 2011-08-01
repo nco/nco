@@ -1,3 +1,4 @@
+// -*-C++-*-
 // Purpose: CDL file to generate netCDF4 test file for groups
 // Created: 20110801 based on in.cdl
 
@@ -7,9 +8,8 @@
 // NB: ncgen arguments depend on version:
 // "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
-// /usr/local/bin/ncgen -k netCDF-4 -b -o in_grp.nc in_grp.cdl
-// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_grp.nc ${HOME}/nco/data/in_grp.cdl
-// scp ~/nco/data/in_grp.cdl esmf.ess.uci.edu:nco/data
+// /usr/local/bin/ncgen -k netCDF-4 -b -o ~/in_grp.nc ${HOME}/nco/data/in_grp.cdl
+// scp ~/nco/data/in_grp.cdl givre.ess.uci.edu:nco/data
 // scp ~/nco/data/in_grp.nc dust.ess.uci.edu:/var/www/html/nco
 // scp dust.ess.uci.edu:/var/www/html/nco/in_grp.nc ~/nco/data
 // mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/in_grp.nc
@@ -48,7 +48,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.1 2011-08-01 22:37:47 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.2 2011-08-01 22:48:50 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -69,12 +69,25 @@ variables:
 	lon:units = "degrees_east";
 
 	double time(time);
-
 data:
 	lat=-90,90;
 	lev=100,500,1000;
 	lon=0,90,180,270;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+
+group: level_1_group_1 { 
+      variables:
+	double time(time);
+      data:
+	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+} // end level_1_group_1
+
+group: level_1_group_2 { 
+      variables:
+	double time(time);
+      data:
+	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+} // end level_1_group_2
 
 }
 
