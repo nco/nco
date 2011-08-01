@@ -1,0 +1,86 @@
+// Purpose: CDL file to generate netCDF4 test file for groups
+// Created: 20110801 based on in.cdl
+
+// Test var int64_var below is commented out until ncgen supports it
+
+// Usage:
+// NB: ncgen arguments depend on version:
+// "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
+// "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
+// /usr/local/bin/ncgen -k netCDF-4 -b -o in_grp.nc in_grp.cdl
+// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_grp.nc ${HOME}/nco/data/in_grp.cdl
+// scp ~/nco/data/in_grp.cdl esmf.ess.uci.edu:nco/data
+// scp ~/nco/data/in_grp.nc dust.ess.uci.edu:/var/www/html/nco
+// scp dust.ess.uci.edu:/var/www/html/nco/in_grp.nc ~/nco/data
+// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/in_grp.nc
+// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0001.nc
+// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0002.nc
+// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0003.nc
+// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0004.nc
+// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/in_grp.nc
+// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0001.nc
+// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0002.nc
+// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0003.nc
+// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0004.nc
+
+// WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.pl test script
+// Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
+// In particular, do not change number of elements in record coordinate, time, without simultaneously changing number of data in all record variables
+// My convention is that the _FillValue, if any, of any packed variable should be of the same type as the expanded variable. Hence _FillValue, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
+
+// Data constants in CDL:
+// byte: 'a'
+// char: "a"
+// short: 1s
+// int: 1 (no decimal point)
+// float: 1.f (decimal point is required, f is required to distinguish from double)
+// double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
+
+// NCL usage:
+// id_in=addfile("/home/zender/nco/data/in_grp.nc","r")
+// print(id_in)
+// list_filevars(id_in)
+
+netcdf in_grp {
+dimensions:
+	lat=2,lev=3,lon=4,time=unlimited;
+variables:
+	:Conventions = "CF-1.0";
+	:history = "History global attribute.\n";
+	:julian_day = 200000.04;
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.1 2011-08-01 22:37:47 zender Exp $";
+
+	float lat(lat);
+	lat:long_name = "Latitude (typically midpoints)";
+	lat:units = "degrees_north";
+
+	float lev(lev);
+	lev:purpose = "Monotonically increasing coordinate pressure";
+	lev:units = "hybrid_sigma_pressure";
+	lev:positive = "down";
+	lev:A_var = "hyam";
+	lev:B_var = "hybm";
+	lev:P0_var = "P0";
+	lev:PS_var = "PS";
+	lev:bounds = "ilev";
+
+	float lon(lon);
+	lon:long_name = "Longitude (typically midpoints)";
+	lon:units = "degrees_east";
+
+	double time(time);
+
+data:
+	lat=-90,90;
+	lev=100,500,1000;
+	lon=0,90,180,270;
+	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+
+}
+
+
+
+
+
+
+
