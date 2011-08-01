@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.11 2011-07-31 23:56:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.12 2011-08-01 05:47:46 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -16,21 +16,130 @@
 
 #include "nco_grp_utl.h" /* Group utilities */
 
-grp_stk_sct * /* O [sct] Pointer to stack */
+int /* [rcd] Return code */
+nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
+(const int grp_id, /* I [ID] Apex group */
+ int * const grp_nbr, /* O [nbr] Number of groups */
+ int * const grp_ids) /* O [ID] Group IDs of children */
+{
+  /* Purpose: Discover and return IDs of apex and all sub-groups
+     If grp_nbr is NULL, it is ignored 
+     If grp_ids is NULL, it is ignored
+     grp_ids must contain enough space to hold grp_nbr IDs */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int grp_nbr_crr; /* [nbr] Number of groups counted so far */
+  int grp_id_crr; /* [ID] Current group ID */
+
+  grp_stk_sct *grp_stk; /* [sct] Group stack pointer */
+  
+  /* Initialize variables that are incremented */
+  grp_nbr_crr=0; /* [nbr] Number of groups counted (i.e., stored in grp_ids array) so far */
+
+  /* Initialize and obtain group iterator */
+  rcd+=nco_grp_stk_get(grp_id,&grp_stk);
+
+  /* Find and return next group ID */
+  rcd+=nco_grp_stk_nxt(grp_stk,&grp_id_crr);
+  while(grp_id != NCO_LST_GRP){
+    /* Store last popped value into group ID array */
+    if(grp_ids) grp_ids[grp_nbr_crr]=grp_id_crr; /* [ID] Group IDs of children */
+
+    /* Increment counter */
+    grp_nbr_crr++;
+
+    /* Find and return next group ID */
+    rcd+=nco_grp_stk_nxt(grp_stk,&grp_id_crr);
+  } /* end while */
+  if(grp_nbr) *grp_nbr=grp_nbr_crr; /* O [nbr] Number of groups */
+
+  /* Free group iterator */
+  nco_grp_itr_free(grp_stk);
+
+  return rcd; /* [rcd] Return code */
+} /* end nco_inq_grps_full() */
+
+void
+nco_grp_itr_free /* [fnc] Free group iterator */
+(grp_stk_sct * const grp_stk) /* O [sct] Group stack pointer */
+{
+  /* Purpose: Free group iterator
+     Call a function that hides the iterator implementation behind the API */
+  nco_grp_itr_free(grp_stk);
+} /* end nco_grp_stk_free() */
+
+int /* [rcd] Return code */
+nco_grp_stk_get /* [fnc] Initialize and obtain group iterator */
+(const int grp_id, /* I [ID] Apex group */
+ grp_stk_sct ** const grp_stk) /* O [sct] Group stack pointer */
+{
+  /* Purpose: Initialize and obtain group iterator
+     The "Apex group", normally, though not necessarily the netCDF file ID, 
+     aka, root ID, is the top group in the hierarchy.
+     Returned iterator contains one valid group, the apex group */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  
+  rcd+=nco_inq_grps(grp_id,(int *)NULL,(int *)NULL);
+
+  /* These error codes would cause an abort in the netCDF wrapper layer anyway,
+     so this condition is purely for defensive programming. */
+  if(rcd != NC_EBADID && rcd != NC_EBADGRPID){
+    *grp_stk=nco_grp_stk_ntl();
+
+    /* [fnc] Push group ID onto stack */
+    (void)nco_grp_stk_psh(*grp_stk,grp_id);
+  } /* endif */
+
+  return rcd; /* [rcd] Return code */
+} /* end nco_grp_stk_get() */
+
+int /* [rcd] Return code */
+nco_grp_stk_nxt /* [fnc] Find and return next group ID */
+(grp_stk_sct * const grp_stk, /* O [sct] Group stack pointer */
+ int * const grp_id) /* O [ID] Group ID */
+{
+  /* Purpose: Find and return next group ID */
+  int *grp_ids; /* [ID] Group IDs of children */
+  int idx;
+  int grp_nbr; /* I [nbr] Number of sub-groups */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+ 
+  if(grp_stk->grp_nbr == 0){
+    /* Return flag showing iterator has reached the end, i.e., no more groups */
+    *grp_id=NCO_LST_GRP;
+  }else{
+    /* Return current stack top */
+    *grp_id=nco_grp_stk_pop(grp_stk);
+    /* Replenish stack with next group ID(s) if available */
+    rcd+=nco_inq_grps(*grp_id,&grp_nbr,(int *)NULL);
+    if(grp_nbr > 0){
+      /* Add sub-groups of current stack top */
+      grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int));
+      rcd+=nco_inq_grps(*grp_id,(int *)NULL,grp_ids);
+      /* Push sub-group IDs in reverse order so when popped will come out in original order */
+      for(idx=grp_nbr-1;idx>=0;idx--) (void)nco_grp_stk_psh(grp_stk,grp_ids[idx]);
+      /* Clean up memory */
+      grp_ids=(int *)nco_free(grp_ids);
+    } /* endif sub-groups exist */
+  } /* endelse */
+
+  return rcd; /* [rcd] Return code */
+} /* end nco_grp_stk_nxt() */
+
+grp_stk_sct * /* O [sct] Group stack pointer */
 nco_grp_stk_ntl /* [fnc] Initialize group stack */
 (void)
 {
   /* Purpose: Initialize dynamic array implementation of group stack */
-  grp_stk_sct *grp_stk; /* O [sct] Pointer to stack */
-  grp_stk=(grp_stk_sct *)nco_malloc(sizeof(grp_stk)); /* O [sct] Pointer to stack */
+  grp_stk_sct *grp_stk; /* O [sct] Group stack pointer */
+  grp_stk=(grp_stk_sct *)nco_malloc(sizeof(grp_stk)); /* O [sct] Group stack pointer */
   grp_stk->grp_nbr=0; /* [nbr] Number of items in stack = number of elements in grp_id array */
   grp_stk->grp_id=NULL; /* [ID] Group ID */
-  return grp_stk;
+  return grp_stk;/* O [sct] Group stack pointer */
 } /* end nco_grp_stk_ntl() */
 
 void
 nco_grp_stk_psh /* [fnc] Push group ID onto stack */
-(grp_stk_sct * const grp_stk, /* I/O [sct] Pointer to top of group stack */
+(grp_stk_sct * const grp_stk, /* I/O [sct] Group stack pointer */
  const int grp_id) /* I [ID] Group ID to push */
 {
   /* Purpose: Push group ID onto dynamic array implementation of stack */
@@ -44,7 +153,7 @@ nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
 (grp_stk_sct * const grp_stk) /* I/O [sct] Pointer to top of stack */
 {
   /* Purpose: Remove and return group ID from dynamic array implementation of stack */
-  int grp_id;
+  int grp_id; /* [ID] Group ID that was popped */
   grp_id=grp_stk->grp_id[grp_stk->grp_nbr]; /* [ID] Group ID that was popped */
 
   if(grp_stk->grp_nbr == 0){
@@ -54,12 +163,20 @@ nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
   grp_stk->grp_nbr--; /* [nbr] Number of items in stack = number of elements in grp_id array */
   grp_stk->grp_id=(int *)nco_realloc(grp_stk,(grp_stk->grp_nbr)*sizeof(int)); /* O [sct] Pointer to group IDs */
 
-  return grp_id;
+  return grp_id; /* [ID] Group ID that was popped */
 } /* end nco_grp_stk_pop() */
+
+void
+nco_grp_stk_free /* [fnc] Free group stack */
+(grp_stk_sct * const grp_stk) /* O [sct] Group stack pointer */
+{
+  /* Purpose: Free dynamic array implementation of stack */
+  grp_stk->grp_id=(int *)nco_free(grp_stk->grp_id);
+} /* end nco_grp_stk_free() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
-(const int nc_id, /* I [enm] netCDF group ID (root ID of input file) */
+(const int nc_id, /* I [enm] Apex group ID */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
@@ -69,21 +186,27 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   
   char *var_sng; /* User-specified variable name or regular expression */
   char *grp_nm_fll; /* [sng] Fully qualified group name */
+  char *var_nm_fll; /* [sng] Fully qualified variable name */
   char *grp_nm_fll_sls; /* [sng] Fully qualified group name plus terminating '/' */
   char *grp_nm_fll_sls_ptr; /* [sng] Pointer to first character following last slash */
   char *var_nm_fll_sls_ptr; /* Pointer to first character following last slash */
   char grp_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
-  char var_nm_fll[NC_MAX_NAME*NCO_MAX_GROUP_DEPTH]; /* [sng] Fully qualified variable name */
   
   int *var_ids;
+  int *grp_ids; /* [ID] Group IDs of children */
+  int grp_id; /* [ID] Group ID */
   int idx;
   int jdx;
   int var_idx;
+  int var_idx_crr; /* [idx] Variable index accounting for previous groups */
   int grp_idx;
   int var_nbr_tmp;
-  int grp_nbr_all; /* [nbr] Number of groups in input file */
+  int grp_nbr; /* [nbr] Number of groups in input file */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int var_nbr_fst; /* [nbr] Number of variables before current group */
   int var_nbr_all; /* [nbr] Number of variables in input file */
+  int var_nbr; /* [nbr] Number of variables in current group */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
@@ -95,80 +218,78 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   size_t grp_nm_lng;
 
-  static short FIRST_INVOCATION=True;
+  /* Discover and return number of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
 
-  /* Free any old space */
-  fl_nm=(char *)nco_free(fl_nm);
+  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
 
-  /* Initialize accumulators for file contents */
-  if(FIRST_INVOCATION){
-    /* Top-level (root group) counts as group */
-    grp_nbr_all=1; /* [nbr] Total number of groups in file */
-    var_nbr_all=0; /* [nbr] Total number of variables in file */
-    nc_id=grp_id_root; /* [enm] netCDF ID of current group */
-    fl_lvl_crr=0; /* [nbr] Depth of current group */
-  }else{ /* end if FIRST_INVOCATION */
-    ;
-  } /* end if not FIRST_INVOCATION */
+  /* Discover and return IDs of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
+
+  /* Initialize variables that accumulate */
+  var_nbr_all=0; /* [nbr] Total number of variables in file */
 
   /* Create list of all variables in input file */
+  for(grp_idx=0;grp_idx<grp_nbr;grp_idx++){
+    grp_id=grp_ids[grp_idx]; /* [ID] Group ID */
+    
+    /* Allocate space for and obtain variable IDs in current group */
+    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
 
-  while(grp_nbr_rmn > 0 && fl_lvl != 0){
-  }
+    if(var_nbr > 0){
+      var_nbr_fst=var_nbr; /* [nbr] Number of variables before current group */
+      var_nbr_all+=var_nbr; /* [nbr] Total number of variables in file */
 
-  /* Allocate space for and obtain full name of current group */
-  rcd+=nco_inq_grpname(nc_id,grp_nm);
-  rcd+=nco_inq_grpname_len(nc_id,&grp_nm_lng);
-  grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
-  rcd+=nco_inq_grpname_full(nc_id,&grp_nm_lng,grp_nm_fll);
+      var_ids=(int *)nco_malloc(var_nbr*sizeof(int));
+      rcd+=nco_inq_varids(grp_id,&var_nbr,var_ids);
 
-  grp_nm_fll_sls=(char *)nco_malloc((grp_nm_lng+2L)*sizeof(char)); /* Add space for a '/' character */
-  grp_nm_fll_sls=strcpy(grp_nm_fll_sls,grp_nm_fll);
-  grp_nm_fll_sls=strcat(grp_nm_fll_sls,"/");
-  var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
-  var_nm_fll_sls_ptr=var_nm_fll+grp_nm_lng+1; /* [ptr] Pointer to first character following last slash */
-  grp_nm_fll_sls_ptr=grp_nm_fll+grp_nm_lng+1; /* [ptr] Pointer to first character following last slash */
+      /* Allocate space for and obtain full name of current group */
+      rcd+=nco_inq_grpname(grp_id,grp_nm);
+      rcd+=nco_inq_grpname_len(grp_id,&grp_nm_lng);
+      grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
+      rcd+=nco_inq_grpname_full(grp_id,&grp_nm_lng,grp_nm_fll);
+    
+      grp_nm_fll_sls=(char *)nco_malloc((grp_nm_lng+2L)*sizeof(char)); /* Add space for a '/' character */
+      grp_nm_fll_sls=strcpy(grp_nm_fll_sls,grp_nm_fll);
+      grp_nm_fll_sls=strcat(grp_nm_fll_sls,"/");
 
-  /* Allocate space for and obtain variable IDs in current group */
-  rcd+=nco_inq_varids(nc_id,&var_nbr_crr,(int *)NULL);
-  var_ids=(int *)nco_malloc(var_nbr_crr*sizeof(int));
-  rcd+=nco_inq_varids(nc_id,&var_nbr_crr,var_ids);
+      var_nm_fll=(char *)nco_malloc((grp_nm_lng+NC_MAX_NAME+2L)*sizeof(char)); /* [sng] Fully qualified variable name */
+      var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
+      var_nm_fll_sls_ptr=var_nm_fll+grp_nm_lng+1; /* [ptr] Pointer to first character following last slash */
+      grp_nm_fll_sls_ptr=grp_nm_fll+grp_nm_lng+1; /* [ptr] Pointer to first character following last slash */
+    
+      if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports group %s, %s has %d variables:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr);
 
-  var_nbr_all+=var_nbr_crr; /* [nbr] Total number of variables in file */
+      for(var_idx=0;var_idx<var_nbr;var_idx++){
+	var_idx_crr=var_nbr_fst+var_idx; /* [idx] Variable index accounting for previous groups */
+	var_lst_all=(nm_id_sct *)nco_realloc(var_lst_all,var_nbr_all*sizeof(nm_id_sct));
 
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports group %s, %s has %d variables:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr_crr);
+	/* Get name of each variable in current group */
+	(void)nco_inq_varname(grp_id,var_idx,var_nm);
+	
+	/* Tack variable name onto slash following group name */
+	var_nm_fll_sls_ptr=(char *)strcat(var_nm_fll_sls_ptr,var_nm);
+	
+	/* Create full name of each variable */
+	var_lst_all[var_idx_crr].grp_nm=(char *)strdup(grp_nm);
+	var_lst_all[var_idx_crr].var_nm_fll=(char *)strdup(var_nm_fll);
+	var_lst_all[var_idx_crr].nm=(char *)strdup(var_nm);
+	var_lst_all[var_idx_crr].id=var_ids[var_idx];
+	
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports var_nm=%s, var_nm_fll=%s\n",prg_nm_get(),var_nm,var_nm_fll);
+      } /* end loop over var_idx */
 
-  for(var_idx=0;var_idx<var_nbr_crr;var_idx++){
-    /* Get name of each variable in current group */
-    (void)nco_inq_varname(nc_id,var_idx,var_nm);
+      /* Memory management after current group */
+      var_ids=(int *)nco_free(var_ids);
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+      var_nm_fll=(char *)nco_free(var_nm_fll);
 
-    /* Tack variable name onto slash following group name */
-    var_nm_fll_sls_ptr=(char *)strcat(var_nm_fll_sls_ptr,var_nm);
+    } /* endif variable exist in current group */
 
-    /* Create full name of each variable */
-    var_lst_all[var_idx].grp_nm=(char *)strdup(grp_nm);
-    var_lst_all[var_idx].var_nm_fll=(char *)strdup(var_nm_fll);
-    var_lst_all[var_idx].nm=(char *)strdup(var_nm);
-    var_lst_all[var_idx].id=var_ids[var_idx];
-
-    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports var_nm=%s, var_nm_fll=%s\n",prg_nm_get(),var_nm,var_nm_fll);
-  } /* end loop over var_idx */
-
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports file has %d named groups and %d total variables\n",prg_nm_get(),grp_nm,grp_nm_fll,grp_nbr_all,var_nbr_all);
-
-  /* Memory management after current group */
-  var_ids=(int *)nco_free(var_ids);
-  grp_nm_fll=(char *)nco_free(grp_nm_fll);
-
-  /* Create list of all variables in input file */
-  var_lst_all=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
-  for(idx=0;idx<var_nbr_all;idx++){
-    /* Get name of each variable */
-    (void)nco_inq_varname(nc_id,idx,var_nm);
-    var_lst_all[idx].nm=(char *)strdup(var_nm);
-    var_lst_all[idx].id=idx;
-  } /* end loop over idx */
+  } /* end loop over grp */
   
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports file has %d named groups and %d total variables\n",prg_nm_get(),grp_nbr,var_nbr_all);
+
   /* Return all variables if none were specified and not -c ... */
   if(*var_nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_nbr_xtr=var_nbr_all;
@@ -244,6 +365,12 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
   *var_nbr_xtr=var_nbr_tmp;    
+
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports following variables matched sub-setting and regular expressions:\n",prg_nm_get());
+  for(idx=0;idx<*var_nbr_xtr;idx++){
+    (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",prg_nm_get(),xtr_lst[var_idx].nm,xtr_lst[var_idx].var_nm_fll);
+  } /* end loop over var */
+
   return xtr_lst;
 } /* end nco_var4_lst_mk() */
 

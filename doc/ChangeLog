@@ -1,5 +1,7 @@
 2011-07-31  Charlie Zender  <zender@uci.edu>
 
+	* Finish group iterators and nco_var4_lst_mk() compiles
+
 	* Finish dynamic array implementation of group stack
 
 2011-07-28  Charlie Zender  <zender@uci.edu>

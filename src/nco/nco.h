@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.163 2011-07-27 06:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.164 2011-08-01 05:47:46 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -124,6 +124,9 @@ extern "C" {
 
   /* netCDF provides no guidance on maximum nesting of groups */
 #define NCO_MAX_GRP_DEPTH 10
+
+  /* Flag that iterator found no more groups in container */
+#define NCO_LST_GRP 0
 
   /* Debugging level that quiets all non-requested informational messages
      This value is compared against user-selected dbg_lvl 

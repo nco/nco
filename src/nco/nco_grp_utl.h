@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.6 2011-07-31 23:56:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.7 2011-08-01 05:47:46 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -43,21 +43,49 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-grp_stk_sct * /* O [sct] Pointer to stack */
+int /* [rcd] Return code */
+nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
+(const int grp_id, /* I [ID] Apex group */
+ int * const grp_nbr, /* O [nbr] Number of groups */
+ int * const grp_ids); /* O [ID] Group IDs of children */
+  /* end nco_inq_grps_full() */
+
+void
+nco_grp_itr_free /* [fnc] Free group iterator */
+(grp_stk_sct * const grp_stk); /* O [sct] Group stack pointer */
+
+int /* [rcd] Return code */
+nco_grp_stk_get /* [fnc] Initialize and obtain group iterator */
+(const int grp_id, /* I [ID] Apex group */
+ grp_stk_sct ** const grp_stk); /* O [sct] Group stack pointer */
+  /* end nco_grp_stk_get() */
+
+int /* [rcd] Return code */
+nco_grp_stk_nxt /* [fnc] Find and return next group ID */
+(grp_stk_sct * const grp_stk, /* O [sct] Group stack pointer */
+ int * const grp_id); /* O [ID] Group ID */
+  /* end nco_grp_stk_nxt() */
+
+grp_stk_sct * /* O [sct] Group stack pointer */
 nco_grp_stk_ntl /* [fnc] Initialize group stack */
 (void); 
-/* end nco_grp_stk_ntl() */
+  /* end nco_grp_stk_ntl() */
 
 void
 nco_grp_stk_psh /* [fnc] Push group ID onto stack */
-(grp_stk_sct * const grp_stk, /* I/O [sct] Pointer to top of group stack */
+(grp_stk_sct * const grp_stk, /* I/O [sct] Group stack pointer */
  const int grp_id); /* I [ID] Group ID to push */
-/* end nco_grp_stk_psh() */
+  /* end nco_grp_stk_psh() */
 
 int /* O [ID] Group ID that was popped */
 nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
-(grp_stk_sct * const grp_stk); /* I/O [sct] Pointer to top of stack */
-/* end nco_grp_stk_pop() */
+(grp_stk_sct * const grp_stk); /* I/O [sct] Group stack pointer */
+  /* end nco_grp_stk_pop() */
+
+void
+nco_grp_stk_free /* [fnc] Free group stack */
+(grp_stk_sct * const grp_stk); /* O [sct] Group stack pointer */
+/* end nco_grp_stk_free() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
