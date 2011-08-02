@@ -1,5 +1,7 @@
 2011-08-02  Charlie Zender  <zender@uci.edu>
 
+	* Fix NUL-termination problem with var_nm_fll in loop
+
 	* Fix offset of group variables into global array
 
 	* Fix function name in nc_inq_grpname_len()
