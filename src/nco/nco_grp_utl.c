@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.12 2011-08-01 05:47:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.13 2011-08-02 00:18:13 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -12,6 +12,7 @@
    ncdump -h ~/in.nc4
    ncks -D 1 -m ~/in.nc4
    ncks -O -D 3 -g HIRDLS -m ~/in.nc4 ~/foo.nc
+   ncks -O -D 3 -m ~/in_grp.nc ~/foo.nc
  */
 
 #include "nco_grp_utl.h" /* Group utilities */
@@ -144,7 +145,7 @@ nco_grp_stk_psh /* [fnc] Push group ID onto stack */
 {
   /* Purpose: Push group ID onto dynamic array implementation of stack */
   grp_stk->grp_nbr++; /* [nbr] Number of items in stack = number of elements in grp_id array */
-  grp_stk->grp_id=(int *)nco_realloc(grp_stk,(grp_stk->grp_nbr)*sizeof(int)); /* O [sct] Pointer to group IDs */
+  grp_stk->grp_id=(int *)nco_realloc(grp_stk->grp_id,(grp_stk->grp_nbr)*sizeof(int)); /* O [sct] Pointer to group IDs */
   grp_stk->grp_id[grp_stk->grp_nbr-1]=grp_id; /* [ID] Group ID */
 } /* end nco_grp_stk_psh() */
 
