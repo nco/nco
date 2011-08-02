@@ -1,3 +1,9 @@
+2011-08-02  Charlie Zender  <zender@uci.edu>
+
+	* Fix offset of group variables into global array
+
+	* Fix function name in nc_inq_grpname_len()
+
 2011-08-01  Charlie Zender  <zender@uci.edu>
 
 	* Fix incorrect pointer in nco_grp_stk_pop()

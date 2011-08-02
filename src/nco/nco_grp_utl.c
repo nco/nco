@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.15 2011-08-02 06:58:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.16 2011-08-02 17:59:53 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -121,7 +121,7 @@ nco_grp_stk_nxt /* [fnc] Find and return next group ID */
     if(grp_nbr > 0){
       /* Add sub-groups of current stack top */
       grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int));
-      rcd+=nco_inq_grps(*grp_id,&grp_nbr,grp_ids);
+      rcd+=nco_inq_grps(*grp_id,(int *)NULL,grp_ids);
       /* Push sub-group IDs in reverse order so when popped will come out in original order */
       for(idx=grp_nbr-1;idx>=0;idx--) (void)nco_grp_stk_psh(grp_stk,grp_ids[idx]);
       /* Clean up memory */
@@ -211,7 +211,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   int var_nbr_tmp;
   int grp_nbr; /* [nbr] Number of groups in input file */
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int var_nbr_fst; /* [nbr] Number of variables before current group */
+  int var_nbr_fst=0; /* [nbr] Number of variables before current group */
   int var_nbr_all; /* [nbr] Number of variables in input file */
   int var_nbr; /* [nbr] Number of variables in current group */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
@@ -244,7 +244,6 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
     rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
 
     if(var_nbr > 0){
-      var_nbr_fst=var_nbr; /* [nbr] Number of variables before current group */
       var_nbr_all+=var_nbr; /* [nbr] Total number of variables in file */
 
       var_ids=(int *)nco_malloc(var_nbr*sizeof(int));
@@ -291,7 +290,10 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
       grp_nm_fll=(char *)nco_free(grp_nm_fll);
       var_nm_fll=(char *)nco_free(var_nm_fll);
 
-    } /* endif variable exist in current group */
+      /* Offset for variables in next group by number of variables in this group */
+      var_nbr_fst=var_nbr; /* [nbr] Number of variables before current group */
+
+    } /* endif current group has variables */
 
   } /* end loop over grp */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.142 2011-07-27 06:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.143 2011-08-02 17:59:53 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -654,7 +654,7 @@ int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng)
 {
   /* Purpose: Wrapper for nc_inq_grpname_len() */
   int rcd;
-  rcd=nc_inq_grpname(nc_id,grp_nm_lng);
+  rcd=nc_inq_grpname_len(nc_id,grp_nm_lng);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grpname_len()");
   return rcd;
 } /* end nco_inq_grpname_len() */
