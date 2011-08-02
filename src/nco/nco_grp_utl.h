@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.7 2011-08-01 05:47:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.8 2011-08-02 06:58:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -105,8 +105,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
-(const int in_id, /* I [enm] netCDF input-file ID */
- const int out_id, /* I [enm] netCDF output-file ID */
+(const int out_id, /* I [enm] netCDF output-file ID */
  nm_id_sct *grp_xtr_lst, /* [grp] Number of groups to be defined */
  const int grp_nbr); /* I [nbr] Number of groups to be defined */
 

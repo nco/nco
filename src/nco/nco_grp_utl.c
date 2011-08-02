@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.14 2011-08-02 05:16:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.15 2011-08-02 06:58:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -65,8 +65,8 @@ nco_grp_itr_free /* [fnc] Free group iterator */
 {
   /* Purpose: Free group iterator
      Call a function that hides the iterator implementation behind the API */
-  nco_grp_itr_free(grp_stk);
-} /* end nco_grp_stk_free() */
+  nco_grp_stk_free(grp_stk);
+} /* end nco_grp_itr_free() */
 
 int /* [rcd] Return code */
 nco_grp_stk_get /* [fnc] Initialize and obtain group iterator */
@@ -74,9 +74,11 @@ nco_grp_stk_get /* [fnc] Initialize and obtain group iterator */
  grp_stk_sct ** const grp_stk) /* O [sct] Group stack pointer */
 {
   /* Purpose: Initialize and obtain group iterator
-     The "Apex group", normally, though not necessarily the netCDF file ID, 
-     aka, root ID, is the top group in the hierarchy.
-     Returned iterator contains one valid group, the apex group */
+     Routine pushes apex group onto stack
+     The "Apex group" is normally (though not necessarily) the netCDF file ID, 
+     aka, root ID, and is the top group in the hierarchy.
+     Returned iterator contains one valid group, the apex group,
+     and the stack counter equals one */
   int rcd=NC_NOERR; /* [rcd] Return code */
   
   rcd+=nco_inq_grps(grp_id,(int *)NULL,(int *)NULL);
@@ -98,24 +100,28 @@ nco_grp_stk_nxt /* [fnc] Find and return next group ID */
 (grp_stk_sct * const grp_stk, /* O [sct] Group stack pointer */
  int * const grp_id) /* O [ID] Group ID */
 {
-  /* Purpose: Find and return next group ID */
+  /* Purpose: Find and return next group ID
+     Next group ID is popped off stack 
+     If this group contains sub-groups, these sub-groups are pushed onto stack before return
+     Hence routine ensures every group is eventually examined for sub-groups */
   int *grp_ids; /* [ID] Group IDs of children */
   int idx;
   int grp_nbr; /* I [nbr] Number of sub-groups */
   int rcd=NC_NOERR; /* [rcd] Return code */
  
+  /* Is stack empty? */
   if(grp_stk->grp_nbr == 0){
     /* Return flag showing iterator has reached the end, i.e., no more groups */
     *grp_id=NCO_LST_GRP;
   }else{
     /* Return current stack top */
     *grp_id=nco_grp_stk_pop(grp_stk);
-    /* Replenish stack with next group ID(s) if available */
+    /* Replenish stack with sub-group IDs, if available */
     rcd+=nco_inq_grps(*grp_id,&grp_nbr,(int *)NULL);
     if(grp_nbr > 0){
       /* Add sub-groups of current stack top */
       grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int));
-      rcd+=nco_inq_grps(*grp_id,(int *)NULL,grp_ids);
+      rcd+=nco_inq_grps(*grp_id,&grp_nbr,grp_ids);
       /* Push sub-group IDs in reverse order so when popped will come out in original order */
       for(idx=grp_nbr-1;idx>=0;idx--) (void)nco_grp_stk_psh(grp_stk,grp_ids[idx]);
       /* Clean up memory */
@@ -162,7 +168,7 @@ nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
     nco_exit(EXIT_FAILURE);
   } /* endif */
   grp_stk->grp_nbr--; /* [nbr] Number of items in stack = number of elements in grp_id array */
-  grp_stk->grp_id=(int *)nco_realloc(grp_stk,(grp_stk->grp_nbr)*sizeof(int)); /* O [sct] Pointer to group IDs */
+  grp_stk->grp_id=(int *)nco_realloc(grp_stk->grp_id,(grp_stk->grp_nbr)*sizeof(int)); /* O [sct] Pointer to group IDs */
 
   return grp_id; /* [ID] Group ID that was popped */
 } /* end nco_grp_stk_pop() */
@@ -369,7 +375,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports following variables matched sub-setting and regular expressions:\n",prg_nm_get());
   for(idx=0;idx<*var_nbr_xtr;idx++){
-    (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",prg_nm_get(),xtr_lst[var_idx].nm,xtr_lst[var_idx].var_nm_fll);
+    (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[var_idx].nm,xtr_lst[var_idx].var_nm_fll);
   } /* end loop over var */
 
   return xtr_lst;
@@ -377,8 +383,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
-(const int in_id, /* I [enm] netCDF input-file ID */
- const int out_id, /* I [enm] netCDF output-file ID */
+(const int out_id, /* I [enm] netCDF output-file ID */
  nm_id_sct *grp_xtr_lst, /* [grp] Groups to be defined */
  const int grp_nbr) /* I [nbr] Number of groups to be defined */
 {

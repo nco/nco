@@ -1,5 +1,11 @@
 2011-08-01  Charlie Zender  <zender@uci.edu>
 
+	* Fix incorrect pointer in nco_grp_stk_pop()
+
+	* Fix ininite recursion in stack memory cleanup
+
+	* Fix off-by-one error in nco_inq_grps_full()
+
 	* Fix incorrect reference to grp_id instead of grp_id_crr
 
 	* Fix off-by-one error in nco_grp_stk_pop()

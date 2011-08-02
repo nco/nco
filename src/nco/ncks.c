@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.276 2011-08-02 05:16:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.277 2011-08-02 06:58:03 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.276 2011-08-02 05:16:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.276 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.277 2011-08-02 06:58:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.277 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -637,7 +637,7 @@ main(int argc,char **argv)
     
     /* Define requested/necessary input groups in output file */
     if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
-    if(grp_nbr > 0) rcd+=nco_grp_dfn(in_id,out_id,grp_lst,grp_nbr);
+    if(grp_nbr > 0) rcd+=nco_grp_dfn(out_id,grp_lst,grp_nbr);
 
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
