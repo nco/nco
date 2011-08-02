@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.13 2011-08-02 00:18:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.14 2011-08-02 05:16:09 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -41,7 +41,7 @@ nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
 
   /* Find and return next group ID */
   rcd+=nco_grp_stk_nxt(grp_stk,&grp_id_crr);
-  while(grp_id != NCO_LST_GRP){
+  while(grp_id_crr != NCO_LST_GRP){
     /* Store last popped value into group ID array */
     if(grp_ids) grp_ids[grp_nbr_crr]=grp_id_crr; /* [ID] Group IDs of children */
 
@@ -155,7 +155,7 @@ nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
 {
   /* Purpose: Remove and return group ID from dynamic array implementation of stack */
   int grp_id; /* [ID] Group ID that was popped */
-  grp_id=grp_stk->grp_id[grp_stk->grp_nbr]; /* [ID] Group ID that was popped */
+  grp_id=grp_stk->grp_id[grp_stk->grp_nbr-1]; /* [ID] Group ID that was popped */
 
   if(grp_stk->grp_nbr == 0){
     (void)fprintf(stderr,"%s: ERROR nco_grp_stk_pop() asked to pop empty stack\n",prg_nm_get());

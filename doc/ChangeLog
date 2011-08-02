@@ -1,5 +1,9 @@
 2011-08-01  Charlie Zender  <zender@uci.edu>
 
+	* Fix incorrect reference to grp_id instead of grp_id_crr
+
+	* Fix off-by-one error in nco_grp_stk_pop()
+
 	* Add in_grp.cdl to test group functionality
 
 2011-07-31  Charlie Zender  <zender@uci.edu>
