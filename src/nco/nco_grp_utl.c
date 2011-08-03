@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.17 2011-08-02 21:57:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.18 2011-08-03 04:35:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -13,6 +13,7 @@
    ncks -D 1 -m ~/in.nc4
    ncks -O -D 3 -g HIRDLS -m ~/in.nc4 ~/foo.nc
    ncks -O -D 3 -m ~/in_grp.nc ~/foo.nc
+   ncks -O -D 3 -v 'Q.?' ~/nco/data/in.nc ~/foo.nc
  */
 
 #include "nco_grp_utl.h" /* Group utilities */
@@ -278,7 +279,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_nm_fll_sls_ptr=var_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
       grp_nm_fll_sls_ptr=grp_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
     
-      if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
+      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
 
       /* Append all variables in current group to variable list */
       for(var_idx=0;var_idx<var_nbr;var_idx++){
@@ -296,6 +297,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
 	var_lst_all[var_idx_crr].var_nm_fll=(char *)strdup(var_nm_fll);
 	var_lst_all[var_idx_crr].nm=(char *)strdup(var_nm);
 	var_lst_all[var_idx_crr].id=var_ids[var_idx];
+	var_lst_all[var_idx_crr].grp_id=grp_id;
 	
 	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"var_nm=%s, var_nm_fll=%s\n",var_nm,var_nm_fll);
 
@@ -315,7 +317,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   } /* end loop over grp */
   
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports file has %d named groups and %d total variables\n",prg_nm_get(),grp_nbr,var_nbr_all);
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports file contains %d group%s comprising %d total variable%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",var_nbr_all,(var_nbr_all > 1) ? "s" : "");
 
   /* Return all variables if none were specified and not -c ... */
   if(*var_nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
@@ -354,8 +356,8 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
     for(jdx=0;jdx<var_nbr_all;jdx++)
       if(!strcmp(var_sng,var_lst_all[jdx].nm)) break;
 
+    /* Mark any match as requested for inclusion by user */
     if(jdx != var_nbr_all){
-      /* Mark this variable as requested for inclusion by user */
       var_xtr_rqs[jdx]=True;
     }else{
       if(EXCLUDE_INPUT_LIST){ 
@@ -370,7 +372,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   } /* end loop over var_lst_in */
   
-  /* Create final variable list using bool array */
+  /* Create final variable list using boolean flag array */
   
   /* malloc() xtr_lst to maximium size(var_nbr_all) */
   xtr_lst=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
@@ -378,25 +380,28 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   for(idx=0;idx<var_nbr_all;idx++){
     /* Copy variable to extraction list */
     if(var_xtr_rqs[idx]){
+      xtr_lst[var_nbr_tmp].grp_nm=(char *)strdup(var_lst_all[idx].grp_nm);
+      xtr_lst[var_nbr_tmp].var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
       xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
       xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
+      xtr_lst[var_nbr_tmp].grp_id=var_lst_all[idx].grp_id;
       var_nbr_tmp++;
     } /* end if */
-    (void)nco_free(var_lst_all[idx].nm);
   } /* end loop over var */
   
-  /* realloc() list to actual size */  
+  /* re-alloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
 
-  var_lst_all=(nm_id_sct *)nco_free(var_lst_all);
+  var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
+  /* Store values for return */
   *var_nbr_xtr=var_nbr_tmp;    
 
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports following variables matched sub-setting and regular expressions:\n",prg_nm_get());
-  for(idx=0;idx<*var_nbr_xtr;idx++){
-    (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[var_idx].nm,xtr_lst[var_idx].var_nm_fll);
-  } /* end loop over var */
+  if(dbg_lvl_get() >= nco_dbg_var){
+    (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_nbr_xtr,(*var_nbr_xtr > 1) ? "s" : "");
+    for(idx=0;idx<*var_nbr_xtr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+  } /* endif dbg */
 
   return xtr_lst;
 } /* end nco_var4_lst_mk() */

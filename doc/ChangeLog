@@ -1,5 +1,7 @@
 2011-08-02  Charlie Zender  <zender@uci.edu>
 
+	* Add grp_id to nm_id_sct
+
 	* Fix NUL-termination problem with var_nm_fll in loop
 
 	* Fix offset of group variables into global array

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.105 2011-07-27 06:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.106 2011-08-03 04:35:55 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -107,13 +107,12 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
       xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
       var_nbr_tmp++;
     } /* end if */
-    (void)nco_free(var_lst_all[idx].nm);
   } /* end loop over var */
   
   /* realloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
 
-  var_lst_all=(nm_id_sct *)nco_free(var_lst_all);
+  var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
   *var_nbr_xtr=var_nbr_tmp;    
@@ -140,7 +139,7 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 
   nm_id_sct *xcl_lst;
   
-  /* Turn the extract list into the exclude list and reallocate the extract list  */
+  /* Turn extract list into exclude list and reallocate extract list  */
   nbr_xcl=*nbr_xtr;
   *nbr_xtr=0;
   xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));

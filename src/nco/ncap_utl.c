@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.148 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.149 2011-08-03 04:35:55 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -947,7 +947,7 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
   
   if(*nbr_xtr == 0) return xtr_lst;
   
-  xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct)); 
+  xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct)); 
   for(idx=0;idx<*nbr_xtr;idx++){
     match=False;
     for(xtr_idx=0;xtr_idx<nbr_lst_b;xtr_idx++)
@@ -957,7 +957,7 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
     xtr_new_lst[xtr_nbr_new++].id=xtr_lst[idx].id;
   } /* end loop over idx */
   /* realloc to actual size */
-  xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
+  xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
   /* free old list */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,*nbr_xtr);
   
@@ -979,7 +979,7 @@ nco_var_lst_add(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst
   
   nbr_xtr_crr=*nbr_xtr;
   if(nbr_xtr_crr > 0){
-    xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));
+    xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));
     for(idx=0;idx<nbr_xtr_crr;idx++){
       xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
       xtr_new_lst[idx].id=xtr_lst[idx].id;
