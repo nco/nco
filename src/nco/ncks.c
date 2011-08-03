@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.278 2011-08-03 04:35:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.279 2011-08-03 05:47:28 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.278 2011-08-03 04:35:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.278 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.279 2011-08-03 05:47:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.279 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -537,6 +537,7 @@ main(int argc,char **argv)
   
   /* Get number of variables, dimensions, and global attributes in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
+  /*  (void)nco4_inq(in_id,&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&rec_dmn_id,(int *)NULL);*/
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Get record dimension name name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
@@ -547,7 +548,7 @@ main(int argc,char **argv)
 
   /* Form initial extraction list which may include extended regular expressions */
   /*  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);*/
-  xtr_lst=nco_var4_lst_mk(in_id,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);  /* fxm: unstable! */
+  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);

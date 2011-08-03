@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.8 2011-08-02 06:58:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.9 2011-08-03 05:47:28 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -87,14 +87,25 @@ nco_grp_stk_free /* [fnc] Free group stack */
 (grp_stk_sct * const grp_stk); /* O [sct] Group stack pointer */
 /* end nco_grp_stk_free() */
 
+int /* [rcd] Return code */
+nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(const int nc_id, /* I [ID] Apex group */
+ int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all, /* O [nbr] Number of variables in file */
+ int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
+ int * const rec_dmn_ids); /* O [ID] Record dimension IDs in file */
+/* end nco4_inq() */
+
 nm_id_sct * /* O [sct] Variable extraction list */
-nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
+nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id,  /* I [enm] netCDF group ID (root ID of input file) */
+ int * const nbr_var_fl, /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const var_nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
-  /* nco_var4_lst_mk() */
+  /* nco4_var_lst_mk() */
 
 nm_id_sct * /* O [sct] Group extraction list */
 nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions */

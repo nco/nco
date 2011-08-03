@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.18 2011-08-03 04:35:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.19 2011-08-03 05:47:28 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -182,9 +182,57 @@ nco_grp_stk_free /* [fnc] Free group stack */
   grp_stk->grp_id=(int *)nco_free(grp_stk->grp_id);
 } /* end nco_grp_stk_free() */
 
+int /* [rcd] Return code */
+nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(const int nc_id, /* I [ID] Apex group */
+ int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all, /* O [nbr] Number of variables in file */
+ int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
+ int * const rec_dmn_ids) /* O [ID] Record dimension IDs in file */
+{
+  /* [fnc] Find and return global totals of dimensions, variables, attributes
+     nco_inq() only applies to a single group
+     Statistics for recursively nested netCDF4 files require more care */
+  int rcd;
+  int *grp_ids; /* [ID] Group IDs of children */
+  int idx;
+  int grp_id; /* [ID] Group ID */
+  int grp_idx;
+  int grp_nbr; /* [nbr] Number of groups */
+  int var_nbr; /* [nbr] Number of variables in current group */
+
+  /* Discover and return number of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
+
+  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
+
+  /* Discover and return IDs of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
+
+  /* Initialize variables that accumulate */
+  *var_nbr_all=0; /* [nbr] Total number of variables in file */
+
+  /* Create list of all variables in input file */
+  for(grp_idx=0;grp_idx<grp_nbr;grp_idx++){
+    grp_id=grp_ids[grp_idx]; /* [ID] Group ID */
+
+    /* How many variables in current group? */
+    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
+
+    /* Augment total number of variables in file */
+    *var_nbr_all+=var_nbr;
+  } /* end loop over grp */
+
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attributes\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",var_nbr_all,(var_nbr_all > 1) ? "s" : "",dmn_nbr_all,(dmn_nbr_all > 1) ? "s" : "",att_nbr_glb,(att_nbr_glb > 1) ? "s" : "");
+
+  return rcd;
+} /* end nco4_inq() */
+
 nm_id_sct * /* O [sct] Variable extraction list */
-nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressions */
+nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [enm] Apex group ID */
+ int * const nbr_var_fl, /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
@@ -201,20 +249,20 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   char grp_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
   
-  int *var_ids;
   int *grp_ids; /* [ID] Group IDs of children */
+  int *var_ids;
   int grp_id; /* [ID] Group ID */
+  int grp_idx;
+  int grp_nbr; /* [nbr] Number of groups in input file */
   int idx;
   int jdx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int var_idx;
   int var_idx_crr; /* [idx] Variable index accounting for previous groups */
-  int grp_idx;
-  int var_nbr_tmp;
-  int grp_nbr; /* [nbr] Number of groups in input file */
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int var_nbr_fst=0; /* [nbr] Number of variables before current group */
-  int var_nbr_all; /* [nbr] Number of variables in input file */
   int var_nbr; /* [nbr] Number of variables in current group */
+  int var_nbr_all; /* [nbr] Number of variables in input file */
+  int var_nbr_fst=0; /* [nbr] Number of variables before current group */
+  int var_nbr_tmp;
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
@@ -246,12 +294,14 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
     /* Re-set Root group flag */
     FLG_ROOT_GRP=False; 
 
-    /* Allocate space for and obtain variable IDs in current group */
+    /* How many variables in current group? */
     rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
 
     if(var_nbr > 0){
-      var_nbr_all+=var_nbr; /* [nbr] Total number of variables in file */
+      /* Augment total number of variables in file */
+      var_nbr_all+=var_nbr;
 
+      /* Allocate space for and obtain variable IDs in current group */
       var_ids=(int *)nco_malloc(var_nbr*sizeof(int));
       rcd+=nco_inq_varids(grp_id,&var_nbr,var_ids);
 
@@ -279,7 +329,7 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_nm_fll_sls_ptr=var_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
       grp_nm_fll_sls_ptr=grp_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
     
-      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
+      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
 
       /* Append all variables in current group to variable list */
       for(var_idx=0;var_idx<var_nbr;var_idx++){
@@ -317,7 +367,10 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   } /* end loop over grp */
   
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports file contains %d group%s comprising %d total variable%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",var_nbr_all,(var_nbr_all > 1) ? "s" : "");
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports file contains %d group%s comprising %d total variable%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",var_nbr_all,(var_nbr_all > 1) ? "s" : "");
+
+  /* Store results prior to first return */
+  *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
   /* Return all variables if none were specified and not -c ... */
   if(*var_nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
@@ -362,10 +415,10 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
     }else{
       if(EXCLUDE_INPUT_LIST){ 
 	/* Variable need not be present if list will be excluded later ... */
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
       }else{ /* !EXCLUDE_INPUT_LIST */
 	/* Variable should be included but no matches found so die */
-	(void)fprintf(stdout,"%s: ERROR nco_var4_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+	(void)fprintf(stdout,"%s: ERROR nco4_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
 	nco_exit(EXIT_FAILURE);
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
@@ -399,12 +452,12 @@ nco_var4_lst_mk /* [fnc] Create variable extraction list using regular expressio
   *var_nbr_xtr=var_nbr_tmp;    
 
   if(dbg_lvl_get() >= nco_dbg_var){
-    (void)fprintf(stdout,"%s: INFO nco_var4_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_nbr_xtr,(*var_nbr_xtr > 1) ? "s" : "");
+    (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_nbr_xtr,(*var_nbr_xtr > 1) ? "s" : "");
     for(idx=0;idx<*var_nbr_xtr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
 
   return xtr_lst;
-} /* end nco_var4_lst_mk() */
+} /* end nco4_var_lst_mk() */
 
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
