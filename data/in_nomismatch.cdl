@@ -3,6 +3,12 @@
 // Purpose: CDL file to generate netCDF test file for NCO
 // in_nomismatch.cdl is a modified version of in.cdl
 // This file contains no variables that trigger the ncgen "_FillValue type mismatch" error
+// scp ~/nco/data/in_nomismatch.cdl dust.ess.uci.edu:/var/www/html/nco
+// scp ~/nco/data/in_nomismatch.cdl zender,nco@web.sf.net:/home/project-web/nco/htdocs
+
+// Substitute his file into normal NCO build procedure with:
+// cd ~;wget http://dust.ess.uci.edu/nco/in_nomismatch.cdl .
+// cp ~/in_nomismatch.cdl /path/to/nco/data/in.cdl
 
 // Usage:
 // netCDF4: ncgen arguments depend on version:
@@ -58,7 +64,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_nomismatch.cdl,v 1.2 2011-08-06 01:05:53 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_nomismatch.cdl,v 1.3 2011-08-06 03:05:50 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
