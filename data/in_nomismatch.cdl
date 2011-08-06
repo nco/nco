@@ -58,7 +58,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_nomismatch.cdl,v 1.1 2011-08-06 01:04:38 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_nomismatch.cdl,v 1.2 2011-08-06 01:05:53 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -1037,7 +1037,6 @@ data:
 	rec_var_dbl_pck=1,2,3,4,5,6,7,8,9,10;
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
-	rec_var_flt_mss_val_flt=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt_all=1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt_all_but_one=1.0e36,1.0e36,1.0e36,1.0e36,5.0,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt_all_but_two=1.0e36,1.0e36,1.0e36,1.0e36,5.0,1.0e36,1.0e36,1.0e36,1.0e36,10.0;
