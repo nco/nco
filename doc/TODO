@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1133 2011-08-23 01:13:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1134 2011-08-23 06:37:57 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -740,8 +740,6 @@ nco1022. nco: ncrcat core-dumps with double-free() error when concatenating reco
 nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without asking, e.g.,
 	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
 	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
-nco1024. nco: ncea -y ttl converts _FillValue to zero in output:
-         ncea -O -y ttl -v mss_val_scl -p ~/nco/data in.nc in.nc ~/foo.nc;ncks ~/foo.nc
 nco1025. 
 qrk
 ************************************************************************
