@@ -48,7 +48,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.5 2011-08-23 18:30:14 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.6 2011-08-23 19:47:46 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -81,6 +81,8 @@ group: level_1_group_1 {
 	float lat(lat);
 	float lev(lev);
 	float lon(lon);
+	lon:long_name = "level_1_group_1 Longitude (typically midpoints)";
+	lon:units = "level_1_group_1 degrees_east";
       data:
 	lat=-90,90;
 	lev=100,500,1000;
@@ -99,10 +101,11 @@ group: level_1_group_3 {
 	dimensions:
 	  rlev=3,time2=unlimited;
 	variables:
+	  :level_1_group_3_global_attribute = "level_1_group_3_global_attribute";
 	  float rz(rlev);
 	  double time2(time2);
 	data:
-	  time2=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	  time2=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.;
 	  rz=0,5000,17000;
 } // end level_1_group_3
 
