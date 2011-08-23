@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.38 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.39 2011-08-23 01:13:00 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -60,18 +60,26 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   switch (nco_op_typ){
   case nco_op_min: /* Minimum */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
-    if(idx_rec == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
+    if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
       (void)nco_var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;
   case nco_op_max: /* Maximium */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
-    if(idx_rec == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
+    if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
       (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
+  case nco_op_ttl: /* Total */ 
+    /* NB: copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min] _could_ work.
+       However, the copying would not change the tally variable, leaving it equal to zero.
+       An extra step would be necessary to set tally equal to one where missing values were not present. 
+       Otherwise, e.g., ensemble averages of one file would never have non-zero tallies.
+       Hence, easier (or just as easy) to use nco_var_add_tll_ncra() and then to post-process nco_op_ttl with nco_var_tll_zro_mss_val() */
+    if(idx_rec == 0) (void)nco_var_copy_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    break;
   case nco_op_avg: /* Average */
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
-  case nco_op_ttl: /* Total */
   case nco_op_sqravg: /* Square of the mean */
+    /* These operations all require subsequent normalization, where degenerate tallies are accounted for */
     (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */

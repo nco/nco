@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.55 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.56 2011-08-23 01:13:00 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1542,6 +1542,80 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
      because we have only operated on local copies of them. */
   
 } /* end nco_var_msk() */
+
+void
+nco_var_tll_zro_mss_val /* [fnc] Write missing value into elements with zero tally */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ const long * const tally, /* I [nbr] Counter to normalize by */
+ ptr_unn op1) /* I/O [val] Values of first operand on input, possibly missing values on output */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Write missing value into elements with zero tally
+     Routine is necessary because initialization of accumulating sums (specified, e.g., with -y ttl or with -N)
+     sets initial sum to zero (so augmenting works) regardless if first slice is missing.
+     Such sums are usually normalized and set to missing if tally is zero.
+     However, totals are integrals and thus are never normalized.
+     Initialization value of zero will be output even if tally is zero,
+     _unless field is processed with this routine after summing and prior to writing. */
+  
+  /* Filter currently works as op1:=mss_val where tally == 0 */
+  
+  long idx;
+  
+  /* Routine changes nothing unless a missing value is defined */
+  if(!has_mss_val) return;
+
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:
+    const float mss_val_flt=*mss_val.fp;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.fp[idx]=mss_val_flt;
+    break;
+  case NC_DOUBLE:
+    const double mss_val_dbl=*mss_val.dp;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.dp[idx]=mss_val_dbl;
+    break;
+  case NC_INT:
+    const nco_int mss_val_ntg=*mss_val.ip;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ip[idx]=mss_val_ntg;
+    break;
+  case NC_SHORT:
+    const nco_short mss_val_short=*mss_val.sp;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.sp[idx]=mss_val_short;
+    break;
+  case NC_USHORT:
+    const nco_ushort mss_val_ushort=*mss_val.usp;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.usp[idx]=mss_val_ushort;
+    break;
+  case NC_UINT:
+    const nco_uint mss_val_uint=*mss_val.uip;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.uip[idx]=mss_val_uint;
+    break;
+  case NC_INT64:
+    const nco_int64 mss_val_int64=*mss_val.i64p;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.i64p[idx]=mss_val_int64;
+    break;
+  case NC_UINT64:
+    const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ui64p[idx]=mss_val_uint64;
+    break;
+  case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end nco_var_tll_zro_mss_val() */
 
 void
 nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */

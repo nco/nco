@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1132 2011-08-22 18:38:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1133 2011-08-23 01:13:00 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -741,7 +741,7 @@ nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without a
 	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
 	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
 nco1024. nco: ncea -y ttl converts _FillValue to zero in output:
-         ncea -O -y ttl -v one_dmn_rec_var__FillValue -p ~/nco/data in.nc in.nc ~/foo.nc;ncks ~/foo.nc
+         ncea -O -y ttl -v mss_val_scl -p ~/nco/data in.nc in.nc ~/foo.nc;ncks ~/foo.nc
 nco1025. 
 qrk
 ************************************************************************

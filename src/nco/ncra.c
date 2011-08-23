@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.266 2011-02-21 22:38:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.267 2011-08-23 01:13:00 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.266 2011-02-21 22:38:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.266 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.267 2011-08-23 01:13:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.267 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -675,7 +675,6 @@ main(int argc,char **argv)
       /* Allocate space for only one record */
       /*var_prc_out[idx]->sz=var_prc[idx]->sz=var_prc[idx]->sz_rec;*/
       var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
-
     } /* endif */
     if(prg == ncra || prg == ncea){
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
@@ -684,7 +683,6 @@ main(int argc,char **argv)
       (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
     } /* end if */
   } /* end loop over idx */
-
 
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
@@ -772,7 +770,7 @@ main(int argc,char **argv)
 		   Output variable type is "sticky" so only convert on first record */
 	        if(idx_rec_out == 0L) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	        var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-	      /* Perform arithmetic operations: avg, min, max, ttl, ... */
+		/* Perform arithmetic operations: avg, min, max, ttl, ... */
 	        nco_opr_drv(idx_rec_out,nco_op_typ,var_prc[idx],var_prc_out[idx]);
               } /* end else */ 
 	    } /* end if ncra */
@@ -882,7 +880,10 @@ main(int argc,char **argv)
 	  break;
 	case nco_op_min: /* Minimum is already in buffer, do nothing */
 	case nco_op_max: /* Maximum is already in buffer, do nothing */
-	case nco_op_ttl: /* Total is already in buffer, do nothing */
+	  break;
+	case nco_op_ttl: /* Total is already in buffer. Overwrite elements of zero tally with missing value. */
+	  (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	  break;
 	default:
 	  break;
 	} /* end switch */

@@ -1,3 +1,12 @@
+2011-08-22  Charlie Zender  <zender@uci.edu>
+
+	* Write nco_var_tll_zro_mss_val() to squash ncea bug
+
+	* Add regression test for ncea -y ttl treatment of missing values
+
+	* Verify ncea -y ttl treats missing values incorrectly.
+	ttl seems to be the only operation with this problem.
+
 2011-08-05  Charlie Zender  <zender@uci.edu>
 
 	* Add in_nomismatch.cdl to work around strict ncgen errors

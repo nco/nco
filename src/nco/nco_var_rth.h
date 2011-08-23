@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.31 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.32 2011-08-23 01:13:00 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -68,6 +68,15 @@ extern "C" {
    ptr_unn op1, /* I [val] Values of first operand */
    ptr_unn op2); /* I/O [val] Values of second operand (running sum) on input, values of new sum on output */
   
+  void
+  nco_var_tll_zro_mss_val /* [fnc] Write missing value into elements with zero tally */
+  (const nc_type type, /* I [enm] netCDF type of operand */
+   const long sz, /* I [nbr] Size (in elements) of operand */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [val] Value of missing value */
+   const long * const tally, /* I [nbr] Counter to normalize by */
+   ptr_unn op1); /* I/O [val] Values of first operand on input, possibly missing values on output */
+
   void
   nco_var_dvd /* [fnc] Divide second operand by first operand */
   (const nc_type type, /* I [type] netCDF type of operands */

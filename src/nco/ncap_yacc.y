@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.58 2010-12-21 20:12:07 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.59 2011-08-23 01:13:00 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -268,7 +268,7 @@ PRINT '(' var_xpr ')' ';' {
     ptr_aed->val.vp=(void*)nco_calloc( ptr_aed->sz,nco_typ_lng(ptr_aed->type));
     } else {
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
-    (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
+    (void)nco_var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
     }
     /* cast_nctype_void($3->type,&ptr_aed->val); */
     if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);

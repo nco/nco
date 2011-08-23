@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.19 2011-08-03 05:47:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.20 2011-08-23 01:13:00 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -224,7 +224,7 @@ nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attrib
     *var_nbr_all+=var_nbr;
   } /* end loop over grp */
 
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attributes\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",var_nbr_all,(var_nbr_all > 1) ? "s" : "",dmn_nbr_all,(dmn_nbr_all > 1) ? "s" : "",att_nbr_glb,(att_nbr_glb > 1) ? "s" : "");
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
 
   return rcd;
 } /* end nco4_inq() */

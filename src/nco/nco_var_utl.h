@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.61 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.62 2011-08-23 01:13:00 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -79,7 +79,7 @@ extern "C" {
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
  
   void 
-  var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
+  nco_var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
   (const nc_type var_typ, /* I [enm] netCDF type */
    const long sz, /* I [nbr] Number of elements to copy */
    const ptr_unn op1, /* I [sct] Values to copy */

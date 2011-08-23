@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.646 2011-07-27 06:00:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.647 2011-08-23 01:13:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12466,7 +12466,7 @@ ncwa -N -v area -B 'ORO < 0.5' -a lat,lon \
 @end example
 Weighting @var{area} (e.g., by @var{gw}) is not appropriate because
 @var{area} is @emph{already} area-weighted by definition.
-Thus the @samp{-N} switch, or, equivalently, the @samp{-y ttl} switch,  
+Thus the @samp{-N} switch, or, equivalently, the @samp{-y ttl} switch, 
 correctly integrate the cell areas into a total regional area.
 
 @cindex mask condition
