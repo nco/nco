@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.39 2011-08-23 01:13:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.40 2011-08-23 03:51:17 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -69,17 +69,24 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
       (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
   case nco_op_ttl: /* Total */ 
-    /* NB: copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min] _could_ work.
-       However, the copying would not change the tally variable, leaving it equal to zero.
-       An extra step would be necessary to set tally equal to one where missing values were not present. 
-       Otherwise, e.g., ensemble averages of one file would never have non-zero tallies.
-       Hence, easier (or just as easy) to use nco_var_add_tll_ncra() and then to post-process nco_op_ttl with nco_var_tll_zro_mss_val() */
+    /* NB: copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min], can work
+       However, the copying with nco_var_copy() would not change the tally variable, leaving it equal to zero
+       Then an extra step would be necessary to set tally equal to one where missing values were not present
+       Otherwise, e.g., ensemble averages of one file would never have non-zero tallies
+       Hence, use special nco_var_copy_tll() function on to copy and change tally only in first loop iteration
+       This way, tally is self-consistent with var_prc_out at all times
+       Other option is to use nco_var_add_tll_ncra() below and then to post-process nco_op_ttl with nco_var_tll_zro_mss_val()
+       in parent function (i.e., in ncra.c).
+       However, that method has downside that post-processing must be done in parent function
+       By using nco_var_copy_tll() in first iteration here, we avoid performing post-processing in parent function */
     if(idx_rec == 0) (void)nco_var_copy_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_avg: /* Average */
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_sqravg: /* Square of the mean */
-    /* These operations all require subsequent normalization, where degenerate tallies are accounted for */
+    /* These operations all require subsequent normalization, where degenerate tallies are accounted for
+       Thus, the all call nco_var_add_tll_ncra() every iteration, without special treatment on first iteration */
     (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
@@ -231,7 +238,7 @@ nco_zero_long /* [fnc] Zero all values of long array */
 
   size_t sz_byt; /* [B] Number of bytes in variable buffer */
   sz_byt=(size_t)sz*sizeof(long);
-  (void)memset((void *)op1,(int)0,sz_byt);
+  (void)memset((void *)op1,(long)0,sz_byt);
 
 #if 0
   /* Presumably this old method used until 20050321 is slower because of pointer de-referencing */
@@ -244,4 +251,18 @@ nco_zero_long /* [fnc] Zero all values of long array */
 #endif /* !0 */
 
 } /* end nco_zero_long() */
+
+void
+nco_set_long /* [fnc] Set all values of long array */
+(const long sz, /* I [nbr] Size (in elements) of operand */
+ const long val, /* I [] Number to set array to */
+ long * restrict const op1) /* I/O [nbr] Array to be set */
+{
+  /* Purpose: Set all values of long array to input value */
+
+  size_t sz_byt; /* [B] Number of bytes in variable buffer */
+  sz_byt=(size_t)sz*sizeof(long);
+  (void)memset((void *)op1,(long)val,sz_byt);
+
+} /* end nco_set_long() */
 

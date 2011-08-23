@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.587 2011-07-25 23:42:52 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.588 2011-08-23 03:51:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -35,7 +35,7 @@
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
 # cd ~/nco/bld;make DAP_OPENDAP=Y;cd - # DAP support via OPeNDAP
-# cd ~/nco/bld;make GSL=Y;cd -	     # GSL support
+# cd ~/nco/bld;make GSL=Y;cd -	     #a GSL support
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
 # cd ~/nco/bld;make MPI=Y;cd -       # MPI support
 # cd ~/nco/bld;make MPI_FAKE=Y;cd -  # Spoof MPI support

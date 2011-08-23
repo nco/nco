@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.56 2011-08-23 01:13:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.57 2011-08-23 03:51:17 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -110,7 +110,7 @@ nco_var_add /* [fnc] Add first operand to second operand */
      nco_var_add() does _not_ increment tally counter
      nco_var_add_tll_ncra() does increment tally counter */
   
-  /* Addition is currently defined as op2:=op1+op2 */
+  /* Addition is currently defined as op2:=op1+op2 where op1 != mss_val and op2 != mss_val */
   
   long idx;
   
@@ -228,7 +228,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
      nco_var_add() does _not_ increment tally counter
      nco_var_add_tll_ncflint() does increment tally counter */
   
-  /* Addition is currently defined as op2:=op1+op2 */
+  /* Addition is currently defined as op2:=op1+op2 where op1 != mss_val and op2 != mss_val */
   
   long idx;
   
@@ -575,7 +575,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
      NCO uses nco_var_add_tll_ncflint() only for ncflint
      NCO uses nco_var_add_tll_ncra() only for ncra/ncea */
   
-  /* Addition is currently defined as op2:=op1+op2 */
+  /* Addition is currently defined as op2:=op1+op2 where op1 != mss_val */
   
   long idx;
   
@@ -724,6 +724,100 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
      because we have only operated on local copies of them. */
   
 } /* end nco_var_add_tll_ncra() */
+
+void 
+nco_var_copy_tll /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
+(const nc_type type, /* I [enm] netCDF type */
+ const long sz, /* I [nbr] Number of elements to copy */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ long * restrict const tally, /* O [nbr] Counter space */
+ const ptr_unn op1, /* I [sct] Values to copy */
+ ptr_unn op2) /* O [sct] Destination to copy values to */
+{
+  /* Purpose: Copy hyperslab variables of type var_typ from op1 to op2
+     Assumes memory area in op2 has already been malloc()'d
+     Where the value copied is not equal to the missing value, set the tally to one
+     nco_var_copy(): Does nothing with missing values and tallies
+     nco_var_copy_tll(): Accounts for missing values in tally */
+
+  /* Algorithm is currently defined as: op2:=op1 */
+
+  long idx;
+
+  /* Use fast nco_var_copy() method to copy variable */
+  (void)memcpy((void *)(op2.vp),(void *)(op1.vp),sz*nco_typ_lng(type));
+
+  /* Tally is one if no missing value is defined */
+  (void)nco_set_long(sz,1L,tally);
+
+  if(!has_mss_val) return;
+
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  /* Overwrite one's with zero's where value equals missing value */
+  switch(type){
+  case NC_FLOAT:
+    {
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++) if(op2.fp[idx] == mss_val_flt) tally[idx]=0L;
+    }
+    break;
+  case NC_DOUBLE:
+    {
+      const double mss_val_dbl=*mss_val.dp;
+      for(idx=0;idx<sz;idx++) if(op2.dp[idx] == mss_val_dbl) tally[idx]=0L;
+    }
+    break;
+  case NC_INT:
+    {
+      const nco_int mss_val_ntg=*mss_val.ip;
+      for(idx=0;idx<sz;idx++) if(op2.ip[idx] == mss_val_ntg) tally[idx]=0L;
+    }
+    break;
+  case NC_SHORT:
+    {
+      const nco_short mss_val_short=*mss_val.sp;
+      for(idx=0;idx<sz;idx++) if(op2.sp[idx] == mss_val_short) tally[idx]=0L;
+    }
+    break;
+  case NC_USHORT:
+    {
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++) if(op2.usp[idx] == mss_val_ushort) tally[idx]=0L;
+    }
+    break;
+  case NC_UINT:
+    {
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++) if(op2.uip[idx] == mss_val_uint) tally[idx]=0L;
+    }
+    break;
+  case NC_INT64:
+    {
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++) if(op2.i64p[idx] == mss_val_int64) tally[idx]=0L;
+    }
+    break;
+  case NC_UINT64:
+    {
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] == mss_val_uint64) tally[idx]=0L;
+    }
+    break;
+  case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+
+} /* end nco_var_copy_tll() */
 
 void
 nco_var_dvd /* [fnc] Divide second operand by first operand */
@@ -1574,36 +1668,52 @@ nco_var_tll_zro_mss_val /* [fnc] Write missing value into elements with zero tal
   
   switch(type){
   case NC_FLOAT:
-    const float mss_val_flt=*mss_val.fp;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.fp[idx]=mss_val_flt;
+    {
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.fp[idx]=mss_val_flt;
+    }
     break;
   case NC_DOUBLE:
-    const double mss_val_dbl=*mss_val.dp;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.dp[idx]=mss_val_dbl;
+    {
+      const double mss_val_dbl=*mss_val.dp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.dp[idx]=mss_val_dbl;
+    }
     break;
   case NC_INT:
-    const nco_int mss_val_ntg=*mss_val.ip;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ip[idx]=mss_val_ntg;
+    {
+      const nco_int mss_val_ntg=*mss_val.ip;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ip[idx]=mss_val_ntg;
+    }
     break;
   case NC_SHORT:
-    const nco_short mss_val_short=*mss_val.sp;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.sp[idx]=mss_val_short;
+    {
+      const nco_short mss_val_short=*mss_val.sp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.sp[idx]=mss_val_short;
+    }
     break;
   case NC_USHORT:
-    const nco_ushort mss_val_ushort=*mss_val.usp;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.usp[idx]=mss_val_ushort;
+    {
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.usp[idx]=mss_val_ushort;
+    }
     break;
   case NC_UINT:
-    const nco_uint mss_val_uint=*mss_val.uip;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.uip[idx]=mss_val_uint;
+    {
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.uip[idx]=mss_val_uint;
+    }
     break;
   case NC_INT64:
-    const nco_int64 mss_val_int64=*mss_val.i64p;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.i64p[idx]=mss_val_int64;
+    {
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.i64p[idx]=mss_val_int64;
+    }
     break;
   case NC_UINT64:
-    const nco_uint64 mss_val_uint64=*mss_val.ui64p;
-    for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ui64p[idx]=mss_val_uint64;
+    {
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ui64p[idx]=mss_val_uint64;
+    }
     break;
   case NC_BYTE: break; /* Do nothing */
   case NC_UBYTE: break; /* Do nothing */

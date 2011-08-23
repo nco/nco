@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.32 2011-08-23 01:13:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.33 2011-08-23 03:51:17 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -68,6 +68,16 @@ extern "C" {
    ptr_unn op1, /* I [val] Values of first operand */
    ptr_unn op2); /* I/O [val] Values of second operand (running sum) on input, values of new sum on output */
   
+  void 
+  nco_var_copy_tll /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
+  (const nc_type type, /* I [enm] netCDF type */
+   const long sz, /* I [nbr] Number of elements to copy */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [val] Value of missing value */
+   long * restrict const tally, /* O [nbr] Counter space */
+   const ptr_unn op1, /* I [sct] Values to copy */
+   ptr_unn op2); /* O [sct] Destination to copy values to */
+
   void
   nco_var_tll_zro_mss_val /* [fnc] Write missing value into elements with zero tally */
   (const nc_type type, /* I [enm] netCDF type of operand */

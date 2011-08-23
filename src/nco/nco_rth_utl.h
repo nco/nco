@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.22 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.23 2011-08-23 03:51:17 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -64,6 +64,12 @@ void
 nco_zero_long /* [fnc] Zero all values of long array */
 (const long sz, /* I [nbr] Size (in elements) of operand */
  long * restrict const op1); /* I/O [nbr] Array to be zeroed */
+
+void
+nco_set_long /* [fnc] Set all values of long array */
+(const long sz, /* I [nbr] Size (in elements) of operand */
+ const long val, /* I [] Number to set array to */
+ long * restrict const op1); /* I/O [nbr] Array to be set */
 
 #ifdef __cplusplus
 } /* end extern "C" */

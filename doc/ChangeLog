@@ -1,5 +1,7 @@
 2011-08-22  Charlie Zender  <zender@uci.edu>
 
+	* Write nco_copy_var_tll() and nco_set_long() as better squasher for ncea bug
+
 	* Write nco_var_tll_zro_mss_val() to squash ncea bug
 
 	* Add regression test for ncea -y ttl treatment of missing values
