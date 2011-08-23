@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.445 2011-08-23 01:13:00 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.446 2011-08-23 04:34:52 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.9 are ready. 
 
@@ -29,9 +29,16 @@ Charlie
 Other "New stuff" in 4.0.9 summary (full details always in ChangeLog):
 
 A. Fix treatment of _FillValue in ncea:
-   When invoked with non-default options such as -y ttl, versions fxm 
-   of ncea could incorrectly handle _FillValue's, including
-   substituting zero in place of the _FillValue.
+   When invoked with the (non-default) summing and integration option 
+   -y ttl = -N, ncea would incorrectly handle the corner case where
+   the value of an array element in the first two input files was
+   _FillValue. In this case, ncea wrote a zero instead of _FillValue,
+   as demonstrated by 
+
+   ncea -O -y ttl -v mss_val_scl -p ~/nco/data in.nc in.nc ~/foo.nc
+   ncks -H ~/foo.nc
+
+   The correct output of this is the _FillValue, i.e., 1.0e36, not 0.
 
 B. Workaround netCDF NOFILL bug: 
    Abandon NOFILL mode until netCDF 4.1.3 is released.

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.659 2011-05-13 03:09:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.660 2011-08-23 04:34:52 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -531,6 +531,7 @@ netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
 <li><b>NCO 4.0.9</b>: (<i>In Progress, features already in beta include the following</i>) 
+Fix <tt>ncea -y ttl</tt>;
 <li><b>NCO 4.0.8</b>: (<i>Current Stable Release</i>) 
 Support <a href="http://nco.sf.net/nco.html#hpss">HPSS</a>;
 Workaround netCDF <tt>NOFILL</tt> <a href="#bug_nofill">bug</a> (<i>upgrade recommended</i>);
