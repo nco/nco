@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.39 2011-07-25 06:38:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.40 2011-08-23 17:21:51 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -18,10 +18,10 @@
 #include <string.h> /* strcmp. . . */
 
 #ifdef HAVE_REGEX_H
-#ifdef MACOSX
-#include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
-#endif /* !MACOSX */
-#include <regex.h> /* POSIX regular expressions library */
+# ifdef MACOSX
+#  include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
+# endif /* !MACOSX */
+# include <regex.h> /* POSIX regular expressions library */
 #endif /* HAVE_REGEX_H */
 
 /* 3rd party vendors */
