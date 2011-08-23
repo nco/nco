@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
+	* Insert crucial "else" in patch!
+
 	* Verify patch appears to fix ncea -y ttl bug
 
 	* Write nco_copy_var_tll() and nco_set_long() as better squasher for ncea bug
