@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.20 2011-08-23 01:13:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.21 2011-08-23 18:30:14 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -194,13 +194,12 @@ nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attrib
   /* [fnc] Find and return global totals of dimensions, variables, attributes
      nco_inq() only applies to a single group
      Statistics for recursively nested netCDF4 files require more care */
-  int rcd;
+  int rcd=NC_NOERR;
   int *grp_ids; /* [ID] Group IDs of children */
-  int idx;
   int grp_id; /* [ID] Group ID */
   int grp_idx;
   int grp_nbr; /* [nbr] Number of groups */
-  int var_nbr; /* [nbr] Number of variables in current group */
+  int var_nbr; /* [nbr] Number of variables */
 
   /* Discover and return number of apex and all sub-groups */
   rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
@@ -223,6 +222,22 @@ nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attrib
     /* Augment total number of variables in file */
     *var_nbr_all+=var_nbr;
   } /* end loop over grp */
+
+  /* Compare to results of nco_inq() */
+  {
+    int att_nbr; /* [nbr] Number of attributes */
+    int dmn_nbr; /* [nbr] Number of dimensions */
+    int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [ID] Record dimension ID */
+
+    rcd+=nco_inq(nc_id,&dmn_nbr,&var_nbr,&att_nbr,&rec_dmn_id);
+    if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: INFO nco_inq() reports file contains %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),var_nbr,(var_nbr > 1) ? "s" : "",dmn_nbr,(dmn_nbr > 1) ? "s" : "",att_nbr,(att_nbr > 1) ? "s" : "");
+
+    /* fxm: Backward compatibility */
+    *rec_dmn_nbr=1;
+    if(rec_dmn_ids) *rec_dmn_ids=rec_dmn_id;
+    *att_nbr_glb=att_nbr;
+    *dmn_nbr_all=dmn_nbr;
+  }
 
   if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
 

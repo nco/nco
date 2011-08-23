@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.279 2011-08-03 05:47:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.280 2011-08-23 18:30:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.279 2011-08-03 05:47:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.279 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.280 2011-08-23 18:30:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.280 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -166,6 +166,7 @@ main(int argc,char **argv)
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  int rec_dmn_nbr; /* O [nbr] Number of record dimensions in file */
   int var_lst_in_nbr=0;
     
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
@@ -536,8 +537,8 @@ main(int argc,char **argv)
   } /* endif aux_nbr */
   
   /* Get number of variables, dimensions, and global attributes in file */
-  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
-  /*  (void)nco4_inq(in_id,&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&rec_dmn_id,(int *)NULL);*/
+  /*  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);*/
+  (void)nco4_inq(in_id,&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&rec_dmn_nbr,&rec_dmn_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Get record dimension name name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
