@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.647 2011-08-23 01:13:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.648 2011-09-26 14:31:52 hmb Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -757,7 +757,7 @@ to the GNU Scientific Library (@acronym{GSL}).
 @acronym{NCO}, in particular @command{ncap2}, uses the @acronym{GSL}
 special function library to evaluate geoscience-relevant mathematics
 such as Bessel functions, Legendre polynomials, and incomplete gamma
-functions (@pxref{@acronym{GSL} special functions}).
+functions (@pxref{GSL special functions}).
  
 @cindex @var{gamma}
 In June 2005, @acronym{NCO} version 3.0.1 began to take advantage
@@ -5983,11 +5983,11 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * sort methods::                
 * Irregular grids::             
 * bilinear interpolation::      
-* @acronym{GSL} special functions::  
-* @acronym{GSL} interpolation::  
-* @acronym{GSL} least-squares fitting::  
-* @acronym{GSL} statistics::    
-* @acronym{GSL} random number generation::  
+* GSL special functions::  
+* GSL interpolation::  
+* GSL least-squares fitting::  
+* GSL statistics::    
+* GSL random number generation::  
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
 * Operators precedence and associativity ::  
@@ -7437,7 +7437,7 @@ The mask procedure is identical for all @var{R}.
 <a name="bln_ntp"></a> <!-- http://nco.sf.net/nco.html#bln_ntp -->
 <a name="bil_int"></a> <!-- http://nco.sf.net/nco.html#bil_int -->
 @end html
-@node bilinear interpolation, @acronym{GSL} special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
+@node bilinear interpolation, GSL special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
 @subsection bilinear interpolation
 @noindent As of version 4.0.0 @acronym{NCO} has internal routines to
 perform bilinear interpolation on gridded data sets.
@@ -7573,8 +7573,8 @@ print(T_out);
 @html
 <a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
 @end html
-@node @acronym{GSL} special functions, @acronym{GSL} interpolation, bilinear interpolation, ncap2 netCDF Arithmetic Processor
-@subsection @acronym{GSL} special functions
+@node GSL special functions, GSL interpolation, bilinear interpolation, ncap2 netCDF Arithmetic Processor
+@subsection GSL special functions
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
 can link to the GNU Scientific Library (@acronym{GSL}). 
@@ -8003,8 +8003,8 @@ prototypes look at the spreadsheet @strong{doc/nco_gsl.ods}. @* @*
 @html
 <a name="gsl_int"></a> <!-- http://nco.sf.net/nco.html#gsl_int -->
 @end html
-@node @acronym{GSL} interpolation, @acronym{GSL} least-squares fitting, @acronym{GSL} special functions, ncap2 netCDF Arithmetic Processor
-@subsection @acronym{GSL} interpolation
+@node GSL interpolation, GSL least-squares fitting, GSL special functions, ncap2 netCDF Arithmetic Processor
+@subsection GSL interpolation
 @cindex @acronym{GSL}
 @noindent As of version 3.9.9 (released July, 2009), @acronym{NCO} has wrappers to the @acronym{GSL} interpolation functions.
 
@@ -8053,8 +8053,8 @@ gsl_spline_integ() @*
 @html
 <a name="ncap_lsqf"></a> <!-- http://nco.sf.net/nco.html#ncap_lsqf -->
 @end html
-@node @acronym{GSL} least-squares fitting, @acronym{GSL} statistics, @acronym{GSL} interpolation, ncap2 netCDF Arithmetic Processor
-@subsection  @acronym{GSL} least-squares fitting       
+@node GSL least-squares fitting, GSL statistics, GSL interpolation, ncap2 netCDF Arithmetic Processor
+@subsection  GSL least-squares fitting       
 @noindent Least Squares fitting is a method of calculating a straight line through a set of experimental data points in the XY plane. The data maybe weighted or unweighted. For more information please refer to the @acronym{GSL} manual.
 
 @noindent These @acronym{GSL} functions fall into three categories:@*
@@ -8063,7 +8063,7 @@ gsl_spline_integ() @*
 @strong{C)} Multi-parameter fitting (not yet implemented)@* 
 
 @strong{Section A} @* @*
-@code{status=@strong{gsl_fit_linear}(data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq) }
+@code{status=@strong{gsl_fit_linear} (data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq) }
 
 @noindent @strong{Input variables}: data_x, stride_x, data_y, stride_y, n @* 
 From the above variables an X and Y vector both of length 'n' are derived. 
@@ -8132,8 +8132,8 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 <a name="ncap_stat"></a> <!-- http://nco.sf.net/nco.html#ncap_stat -->
 @end html
 
-@node @acronym{GSL} statistics, @acronym{GSL} random number generation, @acronym{GSL} least-squares fitting, ncap2 netCDF Arithmetic Processor
-@subsection @acronym{GSL} statistics
+@node GSL statistics, GSL random number generation, GSL least-squares fitting, ncap2 netCDF Arithmetic Processor
+@subsection GSL statistics
 
 @noindent Wrappers for most of the @acronym{GSL} Statistical functions have been implemented. The @acronym{GSL} function names include a type specifier (except for type double functions). To obtain the equivalent @acronym{NCO} name simply remove the type specifier; then depending on the data type the appropriate @acronym{GSL} function  is called. The weighed statistical functions e.g @code{ gsl_stats_wvariance()} are only defined in @acronym{GSL} for floating point types; so your data must of type @code{float} or @code{double} otherwise ncap2 will emit an error message. To view the implemented functions use the shell command @command{ncap2 -f|grep _stats}   
 
@@ -8226,8 +8226,8 @@ print(dmin);print(dmax);
 <a name="ncap_rng"></a> <!-- http://nco.sf.net/nco.html#ncap_rng -->
 @end html
 
-@node @acronym{GSL} random number generation, Examples ncap2, @acronym{GSL} statistics, ncap2 netCDF Arithmetic Processor
-@subsection @acronym{GSL} random number generation
+@node GSL random number generation, Examples ncap2, GSL statistics, ncap2 netCDF Arithmetic Processor
+@subsection GSL random number generation
 The @acronym{GSL} library has a large number of random number generators. In addition there are a large set of functions for turning uniform random numbers into discrete or continuous probabilty distributions. The random number generator algorithms vary in terms of quality numbers output, speed of execution and maximium number output. For more information see the @acronym{GSL} documentation. The algorithm and seed are set via environment variables, these are picked up by the @code{ncap2} code.
 
 @noindent @strong{Setup} @*  
@@ -8328,7 +8328,7 @@ print(b6_avg);
 @html
 <a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
 @end html
-@node Examples ncap2, Intrinsic mathematical methods, @acronym{GSL} random number generation, ncap2 netCDF Arithmetic Processor
+@node Examples ncap2, Intrinsic mathematical methods, GSL random number generation, ncap2 netCDF Arithmetic Processor
 @subsection Examples ncap2
 
 See the @file{ncap.in} and @file{ncap2.in} scripts released with @acronym{NCO} 
