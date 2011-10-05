@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.137 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.138 2011-10-05 09:13:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -188,6 +188,9 @@ ncap_att_gnrl
   int nbr_att;
   char att_nm[NC_MAX_NAME]; 
   const char *tmp_att_nm;
+  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+
   
   var_sct *var_att;
   
@@ -208,8 +211,8 @@ ncap_att_gnrl
     // loop though attributes
     for(idx=0; idx <nbr_att ; idx++){
       (void)nco_inq_attname(prs_arg->in_id,var_id,idx,att_nm);
-      //skip missing value
-      if(!strcmp(att_nm,nco_mss_val_sng_get())) 
+      //skip missing value, scale_factor , add_offset
+      if(!strcmp(att_nm,nco_mss_val_sng_get()) || !strcmp(att_nm,scl_fct_sng) || !strcmp(att_nm,add_fst_sng))
         continue;
       var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
       // now add to list( change the name!!)
@@ -228,8 +231,10 @@ ncap_att_gnrl
       if (s_src!=var_vtr[idx]->getVar()) break;
       if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
         tmp_att_nm=var_vtr[idx]->getAtt().c_str();
-        //skip missing values
-        if(!strcmp(tmp_att_nm,nco_mss_val_sng_get())) continue; 
+        //skip missing value, scale_factor , add_offset
+        if(!strcmp(tmp_att_nm,nco_mss_val_sng_get()) || !strcmp(tmp_att_nm,scl_fct_sng) || !strcmp(tmp_att_nm,add_fst_sng))
+        continue;
+
         // Create string for new attribute
         s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
         var_att=nco_var_dpl(var_vtr[idx]->var);
