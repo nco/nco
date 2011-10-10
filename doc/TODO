@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1134 2011-08-23 06:37:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1135 2011-10-10 04:03:34 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -126,7 +126,6 @@ nco199. Internationalize (i18n) NCO with gettext()
 nco203. Perform benchmarking tests to quantify arithmetic performance improvements, I/O bottlenecks, etc.
 nco209. Add rules to automagically make MANIFEST and update Sourceforge download area
 nco215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
-nco222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 nco225. Pass aed by reference in nco_aed_prc()
 nco226. Is xrf in nco_var_cnf_dmn() is really necessary? If not, remove it and make wgt arg const var_sct * const
 nco228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
@@ -740,7 +739,9 @@ nco1022. nco: ncrcat core-dumps with double-free() error when concatenating reco
 nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without asking, e.g.,
 	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
 	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
-nco1025. 
+nco222.  nco: Warn when ncea/ncra operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
+nco1025. nco: ncrcat/ncecat warn/die when concatting files with different scale factors
+nco1026. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

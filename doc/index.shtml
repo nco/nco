@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.660 2011-08-23 04:34:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.661 2011-10-10 04:03:34 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1039,7 +1039,7 @@ modern Debian-based systems with
 <dt>sudo aptitude install bison flex gcc g++ # GNU toolchain</dt>
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
 <dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
-<dt>sudo aptitude install udunits libudunits2-0 libudunits2-dev # UDUnits</dt>
+<dt>sudo aptitude install udunits-bin libudunits2-0 libudunits2-dev # UDUnits</dt>
 
 </tt>or, on RPM-based systems, with
 <tt>

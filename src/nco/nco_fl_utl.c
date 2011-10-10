@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.137 2011-06-27 21:39:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.138 2011-10-10 04:03:34 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -818,7 +818,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     } /* end if */
 
     if(rmt_cmd == NULL){
-      (void)fprintf(stderr,"%s: ERROR %s neither exists locally nor matches remote filename patterns\n",prg_nm_get(),fl_nm_rmt);
+      (void)fprintf(stderr,"%s: ERROR file %s neither exists locally nor matches remote filename patterns\n",prg_nm_get(),fl_nm_rmt);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 

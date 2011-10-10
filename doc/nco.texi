@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.648 2011-09-26 14:31:52 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.649 2011-10-10 04:03:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2419,6 +2419,10 @@ explicitly typing each, using @acronym{UNIX} shell wildcards, and using
 the @acronym{NCO} @samp{-n} and @samp{-p} switches (or their long option
 equivalents, @samp{--nintap} or @samp{--pth} and @samp{--path},
 respectively). 
+Techniques to augment these methods to specify arbitrary numbers (e.g.,
+thousands) and patterns of filenames are discussed separately 
+(@pxref{Large Numbers of Files}).
+
 To illustrate these methods, consider the simple problem of using
 @command{ncra} to average five input files, @file{85.nc}, @file{86.nc},
 @w{@dots{} @file{89.nc}}, and store the results in @file{8589.nc}.

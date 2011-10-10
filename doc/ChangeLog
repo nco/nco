@@ -1,21 +1,31 @@
-2011-10-05  Henry Butowsky  <henryb@hush.com>
-	
-	* Fixed long standing problem with attribute propagation.
-	  scale_factor and add_offset were being propgated to the LHS.
-	  This was causing problems when packed vars were on the RHS.
-	  These atts are now never propagated to the RHS 
-
-2011-08-23  Charlie Zender  <zender@uci.edu>
-
-	* Transitional nco4_inq() in ncks.c backwards compatible with nco_inq()
-
-2011-08-22  Charlie Zender  <zender@uci.edu>
+2011-10-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:
  	Changes since nco-4_0_8:
 	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
+2011-10-05  Henry Butowsky  <henryb@hush.com>
+
+	* Fixed long standing problem with attribute propagation.
+	scale_factor and add_offset were being propgated to the LHS.
+	This caused problems when packed vars were on the RHS.
+	These atts are now never propagated to the RHS.
+
+2011-09-09  Charlie Zender  <zender@uci.edu>
+
+	* Change "RAM size" to "size (in RAM)"
+
+2011-09-07  Charlie Zender  <zender@uci.edu>
+
+	* Burning Man! Rites of Passage! Wow.
+
+2011-08-23  Charlie Zender  <zender@uci.edu>
+
+	* Transitional nco4_inq() in ncks.c backwards compatible with nco_inq()
+
+2011-08-22  Charlie Zender  <zender@uci.edu>
 
 	* Insert crucial "else" in patch!
 
