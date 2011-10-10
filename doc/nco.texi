@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.649 2011-10-10 04:03:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.650 2011-10-10 04:15:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6406,18 +6406,18 @@ There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordi
   var1( hyper_arg1, hyper_arg2 .. hyper_argN)
 @end example
 @noindent 
-A hyperslab argument is specified using the following notation 
-
+A hyperslab argument is specified in the same
 @example
 start:end:stride 
 @end example
-
 @noindent 
-if "start" is omitted - then default = 0 @*
-if "end" is omitted - default = dimension size less one @*
-if "stride" is omitted - default = 1 
+If "start" is omitted, it defaults to 0.
+If "end" is omitted, it defaults to dimension size minus one.
+If "stride" is omitted, it defaults to 1.
 @sp 1
-@noindent If a single value is present then it is assumed that that dimension collapses to a single value (ie a cross-section). The number of hyperslab arguments MUST be equal to the number of dimensions of the variable. 
+@noindent If a single value is present then it is assumed that that
+dimension collapses to a single value (i.e., a cross-section). 
+The number of hyperslab arguments MUST equal the variable's rank.
 @sp 1
 
 @noindent @strong{Hyperslabs on the Right Hand Side of an assign@*}
@@ -6437,7 +6437,7 @@ od(:)      // 20,22,24,26,28,30,32,34,36,38
 
 A more complex three dimensional example:
 @example
-($lat.size=2, $lon.size=4 )
+($lat.size=2,$lon.size=4)
 th[$time,$lat,$lon]=      
                           @{1, 2, 3, 4, 5, 6, 7, 8,
                           9,10,11,12,13,14,15,16,
@@ -6451,9 +6451,9 @@ th[$time,$lat,$lon]=
                           -99,74,75,76,77,78,79,-99 @};
 
 th(1,1,3);        // 16
-th(2,0,:);        // @{ 17, 18, 19, 20 @};
+th(2,0,:);        // 17, 18, 19, 20
 th(:,1,3);        // 8, 16, 24, -99, 40, 48, 56, 64, 72, -99 
-th(::5 ,:,0:3:2); // 1, 3, 5, 7, 41, 43, 45, 47 ;
+th(::5 ,:,0:3:2); // 1, 3, 5, 7, 41, 43, 45, 47
 @end example
 
 If hyperslab arguments collapse to a single value (a cross-section has
@@ -6462,7 +6462,7 @@ variable.
 If all the values collapse then a scalar variable is returned.
 So, for example, the following is valid: 
 @example
-th_nw=th(0,:,:) +th(9,:,:); 
+th_nw=th(0,:,:)+th(9,:,:); 
 // th_nw has dimensions $lon,$lat 
 // NB: the time dimension has become degenerate
 @end example

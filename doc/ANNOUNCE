@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.446 2011-08-23 04:34:52 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.447 2011-10-10 04:18:42 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.9 are ready. 
 
@@ -27,6 +27,16 @@ Enjoy,
 Charlie
 
 Other "New stuff" in 4.0.9 summary (full details always in ChangeLog):
+
+A. Fix overly-zealous ncap2 packing propagation:
+   Thanks to Ken5746 for reporting this problem.
+   Previous versions of NCO treated packing attributes like all other 
+   attributes in that the scale_factor and add_offset of the LHS-most
+   variable on the RHS of an expression were propagated to the LHS
+   result. This caused problems when multiple RHS variables had
+   differing packing attributes. Hence scale_factor and add_offset are 
+   no longer propagated to the LHS.
+   Thanks to Henry Butowsky for the fix. 
 
 A. Fix treatment of _FillValue in ncea:
    When invoked with the (non-default) summing and integration option 

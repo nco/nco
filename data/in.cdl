@@ -51,12 +51,15 @@
 
 netcdf in {
 dimensions:
-	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,time=unlimited;
+	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.129 2011-08-23 05:20:48 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.130 2011-10-10 04:15:05 zender Exp $";
+
+	int date_int(date_dmn);
+	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -858,6 +861,7 @@ data:
 	char_var_nul='\0';
 	char_var_space=" ";
 	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
+	date_int=1964,3,12,12,9;
 	double_var=10.;
 	double_var2=10.;
 	dps_dry=73;
