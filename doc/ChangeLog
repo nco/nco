@@ -1,5 +1,7 @@
 2011-10-09  Charlie Zender  <zender@uci.edu>
 
+	* Tidy NCO_rgr.pl
+
 	* NCO 4.0.9 release procedure:
  	Changes since nco-4_0_8:
 	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
