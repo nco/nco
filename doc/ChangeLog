@@ -1,3 +1,11 @@
+2011-10-20  Charlie Zender  <zender@uci.edu>
+
+	* Implement l[l]round[f]() rounding patch suggested by Neil Davis
+	Convert floating points to integers with lround(), lroundf(), llround(), and llroundf()
+	This fixes unintended bias in packing with unrounded numbers
+	Required imposing dependency on <math.h> in nco_cnf_typ.h and nco_rth_utl.h
+	fxm: Currently causes unintended regressions
+
 2011-10-09  Charlie Zender  <zender@uci.edu>
 
 	* Tidy NCO_rgr.pl

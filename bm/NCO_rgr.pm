@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.107 2011-10-10 04:25:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.108 2011-10-21 00:45:55 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -787,7 +787,6 @@ sub tst_rgr {
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
 
-
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%i' -v three_dmn_var_dbl -d time,2 -d lon,1 -d lat,0 %tmp_fl_00%";
     $dsc_sng="Pack 3D double variable with MSA (failure expected with netCDF4)"; # 20110428: I can't remember why netCDF4 is expected to cause failure....
@@ -816,7 +815,7 @@ sub tst_rgr {
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max  %tmp_fl_00% %tmp_fl_01%"; 
     $tst_cmd[2]="ncks -C -H  -s '%f' -v three_dmn_var_dbl %tmp_fl_01%";
-    $dsc_sng="Concatenate float variable with multi-hyperlsbs across two files";
+    $dsc_sng="Concatenate float variable with multislabs across two files";
     $tst_cmd[3]="20";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -825,17 +824,16 @@ sub tst_rgr {
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg -d time,,6 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01%"; 
     $tst_cmd[2]="ncks -C -H  -s '%li' -v three_dmn_var_int %tmp_fl_01%";
-    $dsc_sng="Concatenate int variable with multi-hyperlsbs across two files";
+    $dsc_sng="Concatenate int variable with multislabs across two files";
     $tst_cmd[3]="27";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
-
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v four_dmn_rec_var $in_pth_arg -d time,0,,4 -d lat,0,0 -d lon,0,1 -d lon,3,3  in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -y max -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01%"; 
     $tst_cmd[2]="ncks -C -H  -s '%f' -v four_dmn_rec_var  %tmp_fl_01%";
-    $dsc_sng="Concatenate float 4D variable with multi-hyperlsbs across two files";
+    $dsc_sng="Concatenate float 4D variable with multislabs across two files";
     $tst_cmd[3]="204";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
