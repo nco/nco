@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.108 2011-10-21 00:45:55 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.109 2011-11-12 19:02:47 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -181,7 +181,6 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
-    
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",1); b[\$a]=10;c=b(0:0);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncwa -h -O $fl_fmt $nco_D_flg -C  -a a %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -H -v b -s '%i' %tmp_fl_01%";
@@ -191,9 +190,6 @@ sub tst_rgr {
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
-
-
-
 
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait=<STDIN>;
     
@@ -1331,6 +1327,22 @@ sub tst_rgr {
     $tst_cmd[1]="ncks -C -H -s '%e' -v msk_prt_mss_prt %tmp_fl_00%";
     $dsc_sng="average masked variable with some missing values";
     $tst_cmd[2]="0.5";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
+    $dsc_sng="average uniform field with uniform weights";
+    $tst_cmd[2]="10";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+    
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area_asm -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
+    $dsc_sng="average uniform field with asymmetric weights";
+    $tst_cmd[2]="15";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array

@@ -70,7 +70,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_nomismatch.cdl,v 1.4 2011-08-06 03:50:48 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_nomismatch.cdl,v 1.5 2011-11-12 19:02:48 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -716,8 +716,8 @@ variables:
 
 	float rec_var_flt_mss_val_int(time);
 	rec_var_flt_mss_val_int:long_name = "record variable, float, with integer missing values";
-	rec_var_flt_mss_val_int:_FillValue = -999;
-	rec_var_flt_mss_val_int:missing_value = -999;
+	rec_var_flt_mss_val_int:_FillValue = -999.f;
+	rec_var_flt_mss_val_int:missing_value = -999.f;
 
 	int rec_var_int_mss_val_int(time);
 	rec_var_int_mss_val_int:long_name = "record variable, integer, with integer missing values";
