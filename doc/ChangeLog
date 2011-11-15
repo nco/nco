@@ -1,3 +1,8 @@
+2011-11-14  Charlie Zender  <zender@uci.edu>
+
+	* Realized that ncwa was working on asymmetric weighting
+	Added new test cases, also working. Unable to replicate Sentman	bug.
+
 2011-11-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:
@@ -2702,7 +2707,7 @@
 
 	* enable-optimize-custom and -Wall are close to working on ncap2
 	Should be possible to get this working again by 3.2.0
-	
+
 	* Cryptographically sign RPMs with GPG during BFS
 
 	* Tweak nco.spec
@@ -2753,7 +2758,7 @@
 2007-02-24  Charlie Zender  <zender@uci.edu>
 
 	* Finished (I think) quieting all non-fatal INFO/DEBUG/WARNINGS
-	in main() routines, and converted from naked numbers to consistent 
+	in main() routines, and converted from naked numbers to consistent
 	and descriptive enums
 
 2007-02-23  Charlie Zender  <zender@uci.edu>
@@ -2772,7 +2777,7 @@
 	* Changed prefix of parser generated vars from
 	  '_' to '~'. Attribute propagation & inheritance
 	  should now work correctly with vars prefixed by '_'.
-          Can now quote vars and atts   '--u@..-v' 
+          Can now quote vars and atts   '--u@..-v'
 
 2007-02-14  Charlie Zender  <zender@uci.edu>
 
@@ -3221,8 +3226,8 @@
 	the IPCC dataset were incorrect due to significantly wrong regular
 	expressions in nco_bm_hyp.sh. Incorrect regular expressions did
 	not affect satellite dataset because there were fewer than ten
-	variables. 
-	
+	variables.
+
 	* Correct max variable name for var_4d in nco_bm_hyp.sh
 
 	* Give wgt_brd_flg correct sign so not miscounted by nco_ddra()
@@ -3382,7 +3387,7 @@
 	This should cure build failures on Cray platforms, and make
 	nco_mmr.c bulletproof (though still not perfect) for other
 	esoteric platforms.
-	
+
 2006-04-27  Charlie Zender  <zender@uci.edu>
 
 	* Remove superfluous semi-colons from some ncbo/ncflint comments
@@ -3401,7 +3406,7 @@
 2006-04-21  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_2
-	Changes since nco-3_1_1: 
+	Changes since nco-3_1_1:
 	packed data fixed, ncap2 in configure, ncra/ncea/ncwa behavior
 
 	* Change documentation to reflect new ncra/ncea/ncwa behavior

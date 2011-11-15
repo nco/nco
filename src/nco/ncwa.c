@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.291 2011-07-25 03:38:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.292 2011-11-15 02:16:35 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -19,7 +19,7 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
    See the GNU General Public License for more details.
    
    The original author of this software, Charlie Zender, seeks to improve
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.291 2011-07-25 03:38:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.291 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.292 2011-11-15 02:16:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.292 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;

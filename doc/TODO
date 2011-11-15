@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1136 2011-11-12 19:02:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1137 2011-11-15 02:16:35 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -742,8 +742,9 @@ nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without a
 nco222.  nco: Warn when ncea/ncra operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 nco1025. nco: ncrcat/ncecat warn/die when concatting files with different scale factors
 nco1026. ncwa weighted average bug reported by Lori Sentman
-	 ncwa -O -w area -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
-	 ncwa -O -w area_asm -a lat -v area ~/nco/data/in.nc ~/foo.nc # 15 Fail
+	 ncwa -O -C -w area -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
+	 ncwa -O -C -w area_asm -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
+	 ncwa -O -C -w area_asm -a lat -v area2 ~/nco/data/in.nc ~/foo.nc # 10
 	 ncks -H -C -v area -m ~/foo.nc
 nco1027. 
 qrk
