@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.650 2011-10-10 04:15:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.651 2011-11-28 01:00:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7378,7 +7378,7 @@ If the horizontal grid is time-invariant then @var{R}=2 is common:
 
 @var{R}=2: lat(south_north,east_west) and lon(south_north,east_west)
 
-The WRF (Weather and Research Forecast) model uses @var{R}=3
+The Weather and Research Forecast (@acronym{WRF}) model uses @var{R}=3:
 
 @var{R}=3: lat(time,south_north,east_west), lon(time,south_north,east_west)
 
@@ -7391,42 +7391,40 @@ rectangular arrays so space must be allocated for the maximum number
 of east_west points at all latitudes. Then the application writes
 missing values into the unused points near the poles.
 
-Let's demonstrate the recommended @command{ncap2} analysis technique by
-constructing a region mask for an @var{R}=2 grid. 
+We demonstrate the @command{ncap2} analysis technique for irregular
+regions by constructing a mask for an @var{R}=2 grid.
 We wish to find, say, the mean temperature within 
 [@var{lat_min},@var{lat_max}] and [@var{lon_min},@var{lon_max}]: 
 @example
-ncap2 -s 'mask= (lat >= lat_min && lat <= lat_max) && \
-                (lon >= lon_min && lon <= lon_max);' in.nc out.nc
+ncap2 -s 'mask_var= (lat >= lat_min && lat <= lat_max) && \
+                    (lon >= lon_min && lon <= lon_max);' in.nc out.nc
 @end example
-
-Once you have a mask, you can use it on specific variables:
+Arbitrarily shaped regions can be defined by more complex conditional
+statements. 
+Once defined, masks can be applied to specific variables,
+and to entire files:
 @example
-ncap2 -s 'temperature_avg=(temperature*mask).avg()' in.nc out.nc
+ncap2 -s 'temperature_avg=(temperature*mask_var).avg()' in.nc out.nc
+ncwa -a lat,lon -m mask_var -w area in.nc out.nc
 @end example
-and you can apply it to entire files:
-@example
-ncwa -a lat,lon -m mask -w area in.nc out.nc
-@end example
-
-You can put this altogether on the command line or in a script, e.g.,
-cleaner.
+Crafting such commands on the command line is possible though unwieldy.
+In such cases, a script is often cleaner and allows you to document the
+procedure:
 @example
 cat > ncap2.in << EOF
-mask = (lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max);
-if(mask.total() > 0)@{ // Check that mask contains some valid values
-  temperature_avg=(temperature*mask).avg(); // Average temperature
-  temperature_max=(temperature*mask).max(); // Maximum temperature
+mask_var = (lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max);
+if(mask_var.total() > 0)@{ // Check that mask contains some valid values
+  temperature_avg=(temperature*mask_var).avg(); // Average temperature
+  temperature_max=(temperature*mask_var).max(); // Maximum temperature
 @}
 EOF
 ncap2 -S ncap2.in in.nc out.nc
 @end example
 
-For the WRF file creating the mask looks like
+For @acronym{WRF} files creating regional masks looks like 
 @example
-mask = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && > XLONG <= lon_max);
+mask_var = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && > XLONG <= lon_max);
 @end example
-
 In practice with WRF it's a bit more complicated because you must
 use the global metadata to determine the grid staggering and offsets
 to translate XLAT and XLONG into real latitudes and longitudes and
@@ -8425,7 +8423,6 @@ Using the @code{where} statement the above code simplifies to :
 @example
 ncap2 -s 'where(ORO==2.0) ORO=3.0;' in.nc foo.nc
 @end example
-
 
 @html
 <a name="cvr"></a> <!-- http://nco.sf.net/nco.html#cvr -->
@@ -12137,6 +12134,7 @@ is given above (@pxref{Operation Types}).
 @end menu
 
 @html
+<a name="mask"></a> <!-- http://nco.sf.net/nco.html#mask -->
 <a name="msk"></a> <!-- http://nco.sf.net/nco.html#msk -->
 <a name="-m"></a> <!-- http://nco.sf.net/nco.html#-m -->
 @end html
