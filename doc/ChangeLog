@@ -9,7 +9,7 @@
 	* Update to Ubuntu 11.10 build chain and GCC 4.6
 
 	* Re-base libtool using autoreconf -f -i
-	This fixes configure compile errors reported by Henry
+	This fixes some configure compile errors reported by Henry
 
 2011-11-14  Charlie Zender  <zender@uci.edu>
 
