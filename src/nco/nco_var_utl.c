@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.171 2011-08-23 03:51:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.172 2011-11-30 22:57:06 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -269,7 +269,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
-    (void)fprintf(stdout,"%s: ERROR attempt to write %d dimensional input variable %s to %d dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
+    (void)fprintf(stdout,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   nbr_dim=nbr_dmn_out;
@@ -285,10 +285,14 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   
   /* Get dimension sizes from input file */
   for(idx=0;idx<nbr_dim;idx++){
-  /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
-     Until a record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
-     Thus we read input file for dimension sizes */
+    /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
+       Until record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
+       Thus we read input file for dimension sizes */
     (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
+
+    /* 20111130 fxm TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
+    /* int rec_dmn_id
+       nco_inq_unlimdim(in_id,rec_dmn_id) */
 
     /* Initialize indicial offset and stride arrays */
     dmn_srt[idx]=0L;
@@ -335,7 +339,9 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
      Truncate dimensions in variable definition in output file according to user-specified limits
-     Copy variable-by-variable, old-style, used only by ncks */
+     Copy variable-by-variable, old-style, 
+     Routine was used by ncks until MSA implementation in ~2005 
+     Functionality now extended and superceded by nco_cpy_var_val_mlt_lmt() */
 
   nco_bool SRD=False;
   nco_bool WRP=False;
@@ -374,7 +380,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
-    (void)fprintf(stderr,"%s: ERROR attempt to write %d dimensional input variable %s to %d dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
+    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   nbr_dim=nbr_dmn_out;
