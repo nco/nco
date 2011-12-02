@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.143 2011-08-02 17:59:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.144 2011-12-02 00:28:48 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -557,7 +557,7 @@ nco_inq_format(const int nc_id,int * const fl_fmt)
   rcd=nc_inq_format(nc_id,fl_fmt);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format()");
   return rcd;
-} /* end nco_inq_format */
+} /* end nco_inq_format() */
 
 #ifdef ENABLE_NETCDF4
 int
@@ -568,7 +568,7 @@ nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)
   rcd=nc_inq_ncid(nc_id,grp_nm,grp_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ncid()");
   return rcd;
-} /* end nco_inq_ncid */
+} /* end nco_inq_ncid() */
 #endif /* !ENABLE_NETCDF4 */
 
 int
@@ -579,7 +579,7 @@ nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl)
   rcd=nc_inq_ndims(nc_id,dmn_nbr_fl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ndims()");
   return rcd;
-} /* end nco_inq_ndims */
+} /* end nco_inq_ndims() */
 
 int
 nco_inq_nvars(const int nc_id,int * const var_nbr_fl)
@@ -589,7 +589,7 @@ nco_inq_nvars(const int nc_id,int * const var_nbr_fl)
   rcd=nc_inq_nvars(nc_id,var_nbr_fl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_nvars()");
   return rcd;
-} /* end nco_inq_nvars */
+} /* end nco_inq_nvars() */
 
 int
 nco_inq_natts(const int nc_id,int * const att_glb_nbr)
@@ -599,7 +599,7 @@ nco_inq_natts(const int nc_id,int * const att_glb_nbr)
   rcd=nc_inq_natts(nc_id,att_glb_nbr);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_natts()");
   return rcd;
-} /* end nco_inq_natts */
+} /* end nco_inq_natts() */
 
 int
 nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
@@ -609,7 +609,18 @@ nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
   rcd=nc_inq_unlimdim(nc_id,rec_dmn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim()");
   return rcd;
-} /* end nco_inq_unlimdim */
+} /* end nco_inq_unlimdim() */
+
+int
+nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id)
+{
+  /* Purpose: Error-tolerant wrapper for nc_inq_unlimdim(). Tolerates NC_EBADDIM. */
+  int rcd;
+  rcd=nc_inq_unlimdim(nc_id,rec_dmn_id);
+  if(rcd == NC_EBADDIM) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim_flg()");
+  return rcd;
+} /* end nco_inq_unlimdim_flg() */
 /* End File routines */
 
 /* Begin Group routines (_grp) */

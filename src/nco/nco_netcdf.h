@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.78 2011-07-27 06:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.79 2011-12-02 00:28:48 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -114,6 +114,7 @@ int nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl);
 int nco_inq_nvars(const int nc_id,int * const var_nbr_fl);
 int nco_inq_natts(const int nc_id,int * const att_glb_nbr);
 int nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id);
+int nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id);
 /* End File routines */
 
 /* Begin Group routines (_grp) */

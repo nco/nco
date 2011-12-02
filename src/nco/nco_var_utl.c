@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.172 2011-11-30 22:57:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.173 2011-12-02 00:28:48 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -290,15 +290,37 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
        Thus we read input file for dimension sizes */
     (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
 
-    /* 20111130 fxm TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
-    /* int rec_dmn_id
-       nco_inq_unlimdim(in_id,rec_dmn_id) */
-
     /* Initialize indicial offset and stride arrays */
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
       
+  /* 20111130 fxm TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
+  if(nbr_dim > 0){
+    int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
+    int rcd=NC_NOERR; /* [rcd] Return code */
+    long rec_dmn_sz=0L; /* [nbr] Record dimension size in output file */
+    rcd=nco_inq_unlimdim_flg(in_id,&rec_dmn_id); 
+    /* If input file has record dimension ... */
+    if(rcd == NC_NOERR){ 
+      /* ... used as record dimension of this variable...  */
+      if(rec_dmn_id == dmn_id[0]){
+	rcd=nco_inq_unlimdim(out_id,&rec_dmn_id); 
+	/* ... and if output file has record dimension ... */
+	if(rcd == NC_NOERR){ 
+	  (void)nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
+	  /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
+	  if(rec_dmn_sz > 0){
+	    /* ... then check input vs. output record dimension sizes ... */
+	    if(rec_dmn_sz != dmn_cnt[0]){
+	      (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s will likely be corrupt.\n",prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
+	    } /* endif sizes are incommensurate */
+	  } /* endif records exist in output file */
+	} /* endif output file has record dimension */
+      } /* endif this variable uses input file record dimension */
+    } /* endif input file has record dimension */
+  } /* endif this variable is not a scalar */
+    
   /* Allocate enough space to hold variable */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 

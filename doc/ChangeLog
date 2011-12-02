@@ -1,3 +1,7 @@
+2011-12-01  Charlie Zender  <zender@uci.edu>
+
+	* Fix TODO nco1029: warn on ncks -A when dim(old_record) != dim(new_record)
+
 2011-11-29  Charlie Zender  <zender@uci.edu>
 
 	* Quiet set-but-not-used warnings appearing since GCC 4.6+
