@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.173 2011-12-02 00:28:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.174 2011-12-02 00:32:24 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -295,7 +295,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
       
-  /* 20111130 fxm TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
+  /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
   if(nbr_dim > 0){
     int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
     int rcd=NC_NOERR; /* [rcd] Return code */
