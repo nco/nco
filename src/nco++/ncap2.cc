@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.122 2011-07-27 06:00:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.123 2011-12-06 22:25:10 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.122 2011-07-27 06:00:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.123 2011-12-06 22:25:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.123 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -461,19 +461,19 @@ main(int argc,char **argv)
   mth2_cls mth2_obj(true);
   // Basic Functions
   bsc_cls bsc_obj(true);
-  //PDQ functions
+  // PDQ functions
   pdq_cls pdq_obj(true);
-  //Mask functions
+  // Mask functions
   msk_cls msk_obj(true);
-  //Pack functions
+  // Pack functions
   pck_cls pck_obj(true); 
-  //Sort functions
+  // Sort functions
   srt_cls srt_obj(true); 
-  //Unary functions
+  // Unary functions
   unr_cls unr_obj(true); 
-  //array functions
+  // Array functions
   arr_cls arr_obj(true); 
-  //biliner interpolation functions
+  // Bilinear interpolation functions
   bil_cls bil_obj(true); 
 
   // Populate vector

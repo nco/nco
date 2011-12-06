@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.40 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.41 2011-12-06 22:25:10 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1050,7 +1050,6 @@
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("mask",this,(int)PMASK1));
       fmc_vtr.push_back( fmc_cls("mask_clip",this,(int)PMASK_CLIP));
-
     }
   }
 
@@ -1068,7 +1067,6 @@
     std::vector<RefAST> vtr_args; 
     NcapVector<dmn_sct*> dmn_vtr;
 
-
     if(expr)
       vtr_args.push_back(expr);
 
@@ -1080,21 +1078,14 @@
       
     nbr_args=vtr_args.size();  
 
-
-   
-
     if(nbr_args<2)
       err_prn(sfnm, "Function has been called with less than two arguments"); 
-
 
     if(nbr_args >2 && !prs_arg->ntl_scn) 
       wrn_prn(sfnm," Function has been called with more than two arguments"); 
     
- 
     var=walker.out(vtr_args[0]);
     var_msk=walker.out(vtr_args[1]);
-
-
 
     // Deal with initial scan
     if(prs_arg->ntl_scn) {
@@ -1137,7 +1128,6 @@
        slb_sz=nco_typ_lng(var->type);    
        cnt=var->sz/var_msk->sz;
 
-
        (void)cast_void_nctype(NC_SHORT,&var_msk->val);
        //Dereference 
        sp=var_msk->val.sp; 
@@ -1155,10 +1145,8 @@
 	 }   
        } 
 
-
        (void)cast_nctype_void(NC_SHORT,&var_msk->val);
        var_msk=nco_var_free(var_msk);
-    
 
        return var;
       } 
@@ -1192,7 +1180,6 @@
       
       for(idx=0 ; idx<msk_sz ;idx++){
         // index out of bounds bomb out
-
         if(prs_arg->FORTRAN_IDX_CNV) {
 
           if( ip[idx]<1L || ip[idx] > var_sz){
@@ -1207,7 +1194,6 @@
             std::ostringstream os;
             os<<"Function reporting that index "<<ip[idx]<<" into "<<var->nm<<" is out of bounds 0"<<"-"<<var_sz-1; 
             err_prn(sfnm,os.str());         
-
           }
         }
 

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.651 2011-11-28 01:00:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.652 2011-12-06 22:25:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -104,8 +104,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.9
 @set copyright-years 1995--2011
 @set update-year 2011
-@set update-date 27 June 2011
-@set update-month June 2011
+@set update-date 6 December 2011
+@set update-month December 2011
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -5984,13 +5984,13 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 * Where statement::             
 * Loops::                       
 * Include files::               
-* sort methods::                
+* Sort methods::                
 * Irregular grids::             
-* bilinear interpolation::      
-* GSL special functions::  
-* GSL interpolation::  
-* GSL least-squares fitting::  
-* GSL statistics::    
+* Bilinear interpolation::      
+* GSL special functions::       
+* GSL interpolation::           
+* GSL least-squares fitting::   
+* GSL statistics::              
 * GSL random number generation::  
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
@@ -6970,7 +6970,7 @@ These functions are used to manipulate missing values and RAM variables.
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @item ram_write()
- Writes a RAM variable to disk i.e. converts it to a regular disk type variable
+ Writes a RAM variable to disk i.e., converts it to a regular disk type variable
 @item ram_delete()
  Deletes a RAM variable or an attribute 
 @end table
@@ -7214,7 +7214,7 @@ print("Total of odd elements ");print(sum);print("\n");
 @html
 <a name="ncap_inc"></a> <!-- http://nco.sf.net/nco.html#ncap_inc -->
 @end html
-@node Include files, sort methods, Loops, ncap2 netCDF Arithmetic Processor
+@node Include files, Sort methods, Loops, ncap2 netCDF Arithmetic Processor
 @subsection Include files
 @cindex @command{include}
 The syntax of an @var{include-file} is:
@@ -7229,15 +7229,15 @@ Use RAM variables if you do not want these constants written to
 @example
 // script.nco
 // Sample file to #include in ncap2 script
-*pi=3.1415926535; // RAM variable, not written to output-file
-*h=6.62607095e-34; // RAM variable, not written to outpuf-file
-e=2.71828; // Regular (disk) variable, written to output-file
+*pi=3.1415926535; // RAM variable, not written to output
+*h=6.62607095e-34; // RAM variable, not written to output
+e=2.71828; // Regular (disk) variable, written to output
 @end example
 
 @html
 <a name="ncap_srt"></a> <!-- http://nco.sf.net/nco.html#ncap_srt -->
 @end html
-@node sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
+@node Sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
 @subsection @command{sort} methods
 In @acronym{ncap} there are two ways to sort data. 
 The first is a regular @command{sort}. 
@@ -7253,19 +7253,19 @@ to hold the returned sort map.
 a1[$time]=@{10,2,3,4,6,5,7,3,4,1@};
 a1_sort=sort(a1);
 print(a1_sort);
-// 1, 2, 3, 3, 4, 4, 5, 6, 7, 10 ;
+// 1, 2, 3, 3, 4, 4, 5, 6, 7, 10;
 
 a2[$lon]=@{2,1,4,3@};
 a2_sort=sort(a2,&a2_map);
 print(a2);
 // 1, 2, 3, 4
 print(a2_map);
-// 1, 0, 3, 2 ;
+// 1, 0, 3, 2;
 @end example  
 
-If the map variable does not exist prior to the @command{sort} call, then it will
-be created with the same shape as the input variable and be of type
-@code{NC_INT}. 
+If the map variable does not exist prior to the @command{sort()} call,
+then it will be created with the same shape as the input variable and be
+of type @code{NC_INT}. 
 If the map variable already exists, then the only restriction is that it
 be of at least the same size as the input variable. 
 To apply a map use @code{dsort(var_in,var_map)}. 
@@ -7282,34 +7282,129 @@ a4[$nlat,$lon]=@{
 
 a3_sort=sort(a3,&a3_map);
 print(a3_map);
-// 0, 2, 1, 3 ;
+// 0, 2, 1, 3;
 
-a5_sort=dsort(a5,a3_map);
-print(a5_sort);
+a4_sort=dsort(a4,a3_map);
+print(a4_sort);
 // 1, 3, 2, 4,
 // 5, 7, 6, 8,
 // 9,11,10,12,
 // 13,15,14,16,
-// 17,19,18,20 ;
+// 17,19,18,20;
 
 a3_map2[$nlat]=@{4,3,0,2,1@};
 
-a5_sort2=dsort(a5,a3_map2);
-print(a5_sort2);
+a4_sort2=dsort(a4,a3_map2);
+print(a4_sort2);
 // 3, 5, 4, 2, 1
 // 8, 10, 9,7, 6, 
 // 13,15,14,12,11, 
 // 18,20,19,17,16
 @end example
-As in the above example you may create your own mask. 
-To sort in descending order, use @code{reverse()} after the @command{sort}.   
+As in the above example you may create your own sort map.
+To sort in descending order, apply the @code{reverse()} method after the
+@command{sort()}.    
+
+@html
+<a name="srt"></a> <!-- http://nco.sf.net/nco.html#srt -->
+<a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
+<a name="dsort"></a> <!-- http://nco.sf.net/nco.html#dsort -->
+@end html
+Here is an extended example of how to use @command{ncap2} features to
+hyperslab an irregular region based on the values of a variable not a
+coordinate. 
+The distinction is crucial: hyperslabbing based on dimensional indices
+or coordinate values is straightforward.
+Using the values of single or multi-dimensional variable to define a
+hyperslab is quite different.
+@example
+cat > ~/ncap2_foo.nco << 'EOF'
+// Purpose: Mask and save irregular regions based on variable values
+
+/* NB: Single quotes around EOF above turn off shell parameter 
+    expansion in "here documents". This in turn prevents the
+    need for protecting dollarsign characters in NCO script with
+    backslashes when the script is cut-and-pasted (aka "moused") 
+    from an editor or e-mail into a shell console window */
+
+/* Copy coordinates and variable(s) of interest into RAM variable(s)
+   Benefits:
+   1. ncap2 defines writes all variables on LHS of expression to disk
+      Only exception is RAM variables, which are stored in RAM only
+      Repeated operations on regular variables takes more time, 
+      because changes are written to disk copy after every change.
+      RAM variables are only changed in RAM so script works faster
+      RAM variables can be written to disk at end with ram_write()
+   2. Script permutes variables of interest during processing
+      Safer to work with copies that have different names
+      This discourages accidental, mistaken use of permuted versions
+   3. Makes this script a more generic template:
+      var_in instead of specific variable names everywhere */
+*var_in=one_dmn_rec_var;
+*crd_in=time;
+*dmn_in_sz=$time.size; // [nbr] Size of input arrays
+
+/* Create all other "intermediate" variables as RAM variables 
+   to prevent them from cluttering the output file.
+   Mask flag and sort map are same size as variable of interest */
+*msk_flg=var_in;
+*srt_map=var_in;
+
+/* In this example we mask for all values evenly divisible by 3
+   This is the key, problem-specific portion of the template
+   Replace this where() condition by that for your problem
+   Mask variable is Boolean: 1=Meets condition, 0=Fails condition */
+where(var_in % 3 == 0) msk_flg=1; elsewhere msk_flg=0;
+
+// print("msk_flg = ");print(msk_flg); // For debugging...
+
+/* The sort() routine is overloaded, and takes one or two arguments
+   The second argument (optional) is the "sort map" (srt_map below)
+   Pass the sort map by reference, i.e., prefix with an ampersand
+   If the sort map does not yet exist, then it will be created and 
+   returned as an integer type the same shape as the input variable.
+   The output of sort(), on the LHS, is a sorted version of the input
+   msk_flg is not needed in its original order after sort()
+   Hence we use msk_flg as both input and output to sort()
+   Doing this prevents the need to define a new, unneeded variable */
+msk_flg=sort(msk_flg,&srt_map);
+
+// Count number of valid points in mask by summing the one's
+*msk_nbr=msk_flg.total();
+
+// Define output dimension equal in size to number of valid points
+defdim("crd_out",msk_nbr);
+
+/* Now sort the variable of interest using the sort map and dsort()
+   The output, on the LHS, is the input rearranged so that all points
+   meeting the mask condition are contiguous at the end of the array
+   Use same srt_map to hyperslab multiple variables of the same shape
+   Remember to apply srt_map to the coordinate variables */
+crd_in=dsort(crd_in,srt_map);
+var_in=dsort(var_in,srt_map);
+
+/* Hyperslab last msk_nbr values of variable(s) of interest */
+crd_out[crd_out]=crd_in((dmn_in_sz-msk_nbr):(dmn_in_sz-1));
+var_out[crd_out]=var_in((dmn_in_sz-msk_nbr):(dmn_in_sz-1));
+
+/* NB: Even though we created all variables possible as RAM variables,
+   the original coordinate of interest, time, is written to the ouput.
+   I'm not exactly sure why. For now, delete it from the output with: 
+   ncks -O -x -v time ~/foo.nc ~/foo.nc
+   */ 
+EOF
+ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
+ncks -O -x -v time ~/foo.nc ~/foo.nc
+ncks ~/foo.nc
+@end example
+
 @html
 <a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
 
-@node Irregular grids, bilinear interpolation, sort methods, ncap2 netCDF Arithmetic Processor
+@node Irregular grids, Bilinear interpolation, Sort methods, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
@@ -7439,8 +7534,8 @@ The mask procedure is identical for all @var{R}.
 <a name="bln_ntp"></a> <!-- http://nco.sf.net/nco.html#bln_ntp -->
 <a name="bil_int"></a> <!-- http://nco.sf.net/nco.html#bil_int -->
 @end html
-@node bilinear interpolation, GSL special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
-@subsection bilinear interpolation
+@node Bilinear interpolation, GSL special functions, Irregular grids, ncap2 netCDF Arithmetic Processor
+@subsection Bilinear interpolation
 @noindent As of version 4.0.0 @acronym{NCO} has internal routines to
 perform bilinear interpolation on gridded data sets.
 In mathematics, bilinear interpolation is an extension of linear
@@ -7566,16 +7661,16 @@ T_out[$lat_out,$lon_out]=0.0;
 
 T_out=bilinear_interp_wrap(T_in,T_out,lat_out,lon_out,lat_in,lon_in);
 print(T_out); 
-//  13.4375, 49.5, 14.09375,
-//  16.25, 54, 16.625,
-//  19.25, 58.8, 19.325,
-//  20.15, 60.24, 20.135 ;
+// 13.4375, 49.5, 14.09375,
+// 16.25, 54, 16.625,
+// 19.25, 58.8, 19.325,
+// 20.15, 60.24, 20.135 ;
 @end example
 
 @html
 <a name="gsl"></a> <!-- http://nco.sf.net/nco.html#gsl -->
 @end html
-@node GSL special functions, GSL interpolation, bilinear interpolation, ncap2 netCDF Arithmetic Processor
+@node GSL special functions, GSL interpolation, Bilinear interpolation, ncap2 netCDF Arithmetic Processor
 @subsection GSL special functions
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 

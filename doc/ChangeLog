@@ -1,3 +1,7 @@
+2011-12-06  Charlie Zender  <zender@uci.edu>
+
+	* Add extensive documentation of hyperslabbing irregular regions based on variable values
+
 2011-12-01  Charlie Zender  <zender@uci.edu>
 
 	* Fix TODO nco1029: warn on ncks -A when dim(old_record) != dim(new_record)
@@ -1914,7 +1918,7 @@
 	* Add rule to post-process ANTLR-files with broken tokens:
 	nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
 	This should fix build problems on Solaris
-	
+
 2008-03-13  Charlie Zender  <zender@uci.edu>
 
 	* Improve error messages
@@ -1931,8 +1935,8 @@
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.4 release"
 	  cvs tag -c nco-3_9_4;cvs tag -c nco-3_9_4-1
 	  Changes since nco-3_9_3: -3, -X, --msa_usr_rdr, ncap2 mask, WIN32
-	
-	* Make netCDF4 changes to libnco_c++ back-compatible with 
+
+	* Make netCDF4 changes to libnco_c++ back-compatible with
 	  netcdf 3.6.1 still widely used including by FC DAP RPMs.
 
 	* Add netCDF4 put_varx_string() functions to nco_c++
@@ -1981,16 +1985,16 @@
 2008-02-13  Henry Butowsky  <henryb@ntlworld.com>
 
 	* First cut of NCL-style operators "<<", "<<=", ">>", ">>="
-	
+
 2008-02-06  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Added functions "mask" & "mask_clip"
-	
+
 2008-01-22  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Work-arounds related NCO_NETCDF4_AND_FILL_VALUE changes to
-	ncap_var_write_omp(). Added NCAP4_FILL property to prs_cls. 
-	
+	ncap_var_write_omp(). Added NCAP4_FILL property to prs_cls.
+
 2008-01-17  Charlie Zender  <zender@uci.edu>
 
 	* Re-define NCO_NETCDF4_AND_FILLVALUE to workaround CPP problems
@@ -3209,7 +3213,7 @@
 2006-05-30  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_3
-	Changes since nco-3_1_2: 
+	Changes since nco-3_1_2:
 	ncap2 attribute propagation, CF coordinates, ncwa -b -B, ncra 0 records
 
 	* Daniel fixed nco_bm.pl
@@ -5794,7 +5798,7 @@
 
 	* cvs tag -c nco-2_9_8
 	Changes since nco-2_9_7: 1. ncpdq, 2. ncwa --msk_sng consolidated
-	mask switch, and 3. C99 
+	mask switch, and 3. C99
 
 	* Fixed bug where nco_var_dmn_rdr_mtd() returned before reversal
 	flag list created for 1-D arrays. This cause reversal of 1-D
@@ -8606,14 +8610,14 @@ Thu Jan 21 15:23:02 1999  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 	* Fixed bug in var_def() where wrong branch was executed when
 	called by ncwa for files with no output dimensions. Symptom was a
 	core dump or "ncvardef: ncid 4: Invalid dimension id or name"
-	error. 
+	error.
 
 Wed Jan  6 17:55:26 1999  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Tagged and released this as nco1_1_18
 
 	* Added kludge to ncwa to workaround bug in var_conform_dim()
-	where var_conform_dim() sometimes allows the returned weight 
+	where var_conform_dim() sometimes allows the returned weight
 	not to have same size tally array as the template variable. This
 	caused core dumps in ncwa.
 
@@ -8632,7 +8636,7 @@ Fri Dec  4 15:06:23 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 	* Disabled ncwa -n and -W normalization options until I think of
 	better way to implement them. -N option now causes ncwa not to
 	divide by the denominator. Disabled -n and -W tests in nco_tst.sh
-	(tests #2 and #3). 
+	(tests #2 and #3).
 
 1998-12-02  Charlie Zender  <zender@z.ppp.ucar.edu>
 

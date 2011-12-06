@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.188 2011-04-12 03:19:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.189 2011-12-06 22:25:10 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2632,10 +2632,7 @@ var_sct *var_rhs;
        var_rhs=nco_var_free(var_rhs);
        var_rhs=var_tmp;
      }  
-
    }
- 
- 
   
    // Make mask conform
    if(var_msk->sz != var_lhs->sz){
@@ -2720,8 +2717,6 @@ var_sct *var_rhs;
         }
       } 
     }             
-
-
 
    (void)cast_nctype_void(NC_SHORT,&var_msk->val); 
 
