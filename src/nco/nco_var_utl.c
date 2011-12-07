@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.174 2011-12-02 00:32:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.175 2011-12-07 18:40:29 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -937,11 +937,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
   /* Purpose: Define variables in output file, copy their attributes */
 
   /* This function is unusual (for me) in that dimension arguments are only intended
-     to be used by certain programs, those that alter the rank of input variables. 
+     to be used by certain programs---those that alter the rank of input variables. 
      Programs that do not alter input variable rank (dimensionality) should
      call this function with NULL dimension list and nbr_dmn_ncl=0. 
      Otherwise, this routine attempts to define variable correctly in output file 
-     (allowing variable to be defined with only those dimensions that are in dimension inclusion list) without altering variable structures. 
+     (allowing variable to be defined with only those dimensions that are in dimension inclusion list) 
+     without altering variable structures. 
 
      Moreover, this function is intended to be called with var_prc_out, not var_prc
      So local variable var usually refers to var_prc_out in calling function 

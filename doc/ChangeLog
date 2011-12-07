@@ -1,22 +1,28 @@
-2011-12-06  Charlie Zender  <zender@uci.edu>
+2011-12-07  Charlie Zender  <zender@uci.edu>
 
-	* Add extensive documentation of hyperslabbing irregular regions based on variable values
+	* Fix TODO nco1025 warn/die when catting files with different scale factors
 
-2011-12-01  Charlie Zender  <zender@uci.edu>
-
-	* Fix TODO nco1029: warn on ncks -A when dim(old_record) != dim(new_record)
-
-2011-11-29  Charlie Zender  <zender@uci.edu>
-
-	* Quiet set-but-not-used warnings appearing since GCC 4.6+
-
-2011-11-22  Charlie Zender  <zender@uci.edu>
+	* Tidy ncra.c
 
 	* NCO 4.0.9 release procedure:
  	Changes since nco-4_0_8:
 	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
+2011-12-06  Charlie Zender  <zender@uci.edu>
+
+	* Document hyperslabbing irregular regions based on variable values
+
+2011-12-01  Charlie Zender  <zender@uci.edu>
+
+	* Fixed TODO nco1029: warn on ncks -A when dim(old_record) != dim(new_record)
+
+2011-11-29  Charlie Zender  <zender@uci.edu>
+
+	* Quiet set-but-not-used warnings appearing since GCC 4.6+
+
+2011-11-22  Charlie Zender  <zender@uci.edu>
 
 	* Update to Ubuntu 11.10 build chain and GCC 4.6
 

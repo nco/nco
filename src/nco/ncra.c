@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.268 2011-08-23 03:51:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.269 2011-12-07 18:40:29 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.268 2011-08-23 03:51:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.268 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.269 2011-12-07 18:40:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.269 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -555,28 +555,23 @@ main(int argc,char **argv)
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
     /* Initialize record coordinate re-basing */
     if(prg == ncra || prg == ncrcat){
-      lmt_rec->origin=0.0; 
       int var_id;
-      char *cln_att_sng=(char*)NULL;
-
-      lmt_rec->rbs_sng=(char *)NULL;
+      
       lmt_rec->lmt_cln=cln_nil; 
+      lmt_rec->origin=0.0; 
+      lmt_rec->rbs_sng=NULL;
 
-
+      /* Obtain metadata for record coordinate */
       rcd=nco_inq_varid_flg(in_id,lmt_rec->nm,&var_id);
-
-
       if(rcd == NC_NOERR){ 
-       lmt_rec->rbs_sng=nco_lmt_get_udu_att(in_id,var_id,"units"); 
-       cln_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
-       lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
-      }
-
-      if(cln_att_sng)
-        cln_att_sng=(char*)nco_free(cln_att_sng);  
-
+	char *cln_att_sng=NULL;
+	lmt_rec->rbs_sng=nco_lmt_get_udu_att(in_id,var_id,"units"); 
+	cln_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
+	lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
+	if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
+      } /* endif record coordinate exists */
     } /* endif ncra, ncrcat */
-  } /* Record dimension exists */
+  } /* endif record dimension exists */
   
   if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
     for(idx=0;idx<nbr_dmn_fl;idx++){

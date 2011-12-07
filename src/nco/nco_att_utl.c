@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.113 2011-06-26 23:26:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.114 2011-12-07 18:40:29 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -243,31 +243,31 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       att_val_new=nco_free(att_val_new);
     }else{
       /* Create new attribute */
-      rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+      rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     } /* end else */
     break;
   case aed_create:	
-    if(rcd_inq_att != NC_NOERR) rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    if(rcd_inq_att != NC_NOERR) rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   case aed_delete:	
     /* Delete specified attribute if attribute name was specified... */
     if(aed.att_nm){
       /* ...and if attribute is known to exist from previous inquire call... */
-      if(rcd_inq_att == NC_NOERR) rcd=nco_del_att(nc_id,var_id,aed.att_nm);
+      if(rcd_inq_att == NC_NOERR) rcd+=nco_del_att(nc_id,var_id,aed.att_nm);
     }else{
       /* ...else delete all attributes for this variable... */
       while(nbr_att){
-	rcd=nco_inq_attname(nc_id,var_id,nbr_att-1,att_nm);
-	rcd=nco_del_att(nc_id,var_id,att_nm);
+	rcd+=nco_inq_attname(nc_id,var_id,nbr_att-1,att_nm);
+	rcd+=nco_del_att(nc_id,var_id,att_nm);
 	nbr_att--;
       } /* end while */
     } /* end else */
     break;
   case aed_modify:	
-    if(rcd_inq_att == NC_NOERR) rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+    if(rcd_inq_att == NC_NOERR) rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     break;
   case aed_overwrite:	
-    rcd=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   default: 
     break;
@@ -275,11 +275,13 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   if(flg_netCDF4_rename_trick){
-    rcd=nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
+    rcd+=nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
     /* Restore original name (space already allocated) */
     strcpy(aed.att_nm,nco_mss_val_sng_get()); 
   } /* !flg_netCDF4_rename_trick */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
+
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: DEBUG WARNING %s reports unexpected cumulative rcd = %i on exit. Please report this to NCO project.\n",prg_nm_get(),fnc_nm,rcd);
 
 } /* end nco_aed_prc() */
 
@@ -309,18 +311,32 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     (void)nco_inq_varnatts(in_id,var_in_id,&nbr_att);
   } /* end else */
   
+  if(nbr_att > 0 && var_out_id != NC_GLOBAL) (void)nco_inq_varname(out_id,var_out_id,var_nm);
+
   /* Jump back to here if current attribute is treated specially */
   for(idx=0;idx<nbr_att;idx++){
     (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
     /* Look for same attribute in output variable in output file */
     rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
       
-    /* If instructed not to copy packing attributes... */
-    if(!PCK_ATT_CPY)
-      /* ...and attribute is "scale_factor" or "add_offset" ... */
-      if(!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset"))
+    /* If attribute is "scale_factor" or "add_offset" ... */
+    if(!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset")){
+      /* ...and if instructed to copy packing attributes... */
+      if(PCK_ATT_CPY){
+	int prg_id; /* [enm] Program ID */
+	prg_id=prg_get(); /* [enm] Program ID */
+	/* ...and if multifile concatenator (ncrcat, ncecat)... */
+	if(prg_id == ncrcat || prg_id == ncecat){
+	  /* ...then risk exists that packing attributes in first file do not match subsequent files... */
+	  static short FIRST_WARNING=True;
+	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: INFO/WARNING Multi-file concatenator encountered packing attribute %s for variable %s. NCO copies the packing attributes from the first file to the output file. The packing attributes from the remaining files must match exactly those in the first file or the data from the subsequent files will not be unpacked correctly. Be sure that all input files share the same packing attributes. If in doubt, unpack (with ncpdq -U) the input files, then concatenate them, then pack the result (with ncpdq). This message is printed only once per invocation.\n",prg_nm_get(),att_nm,var_nm);
+	  FIRST_WARNING=False;
+	} /* endif ncrcat or ncecat */
+      }else{ /* ...do not copy packing attributes... */
 	/* ...then skip remainder of loop, thereby skipping attribute copy... */
 	continue;
+      } /* endelse */
+    } /* endif attribute is "scale_factor" or "add_offset" */
     
     /* Inform user when copy will overwrite an existing attribute */
     if(dbg_lvl_get() >= nco_dbg_std){
@@ -328,7 +344,6 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	if(var_out_id == NC_GLOBAL){
 	  (void)fprintf(stderr,"%s: INFO Overwriting global attribute %s\n",prg_nm_get(),att_nm);
 	}else{
-	  (void)nco_inq_varname(out_id,var_out_id,var_nm);
 	  (void)fprintf(stderr,"%s: INFO Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
 	} /* end else */
       } /* end if */
