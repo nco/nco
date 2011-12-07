@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.32 2011-06-28 00:00:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.33 2011-12-07 19:52:12 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -134,19 +134,17 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
 
-/****************************************************************************************************/
-/******************** UDUNITS 2 *********************************************************************/
-/****************************************************************************************************/
+/* UDUnits2 routines */
 
 int /* [rcd] Return code */
-nco_cln_clc_dff /* [fnc] Compute difference between two co-ordinate units */
+nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two co-ordinate units */
 (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
  double crr_val,
  double *og_val) /* O difference between two units strings */
 {
   const char fnc_nm[]="nco_cln_clc_dff()"; /* [sng] Function name */
-
+  
   int ut_rcd; /* [enm] UDUnits2 status */
   
   cv_converter *ut_cnv; /* UDUnits converter */
@@ -168,7 +166,7 @@ nco_cln_clc_dff /* [fnc] Compute difference between two co-ordinate units */
     (void)fprintf(stdout,"%s: %s() failed to initialize UDUnits2 library\n",prg_nm_get(),fnc_nm);
     return EXIT_FAILURE; /* Failure */
   } /* end if err */ 
-
+  
   /* Units string to convert from */
   ut_sct_in=ut_parse(ut_sys,fl_unt_sng,UT_ASCII); 
   if(ut_sct_in == NULL){ /* Problem with 'units' attribute */
@@ -210,17 +208,17 @@ nco_cln_clc_dff /* [fnc] Compute difference between two co-ordinate units */
   cv_free(ut_cnv);
 
   return EXIT_SUCCESS;
-}  /* end nco_cln_clc_dff() */
+}  /* end UDUnits2 nco_cln_clc_dff() */
 
 int /* [rcd] Successful conversion returns 0 */
-nco_cln_prs_tm /* Extract time stamp from parsed UDUnits string */
+nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 (const char *unt_sng, /* I [ptr] units attribute string */
  tm_cln_sct *tm_in) /*  O [sct] struct to be populated */             
 {
   int ut_rcd; /* [enm] UDUnits2 status */
   char buf[200];
   char *bptr;
-    
+
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
 
@@ -255,35 +253,34 @@ nco_cln_prs_tm /* Extract time stamp from parsed UDUnits string */
   ut_free(ut_sct_in);
 
   return EXIT_SUCCESS;
-} /* end nco_cln_prs_tm() */
+} /* end UDUnits2 nco_cln_prs_tm() */
 
 # else /* !HAVE_UDUNITS2_H */
 
-/****************************************************************************************************/
-/******************** UDUNITS 1 *********************************************************************/
-/****************************************************************************************************/
+/* UDUnits1 routines */
 
-int                 /* [rcd] Successful conversion returns 0 */
-nco_cln_clc_dff(    /* [fnc] Difference between two co-ordinate units */      
-const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
-const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-double crr_val,
-double *og_val){        /* O [ptr]                                   */
-
-  int rcd;
-
+int /* [rcd] Successful conversion returns 0 */
+nco_cln_clc_dff /* [fnc] UDUnits1 Difference between two co-ordinate units */
+(const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
+ const char *fl_bs_sng, /* I [ptr] units attribute string from disk  */     
+ double crr_val,
+ double *og_val) /* O [ptr] */
+{
+  const char fnc_nm[]="nco_cln_clc_dff()"; /* [sng] Function name */
+    
   double slp;
   double incpt;
+
+  int rcd;
 
   utUnit udu_sct_in; /* UDUnits structure, input units */
   utUnit udu_sct_out; /* UDUnits structure, output units */
 
-
-  /* quick return if units identical */
+  /* Quick return if units identical */
   if(!strcmp(fl_unt_sng,fl_bs_sng) ){
     *og_val=crr_val;  
     return EXIT_SUCCESS;
-  }
+  } /* endif */
 
 #ifdef UDUNITS_PATH
   /* UDUNITS_PATH macro expands to where autoconf found database file */
@@ -296,23 +293,15 @@ double *og_val){        /* O [ptr]                                   */
 
   if(rcd != 0){
     (void)fprintf(stdout,"%s: nco_lmt_cls_dff() failed to initialize UDUnits library\n",prg_nm_get());
-
     return EXIT_FAILURE;
-
   } /* end if err */ 
 
   /* units string to convert from */
   rcd=utScan(fl_unt_sng,&udu_sct_in); 
   if(rcd !=0){
-    if(rcd == UT_EINVALID)
-      (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",fl_unt_sng);
-
-    if(rcd == UT_ESYNTAX)
-      (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",fl_unt_sng);
-
-    if(rcd == UT_EUNKNOWN)
-      (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",fl_unt_sng);
-
+    if(rcd == UT_EINVALID) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",fl_unt_sng);
+    if(rcd == UT_ESYNTAX) (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",fl_unt_sng);
+    if(rcd == UT_EUNKNOWN) (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",fl_unt_sng);
     (void)utTerm(); /* Free memory taken by UDUnits library */
     return EXIT_FAILURE;
   } /* endif unkown type */
@@ -320,15 +309,9 @@ double *og_val){        /* O [ptr]                                   */
   /* units string to convert to */
   rcd=utScan(fl_bs_sng,&udu_sct_out); 
   if(rcd !=0){
-    if(rcd == UT_EINVALID)
-      (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",fl_bs_sng);
-
-    if(rcd == UT_ESYNTAX)
-      (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",fl_bs_sng);
-
-    if(rcd == UT_EUNKNOWN)
-      (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",fl_bs_sng);
-
+    if(rcd == UT_EINVALID) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",fl_bs_sng);
+    if(rcd == UT_ESYNTAX) (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",fl_bs_sng);
+    if(rcd == UT_EUNKNOWN) (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",fl_bs_sng);
     (void)utTerm(); /* Free memory taken by UDUnits library */
     return EXIT_FAILURE;
   } /* endif unkown type */
@@ -343,19 +326,18 @@ double *og_val){        /* O [ptr]                                   */
   *og_val=crr_val*slp+incpt;
 
   /* debug stuff */
-  if(dbg_lvl_get() >nco_dbg_std) 
-    fprintf(stderr, "%s: nco_cln_clc_org() reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fl_unt_sng,fl_bs_sng, *og_val);
+  if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: %s reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
 
   (void)utTerm();
 
   return EXIT_SUCCESS;   
-}
+}  /* end UDUnits1 nco_cln_clc_dff() */
 
-int                  /* [rcd] Successful conversion returns 0 */     
-nco_cln_prs_tm(      /* Extract time stamp from a parsed udunits string */
-const char *unt_sng, /* I [ptr] units attribute string   */            
-tm_cln_sct *tm_in){ /*  O [sct] struct to be populated   */             
-
+int /* [rcd] Successful conversion returns 0 */     
+nco_cln_prs_tm /* UDUnits1 Extract time stamp from a parsed udunits string */
+(const char *unt_sng, /* I [ptr] units attribute string   */            
+tm_cln_sct *tm_in) /*  O [sct] struct to be populated   */             
+{
 int rcd;
 utUnit udu_sct_in; /* UDUnits structure, input units */
 
@@ -375,41 +357,32 @@ utUnit udu_sct_in; /* UDUnits structure, input units */
 
   /* units string to convert from */
   rcd=utScan(unt_sng,&udu_sct_in); 
-  if(rcd !=0){
-    if(rcd == UT_EINVALID)
-      (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",unt_sng);
-
-    if(rcd == UT_ESYNTAX)
-      (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",unt_sng);
-
-    if(rcd == UT_EUNKNOWN)
-      (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",unt_sng);
-
+  if(rcd != 0){
+    if(rcd == UT_EINVALID) (void)fprintf(stderr,"ERROR: units attribute \"%s\" is invalid \n",unt_sng);
+    if(rcd == UT_ESYNTAX) (void)fprintf(stderr,"ERROR units attribute \"%s\" contains a syntax error",unt_sng);
+    if(rcd == UT_EUNKNOWN) (void)fprintf(stderr,"ERROR units attribute \"%s\" is not in udunits database",unt_sng);
     (void)utTerm(); /* Free memory taken by UDUnits library */
     return EXIT_FAILURE;
   } /* endif unkown type */
 
-
-    /* Extract time origin */
-  if( utIsTime(&udu_sct_in)){
+  /* Extract time origin */
+  if(utIsTime(&udu_sct_in)){
     utCalendar(0.0,&udu_sct_in,&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
     rcd=EXIT_SUCCESS;  
   }else{
     rcd=EXIT_FAILURE;
-      
-  }
+  } /* endelse */
 
  (void)utTerm(); /* Free memory taken by UDUnits library */
  return rcd;
 
-} /* end nco_cln_prs_tm */
+} /* end UDUnits1 nco_cln_prs_tm() */
 
 # endif /*!HAVE_UDUNITS2 */
+
 #else /* !ENABLE_UDUNITS */
 
-/****************************************************************************************************/
-/******************** NO UDUNITS  *******************************************************************/
-/****************************************************************************************************/
+/* No UDUnits implementation available */
 
 /* Stubs to enable compilation without UDUnits */
 
@@ -431,23 +404,21 @@ return EXIT_SUCCESS;
 
 #endif /* !ENABLE_UDUNITS */
 
-/****************************************************************************************************/
-/******************** END ALL UDUNITS  ************************* ************************************/
-/****************************************************************************************************/
+/* End UDUnits-related routines*/
  
-tm_typ              /* [enum] Units type */    
+tm_typ /* [enum] Units type */    
 nco_cln_get_tm_typ /* returns time unit type or tm_void if not found */
 (const char *ud_sng){ /* I [ptr] units string  */      
-int idx;
-int len; 
-char *lcl_sng;  
-tm_typ ret_typ;
- 
+  int idx;
+  int len; 
+  char *lcl_sng;  
+  tm_typ ret_typ;
+  
   lcl_sng=strdup(ud_sng);
   
   /* initially set ret type to void */
   ret_typ=tm_void;   
-
+  
   /* convert to lower case */
   len=strlen(lcl_sng);
   for(idx=0 ; idx<len ; idx++)
@@ -465,7 +436,7 @@ tm_typ ret_typ;
     ret_typ=tm_min;
   else if(!strcmp(lcl_sng,"sec") || !strcmp(lcl_sng,"secs")|| !strcmp(lcl_sng,"second") || !strcmp(lcl_sng,"seconds") ) 
     ret_typ=tm_sec;
-
+  
   return ret_typ;
 } /* end nco_cln_get_tm_typ() */
 
@@ -473,22 +444,22 @@ cln_typ               /* [enum] Calendar type */
 nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
 (const char *ud_sng) /* I [ptr] units string  */      
 {
-int idx;
-int len; 
-char *lcl_sng;  
-cln_typ ret_typ;
-
- if(!ud_sng) return cln_nil;
- 
+  int idx;
+  int len; 
+  char *lcl_sng;  
+  cln_typ ret_typ;
+  
+  if(!ud_sng) return cln_nil;
+  
   lcl_sng=strdup(ud_sng);
   
   /* initially set ret type to void */
   ret_typ=cln_nil;
-
+  
   /* convert to lower case */
   len=strlen(lcl_sng);
   for(idx=0;idx<len;idx++) lcl_sng[idx]=tolower(lcl_sng[idx]);
-
+  
   if(!strcmp(lcl_sng, "standard") )
     ret_typ=cln_std;
   else if(!strcmp(lcl_sng, "gregorian") || !strcmp(lcl_sng, "proleptic_gregorian") )
@@ -501,106 +472,107 @@ cln_typ ret_typ;
     ret_typ=cln_365;
   else if(!strcmp(lcl_sng, "all_leap") || !strcmp(lcl_sng,"366_day" ))
     ret_typ=cln_366;
-
+  
   return ret_typ;
 } /* end nco_cln_get_cln_typ() */
 
 int                /* O [int] number of days */
 nco_cln_mth2day( /* [fnc] number of days in months */
-cln_typ lmt_cln,   /* [enum] calendar type */
-int months){       /* I [int] month */ 
-int *days=NULL_CEWI;
-int idx;
-int idays=0;
-
- switch(lmt_cln){
- case cln_360:
-   days=DAYS360;
-   break; 
- case cln_365:
-   days=DAYS365;
-   break; 
- case cln_366: 
-   days=DAYS366;
-   break;  
- case cln_std:
- case cln_grg:
- case cln_jul:
- case cln_nil:
-   break;
- }
-
- months--;
-
- for(idx=0 ;idx<months ;idx++)
-   idays+=days[idx];
+		cln_typ lmt_cln,   /* [enum] calendar type */
+		int months){       /* I [int] month */ 
+  int *days=NULL_CEWI;
+  int idx;
+  int idays=0;
   
- return idays;
+  switch(lmt_cln){
+  case cln_360:
+    days=DAYS360;
+    break; 
+  case cln_365:
+    days=DAYS365;
+    break; 
+  case cln_366: 
+    days=DAYS366;
+    break;  
+  case cln_std:
+  case cln_grg:
+  case cln_jul:
+  case cln_nil:
+    break;
+  }
+  
+  months--;
+  
+  for(idx=0 ;idx<months ;idx++)
+    idays+=days[idx];
+  
+  return idays;
 } /* end nco_cln_mth2day() */
 
 void
-nco_cln_pop_val(     /* [fnc] Calculate value in cln_sct */ 
-tm_cln_sct *cln_sct){/* I/O [ptr] structure */
-double *data;
+nco_cln_pop_val /* [fnc] Calculate value in cln_sct */ 
+(tm_cln_sct *cln_sct) /* I/O [ptr] structure */
+{
+  double *data;
+  
+  switch(cln_sct->sc_cln){
+  case cln_360:
+    data=DATA_360;
+    cln_sct->value=data[0]*(cln_sct->year-1)+
+      data[1]*(cln_sct->month-1)+
+      data[2]*(cln_sct->day-1)+
+      data[3]*cln_sct->hour+
+      data[4]*cln_sct->min+
+      data[5]*(double)cln_sct->sec;
+    break; 
+  case cln_365:  
+    data=DATA_365;    
+    cln_sct->value=data[0]*(cln_sct->year-1)+
+      data[2]*nco_cln_mth2day(cln_365,cln_sct->month)+
+      data[2]*(cln_sct->day-1)+
+      data[3]*cln_sct->hour+
+      data[4]*cln_sct->min+
+      data[5]*(double)cln_sct->sec;
+    break;
+  case cln_366:
+    break;
+  case cln_std:
+  case cln_grg:
+  case cln_jul:
+  case cln_nil:
+    break;
+  }
+  
+  return;
+} /* end nco_cln_pop_val() */
 
- switch(cln_sct->sc_cln) {
-       
-   case cln_360:
-     data=DATA_360;
-     cln_sct->value=data[0]*(cln_sct->year-1)+
-                    data[1]*(cln_sct->month-1)+
-                    data[2]*(cln_sct->day-1)+
-                    data[3]*cln_sct->hour+
-                    data[4]*cln_sct->min+
-                    data[5]*(double)cln_sct->sec;
-
-     break; 
-   case cln_365:  
-     data=DATA_365;    
-     cln_sct->value=data[0]*(cln_sct->year-1)+
-                    data[2]*nco_cln_mth2day(cln_365,cln_sct->month)+
-                    data[2]*(cln_sct->day-1)+
-                    data[3]*cln_sct->hour+
-                    data[4]*cln_sct->min+
-                    data[5]*(double)cln_sct->sec;
-     break;
-   case cln_366:
-     break;
- case cln_std:
- case cln_grg:
- case cln_jul:
- case cln_nil:
-   break;
- }
-
- return;
-}
-
-double nco_cln_rel_val( /* O [dbl] relative time */
-double offset,          /* I [dbl] time in base units */
-cln_typ lmt_cln,        /* I [enum] Calendar type */ 
-tm_typ bs_tm_typ){      /* I [enum] Time units */
-double *data=NULL_CEWI;
-double scl=double_CEWI;
-
- switch(lmt_cln) {
-   case cln_360:
-     data=DATA_360;    
-     break; 
-   case cln_365:  
-     data=DATA_365;    
-     break;
-   case cln_366:
-     break;
- case cln_std:
- case cln_grg:
- case cln_jul:
- case cln_nil:
-   break;
- }
-
- /* switch for type */
- switch(bs_tm_typ){ 
+double /* O [dbl] relative time */
+nco_cln_rel_val
+(double offset, /* I [dbl] time in base units */
+ cln_typ lmt_cln, /* I [enm] Calendar type */ 
+ tm_typ bs_tm_typ) /* I [enm] Time units */
+{
+  double *data=NULL_CEWI;
+  double scl=double_CEWI;
+  
+  switch(lmt_cln) {
+  case cln_360:
+    data=DATA_360;    
+    break; 
+  case cln_365:  
+    data=DATA_365;    
+    break;
+  case cln_366:
+    break;
+  case cln_std:
+  case cln_grg:
+  case cln_jul:
+  case cln_nil:
+    break;
+  }
+  
+  /* Switch for type */
+  switch(bs_tm_typ){ 
   case tm_year:    
     scl=data[0];
     break;   
@@ -618,89 +590,88 @@ double scl=double_CEWI;
     break;   
   case tm_sec:
   case tm_void: 
-     scl=data[5];
+    scl=data[5];
     break;     
- } /* end switch */ 
- 
- return offset/scl;
-}
+  } /* end switch */ 
+  
+  return offset/scl;
+} /* end nco_cln_rel_val() */
 
 int /* [rcd] Successful conversion returns 0 */
-nco_cln_clc_tm /* [fnc] Difference between two co-ordinate units */
+nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
  cln_typ lmt_cln, /* [enum] Calendar type of coordinate var */ 
  double *og_val){ /* O [ptr] */
-
-int rcd;
-int year;
-int month;
-char *lcl_unt_sng;
-char tmp_sng[100]; 
-double crr_val;
-
-tm_typ bs_tm_typ; /* enum for units type in fl_bs_sng */
-tm_cln_sct unt_cln_sct;
-tm_cln_sct bs_cln_sct;
   
- if(dbg_lvl_get() > nco_dbg_std){
-   fprintf(stderr, "%s : nco_cln_clc_tm: unt_sng=%s bs_sng=%s\n",prg_nm_get(),fl_unt_sng,fl_bs_sng);
- }
-
- /* Does fl_unt_sng look like a regular timestamp? */ 
- if(sscanf(fl_unt_sng,"%d-%d",&year,&month)==2){
-   lcl_unt_sng=(char *)nco_malloc( (strlen(fl_unt_sng)+3) *sizeof(char) );
-   strcpy(lcl_unt_sng,"s@");
-   strcat(lcl_unt_sng,fl_unt_sng);
+  int rcd;
+  int year;
+  int month;
+  char *lcl_unt_sng;
+  char tmp_sng[100]; 
+  double crr_val;
+  
+  tm_typ bs_tm_typ; /* enum for units type in fl_bs_sng */
+  tm_cln_sct unt_cln_sct;
+  tm_cln_sct bs_cln_sct;
+  
+  if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",prg_nm_get(),fl_unt_sng,fl_bs_sng);
+  
+  /* Does fl_unt_sng look like a regular timestamp? */ 
+  if(sscanf(fl_unt_sng,"%d-%d",&year,&month) == 2){
+    lcl_unt_sng=(char *)nco_malloc((strlen(fl_unt_sng)+3L) *sizeof(char) );
+    strcpy(lcl_unt_sng,"s@");
+    strcat(lcl_unt_sng,fl_unt_sng);
   }else{
-   lcl_unt_sng=strdup(fl_unt_sng);
- }
+    lcl_unt_sng=strdup(fl_unt_sng);
+  } /* endelse */
+  
+  /* Temporary until we handle more calendar types */
+  if(lmt_cln != cln_360 && lmt_cln != cln_365){
+    rcd=nco_cln_clc_dff(lcl_unt_sng,fl_bs_sng,0.0,og_val);
+    lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
+    return rcd;
+  }
+  
+  /* Obtain units type from fl_bs_sng */
+  if(sscanf(fl_bs_sng,"%s",tmp_sng) !=1) return EXIT_FAILURE;
+  
+  bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+  
+  /* Assume non-standard calendar */ 
+  if(nco_cln_prs_tm(lcl_unt_sng, &unt_cln_sct)) return EXIT_FAILURE;
+  
+  if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct)) return EXIT_FAILURE;
+  
+  unt_cln_sct.sc_typ=bs_tm_typ;
+  bs_cln_sct.sc_typ=bs_tm_typ;
+  
+  unt_cln_sct.sc_cln=lmt_cln;
+  bs_cln_sct.sc_cln=lmt_cln;
+  
+  (void)nco_cln_pop_val(&unt_cln_sct);
+  (void)nco_cln_pop_val(&bs_cln_sct);
+  
+  crr_val=nco_cln_rel_val(unt_cln_sct.value-bs_cln_sct.value,lmt_cln,bs_tm_typ);                 
+  
+  *og_val=crr_val;
+  
+  return EXIT_SUCCESS;
+} /* end nco_cln_clc_tm() */
 
- /* Temporary until we handle more calendar types */
- if(lmt_cln != cln_360 && lmt_cln != cln_365 ) {
-   rcd=nco_cln_clc_dff(lcl_unt_sng,fl_bs_sng,0.0,og_val);
-   lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
-   return rcd;
- }
-
- /* Obtain units type from fl_bs_sng */
- if(sscanf(fl_bs_sng,"%s",tmp_sng) !=1) return EXIT_FAILURE;
-
- bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
-
- /* Assume non-standard calendar */ 
- if(nco_cln_prs_tm(lcl_unt_sng, &unt_cln_sct)) return EXIT_FAILURE;
-
- if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct)) return EXIT_FAILURE;
-
- unt_cln_sct.sc_typ=bs_tm_typ;
- bs_cln_sct.sc_typ=bs_tm_typ;
- 
- unt_cln_sct.sc_cln=lmt_cln;
- bs_cln_sct.sc_cln=lmt_cln;
-
- (void)nco_cln_pop_val(&unt_cln_sct);
- (void)nco_cln_pop_val(&bs_cln_sct);
-
- crr_val=nco_cln_rel_val( unt_cln_sct.value-bs_cln_sct.value,lmt_cln,bs_tm_typ);                 
-
- *og_val=crr_val;
-
- return EXIT_SUCCESS;
-}
-
-int                 /* [rcd] Successful conversion returns 0 */
-nco_cln_clc_org(    /* [fnc] Difference between two co-ordinate units */      
-const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
-const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-cln_typ lmt_cln,        /* [enum] Calendar type of coordinate var */ 
-double *og_val){        /* O [ptr]                                   */
+int /* [rcd] Successful conversion returns 0 */
+nco_cln_clc_org /* [fnc] Difference between two co-ordinate units */      
+(const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
+ const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
+ cln_typ lmt_cln,        /* [enum] Calendar type of coordinate var */ 
+ double *og_val)        /* O [ptr]                                   */
+{
   int rcd;
   
   char *usr_unt_sng;   
   double crr_val;
   
-  /* check if units output  is a timestamp if so call special time routine */
+  /* Check if units output is a timestamp if so call special time routine */
   if(strstr(fl_bs_sng," from ") || strstr(fl_bs_sng," since ") || strstr(fl_bs_sng," after ")){
     rcd=nco_cln_clc_tm(fl_unt_sng,fl_bs_sng,lmt_cln,og_val);   
     return rcd;
@@ -712,6 +683,6 @@ double *og_val){        /* O [ptr]                                   */
   rcd=nco_cln_clc_dff(usr_unt_sng,fl_bs_sng,crr_val,og_val);
   usr_unt_sng=(char *)nco_free(usr_unt_sng);
   return rcd;  
-} /* end nco_cln_clc_org */
+} /* end nco_cln_clc_org() */
 
 

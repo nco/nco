@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.653 2011-12-07 18:40:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.654 2011-12-07 19:52:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4151,12 +4151,12 @@ requesting units conversion.
 @cindex @code{time} 
 The translation and dimensional innterpretation of time coordinates
 shows a more powerful, and probably more common, UDUnits application.
-In this example, the user prints all data between the eighth and ninth
-of December, 1999, from a variable whose time dimension is hours
+In this example, the user prints all data between @w{4 PM} and @w{7 PM}
+on @w{December 8}, 1999, from a variable whose time dimension is hours 
 since the year 1900:
 @example
-% ncks -H -C -v time_udunits -d time_udunits,"1999-12-08 \
-  12:00:0.0","1999-12-09 00:00:0.0",2 in.nc foo2.nc
+% ncks -u -H -C -v time_udunits -d time_udunits,"1999-12-08 \
+  16:00:0.0","1999-12-08 19:00:0.0" in.nc
 time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
 @end example
 @noindent
@@ -4189,7 +4189,9 @@ intended.
 
 @acronym{NCO} implemented support for the UDUnits2 library with version   
 3.9.2 (August, 2007).
-The @uref{http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html, UDUnits2} package supports non-ASCII characters and logarithmic units.
+The
+@uref{http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html,
+UDUnits2} package supports non-ASCII characters and logarithmic units. 
 We are interested in user-feedback on these features.
 
 One aspect that deserves mention is that UDUnits, and thus
@@ -4283,10 +4285,10 @@ Availability:
 Short options: None@*
 @end cartouche
 
-Time re-basing seeks to fix the following problem:
-Numerous files share a common time-based record coordinate.
-The record coordinate is in the same time units in each file,
-but the date offset differs among files.
+Time re-basing is performed automatically when UDUnits is installed.
+Time rebasing is invoked when numerous files share a common time-based
+record coordinate, and the record coordinate is in the same time units
+in each file, but the date offset differs among files.
 For example suppose the time coordinate is in hours and each day in
 January is stored in its own daily file.
 Each daily file records the temperature variable @code{tpt(time)} 

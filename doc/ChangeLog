@@ -1,14 +1,16 @@
 2011-12-07  Charlie Zender  <zender@uci.edu>
 
-	* Fix TODO nco1025 warn/die when catting files with different scale factors
-
-	* Tidy ncra.c
+	* Tidy nco_cln_utl.c
 
 	* NCO 4.0.9 release procedure:
  	Changes since nco-4_0_8:
 	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
+	* Fix TODO nco1025 warn when catting files with different scale factors
+
+	* Tidy ncra.c
 
 2011-12-06  Charlie Zender  <zender@uci.edu>
 
