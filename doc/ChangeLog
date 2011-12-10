@@ -1,6 +1,4 @@
-2011-12-07  Charlie Zender  <zender@uci.edu>
-
-	* Tidy nco_cln_utl.c
+2011-12-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:
  	Changes since nco-4_0_8:
@@ -8,7 +6,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
-	* Fix TODO nco1025 warn when catting files with different scale factors
+	* Print helpful hint with NC_EVARSIZE errors
+
+2011-12-07  Charlie Zender  <zender@uci.edu>
+
+	* Tidy nco_cln_utl.c
+
+	* Fix TODO nco1025: Warn when catting files with different scale factors
 
 	* Tidy ncra.c
 
