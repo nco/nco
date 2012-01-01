@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.19 2010-12-21 20:12:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.20 2012-01-01 20:51:53 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -13,7 +13,7 @@
    I am not yet sure I want _any_ MPI dependencies in libnco.a 
    Cross-platform link weirdness (e.g., AIX) makes avoiding this desirable */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

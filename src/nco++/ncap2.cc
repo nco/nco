@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.123 2011-12-06 22:25:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.124 2012-01-01 20:51:54 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 1995--2012 Charlie Zender
    
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.123 2011-12-06 22:25:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.123 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.124 2012-01-01 20:51:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.124 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

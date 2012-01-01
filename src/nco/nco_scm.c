@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.47 2011-10-10 04:03:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.48 2012-01-01 20:51:53 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -147,7 +147,7 @@ void
 nco_cpy_prn(void) /* [fnc] Print copyright notice */
 {
   /* Purpose: Print copyright notice */
-  (void)fprintf(stderr,"Copyright (C) 1995--2011 Charlie Zender\n");
+  (void)fprintf(stderr,"Copyright (C) 1995--2012 Charlie Zender\n");
   (void)fprintf(stdout,"NCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\nLicense: GNU General Public License (GPL) Version 3\n");
 } /* end copyright_prn() */
 

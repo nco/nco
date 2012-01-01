@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.145 2011-12-10 22:21:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.146 2012-01-01 20:51:53 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

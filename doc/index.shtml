@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.664 2011-12-02 00:28:48 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.665 2012-01-01 20:51:53 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -120,7 +120,11 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2011 Summer? NCO 4.0.9</li>
+<li>2012 Jan&nbsp;01?: Funding for NASA <a href="#prp_access">ACCESS Project</a> begins</li>
+
+<li>2012 Jan&nbsp;2?: NCO 4.0.9</li>
+
+<li>2011 Jun&nbsp;03: Submit NASA ACCESS <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">proposal</a></li>
 
 <li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL workaround, <i>upgrade recommended</i>)</li>
 
@@ -223,11 +227,11 @@ Keep the size &lt;250&times;250 pixels.<br>
 
 <li>2004 Sep&nbsp;07: NCO 2.9.9 (<tt>ncpdq</tt> packs data quietly)</li>
 
-<li>2004 Sep&nbsp;01: <a href="http://www.nsf.gov">NSF</a> funding for <a href="#prp_sei">NCO&rarr;SDO Project</a> begins</li>
+<li>2004 Sep&nbsp;01: Funding for NSF <a href="#prp_sei">SEI Project</a> begins</li>
 
 <li>2004 Aug&nbsp;07: NCO 2.9.8 (<a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> re-orders dimensions)</li>
 
-<li>2004 Mar&nbsp;04: Submit NSF <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">proposal</a></li>
+<li>2004 Mar&nbsp;04: Submit NSF <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">SEI proposal</a></li>
 
 <li><a href="./nco_news.shtml">Ancient NCO News &amp; Announcements</a></li>
 </ul>
@@ -324,17 +328,88 @@ influence of your monetary donations on NCO development:
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More emoticons in the documentation :)</dt>
 <hr></p>
 
+<a name="nasa"></a> <!-- http://nco.sf.net#nasa -->
+<a name="access"></a> <!-- http://nco.sf.net#access -->
+<dt><a name="prp_access"></a></dt> <!-- http://nco.sf.net#prp_access -->
+<h2>NASA ACCESS Project</h2>
+<img src="nasa.png" height=180 width=180 align=right>
+<p>
+The National Aeronautics and Space Administration Cooperative Agreement (CA)
+<a href="fxm 11-ACCESS11-32">NASA 11-ACCESS11-32</a>
+funded our
+<a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">ACCESS Project</a>,
+&ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
+from 20120101&ndash;20131231 as part of the 
+<a href="http://fxm">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
+We appreciate the proposal reviewers for and staff of the 
+<a href="http://fxm">Earth Science Division (ESD) Research and Analysis (R\&A)</a>
+in the 
+<a href="http://fxm">Science Mission Directorate (SMD)</a>.
+NCO development has been completely voluntary and without
+institutional support since August, 2008.
+This NASA support dramatically changes the scale and pace of NCO development. 
+This URL,
+<a href="http://nco.sf.net#prp_access"><tt>http://nco.sf.net#prp_access</tt></a>,
+points to the most up-to-date information on the ACCESS proposal.</p> 
+
+<p>The ACCESS project provides the human resources to implement support 
+in NCO for hierarchical group features in netCDF4 files and for NCO to
+process (using wrappers) HDF-EOS files. 
+Groups are a powerful HDF feature that some NASA satellite datasets
+(e.g., HIRDLS) exploit, and that sources of netCDF data (e.g., the
+CMIP5 archive of climate simulations for IPCC AR5) could better
+exploit.  
+By supporting groups in a generic fashion, NCO hopes to remove one of
+the barriers to more widespread adoption of netCDF4 features.</p>
+
+<p>We plan to recruit two personnel, a programmer (aka software engineer)
+and a graduate student (scientific specialist) each for at least two
+years, to accomplish our ACCESS objectives. 
+As described in the proposal, the responsibilities of positions are
+roughly segregated as follows: 
+The 
+<a href="http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf">programmer</a> 
+will re-factor the code-base to support groups (50%),
+improve the NCO build system and user support (25%), 
+and support NASA ESDSWG activities (25%).
+The 
+<a href="http://dust.ess.uci.edu/hire/sdn_grd_03_adv.pdf">graduate student researcher</a> 
+analyze and intercompare snow cover and snow albedo datasets from
+NASA MODIS and MISR datasets (in HDF-EOS format) and NCAR CESM
+simulations (in netCDF format). 
+The analysis will inform the development of wrappers for NCO
+commands to analyze HDF-EOS datasets.
+Contact us if you are seriously interested in these positions on a
+full-time, part-time, or pay-per-feature basis.</p> 
+
+<p>We continue to encourage you to e-mail NCO endorsements to
+<a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
+with Subject: &ldquo;NCO Proposal Endorsement&rdquo;. 
+An endorsement can be a sentence or a page, describing how NCO
+benefits your work or research.
+The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.
+&ldquo;What future proposals?&rdquo; you ask, &ldquo;Didn't you just get funded?&rdquo;
+Yes, we are funded to implement netCDF4 groups and HDF-EOS wrappers in NCO.
+Our ambition is get one more grant funded to fully support netCDF4
+capabilities in NCO.
+For example, user-defined types, multiple record coordinates, and some
+more CF conventions.
+Need I say more? 
+If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
+</ul>
+<hr></p>
+
 <a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
 <a name="sdo"></a> <!-- http://nco.sf.net#sdo -->
 <a name="sei"></a> <!-- http://nco.sf.net#sei -->
 <dt><a name="prp_sei"></a></dt> <!-- http://nco.sf.net#prp_sei -->
-<h2>NCO&rarr;SDO Project</h2>
+<h2>NSF SEI Project</h2>
 <img src="nsf.png" height=180 width=180 align=right>
 <p>
 The National Science Foundation Grant
 <a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">NSF IIS-0431203</a>
 funded our
-<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>,
+<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">SEI Project</a>,
 &ldquo;SEI(GEO): Scientific Data Operators Optimized for Efficient Distributed Interactive and Batch Analysis of Tera-Scale Geophysical Data&rdquo;
 from 20040901&ndash;20080831 as part of the 
 <a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science
@@ -349,16 +424,15 @@ Until September 2004, NCO development was completely voluntary and without insti
 This NSF support dramatically changed the scale and pace of NCO development.
 This URL,
 <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a>,
-points to the most up-to-date information on the NCO/SDO proposal.</p> 
+points to the most up-to-date information on the NCO SEI proposal.</p> 
 
-<p>The NSF project provides the human and technical resources to analyze,  
+<p>The NSF project provided the human and technical resources to analyze,  
 design, and implement novel advanced methods for distributed 
 data analysis and reduction (DDRA) of geophysical data.
-These powerful methods will be &ldquo;grid-enabled&rdquo;, and we will
-demonstrate their efficacy with analyses of distributed climate
-prediction and observation datasets.
-On the human side, recruited full-time help for specific areas of SDO,
-alongside our current and future volunteers. 
+The efficacy of these powerful methods were demonstrated by analyses
+of distributed climate prediction and observation datasets.
+On the human side, we recruited full-time help for specific areas of
+NCO, alongside our current and future volunteers. 
 We have a
 <a href="http://dust.ess.uci.edu/hire/prg_anl_03_adv.pdf">full-time programmer</a> 
 to help design, implement, and release major code changes.
@@ -384,14 +458,14 @@ to the
 These supercomputers dedicated a TB of storage each to
 <a href="http://www.opendap.org">OPeNDAP</a>-served climate simulation
 datasets for DDRA.
-After the proof-of-concept SDO DDRA was complete, we attempted a DDRA 
+After the proof-of-concept NCO DDRA was complete, we attempted a DDRA 
 intercomparison of the internationally distributed
 <a href="http://www.ccsm.ucar.edu/experiments/ccsm3.0">global climate change simulations</a>
 that reside on the 
 <a href="http://www.earthsystemgrid.org">Earth System Grid</a>.
 Our techniques tremendously accelerated the analysis of different
 climate prediction scenarios for the same model, and among different
-climate models.</p> 
+climate models (see <a href="#pub">publications</a>).</p> 
 
 <p>We encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
@@ -410,6 +484,8 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <hr></p>
 
 <!-- http://nco.sf.net#pub -->
+<!-- http://nco.sf.net#pubs -->
+<!-- http://nco.sf.net#Publications -->
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications and Presentations</h2>
 <ul>
@@ -534,6 +610,7 @@ Stride works with DAP?;
 Fix over-zealous <tt>ncap2</tt> packing;
 Fix <tt>ncea -y ttl</tt>;
 Warn when appending variables of suspicious record length;
+Warn when <tt>NC_MAX_ATTRS</tt> exceeded;
 <li><b>NCO 4.0.8</b>: (<i>Current Stable Release</i>) 
 Support <a href="http://nco.sf.net/nco.html#hpss">HPSS</a>;
 Workaround netCDF <tt>NOFILL</tt> <a href="#bug_nofill">bug</a> (<i>upgrade recommended</i>);

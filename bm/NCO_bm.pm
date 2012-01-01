@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.74 2011-02-21 05:41:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.75 2012-01-01 20:51:53 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -136,7 +136,7 @@ appending history to file.
 This script is part of the netCDF Operators package:
 http://nco.sourceforge.net
 
-Copyright 1995--2011 Charlie Zender
+Copyright 1995--2012 Charlie Zender
 
 USAGE
 exit(0);

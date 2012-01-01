@@ -1,3 +1,17 @@
+2011-12-31  Charlie Zender  <zender@uci.edu>
+
+	* Update NCO homepage to announce ACCESS and deprecate SDO
+
+2011-12-24  Charlie Zender  <zender@uci.edu>
+
+	* Change copyright year to 2012
+
+2011-12-23  Charlie Zender  <zender@uci.edu>
+
+	* Warn when number of attributes exceeds NC_MAX_ATTRS
+
+	* Learned NASA will fund ACCESS proposal!
+
 2011-12-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.0.9 release procedure:

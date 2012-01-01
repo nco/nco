@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.114 2011-12-07 18:40:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.115 2012-01-01 20:51:53 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -307,11 +307,12 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 
   if(var_in_id == NC_GLOBAL){
     (void)nco_inq_natts(in_id,&nbr_att);
+    if(nbr_att > NC_MAX_ATTRS) (void)fprintf(stdout,"%s: WARNING Number of global attributes is %d which exceeds number permitted by netCDF NC_MAX_ATTRS = %d\n",prg_nm_get(),nbr_att,NC_MAX_ATTRS);
   }else{
     (void)nco_inq_varnatts(in_id,var_in_id,&nbr_att);
+    if(nbr_att > 0) (void)nco_inq_varname(out_id,var_out_id,var_nm);
+    if(nbr_att > NC_MAX_ATTRS) (void)fprintf(stdout,"%s: WARNING Variable %s has %d attributes which exceeds number permitted by netCDF NC_MAX_ATTRS = %d\n",prg_nm_get(),var_nm,nbr_att,NC_MAX_ATTRS);
   } /* end else */
-  
-  if(nbr_att > 0 && var_out_id != NC_GLOBAL) (void)nco_inq_varname(out_id,var_out_id,var_nm);
 
   /* Jump back to here if current attribute is treated specially */
   for(idx=0;idx<nbr_att;idx++){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.269 2011-12-07 18:40:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.270 2012-01-01 20:51:53 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -9,7 +9,7 @@
    specfied variables of multiple input netCDF files and output them 
    to a single file. */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 1995--2012 Charlie Zender
 
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.269 2011-12-07 18:40:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.269 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.270 2012-01-01 20:51:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.270 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;

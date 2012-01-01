@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.23 2011-04-12 03:19:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.24 2012-01-01 20:51:54 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
 
-/* Copyright (C) 1995--2011 Charlie Zender
+/* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

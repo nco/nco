@@ -5,13 +5,13 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.654 2011-12-07 19:52:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.655 2012-01-01 20:51:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2011 Charlie Zender
+Copyright (C) 1995--2012 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -102,10 +102,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 4.0.9
 @set doc-edition 4.0.9
-@set copyright-years 1995--2011
-@set update-year 2011
-@set update-date 6 December 2011
-@set update-month December 2011
+@set copyright-years 1995--2012
+@set update-year 2012
+@set update-date 1 January 2012
+@set update-month January 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -3104,7 +3104,7 @@ the new @code{NETCDF4} format.
 Users are advised to use the default @code{CLASSIC} format or the
 @code{NETCDF4_CLASSIC} format until netCDF4 is more widespread.
 Widespread support for @code{NETCDF4} format files is not expected for 
-a few more years, 2010--2011, say.
+a few more years, 2013--2014, say.
 If performance or coolness are issues, then use @code{NETCDF4_CLASSIC}  
 instead of @code{CLASSIC} format files.
 
@@ -9621,9 +9621,10 @@ they are superfluous in @dfn{Delete} mode.
 
 @cindex global attributes
 @cindex attributes, global
-Delete all attributes associated with the @code{tpt} variable:
+Delete all attributes associated with the @code{tpt} variable, and
+delete all global attributes
 @example
-ncatted -a ,tpt,d,, in.nc
+ncatted -a ,tpt,d,, -a ,global,d,, in.nc
 @end example
 @noindent
 The value of @var{att_nm} was left blank in order to select all
