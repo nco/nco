@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1140 2011-11-30 22:57:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1141 2012-02-02 18:13:20 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -747,9 +747,10 @@ nco1026. ncwa weighted average bug reported by Lori Sentman
 	 ncwa -O -C -w area_asm -a lat -v area2 ~/nco/data/in.nc ~/foo.nc # 10
 	 ncks -H -C -v area -m ~/foo.nc
 nco1027. ncrcat check md5sum of data before/after concatenation ? would have prevented corruption by NOFILL bug
-nco1028. ncap2: create list reserved words put in manual
+nco1028. ncap2: create maintainable list of reserved words and put in manual
 nco1029. nco: warn on ncks -A when dim(old_time) != dim(new_time)
-nco1030. 
+nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them though)
+nco1031. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

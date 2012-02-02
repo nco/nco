@@ -628,7 +628,7 @@
 	* Begin codebase-wide error handling of string-conversion to int
 	with nco_sng_cnv_err(), and error handling of string-conversion to
 	float with nco_sng_cnv_err(). Many problems encountered.
-	Using ncflint.c to prototype strtod() handling and 
+	Using ncflint.c to prototype strtod() handling and
 	ncpdq.c to prototype strtol() handling.
 
 2010-09-17  Charlie Zender  <zender@uci.edu>
