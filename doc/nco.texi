@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.655 2012-01-01 20:51:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.656 2012-02-04 04:46:35 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -50,8 +50,11 @@ texi2dvi --output=nco.dvi nco.texi
 texi2dvi --pdf --output=nco.pdf nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
-cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco_*.png nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco_*.png nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
+# 20120203 provisional commands to copy PNG images for nco.html
+cd ~/nco/doc;/usr/bin/scp nco_*.png zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
 
 NB: @cindex references in footnotes propagate to PDF file, but not to
     HTML files, bug-report sent to makeinfo people 20040229
@@ -6615,7 +6618,10 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 @node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Number literals
 @cindex number literals @command{ncap}
-The table below lists the postfix character(s) to add to a number literal for type cohesion. To use the new netCDF4 types @acronym{NCO} must be compiled/linked to the netCDF4 library and the output file must be HDF5.
+The table below lists the postfix character(s) to add to a number
+literal for type cohesion. 
+To use the new netCDF4 types @acronym{NCO} must be compiled/linked to
+the netCDF4 library and the output file must be @acronym{HDF5}.
 
 @example
 n1[$time]=1UL; // n1 will now by type @code{NC_UINT}
@@ -6625,11 +6631,15 @@ n3@@a1=6.0d;   // attribute will be type @code{NC_DOUBLE}
 n3@@a2=-666L;  // attribute will be type @code{NC_INT}
 @end example
 
-A floating point number without a postfix will default to @code{NC_DOUBLE}. An integer without a postfix will default to type @code{NC_INT}. Thre is no postfix for characters. Use a quoted string.
+A floating point number without a postfix will default to
+@code{NC_DOUBLE}. 
+An integer without a postfix will default to type @code{NC_INT}. 
+There is no postfix for characters, use a quoted string instead.
 @example
-n4[$rlev]=.1      // n4 will be of type @code{NC_DOUBLE}
-n5[$lon_grd]=2.   // n5 will be of type @code{NC_DOUBLE}
-n6[$gds_crd]=2e3; // n6 will be of type @code{NC_DOUBLE}
+n4[$rlev]=0.1      // n4 will be of type @code{NC_DOUBLE}
+n5[$lon_grd]=2.0   // n5 will be of type @code{NC_DOUBLE}
+n6[$gds_crd]=2e3;  // n6 will be of type @code{NC_DOUBLE}
+n7[$gds_crd]=2e3f;  // n7 will be of type @code{NC_FLOAT}
 n6@@a1=41;         // attribute will be type @code{NC_INT}
 n6@@a2=-21;        // attribute will be type @code{NC_INT}  
 n6@@units="kelvin" // attribute will be type @code{NC_CHAR}

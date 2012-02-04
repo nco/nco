@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.666 2012-01-02 00:51:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.667 2012-02-04 04:46:35 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -7,8 +7,8 @@ http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
-scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png dust.ess.uci.edu:/var/www/html/nco
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/index.shtml ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png dust.ess.uci.edu:/var/www/html/nco
 scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:/var/www/html/nco/src
 -->
