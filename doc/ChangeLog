@@ -1,3 +1,8 @@
+2012-02-06  Charlie Zender  <zender@uci.edu>
+
+	* Build with netCDF 4.2 snapshots.
+	No more regressions than with 4.1.3 so 4.2 is new default.
+
 2011-12-31  Charlie Zender  <zender@uci.edu>
 
 	* Update NCO homepage to announce ACCESS and deprecate SDO

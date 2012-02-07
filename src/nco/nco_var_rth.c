@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.58 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.59 2012-02-07 07:12:05 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1486,7 +1486,7 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   nco_byte mss_val_byte=nco_byte_CEWI;
   nco_ubyte mss_val_ubyte=nco_ubyte_CEWI;
   nco_char mss_val_char=nco_char_CEWI;
-  nco_string mss_val_string=nco_string_CEWI;
+  /*  nco_string mss_val_string=nco_string_CEWI;*/ /* 20120206: mss_val_string is not yet used so do not define */
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op2);
@@ -1511,7 +1511,7 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
     case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
     case NC_CHAR: mss_val_char=*mss_val.cp; break;
-    case NC_STRING: mss_val_string=*mss_val.sngp; break;
+      /*    case NC_STRING: mss_val_string=*mss_val.sngp; break;*/ /* 20120206: mss_val_string is not yet used so do not define */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */

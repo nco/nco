@@ -8,11 +8,11 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.110 2011-11-15 02:16:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.111 2012-02-07 07:12:05 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
-/* Copyright (C) 2005--2011 Charlie Zender
+/* Copyright (C) 2005--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
