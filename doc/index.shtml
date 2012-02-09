@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.667 2012-02-04 04:46:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.668 2012-02-09 23:46:57 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -120,9 +120,9 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2012 Jan&nbsp;01?: Funding for NASA <a href="#prp_access">ACCESS Project</a> begins</li>
+<li>2012 Apr&nbsp;01?: Funding for NASA <a href="#prp_access">ACCESS Project</a> begins</li>
 
-<li>2012 Jan&nbsp;2?: NCO 4.0.9</li>
+<li>2012 Feb&nbsp;?: NCO 4.0.9</li>
 
 <li>2011 Jun&nbsp;03: Submit NASA ACCESS <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">proposal</a></li>
 
@@ -339,7 +339,7 @@ The National Aeronautics and Space Administration Cooperative Agreement (CA)
 funded our
 <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">ACCESS Project</a>,
 &ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
-from 20120101&ndash;20131231 as part of the 
+from 20120401&ndash;20140331 as part of the 
 <a href="http://fxm">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
 We appreciate the proposal reviewers for and staff of the 
 <a href="http://fxm">Earth Science Division (ESD) Research and Analysis (R\&A)</a>
@@ -433,21 +433,19 @@ The efficacy of these powerful methods were demonstrated by analyses
 of distributed climate prediction and observation datasets.
 On the human side, we recruited full-time help for specific areas of
 NCO, alongside our current and future volunteers. 
-We have a
-<a href="http://dust.ess.uci.edu/hire/prg_anl_03_adv.pdf">full-time programmer</a> 
+We hired a
+<a href="http://dust.ess.uci.edu/hire/prg_anl_03_adv.pdf">programmer</a> 
 to help design, implement, and release major code changes.
-We have a
+We hired a
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_02_adv.pdf">graduate student researcher</a> 
-pursuing innovative Ph.D. research in using 
+to pursue innovative Ph.D. research using 
 <a href="http://www3.niu.edu/mpi">&ldquo;grid-aware&rdquo;</a>
 <a href="http://www.mpi-forum.org">distributed memory</a>, 
 <a href="http://www.openmp.org">shared memory</a>, and 
 <a href="http://opendap.org">client-server</a> software
 technologies to improve DDRA of climate datasets.
-Another graduate student helps us design, implement, and release major
-code changes. 
-Contact us if you are seriously interested in tackling these
-problems on a full-time, part-time, or pay-per-feature basis.</p>
+Another graduate student helped us design, implement, and release major
+code changes.</p>
 
 <p>On the institutional and hardware side, this project connected the
 <a href="http://www.ess.uci.edu/esmf">Earth System Modeling Facility</a> (ESMF)
