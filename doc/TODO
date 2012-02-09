@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1141 2012-02-02 18:13:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1142 2012-02-09 21:02:46 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -740,7 +740,7 @@ nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without a
 	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
 	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
 nco222.  nco: Warn when ncea/ncra operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
-nco1025. nco: ncrcat/ncecat warn/die when concatting files with different scale factors
+nco1025. nco: ncrcat/ncecat warn/die when concatenating files with different scale factors
 nco1026. ncwa weighted average bug reported by Lori Sentman
 	 ncwa -O -C -w area -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
 	 ncwa -O -C -w area_asm -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
@@ -748,12 +748,60 @@ nco1026. ncwa weighted average bug reported by Lori Sentman
 	 ncks -H -C -v area -m ~/foo.nc
 nco1027. ncrcat check md5sum of data before/after concatenation ? would have prevented corruption by NOFILL bug
 nco1028. ncap2: create maintainable list of reserved words and put in manual
-nco1029. nco: warn on ncks -A when dim(old_time) != dim(new_time)
 nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them though)
-nco1031. 
+nco1031. ncap2: overload array() so it works for multi-dimensional variables?
+nco1032. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
+************************************************************************
+
+************************************************************************
+Begin bug examples
+************************************************************************
+Sent 20120209:
+Hi Henry,
+
+Is there an overloaded version of array() that works on
+multi-dimensional arrays? The first array() call below
+works for 1-D, and the next two fail for the 3-D case.
+If array() were defined to populate the multi-dimensional
+output as if it were an unfolded 1-D array, then it would
+be more useful.
+
+cat > ~/ncap2_foo.nco << 'EOF'
+//var_out=array(1,1,$time); // 1,2,3,4,5,6,7,8,9,10
+var_out=array(1,1,$time,$lat,$lon);
+var_out=array(1,1,&three_dmn_var);
+print(var_out);
+EOF
+ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
+
+Sent 20120209:
+Hi Henry,
+
+Any idea why running the first script below works fine and the second
+script fails yet the only difference is an extra print statement?
+
+cat > ~/ncap2_foo.nco << 'EOF'
+time=10.0*gsl_rng_uniform(time); // Replace time coordinate with random values
+var_rnd[$time,$lat,$lon]=0.0; // Initialize multi-dimensional array
+print(time);
+EOF
+ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
+
+cat > ~/ncap2_foo.nco << 'EOF'
+print(time);
+time=10.0*gsl_rng_uniform(time); // Replace time coordinate with random values
+print(time);
+var_rnd[$time,$lat,$lon]=0.0; // Initialize multi-dimensional array
+EOF
+ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
+
+Thanks!
+c
+************************************************************************
+End bug examples
 ************************************************************************
 
 ************************************************************************

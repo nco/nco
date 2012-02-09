@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.657 2012-02-09 16:03:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.658 2012-02-09 21:02:46 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6402,6 +6402,8 @@ coordinate system is easy with left hand casting.
 @node Arrays and hyperslabs, Attributes, Left hand casting, ncap2 netCDF Arithmetic Processor
 @subsection Arrays and hyperslabs
 
+@findex array
+@cindex @code{array} function
 @cindex arrays
 @cindex findgen-equivalent
 @cindex indgen-equivalent
@@ -7359,6 +7361,8 @@ hyperslab is quite different.
 cat > ~/ncap2_foo.nco << 'EOF'
 // Purpose: Save irregular 1-D regions based on variable values
 
+// Included in NCO User's Guide at http://nco.sf.net/nco.html#sort
+
 /* NB: Single quotes around EOF above turn off shell parameter 
     expansion in "here documents". This in turn prevents the
     need for protecting dollarsign characters in NCO scripts with
@@ -7414,7 +7418,7 @@ msk_flg=sort(msk_flg,&srt_map);
 defdim("crd_out",msk_nbr);
 
 /* Now sort the variable of interest using the sort map and dsort()
-   The output, on the LHS, is the input rearranged so that all points
+   The output, on the LHS, is the input re-arranged so that all points
    meeting the mask condition are contiguous at the end of the array
    Use same srt_map to hyperslab multiple variables of the same shape
    Remember to apply srt_map to the coordinate variables */
@@ -7434,6 +7438,82 @@ EOF
 ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
 ncks -O -x -v time ~/foo.nc ~/foo.nc
 ncks ~/foo.nc
+@end example
+
+Here is an extended example of how to use @command{ncap2} features to
+sort multi-dimensional arrays based on the coordinate values along a
+single dimension. 
+@example
+cat > ~/ncap2_foo.nco << 'EOF'
+/* Purpose: Sort multi-dimensional array based on coordinate values
+   This example sorts the variable three_dmn_rec_var(time,lat,lon)
+   based on the values of the time coordinate. */
+
+// Included in NCO User's Guide at http://nco.sf.net/nco.html#sort
+
+// Randomize the time coordinate
+time=10.0*gsl_rng_uniform(time);
+//print("original randomized time =\n");print(time);
+
+/* The sort() routine is overloaded, and takes one or two arguments
+   The first argument is a one dimensional array
+   The second argument (optional) is the "sort map" (srt_map below)
+   Pass the sort map by reference, i.e., prefix with an ampersand
+   If the sort map does not yet exist, then it will be created and 
+   returned as an integer type the same shape as the input variable.
+   The output of sort(), on the LHS, is a sorted version of the input */
+
+time=sort(time,&srt_map);
+//print("sorted time (ascending order) and associated sort map =\n");print(time);print(srt_map);
+
+/* sort() always sorts in ascending order
+   The associated sort map therefore re-arranges the original,
+   randomized time array into ascending order.
+   There are two methods to obtain the descending order the user wants
+   1) We could solve the problem in ascending order (the default)
+   and then apply the reverse() method to re-arrange the results.
+   2) We could change the sort map to return things in descending
+   order of time and solve the problem directly in descending order. */
+
+// Following shows how to do method one:
+
+/* Expand the sort map to srt_map_3d, the size of the data array
+   1. Use data array to provide right shape for the expanded sort map
+   2. Coerce data array into an integer so srt_map_3d is an integer
+   3. Multiply data array by zero so 3-d map elements are all zero
+   4. Add the 1-d sort map to the 3-d sort map (NCO automatically resizes)
+   5. Add the spatial (lat,lon) offsets to each time index 
+   6. de-sort using the srt_map_3d
+   7. Use reverse to obtain descending in time order
+   Loops could accomplish the same thing (exercise left for reader)
+   However, loops are slow for large datasets */
+
+/* Following index manipulation requires understanding correspondence
+   between 1-d (unrolled, memory order of storage) and access into that
+   memory as a multidimensional (3-d, in this case) rectangular array.
+   Key idea to understand is how dimensionality affects offsets */ 
+// Copy 1-d sort map into 3-d sort map
+srt_map_3d=(0*int(three_dmn_rec_var))+srt_map;
+// Multiply base offset by factorial of lesser dimensions
+srt_map_3d*=$lat.size*$lon.size;
+lon_idx=array(0,1,$lon);
+lat_idx=array(0,1,$lat)*$lon.size;
+lat_lon_idx[$lat,$lon]=lat_idx+lon_idx;
+srt_map_3d+=lat_lon_idx;
+
+print("sort map 3d =\n");print(srt_map_3d);
+
+// Use dsort() to "de-sort" the data using the sort map
+three_dmn_rec_var=dsort(three_dmn_rec_var,srt_map_3d);
+
+// Finally, reverse data so time coordinate is descending
+time=time.reverse($time);
+//print("sorted time (descending order) =\n");print(time);
+three_dmn_rec_var=three_dmn_rec_var.reverse($time);
+
+// Method two: Key difference is srt_map=$time.size-srt_map-1;
+EOF
+ncap2 -O -v -S ~/ncap2_foo.nco ~/nco/data/in.nc ~/foo.nc
 @end example
 
 @html
@@ -8387,11 +8467,10 @@ This function returns var_in with integers from the chosen rng algorithm. The mi
 @item gsl_rng_uniform_int(var_in)
 This function returns var_in with random integers from 0 to n-1. The value n must be less than or equal to the maximium value of the chosen rng algorithm. 
 @item gsl_rng_uniform(var_in)
-This function returns var_in with double precision numbers in the range [0.0,1). The range include 0.0 but excludes 1.0.
+This function returns var_in with double precision numbers in the range [0.0,1). The range includes 0.0 and excludes 1.0.
 @item gsl_rng_uniform_pos(var_in)
-This function returns var_in with double precision numbers in the range (0.0,1) - excluding both 0.0 and 1.0.
+This function returns var_in with double precision numbers in the range (0.0,1), excluding both 0.0 and 1.0.
 @end table
-
 
 @noindent Below are examples of @code{gsl_rng_get()} and @code{gsl_rng_uniform_int()} in action.
 
@@ -8420,12 +8499,10 @@ ncap2 -v -O -s 'a1[time]=0;a2=gsl_rng_get(a1);' in.nc foo.nc
 ncap2 -v -O -s 'rng_max=gsl_rng_max();print(rng_max)' in.nc foo.nc
 @end example
 
-
 @noindent @strong{Random Number Distributions} @*
 The @acronym{GSL} library has a rich set of random number disribution functions. The library also provides cumulative distribution functions and inverse cumulative distribution functions sometimes referred to a quantile functions. To see whats available on your build use the shell command @code{ncap2 -f|grep -e _ran -e _cdf}.
 
-@noindent The following examples  all return variables of type @code{NC_INT} @*
-
+@noindent The following examples all return variables of type @code{NC_INT} @*
 @example
 defdim("out",15);
 a1[$out]=0.5;
@@ -8438,7 +8515,6 @@ a4=gsl_ran_pascal(a2,50);
 @end example
 
 @noindent The following all return variables of type @code{NC_DOUBLE};
-
 @example
 defdim("b1",1000);
 b1[$b1]=0.8;
@@ -8451,9 +8527,9 @@ b3=gsl_ran_gaussian(b1);
 b3_avg=b3.avg();
 b3_rms=b3.rms();
 print(b3_avg);
-// b3_avg= -0.00903446534258 ;
+// b3_avg = -0.00903446534258;
 print(b3_rms);
-// b3_rms= 0.81162979889 ;
+// b3_rms = 0.81162979889;
 
 b4[$b1]=10.0;
 b5[$b1]=20.0;
@@ -8461,9 +8537,7 @@ b6=gsl_ran_flat(b4,b5);
 b6_avg=b6.avg();
 print(b6_avg);
 // b6_avg=15.0588129413
-
 @end example
-
 
 @html
 <a name="ncap_emp"></a> <!-- http://nco.sf.net/nco.html#ncap_emp -->
@@ -8472,10 +8546,8 @@ print(b6_avg);
 @subsection Examples ncap2
 
 See the @file{ncap.in} and @file{ncap2.in} scripts released with @acronym{NCO} 
-for more complete demonstrations of @command{ncap} and @command{ncap2}
-functionality, respectively (these scripts are available on-line at
-@url{http://nco.sf.net/ncap.in} and
-@url{http://nco.sf.net/ncap2.in}).
+for more complete demonstrations of @command{ncap2} functionality
+(script available on-line at @url{http://nco.sf.net/ncap2.in}).
 
 Define new attribute @var{new} for existing variable @var{one}
 as twice the existing attribute @var{double_att} of variable
