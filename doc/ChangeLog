@@ -1,3 +1,9 @@
+2012-02-08  Charlie Zender  <zender@uci.edu>
+
+	* Document ncap2 array() function
+
+	* Clean-up prs_cls.cc
+
 2012-02-06  Charlie Zender  <zender@uci.edu>
 
 	* Build with netCDF 4.2 snapshots.

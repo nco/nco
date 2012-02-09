@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.24 2012-01-01 20:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.25 2012-02-09 16:03:37 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -24,15 +24,13 @@
 #include "NcapVar.hh"
 #include "sdo_utl.hh"
 
-/********Begin prs_cls methods********************************************************/
-/*************************************************************************************/
-
+/* Begin prs_cls methods */
 
 var_sct * 
 prs_cls::ncap_var_init(
-const std::string &snm, 
-bool bfll){
-
+		       const std::string &snm, 
+		       bool bfll){
+  
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
   
@@ -46,16 +44,15 @@ bool bfll){
   int fl_id;
   char dmn_nm[NC_MAX_NAME];
   const char *var_nm;
-
+  
   var_sct *var=NULL_CEWI;;
   
   NcapVar *Nvar;
-
+  
   var_nm=snm.c_str();
-
   
   // INITIAL SCAN
-    if(ntl_scn){
+  if(ntl_scn){
     // check int vtr
     Nvar=int_vtr.find(var_nm);
     // check var_vtr (output)  
@@ -68,31 +65,29 @@ bool bfll){
     }
     bfll=false;
   }
- 
   
   if(dbg_lvl_get() > 2 && !ntl_scn) {
     std::ostringstream os;
     os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
     dbg_prn(fnc_nm,os.str());  
   }
- 
   
   // FINAL SCAN
-  // We have a  dilema -- its possible for a variable to exist in input & output 
-  // with the var in output defined but empty - -this could occur with the
-  // increment/decrement ops e.g time++, four+=10 or a LHS hyperslab 
-  // e.g time(0:2)=666 or var on LHS & RHS at the same time time()=time*10;
-  // So what we want to happen in these cases is read the original var from
-  // input. --Later on in the script the empty var in output will be populated 
-  // and subsequent reads will occur from  output 
-
+  /* We have a dilemma -- it is possible for a variable to exist in input & output 
+     with the var in output defined but empty. This could occur with the
+     increment/decrement operators e.g., time++, four+=10 or a LHS hyperslab 
+     e.g., time(0:2)=666 or var on LHS & RHS at the same time time()=time*10.
+     What we want to happen in these cases is to read the original variable from input. 
+     Later on in the script the empty variable in output will be populated 
+     and subsequent reads will occur from output. */
+  
   if(!ntl_scn){
     Nvar=var_vtr.find(var_nm);
     
     // var is defined in O and populated
     if(Nvar && Nvar->flg_stt==2 && !Nvar->flg_mem){
       var=Nvar->cpyVarNoData();
-
+      
 #ifdef _OPENMP
       fl_id= ( omp_in_parallel() ?out_id_readonly : out_id );
 #else    
@@ -102,16 +97,15 @@ bool bfll){
       /* Retrieve variable values from disk into memory */
       if(bfll)
         (void)nco_var_get(fl_id,var); 
-
+      
       return var;
     }
-
+    
     // var is defined in O and populated && a RAM variable
     if(Nvar && Nvar->flg_stt==2 && Nvar->flg_mem){
       var=Nvar->cpyVar();
       return var;
     }
-    
     
     // var is defined in O but NOT populated
     // Set flag so read is tried only from input
@@ -119,31 +113,28 @@ bool bfll){
     // what else ??? 
     if(Nvar && Nvar->flg_stt==1 )
       bskp_npt=true;
-     
+    
   } // end !ntl_scn
-
-
   
-
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_id);
   if(rcd == NC_NOERR && !bskp_npt){
-
+    
 #ifdef _OPENMP
     fl_id= ( omp_in_parallel() ?out_id_readonly : out_id );
 #else    
     fl_id=out_id;  
 #endif
-
+    
     var=nco_var_fll(fl_id,var_id,var_nm,&dmn_out_vtr[0],dmn_out_vtr.size());
     var->tally=(long *)NULL;
     /* Retrieve variable values from disk into memory */
     if(bfll)
       (void)nco_var_get(fl_id,var); 
-
+    
     return var;
   }
-   
+  
   /* Rest of function assumes var to be read is in Input */
   /* Check input file for ID */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_id);
@@ -154,22 +145,22 @@ bool bfll){
     wrn_prn(fnc_nm,os.str());
     return NULL_CEWI;
   } /* end if */
-    
+  
   /* Find dimensions used in var
      Learn which are not already in output list dmn_out and output file
      Add these to output list and output file */
-
+  
   fl_id=in_id;
-    
+  
   (void)nco_inq_varndims(fl_id,var_id,&dmn_var_nbr);
   if(dmn_var_nbr>0){
     int *dim_id=NULL_CEWI;
     dmn_sct *dmn_fd; 
     dmn_sct *dmn_nw;
     std::vector<dmn_sct*> dmn_tp_out;
-
+    
     dim_id=(int *)nco_malloc(dmn_var_nbr*sizeof(int));
-      
+    
     (void)nco_inq_vardimid(fl_id,var_id,dim_id);
     for(idx=0;idx<dmn_var_nbr;idx++){ 
       // get dim name
@@ -184,29 +175,29 @@ bool bfll){
         os<<"Unable to find dimension " <<dmn_nm << " in " << fl_in <<" or " << fl_out;
         err_prn(fnc_nm,os.str());
       }
-	
+      
       dmn_tp_out.push_back(dmn_fd);
-        
+      
     } // end idx
-
+    
     // no longer needed
     (void)nco_free(dim_id);
-
+    
     // define new dims in output if necessary  
     if(dmn_tp_out.size() >0){
-
+      
 #ifdef _OPENMP
       if( omp_in_parallel())
 	err_prn(fnc_nm,"Attempt to go into netcdf define mode while in OPENMP parallel mode");
 #endif
-
+      
       (void)nco_redef(out_id);
       for(idx=0; idx< (int)dmn_tp_out.size();idx++){
         dmn_nw=nco_dmn_dpl(dmn_tp_out[idx]);
         (void)nco_dmn_xrf(dmn_nw,dmn_tp_out[idx]);
 	(void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
 	(void)dmn_out_vtr.push_back(dmn_nw);
-
+	
 	if(dbg_lvl_get() > 2) {
           std::ostringstream os;
           os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " <<fl_in;
@@ -214,16 +205,13 @@ bool bfll){
           dbg_prn(fnc_nm,os.str());
 	}
       }// end idx
-
-      (void)nco_enddef(out_id);
-
-    } // end if 
-
-  } // end if
-
-
-   
       
+      (void)nco_enddef(out_id);
+      
+    } // end if 
+    
+  } // end if
+  
   var=nco_var_fll(fl_id,var_id,var_nm,&dmn_out_vtr[0],dmn_out_vtr.size());
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
       (void)strcpy(var->nm,var_nm); */
@@ -231,77 +219,67 @@ bool bfll){
   /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
      (void)nco_zero_long(var->sz,var->tally); */
   
-   var->tally=(long *)NULL;
+  var->tally=(long *)NULL;
   /* Retrieve variable values from disk into memory */
-  if(bfll)
-    (void)nco_var_get(fl_id,var); 
+  if(bfll) (void)nco_var_get(fl_id,var); 
   
-
   return var;
-
 }            
-
 
 int 
 prs_cls::ncap_var_init_chk(
-const std::string &var_nm){
-int rcd;  
-int var_id;
-NcapVar *Nvar;
-
-
-   // check output
-   Nvar=var_vtr.find(var_nm);
-   if(Nvar)
-     return 1;
+			   const std::string &var_nm){
+  int rcd;  
+  int var_id;
+  NcapVar *Nvar;
   
-  // initial scan
-   if(ntl_scn){
-     // check int vtr
-     Nvar=int_vtr.find(var_nm);
-     if(Nvar)
-       return 1;
-   }   
-
-
-   // Check output file for ID 
+  // Check output
+  Nvar=var_vtr.find(var_nm);
+  if(Nvar) return 1;
+  
+  // Initial scan
+  if(ntl_scn){
+    // Check int vtr
+    Nvar=int_vtr.find(var_nm);
+    if(Nvar) return 1;
+  }   
+  
+  
+  // Check output file for ID 
   rcd=nco_inq_varid_flg(out_id,var_nm.c_str(),&var_id);
   if(rcd == NC_NOERR)
     return 1;
-
-
-   // Check input file for ID 
+  
+  // Check input file for ID 
   rcd=nco_inq_varid_flg(in_id,var_nm.c_str(),&var_id);
   if(rcd == NC_NOERR)
     return 1;
-
-  // var not in Input or Output or int_vtr
+  
+  // Variable not in Input or Output or int_vtr
   return 0;
-
 }
 
 
 int 
 prs_cls::ncap_var_write_slb( 
-var_sct *var)
+			    var_sct *var)
 {
-int bret;
-
- bret=ncap_var_write_wrp(var,false,true);
- return bret;
-
+  int bret;
+  
+  bret=ncap_var_write_wrp(var,false,true);
+  return bret;
 }
 
 
 int 
 prs_cls::ncap_var_write( 
-var_sct *var,
-bool bram){
-int bret;
-
- bret=ncap_var_write_wrp(var,bram,false);
- return bret;
-
+			var_sct *var,
+			bool bram){
+  int bret;
+  
+  bret=ncap_var_write_wrp(var,bram,false);
+  return bret;
+  
 }
 
 
@@ -309,39 +287,39 @@ int bret;
 // both write to Output -  nb only one thread can write!! 
 int
 prs_cls::ncap_var_write_wrp(
-var_sct *var,
-bool bram,
-bool bslb){
-int bret;
-
+			    var_sct *var,
+			    bool bram,
+			    bool bslb){
+  int bret;
+  
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-    {
-      if(bslb){
+  {
+    if(bslb){
       
-       // put the slab -nb var already defined+ populated in 0
-       (void)nco_put_vars(out_id,var->id,var->srt,var->cnt,var->srd,var->val.vp,var->type);
-       var=nco_var_free(var);       
-       bret=1;  
-
-
-      }else{  
-          
-       bret=ncap_var_write_omp(var,bram);
-      } 
-    } // end pragma
-
- return bret;
-
-
+      // put the slab -nb var already defined+ populated in 0
+      (void)nco_put_vars(out_id,var->id,var->srt,var->cnt,var->srd,var->val.vp,var->type);
+      var=nco_var_free(var);       
+      bret=1;  
+      
+      
+    }else{  
+      
+      bret=ncap_var_write_omp(var,bram);
+    } 
+  } // end pragma
+  
+  return bret;
+  
+  
 } // end ncap_var_write_wrp()
 
 int 
 prs_cls::ncap_var_write_omp(
-var_sct *var,
-bool bram){ 
-
+			    var_sct *var,
+			    bool bram){ 
+  
   /* Purpose: Define variable in output file and write variable */
   /*  const char mss_val_sng[]="missing_value"; *//* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -357,7 +335,7 @@ bool bram){
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
-
+  
   
   // INITIAL SCAN
   if(ntl_scn){
@@ -386,10 +364,10 @@ bool bram){
     // temporary fix make typ_dsk same as type
     Nvar->var->typ_dsk=Nvar->var->type;
     bdef=true;
-
+    
     //Possibly overwrite bram !!
     bram=Nvar->flg_mem;
-      
+    
     if(var->has_mss_val)
       (void)nco_mss_val_cp(var,Nvar->var);
     // delete missing value
@@ -397,9 +375,9 @@ bool bram){
       Nvar->var->has_mss_val=False;
       Nvar->var->mss_val.vp=(void*)nco_free(Nvar->var->mss_val.vp);
     }      
-
+    
   } 
-
+  
   
   // Deal with a new RAM only variable
   if(!bdef && bram){
@@ -412,17 +390,17 @@ bool bram){
     var_vtr.push(NewNvar);
     return True;
   }
-
+  
   
   // Deal with a an existing RAM variable
   if(bdef && bram){
     var_sct *var_ref;
     void *vp_swp;
-        
+    
     // De-reference
     var_ref=Nvar->var;
-
-
+    
+    
     
     // check sizes are the same 
     if(var_ref->sz != var->sz) {
@@ -445,7 +423,7 @@ bool bram){
     
     Nvar->flg_stt=2;
     
-        
+    
     (void)nco_var_free(var);
     
     return True;
@@ -493,50 +471,50 @@ bool bram){
   
   rcd=nco_inq_varid_flg(out_id,var->nm,&var_out_id);
   
-
+  
   // Only go into define mode if necessary
   if(!bdef || var->pck_ram ){  
-
+    
 #ifdef _OPENMP
-	if( omp_in_parallel())
-	  err_prn(fnc_nm, "Attempt to go into netcdf define mode while in OPENMP parallel mode");
-      
+    if( omp_in_parallel())
+      err_prn(fnc_nm, "Attempt to go into netcdf define mode while in OPENMP parallel mode");
+    
 #endif
-	(void)nco_redef(out_id);
-
-  /* Define variable */   
-  if(!bdef){
-    (void)nco_def_var(out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
-
-    // set deflate, shuffle, chunking
-    if(var->nbr_dim > 0){
-      /* Set HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl > 0) 
-        (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,dfl_lvl);    
-      else if(var->dfl_lvl)
-        (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,var->dfl_lvl);    
-
-      /* Set chunk sizes, if requested */
-      // fxm: must first allow cnk_sz specification in ncap2.cc main()
-      //if(var->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var->cnk_sz);
-    } /* endif */
-
-  } // bdef
-  /* Put missing value 
-  if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
-  */
-  
-  /* Write/overwrite scale_factor and add_offset attributes */
-  if(var->pck_ram){ /* Variable is packed in memory */
-    if(var->has_scl_fct) (void)nco_put_att(out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
-    if(var->has_add_fst) (void)nco_put_att(out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
-  } /* endif pck_ram */
-  
-  /* Take output file out of define mode */
-  (void)nco_enddef(out_id);
-  
+    (void)nco_redef(out_id);
+    
+    /* Define variable */   
+    if(!bdef){
+      (void)nco_def_var(out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
+      
+      // set deflate, shuffle, chunking
+      if(var->nbr_dim > 0){
+	/* Set HDF Lempel-Ziv compression level, if requested */
+	if(dfl_lvl > 0) 
+	  (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,dfl_lvl);    
+	else if(var->dfl_lvl)
+	  (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,var->dfl_lvl);    
+	
+	/* Set chunk sizes, if requested */
+	// fxm: must first allow cnk_sz specification in ncap2.cc main()
+	//if(var->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var->cnk_sz);
+      } /* endif */
+      
+    } // bdef
+    /* Put missing value 
+       if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
+    */
+    
+    /* Write/overwrite scale_factor and add_offset attributes */
+    if(var->pck_ram){ /* Variable is packed in memory */
+      if(var->has_scl_fct) (void)nco_put_att(out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+      if(var->has_add_fst) (void)nco_put_att(out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
+    } /* endif pck_ram */
+    
+    /* Take output file out of define mode */
+    (void)nco_enddef(out_id);
+    
   } // end if
-
+  
   /* Write variable */ 
   if(var->nbr_dim == 0){
     (void)nco_put_var1(out_id,var_out_id,0L,var->val.vp,var->type);
@@ -558,10 +536,10 @@ bool bram){
   // save variable to output vector if new
   if(!bdef) {
     var_sct *var1;
-
+    
     var->val.vp=(void*)nco_free(var->val.vp);
     var1=nco_var_dpl(var);
-
+    
     var1->id=var_out_id;
     var1->nc_id=out_id;
     //temporary fix .. make typ_dsk same as type
@@ -576,8 +554,7 @@ bool bram){
   Nvar->flg_stt=2;
   
   return True;
- 
- }
+}
 
 void prs_cls::ncap_def_ntl_scn(void)
 {
@@ -589,66 +566,57 @@ void prs_cls::ncap_def_ntl_scn(void)
   var_sct *var1;
   
   const std::string fnc_nm("prs_cls::ncap_def_ntl_scn"); 
-
-  if(dbg_lvl_get() > 0)
-    dbg_prn(fnc_nm, "Entered function");
-
+  
+  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm, "Entered function");
   
   sz=int_vtr.size();
   
-  for(idx=0; idx < sz ; idx++){
-    // de-reference
+  for(idx=0;idx<sz;idx++){
+    // De-reference
     Nvar=int_vtr[idx];
     var1=Nvar->var;
-    if( !Nvar->flg_udf && Nvar->xpr_typ==ncap_var) {
+    if(!Nvar->flg_udf && Nvar->xpr_typ==ncap_var){
       
-      if(dbg_lvl_get() > 0)
-	dbg_prn(fnc_nm, Nvar->getFll()+ ( !Nvar->flg_mem ? " - defined in output.": " - RAM variable") );
+      if(dbg_lvl_get() > 0) dbg_prn(fnc_nm, Nvar->getFll()+ (!Nvar->flg_mem ? " defined in output": " RAM variable"));
       
-      // define variable
-      if(!Nvar->flg_mem) {
+      // Define variable
+      if(!Nvar->flg_mem){
 	(void)nco_def_var(out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
-
+	
 	Nvar->var->id=var_id;
 	Nvar->var->nc_id=out_id;
 	Nvar->flg_stt=1;
-
-        // set deflate,shuffle,chunking 
+	
+        // Set deflation, shuffle, chunking 
         if(var1->nbr_dim > 0){ 
 	  /* Set HDF Lempel-Ziv compression level, if requested */
 	  if(dfl_lvl > 0) 
             (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,dfl_lvl);    
           else if(var1->dfl_lvl)
             (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,var1->dfl_lvl);    
-
+	  
 	  /* Set chunk sizes, if requested */
 	  // fxm: must first allow cnk_sz specification in ncap2.cc main()
 	  //if(var1->cnk_sz && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var1->cnk_sz);
 	} /* endif */
-
+	
       } else { 
 	//deal with RAM only var        
 	Nvar->var->id=-1;
 	Nvar->var->nc_id=-1;
 	Nvar->flg_stt=1;
       }
-      // save newly defined var in output vector
       
+      // Save newly defined variable in output vector
       Cvar=new NcapVar(*Nvar);
       var_vtr.push(Cvar);
-      
     } 
     delete Nvar;  
   }
   
-  // empty int_vtr n.b pointers have all been deleted
-   int_vtr.clear();
+  // Empty int_vtr n.b pointers have all been deleted
+  int_vtr.clear();
 }
-
-
-
-
 
 /********End prs_cls methods********************************************************/
 /***********************************************************************************/
-

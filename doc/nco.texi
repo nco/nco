@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.656 2012-02-04 04:46:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.657 2012-02-09 16:03:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6401,17 +6401,44 @@ coordinate system is easy with left hand casting.
 @end html
 @node Arrays and hyperslabs, Attributes, Left hand casting, ncap2 netCDF Arithmetic Processor
 @subsection Arrays and hyperslabs
-@cindex hyperslabs
-Hyperslabs in @command{ncap2} are a bit more limited than  hyperslabs with the other @acronym{NCO} operators.
-There is no per-se multi-slabs, wrapped co-ordinates, negative stride or co-ordinate value limits. However with a bit of syntactic magic they are all are possible.
+
+@cindex arrays
+@cindex findgen-equivalent
+@cindex indgen-equivalent
+Generating a regularly spaced one-dimensional array with @command{ncap2}
+is simple with the @code{array()} function. 
+The syntax is 
 @example
-  var1( hyper_arg1, hyper_arg2 .. hyper_argN)
+output=array(srt_val,ncr_val,$dmn_nm)
 @end example
-@noindent 
-A hyperslab argument is specified in the same
+@noindent
+where the starting value @var{val_srt}, incremental value @var{val_ncr},
+and dimension @code{$dmn_nm}.
+Once the associated dimensions have been defined, the start and
+increment arguments may be supplied as values, mathmatical expressions,
+or variables:
+@example
+var_out=array(1,1,$time); // 1,2,3,4,5,6,7,8,9,10
+var_out=array(1+2-2,one,$time); // 1,2,3,4,5,6,7,8,9,10
+@end example
+
+@cindex hyperslabs
+Hyperslabs in @command{ncap2} are more limited than hyperslabs with the
+other @acronym{NCO} operators. 
+@command{ncap2} does not understand the shell command-line syntax
+used to specify multi-slabs, wrapped co-ordinates, negative stride or
+coordinate value limits.
+However with a bit of syntactic magic they are all are possible. 
+@command{ncap2} accepts (in fact, it requires) @var{N}-hyperslab
+arguments for a variable of rank @var{N}:
+@example
+var1(arg1,arg2 ... argN);
+@end example
+where each hyperslab argument is of the form
 @example
 start:end:stride 
 @end example
+and the arguments for different dimensions are separated by commas.
 @noindent 
 If "start" is omitted, it defaults to 0.
 If "end" is omitted, it defaults to dimension size minus one.
@@ -7062,23 +7089,25 @@ n3=1/(three_dmn_var_dbl.cos().pow(2))-tan(three_dmn_var_dbl)^2; // n3 type doubl
 @end html
 @node RAM variables, Where statement, Methods and functions, ncap2 netCDF Arithmetic Processor
 @subsection RAM variables
-RAM variables are used in place of regular variables to speed things up. For example in a loop or where a variable is very frequently referenced. To declare and define a RAM variable simply prefix the variable name with * when the variable is declared/initialized.@*
+Unlike regular variables, RAM variables are never written to disk.
+Hence using RAM variables in place of regular variables (especially
+within loops) significantly increases execution speed.
+Variables that are frequently accessed within @code{for} or @code{where}
+clauses provide the greatest opportunities for optimization. 
+To declare and define a RAM variable simply prefix the variable name
+with an asterisk (@code{*}) when the variable is declared/initialized.
+To delete a RAM variables (and recover their memory) use the
+@code{ram_delete()} method. 
+To write a RAM variable to disk (like a regular variable) use
+@code{ram_write()}. 
 @cindex ram_write()
 @cindex ram_delete()
-To delete a RAM variable (recover some memory) use  the ram_delete() method. To convert a RAM variable to a regular disk variable in output use ram_write() method.@*
-
-The following is valid:
 @example
 *temp[$time,$lat,lon]=10.0;     // Cast
 *temp_avg=temp.avg($time);      // Regular assign
-....
 temp.ram_delete();              // Delete RAM variable
 temp_avg.ram_write();           // Write Variable to output
 
-@end example
-
-Other Assigns
-@example
 // Create and increment a RAM variable from "one" in Input
 *one++;   
 // Create RAM variables from the variables three and four in Input.
@@ -7332,7 +7361,7 @@ cat > ~/ncap2_foo.nco << 'EOF'
 
 /* NB: Single quotes around EOF above turn off shell parameter 
     expansion in "here documents". This in turn prevents the
-    need for protecting dollarsign characters in NCO script with
+    need for protecting dollarsign characters in NCO scripts with
     backslashes when the script is cut-and-pasted (aka "moused") 
     from an editor or e-mail into a shell console window */
 
@@ -8280,33 +8309,38 @@ a1_sd=gsl_stats_sd(a1,5,3);
 
 @end example
 
-@noindent For functions with the signature  @strong{func_nm(var_data, data_stride, n)} you can omit the second or third arguments. The default value for stride is @code{1}. The default value for n is @code{ 1+ (data.size()-1)/stride}          
+@noindent For functions with the signature 
+@strong{func_nm(var_data,data_stride,n)}, 
+one may omit the second or third arguments. 
+The default value for @var{stride} is @code{1}. 
+The default value for @var{n} is @code{1+(data.size()-1)/stride}.
 
 @example
-// the following are equvalent
+// Following statements are equvalent
 n2=gsl_stats_max(a1,1,10)
 n2=gsl_stats_max(a1,1);
 n2=gsl_stats_max(a1);
 
-// the following are equivalent
+// Following statements are equvalent
 n3=gsl_stats_median_from_sorted_data(a1,2,5);
 n3=gsl_stats_median_from_sorted_data(a1,2);
 
-// the following are NOT equivalent
+// Following statements are NOT equvalent
 n4=gsl_stats_kurtosis(a1,3,2);
 n4=gsl_stats_kurtosis(a1,3); //default n=4
 @end example 
 
-@noindent The following example illustrates some of the weighted functions in action. The data is randomly generated. In this case the value of the weight for each datum is either 0.0 or 1.0  
-
+The following example illustrates some of the weighted functions.
+The data are randomly generated. 
+In this case the value of the weight for each datum is either 0.0 or 1.0   
 @example
 defdim("r1",2000);
 data[r1]=1.0;
 
-// fill with ramdon numbers [0.0,10.0)
+// Fill with random numbers [0.0,10.0)
 data=10.0*gsl_rng_uniform(data);
 
-// Create a weighting var 
+// Create a weighting variable
 weight=(data>4.0);
 
 wmean=gsl_stats_wmean(weight,1,data,1,$r1.size);

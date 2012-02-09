@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.34 2011-03-18 20:13:38 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.35 2012-02-09 16:03:37 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for ncap2
 
@@ -174,9 +174,9 @@ if(0 && j1++) j1@bool="true";
 if( 1 || --j1 ) j1@bool="true"; 
 j2=10;
 j3=1;
-// There are no side effects with the ternary operator e.g
-// the result is that j2=10 ,j3=2 , j4=2;
-j4= ( i7<9 ? ++j2 : ++j3);
+// There are no side effects with the ternary operator, e.g.,
+// the result is that j2=10, j3=2, j4=2.
+j4= (i7<9 ? ++j2 : ++j3);
 // Defining Dimensions
 // use the defdim function. Dimensions in the input file CANNOT
 // be redefined in the output. Dimensions are imutable and
