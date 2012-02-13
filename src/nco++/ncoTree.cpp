@@ -531,13 +531,18 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 					if(prs_arg->ntl_scn) goto end2;
 					Nvar=prs_arg->var_vtr.find(va_nm);
 					
-					// check output first 
-					if(Nvar){
-					if(Nvar->flg_mem) {
+					
+					if(Nvar && Nvar->flg_mem){   
 					wrn_prn(fnc_nm,"Cannot print out RAM variables at the moment!");
 					goto end2;
 					}
-					fl_id=prs_arg->out_id;
+					
+					// check output first -nb can only print out vars that are defined AND written
+					// it is possible to get with the var defined in output but no data
+					// flg_stt==1 mean var defined but no data !!
+					// So we try to use var in input -if it exist their    
+					if(Nvar && Nvar->flg_stt==2){
+					fl_id=prs_arg->out_id;   
 					}else{
 					// Check input file for var   
 					if(NC_NOERR==nco_inq_varid_flg(prs_arg->in_id,va_nm.c_str(),&var_id))
@@ -555,15 +560,10 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 					else 
 					fmt_sng=(char*)NULL; 
 					
-					
-					
-					
 					if( fl_id >=0)
 					(void)nco_prn_var_val_lmt(fl_id,va_nm.c_str(),(lmt_sct*)NULL,0L,fmt_sng,prs_arg->FORTRAN_IDX_CNV,False,False);
 					
-					
-					if(fmt_sng)
-					fmt_sng=(char*)nco_free(fmt_sng); 
+					if(fmt_sng) fmt_sng=(char*)nco_free(fmt_sng); 
 					
 					
 					end2: ;

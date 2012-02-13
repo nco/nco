@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.668 2012-02-09 23:46:57 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.669 2012-02-13 21:27:21 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -607,6 +607,7 @@ Stride works with DAP?;
 <li><b>NCO 4.0.9</b>: (<i>In Progress, features already in beta include the following</i>) 
 Fix over-zealous <tt>ncap2</tt> packing;
 Fix <tt>ncea -y ttl</tt>;
+Fix <tt>ncap2 print, array()</tt>;
 Warn when appending variables of suspicious record length;
 Warn when <tt>NC_MAX_ATTRS</tt> exceeded;
 <li><b>NCO 4.0.8</b>: (<i>Current Stable Release</i>) 

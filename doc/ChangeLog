@@ -1,3 +1,7 @@
+2012-02-13  Charlie Zender  <zender@uci.edu>
+
+	* Document improved ncap2 array() function
+
 2012-02-08  Charlie Zender  <zender@uci.edu>
 
 	* Document ncap2 array() function
