@@ -1,5 +1,11 @@
 2012-02-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.0.9 release procedure:
+ 	Changes since nco-4_0_8: array(), revert NO_FILL, rounding
+	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
+	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
+
 	* Document improved ncap2 array() function
 
 2012-02-08  Charlie Zender  <zender@uci.edu>
@@ -28,12 +34,6 @@
 	* Learned NASA will fund ACCESS proposal!
 
 2011-12-10  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.0.9 release procedure:
- 	Changes since nco-4_0_8:
-	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
-	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
 	* Print helpful hint with NC_EVARSIZE errors
 
