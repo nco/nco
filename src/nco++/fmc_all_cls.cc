@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.42 2012-01-01 20:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.43 2012-02-13 17:43:06 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1767,6 +1767,8 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
   RefAST tr;
   std::vector<RefAST> args_vtr; 
+  std::vector<std::string> cst_vtr;              
+
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;            
   vtl_typ lcl_typ;
@@ -1785,7 +1787,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       
   nbr_args=args_vtr.size();  
 
-  susg="usage: var_out="+sfnm+"(start_exp,inc_exp,$dim)"; 
+  susg="usage: var_out="+sfnm+"(start_exp,inc_exp,$dim|var)"; 
 
   
   if(nbr_args<3)
@@ -1811,18 +1813,29 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           
 
   /* third argument must be a single dimension */
-  if(args_vtr[2]->getType() != DIM_ID ) 
-    err_prn(sfnm,"Third argument must be a dimension\n"+susg); 
+  //if(args_vtr[2]->getType() != DIM_ID ) 
+  //  err_prn(sfnm,"Third argument must be a dimension\n"+susg); 
 
   // cast a var from using the dim arg
+  if(args_vtr[2]->getType() == DIM_ID ) 
   {
-   std::vector<std::string> cst_vtr;              
    cst_vtr.push_back(args_vtr[2]->getText());
      
    var_ret=ncap_cst_mk(cst_vtr,prs_arg);
    
    // convert to type of first arg
    var_ret=nco_var_cnf_typ(var1->type,var_ret);  
+
+  }else{
+    // assume third argument is var - interested in only using its shape !!  
+    var_ret=walker.out(args_vtr[2]);
+    
+    for(idx=0; idx<var_ret->nbr_dim;idx++)
+      cst_vtr.push_back(var_ret->dim[idx]->nm);
+
+    var_ret=ncap_cst_mk(cst_vtr,prs_arg);
+    // convert to type of first arg
+    var_ret=nco_var_cnf_typ(var1->type,var_ret); 
 
   }
 
