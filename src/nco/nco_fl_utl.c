@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.140 2012-02-13 23:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.141 2012-02-13 23:18:58 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1326,7 +1326,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
 
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"%s: WARNING %s reports unclean exit\n",prg_nm_get(),fnc_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
 
   return fl_out_tmp;
 
