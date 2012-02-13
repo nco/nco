@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.36 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.37 2012-02-13 23:09:50 zender Exp $ */
 
 /* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -25,8 +25,8 @@ nco_find_lat_lon
  char **units,
  int *lat_id,
  int *lon_id,
- nc_type *crd_typ
- ){
+ nc_type *crd_typ)
+{
   /* Purpose: Find auxiliary coordinate variables that map to latitude/longitude 
      Find variables with standard_name = "latitude" and "longitude"
      Return true if both latitude and longitude standard names are found
@@ -95,14 +95,14 @@ nco_find_lat_lon
     
   } /* end loop over vars */
   
-  // Die if both not found
+  /* Die if both not found */
   if(ret != 2) nco_err_exit(rcd,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.");
  
- return rcd;
+  return rcd;
 
 } /* end nco_find_lat_lon() */
 
-int  /* status code */
+int /* [enm] Return status */
 nco_get_dmn_info
 (int nc_id,
  int var_id,
@@ -138,8 +138,8 @@ nco_aux_evl
 (int in_id, 
  int aux_nbr, 
  char *aux_arg[],
- int *lmt_nbr
- ){
+ int *lmt_nbr)
+{
   /* Purpose: Create lmt structure of slabs of continguous cells that
      match rectangular region specified by -X arguments.
      Intended for use with non-monotonic grids
@@ -187,11 +187,13 @@ nco_aux_evl
   void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
   
   /* Obtain lat/lon variable names */
-  rcd=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
+  rcd+=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
   
   /* Obtain dimension information of lat/lon coordinates */
-  rcd=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
+  rcd+=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
   
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
+
   /* Load latitude/longitude variables needed to search for region matches */
   lat.type=crd_typ;
   lat.sz=dmn_sz;
@@ -201,8 +203,8 @@ nco_aux_evl
   lon.sz=dmn_sz;
   lon.srt=0L;
   vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
-  rcd=nco_get_vara(in_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
-  rcd=nco_get_vara(in_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
+  rcd+=nco_get_vara(in_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
+  rcd+=nco_get_vara(in_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
   
   *lmt_nbr=0;
   

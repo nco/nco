@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.41 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.42 2012-02-13 23:09:50 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -18,9 +18,8 @@
 #include <string.h> /* strcmp. . . */
 
 #ifdef HAVE_REGEX_H
-# ifdef MACOSX
-#  include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
-# endif /* !MACOSX */
+/* 20120213: Linux GCC 4.6 regex.h also now, like Mac OS X, depends on sys/types.h */
+# include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
 # include <regex.h> /* POSIX regular expressions library */
 #endif /* HAVE_REGEX_H */
 
@@ -74,8 +73,6 @@ nco_lst_prs_sgl_2D /* [fnc] Create list of strings from given string and delimit
 (const char * const sng_in, /* I [sng] Delimited argument list */
  const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst); /* O [nbr] Number of elements in list */
-
-
 
 nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */

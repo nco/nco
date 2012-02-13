@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
+	* Linux GCC 4.6 regex.h also now, like Mac OS X, depends on sys/types.h
+
+	* Clean-up set-but-unused variables for GCC 4.6
+
 	* Document improved ncap2 array() function
 
 2012-02-08  Charlie Zender  <zender@uci.edu>

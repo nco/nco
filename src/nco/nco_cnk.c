@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.33 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.34 2012-02-13 23:09:50 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -574,10 +574,9 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
   /* Purpose: Check whether variable is chunked on disk */
   /* ncea -O -D 3 -v cnk ~/nco/data/in.nc ~/nco/data/foo.nc */
   
-  int rcd; /* [rcd] Return success code */
   int srg_typ; /* [enm] Storage type */
   
-  rcd=nco_inq_var_chunking(nc_id,var_id,&srg_typ,(size_t *)NULL);
+  (void)nco_inq_var_chunking(nc_id,var_id,&srg_typ,(size_t *)NULL);
 
   if(srg_typ == NC_CONTIGUOUS) return False; else return True;
   

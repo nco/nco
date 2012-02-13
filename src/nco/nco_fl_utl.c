@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.139 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.140 2012-02-13 23:09:50 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -381,14 +381,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   nco_bool FTP_OR_SFTP_URL; /* FTP or SFTP */
   nco_bool HTTP_URL=False; /* Retrieve remote file via wget */
   nco_bool SFTP_URL=False; /* Retrieve remote file via SFTP */
-  nco_bool PTH_LCL_DRV=False; /* Local path was derived (not user-specified) */
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
   char *fl_nm_lcl_tmp;
   char *fl_nm_stub;
   char *fl_pth_lcl_tmp=NULL;
 
-  const char fnc_nm[]="nco_fl_mk_lcl"; /* [sng] Function name */
+  const char fnc_nm[]="nco_fl_mk_lcl()"; /* [sng] Function name */
   const char ftp_url_sng[]="ftp://";
   const char http_url_sng[]="http://";
   const char sftp_url_sng[]="sftp://";
@@ -438,7 +437,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       switch(prg_id){
       case ncatted:
       case ncrename:
-	(void)fprintf(stderr,"%s: ERROR %s() reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get(),fnc_nm);
+	(void)fprintf(stderr,"%s: ERROR %s reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
 	break;
       default:
@@ -691,7 +690,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	  host_nm_rmt_psn=strstr(fl_netrc_bfr,host_nm_rmt);
 	  if(host_nm_rmt_psn){
 	    FTP_NETRC=True;
-	    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s() will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
+	    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
 	  } /* endif host_nm_rmt_psn */
 	  fl_netrc_bfr=(char *)nco_free(fl_netrc_bfr);
 	} /* endif rcd_stt */
@@ -839,9 +838,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
       (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
       fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
-      PTH_LCL_DRV=True; /* Local path was derived (not user-specified) */
       /* Tell user what local filepath was derived */
-      (void)fprintf(stderr,"%s: INFO Retrieved files will be stored in directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
+      (void)fprintf(stderr,"%s: INFO Retrieved files will be stored in derived directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
     }else{
       /* Copy user-specified local path to unite following code in terms of fl_pth_lcl_tmp */
       fl_pth_lcl_tmp=(char *)strdup(fl_pth_lcl);
@@ -1133,11 +1131,12 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   char *fl_out_tmp;
   char *pid_sng; /* String containing decimal representation of PID */
 
+  const char fnc_nm[]="nco_fl_out_open"; /* [sng] Function name */
   const char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
   const char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
 
   int nccreate_mode; /* [enm] Mode flag for nco_create() call */
-  int rcd; /* [rcd] Return code */
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_stt; /* [rcd] Return code */
 
   long fl_out_tmp_lng; /* [nbr] Length of temporary file name */
@@ -1188,7 +1187,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
-  if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: nco_fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
+  if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: %s reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),fnc_nm,(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
   rcd_stt=stat(fl_out_tmp,&stat_sct);
 
   /* Free temporary memory */
@@ -1220,7 +1219,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
 #endif /* !HAVE_MKSTEMP */
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
-    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: nco_fl_out_open() reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
+    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
     fl_out_tmp_sys=(char *)nco_free(fl_out_tmp_sys);
   } /* endif dbg */
 
@@ -1231,8 +1230,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* end if */
 
   if(FORCE_OVERWRITE){
-    rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
-    /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
+    rcd+=nco_create(fl_out_tmp,nccreate_mode,out_id);
+    /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
 
@@ -1241,7 +1240,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       /* ncrename and ncatted allow single filename without question */
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd=nco_open(fl_out_tmp,NC_WRITE,out_id);
+      rcd+=nco_open(fl_out_tmp,NC_WRITE,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1266,7 +1265,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     if(FORCE_APPEND){
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd=nco_open(fl_out_tmp,NC_WRITE,out_id);
+      rcd+=nco_open(fl_out_tmp,NC_WRITE,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1295,7 +1294,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 	if(usr_rpl[usr_rpl_lng-1] == '\n')
 	    usr_rpl[usr_rpl_lng-1]='\0';
 
-      if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: INFO nco_fl_out_open() reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);
+      if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: INFO %s reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),fnc_nm,(rcd_fgets == NULL) ? "NULL" : usr_rpl);
     } /* end while */
 
     /* Ensure one case statement for each exit condition in preceding while loop */
@@ -1307,14 +1306,14 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       break;
     case 'O':
     case 'o':
-      rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
-      /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
+      rcd+=nco_create(fl_out_tmp,nccreate_mode,out_id);
+      /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
       break;
     case 'A':
     case 'a':
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd=nco_open(fl_out_tmp,NC_WRITE,out_id);
+      rcd+=nco_open(fl_out_tmp,NC_WRITE,out_id);
       (void)nco_redef(*out_id);
       break;
     default: nco_dfl_case_nc_type_err(); break;
@@ -1323,9 +1322,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   }else{ /* Output file does not yet already exist */
     nccreate_mode=NC_NOCLOBBER;
     nccreate_mode=nco_create_mode_mrg(nccreate_mode,fl_out_fmt);
-    rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
-    /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
+    rcd+=nco_create(fl_out_tmp,nccreate_mode,out_id);
+    /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"%s: WARNING %s reports unclean exit\n",prg_nm_get(),fnc_nm);
 
   return fl_out_tmp;
 
