@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.88 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.89 2012-02-14 05:39:04 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -790,6 +790,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     ptr_unn_max.vp=(void *)nco_malloc(nco_typ_lng(var->type));
 
     /* Create double precision missing_value for use in min/max arithmetic */
+    ptr_unn_mss_val_dbl.vp=(void *)NULL; /* CEWI */
     if(var->has_mss_val){
       ptr_unn_mss_val_dbl.vp=(void *)nco_malloc(nco_typ_lng((nc_type)NC_DOUBLE));
       (void)nco_val_cnf_typ(var->type,var->mss_val,(nc_type)NC_DOUBLE,ptr_unn_mss_val_dbl);
@@ -884,7 +885,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
       if(nc_typ_pck != NC_STRING && (mss_val_dbl < pck_rng_min_dbl || mss_val_dbl > pck_rng_max_dbl)){ 
 	(void)fprintf(stdout,"%s: WARNING %s reports mss_val_dbl (= %g) is outside range (%g <= x <= %g) represented by packed data type (= %s). Conversion of missing values is unpredictable and could lead to erroneous results. Workaround is to set _FillValue to be within packed range with, e.g.,\nncatted -O -a _FillValue,,o,f,%g inout.nc\nFor more information on this workaround, see\nhttp://nco.sf.net/nco.html#mss_val\n",prg_nm_get(),fnc_nm,mss_val_dbl,pck_rng_min_dbl,pck_rng_max_dbl,nco_typ_sng(nc_typ_pck),mss_val_dfl_dbl);
       } /* NC_STRING */
-    } /* endif */
+    } /* end if(var->has_mss_val && !PURE_MSS_VAL_FLD) */
 
     if(dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);
 

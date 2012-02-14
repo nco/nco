@@ -18918,7 +18918,8 @@ fi
 
     ac_fn_c_check_header_mongrel "$LINENO" "sys/types.h" "ac_cv_header_sys_types_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_types_h" = xyes; then :
-  $as_echo "#define HAVE_SYS_TYPES_H 1" >>confdefs.h
+
+$as_echo "#define HAVE_SYS_TYPES_H 1" >>confdefs.h
 
 else
   nco_have_regex=no

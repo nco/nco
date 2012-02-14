@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.41 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.42 2012-02-14 05:39:04 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -351,7 +351,7 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 #ifdef CRAY
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is CRAY so rusage units for page size and time are unknown.\n",prg_nm_get());
 #endif /* !CRAY */
-#ifdef LINUX
+#if (defined LINUX) || (defined LINUXAMD64)
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is LINUX so rusage does not implement ru_maxrss, ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),sz_pg);
 #endif /* !LINUX */
 #ifdef NECSX

@@ -1,10 +1,10 @@
 nco (4.0.9-1) unstable; urgency=low
 
-  * new upstream version (fxm)
+  * new upstream version (array(), revert NO_FILL, rounding)
   * debian/rules
     - remove CPPFLAGS += -DHAVE_NETCDF4_H hack
 
- -- Charlie Zender <zender@uci.edu>  Tue, 26 Jun 2011 15:49:48 -0700
+ -- Charlie Zender <zender@uci.edu>  Mon, 13 Feb 2012 21:45:15 -0800
 
 nco (4.0.7-1.1) unstable; urgency=low
 

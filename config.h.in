@@ -316,7 +316,7 @@
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
-/* Define to 1 if you have the <sys/types.h> header file. */
+/* Define to 1 if <sys/types.h> is present */
 #undef HAVE_SYS_TYPES_H
 
 /* Define to 1 if compiler finds external `tanf' function */

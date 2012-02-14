@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.659 2012-02-13 21:27:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.660 2012-02-14 05:39:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.0.9
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 1 January 2012
-@set update-month January 2012
+@set update-date 13 February 2012
+@set update-month February 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -470,11 +470,14 @@ NASA grant
 @uref{http://www.nasa.gov/mission_pages/IPY/main/PolarExploration.html,NNX07AR23G}.
 supported Henry Butowsky until May, 2010 while he developed key
 @command{ncap2} features used in our research. 
-fxm.@*
+Fortunately, the NASA ACCESS program has now agreed to fund NCO
+support for netCDF4 group functionality
+@uref{http://www.nasa.gov/mission_pages/IPY/main/PolarExploration.html,NNX07AR23G}.
+.@*
 @sp 1
 @noindent
 Charlie Zender@*
-2010@*
+2012@*
 Irvine, California@*
 @end ignore
 
