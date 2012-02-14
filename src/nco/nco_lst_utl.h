@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.42 2012-02-13 23:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.43 2012-02-14 00:38:49 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -17,11 +17,14 @@
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, qsort */
 #include <string.h> /* strcmp. . . */
 
-#ifdef HAVE_REGEX_H
-/* 20120213: Linux GCC 4.6 regex.h also now, like Mac OS X, depends on sys/types.h */
-# include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
+/* 20120213: NCO configure inexplicably cannot find regex.h when protected by HAVE_REGEX_H tokens */
+/* #ifdef HAVE_REGEX_H */
+/* 20120213: Linux GCC 4.6 man page says regex.h depends on (non-present) sys/types.h */
+# ifdef MACOSX
+#  include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
+# endif /* !MACOSX */
 # include <regex.h> /* POSIX regular expressions library */
-#endif /* HAVE_REGEX_H */
+/* #endif */ /* HAVE_REGEX_H */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
