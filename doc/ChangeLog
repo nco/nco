@@ -1,5 +1,13 @@
 2012-02-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.1.0 release procedure:
+ 	Changes since nco-4_0_9: 
+	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
+	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
+
+2012-02-13  Charlie Zender  <zender@uci.edu>
+
 	* NCO 4.0.9 release procedure:
  	Changes since nco-4_0_8: array(), revert NO_FILL, rounding
 	cd ~/nco;cvs tag -d nco-4_0_9;cvs tag -d nco-4_0_9-1
