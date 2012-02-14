@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.0.9 release"
 	cvs tag -c nco-4_0_9;cvs tag -c nco-4_0_9-1
 
-	* Configure inexplicably does not find regex.h when protected by HAVE_REGEX_H tokens
+	* Put #ifdef HAVE_CONFIG_H clauses in nco_mmr.h,nco_var_lst.h,nco_lst_utl.h
 
 	* Linux GCC 4.6 regex.h also now, like Mac OS X, depends on sys/types.h
 

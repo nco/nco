@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.29 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.30 2012-02-14 01:10:05 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_MMR_H
 #define NCO_MMR_H
+
+#ifdef HAVE_CONFIG_H
+# include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <errno.h> /* system/library error diagnostics, errno */
