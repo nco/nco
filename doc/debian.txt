@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.168 2012-02-13 21:37:48 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.169 2012-02-14 05:39:03 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -183,7 +183,7 @@ m ~/foo.nco
 scp ${DATA}/nco_4.0.9* dust.ess.uci.edu:/var/www/html/nco/src
 scp ${DATA}/nco_4.0.9* zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # NB: Make sure RPMs build before uploading to debian, since changing
-# Debian versions are such a PITA
+# Debian versions is a PITA
 # NB: Only upload pbuilder Debian Sid (not personal Ubuntu) .deb builds to Debian mentors
 # cd ${DATA};dupload -t mentors nco_4.0.9-1_*.changes
 bsrc # Reset shell environment for regular development

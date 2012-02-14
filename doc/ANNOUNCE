@@ -1,51 +1,60 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.452 2012-02-13 21:27:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.453 2012-02-14 05:39:03 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.0.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements support for retrieving files from HPSS storage 
-systems, such as that now used at NCAR. It also supports the CF
-"bounds" convention, the CF "noleap" convention, fixes a bug in
-ncatted overwrite-mode, fixes printing of NC_[U]BYTE attributes. 
+This release contains a number of minor improvements for corner cases 
+encountered with ncea, ncap2, and ncatted. This has been the longest
+release cycle in many years, because no serious bugs were known, few
+new features were added, and because...hey, we're volunteers, no 
+further explanations necessary. Fortunately, NASA has recently given
+us indications (nothing binding yet), that they may fund NCO to
+develop support for netCDF4 groups and to write some NCO wrappers for 
+HDF-EOS files. More on that next time.
 
-4.0.9 also contains a workaround for the NOFILL bug recently found
-to be present in all netCDF versions since 1999. NCO 4.0.9 works
-around the NOFILL bug whether or not the underlying netCDF library 
-has been patched to fix the bug. Often users can re-install
-application software (e.g., NCO in RPM or .deb format) more quickly 
-than they can upgrade base system software (e.g., netCDF).
-For these reasons, upgrading to NCO 4.0.9 is recommended.
+4.0.9 also reverts the 4.0.8 workaround for the NOFILL bug recently
+found to be present in all netCDF versions since 1999. NCO 4.0.9 
+assumes that the underlying netCDF library has been patched to fix the
+NOFILL bug, i.e., NCO 4.0.9 requires netCDF version 4.1.3 or later.
 
 http://nco.sf.net#bug_nofill
 
-Work on NCO 4.0.9 is underway, focused on issues described in the 
-KNOWN BUGS NOT YET FIXED section below.
+Work on NCO 4.1.0 is underway, focused on making a more robust 
+build/configuration environment and on simplifying issues described in 
+the KNOWN BUGS NOT YET FIXED section below.
 
 Enjoy,
 Charlie
 
 Other "New stuff" in 4.0.9 summary (full details always in ChangeLog):
 
-A. ncap2 array() function now works on multi-dimensional arrays.
+A. Revert netCDF NOFILL bug workaround from NCO 4.0.8. 
+   Assume netCDF 4.1.3+ is installed and use NOFILL mode as before. 
+   http://nco.sf.net#bug_nofill
+
+B. Improve CF convention support for "bounds" attribute.
+   http://nco.sf.net/nco.html#bnd
+
+C. ncap2 array() function now works on multi-dimensional arrays.
    Pass array() a template the same shape as the desired output:
    var_out=array(1,2,three_dmn_rec_var); // 1,3,5,...155,157,159
 
-A. Fix ncap2 print() function
+D. Fix ncap2 print() function
 
-A. Warn when number of attributes exceeds NC_MAX_ATTRS
+E. Warn when number of attributes exceeds NC_MAX_ATTRS
 
-A. Print helpful hint with NC_EVARSIZE errors. Suggest users try more
+F. Print helpful hint with NC_EVARSIZE errors. Suggest users try more
    capacious output file types.
 
-A. Warn when concatenating files containing packed data.
+G. Warn when concatenating files containing packed data.
    User is now warned to be sure that packing factors in all input files
    exactly match those in the first file since factors are copied from
    first file only. Otherwise users should unpack, then concatenate,
    then pack. 
 
-A. Warn when appended variable has suspicious record length.
+H. Warn when appended variable has suspicious record length.
    NCO forbids appending variables if dimension sizes do not match
    between input and output files. Except for the record dimension.
    For various reasons, it should be possible, and so NCO allows,
@@ -54,7 +63,7 @@ A. Warn when appended variable has suspicious record length.
    Power users can still enjoy this "feature", while novice users 
    will hopefully take heed of the warning.
 
-A. Fix overly-zealous ncap2 packing propagation:
+I. Fix overly-zealous ncap2 packing propagation:
    Thanks to Ken5746 for reporting this problem.
    Previous versions of NCO treated packing attributes like all other 
    attributes in that the scale_factor and add_offset of the LHS-most
@@ -64,7 +73,7 @@ A. Fix overly-zealous ncap2 packing propagation:
    no longer propagated to the LHS.
    Thanks to Henry Butowsky for the fix. 
 
-A. Fix treatment of _FillValue in ncea:
+J. Fix treatment of _FillValue in ncea:
    When invoked with the (non-default) summing and integration option 
    -y ttl = -N, ncea would incorrectly handle the corner case where
    the value of an array element in the first two input files was
@@ -76,61 +85,12 @@ A. Fix treatment of _FillValue in ncea:
 
    The correct output of this is the _FillValue, i.e., 1.0e36, not 0.
 
-B. Workaround netCDF NOFILL bug: 
-   Abandon NOFILL mode until netCDF 4.1.3 is released.
-   This avoids the (rare, but nasty) bug that can silently corrupt
-   writes of netCDF3 files. However, this workaround patch slows
-   the writing of netCDF3 files. If write speed is important to you
-   you can revert the patch by uncommenting all the lines containing
-   NC_NOFILL in the NCO source code.
-
-   http://nco.sf.net#bug_nofill
-
-C. Support CF convention for "bounds" attribute for cell boundaries.
-   Thanks to Andrew Schurer for this suggestion.
-   Now NCO-generated subsets of CF-compliant files with "bounds" will
-   include the coordinates specified by the "bounds" attribute, if any. 
-   Hence the subsets will themselves be CF-compliant.
-
-   http://nco.sf.net/nco.html#bnd
-
 KNOWN BUGS NOT YET FIXED:
 
    This section of the ANNOUNCE file is intended to make clear the
    existence and severity of known, not yet fixed, problems. 
 
-A. POSSIBLY FIXED
-   Correctly handle stride argument when accessing some files through some DAP servers.  
-   DAP non-transparency: Works locally, fails through DAP server.
-
-   Demonstration:
-   ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc # Fails as of 20110114, old DAP server?
-   ncks -O -F -D 9 -v three_dmn_rec_var -d time,1,10,5 http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc ~/foo.nc # Works as of 20110114
-
-   20110114: Verified problem still exists on NOAA DAP server
-   Bug report not filed: Suggest users upgrade DAP servers?
-
-B. POSSIBLY FIXED
-   Correctly handle NC_CHAR coordinates (like fl_dmn) on DAP files.
-   DAP non-transparency: Works locally, fails through DAP server.
-
-   Demonstration:
-   ncks -D 4 -v fl_dmn -O http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc ~/foo.nc
-
-   20110114: Fixed in Unidata DAP server? Need confirmation works elsewhere
-   Bug report filed: netCDF #JZN-949284 NC_CHAR coordinate via DAP
-
-C. NOT YET FIXED
-   Correctly average NC_CHAR coordinates from DAP files.
-   DAP non-transparency: Works locally, fails through DAP server.
-
-   Demonstration:
-   ncra -O -C -D 3 -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc in.nc ~/foo.nc # Breaks with "NetCDF: DAP server error"
-
-   20110221: Verified problem still exists
-   Bug report filed: netCDF #JZN-949284 NC_CHAR coordinate via DAP
-
-D. NOT YET FIXED
+A. NOT YET FIXED
    Correctly read netCDF4 input over DAP, write netCDF4 output, then read resulting file.
    Replacing netCDF4 with netCDF3 in either location of preceding sentence leads to success.
    DAP non-transparency: Works locally, fails through DAP server.
@@ -139,47 +99,23 @@ D. NOT YET FIXED
    ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
    ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
 
-   20110114: Verified problem still exists
+   20120213: Verified problem still exists
    Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
 
-E. NOT YET FIXED
-   netCDF3 files created under certain conditions are corrupt.
-   The corruption occurs silently (without warning or error messages). 
-   The problem has been seen "in the wild" only on filesystems with
-   large block sizes (e.g., Lustre), although it may be more widespread. 
-   It is caused by a netCDF bug that NCO triggers by invoking
-   NOFILL mode for faster writes. Hence it is called the NOFILL bug.
-   More information at:
-
-   http://nco.sf.net#bug_nofill
+B. NOT YET FIXED
+   netCDF4 library fails when renaming dimension and variable using
+   that dimension, in either order. Works fine with netCDF3.
+   Problem with netCDF4 library implementation.
 
    Demonstration:
-   ncks -O -d time,603.75,603.875 -v Q,RELHUM \
-   /glade/scratch/sghosh/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-04-29-64800.nc \
-   /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc
-   ncks -C -H -v Q -d time,603.75 -d lev,25 -d lat,0.0 -d lon,180.0 \
-   /glade/scratch/zender/cam-2rn-co-ch3i-st-19950903.cam2.h0.1997-05.W.nc #
-   (Contents equaling zero means NCO is affected by the bug)
+   ncks -O -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
+   ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
+   ncks -m ~/foo.nc
 
-   Workarounds: 
-   1. Avoid creating netCDF3 files
-   2. Create only netCDF4 files (e.g., ncks -4 ...)
-   3. Patch NCO to avoid use of NOFILL mode (results in slower writes):
-      Simply comment-out all lines containing NC_NOFILL in NCO source code.
-      This patch is used by default in NCO 4.0.8, and will workaround
-      the NOFILL bug on all versions of netCDF (i.e., 4.1.2 and earlier).
-      Hence NCO 4.0.8 will always correctly write netCDF3 files.
-      The NOFILL patch included in NCO 4.0.8 will probably be removed
-      in NCO 4.0.9, assuming netCDF 4.1.3, which fixes the underlying
-      bug, has been released and is stable. At that time the netCDF3
-      write speed of NCO will increase to what it once was.
-      Executables at NCAR in ~zender/bin/*/nc* on bluefire and /glade
-      have already been patched and will not trigger this bug.
+   20120213: Verified problem still exists
+   Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
-   20110422: Verified problem exists on NCAR /glade and bluefire /ptmp 
-   Bug report filed: netCDF #VRU-236841: Large block size, silent file corruption
-
-F. NOT YET FIXED
+C. NOT YET FIXED
    Unable to retrieve contents of variables with period '.' in name
    Metadata is returned successfully, data is not.
    DAP non-transparency: Works locally, fails through DAP server.
@@ -187,21 +123,9 @@ F. NOT YET FIXED
    Demonstration:
    ncks -O -C -D 3 -v var_nm.dot -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # Breaks with "NetCDF: DAP server error"
 
-   20110506: Verified problem still exists
+   20110506: Verified problem still exists. Stopped testing because
+   inclusion of var_nm.dot broke all test scripts.
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
-
-G. NOT YET FIXED
-   netCDF4 library fails when renaming dimension and variable using
-   that dimension, in either order. Works fine with netCDF3.
-   Problem with netCDF4 library implementation.
-
-   Demonstration:
-   ncks -O -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
-   ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc
-   ncks -m ~/foo.nc
-
-   20110708: Verified problem still exists
-   Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 "Sticky" reminders:
 
@@ -231,8 +155,8 @@ E. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.0.9 with was built and tested with HDF5 hdf5-1.8.5-patch1 and with
-   4.1.2-snapshot2011041822.
+   NCO 4.0.9 with was built and tested with HDF5 hdf5-1.8.7 and with
+   4.2-snapshot2012020522.
    NCO may not build with earlier, and should build with later, netCDF4 releases.
    This is particularly true since NCO 4.0.9 takes advantage of an
    internal change to the netCDF nc_def_var_chunking() API in June 2009. 
@@ -242,7 +166,7 @@ E. NCO support for netCDF4 features is tracked at
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
 
 F. Have you seen the NCO logo candidates by Tony Freeman, Rich
-   Signell, Rob Hetland, and Andrea Cimatoribus?
+   Signell, Rob Hetland, and Andrea Cimatoribus? 
    http://nco.sf.net
    Tell us what you think...
 
