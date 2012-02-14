@@ -1,10 +1,12 @@
-2012-02-13  Charlie Zender  <zender@uci.edu>
+2012-02-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.1.0 release procedure:
  	Changes since nco-4_0_9: 
 	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
+
+	* Update AIX options to netCDF 4.1.3 on bluefire
 
 2012-02-13  Charlie Zender  <zender@uci.edu>
 

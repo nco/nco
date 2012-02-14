@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.99 2012-01-01 20:51:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.100 2012-02-14 23:29:19 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -24,7 +24,7 @@
 # 64-bit ABI netCDF3 on NCAR AIX systems (bluefire):
 # cd ${HOME}/nco/src/nco_c++;NETCDF_LIB='/usr/local/lib64/r4i4' make -f Makefile.old --jobs=1 ABI=64 all;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
-# cd ${HOME}/nco/src/nco_c++;CURL_LIB='/contrib/curl/7.21.2/lib' HDF5_ROOT='/contrib/hdf5-1.8.6_seq' NETCDF_ROOT='/contrib/netcdf-4.1.2_seq' SZ_LIB='/contrib/szip/lib' make -f Makefile.old --jobs=1 ABI=64 NETCDF4=Y OPTS=D SZ=Y all;cd -
+# cd ${HOME}/nco/src/nco_c++;CURL_LIB='/contrib/curl/7.21.2/lib' HDF5_ROOT='/contrib/hdf5-1.8.7_seq' NETCDF_ROOT='/contrib/netcdf-4.1.3_seq' SZ_LIB='/contrib/szip/lib' make -f Makefile.old --jobs=1 ABI=64 NETCDF4=Y OPTS=D SZ=Y all;cd -
 
 # In rule 
 # foobar.o : foo.c bar.c

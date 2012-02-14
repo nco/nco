@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.117 2012-01-01 20:51:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.118 2012-02-14 23:29:19 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -30,7 +30,7 @@
 # 64-bit ABI netCDF3 on NCAR AIX systems (bluefire):
 # cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D NETCDF4=N UDUNITS2=N all;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
-# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/7.21.2/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' GSL_MINOR_VERSION='12' HDF5_ROOT='/contrib/hdf5-1.8.6_seq' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf-4.1.2_seq' SZ_LIB='/contrib/szip/lib' UDUNITS_LIB='/contrib/zlib/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D SZ=Y all;cd -
+# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/7.21.2/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' GSL_MINOR_VERSION='12' HDF5_ROOT='/contrib/hdf5-1.8.7_seq' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf-4.1.3_seq' SZ_LIB='/contrib/szip/lib' UDUNITS_LIB='/contrib/zlib/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D SZ=Y all;cd -
 # 
 # Cygwin on Windows Vista systems:
 # cd ~/nco/src/nco++;ANTLR='antlr' make -f Makefile.old GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y all;cd -
