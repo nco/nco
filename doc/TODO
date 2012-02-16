@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1142 2012-02-09 21:02:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1143 2012-02-16 05:24:42 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -750,7 +750,7 @@ nco1027. ncrcat check md5sum of data before/after concatenation ? would have pre
 nco1028. ncap2: create maintainable list of reserved words and put in manual
 nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them though)
 nco1031. ncap2: overload array() so it works for multi-dimensional variables?
-nco1032. 
+nco1032. ncap2: develop a real "de-sort" or un-sort function that undoes what srt_map did in the original call to sort()
 qrk
 ************************************************************************
 End ncoXXX TODOs
