@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.662 2012-02-16 05:24:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.663 2012-02-16 22:58:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2230,7 +2230,7 @@ If not user-specified, OpenMP obtains @var{thr_nbr} from the
 @cindex @code{OMP_NUM_THREADS}
 @cindex @command{ncrcat}
 @cindex @command{ncwa}
-@cindex @command{ncap}
+@cindex @command{ncap2}
 @cindex @command{ncpdq}
 @cindex large datasets
 @acronym{NCO} may modify @var{thr_nbr} according to its own internal
@@ -2248,7 +2248,7 @@ In the future (perhaps with netCDF4), we hope to
 demonstrate significant threading improvements with operators
 like @code{ncrcat} by performing multiple simultaneous writes.
 
-Compute-intensive operators (@code{ncap}, @code{ncwa} and @code{ncpdq}) 
+Compute-intensive operators (@code{ncap2}, @code{ncwa} and @code{ncpdq}) 
 benefit most from threading.
 The greatest increases in throughput due to threading occur on
 large datasets where each thread performs millions, at least,
@@ -5698,7 +5698,7 @@ host geophysical model and it makes no sense to change their values.
 @cindex non-coordinate grid properties
 Furthermore, the @dfn{size and rank-preserving arithmetic operators} try
 not to operate on certain grid properties.
-These operators are @command{ncap}, @command{ncbo}, @command{ncea},
+These operators are @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncflint}, and @command{ncpdq} (when used for packing, not for
 permutation).  
 These operators do not operate, by default, on (i.e., add, subtract,
@@ -5945,7 +5945,7 @@ put into maintenance mode in November, 2006.
 This documentation refers to @command{ncap2}, which has a superset of
 the @command{ncap} functionality. 
 Eventually @command{ncap} will be deprecated in favor @command{ncap2}.
-@command{ncap2} may be renamed @command{ncap} in 2011.}.
+@command{ncap2} may be renamed @command{ncap} in 2012.}.
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}
@@ -6583,7 +6583,7 @@ three_dmn_var_prm=
 @end html
 @node Attributes, Number literals, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
-@cindex attributes@command{ncap}
+@cindex attributes@command{ncap2}
 @noindent Attributes are referred to by @emph{var_nm@@att_nm} @*
 All the following are valid statements:
 @example
@@ -6652,7 +6652,7 @@ If the attribute name contains non-regular characters use ID quoting. See @pxref
 @end html
 @node Number literals, if statement, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Number literals
-@cindex number literals @command{ncap}
+@cindex number literals @command{ncap2}
 The table below lists the postfix character(s) to add to a number
 literal for type cohesion. 
 To use the new netCDF4 types @acronym{NCO} must be compiled/linked to
@@ -6792,7 +6792,7 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : three_dmn_var_sht.int
 @end html
 @node print statement, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
 @subsection print statement
-@cindex print()@command{ncap}
+@cindex print() @command{ncap2}
 @example
 print(variable_name/attribute name/string, format string);
 @end example  
@@ -6800,10 +6800,10 @@ print(variable_name/attribute name/string, format string);
 @noindent The print function takes a variable name or attribute name or
 a quoted string and prints the contents in a in a similar fashion to
 @code{ncks -H}.
-There is also an optional C style format string argument. 
-Currently the print function cannot print RAM variables or expressions 
+There is also an optional C-language style format string argument. 
+Currently the print function cannot print @acronym{RAM} variables or expressions 
 such as @code{'print(var_msk*3+4)'}. 
-To print an expression, first evaluate it as a non-RAM variable (so it
+To print an expression, first evaluate it as a non-@acronym{RAM} variable (so it
 will be saved and can be printed), and then print the variable.
 
 @noindent examples
@@ -7001,7 +7001,7 @@ Returns the netcdf type (see previous section)
 
 @sp 1
 @noindent @strong{Utility Methods @*}
-These functions are used to manipulate missing values and RAM variables.
+These functions are used to manipulate missing values and @acronym{RAM} variables.
 @pxref{Missing values ncap2} 
 
 @table @code
@@ -7014,9 +7014,9 @@ These functions are used to manipulate missing values and RAM variables.
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @item ram_write()
- Writes a RAM variable to disk i.e., converts it to a regular disk type variable
+ Writes a @acronym{RAM} variable to disk i.e., converts it to a regular disk type variable
 @item ram_delete()
- Deletes a RAM variable or an attribute 
+ Deletes a @acronym{RAM} variable or an attribute 
 @end table
 
 @sp 1
@@ -7097,16 +7097,16 @@ n3=1/(three_dmn_var_dbl.cos().pow(2))-tan(three_dmn_var_dbl)^2; // n3 type doubl
 @end html
 @node RAM variables, Where statement, Methods and functions, ncap2 netCDF Arithmetic Processor
 @subsection RAM variables
-Unlike regular variables, RAM variables are never written to disk.
-Hence using RAM variables in place of regular variables (especially
+Unlike regular variables, @acronym{RAM} variables are never written to disk.
+Hence using @acronym{RAM} variables in place of regular variables (especially
 within loops) significantly increases execution speed.
 Variables that are frequently accessed within @code{for} or @code{where}
 clauses provide the greatest opportunities for optimization. 
-To declare and define a RAM variable simply prefix the variable name
+To declare and define a @acronym{RAM} variable simply prefix the variable name
 with an asterisk (@code{*}) when the variable is declared/initialized.
-To delete a RAM variables (and recover their memory) use the
+To delete a @acronym{RAM} variables (and recover their memory) use the
 @code{ram_delete()} method. 
-To write a RAM variable to disk (like a regular variable) use
+To write a @acronym{RAM} variable to disk (like a regular variable) use
 @code{ram_write()}. 
 @cindex ram_write()
 @cindex ram_delete()
@@ -7215,43 +7215,41 @@ temp_max=temperature.max();
 @subsection Loops
 @cindex while()
 @cindex for()
-@command{ncap} supplies @command{for()} loops and @command{while()} loops. 
-They are completely unoptimized so use them only with RAM 
+@command{ncap2} supplies @command{for()} loops and @command{while()} loops. 
+They are completely unoptimized so use them only with @acronym{RAM} 
 variables unless you want thrash your disk to death. 
 To break out of a loop use the @command{break} command. 
 To iterate to the next cycle use the @command{continue} command. 
 
 @example
-// Follwing sets elements in variable double temp(time,lat) 
+// Set elements in variable double temp(time,lat) 
 // If element < 0 set to 0, if element > 100 set to 100
 *sz_idx=$time.size;
 *sz_jdx=$lat.size;
 
 for(*idx=0;idx<sz_idx;idx++)
   for(*jdx=0;jdx<sz_jdx;jdx++)
-    if(temp(idx,jdx) > 100) temp(idx,jdx)=100.0;
-    else if(temp(idx,jdx) < 0) temp(idx,jdx)=0.0;
+    if(temp(idx,jdx) > 100) temp(idx,jdx)=100.0; 
+      else if(temp(idx,jdx) < 0) temp(idx,jdx)=0.0;
 
 // Are values of co-ordinate variable double lat(lat) monotonic?
-   *sz=$lat.size;
+*sz=$lat.size;
 
-   for(*idx=1;idx<sz;idx++)
-     if(lat(idx)-lat(idx-1) < 0.0) 
-       break;
+for(*idx=1;idx<sz;idx++)
+  if(lat(idx)-lat(idx-1) < 0.0) break;
 
-   if(idx == sz) 
-     print("lat co-ordinate is monotonic\n");
-   else 
-     print("lat co-ordinate is NOT monotonic\n");
+if(idx == sz) print("lat co-ordinate is monotonic\n");
+   else print("lat co-ordinate is NOT monotonic\n");
 
 // Sum odd elements	
 *idx=0;
 *sz=$lat_nw.size;
 *sum=0.0;
-  while(idx<sz)@{
-   if(lat(idx)%2) sum+=lat(idx);
-   idx++;
-  @}
+
+while(idx<sz)@{
+  if(lat(idx)%2) sum+=lat(idx);
+  idx++;
+@}
 
 ram_write(sum);
 print("Total of odd elements ");print(sum);print("\n"); 
@@ -7270,7 +7268,7 @@ The syntax of an @var{include-file} is:
 The script filename is searched relative to the run directory. 
 It is possible to nest include files to an arbitrary depth. 
 A handy use of inlcude files is to store often used constants. 
-Use RAM variables if you do not want these constants written to
+Use @acronym{RAM} variables if you do not want these constants written to
 @var{output-file}.  
 @example
 // script.nco
@@ -7285,7 +7283,7 @@ e=2.71828; // Regular (disk) variable, written to output
 @end html
 @node Sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
 @subsection @command{sort} methods
-In @acronym{ncap} there are two ways to sort data. 
+In @acronym{ncap2} there are two ways to sort data. 
 The first is a regular @command{sort}. 
 This sorts ALL the elements of a variable or attribute without
 regard to any dimensions. 
@@ -7799,7 +7797,7 @@ print(T_out);
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
 can link to the GNU Scientific Library (@acronym{GSL}). 
-@command{ncap} can access most @acronym{GSL} special functions including
+@command{ncap2} can access most @acronym{GSL} special functions including
 Airy, Bessel, error, gamma, beta, hypergeometric, and Legendre functions
 and elliptical integrals. 
 @acronym{GSL} must be @w{version 1.4} or later. 
@@ -7830,7 +7828,7 @@ us know if you find otherwise).
 @noindent Consider the gamma function.@*
 @noindent The @acronym{GSL} function prototype is @*
 @code{int gsl_sf_gamma_e(const double x, gsl_sf_result * result)}
-The @command{ncap} script would be:
+The @command{ncap2} script would be:
 @example
 lon_in[lon]=@{-1,0.1,0,2,0.3@};
 lon_out=gsl_sf_gamma(lon_in);
@@ -7850,7 +7848,7 @@ Otherwise, the default double fill value is used
 prototype@* 
 @code{int gsl_sf_bessel_Jn_e(int n, double x, gsl_sf_result * result)} 
 
-An @command{ncap} script would be
+An @command{ncap2} script would be
 @example
 lon_out=gsl_sf_bessel_Jn(2,lon_in);  
 lon_out=0.11490, 0.0012, 0.00498, 0.011165
@@ -7865,7 +7863,7 @@ lon_out=gsl_sf_bessel_Jn(n_in,0.5);
 lon_out= 0.93846, 0.24226, 0.03060, 0.00256
 @end example
 
-@noindent Arguments to @acronym{GSL} wrapper functions in @command{ncap}
+@noindent Arguments to @acronym{GSL} wrapper functions in @command{ncap2}
 must conform to one another, i.e., they must share the same sub-set of
 dimensions.  
 For example: @code{three_out=gsl_sf_bessel_Jn(n_in,three_dmn_var_dbl)}
@@ -7881,14 +7879,14 @@ Consider the elliptical integral with prototype
 three_out=gsl_sf_ellint_RD(0.5,time,three_dmn_var_dbl);
 @end example
 
-@noindent The three arguments are all conformable so the above @command{ncap} call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environment variable @code{GSL_PREC_MODE}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the @acronym{GSL} manual for more details. 
+@noindent The three arguments are all conformable so the above @command{ncap2} call is valid. The mode argument in the function prototype controls the convergence of the algorithm. It also appears  in the Airy Function prototypes. It can be set by defining the environment variable @code{GSL_PREC_MODE}. If unset it defaults to the value @code{GSL_PREC_DOUBLE}. See the @acronym{GSL} manual for more details. 
 @example
 export GSL_PREC_MODE=0 // GSL_PREC_DOUBLE
 export GSL_PREC_MODE=1 // GSL_PREC_SINGLE
 export GSL_PREC_MODE=2 // GSL_PREC_APPROX
 @end example
 
-@noindent The @command{ncap} wrappers to the array functions are
+@noindent The @command{ncap2} wrappers to the array functions are
 slightly different. 
 Consider the following @acronym{GSL} prototype @* 
 @code{int gsl_sf_bessel_Jn_array(int nmin, int nmax, double x, double *result_array)}
@@ -8231,7 +8229,7 @@ prototypes look at the spreadsheet @strong{doc/nco_gsl.ods}. @* @*
 
 @noindent  Given a set of data points (x1,y1)...(xn, yn) the @acronym{GSL} functions computes a continuous interpolating function @acronym{Y(x)} such that @acronym{Y(xi) = yi}. The interpolation is piecewise smooth, and its behavior at the end-points is determined by the type of interpolation used. For more information consult the @acronym{GSL} manual. 
 
-@noindent Interpolation with @command{ncap2} is a two stage process. In the first stage, a ram variable is created from the chosen interpolating function and the data set. This ram variable holds in memory a @acronym{GSL} interpolation object. In the second stage, points along the interpolating function are calculated. If you have a very large data set or are interpolating many sets then consider deleting the ram variable when it is redundant. Use the command @command{ram_delete(var_nm)}.   
+@noindent Interpolation with @command{ncap2} is a two stage process. In the first stage, a @acronym{RAM} variable is created from the chosen interpolating function and the data set. This @acronym{RAM} variable holds in memory a @acronym{GSL} interpolation object. In the second stage, points along the interpolating function are calculated. If you have a very large data set or are interpolating many sets then consider deleting the @acronym{RAM} variable when it is redundant. Use the command @command{ram_delete(var_nm)}.   
 
 @noindent A simple example
 
@@ -8249,16 +8247,15 @@ y2=gsl_spline_eval(ram_sp,1.3);
 y3=gsl_spline_eval(ram_sp,0.0);
 ram_delete(ram_sp);
 
-print(y_out);   // 1.10472, 1.2, 1.4, 1.42658, 1.69680002 
-print(y2);      // 1.12454 
-print(y3);      // '_' 
-
+print(y_out); // 1.10472, 1.2, 1.4, 1.42658, 1.69680002 
+print(y2);    // 1.12454 
+print(y3);    // '_' 
 @end example
 
 @noindent Note in the above example y3 is set to 'missing value' because 0.0 isn't within the input X range.  
 
-@strong{ @acronym{GSL} Interpolation Types } @*
-@noindent All the interpolation functions have been implemented. These are: @*
+@strong{@acronym{GSL} Interpolation Types}@*
+@noindent All the interpolation functions have been implemented. These are:@*
 gsl_interp_linear() @* gsl_interp_polynomial() @* gsl_interp_cspline()@*
 gsl_interp_cspline_periodic()@* gsl_interp_akima() @* gsl_interp_akima_periodic() @*
 
@@ -8267,9 +8264,9 @@ gsl_interp_cspline_periodic()@* gsl_interp_akima() @* gsl_interp_akima_periodic(
 @noindent @strong{Implemented} @*
 gsl_spline_eval() @*
 @noindent @strong{Unimplemented} @*
-gsl_spline_deriv() @*
-gsl_spline_deriv2() @*
-gsl_spline_integ() @*
+gsl_spline_deriv()@*
+gsl_spline_deriv2()@*
+gsl_spline_integ()@*
 
 @html
 <a name="ncap_lsqf"></a> <!-- http://nco.sf.net/nco.html#ncap_lsqf -->
@@ -9271,7 +9268,7 @@ other OSs.}
 @end html
 @node Operators precedence and associativity , ID Quoting, Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
 @subsection Operators precedence and associativity
-This page lists the @command{ncap} operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
+This page lists the @command{ncap2} operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
 
 @multitable @columnfractions .18 .62 .20
 @headitem Operator @tab Description @tab Associativity
@@ -12762,7 +12759,7 @@ Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @command{ncra} and @command{ncwa}. 
 Type conversion for arithmetic.
 Migration to netCDF3 API.
-@command{ncap} parser, lexer, @w{and I/O}.
+@command{ncap2} parser, lexer, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
 Various hacks.
