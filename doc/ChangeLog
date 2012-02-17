@@ -1,7 +1,9 @@
 2012-02-14  Charlie Zender  <zender@uci.edu>
 
+	* Tested 4.0.9 on bluefire to find, of course, massive breakage
+
 	* NCO 4.1.0 release procedure:
- 	Changes since nco-4_0_9: 
+ 	Changes since nco-4_0_9:
 	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
