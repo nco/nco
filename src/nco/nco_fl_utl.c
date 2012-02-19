@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.141 2012-02-13 23:18:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.142 2012-02-19 23:13:14 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -966,24 +966,49 @@ nco_fl_mv /* [fnc] Move first file to second */
  const char * const fl_dst) /* I [sng] Name of destination file */
 {
   /* Purpose: Move first file to second */
-  char *mv_cmd;
-  const char mv_cmd_fmt[]="mv -f %s %s";
+  char *cmd_mv;
+  const char cmd_mv_fmt[]="mv -f %s %s";
 
   int rcd_sys; /* [rcd] Return code for system() */
   const int fmt_chr_nbr=4;
 
   /* Construct and execute copy command */
-  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
+  cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
   if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
-  (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
-  rcd_sys=system(mv_cmd);
+  (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src,fl_dst);
+  rcd_sys=system(cmd_mv);
   if(rcd_sys == -1){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  mv_cmd=(char *)nco_free(mv_cmd);
+  cmd_mv=(char *)nco_free(cmd_mv);
   if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_mv() */
+
+void
+nco_md5_chk /* [fnc] Return MD5 checksum on hyperslab */
+(const int in_id, /* I [id] netCDF input file ID */
+ const char * const var_nm) /* I [sng] Input variable name */
+{
+  /* Purpose: Move first file to second */
+  char *cmd_md5;
+  const char cmd_md5_fmt[]="openssl dgst -md5";
+
+  int rcd_sys; /* [rcd] Return code for system() */
+  const int fmt_chr_nbr=4;
+
+  /* Construct and execute copy command */
+  cmd_md5=(char *)nco_malloc((strlen(cmd_md5_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Performing MD5 digest of %s...",prg_nm_get(),fl_src,fl_dst);
+  (void)sprintf(cmd_md5,cmd_md5_fmt,fl_src,fl_dst);
+  rcd_sys=system(cmd_md5);
+  if(rcd_sys == -1){
+    (void)fprintf(stdout,"%s: ERROR nco_md5_chk() unable to execute mv command \"%s\"\n",prg_nm_get(),cmd_md5);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+  cmd_md5=(char *)nco_free(cmd_md5);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+} /* end nco_md5_chk() */
 
 char * /* O [sng] Name of file to retrieve */
 nco_fl_nm_prs /* [fnc] Construct file name from input arguments */

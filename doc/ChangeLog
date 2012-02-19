@@ -1,3 +1,7 @@
+2012-02-19  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_md5.[ch] for MD5 digests
+
 2012-02-14  Charlie Zender  <zender@uci.edu>
 
 	* Tested 4.0.9 on bluefire to find, of course, massive breakage

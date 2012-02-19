@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.592 2012-02-14 23:29:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.593 2012-02-19 23:13:13 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1807,6 +1807,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_grp_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_lmt.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_lst_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_md5.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_mmr.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_msa.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_mss_val.o) \

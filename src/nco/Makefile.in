@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.114 2011-11-15 02:18:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.115 2012-02-19 23:13:14 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -92,19 +92,19 @@ am__libnco_la_SOURCES_DIST = libnco.h nco_getopt.h ncap.h ncap_yacc.h \
 	nco.h nco_att_utl.h nco_aux.h nco_bnr.h nco_cln_utl.h \
 	nco_cnf_dmn.h nco_cnf_typ.h nco_cnk.h nco_cnv_arm.h \
 	nco_cnv_csm.h nco_ctl.h nco_dbg.h nco_dmn_utl.h nco_fl_utl.h \
-	nco_grp_utl.h nco_lmt.h nco_lst_utl.h nco_mmr.h nco_mpi.h \
-	nco_msa.h nco_mss_val.h nco_netcdf.h nco_omp.h nco_pck.h \
-	nco_prn.h nco_rec_var.h nco_rth_flt.h nco_rth_utl.h \
+	nco_grp_utl.h nco_lmt.h nco_lst_utl.h nco_md5.h nco_mmr.h \
+	nco_mpi.h nco_msa.h nco_mss_val.h nco_netcdf.h nco_omp.h \
+	nco_pck.h nco_prn.h nco_rec_var.h nco_rth_flt.h nco_rth_utl.h \
 	nco_scl_utl.h nco_scm.h nco_sng_utl.h nco_typ.h nco_var_avg.h \
 	nco_var_lst.h nco_var_rth.h nco_var_scv.h nco_var_utl.h \
 	nco_getopt.c nco_att_utl.c nco_aux.c nco_bnr.c nco_cln_utl.c \
 	nco_cnf_dmn.c nco_cnf_typ.c nco_cnk.c nco_cnv_arm.c \
 	nco_cnv_csm.c nco_ctl.c nco_dbg.c nco_dmn_utl.c nco_fl_utl.c \
-	nco_grp_utl.c nco_lmt.c nco_lst_utl.c nco_mmr.c nco_msa.c \
-	nco_mss_val.c nco_netcdf.c nco_omp.c nco_pck.c nco_prn.c \
-	nco_rec_var.c nco_rth_flt.c nco_rth_utl.c nco_scl_utl.c \
-	nco_scm.c nco_sng_utl.c nco_var_avg.c nco_var_lst.c \
-	nco_var_rth.c nco_var_scv.c nco_var_utl.c
+	nco_grp_utl.c nco_lmt.c nco_lst_utl.c nco_md5.c nco_mmr.c \
+	nco_msa.c nco_mss_val.c nco_netcdf.c nco_omp.c nco_pck.c \
+	nco_prn.c nco_rec_var.c nco_rth_flt.c nco_rth_utl.c \
+	nco_scl_utl.c nco_scm.c nco_sng_utl.c nco_var_avg.c \
+	nco_var_lst.c nco_var_rth.c nco_var_scv.c nco_var_utl.c
 am__objects_1 =
 am__objects_2 = $(am__objects_1)
 @NCO_NEED_GETOPT_LONG_TRUE@am__objects_3 = nco_getopt.lo
@@ -113,8 +113,8 @@ am_libnco_la_OBJECTS = $(am__objects_2) $(am__objects_3) \
 	nco_cnf_dmn.lo nco_cnf_typ.lo nco_cnk.lo nco_cnv_arm.lo \
 	nco_cnv_csm.lo nco_ctl.lo nco_dbg.lo nco_dmn_utl.lo \
 	nco_fl_utl.lo nco_grp_utl.lo nco_lmt.lo nco_lst_utl.lo \
-	nco_mmr.lo nco_msa.lo nco_mss_val.lo nco_netcdf.lo nco_omp.lo \
-	nco_pck.lo nco_prn.lo nco_rec_var.lo nco_rth_flt.lo \
+	nco_md5.lo nco_mmr.lo nco_msa.lo nco_mss_val.lo nco_netcdf.lo \
+	nco_omp.lo nco_pck.lo nco_prn.lo nco_rec_var.lo nco_rth_flt.lo \
 	nco_rth_utl.lo nco_scl_utl.lo nco_scm.lo nco_sng_utl.lo \
 	nco_var_avg.lo nco_var_lst.lo nco_var_rth.lo nco_var_scv.lo \
 	nco_var_utl.lo
@@ -420,6 +420,7 @@ nco_fl_utl.h \
 nco_grp_utl.h \
 nco_lmt.h \
 nco_lst_utl.h \
+nco_md5.h \
 nco_mmr.h \
 nco_mpi.h \
 nco_msa.h \
@@ -472,6 +473,7 @@ nco_fl_utl.c \
 nco_grp_utl.c \
 nco_lmt.c \
 nco_lst_utl.c \
+nco_md5.c \
 nco_mmr.c \
 nco_msa.c \
 nco_mss_val.c \
@@ -696,6 +698,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_grp_utl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_lmt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_lst_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_md5.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_mmr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_msa.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_mss_val.Plo@am__quote@

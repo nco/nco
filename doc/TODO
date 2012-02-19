@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1144 2012-02-16 22:58:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1145 2012-02-19 23:13:14 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -746,12 +746,14 @@ nco1026. ncwa weighted average bug reported by Lori Sentman
 	 ncwa -O -C -w area_asm -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
 	 ncwa -O -C -w area_asm -a lat -v area2 ~/nco/data/in.nc ~/foo.nc # 10
 	 ncks -H -C -v area -m ~/foo.nc
-nco1027. ncrcat check md5sum of data before/after concatenation ? would have prevented corruption by NOFILL bug
+nco1027. ncrcat check md5sum of data before/after concatenation ? would have prevented corruption by NOFILL bug requested by patbrock 20120217
 nco1028. ncap2: create maintainable list of reserved words and put in manual
 nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them though)
 nco1031. ncap2: overload array() so it works for multi-dimensional variables?
 nco1032. ncap2: develop a real "de-sort" or un-sort function that undoes what srt_map did in the original call to sort()
-nco1033. 
+nco1033. ncrcat: warn when first file has more variables than subsequent files
+
+nco1034. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.48 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.49 2012-02-19 23:13:14 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) library */
 
@@ -35,6 +35,7 @@
 #include "nco_grp_utl.h" /* Group utilities */
 #include "nco_lmt.h" /* Hyperslab limits */
 #include "nco_lst_utl.h" /* List utilities */
+#include "nco_md5.h" /* MD5 digests */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 #include "nco_mss_val.h" /* Missing value utilities */
