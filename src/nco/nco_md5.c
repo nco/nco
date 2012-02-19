@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.1 2012-02-19 23:13:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.2 2012-02-19 23:37:38 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -38,7 +38,7 @@
   L. Peter Deutsch
   ghost@aladdin.com
  */
-/* $Id: nco_md5.c,v 1.1 2012-02-19 23:13:14 zender Exp $ */
+/* $Id: nco_md5.c,v 1.2 2012-02-19 23:37:38 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
 
@@ -71,21 +71,21 @@
 #include "nco_md5.h" /* MD5 digests */
 
 void
-nco_md5_chk /* [fnc] Return MD5 checksum on hyperslab */
+nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm) /* I [sng] Input variable name */
 {
-  /* Purpose: Move first file to second */
+  /* Purpose: Perform MD5 digest on hyperslab */
   char *cmd_md5;
-  const char cmd_md5_fmt[]="openssl dgst -md5";
+  const char cmd_md5_fmt[]="openssl dgst -md5 %s";
 
   int rcd_sys; /* [rcd] Return code for system() */
   const int fmt_chr_nbr=4;
 
   /* Construct and execute copy command */
-  cmd_md5=(char *)nco_malloc((strlen(cmd_md5_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Performing MD5 digest of %s...",prg_nm_get(),fl_src,fl_dst);
-  (void)sprintf(cmd_md5,cmd_md5_fmt,fl_src,fl_dst);
+  cmd_md5=(char *)nco_malloc((strlen(cmd_md5_fmt)-fmt_chr_nbr+1UL)*sizeof(char));
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Performing MD5 digest of %s...",prg_nm_get(),var_nm);
+  (void)sprintf(cmd_md5,cmd_md5_fmt,var_nm);
   rcd_sys=system(cmd_md5);
   if(rcd_sys == -1){
     (void)fprintf(stdout,"%s: ERROR nco_md5_chk() unable to execute mv command \"%s\"\n",prg_nm_get(),cmd_md5);

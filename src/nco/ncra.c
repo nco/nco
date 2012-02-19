@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.271 2012-02-19 23:13:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.272 2012-02-19 23:37:38 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -103,7 +103,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool LAST_RECORD=False;
-  nco_bool MD5_CHECKSUM=False;
+  nco_bool MD5_DIGEST=False;
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.271 2012-02-19 23:13:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.271 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.272 2012-02-19 23:37:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.272 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -219,7 +219,7 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"md5_checksum",no_argument,0,0}, /* [flg] Print MD5 checksum */
+      {"md5_digest",no_argument,0,0}, /* [flg] Print MD5 digest */
       {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
@@ -331,9 +331,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-      if(!strcmp(opt_crr,"md5_checksum")){
-	MD5_CHECKSUM=True;
-	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Will perform MD5 checksums of input and output hyperslabs\n",prg_nm_get());
+      if(!strcmp(opt_crr,"md5_digest")){
+	MD5_DIGEST=True;
+	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -735,7 +735,7 @@ main(int argc,char **argv)
         lmt_all_rec->lmt_dmn[0]->srd=1L;   
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,lmt_rec,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    in_id=in_id_arr[omp_get_thread_num()];
@@ -787,11 +787,10 @@ main(int argc,char **argv)
 #endif /* _OPENMP */
 	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 
-	      /* Perform MD5 checksum of input and output data if requested */
-	      if(MD5_CHECKSUM){
-		md5_sum=nco_md5_chk(in_id,var_prc[idx]->id,fxm);
-		(void)nco_md5_chk(out_id,var_prc_out[idx]->id,fxm);
-	      } /* !MD5_CHECKSUM */
+	      /* Perform MD5 digest of input and output data if requested */
+	      if(MD5_DIGEST){
+		(void)nco_md5_chk(out_id,var_prc_out[idx]->nm);
+	      } /* !MD5_DIGEST */
 	    } /* end if ncrcat */
 	    
 	    /* Warn if record coordinate, if any, is not monotonic */

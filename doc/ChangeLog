@@ -1,5 +1,8 @@
 2012-02-19  Charlie Zender  <zender@uci.edu>
 
+	* Incorporate MD5 digest code by L. Peter Deutsch (LPD)
+	Code is under separate BSD-like license. Compiles though not used yet.
+
 	* Add nco_md5.[ch] for MD5 digests
 
 2012-02-14  Charlie Zender  <zender@uci.edu>
