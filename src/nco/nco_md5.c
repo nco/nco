@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.6 2012-02-20 04:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.7 2012-02-20 16:46:56 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -41,7 +41,7 @@
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.6 2012-02-20 04:42:06 zender Exp $ */
+/* $Id: nco_md5.c,v 1.7 2012-02-20 16:46:56 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
@@ -74,32 +74,112 @@
 #include "nco_md5.h" /* MD5 digests */
 
 void
-nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
-(const int out_id, /* I [id] netCDF output file ID */
- const char * const var_nm, /* I [sng] Input variable name */
- const long sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
- const void * const vp) /* I [val] Values to digest */
+nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab */
+(const char * const var_nm, /* I [sng] Input variable name */
+ const long var_sz_byt, /* I [nbr] Size (in bytes) of hyperslab in RAM */
+ const int nc_id, /* I [id] netCDF file ID */
+ const long * const dmn_srt, /* I [idx] Contiguous vector of indices to start of hyperslab on disk */
+ const long * const dmn_cnt, /* I [nbr] Contiguous vector of lengths of hyperslab on disk */
+ void * const vp) /* I/O [val] Values to digest */
 {
-  /* Purpose: Perform MD5 digest on hyperslab */
-  char hex_output[16*2+1];
-  
-  int idx_dgs;
-  
-  md5_state_t md5_stt;
-  md5_byte_t md5_dgs_sng[16];
-  
-  md5_init(&md5_stt);
-  md5_append(&md5_stt,(const md5_byte_t *)vp,sz_byt);
-  md5_finish(&md5_stt,md5_dgs_sng);
-  
-  for(idx_dgs=0;idx_dgs<16;++idx_dgs) sprintf(hex_output+idx_dgs*2,"%02x",md5_dgs_sng[idx_dgs]);
+  /* Purpose: Perform MD5 digest on hyperslab in RAM
+     Optionally do same for hyperslab written to disk and compare with RAM digest 
+     NB: Input argument var_sz_byt is independent of dmn_srt and dmn_cnt
+     Routine uses var_sz_byt _only_ for MD5 digest of RAM variable 
+     That is why this input is const
+     Iff MD5 of disk hyperslab is requested, then routine uses nc_id and var_nm to obtain  
+     var_id, dmn_nbr, var_typ_dsk of variable on disk.
+     From these we obtain var_sz_dsk and var_sz_byt
+     In other words, MD5(RAM) depends only on information provided in RAM while
+     MD5(disk) utilizes netCDF layer to assemble hyperslab data.
+     Idea is that this provides the best comparison of RAM vs. disk hyperslabs */
 
-  /* Report MD5 digest */
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,hex_output);
+  int prg_id; /* [enm] Program ID */
   
-  /* Compare this digest to what is read in from output netCDF file */
+  char md5_dgs_hxd_sng_ram[NCO_MD5_DGS_SZ*2+1];
+  
+  nco_bool MD5_DGS_DSK=False; /* [flg] Perform MD5 digest of variable written to disk */
+
+  /* MD5 digest of hyperslab already in RAM */
+  (void)nco_md5_chk_ram(var_nm,var_sz_byt,vp,md5_dgs_hxd_sng_ram);
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
+  
+  /* NB: Setting this flag significantly increases execution time
+     Comparing RAM to disk requires reading hyperslab from disk
+     Hence it essentially double numbers of disk reads, e.g.,
+     ncrcat reads/writes only one record of one variable at a time, and will perform an extra read to digest each write.
+     Default strategy is to turn on MD5 disk-checking only when user is concatenating files */
+  prg_id=prg_get(); /* [enm] Program ID */
+  if(prg_id == ncrcat || prg_id == ncecat) MD5_DGS_DSK=True;  /* [flg] Perform MD5 digest of variable written to disk */
+
+  /* Compare this digest to what is read in from output netCDF file
+     This implementation re-uses vp to hold data read from disk 
+     Advantages of this include lower overall memory usage
+     Assumptions include:
+     1. Original vp data are written to disk just before MD5 digest above
+     2. Original vp data are no longer needed in calling routine, i.e., ncks or ncrcat
+        Hence calls to nco_md5_chk() should occur just after put_vara() and prior to free()
+     3. vp data are contiguous and may be read with a single get_vara() call */
+
+  if(MD5_DGS_DSK){
+    char md5_dgs_hxd_sng_dsk[NCO_MD5_DGS_SZ*2+1];
+
+    int dmn_idx; 
+    int dmn_nbr;
+    int var_id;
+
+    long var_sz_dsk=1L; /* [nbr] Size (in elements) of variable on disk */
+    long var_sz_byt_dsk; /* [nbr] Size (in bytes) of variable (hyperslab) on disk */
+
+    nc_type var_typ_dsk; /* [enm] netCDF type of variable on disk */
+
+    /* Get var_id for requested variable */
+    (void)nco_inq_varid(nc_id,var_nm,&var_id);
+    
+    /* Get type and number of dimensions for variable */
+    (void)nco_inq_var(nc_id,var_id,(char *)NULL,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
+    
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) var_sz_dsk*=dmn_cnt[dmn_idx];
+
+    var_sz_byt_dsk=var_sz_dsk*nco_typ_lng(var_typ_dsk);
+
+    /* NB: If dmn_nbr is zero, then input dmn_srt and dmn_cnt are not used
+       When the calling routine knows this, it may supply dmn_srt_and dmn_cnt as (const long * )NULL */
+    if(dmn_nbr == 0) (void)nco_get_var1(nc_id,var_id,0L,vp,var_typ_dsk); else (void)nco_get_vara(nc_id,var_id,dmn_srt,dmn_cnt,vp,var_typ_dsk);
+
+    (void)nco_md5_chk_ram(var_nm,var_sz_byt_dsk,vp,md5_dgs_hxd_sng_dsk);
+    if(strcmp(md5_dgs_hxd_sng_ram,md5_dgs_hxd_sng_dsk)){
+      (void)fprintf(stderr,"%s: ERROR MD5(%s) RAM and disk disagree: %s != %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram,md5_dgs_hxd_sng_dsk);
+      nco_exit(EXIT_FAILURE);
+    }else{ /* endif digests differ */
+
+      if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO MD5 digests of RAM and disk contents for %s agree\n",prg_nm_get(),var_nm);
+    }  /* endif digests agree */
+
+  } /* !MD5_DGS_DSK */
 
 } /* end nco_md5_chk() */
+
+void
+nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
+(const char * const var_nm, /* I [sng] Input variable name */
+ const long var_sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
+ const void * const vp, /* I [val] Values to digest */
+ char md5_dgs_hxd_sng[NCO_MD5_DGS_SZ*2+1]) /* O [sng] MD5 digest */
+{
+  /* Purpose: Perform MD5 digest on hyperslab */
+  int idx_dgs; 
+  
+  md5_state_t md5_stt;
+  md5_byte_t md5_dgs_byt[NCO_MD5_DGS_SZ];
+  
+  /* Sequence of MD5 digest determined by LPD's implementation */
+  md5_init(&md5_stt);
+  md5_append(&md5_stt,(const md5_byte_t *)vp,var_sz_byt);
+  md5_finish(&md5_stt,md5_dgs_byt);
+  
+  for(idx_dgs=0;idx_dgs<NCO_MD5_DGS_SZ;++idx_dgs) sprintf(md5_dgs_hxd_sng+idx_dgs*2,"%02x",md5_dgs_byt[idx_dgs]);
+} /* end nco_md5_chk_ram() */
 
 /* Begin md5.c by LPD: */
 

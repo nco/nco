@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.178 2012-02-20 04:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.179 2012-02-20 16:46:56 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -336,7 +336,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     } /* end if var_sz */
   } /* end if variable is an array */
   /* Perform MD5 digest of input and output data if requested */
-  if(MD5_DIGEST) (void)nco_md5_chk(out_id,var_nm,var_sz*nco_typ_lng(var_type),void_ptr);
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,dmn_srt,dmn_cnt,void_ptr);
   /* Write unformatted binary data */
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
 
@@ -1210,7 +1210,7 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
 var_sct * /* O [sct] Variable structure */
 nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 (const int nc_id, /* I [id] netCDF file ID */
- const int var_id, /* I [id] variable ID */
+ const int var_id, /* I [id] Variable ID */
  const char * const var_nm, /* I [sng] Variable name */
  dmn_sct * const * const dim, /* I [sct] Dimensions available to variable */
  const int nbr_dim) /* I [nbr] Number of dimensions in list */
@@ -1225,7 +1225,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   var_sct *var;
 
-  /* get file format */
+  /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   /* Get record dimension ID */

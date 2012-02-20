@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.143 2012-02-19 23:13:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.144 2012-02-20 16:46:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1131,7 +1131,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   char *fl_out_tmp;
   char *pid_sng; /* String containing decimal representation of PID */
 
-  const char fnc_nm[]="nco_fl_out_open"; /* [sng] Function name */
+  const char fnc_nm[]="nco_fl_out_open()"; /* [sng] Function name */
   const char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
   const char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.283 2012-02-20 04:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.284 2012-02-20 16:46:56 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.283 2012-02-20 04:42:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.283 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.284 2012-02-20 16:46:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.284 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -347,7 +347,7 @@ main(int argc,char **argv)
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"md5_digest")){
 	MD5_DIGEST=True;
-	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
+	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;

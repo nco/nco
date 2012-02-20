@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.5 2012-02-20 04:26:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.6 2012-02-20 16:46:56 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -24,16 +24,30 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
 
+/* MD5 specification defines digest as a 16 byte array 
+   Each byte represents a value [0..255] which requires two hexadecimal characters to print 
+   Hence MD5 digest string is 2*16+1 long (where extra one is for NUL-terminator */
+#define NCO_MD5_DGS_SZ 16
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
   
   void
-  nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
-  (const int out_id, /* I [id] netCDF output file ID */
-   const char * const var_nm, /* I [sng] Input variable name */
-   const long sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
-   const void * const vp); /* I [val] Values to digest */
+  nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab */
+  (const char * const var_nm, /* I [sng] Input variable name */
+   const long var_sz_byt, /* I [nbr] Size (in bytes) of hyperslab in RAM */
+   const int nc_id, /* I [id] netCDF file ID */
+   const long * const dmn_srt, /* I [idx] Contiguous vector of indices to start of hyperslab on disk */
+   const long * const dmn_cnt, /* I [nbr] Contiguous vector of lengths of hyperslab on disk */
+   void * const vp); /* I/O [val] Values to digest */
+  
+  void
+  nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
+  (const char * const var_nm, /* I [sng] Input variable name */
+   const long var_sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
+   const void * const vp, /* I [val] Values to digest */
+   char md5_dgs_hxd_sng[NCO_MD5_DGS_SZ*2+1]); /* O [sng] MD5 digest */
   
 #ifdef __cplusplus
 } /* end extern "C" */
@@ -73,7 +87,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.5 2012-02-20 04:26:38 zender Exp $ */
+/* $Id: nco_md5.h,v 1.6 2012-02-20 16:46:56 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

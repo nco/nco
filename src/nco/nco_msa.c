@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.88 2012-02-20 04:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.89 2012-02-20 16:46:56 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -407,7 +407,7 @@ nco_msa_ovl
 {
   /* Purpose: Return true if limits overlap
      NB: Assumes that limits have been sorted */
-
+  
   long idx;
   long jdx;
   long sz=lmt_lst->lmt_dmn_nbr;
@@ -431,8 +431,8 @@ nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
   const lmt_sct * const lmt1=*((const lmt_sct * const *)vp1);
   const lmt_sct * const lmt2=*((const lmt_sct * const *)vp2); 
   /* fxm: need to compiler warnings. will following work?
-      const lmt_sct * const lmt1=(const lmt_sct *)vp1;
-      const lmt_sct * const lmt2=(const lmt_sct *)vp2; */
+     const lmt_sct * const lmt1=(const lmt_sct *)vp1;
+     const lmt_sct * const lmt2=(const lmt_sct *)vp2; */
   
   return lmt1->srt < lmt2->srt ? -1 : (lmt1->srt > lmt2->srt);
 }
@@ -539,31 +539,31 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
-int idx;
-int jdx;
-int nbr_dim;
-nc_type typ_tmp;
-void *void_ptr;
-lmt_all_sct **lmt_mult;
-lmt_sct **lmt;
-
+  int idx;
+  int jdx;
+  int nbr_dim;
+  nc_type typ_tmp;
+  void *void_ptr;
+  lmt_all_sct **lmt_mult;
+  lmt_sct **lmt;
+  
   nbr_dim=var_in->nbr_dim;	
-
+  
   /* Refresh nc_id with in_id, NB: makes OpenMP threading work
      Should have been included in release 3.9.5
      Fixes TODO nco956 */
   var_in->nc_id=in_id; 
-  /* Deal with scalar var */
-  if(nbr_dim==0){
-   var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
-   (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
-   goto do_unpck;
-   /*return; */
-  }
 
+  /* Scalars */
+  if(nbr_dim == 0){
+    var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
+    (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
+    goto do_unpck;
+  } /* end if scalar */
+  
   lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
-
+  
   /* Initialize lmt_mult with multi-limits from lmt_lst limits */
   for(idx=0;idx<nbr_dim;idx++){
     for(jdx=0;jdx<nbr_dmn_fl;jdx++){
@@ -582,19 +582,19 @@ lmt_sct **lmt;
   
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
-
+  
   (void)nco_free(lmt_mult);
   (void)nco_free(lmt);
-
-do_unpck:
+  
+ do_unpck:
   /* Following code copied from nco_var_get() */
-
+  
   if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
   /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
-
+  
   /* Type of variable and missing value in memory are now same as type on disk */
   var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
-
+  
   /* Packing in RAM is now same as packing on disk pck_dbg 
      fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
   (void)nco_pck_dsk_inq(in_id,var_in);
@@ -607,7 +607,7 @@ do_unpck:
        20050629: Making this region multi-threaded causes no problems */
     if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
   } /* endif arithmetic operator */
-
+  
   return;
 } /* end nco_msa_var_get */
 
@@ -638,7 +638,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   
   /* For regular data */
   long *dmn_map_in;
-  long *dmn_map_out;
+  long *dmn_map_cnt;
   long *dmn_map_srt;
   long var_sz=1L;
   
@@ -669,22 +669,22 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     var_sz=1L;
     void_ptr=nco_malloc(nco_typ_lng(var_type));
     /* Block is critical/thread-safe for identical/distinct in_id's */
-    { /* begin potential OpenMP critical */
+    { /* Begin potential OpenMP critical */
       (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     } /* end potential OpenMP critical */
     /* Block is always critical */
-    { /* begin OpenMP critical */
+    { /* Begin OpenMP critical */
       (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
     } /* end OpenMP critical */
     /* Perform MD5 digest of input and output data if requested */
-    if(MD5_DIGEST) (void)nco_md5_chk(out_id,var_nm,var_sz*nco_typ_lng(var_type),void_ptr);
+    if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,(long *)NULL,(long *)NULL,void_ptr);
     if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
     (void)nco_free(void_ptr);
     return;
   } /* end if */
   
   dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_map_out=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   
@@ -705,7 +705,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     } /* end loop over jdx */
     /* Create maps now---they maybe useful later */ 
     (void)nco_inq_dimlen(in_id,dmn_id[idx],&dmn_map_in[idx]);
-    dmn_map_out[idx]=lmt_mult[idx]->dmn_cnt;
+    dmn_map_cnt[idx]=lmt_mult[idx]->dmn_cnt;
     dmn_map_srt[idx]=0L;
   } /* end for */
   
@@ -722,16 +722,16 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   
   /* Block is always critical */
   { /* begin OpenMP critical */
-    (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_out,void_ptr,var_type);
+    (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_type);
   } /* end OpenMP critical */
 
   /* Perform MD5 digest of input and output data if requested */
-  if(MD5_DIGEST) (void)nco_md5_chk(out_id,var_nm,var_sz*nco_typ_lng(var_type),void_ptr);
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
   
   (void)nco_free(void_ptr);
   (void)nco_free(dmn_map_in);
-  (void)nco_free(dmn_map_out);
+  (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
   (void)nco_free(dmn_id);
   (void)nco_free(lmt_mult);
@@ -952,13 +952,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   if(var.nbr_dim > 0 && dlm_sng == NULL){
     long *mod_map_in;
-    long *mod_map_out;
+    long *mod_map_cnt;
     long *dmn_sbs_ram; /* Indices in hyperslab */
     long *dmn_sbs_dsk; /* Indices of hyperslab relative to original on disk */  
     long var_dsk;
     
     mod_map_in=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-    mod_map_out=(long *)nco_malloc(var.nbr_dim*sizeof(long));
+    mod_map_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     
@@ -968,11 +968,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       for(jdx=idx+1;jdx<var.nbr_dim;jdx++)
 	mod_map_in[idx]*=lmt_mult[jdx]->dmn_sz_org;
     
-    /* Create mod_map_out */
-    for(idx=0;idx< var.nbr_dim;idx++) mod_map_out[idx]=1L;
+    /* Create mod_map_cnt */
+    for(idx=0;idx< var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
     for(idx=0;idx< var.nbr_dim;idx++) 
       for(jdx=idx;jdx<var.nbr_dim;jdx++)
-	mod_map_out[idx]*=lmt_mult[jdx]->dmn_cnt;
+	mod_map_cnt[idx]*=lmt_mult[jdx]->dmn_cnt;
     
     /* Read coordinate dimensions if required */
     if(PRN_DMN_IDX_CRD_VAL){
@@ -1009,7 +1009,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       
       /* Caculate RAM indices from current limit */
       for(idx=0;idx <var.nbr_dim;idx++) 
-	dmn_sbs_ram[idx]=(lmn%mod_map_out[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_out[idx+1]);
+	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
       /* Calculate disk indices from RAM indices */
       (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_mult,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
       
@@ -1181,7 +1181,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end loop over elements */
     
     (void)nco_free(mod_map_in);
-    (void)nco_free(mod_map_out);
+    (void)nco_free(mod_map_cnt);
     (void)nco_free(dmn_sbs_ram);
     (void)nco_free(dmn_sbs_dsk);
     

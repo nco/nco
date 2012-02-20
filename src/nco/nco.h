@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.166 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.167 2012-02-20 16:46:56 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -601,10 +601,10 @@ extern "C" {
     int pck_ram; /* [flg] Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
     int shuffle; /* [flg] Turn on shuffle filter */
     int undefined; /* [flg] Variable is still undefined (in first parser pass) */
-    long *cnt; /* [id] Contiguous vector of lengths of hyperslab */
-    long *end; /* [id] Contiguous vector of indices to end of hyperslab */
-    long *srd; /* [id] Contiguous vector of stride of hyperslab */
-    long *srt; /* [id] Contiguous vector of indices to start of hyperslab */
+    long *cnt; /* [nbr] Contiguous vector of lengths of hyperslab */
+    long *end; /* [idx] Contiguous vector of indices to end of hyperslab */
+    long *srd; /* [nbr] Contiguous vector of stride of hyperslab */
+    long *srt; /* [idx] Contiguous vector of indices to start of hyperslab */
     long *tally; /* [nbr] Number of valid operations performed so far */
     long sz; /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
     long sz_rec; /* [nbr] Number of elements in one record of hyperslab */

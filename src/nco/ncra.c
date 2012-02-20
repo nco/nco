@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.274 2012-02-20 04:26:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.275 2012-02-20 16:46:56 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.274 2012-02-20 04:26:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.274 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.275 2012-02-20 16:46:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.275 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -333,7 +333,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"md5_digest")){
 	MD5_DIGEST=True;
-	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
+	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -787,7 +787,7 @@ main(int argc,char **argv)
 #endif /* _OPENMP */
 	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	      /* Perform MD5 digest of input and output data if requested */
-	      if(MD5_DIGEST) (void)nco_md5_chk(out_id,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),var_prc[idx]->val.vp);
+	      if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
 	    } /* end if ncrcat */
 	    
 	    /* Warn if record coordinate, if any, is not monotonic */
