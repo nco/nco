@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.4 2012-02-20 03:06:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.5 2012-02-20 04:26:38 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -7,7 +7,9 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Usage:
-   ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc */
+   ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
+   ncrcat -O -D 1 --md5 -v md5_a,md5_abc -p ~/nco/data in.nc in.nc ~/foo.nc
+   ncrcat -O -D 1 --md5 -v md5_a,md5_abc,one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc */
 
 /* This NCO file contains the entirety of the MD5 implementation by
    L. Peter Deutsch of Aladdin Software, also author of Ghostscript.
@@ -38,7 +40,7 @@
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.4 2012-02-20 03:06:04 zender Exp $ */
+/* $Id: nco_md5.c,v 1.5 2012-02-20 04:26:38 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
@@ -72,27 +74,30 @@
 
 void
 nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
-(const int in_id, /* I [id] netCDF input file ID */
+(const int out_id, /* I [id] netCDF output file ID */
  const char * const var_nm, /* I [sng] Input variable name */
- const sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
+ const long sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
  const void * const vp) /* I [val] Values to digest */
 {
   /* Purpose: Perform MD5 digest on hyperslab */
-  char hex_output[16*2 + 1];
+  char hex_output[16*2+1];
   
-  int di;
+  int idx_dgs;
   
-  md5_state_t state;
-  md5_byte_t digest[16];
+  md5_state_t md5_stt;
+  md5_byte_t md5_dgs_sng[16];
   
-  md5_init(&state);
-  md5_append(&state,(const md5_byte_t *)test[i], strlen(test[i]));
-  md5_finish(&state,digest);
+  md5_init(&md5_stt);
+  md5_append(&md5_stt,(const md5_byte_t *)vp,sz_byt);
+  md5_finish(&md5_stt,md5_dgs_sng);
   
-  /* Construct and execute copy command */
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Performing MD5 digest of %s...",prg_nm_get(),var_nm);
+  for(idx_dgs=0;idx_dgs<16;++idx_dgs) sprintf(hex_output+idx_dgs*2,"%02x",md5_dgs_sng[idx_dgs]);
+
+  /* Report MD5 digest */
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,hex_output);
   
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+  /* Compare this digest to what is read in from output netCDF file */
+
 } /* end nco_md5_chk() */
 
 /* Begin md5.c by LPD: */

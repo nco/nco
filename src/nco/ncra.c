@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.273 2012-02-20 02:59:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.274 2012-02-20 04:26:38 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -103,7 +103,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool LAST_RECORD=False;
-  nco_bool MD5_DIGEST=False;
+  nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.273 2012-02-20 02:59:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.273 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.274 2012-02-20 04:26:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.274 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -786,11 +786,8 @@ main(int argc,char **argv)
 #pragma omp critical
 #endif /* _OPENMP */
 	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
-
 	      /* Perform MD5 digest of input and output data if requested */
-	      if(MD5_DIGEST){
-		(void)nco_md5_chk(out_id,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),var_prc[idx]->val.vp);
-	      } /* !MD5_DIGEST */
+	      if(MD5_DIGEST) (void)nco_md5_chk(out_id,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),var_prc[idx]->val.vp);
 	    } /* end if ncrcat */
 	    
 	    /* Warn if record coordinate, if any, is not monotonic */

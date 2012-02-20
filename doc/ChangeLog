@@ -1,5 +1,9 @@
 2012-02-19  Charlie Zender  <zender@uci.edu>
 
+	* Implement MD5 algorithm on all ncrcat record writes, and on ncks non-hyperslab writes
+
+	* Add MD5 test variables to in.nc
+
 	* Incorporate MD5 digest code by L. Peter Deutsch (LPD)
 	Code is under separate BSD-like license. Compiles though not used yet.
 

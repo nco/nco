@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.132 2011-11-15 02:16:35 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.133 2012-02-20 04:26:38 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -253,6 +253,16 @@ variables:
 	float lon_wgt(lon);
 	lon_wgt:long_name = "Gaussian weights";
 	lon_wgt:purpose = "Gaussian weights which sum to two for n = 4. These weights are all have floor of 0.0 so should cause SIGFPE when applied to integer types in weighted average.";
+
+	char md5_a;
+	md5_a:long_name = "the letter a";
+	md5_a:purpose = "String with known MD5 digest"; 
+	md5_a:MD5 = "0cc175b9c0f1b6a831c399e269772661"; 
+
+	char md5_abc(lev);
+	md5_abc:long_name = "the letters abc";
+	md5_abc:purpose = "String with known MD5 digest"; 
+	md5_abc:MD5 = "900150983cd24fb0d6963f7d28e17f72";
 
 	float msk_prt_mss_prt(lon);
 	msk_prt_mss_prt:long_name = "partial mask, partial missing value example";
@@ -945,6 +955,8 @@ data:
 //	mask=1.,1.,1.,1.,1.,1.,1.,1.;
 	fll_val=73,-999,73,-999;
 	fll_val_mss_val=73,-999,73,-999;
+	md5_a="a";
+	md5_abc="abc";
 	msk_prt_mss_prt=0.5,1.0e36,1.5,1.0e36;
 	mss_val=73,1.0e36,73,1.0e36;
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;

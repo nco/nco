@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.63 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.64 2012-02-20 04:26:38 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -34,6 +34,7 @@
 #include "nco_att_utl.h" /* Attribute utilities */
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_md5.h" /* MD5 digests */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
@@ -65,6 +66,7 @@ extern "C" {
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+   const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
    const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
    const char *var_nm); /* I [sng] Variable name */
 

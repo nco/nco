@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.4 2012-02-20 03:06:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.5 2012-02-20 04:26:38 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -30,9 +30,9 @@ extern "C" {
   
   void
   nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
-  (const int in_id, /* I [id] netCDF input file ID */
+  (const int out_id, /* I [id] netCDF output file ID */
    const char * const var_nm, /* I [sng] Input variable name */
-   const sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
+   const long sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
    const void * const vp); /* I [val] Values to digest */
   
 #ifdef __cplusplus
@@ -73,7 +73,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.4 2012-02-20 03:06:04 zender Exp $ */
+/* $Id: nco_md5.h,v 1.5 2012-02-20 04:26:38 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
