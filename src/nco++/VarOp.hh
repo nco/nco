@@ -336,6 +336,11 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
          std::sort(tp1,tp1+sz );  
          break; 
 
+	 // reverse sort 
+    case VRSORT: 
+         std::sort(tp1,tp1+sz,std::greater<T>() );  
+         break; 
+
     // return absolute value 
     case VABS:
 	if(!bmss) {
