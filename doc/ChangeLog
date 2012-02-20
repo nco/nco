@@ -1,5 +1,13 @@
 2012-02-19  Charlie Zender  <zender@uci.edu>
 
+	* MD5 is now done for input side. Need to add read loop to check output.
+
+	* Finish implementatation for MSA writes and verify hyperslabs are
+	correctly digested by showing that the digest of the hyperslab
+	from "abc" to "a" yields the same as the digest of "a" directly.
+
+	* Verify NCO MD5 implementation works for LPD's test cases
+
 	* Implement MD5 algorithm on all ncrcat record writes, and on ncks non-hyperslab writes
 
 	* Add MD5 test variables to in.nc

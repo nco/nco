@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.5 2012-02-20 04:26:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.6 2012-02-20 04:42:06 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -8,8 +8,9 @@
 
 /* Usage:
    ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
-   ncrcat -O -D 1 --md5 -v md5_a,md5_abc -p ~/nco/data in.nc in.nc ~/foo.nc
-   ncrcat -O -D 1 --md5 -v md5_a,md5_abc,one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc */
+   ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc -p ~/nco/data in.nc ~/foo.nc
+   ncks -O -D 1 -C -m --md5 -v md5_a,md5_abc,one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
+   ncks -O -D 1 -C -d lev,0 -m --md5 -v md5_a,md5_abc,one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc */
 
 /* This NCO file contains the entirety of the MD5 implementation by
    L. Peter Deutsch of Aladdin Software, also author of Ghostscript.
@@ -40,7 +41,7 @@
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.5 2012-02-20 04:26:38 zender Exp $ */
+/* $Id: nco_md5.c,v 1.6 2012-02-20 04:42:06 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

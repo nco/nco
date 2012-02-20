@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.177 2012-02-20 04:26:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.178 2012-02-20 04:42:06 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -329,14 +329,14 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   if(nbr_dim==0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
-    /* Perform MD5 digest of input and output data if requested */
   }else{ /* end if variable is scalar */
     if(var_sz > 0){ /* Allow for zero-size record variables */
       nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
       nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
     } /* end if var_sz */
-    if(MD5_DIGEST) (void)nco_md5_chk(out_id,var_nm,var_sz*nco_typ_lng(var_type),void_ptr);
   } /* end if variable is an array */
+  /* Perform MD5 digest of input and output data if requested */
+  if(MD5_DIGEST) (void)nco_md5_chk(out_id,var_nm,var_sz*nco_typ_lng(var_type),void_ptr);
   /* Write unformatted binary data */
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
 
