@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.191 2012-02-13 17:42:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.192 2012-02-20 15:46:10 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -73,7 +73,8 @@ tokens {
     ATAN2;  //Used indirectly
     WHERE_ASSIGN;
     MISS2ZERO; //used only in VarOp -sets all missing values to zero
-    VSORT;     // only used outside of grammer to sort in VarOp 
+    VSORT;     // ascending sort only used outside of grammer to sort in VarOp  
+    VRSORT;     // reverse sort only used outside of grammer to sort in VarOp 
     VABS;      // imaginary token used in VarOp to return absolute value 
     VSQR2;     // imaginary token used in VarOp to return square of number 
 
