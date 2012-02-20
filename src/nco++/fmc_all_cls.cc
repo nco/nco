@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.44 2012-02-20 15:44:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.45 2012-02-20 16:32:30 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1634,7 +1634,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
             cp_out=(char*)var_out->val.vp+ (ptrdiff_t)idx*sz*slb_sz;              
             for(jdx=0 ;jdx<sz; jdx++){
               // do bounds checking for the mapping
-	      if(lp_mp[jdx] !=jdx && lp_mp[jdx] >=0 && lp_mp[jdx]< sz )
+	      if(lp_mp[jdx] >=0 && lp_mp[jdx]< sz )
                 // copy element from var1 to var_out
                 (void)memcpy(cp_out+(ptrdiff_t)(lp_mp[jdx]*slb_sz),cp_in,slb_sz); 
 	      cp_in+=(ptrdiff_t)slb_sz;
