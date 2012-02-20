@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.272 2012-02-19 23:37:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.273 2012-02-20 02:59:43 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.272 2012-02-19 23:37:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.272 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.273 2012-02-20 02:59:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.273 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -789,7 +789,7 @@ main(int argc,char **argv)
 
 	      /* Perform MD5 digest of input and output data if requested */
 	      if(MD5_DIGEST){
-		(void)nco_md5_chk(out_id,var_prc_out[idx]->nm);
+		(void)nco_md5_chk(out_id,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),var_prc[idx]->val.vp);
 	      } /* !MD5_DIGEST */
 	    } /* end if ncrcat */
 	    
