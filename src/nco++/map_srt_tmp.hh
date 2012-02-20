@@ -9,15 +9,21 @@ class map_srt{
      long _imp;
      T _V;
 
-     //Use for sorting
+     // Use for sorting ascending
      bool operator<(const map_srt &right)const {
       return ( _V < right._V);
-   } 
+    } 
+
+    // sort descending -a hack - function shouldn't be static - but  hey it works
+    inline static bool greater(const  map_srt &x, const map_srt &y ) {
+      return (x._V > y._V);
+    } 
+
 };
 
 
 template<typename T> 
-void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
+void ncap_sort_and_map(var_sct *var, var_sct *var_mp, bool bd)
 {
             
   long idx;  
@@ -35,8 +41,14 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp)
   }
             
   // sort array
-  std::sort(mp,mp+sz);  
+  if(bd)
+    std::sort(mp,mp+sz);  // increasing
+  else
+    std:sort(mp,mp+sz,map_srt<T>::greater);  // decreasing
 
+
+
+  
   // Currently only two types for the mapping
   if(var_mp->type==NC_INT){
     // var_mp will hold the mapping
