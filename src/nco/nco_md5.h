@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.3 2012-02-20 02:59:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.4 2012-02-20 03:06:04 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -27,14 +27,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-void
-nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
-(const int in_id, /* I [id] netCDF input file ID */
- const char * const var_nm, /* I [sng] Input variable name */
- const sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
- const void * const vp); /* I [val] Values to digest */
-
+  
+  void
+  nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const char * const var_nm, /* I [sng] Input variable name */
+   const sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
+   const void * const vp); /* I [val] Values to digest */
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
@@ -52,52 +52,52 @@ nco_md5_chk /* [fnc] Perform MD5 digest on hyperslab */
 
 /*
   Copyright (C) 1999, 2002 Aladdin Enterprises.  All rights reserved.
-
+  
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
   arising from the use of this software.
-
+  
   Permission is granted to anyone to use this software for any purpose,
   including commercial applications, and to alter it and redistribute it
   freely, subject to the following restrictions:
-
+  
   1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
+  claim that you wrote the original software. If you use this software
+  in a product, an acknowledgment in the product documentation would be
+  appreciated but is not required.
   2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
+  misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-
+  
   L. Peter Deutsch
   ghost@aladdin.com
-
- */
-/* $Id: nco_md5.h,v 1.3 2012-02-20 02:59:43 zender Exp $ */
+  
+*/
+/* $Id: nco_md5.h,v 1.4 2012-02-20 03:06:04 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
-
+  
   This code implements the MD5 Algorithm defined in RFC 1321, whose
   text is available at
-	http://www.ietf.org/rfc/rfc1321.txt
+  http://www.ietf.org/rfc/rfc1321.txt
   The code is derived from the text of the RFC, including the test suite
   (section A.5) but excluding the rest of Appendix A.  It does not include
   any code or documentation that is identified in the RFC as being
   copyrighted.
-
+  
   The original and principal author of md5.h is L. Peter Deutsch
   <ghost@aladdin.com>.  Other authors are noted in the change history
   that follows (in reverse chronological order):
-
+  
   2002-04-13 lpd Removed support for non-ANSI compilers; removed
-	references to Ghostscript; clarified derivation from RFC 1321;
-	now handles byte order either statically or dynamically.
+  references to Ghostscript; clarified derivation from RFC 1321;
+  now handles byte order either statically or dynamically.
   1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
   1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5);
-	added conditionalization for C++ compilation from Martin
-	Purschke <purschke@bnl.gov>.
+  added conditionalization for C++ compilation from Martin
+  Purschke <purschke@bnl.gov>.
   1999-05-03 lpd Original version.
- */
+*/
 
 #ifndef md5_INCLUDED
 #  define md5_INCLUDED
@@ -117,25 +117,25 @@ typedef unsigned int md5_word_t; /* 32-bit word */
 
 /* Define the state of the MD5 Algorithm. */
 typedef struct md5_state_s {
-    md5_word_t count[2];	/* message length in bits, lsw first */
-    md5_word_t abcd[4];		/* digest buffer */
-    md5_byte_t buf[64];		/* accumulate block */
+  md5_word_t count[2];	/* message length in bits, lsw first */
+  md5_word_t abcd[4];		/* digest buffer */
+  md5_byte_t buf[64];		/* accumulate block */
 } md5_state_t;
 
 #ifdef __cplusplus
 extern "C" 
 {
 #endif
-
-/* Initialize the algorithm. */
-void md5_init(md5_state_t *pms);
-
-/* Append a string to the message. */
-void md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes);
-
-/* Finish the message and return the digest. */
-void md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
-
+  
+  /* Initialize the algorithm. */
+  void md5_init(md5_state_t *pms);
+  
+  /* Append a string to the message. */
+  void md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes);
+  
+  /* Finish the message and return the digest. */
+  void md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
+  
 #ifdef __cplusplus
 }  /* end extern "C" */
 #endif
