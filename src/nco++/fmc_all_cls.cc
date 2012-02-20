@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.43 2012-02-13 17:43:06 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.44 2012-02-20 15:44:08 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1352,8 +1352,12 @@
   srt_cls::srt_cls(bool flg_dbg){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
-          fmc_vtr.push_back( fmc_cls("sort" , this,PSORT)); 
+          fmc_vtr.push_back( fmc_cls("sort" , this,PASORT)); 
+          fmc_vtr.push_back( fmc_cls("asort" , this,PASORT)); 
           fmc_vtr.push_back( fmc_cls("dsort" , this,PDSORT)); 
+          fmc_vtr.push_back( fmc_cls("remap" , this,PREMAP)); 
+          fmc_vtr.push_back( fmc_cls("unmap" , this,PUNMAP)); 
+          fmc_vtr.push_back( fmc_cls("invert_map" , this,PIMAP)); 
 
 			     		      
     }
@@ -1381,10 +1385,12 @@
     is_mtd=(expr ? true: false);
 
     switch(fdx){
-      case PSORT:
+      case PASORT:
+      case PDSORT: 
         return srt_fnd(is_mtd,vtr_args,fmc_obj,walker);  
         break;
-      case PDSORT:
+      case PREMAP:
+      case PUNMAP:
         return mst_fnd(is_mtd,vtr_args,fmc_obj,walker);  
         break;
     }
@@ -1407,6 +1413,7 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     std::string styp;
     std::string var_nm;
     std::string susg;
+    bool bdirection; // ascending or desending sort
     prs_cls *prs_arg=walker.prs_arg;    
 
 
@@ -1432,9 +1439,6 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     if(nbr_args==0)
        err_prn(sfnm,"Function has been called with no arguments"); 
 
-       
-    if(fdx==PSORT) {
-        
          
       var1=walker.out(args_vtr[0]);
        
@@ -1479,78 +1483,74 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
         if(prs_arg->ntl_scn) 
           return var1;
        
-    }
+     if(fdx==PASORT) bdirection=true;          
+     if(fdx==PDSORT) bdirection=false;          
 
-    switch(fdx) {
+
+
              
-      case PSORT:
-	   if(var2==NULL){
-	       var1=ncap_var_var_op(var1,(var_sct*)NULL,VSORT);  
-               break;   
-           }
+      if(var2==NULL){
+	if(bdirection)   
+	  var1=ncap_var_var_op(var1,(var_sct*)NULL,VSORT);  
+        else 
+	  var1=ncap_var_var_op(var1,(var_sct*)NULL,VRSORT);  
+      }else{
 
-           // convert map 
-           var2=nco_var_cnf_typ(mp_typ, var2);  
+       // convert map 
+       var2=nco_var_cnf_typ(mp_typ, var2);  
 
-           // check if map is large enough  
-           if( var2->sz < var1->sz) {
-             ostringstream os; 
-	     os<<"Size of map  "<<var_nm<<"("<< var2->sz<<") is less than size of var(" << var1->sz<<")";
+       // check if map is large enough  
+       if( var2->sz < var1->sz) {
+         ostringstream os; 
+	 os<<"Size of map  "<<var_nm<<"("<< var2->sz<<") is less than size of var(" << var1->sz<<")";
              err_prn(sfnm,os.str());
-           }
+        }
 
-           switch (var1->type) {
-             case NC_DOUBLE: 
-	        (void)ncap_sort_and_map<double>(var1,var2);    
-                break;  
-             case NC_FLOAT: 
-	        (void)ncap_sort_and_map<float>(var1,var2);    
-                break;  
-             case NC_INT: 
-	        (void)ncap_sort_and_map<nco_int>(var1,var2);    
-                break;  
-             case NC_SHORT: 
-	        (void)ncap_sort_and_map<nco_short>(var1,var2);    
-                break;  
-             case NC_USHORT: 
-	        (void)ncap_sort_and_map<nco_ushort>(var1,var2);    
-                break;  
-             case NC_UINT: 
-	        (void)ncap_sort_and_map<nco_uint>(var1,var2);    
-                break;  
-             case NC_INT64: 
-	        (void)ncap_sort_and_map<nco_int64>(var1,var2);    
-                break;  
-             case NC_UINT64: 
-	        (void)ncap_sort_and_map<nco_uint64>(var1,var2);    
-                break;  
-             case NC_BYTE: 
-	        (void)ncap_sort_and_map<nco_byte>(var1,var2);    
-                break;  
-             case NC_UBYTE: 
-	        (void)ncap_sort_and_map<nco_ubyte>(var1,var2);    
-                break;  
-             case NC_CHAR: 
-	        (void)ncap_sort_and_map<nco_char>(var1,var2);    
-                break;  
-             case NC_STRING: break; /* Do nothing */
+        switch (var1->type) {
+          case NC_DOUBLE: 
+	    (void)ncap_sort_and_map<double>(var1,var2,bdirection);    
+            break;  
+          case NC_FLOAT: 
+	    (void)ncap_sort_and_map<float>(var1,var2,bdirection);    
+            break;  
+          case NC_INT: 
+	    (void)ncap_sort_and_map<nco_int>(var1,var2,bdirection);    
+            break;  
+          case NC_SHORT: 
+	    (void)ncap_sort_and_map<nco_short>(var1,var2,bdirection);    
+            break;  
+          case NC_USHORT: 
+	    (void)ncap_sort_and_map<nco_ushort>(var1,var2,bdirection);    
+            break;  
+          case NC_UINT: 
+	    (void)ncap_sort_and_map<nco_uint>(var1,var2,bdirection);    
+            break;  
+          case NC_INT64: 
+	    (void)ncap_sort_and_map<nco_int64>(var1,var2,bdirection);    
+            break;  
+          case NC_UINT64: 
+	    (void)ncap_sort_and_map<nco_uint64>(var1,var2,bdirection);    
+            break;  
+          case NC_BYTE: 
+	    (void)ncap_sort_and_map<nco_byte>(var1,var2,bdirection);    
+            break;  
+          case NC_UBYTE: 
+	    (void)ncap_sort_and_map<nco_ubyte>(var1,var2,bdirection);    
+            break;  
+          case NC_CHAR: 
+	    (void)ncap_sort_and_map<nco_char>(var1,var2,bdirection);    
+            break;  
+           case NC_STRING: break; /* Do nothing */
              
-            default: nco_dfl_case_nc_type_err(); break;
+           default: nco_dfl_case_nc_type_err(); break;
             
-           } // end big switch
+	} // end big switch
  
-           // Write out mapping
-           (void)prs_arg->ncap_var_write(var2,false);             
-           break; 
+         // Write out mapping
+         (void)prs_arg->ncap_var_write(var2,false);             
+      }
 
-
-
-
-
-    }
-
-
-    return var1;
+      return var1;
     
 
 } // end srt_cls::srt_fnd()
@@ -1588,21 +1588,14 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     var2=nco_var_cnf_typ((nc_type)NC_UINT64, var2);
 
 
-
-
-    if( fdx== PDSORT) {
       
-      if(prs_arg->ntl_scn){
-        var2=nco_var_free(var2);
-        return var1;    
-      }
-    }   
-    
+    if(prs_arg->ntl_scn){
+       var2=nco_var_free(var2);
+       return var1;    
+     }
    
-    switch(fdx) {
-      
-
-      case PDSORT:{
+      // here usage PREMAP, PUNMAP 
+      {
           char *cp_in;
           char *cp_out;
           long idx; 
@@ -1628,11 +1621,15 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
           slb_sz=nco_typ_lng(var_out->type);
           cp_in=(char*)var1->val.vp; 
+          cp_out=(char*)var_out->val.vp;
 
           // var2 contains the mapping
           (void)cast_void_nctype((nc_type)NC_UINT64,&var2->val);
           lp_mp=var2->val.ui64p; 
          
+	  switch(fdx){ 
+          
+          case PREMAP:  
           for(idx=0; idx<sz_idx; idx++){ 
             cp_out=(char*)var_out->val.vp+ (ptrdiff_t)idx*sz*slb_sz;              
             for(jdx=0 ;jdx<sz; jdx++){
@@ -1643,7 +1640,25 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 	      cp_in+=(ptrdiff_t)slb_sz;
 	    } // end jdx
           } //end idx; 
-          
+          break;
+         
+          // reverse map
+          case PUNMAP:  
+          for(idx=0; idx<sz_idx; idx++){ 
+            cp_in=(char*)var1->val.vp+ (ptrdiff_t)idx*sz*slb_sz;              
+            for(jdx=0 ;jdx<sz; jdx++){
+              // do bounds checking for the mapping
+	      if(lp_mp[jdx] >=0 && lp_mp[jdx]< sz )
+                // copy element from var1 to var_out
+                (void)memcpy(cp_out,cp_in+(ptrdiff_t)(lp_mp[jdx]*slb_sz),slb_sz); 
+	      cp_out+=(ptrdiff_t)slb_sz;
+	    } // end jdx
+          } //end idx; 
+          break;
+         
+	  } // end switch
+
+
          
           var1=nco_var_free(var1);
           (void)cast_nctype_void((nc_type)NC_UINT64,&var2->val);
@@ -1652,11 +1667,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           var1=var_out;
 
  
-       } break;  
-
-
-
-    }
+      }
 
 
     return var1;
