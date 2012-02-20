@@ -181,7 +181,7 @@ public:
 //Sort Function /****************************************/
 class srt_cls: public vtl_cls {
 private:
-   enum {PSORT,PDSORT };
+  enum {PASORT,PDSORT,PREMAP,PUNMAP,PIMAP };
    bool _flg_dbg;
 public:
   srt_cls(bool flg_dbg);
