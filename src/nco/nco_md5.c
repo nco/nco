@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.8 2012-02-21 05:51:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.9 2012-02-21 17:20:50 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -50,9 +50,9 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
   prg_id=prg_get(); /* [enm] Program ID */
 
   /* MD5 digest of hyperslab already in RAM */
-  (void)nco_md5_chk_ram(var_nm,var_sz_byt,vp,md5_dgs_hxd_sng_ram);
+  (void)nco_md5_chk_ram(var_sz_byt,vp,md5_dgs_hxd_sng_ram);
   if((prg_id == ncks && dbg_lvl_get() >= nco_dbg_std) ||
-     (prg_id == ncecat || prg_id == ncrcat && dbg_lvl_get() >= nco_dbg_var) ||
+     ((prg_id == ncecat || prg_id == ncrcat) && dbg_lvl_get() >= nco_dbg_var) ||
      False)
     (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
   
@@ -98,7 +98,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
        When the calling routine knows this, it may supply dmn_srt_and dmn_cnt as (const long * )NULL */
     if(dmn_nbr == 0) (void)nco_get_var1(nc_id,var_id,0L,vp,var_typ_dsk); else (void)nco_get_vara(nc_id,var_id,dmn_srt,dmn_cnt,vp,var_typ_dsk);
 
-    (void)nco_md5_chk_ram(var_nm,var_sz_byt_dsk,vp,md5_dgs_hxd_sng_dsk);
+    (void)nco_md5_chk_ram(var_sz_byt_dsk,vp,md5_dgs_hxd_sng_dsk);
     if(strcmp(md5_dgs_hxd_sng_ram,md5_dgs_hxd_sng_dsk)){
       (void)fprintf(stderr,"%s: ERROR MD5(%s) RAM and disk disagree: %s != %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram,md5_dgs_hxd_sng_dsk);
       nco_exit(EXIT_FAILURE);
@@ -113,8 +113,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
 
 void
 nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
-(const char * const var_nm, /* I [sng] Input variable name */
- const long var_sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
+(const long var_sz_byt, /* I [nbr] Size (in bytes) of hyperslab */
  const void * const vp, /* I [val] Values to digest */
  char md5_dgs_hxd_sng[NCO_MD5_DGS_SZ*2+1]) /* O [sng] MD5 digest */
 {
@@ -156,7 +155,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.8 2012-02-21 05:51:00 zender Exp $ */
+/* $Id: nco_md5.c,v 1.9 2012-02-21 17:20:50 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

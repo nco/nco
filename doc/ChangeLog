@@ -1,10 +1,11 @@
-2012-02-21  Henry Butowsky  <henryb@hush.com> 
-	* big mods to the sort functions added the following
-	* sort(), asort() -sort ascending with/without map
-	* dsort() sort descending with/without map
-	* remap() - remap var with a sort map
-	* unmap()- invert remap with sort map
-	* invert_map()- invert the mapping 
+2012-02-21  Henry Butowsky  <henryb@hush.com>
+
+	* Modified/added following sort functions:
+	sort(), asort() -sort ascending with/without map
+	dsort() sort descending with/without map
+	remap() - remap var with a sort map
+	unmap()- invert remap with sort map
+	invert_map()- invert the mapping
 
 2012-02-20  Charlie Zender  <zender@uci.edu>
 
