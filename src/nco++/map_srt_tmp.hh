@@ -43,12 +43,15 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp, bool bd)
   // sort array
   if(bd)
     std::sort(mp,mp+sz);  // increasing
-  else
+  else 
     std:sort(mp,mp+sz,map_srt<T>::greater);  // decreasing
 
-
-
+  //The above line may not work with some compilers if so replace with the following
+  // { std::sort(mp,mp+sz); std::reverse(mp,mp+sz);}       
   
+
+
+
   // Currently only two types for the mapping
   if(var_mp->type==NC_INT){
     // var_mp will hold the mapping
@@ -68,13 +71,11 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp, bool bd)
     for(idx=0 ; idx<sz; idx++){
       // nb reverse the map
       var_mp->val.ui64p[ mp[idx]._imp] =idx;
-      tp[idx]=mp[idx]._V;
+              tp[idx]=mp[idx]._V;
     }
     (void)cast_nctype_void((nc_type)NC_UINT64,&var_mp->val); 
   }
 
-
-            
   // delete array
   delete []mp;
 
