@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.45 2012-02-20 16:32:30 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.46 2012-02-21 10:34:08 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -1380,7 +1380,7 @@
 	vtr_args.push_back(tr);
       while(tr=tr->getNextSibling());    
     }
- 
+    
 
     is_mtd=(expr ? true: false);
 
@@ -1392,12 +1392,77 @@
       case PREMAP:
       case PUNMAP:
         return mst_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+      case PIMAP:
+        return imap_fnd(is_mtd,vtr_args,fmc_obj,walker);   
         break;
     }
 
 
 
 } // end gsl_fit_cls::fnd 
+
+
+  
+var_sct * srt_cls::imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("srt_cls::imap_fnd");
+    int nbr_args;
+    int fdx=fmc_obj.fdx();
+    var_sct *var1=NULL_CEWI;
+    var_sct *var_ret=NULL_CEWI;
+    nc_type styp; // used to hold the mapping type either NC_INT or NC_UINT64 
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string var_nm;
+    std::string susg;
+    prs_cls *prs_arg=walker.prs_arg;    
+
+
+    nbr_args=args_vtr.size(); 
+
+
+    if(nbr_args==0)
+       err_prn(sfnm,"Function has been called with no arguments"); 
+
+    
+    var1=walker.out(args_vtr[0]);   
+
+    if(prs_arg->ntl_scn)     
+      return var1;  
+
+    // remember original type 
+    styp=var1->type; 
+
+    var1=nco_var_cnf_typ((nc_type)NC_UINT64, var1);  
+
+    // var2 contains the mapping
+    (void)cast_void_nctype((nc_type)NC_UINT64,&var1->val);
+
+     {
+       long idx;
+       long sz; 
+       nco_uint64 *lp_mp;  
+       nco_uint64 *lp_mp_out;   
+       sz=var1->sz;
+       lp_mp=var1->val.ui64p; 
+        
+       lp_mp_out=(nco_uint64*)nco_calloc(sz,sizeof( nco_uint64));  
+         
+       for(idx=0;idx<sz;idx++)
+         if(lp_mp[idx]<sz) lp_mp_out[ lp_mp[idx] ] =idx;
+
+       //swap values 
+       nco_free(var1->val.ui64p);
+       var1->val.ui64p=lp_mp_out; 
+            
+     }
+
+     (void)cast_nctype_void((nc_type)NC_UINT64,&var1->val);  
+     // convert back to original type 
+     var1=nco_var_cnf_typ(styp, var1);  
+      
+     return var1;
+
+}
+
 
 
 
