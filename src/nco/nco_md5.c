@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.7 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.8 2012-02-21 05:51:00 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -7,69 +7,16 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Usage:
+   ncecat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
    ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
-   ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc -p ~/nco/data in.nc ~/foo.nc
-   ncks -O -D 1 -C -m --md5 -v md5_a,md5_abc,one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
-   ncks -O -D 1 -C -d lev,0 -m --md5 -v md5_a,md5_abc,one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc */
+   ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc ~/nco/data/in.nc
+   ncks -O -D 1 -C -m --md5 -v md5_a,md5_abc,one_dmn_rec_var ~/nco/data/in.nc
+   ncks -O -D 1 -C -d lev,0 -m --md5 -v md5_a,md5_abc,one_dmn_rec_var ~/nco/data/in.nc */
 
 /* This NCO file contains the entirety of the MD5 implementation by
-   L. Peter Deutsch of Aladdin Software, also author of Ghostscript.
+   L. Peter Deutsch of Aladdin Software (aka author of Ghostscript).
    NCO-specific functions are defined first, then LPD's md5.c is 
-   included in a nearly unaltered state.
-   Copyright notices for LPD's MD5 code first, so legal information
-   is prominently displayed. */
-
-/*
-  Copyright (C) 1999, 2000, 2002 Aladdin Enterprises.  All rights reserved.
-  
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
-  
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
-  
-  1. The origin of this software must not be misrepresented; you must not
-  claim that you wrote the original software. If you use this software
-  in a product, an acknowledgment in the product documentation would be
-  appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-  misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
-  
-  L. Peter Deutsch
-  ghost@aladdin.com
-*/
-/* $Id: nco_md5.c,v 1.7 2012-02-20 16:46:56 zender Exp $ */
-/*
-  Independent implementation of MD5 (RFC 1321).
-  
-  This code implements the MD5 Algorithm defined in RFC 1321, whose
-  text is available at
-  http://www.ietf.org/rfc/rfc1321.txt
-  The code is derived from the text of the RFC, including the test suite
-  (section A.5) but excluding the rest of Appendix A.  It does not include
-  any code or documentation that is identified in the RFC as being
-  copyrighted.
-  
-  The original and principal author of md5.c is L. Peter Deutsch
-  <ghost@aladdin.com>.  Other authors are noted in the change history
-  that follows (in reverse chronological order):
-  
-  2002-04-13 lpd Clarified derivation from RFC 1321; now handles byte order
-  either statically or dynamically; added missing #include <string.h>
-  in library.
-  2002-03-11 lpd Corrected argument list for main(), and added int return
-  type, in test program and T value program.
-  2002-02-21 lpd Added missing #include <stdio.h> in test program.
-  2000-07-03 lpd Patched to eliminate warnings about "constant is
-  unsigned in ANSI C, signed in traditional"; made test program
-  self-checking.
-  1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
-  1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5).
-  1999-05-03 lpd Original version.
-*/
+   included in a nearly unaltered state. */
 
 #include "nco_md5.h" /* MD5 digests */
 
@@ -100,16 +47,20 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
   
   nco_bool MD5_DGS_DSK=False; /* [flg] Perform MD5 digest of variable written to disk */
 
+  prg_id=prg_get(); /* [enm] Program ID */
+
   /* MD5 digest of hyperslab already in RAM */
   (void)nco_md5_chk_ram(var_nm,var_sz_byt,vp,md5_dgs_hxd_sng_ram);
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
+  if((prg_id == ncks && dbg_lvl_get() >= nco_dbg_std) ||
+     (prg_id == ncecat || prg_id == ncrcat && dbg_lvl_get() >= nco_dbg_var) ||
+     False)
+    (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
   
   /* NB: Setting this flag significantly increases execution time
      Comparing RAM to disk requires reading hyperslab from disk
      Hence it essentially double numbers of disk reads, e.g.,
      ncrcat reads/writes only one record of one variable at a time, and will perform an extra read to digest each write.
      Default strategy is to turn on MD5 disk-checking only when user is concatenating files */
-  prg_id=prg_get(); /* [enm] Program ID */
   if(prg_id == ncrcat || prg_id == ncecat) MD5_DGS_DSK=True;  /* [flg] Perform MD5 digest of variable written to disk */
 
   /* Compare this digest to what is read in from output netCDF file
@@ -182,6 +133,58 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
 } /* end nco_md5_chk_ram() */
 
 /* Begin md5.c by LPD: */
+
+/*
+  Copyright (C) 1999, 2000, 2002 Aladdin Enterprises.  All rights reserved.
+  
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+  
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+  
+  1. The origin of this software must not be misrepresented; you must not
+  claim that you wrote the original software. If you use this software
+  in a product, an acknowledgment in the product documentation would be
+  appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+  misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+  
+  L. Peter Deutsch
+  ghost@aladdin.com
+*/
+/* $Id: nco_md5.c,v 1.8 2012-02-21 05:51:00 zender Exp $ */
+/*
+  Independent implementation of MD5 (RFC 1321).
+  
+  This code implements the MD5 Algorithm defined in RFC 1321, whose
+  text is available at
+  http://www.ietf.org/rfc/rfc1321.txt
+  The code is derived from the text of the RFC, including the test suite
+  (section A.5) but excluding the rest of Appendix A.  It does not include
+  any code or documentation that is identified in the RFC as being
+  copyrighted.
+  
+  The original and principal author of md5.c is L. Peter Deutsch
+  <ghost@aladdin.com>.  Other authors are noted in the change history
+  that follows (in reverse chronological order):
+  
+  2002-04-13 lpd Clarified derivation from RFC 1321; now handles byte order
+  either statically or dynamically; added missing #include <string.h>
+  in library.
+  2002-03-11 lpd Corrected argument list for main(), and added int return
+  type, in test program and T value program.
+  2002-02-21 lpd Added missing #include <stdio.h> in test program.
+  2000-07-03 lpd Patched to eliminate warnings about "constant is
+  unsigned in ANSI C, signed in traditional"; made test program
+  self-checking.
+  1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
+  1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5).
+  1999-05-03 lpd Original version.
+*/
 
 #undef BYTE_ORDER	/* 1 = big-endian, -1 = little-endian, 0 = unknown */
 #ifdef ARCH_IS_BIG_ENDIAN

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.89 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.90 2012-02-21 05:51:00 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -22,7 +22,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
  var_sct *vara) /* [sct] Information for routine to read variable information and pass information between calls */
 {
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-  /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer */
+  /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer) */
   int idx;
   int nbr_slb;
   void *vp;
@@ -760,6 +760,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM) /* I [flg] Print dimension/variable names */
@@ -809,7 +810,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get type and number of dimensions for variable */
   (void)nco_inq_var(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
   
-  /* Deal with scalar variables */
+  /* Scalars */
   if(var.nbr_dim == 0){
     var.sz=1L;
     var.val.vp=nco_malloc(nco_typ_lng(var.type));
@@ -828,8 +829,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   /* Initialize lmt_mult with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
-  for(idx=0;idx< var.nbr_dim;idx++)
-    for(jdx=0;jdx< lmt_nbr;jdx++){
+  for(idx=0;idx<var.nbr_dim;idx++)
+    for(jdx=0;jdx<lmt_nbr;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
 	lmt_mult[idx]=lmt_lst[jdx];
         break;
@@ -840,6 +841,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
   /* Call also initializes var.sz with final size */
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),in_id,(long *)NULL,(long *)NULL,var.val.vp);
 
   /* Warn if variable is packed */
   if(nco_pck_dsk_inq(in_id,&var)) (void)fprintf(stderr,"%s: WARNING about to print packed contents of variable \"%s\". Consider unpacking variable first using ncpdq -U.\n",prg_nm_get(),var_nm);
@@ -969,8 +971,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	mod_map_in[idx]*=lmt_mult[jdx]->dmn_sz_org;
     
     /* Create mod_map_cnt */
-    for(idx=0;idx< var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
-    for(idx=0;idx< var.nbr_dim;idx++) 
+    for(idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
+    for(idx=0;idx<var.nbr_dim;idx++) 
       for(jdx=idx;jdx<var.nbr_dim;jdx++)
 	mod_map_cnt[idx]*=lmt_mult[jdx]->dmn_cnt;
     
@@ -979,7 +981,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       var_sct var_crd;
       
       dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
-      for(idx=0;idx <var.nbr_dim;idx++){
+      for(idx=0;idx<var.nbr_dim;idx++){
 	dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_mult[idx]->dmn_nm;
         rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
@@ -1007,9 +1009,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     
     for(lmn=0;lmn<var.sz;lmn++){
       
-      /* Caculate RAM indices from current limit */
+      /* Calculate RAM indices from current limit */
       for(idx=0;idx <var.nbr_dim;idx++) 
 	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
+
       /* Calculate disk indices from RAM indices */
       (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_mult,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
       
@@ -1189,19 +1192,21 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     (void)fprintf(stdout,"\n");
     (void)fflush(stdout);
   } /* end if variable has more than one dimension */
+
+  /* Free value buffer */
   var.val.vp=nco_free(var.val.vp);
   var.nm=(char *)nco_free(var.nm);
   
   if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);
+
   if(var.nbr_dim > 0){
     (void)nco_free(dmn_id);
     (void)nco_free(lmt_mult);
     (void)nco_free(lmt);
   } /* end if */
+
   if(PRN_DMN_IDX_CRD_VAL && dlm_sng==NULL){
-    for(idx=0;idx<var.nbr_dim;idx++)
-      dim[idx].val.vp=nco_free(dim[idx].val.vp);
-    
+    for(idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=nco_free(dim[idx].val.vp);
     dim=(dmn_sct *)nco_free(dim);
   } /* end if */
   
@@ -1359,9 +1364,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
     nbr_dim=var[idx]->nbr_dim;
 
-    /* GET VARIABLE DATA */
-  
-    /* Deal with scalar var */
+    /* Scalars */
     if(nbr_dim==0){
       var[idx]->val.vp=nco_malloc(nco_typ_lng(var[idx]->type));
       (void)nco_get_var1(in_id,var[idx]->id,0L,var[idx]->val.vp,var[idx]->type);

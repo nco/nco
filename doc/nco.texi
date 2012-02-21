@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.663 2012-02-16 22:58:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.664 2012-02-21 05:51:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -50,9 +50,9 @@ texi2dvi --output=nco.dvi nco.texi
 texi2dvi --pdf --output=nco.pdf nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco_*.png nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
-cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco_*.png nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
-# 20120203 provisional commands to copy PNG images for nco.html
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
+# 20120203 Copy all nco.html PNG images (takes additional time)
 cd ~/nco/doc;/usr/bin/scp nco_*.png zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.1.0
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 13 February 2012
+@set update-date 20 February 2012
 @set update-month February 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -2129,6 +2129,7 @@ feature is automatic and cannot be controlled by the user.
 * Missing Values::              
 * Chunking::                    
 * Deflation::                   
+* MD5 digests::                 
 * Packed data::                 
 * Operation Types::             
 * Type Conversion::             
@@ -4721,7 +4722,7 @@ variables.
 <a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
 <a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
 @end html
-@node Deflation, Packed data, Chunking, Common features
+@node Deflation, MD5 digests, Chunking, Common features
 @section Deflation
 @cindex @code{-L}
 @cindex @code{--deflate}
@@ -4777,10 +4778,103 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 (@pxref{ncks netCDF Kitchen Sink}).
 
 @html
+<a name="md5"></a> <!-- http://nco.sf.net/nco.html#md5 -->
+<a name="digest"></a> <!-- http://nco.sf.net/nco.html#digest -->
+<a name="hash"></a> <!-- http://nco.sf.net/nco.html#hash -->
+<a name="integrity"></a> <!-- http://nco.sf.net/nco.html#integrity -->
+<a name="security"></a> <!-- http://nco.sf.net/nco.html#security -->
+@end html
+@node MD5 digests, Packed data, Deflation, Common features
+@section MD5 digests
+@cindex @code{--md5_digest}
+@cindex integrity
+@cindex security
+@cindex digest
+@cindex hash
+@cindex MD5 digest
+@cartouche
+Availability: 
+@command{ncecat}, @command{ncks}, @command{ncrcat}@*
+Short options: @*
+Long options: @samp{--md5_digest}@*  
+@end cartouche
+
+As of @acronym{NCO} version 4.1.0 (April, 2012), @acronym{NCO} 
+supports data integrity verification using the @acronym{MD5} digest
+algorithm. 
+This support is currently implemented in the multifile concantenators
+(@command{ncecat} and @command{ncrcat}) and @command{ncks}.
+Activate it with the @samp{--md5_digest} long option.
+
+The behavior and verbosity of the @acronym{MD5} digest is
+operator-dependent.
+When activating @acronym{MD5} digests with @command{ncks} it is assumed
+that the user simply wishes to see the digest of every variable and this
+is done when the debugging level exceeds one.
+This incurs the minor overhead of performing the hash algorithm for each 
+variable read.
+@acronym{MD5} digests may be activated in both the one- and two-filename
+argument forms of @command{ncks}, which are used for printing and
+sub-setting, respectively.
+The @acronym{MD5} digests are shown as a 32-character hexadecimal string 
+in which each two characters represent one byte of the 16-byte digest:
+@example
+> ncks -O -D 2 -C --md5 -v md5_a,md5_abc ~/nco/data/in.nc
+...
+ncks: INFO MD5(md5_a) = 0cc175b9c0f1b6a831c399e269772661
+md5_a = 'a' 
+ncks: INFO MD5(md5_abc) = 900150983cd24fb0d6963f7d28e17f72
+lev[0]=100 md5_abc[0--2]='abc' 
+> ncks -O -D 2 -C -d lev,0 --md5 -v md5_a,md5_abc ~/nco/data/in.nc
+...
+cks: INFO MD5(md5_a) = 0cc175b9c0f1b6a831c399e269772661
+md5_a = 'a' 
+ncks: INFO MD5(md5_abc) = 0cc175b9c0f1b6a831c399e269772661
+lev[0]=100 md5_abc[0--0]='a' 
+@end example
+In fact these examples demonstrate the validity of the hash algorithm
+since the @acronym{MD5} hashes of the strings ``a'' and ``abc'' are
+widely known.
+The second example shows that the hyperslab of variable @code{md5_abc}
+(= ``abc'') consisting of only its first letter (= ``a'') has the same
+hash as the variable @code{md5_a} (``a'').
+This illustrates that @acronym{MD5} digests acts only on variable data,
+not on metadata. 
+
+When activating @acronym{MD5} digests with @command{ncecat} or
+@command{ncrcat} it is assumed that the user wishes to verify
+that every variable written to disk has the same @acronym{MD5} digest 
+as when it is subsequently read from disk.
+This incurs the major additional overhead of reading in each variable
+after it is written and performing the hash algorithm again on that to
+compare to the original hash.
+Moreover, it is assumed that such operations are generally done
+``production mode'' where the user is not interested in actually
+examining the digests herself.
+The digests proceed silently unless the debugging level exceeds three:
+@example
+> ncecat -O -D 4 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc | grep MD5
+...
+ncecat: INFO MD5(wnd_spd) = bec190dd944f2ce2794a7a4abf224b28
+ncecat: INFO MD5 digests of RAM and disk contents for wnd_spd agree
+> ncrcat -O -D 4 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc | grep MD5
+...
+ncrcat: INFO MD5(wnd_spd) = 74699bb0a72b7f16456badb2c995f1a1
+ncrcat: INFO MD5 digests of RAM and disk contents for wnd_spd agree
+@end example
+Regardless of the debugging level, an error will be returned if the
+digests of the variable read from the source file and from the output
+file do not agree.
+
+These rules are evolving and as @acronym{NCO} pays more attention to
+data integrity. 
+We welcome feedback and suggestions from users.
+
+@html
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->
 <a name="pack"></a> <!-- http://nco.sf.net/nco.html#pack -->
 @end html
-@node Packed data, Operation Types, Deflation, Common features
+@node Packed data, Operation Types, MD5 digests, Common features
 @section Packed data
 @cindex packing
 @cindex unpacking
@@ -10299,7 +10393,7 @@ SYNTAX
 ncecat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
-[-M] [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
+[-M] [--md5_digest] [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -10719,7 +10813,8 @@ SYNTAX
 ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fix_rec_dmn]
-[-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}]
+[-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] 
+[-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] 
 [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 @var{input-file} [[@var{output-file}]]
@@ -11914,7 +12009,7 @@ SYNTAX
 ncrcat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
-[-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
+[--md5_digest] [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example

@@ -1,5 +1,10 @@
 2012-02-20  Charlie Zender  <zender@uci.edu>
 
+	* Implement MD5_DIGEST in nco_msa_prn_var_val() so MD5 now active
+	in all forms of ncks.
+
+	* Clean-up nco_md5.[ch], mark TODO nco1027 and nco485 as done
+
 	* MD5 optionally enabled (with --md5) for input on ncks, ncrcat, ncecat
 	When so enabled, MD5 comparisons to output are automatic with ncrcat, ncecat
 

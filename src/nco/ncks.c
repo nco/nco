@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.284 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.285 2012-02-21 05:51:00 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.284 2012-02-20 16:46:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.284 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.285 2012-02-21 05:51:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.285 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -721,7 +721,7 @@ main(int argc,char **argv)
     
     if(PRN_VAR_DATA){
       /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-      for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+      for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
     } /* end if PRN_VAR_DATA */
     
   } /* !fl_out */

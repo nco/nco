@@ -1,27 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.454 2012-02-14 06:07:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.455 2012-02-21 05:51:00 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release contains a number of minor improvements for corner cases 
-encountered with ncea, ncap2, and ncatted. This has been the longest
-release cycle in many years, because no serious bugs were known, few
-new features were added, and because...hey, we're volunteers, no 
-further explanations necessary. Fortunately, NASA has recently given
-us indications (nothing binding yet), that they may fund NCO to
-develop support for netCDF4 groups and to write some NCO wrappers for 
-HDF-EOS files. More on that next time.
+This release implements NCO's first data security/integrity checks,
+consisting of MD5 hashes of variables.
 
-4.1.0 also reverts the 4.0.8 workaround for the NOFILL bug recently
-found to be present in all netCDF versions since 1999. NCO 4.1.0 
-assumes that the underlying netCDF library has been patched to fix the
-NOFILL bug, i.e., NCO 4.1.0 requires netCDF version 4.1.3 or later.
+NASA has recently given us indications (nothing binding yet), that
+they may fund NCO to develop support for netCDF4 groups and to write
+some NCO wrappers for HDF-EOS files. More on that next time.
 
 http://nco.sf.net#bug_nofill
 
-Work on NCO 4.1.0 is underway, focused on making a more robust 
+Work on NCO 4.1.1 is underway, focused on making a more robust 
 build/configuration environment and on simplifying issues described in 
 the KNOWN BUGS NOT YET FIXED section below.
 
@@ -30,60 +23,15 @@ Charlie
 
 Other "New stuff" in 4.1.0 summary (full details always in ChangeLog):
 
-A. Revert netCDF NOFILL bug workaround from NCO 4.0.8. 
-   Assume netCDF 4.1.3+ is installed and use NOFILL mode as before. 
-   http://nco.sf.net#bug_nofill
+A. MD5 digest support. Digests can help ensure data integrity.
+   They will alert, e.g., some ocurrances of the NC_NOFILL bug.
+   However, the execution time cost can be significant, requiring
+   two MD5 digests and an extra-from-disk for all data.
+   ncks -O -D 1 -H -C --md5 -v md5_a,md5_abc ~/nco/data/in.nc
+   ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
+   http://nco.sf.net/nco.html#md5
 
-B. Improve CF convention support for "bounds" attribute.
-   http://nco.sf.net/nco.html#bnd
-
-C. ncap2 array() function now works on multi-dimensional arrays.
-   Pass array() a template the same shape as the desired output:
-   var_out=array(1,2,three_dmn_rec_var); // 1,3,5,...155,157,159
-
-D. Fix ncap2 print() function
-
-E. Warn when number of attributes exceeds NC_MAX_ATTRS
-
-F. Print helpful hint with NC_EVARSIZE errors. Suggest users try more
-   capacious output file types.
-
-G. Warn when concatenating files containing packed data.
-   User is now warned to be sure that packing factors in all input files
-   exactly match those in the first file since factors are copied from
-   first file only. Otherwise users should unpack, then concatenate,
-   then pack. 
-
-H. Warn when appended variable has suspicious record length.
-   NCO forbids appending variables if dimension sizes do not match
-   between input and output files. Except for the record dimension.
-   For various reasons, it should be possible, and so NCO allows,
-   appending variables with differently sized record dimensions.
-   Now instead of doing this silently, NCO issues a warning.
-   Power users can still enjoy this "feature", while novice users 
-   will hopefully take heed of the warning.
-
-I. Fix overly-zealous ncap2 packing propagation:
-   Thanks to Ken5746 for reporting this problem.
-   Previous versions of NCO treated packing attributes like all other 
-   attributes in that the scale_factor and add_offset of the LHS-most
-   variable on the RHS of an expression were propagated to the LHS
-   result. This caused problems when multiple RHS variables had
-   differing packing attributes. Hence scale_factor and add_offset are 
-   no longer propagated to the LHS.
-   Thanks to Henry Butowsky for the fix. 
-
-J. Fix treatment of _FillValue in ncea:
-   When invoked with the (non-default) summing and integration option 
-   -y ttl = -N, ncea would incorrectly handle the corner case where
-   the value of an array element in the first two input files was
-   _FillValue. In this case, ncea wrote a zero instead of _FillValue,
-   as demonstrated by 
-
-   ncea -O -y ttl -v mss_val_scl -p ~/nco/data in.nc in.nc ~/foo.nc
-   ncks -H ~/foo.nc
-
-   The correct output of this is the _FillValue, i.e., 1.0e36, not 0.
+A. fxm
 
 KNOWN BUGS NOT YET FIXED:
 

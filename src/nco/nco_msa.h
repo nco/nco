@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.38 2012-02-20 04:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.39 2012-02-21 05:51:00 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -126,6 +126,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM); /* I [flg] Print dimension/variable names */

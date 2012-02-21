@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.6 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.7 2012-02-21 05:51:00 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -8,6 +8,11 @@
 
 /* Usage:
    #include "nco_md5.h" *//* MD5 digests */
+
+/* This NCO file contains the entirety of the MD5 implementation by
+   L. Peter Deutsch of Aladdin Software (aka author of Ghostscript).
+   NCO-specific functions are defined first, then LPD's md5.h is 
+   included in a nearly unaltered state. */
 
 #ifndef NCO_MD5_H
 #define NCO_MD5_H
@@ -57,13 +62,6 @@ extern "C" {
 
 /* Begin md5.h by LPD: */
 
-/* This NCO file contains the entirety of the MD5 implementation by
-   L. Peter Deutsch of Aladdin Software, also author of Ghostscript.
-   NCO-specific functions are defined first, then LPD's md5.h is 
-   included in a nearly unaltered state.
-   Copyright notices for LPD's MD5 code first, so legal information
-   is prominently displayed. */
-
 /*
   Copyright (C) 1999, 2002 Aladdin Enterprises.  All rights reserved.
   
@@ -87,7 +85,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.6 2012-02-20 16:46:56 zender Exp $ */
+/* $Id: nco_md5.h,v 1.7 2012-02-21 05:51:00 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
