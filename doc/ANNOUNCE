@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.455 2012-02-21 05:51:00 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.456 2012-02-23 21:00:18 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
@@ -31,7 +31,17 @@ A. MD5 digest support. Digests can help ensure data integrity.
    ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
    http://nco.sf.net/nco.html#md5
 
-A. fxm
+A. Expand and redefine ncap2 treatment of sorting and maps:
+   var_out=sort(var_in,&srt_map); // Ascending sort
+   var_out=asort(var_in,&srt_map); // Accending sort 
+   var_out=dsort(var_in,&srt_map); // Desending sort     
+   var_out=remap(var_in,srt_map); // Apply srt_map to var_in
+   var_out=unmap(var_in,srt_map); // Reverse what srt_map did to var_in
+   dsr_map=invert_map(srt_map); // Produce "de-sort" map that inverts srt_map
+   http://nco.sf.net/nco.html#sort
+   Thanks to Henry Butowsky for this functionality
+
+A. Fix bug with ncap2 print() command
 
 KNOWN BUGS NOT YET FIXED:
 

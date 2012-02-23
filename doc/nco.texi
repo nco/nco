@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.665 2012-02-23 20:55:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.666 2012-02-23 21:00:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7373,7 +7373,9 @@ e=2.71828; // Regular (disk) variable, written to output
 @end example
 
 @html
-<a name="ncap_srt"></a> <!-- http://nco.sf.net/nco.html#ncap_srt -->
+<a name="srt"></a> <!-- http://nco.sf.net/nco.html#srt -->
+<a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
+<a name="remap"></a> <!-- http://nco.sf.net/nco.html#remap -->
 @end html
 @node Sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
 @subsection @command{sort} methods
@@ -7392,7 +7394,7 @@ var_out=asort(var_in,&srt_map); // Accending sort
 var_out=dsort(var_in,&srt_map); // Desending sort     
 var_out=remap(var_in,srt_map); // Apply srt_map to var_in
 var_out=unmap(var_in,srt_map); // Reverse what srt_map did to var_in
-dsr_map=invert_map(srt_map); // Produce map that inverts srt_map
+dsr_map=invert_map(srt_map); // Produce "de-sort" map that inverts srt_map
 @end example
 The first two functions, @command{sort()} and @command{asort()}
 sort, in ascending order, all the elements of @var{var_in} (which can be
@@ -7477,11 +7479,6 @@ As in the above example you may create your own sort map.
 To sort in descending order, apply the @code{reverse()} method after the
 @command{sort()}.    
 
-@html
-<a name="srt"></a> <!-- http://nco.sf.net/nco.html#srt -->
-<a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
-<a name="remap"></a> <!-- http://nco.sf.net/nco.html#remap -->
-@end html
 Here is an extended example of how to use @command{ncap2} features to
 hyperslab an irregular region based on the values of a variable not a
 coordinate. 
