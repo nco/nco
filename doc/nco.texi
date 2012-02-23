@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.664 2012-02-21 05:51:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.665 2012-02-23 20:55:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.1.0
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 20 February 2012
+@set update-date 23 February 2012
 @set update-month February 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -7377,16 +7377,50 @@ e=2.71828; // Regular (disk) variable, written to output
 @end html
 @node Sort methods, Irregular grids, Include files, ncap2 netCDF Arithmetic Processor
 @subsection @command{sort} methods
-In @acronym{ncap2} there are two ways to sort data. 
-The first is a regular @command{sort}. 
-This sorts ALL the elements of a variable or attribute without
-regard to any dimensions. 
-The second method applies a sort map to a variable. 
-To apply this sort map the size of the variable must be exactly
-divisible by the size of the sort map. 
-The method @code{sort(var_in,&var_map)} is overloaded. 
-The second optional argument is to supply a call-by-reference variable
-to hold the returned sort map.  
+@cindex @command{sort}
+@cindex @command{asort}
+@cindex @command{dsort}
+@cindex @command{remap}
+@cindex @command{unmap}
+@cindex @command{invert_map}
+In @acronym{ncap2} there are multiple ways to sort data. 
+Beginning with @acronym{NCO} 4.1.0 (February, 2012), @acronym{ncap2} 
+support six sorting functions:
+@example
+var_out=sort(var_in,&srt_map); // Ascending sort
+var_out=asort(var_in,&srt_map); // Accending sort 
+var_out=dsort(var_in,&srt_map); // Desending sort     
+var_out=remap(var_in,srt_map); // Apply srt_map to var_in
+var_out=unmap(var_in,srt_map); // Reverse what srt_map did to var_in
+dsr_map=invert_map(srt_map); // Produce map that inverts srt_map
+@end example
+The first two functions, @command{sort()} and @command{asort()}
+sort, in ascending order, all the elements of @var{var_in} (which can be
+a variable or attribute) without regard to any dimensions.
+The third function, @command{dsort()} does the same but sorts in
+descending order. 
+Remember that ascending and descending sorts are specified by
+@command{asort()} and @command{dsort()}, respectively.
+
+These three functions are overloaded to take a second, optional argument 
+called the sort map @var{srt_map}, which should be supplied as a
+call-by-reference variable, i.e., preceded with an ampersand.
+If the sort map does not yet exist, then it will be created and 
+returned as an integer type the same shape as the input variable.
+
+The output @var{var_out} of each sort function is a sorted version of
+the input, @var{var_in}.
+The output @var{var_out} of the two mapping functions the result of
+applying (with @command{remap()} or un-applying (with @command{unmap()}) 
+the sort map @var{srt_map} to the input @var{var_in}.
+To apply the sort map with @command{remap()} the size of the variable
+must be exactly divisible by the size of the sort map. 
+
+The final function @command{invert_map()} returns the so-called
+de-sorting map @var{dsr_map} which is inverse map of the input map
+@var{srt_map}. 
+This gives the user access to both the forward and inverse sorting maps
+which can be useful in special situations.
 @example
 a1[$time]=@{10,2,3,4,6,5,7,3,4,1@};
 a1_sort=sort(a1);
@@ -7406,7 +7440,7 @@ then it will be created with the same shape as the input variable and be
 of type @code{NC_INT}. 
 If the map variable already exists, then the only restriction is that it
 be of at least the same size as the input variable. 
-To apply a map use @code{dsort(var_in,var_map)}. 
+To apply a map use @code{remap(var_in,srt_map)}. 
 @example
 defdim("nlat",5);
 
@@ -7422,7 +7456,7 @@ a3_sort=sort(a3,&a3_map);
 print(a3_map);
 // 0, 2, 1, 3;
 
-a4_sort=dsort(a4,a3_map);
+a4_sort=remap(a4,a3_map);
 print(a4_sort);
 // 1, 3, 2, 4,
 // 5, 7, 6, 8,
@@ -7432,7 +7466,7 @@ print(a4_sort);
 
 a3_map2[$nlat]=@{4,3,0,2,1@};
 
-a4_sort2=dsort(a4,a3_map2);
+a4_sort2=remap(a4,a3_map2);
 print(a4_sort2);
 // 3, 5, 4, 2, 1
 // 8, 10, 9,7, 6, 
@@ -7446,7 +7480,7 @@ To sort in descending order, apply the @code{reverse()} method after the
 @html
 <a name="srt"></a> <!-- http://nco.sf.net/nco.html#srt -->
 <a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
-<a name="dsort"></a> <!-- http://nco.sf.net/nco.html#dsort -->
+<a name="remap"></a> <!-- http://nco.sf.net/nco.html#remap -->
 @end html
 Here is an extended example of how to use @command{ncap2} features to
 hyperslab an irregular region based on the values of a variable not a
@@ -7515,13 +7549,13 @@ msk_flg=sort(msk_flg,&srt_map);
 // Define output dimension equal in size to number of valid points
 defdim("crd_out",msk_nbr);
 
-/* Now sort the variable of interest using the sort map and dsort()
+/* Now sort the variable of interest using the sort map and remap()
    The output, on the LHS, is the input re-arranged so that all points
    meeting the mask condition are contiguous at the end of the array
    Use same srt_map to hyperslab multiple variables of the same shape
    Remember to apply srt_map to the coordinate variables */
-crd_in=dsort(crd_in,srt_map);
-var_in=dsort(var_in,srt_map);
+crd_in=remap(crd_in,srt_map);
+var_in=remap(var_in,srt_map);
 
 /* Hyperslab last msk_nbr values of variable(s) of interest */
 crd_out[crd_out]=crd_in((dmn_in_sz-msk_nbr):(dmn_in_sz-1));
@@ -7601,8 +7635,8 @@ srt_map_3d+=lat_lon_idx;
 
 print("sort map 3d =\n");print(srt_map_3d);
 
-// Use dsort() to "de-sort" the data using the sort map
-three_dmn_rec_var=dsort(three_dmn_rec_var,srt_map_3d);
+// Use remap() to re-map the data
+three_dmn_rec_var=remap(three_dmn_rec_var,srt_map_3d);
 
 // Finally, reverse data so time coordinate is descending
 time=time.reverse($time);

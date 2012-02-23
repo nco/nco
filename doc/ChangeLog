@@ -1,11 +1,15 @@
+2012-02-23  Charlie Zender  <zender@uci.edu>
+
+	* Update documentation to include/use new sort/map routines
+
 2012-02-21  Henry Butowsky  <henryb@hush.com>
 
 	* Modified/added following sort functions:
 	sort(), asort() -sort ascending with/without map
 	dsort() sort descending with/without map
-	remap() - remap var with a sort map
-	unmap()- invert remap with sort map
-	invert_map()- invert the mapping
+	remap() apply sort map to variable
+	unmap() return variable that produced current variable using sort map
+	invert_map() invert the mapping
 
 2012-02-20  Charlie Zender  <zender@uci.edu>
 
