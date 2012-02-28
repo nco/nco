@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.673 2012-02-21 05:51:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.674 2012-02-28 23:45:57 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -942,7 +942,9 @@ Volunteers are encourage to add their own &ldquo;NCO Hacks&rdquo; to this cookbo
 <ul>
 <li>This <a href="http://dust.ess.uci.edu/doc/abb/abb.pdf">abbreviation key</a> unlocks the mysteries of the source code abbreviations and acronyms.</li>
 
+<!-- This documentation went MIA sometime in 2010:
 <li>Unidata netCDF for Developers Workshop <a href="http://www.unidata.ucar.edu/software/netcdf/docs/workshop/utilities/Nco.html">NCO examples</a></li>
+-->
 </ul>
 
 <!-- This documentation went MIA sometime in 2004:
