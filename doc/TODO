@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1146 2012-02-21 05:51:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1147 2012-02-29 12:42:48 hmb Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -1021,7 +1021,8 @@ ncap72. Stop linking to -lC on AIX. Get all float math functions by casting doub
 ncap79. make abs() synonym for fabs() and pow() and ** synonyms for ^
 ncap80. ncap2+openmp+netCDF4 - script only works with threads>1 if there are no atts in input file
 ncap81  the script 'defdim("a",3);defdim("b",4);a[$a,$b]=10;' works on netCDF3 not netCDF4. Known bug with netCDF4. (Why? what causes it?) 
-ncap82. 
+ncap82. Unable to average a single/multi dimensional var  of total size 1 var in ncap2 
+e.g defdim("X",10);defdim("Y",1); m[X,Y]=10; m.avg();- fails with seg fault  
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************
