@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.675 2012-02-29 08:05:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.676 2012-02-29 17:48:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -340,11 +340,11 @@ funded our
 <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">ACCESS Project</a>,
 &ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
 from 20120401&ndash;20140331 as part of the 
-<a href="http://fxm">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
+<a href="http://science.nasa.gov/earth-science/earth-science-data/access">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
 We appreciate the proposal reviewers for and staff of the 
-<a href="http://fxm">Earth Science Division (ESD) Research and Analysis (R\&A)</a>
+<a href="http://science.nasa.gov/researchers/sara/division-corner/earth-science-division-corner">Earth Science Division (ESD) Research and Analysis (R\&A)</a>
 in the 
-<a href="http://fxm">Science Mission Directorate (SMD)</a>.
+<a href="http://science.nasa.gov/about-us/organization-and-leadership">Science Mission Directorate (SMD)</a>.
 NCO development has been completely voluntary and without
 institutional support since August, 2008.
 This NASA support dramatically changes the scale and pace of NCO development. 

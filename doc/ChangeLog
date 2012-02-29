@@ -1,3 +1,9 @@
+2012-02-29  Charlie Zender  <zender@uci.edu>
+
+	* Fix stat() and chmod() logic
+
+	* Increase ncrename diagnostics consistency and verbosity
+
 2012-02-28  Charlie Zender  <zender@uci.edu>
 
 	* Implement chmod so ncrename succeeds when output file is specified and input file is read-only

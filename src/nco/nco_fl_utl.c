@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.145 2012-02-29 08:05:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.146 2012-02-29 17:48:04 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -113,7 +113,7 @@ nco_fl_chmod /* [fnc] Copy first file to second */
 
   /* Construct and execute copy command */
   chmod_cmd=(char *)nco_malloc((strlen(chmod_cmd_fmt)+strlen(fl_nm)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"chmod'ing %s to owner-writable...",fl_nm);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: chmod'ing %s to owner-writable...",prg_nm_get(),fl_nm);
   (void)sprintf(chmod_cmd,chmod_cmd_fmt,fl_nm);
   rcd=system(chmod_cmd);
   if(rcd == -1){
@@ -138,7 +138,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   /* Construct and execute copy command */
   cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Copying %s to %s...",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
   if(rcd == -1){
