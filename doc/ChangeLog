@@ -1,6 +1,8 @@
 2012-02-29  Charlie Zender  <zender@uci.edu>
 
-	* Fix stat() and chmod() logic
+	* Use chmod() C-library call instead of chmod shell-command
+
+	* Fix stat() and chmod() logic in ncrename
 
 	* Increase ncrename diagnostics consistency and verbosity
 

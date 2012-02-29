@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.146 2012-02-29 17:48:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.147 2012-02-29 18:08:29 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -104,7 +104,8 @@ void
 nco_fl_chmod /* [fnc] Copy first file to second */
 (const char * const fl_nm) /* I [sng] Name of file */
 {
-  /* Purpose: Make file owner-writable */
+  /* Purpose: Make file owner-writable
+     NB: superceded by chmod() C-library call */
   char *chmod_cmd;
   const char chmod_cmd_fmt[]="chmod u+w %s";
 

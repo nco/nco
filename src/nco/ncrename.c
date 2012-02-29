@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.131 2012-02-29 17:48:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.132 2012-02-29 18:08:29 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -39,6 +39,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
+#include <errno.h> /* system/library error diagnostics, errno */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -65,6 +66,10 @@
 int 
 main(int argc,char **argv)
 {
+#ifndef __GNUG__
+  extern int errno; /* [enm] Error code in errno.h */
+#endif /* __GNUG__ */
+
   nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
@@ -87,8 +92,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.131 2012-02-29 17:48:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.131 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.132 2012-02-29 18:08:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.132 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -271,6 +276,7 @@ main(int argc,char **argv)
   if(OUTPUT_TO_NEW_NETCDF_FILE){
     int rcd_lcl;
 
+    mode_t fl_out_md;
     mode_t fl_out_usr_md;
     mode_t fl_out_usr_wrt_md;
 
@@ -321,13 +327,22 @@ main(int argc,char **argv)
        Method of checking: 
        First  bit-wise "and" (& S_IRWXU) uses mask to strips full, multibyte, file mode flag of all but user/owner byte 
        Second bit-wise "and" (& S_IWUSR) is only "true" (non-zero) is owner write permission is set */
-    fl_out_usr_md=stat_sct.st_mode & S_IRWXU;
+    fl_out_md=stat_sct.st_mode;
+    fl_out_usr_md=fl_out_md & S_IRWXU;
     fl_out_usr_wrt_md=fl_out_usr_md & S_IWUSR;
-    if(dbg_lvl == nco_dbg_crr) (void)fprintf(stderr,"%s: Output file mode (octal)    = %lo\n",prg_nm,(unsigned long)stat_sct.st_mode);
-    if(dbg_lvl == nco_dbg_crr) (void)fprintf(stderr,"%s: Output file user mode       = %lo\n",prg_nm,(unsigned long)fl_out_usr_md);
-    if(dbg_lvl == nco_dbg_crr) (void)fprintf(stderr,"%s: Output file user write mode = %lo\n",prg_nm,(unsigned long)fl_out_usr_wrt_md);
-    if(!fl_out_usr_wrt_md) (void)nco_fl_chmod(fl_out);
-
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: Output file mode (octal)    = %lo\n",prg_nm,(unsigned long)stat_sct.st_mode);
+    if(!fl_out_usr_wrt_md){
+      /* Set user-write bit of output file */
+      fl_out_md=fl_out_md | S_IWUSR;
+      rcd_lcl=chmod(fl_out,fl_out_md);
+      if(rcd_lcl == -1){
+#ifndef __GNUG__
+	(void)fprintf(stdout,"%s: chmod() error is \"%s\"\n",prg_nm,strerror(errno));
+#endif /* __GNUG__ */
+	(void)fprintf(stdout,"%s: ERROR Unable to make output file writable by user, exiting...\n",prg_nm_get());
+	nco_exit(EXIT_FAILURE);
+      } /* endif rcd_lcl */
+    } /* end if chmod */
   } /* end if OUTPUT_TO_NEW_NETCDF_FILE */
   
   /* Open file enabled for writing. Place file in define mode for renaming. */
