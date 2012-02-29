@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.456 2012-02-23 21:00:18 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.457 2012-02-29 08:05:32 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
@@ -42,6 +42,11 @@ A. Expand and redefine ncap2 treatment of sorting and maps:
    Thanks to Henry Butowsky for this functionality
 
 A. Fix bug with ncap2 print() command
+
+A. chmod() so ncrename succeeds when output file is specified and
+   input file is read-only. Formerly this failed:
+   chmod 444 ~/foo.nc;ncrename -O -v one,uno ~/foo.nc ~/foo2.nc
+   Now it succeeds. Thanks to Paida for reporting this.
 
 KNOWN BUGS NOT YET FIXED:
 

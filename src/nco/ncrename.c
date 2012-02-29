@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.129 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.130 2012-02-29 08:05:32 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.129 2012-01-01 20:51:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.129 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.130 2012-02-29 08:05:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.130 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -270,11 +270,11 @@ main(int argc,char **argv)
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){
 
+    struct stat stat_sct;
+      
     if(!FORCE_OVERWRITE){
       int rcd_lcl;
 
-      struct stat stat_sct;
-      
       rcd_lcl=stat(fl_out,&stat_sct);
 
       /* If file already exists, then query user whether to overwrite */
@@ -306,6 +306,12 @@ main(int argc,char **argv)
        changing names on the fly. This avoids possible XDR translation
        performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
+
+    /* 20120228 Ensure output file is writable even when input file is not 
+       stat structure includes st_mode field which includes following flags:
+       mode_t st_mode
+       S_IWUSR    00200     owner has write permission */
+    if(!(S_IRWXU == (stat_sct.st_mode & S_IRWXU))) (void)nco_fl_chmod(fl_out);
 
   } /* end if OUTPUT_TO_NEW_NETCDF_FILE */
   

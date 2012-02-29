@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.144 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.145 2012-02-29 08:05:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -99,6 +99,30 @@ nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */
   if(cnk_nbr > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to chunk variables in output file which has netCDF format %s. Chunking is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without chunking. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
   if(dfl_lvl > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to deflate (compress) variables in output file which has netCDF format %s. Deflation is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without deflation. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
 } /* end nco_nco_fl_fmt_vet() */
+
+void
+nco_fl_chmod /* [fnc] Copy first file to second */
+(const char * const fl_nm) /* I [sng] Name of file */
+{
+  /* Purpose: Make file owner-writable */
+  char *chmod_cmd;
+  const char chmod_cmd_fmt[]="chmod u+w %s";
+
+  int rcd;
+  const int fmt_chr_nbr=2;
+
+  /* Construct and execute copy command */
+  chmod_cmd=(char *)nco_malloc((strlen(chmod_cmd_fmt)+strlen(fl_nm)-fmt_chr_nbr+1UL)*sizeof(char));
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"chmod'ing %s to owner-writable...",fl_nm);
+  (void)sprintf(chmod_cmd,chmod_cmd_fmt,fl_nm);
+  rcd=system(chmod_cmd);
+  if(rcd == -1){
+    (void)fprintf(stdout,"%s: ERROR nco_fl_chmod() is unable to execute chmod command \"%s\"\n",prg_nm_get(),chmod_cmd);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+  chmod_cmd=(char *)nco_free(chmod_cmd);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+} /* end nco_fl_chmod() */
 
 void
 nco_fl_cp /* [fnc] Copy first file to second */

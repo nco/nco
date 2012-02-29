@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.46 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.47 2012-02-29 08:05:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -58,6 +58,10 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
 
 void
 nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
+
+void
+nco_fl_chmod /* [fnc] Make file owner-writable */
+(const char * const fl_nm); /* I [sng] Name of file */
 
 void
 nco_fl_cp /* [fnc] Copy first file to second */
