@@ -1,3 +1,13 @@
+2012-03-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.1.0 release procedure:
+ 	Changes since nco-4_0_9: sorts & maps, MD5, chmod
+	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
+	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
+
+	* Add degenerate variables to in.nc for testing nco_var_avg()
+
 2012-02-29  Charlie Zender  <zender@uci.edu>
 
 	* Use chmod() C-library call instead of chmod shell-command
@@ -11,12 +21,6 @@
 	* Implement chmod so ncrename succeeds when output file is specified and input file is read-only
 
 2012-02-23  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.1.0 release procedure:
- 	Changes since nco-4_0_9: sorts & maps, MD5
-	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
-	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
 
 	* Update documentation to include/use new sort/map routines
 

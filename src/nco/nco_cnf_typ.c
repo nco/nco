@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.59 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.60 2012-03-01 18:07:46 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -980,27 +980,20 @@ ncap_typ_hgh /* [fnc] Return Highest type */
   nco_bool v1s;
   nco_bool v2s;
  
-  /* already identical */
-  if(typ_1 == typ_2)
-    return typ_1;
+  /* Already identical */
+  if(typ_1 == typ_2) return typ_1;
 
-  /* deal with NC_DOUBLE */
-  if(typ_1 == NC_DOUBLE || typ_2 == NC_DOUBLE )
-    return NC_DOUBLE;
-  
+  /* Deal with NC_DOUBLE */
+  if(typ_1 == NC_DOUBLE || typ_2 == NC_DOUBLE ) return NC_DOUBLE;
 
-  /* deal with NC_FLOAT */
-  if(typ_1 == NC_FLOAT || typ_2 ==NC_FLOAT )
-      return NC_FLOAT;
-  
+  /* Deal with NC_FLOAT */
+  if(typ_1 == NC_FLOAT || typ_2 ==NC_FLOAT ) return NC_FLOAT;
 
   v1s=nco_typ_sgn(typ_1);
   v2s=nco_typ_sgn(typ_2);
 
   /* Both signed or both unsigned */
-  if( v1s==v2s  )
-    return ( typ_1 > typ_2 ? typ_1 : typ_2 );  
-
+  if(v1s == v2s) return (typ_1 > typ_2 ? typ_1 : typ_2);  
 
   /* From here on one is signed the other unsigned */
   
@@ -1021,20 +1014,18 @@ ncap_typ_hgh /* [fnc] Return Highest type */
       return typ_2; 
       break;
     case NC_SHORT: 
-      return (typ_2<NC_USHORT ? typ_1 : typ_2);
+      return (typ_2 < NC_USHORT ? typ_1 : typ_2);
       break;
     case NC_INT:
-      return (typ_2<NC_UINT ? typ_1 : typ_2); 
+      return (typ_2 < NC_UINT ? typ_1 : typ_2); 
       break;
     case NC_INT64:
-       return (typ_2<NC_UINT64 ? typ_1 : typ_2); 
+      return (typ_2 < NC_UINT64 ? typ_1 : typ_2); 
       break; 
   default: nco_dfl_case_nc_type_err(); break;
-    
   } /* end switch */
   return typ_1;
 } /* end ncap_typ_hgh */
-
 
 nc_type /* O [enm] Highest precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */

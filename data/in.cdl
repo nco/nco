@@ -56,10 +56,16 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.133 2012-02-20 04:26:38 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.134 2012-03-01 18:07:46 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
+
+	float dgn(dgn);
+	dgn:long_name = "degenerate coordinate (dgn means degenerate, i.e., of size 1)";
+
+	float dgn_var(dgn);
+	dgn_var:long_name = "degenerate variable (dgn means degenerate, i.e., of size 1)";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -882,6 +888,8 @@ data:
 	char_var_space=" ";
 	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 	date_int=1964,3,12,12,9;
+	dgn=73;
+	dgn_var=73;
 	double_var=10.;
 	double_var2=10.;
 	dps_dry=73;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.64 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.65 2012-03-01 18:07:46 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -174,6 +174,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
     /* First set tally field to 1 */
     for(idx=0;idx<fix_sz;idx++) fix_tally[idx]=1L;
+
     /* Next overwrite any missing value locations with zero */
     if(fix->has_mss_val){
       int val_sz_byte;
@@ -181,8 +182,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       char *val;
       char *mss_val;
 
-      /* NB: Use char * rather than void * because some compilers (acc) will not do pointer
-	 arithmetic on void * */
+      /* NB: Use char * rather than void * because some compilers (acc) will not do pointer arithmetic on void * */
       mss_val=(char *)fix->mss_val.vp;
       val_sz_byte=nco_typ_lng(fix->type);
       val=(char *)fix->val.vp;
