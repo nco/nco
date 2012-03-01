@@ -6,7 +6,14 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
 
+	* Allocate tally array for degenerate averages in nco_var_avg()
+	This fixes ncap2 problem. Not sure why ncwa never failed.
+
 	* Add degenerate variables to in.nc for testing nco_var_avg()
+
+	* nco_var_avg() crashes on degenerate arrays sent by ncap2 not ncwa
+	ncap2 -O -v -s 'dgn_max=dgn.max()' ~/nco/data/in.nc ~/foo.nc # Fails
+	ncwa -O -v dgn_var ~/nco/data/in.nc ~/foo.nc # Succeeds
 
 2012-02-29  Charlie Zender  <zender@uci.edu>
 

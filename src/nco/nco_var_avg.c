@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.65 2012-03-01 18:07:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.66 2012-03-01 18:23:40 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -164,6 +164,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix->cnt=(long *)nco_realloc(fix->cnt,dmn_rdd_nbr*sizeof(long));
   fix->end=(long *)nco_realloc(fix->end,dmn_rdd_nbr*sizeof(long));
   
+  /* Resize (or just plain allocate) tally array */
+  fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
+
   if(avg_sz == 1L){
     /* If averaging block size is 1L, input and output value arrays are identical 
        var->val was copied to fix->val by nco_var_dpl() at beginning of routine
@@ -206,8 +209,6 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     avg_val=fix->val;
     /* Create new value buffer for output (averaged) size */
     fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
-    /* Resize (or just plain allocate) tally array */
-    fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
     
     /* Initialize value and tally arrays */
     (void)nco_zero_long(fix_sz,fix->tally);
