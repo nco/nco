@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.48 2012-03-02 04:02:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.49 2012-03-02 04:17:24 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -17,6 +17,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <errno.h> /* system/library error diagnostics, errno */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
@@ -41,6 +42,16 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
+
+/* 20120301: Replace multiple instances of hard-coded retry limit with CPP token NCO_MAX_NBR_USR_INPUT_RETRY */
+#ifndef NCO_MAX_NBR_USR_INPUT_RETRY
+# define NCO_MAX_NBR_USR_INPUT_RETRY 10
+#endif /* NCO_MAX_NBR_USR_INPUT_RETRY */
+
+/* 20120301: Replace multiple instances of hard-coded reply length limit with CPP token NCO_USR_RPL_MAX_LNG */
+#ifndef NCO_USR_RPL_MAX_LNG
+# define NCO_USR_RPL_MAX_LNG 10
+#endif /* NCO_USR_RPL_MAX_LNG */
 
 #ifdef __cplusplus
 extern "C" {

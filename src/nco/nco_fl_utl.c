@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.148 2012-03-02 04:02:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.149 2012-03-02 04:17:24 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -116,11 +116,11 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
   
   /* When output file already exists, query user whether to overwrite */
   if(rcd_sys != -1){
-    char usr_reply='z';
+    char usr_rpl='z';
     short nbr_itr=0;
     
     /* fxm TODO nco199: Internationalize (i18n) NCO with gettext() */
-    while(usr_reply != 'n' && usr_reply != 'y'){
+    while(usr_rpl != 'n' && usr_rpl != 'y'){
       nbr_itr++;
       if(nbr_itr > NCO_MAX_NBR_USR_INPUT_RETRY){
 	(void)fprintf(stdout,"\n%s: ERROR %s reports %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),fnc_nm,nbr_itr-1);
@@ -128,13 +128,13 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
       } /* end if */
       (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",prg_nm_get(),fl_nm);
       (void)fflush(stdout);
-      usr_reply=(char)fgetc(stdin);
+      usr_rpl=(char)fgetc(stdin);
       /* Allow one carriage return per response free of charge */
-      if(usr_reply == '\n') usr_reply=(char)fgetc(stdin);
+      if(usr_rpl == '\n') usr_rpl=(char)fgetc(stdin);
       (void)fflush(stdin);
     } /* end while */
     
-    if(usr_reply == 'n'){
+    if(usr_rpl == 'n'){
       nco_exit(EXIT_SUCCESS);
     } /* end if */
   } /* end if rcd_sys != -1 */
@@ -1340,9 +1340,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* If permanent file already exists, query user whether to overwrite, append, or exit */
   if(rcd_stt != -1){
     char *rcd_fgets=NULL; /* Return code from fgets */
-#define USR_RPL_MAX_LNG 10 /* [nbr] Maximum length for user reply */
-#define USR_RPL_MAX_NBR 10 /* [nbr] Maximum number of chances for user to reply */
-    char usr_rpl[USR_RPL_MAX_LNG];
+    char usr_rpl[NCO_USR_RPL_MAX_LNG];
     int usr_rpl_int;
     short nbr_itr=0;
     size_t usr_rpl_lng;
@@ -1362,18 +1360,18 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     /* Ensure one exit condition for each valid switch in following case statement */
     while(strcasecmp(usr_rpl,"o") && strcasecmp(usr_rpl,"a") && strcasecmp(usr_rpl,"e")){
       /* int cnv_nbr; *//* [nbr] Number of scanf conversions performed this scan */
-      if(nbr_itr++ > USR_RPL_MAX_NBR){
+      if(nbr_itr++ > NCO_MAX_NBR_USR_INPUT_RETRY){
 	(void)fprintf(stdout,"\n%s: ERROR %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: %s exists---`e'xit, `o'verwrite (i.e., delete existing file), or `a'ppend (i.e., replace duplicate variables in and add new variables to existing file) (e/o/a)? ",prg_nm_get(),fl_out);
       (void)fflush(stdout);
-      /*       fgets() reads (at most one less than USR_RPL_MAX_LNG) to first newline or EOF */
-      rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);
+      /*       fgets() reads (at most one less than NCO_USR_RPL_MAX_LNG) to first newline or EOF */
+      rcd_fgets=fgets(usr_rpl,NCO_USR_RPL_MAX_LNG,stdin);
       /*       fscanf() reads ... */
       /*      while((cnv_nbr=fscanf(stdin,"%9s",usr_rpl)) != EOF) continue;*/
-      /*      while((rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin)) == NULL){*/
+      /*      while((rcd_fgets=fgets(usr_rpl,NCO_USR_RPL_MAX_LNG,stdin)) == NULL){*/
 	/*	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);*/
       /*      continue;}*/
 

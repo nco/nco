@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
 
+	* Clean-up CPP token scope
+
 	* Sub-routine-ize nco_fl_overwrite_prm() to cleanup ncatted.c, ncrename.c
 
 	* Port new file copy/chmod code from ncrename to ncatted
