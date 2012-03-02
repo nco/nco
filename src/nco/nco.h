@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.167 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.168 2012-03-02 00:20:07 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -151,6 +151,11 @@ extern "C" {
 # endif /* !NCO_USE_FILL_VALUE */
 # define NCO_MSS_VAL_SNG
 #endif /* NCO_MSS_VAL_SNG */
+
+  /* 20120301: Replace multiple instances of hard-coded limit with CPP token NCO_MAX_NBR_USR_INPUT_RETRY */
+#ifndef NCO_MAX_NBR_USR_INPUT_RETRY
+# define NCO_MAX_NBR_USR_INPUT_RETRY 10
+#endif /* NCO_MAX_NBR_USR_INPUT_RETRY */
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */

@@ -1,5 +1,9 @@
 2012-03-01  Charlie Zender  <zender@uci.edu>
 
+	* Port new file copy/chmod code from ncrename to ncatted
+
+	* Replace multiple instances of hard-coded limit with CPP token NCO_MAX_NBR_USR_INPUT_RETRY
+
 	* NCO 4.1.0 release procedure:
  	Changes since nco-4_0_9: sorts & maps, MD5, chmod
 	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1

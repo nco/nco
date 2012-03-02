@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.459 2012-03-01 18:23:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.460 2012-03-02 00:20:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
@@ -46,7 +46,8 @@ A. Fix bug with ncap2 print() command
 A. ncrename/ncatted succeed when output file is specified and input
    file is read-only. Formerly this failed:    
    chmod 444 ~/foo.nc;ncrename -O -v one,uno ~/foo.nc ~/foo2.nc
-   Now NCO executes chmod() so it succeeds. Thanks to Paida for reporting this.
+   Now NCO executes chmod() so it succeeds. Ditto for ncatted.
+   Thanks to Paida for reporting this.
 
 A. Fix bug where ncap2 could fail when averaging degenerate arrays
 
