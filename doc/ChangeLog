@@ -1,16 +1,16 @@
 2012-03-01  Charlie Zender  <zender@uci.edu>
 
-	* Sub-routine-ize nco_fl_overwrite_prm() to cleanup ncatted.c, ncrename.c
-
-	* Port new file copy/chmod code from ncrename to ncatted
-
-	* Replace multiple instances of hard-coded limit with CPP token NCO_MAX_NBR_USR_INPUT_RETRY
-
 	* NCO 4.1.0 release procedure:
  	Changes since nco-4_0_9: sorts & maps, MD5, chmod
 	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
+
+	* Sub-routine-ize nco_fl_overwrite_prm() to cleanup ncatted.c, ncrename.c
+
+	* Port new file copy/chmod code from ncrename to ncatted
+
+	* Replace multiple instances of hard-coded limit with CPP token NCO_MAX_NBR_USR_INPUT_RETRY
 
 	* Allocate tally array for degenerate averages in nco_var_avg()
 	This fixes ncap2 problem. Not sure why ncwa never failed.
