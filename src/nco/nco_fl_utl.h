@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.49 2012-03-02 04:17:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.50 2012-03-02 04:42:23 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -106,7 +106,7 @@ char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
- nco_bool * const FILE_RETRIEVED_FROM_REMOTE_LOCATION); /* O [flg] File was retrieved from remote location */
+ nco_bool * const FL_RTR_RMT_LCN); /* O [flg] File was retrieved from remote location */
 
 void
 nco_fl_mv /* [fnc] Move first file to second */

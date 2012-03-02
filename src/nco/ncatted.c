@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.138 2012-03-02 04:02:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.139 2012-03-02 04:42:23 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -125,13 +125,13 @@ main(int argc,char **argv)
 {
   aed_sct *aed_lst=NULL_CEWI;
 
-  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_RTR_RMT_LCN;
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool OUTPUT_TO_NEW_NETCDF_FILE=False;
-  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool FL_OUT_NEW=False;
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option n */
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.138 2012-03-02 04:02:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.138 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.139 2012-03-02 04:42:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.139 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -268,7 +268,7 @@ main(int argc,char **argv)
       fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
-      REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
+      RM_RMT_FL_PST_PRC=!RM_RMT_FL_PST_PRC;
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
@@ -294,7 +294,7 @@ main(int argc,char **argv)
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
-  if(fl_out) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=(char *)strdup(fl_lst_in[0]);
+  if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
 
   if(nbr_aed == 0){
     (void)fprintf(stdout,"%s: ERROR must specify an attribute to edit\n",prg_nm);
@@ -312,9 +312,9 @@ main(int argc,char **argv)
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
 
-  if(OUTPUT_TO_NEW_NETCDF_FILE){
+  if(FL_OUT_NEW){
     /* Obtain user consent, if needed, to overwrite output file (or die trying) */
     if(!FORCE_OVERWRITE) nco_fl_overwrite_prm(fl_out);
     
@@ -325,7 +325,7 @@ main(int argc,char **argv)
 
     /* Ensure output file is user/owner-writable */
     (void)nco_fl_chmod(fl_out);
-  } /* end if OUTPUT_TO_NEW_NETCDF_FILE */
+  } /* end if FL_OUT_NEW */
 
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
   /*  if(dbg_lvl == 8) ncopen_mode|=NC_SHARE;*/
@@ -378,7 +378,7 @@ main(int argc,char **argv)
   nco_close(nc_id);
   
   /* Remove local copy of file */
-  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){

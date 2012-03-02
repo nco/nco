@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.149 2012-03-02 04:17:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.150 2012-03-02 04:42:23 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -457,7 +457,7 @@ char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
- nco_bool * const FILE_RETRIEVED_FROM_REMOTE_LOCATION) /* O [flg] File was retrieved from remote location */
+ nco_bool * const FL_RTR_RMT_LCN) /* O [flg] File was retrieved from remote location */
 {
   /* Purpose: Locate input file, retrieve it from remote storage system if necessary,
      create local storage directory if neccessary, check file for read-access,
@@ -1013,9 +1013,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* end if */
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
     } /* end else transfer mode is asynchronous */
-    *FILE_RETRIEVED_FROM_REMOTE_LOCATION=True;
+    *FL_RTR_RMT_LCN=True;
   }else{ /* end if input file did not exist locally */
-    *FILE_RETRIEVED_FROM_REMOTE_LOCATION=False;
+    *FL_RTR_RMT_LCN=False;
   } /* end if file was already on the local system */
 
   if(dbg_lvl_get() >= nco_dbg_fl)

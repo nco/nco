@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.193 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.194 2012-03-02 04:42:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -65,7 +65,7 @@ main(int argc,char **argv)
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_RTR_RMT_LCN;
   nco_bool FL_LST_IN_APPEND=True; /* Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
@@ -74,7 +74,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
-  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -97,8 +97,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.193 2012-02-20 16:46:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.194 2012-03-02 04:42:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -361,7 +361,7 @@ main(int argc,char **argv)
       fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
-      REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
+      RM_RMT_FL_PST_PRC=!RM_RMT_FL_PST_PRC;
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
@@ -425,7 +425,7 @@ main(int argc,char **argv)
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
@@ -640,8 +640,8 @@ main(int argc,char **argv)
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr, fl_lst_abb,fl_pth);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
-    if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl >= nco_dbg_fl && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in);
+    if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+    if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     /* Open file once per thread to improve caching */
@@ -692,7 +692,7 @@ main(int argc,char **argv)
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
 
     /* Remove local copy of file */
-    if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
+    if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
     
   } /* end loop over fl_idx */
   

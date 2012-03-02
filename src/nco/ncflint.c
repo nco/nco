@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.192 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.193 2012-03-02 04:42:23 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -83,7 +83,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool MUST_CONFORM=False; /* Must nco_var_cnf_dmn() find truly conforming variables? */
-  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option a */
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.192 2012-01-01 20:51:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.192 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.193 2012-03-02 04:42:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.193 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -373,7 +373,7 @@ main(int argc,char **argv)
       fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
-      REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
+      RM_RMT_FL_PST_PRC=!RM_RMT_FL_PST_PRC;
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
@@ -761,8 +761,8 @@ main(int argc,char **argv)
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   /* Remove local copy of file */
-  if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
-  if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
+  if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in_1);
+  if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in_2);
   
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){

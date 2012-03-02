@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.124 2012-01-01 20:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.125 2012-03-02 04:42:23 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -105,19 +105,18 @@ main(int argc,char **argv)
   double rnd_nbr(double);
   
   nco_bool CNV_CCM_CCSM_CF;
-  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_RTR_RMT_LCN;
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool OUTPUT_TO_NEW_NETCDF_FILE=False;
+  nco_bool FL_OUT_NEW=False;
   nco_bool PRN_FNC_TBL=False; /* Option f */  
   nco_bool PROCESS_ALL_VARS=True; /* Option v */  
-  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool ATT_PROPAGATE=True;        
   nco_bool ATT_INHERIT=True;          
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
@@ -142,8 +141,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.124 2012-01-01 20:51:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.124 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.125 2012-03-02 04:42:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.125 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -389,7 +388,7 @@ main(int argc,char **argv)
       fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
-      REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
+      RM_RMT_FL_PST_PRC=!RM_RMT_FL_PST_PRC;
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
@@ -412,9 +411,6 @@ main(int argc,char **argv)
     case 'v': /* Variables to extract/exclude */
       PROCESS_ALL_VARS=False;
       nbr_xtr=0;
-      break;
-    case 'x': /* Exclude rather than extract variables specified with -v */
-      EXCLUDE_INPUT_LIST=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -537,7 +533,7 @@ main(int argc,char **argv)
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
-  if(fl_out) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=(char *)strdup(fl_lst_in[0]);
+  if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
   
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
@@ -548,7 +544,7 @@ main(int argc,char **argv)
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
@@ -573,7 +569,7 @@ main(int argc,char **argv)
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
   /* Open output file */
-  if(OUTPUT_TO_NEW_NETCDF_FILE){
+  if(FL_OUT_NEW){
     /* Normal case, like rest of NCO, where writes are made to temporary file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
   }else{ /* Existing file */
@@ -614,7 +610,7 @@ main(int argc,char **argv)
   
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   prs_arg.NCAP4_FILL = (fl_out_fmt==NC_FORMAT_NETCDF4 || fl_out_fmt==NC_FORMAT_NETCDF4_CLASSIC);
-# else
+#else
   prs_arg.NCAP4_FILL=false;
 #endif
   prs_arg.ntl_scn=false;
@@ -625,14 +621,14 @@ main(int argc,char **argv)
   for(idx=1;idx<thr_nbr;idx++){
     prs_cls prs_tmp(prs_arg);
     
-    // Open files for each thread
+    /* Open files for each thread */
     rcd=nco_open(fl_in,NC_NOWRITE,&prs_tmp.in_id);
     
-    // Handle to read output only
-    //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_tmp.out_id_readonly);
+    /* Handle to read output only */
+    /* rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_tmp.out_id_readonly); */
     rcd=nco_open(fl_out_tmp, NC_NOWRITE,&prs_tmp.out_id_readonly);
     
-    // only one handle for reading & writing 
+    /* Only one handle for reading and writing */
     prs_tmp.out_id=out_id;
     
     prs_vtr.push_back(prs_tmp);
@@ -640,8 +636,7 @@ main(int argc,char **argv)
   
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
-    if(nbr_spt == 0)
-      err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
+    if(nbr_spt == 0) err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
     
     /* Print all command-line scripts */
     if(dbg_lvl_get() > 0){
@@ -662,7 +657,7 @@ main(int argc,char **argv)
   rcd=parse_antlr(prs_vtr,fl_spt_usr,spt_arg_cat);
   
   /* Get number of variables in output file */
-  rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
+  rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
   /* Make list of all new variables in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,False,&nbr_lst_a);
@@ -670,28 +665,12 @@ main(int argc,char **argv)
   if(PROCESS_ALL_VARS){
     /* Get number of variables in input file */
     rcd=nco_inq(in_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
-    
     /* Form initial list of all variables in input file */
     xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,False,&nbr_xtr);
   }else{
     /* Make list of variables of new attributes whose parent variable is only in input file */
     xtr_lst=nco_att_lst_mk(in_id,out_id,var_vtr,&nbr_xtr);
   } /* endif */
-  
-    /* Find dimensions associated with xtr_lst */
-    /* Write to O only new dims
-       Add apropriate coordinate variables to extraction list 
-       options -c      -process all cordinates 
-       i.e., add coordinates to var list 
-       Also add their dims
-       
-       options --none   -process associated co-ords
-       loop though dim_out and append to var list
-       
-       options -C         no co-ordinates   Do nothing */
-  
-    /* Subtract list A again */
-    /* Finally extract variables on list */
   
   /* Subtract list A */
   if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
@@ -723,7 +702,6 @@ main(int argc,char **argv)
   /* Dimensions for manually specified extracted variables are now defined in output file
      Add coordinate variables to extraction list
      If EXTRACT_ALL_COORDINATES then write associated dimension to output */
-  
   if(EXTRACT_ASSOCIATED_COORDINATES){
     for(idx=0;idx<dmn_in_vtr.size();idx++){
       if(!dmn_in_vtr[idx]->is_crd_dmn) continue;
@@ -783,7 +761,7 @@ main(int argc,char **argv)
   
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
-    /* write misssing value contained inside var */
+    /* Write misssing value contained inside variable */
     if(var_vtr[idx]->xpr_typ == ncap_var){
       var_sct *var_ref;
       
@@ -793,17 +771,17 @@ main(int argc,char **argv)
       /* skip RAM vars and orphaned vars */
       if(rcd!=NC_NOERR|| !var_ref->has_mss_val) continue;  
       
-      /* Do netdf4 name hack */
+      /* netCDF4 name hack */
       if(prs_arg.NCAP4_FILL){
         (void)nco_put_att(out_id,var_id,att_nm_tmp,var_ref->type,1,var_ref->mss_val.vp);
         (void)nco_rename_att(out_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
       }else{
         (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);
-      }
+      } /* !prs_arg.NCAP4_FILL */
       continue;
-    }
+    } /* !ncap_var */
     
-    /* Skip missing values for now !!! */
+    /* Skip missing values (for now) */
     if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;     
     
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
@@ -815,21 +793,21 @@ main(int argc,char **argv)
     
     if(!strcmp(att_item.var_nm,"global")) 
       var_id=NC_GLOBAL;
-    else {
+    else{
       rcd=nco_inq_varid_flg(out_id,att_item.var_nm,&var_id);
       if(rcd != NC_NOERR)  goto cln_up;
-    }
-    // Check size;
+    } /* end else */
+    /* Check size */
     if(att_item.sz > NC_MAX_ATTRS ){ 
       (void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximium %d\n",prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
       goto cln_up;
-    }
+    } /* end if */
     /* NB: These attributes should probably be written prior to last data mode */
     (void)nco_aed_prc(out_id,var_id,att_item);
     
   cln_up: att_item.var_nm=(char*)nco_free(att_item.var_nm);
     att_item.att_nm=(char*)nco_free(att_item.att_nm);
-  }/* end for */
+  } /* end for */
   
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_all_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
@@ -853,10 +831,10 @@ main(int argc,char **argv)
   } /* end loop over threads */
   
   /* Remove local copy of file */
-  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
   
   /* Close output file and move it from temporary to permanent location */
-  if(OUTPUT_TO_NEW_NETCDF_FILE) (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id); else nco_close(out_id);
+  if(FL_OUT_NEW) (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id); else nco_close(out_id);
   
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
