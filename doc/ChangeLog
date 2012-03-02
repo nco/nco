@@ -1,5 +1,7 @@
 2012-03-01  Charlie Zender  <zender@uci.edu>
 
+	* Sub-routine-ize nco_fl_overwrite_prm() to cleanup ncatted.c, ncrename.c
+
 	* Port new file copy/chmod code from ncrename to ncatted
 
 	* Replace multiple instances of hard-coded limit with CPP token NCO_MAX_NBR_USR_INPUT_RETRY

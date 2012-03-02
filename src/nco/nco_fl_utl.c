@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.147 2012-02-29 18:08:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.148 2012-03-02 04:02:46 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -101,28 +101,92 @@ nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */
 } /* end nco_nco_fl_fmt_vet() */
 
 void
-nco_fl_chmod /* [fnc] Copy first file to second */
+nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
 (const char * const fl_nm) /* I [sng] Name of file */
 {
-  /* Purpose: Make file owner-writable
-     NB: superceded by chmod() C-library call */
-  char *chmod_cmd;
-  const char chmod_cmd_fmt[]="chmod u+w %s";
+  /* Purpose: Obtain user consent to overwrite output file (or die trying) */
+  const char fnc_nm[]="nco_fl_overwrite_prm()"; /* [sng] Function name */
 
-  int rcd;
-  const int fmt_chr_nbr=2;
+  int rcd_sys;
+  
+  struct stat stat_sct;
+  
+  /* Use stat() to determine if output file already exists */
+  rcd_sys=stat(fl_nm,&stat_sct);
+  
+  /* When output file already exists, query user whether to overwrite */
+  if(rcd_sys != -1){
+    char usr_reply='z';
+    short nbr_itr=0;
+    
+    /* fxm TODO nco199: Internationalize (i18n) NCO with gettext() */
+    while(usr_reply != 'n' && usr_reply != 'y'){
+      nbr_itr++;
+      if(nbr_itr > NCO_MAX_NBR_USR_INPUT_RETRY){
+	(void)fprintf(stdout,"\n%s: ERROR %s reports %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),fnc_nm,nbr_itr-1);
+	nco_exit(EXIT_FAILURE);
+      } /* end if */
+      (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",prg_nm_get(),fl_nm);
+      (void)fflush(stdout);
+      usr_reply=(char)fgetc(stdin);
+      /* Allow one carriage return per response free of charge */
+      if(usr_reply == '\n') usr_reply=(char)fgetc(stdin);
+      (void)fflush(stdin);
+    } /* end while */
+    
+    if(usr_reply == 'n'){
+      nco_exit(EXIT_SUCCESS);
+    } /* end if */
+  } /* end if rcd_sys != -1 */
+  
+} /* end nco_fl_overwrite_prm() */
 
-  /* Construct and execute copy command */
-  chmod_cmd=(char *)nco_malloc((strlen(chmod_cmd_fmt)+strlen(fl_nm)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: chmod'ing %s to owner-writable...",prg_nm_get(),fl_nm);
-  (void)sprintf(chmod_cmd,chmod_cmd_fmt,fl_nm);
-  rcd=system(chmod_cmd);
-  if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_chmod() is unable to execute chmod command \"%s\"\n",prg_nm_get(),chmod_cmd);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
-  chmod_cmd=(char *)nco_free(chmod_cmd);
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+void
+nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
+(const char * const fl_nm) /* I [sng] Name of file */
+{
+  /* Purpose: Make file user/owner-writable
+     Uses chmod() C-library call rather than chmod shell program
+     Routine assumes that output file already exists, but is of unknown mode */
+
+  const char fnc_nm[]="nco_fl_chmod()"; /* [sng] Function name */
+  
+  int rcd_sys;
+  
+  mode_t fl_md;
+  mode_t fl_usr_md;
+  mode_t fl_usr_wrt_md;
+  
+  struct stat stat_sct;
+  
+  /* Output file now guaranteed to exist. Perform stat() to check its permissions. */
+  rcd_sys=stat(fl_nm,&stat_sct);
+  
+  /* 20120228 Ensure output file is writable even when input file is not 
+     stat structure includes st_mode field which includes following flags:
+     mode_t st_mode
+     S_IRWXU    00700     mask for file owner permissions
+     S_IWUSR    00200     owner has write permission
+     Method of checking: 
+     First  bit-wise "and" (& S_IRWXU) uses mask to strips full, multibyte, file mode flag of all but user/owner byte 
+     Second bit-wise "and" (& S_IWUSR) is only "true" (non-zero) is owner write permission is set */
+  fl_md=stat_sct.st_mode;
+  fl_usr_md=fl_md & S_IRWXU;
+  fl_usr_wrt_md=fl_usr_md & S_IWUSR;
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports permissions for file %s are (octal) = %lo\n",prg_nm_get(),fnc_nm,fl_nm,(unsigned long)stat_sct.st_mode);
+  if(!fl_usr_wrt_md){
+    /* Set user-write bit of output file */
+    fl_md=fl_md | S_IWUSR;
+    rcd_sys=chmod(fl_nm,fl_md);
+    if(rcd_sys == -1){
+#ifndef __GNUG__
+      (void)fprintf(stdout,"%s: %s reports chmod() returned error \"%s\"\n",prg_nm_get(),fnc_nm,strerror(errno));
+#endif /* __GNUG__ */
+      (void)fprintf(stdout,"%s: ERROR Unable to make output file writable by user, exiting...\n",prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* endif rcd_sys */
+  } /* end if chmod */
+  
 } /* end nco_fl_chmod() */
 
 void

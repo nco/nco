@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.47 2012-02-29 08:05:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.48 2012-03-02 04:02:46 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -60,13 +60,17 @@ void
 nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
 
 void
-nco_fl_chmod /* [fnc] Make file owner-writable */
+nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
 (const char * const fl_nm); /* I [sng] Name of file */
 
 void
 nco_fl_cp /* [fnc] Copy first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to copy */
  const char * const fl_dst); /* I [sng] Name of destination file */
+
+void
+nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
+(const char * const fl_nm); /* I [sng] Name of file */
 
 void
 nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */

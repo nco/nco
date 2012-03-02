@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.133 2012-03-02 00:20:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.134 2012-03-02 04:02:46 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.133 2012-03-02 00:20:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.133 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.134 2012-03-02 04:02:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.134 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -274,76 +274,16 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){
-    int rcd_lcl;
-
-    mode_t fl_out_md;
-    mode_t fl_out_usr_md;
-    mode_t fl_out_usr_wrt_md;
-
-    struct stat stat_sct;
-
-    /* Use stat() to determine if output file already exists */
-    rcd_lcl=stat(fl_out,&stat_sct);
-      
-    if(!FORCE_OVERWRITE){
-      /* When output file already exists, query user whether to overwrite */
-      if(rcd_lcl != -1){
-        char usr_reply='z';
-	short nbr_itr=0;
-
-	/* fxm TODO nco199: Internationalize (i18n) NCO with gettext() */
-        while(usr_reply != 'n' && usr_reply != 'y'){
-	  nbr_itr++;
-	  if(nbr_itr > NCO_MAX_NBR_USR_INPUT_RETRY){
-	    (void)fprintf(stdout,"\n%s: ERROR %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
-	    nco_exit(EXIT_FAILURE);
-	  } /* end if */
-          (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",prg_nm_get(),fl_out);
-	  (void)fflush(stdout);
-          usr_reply=(char)fgetc(stdin);
-	  /* Allow one carriage return per response free of charge */
-	  if(usr_reply == '\n') usr_reply=(char)fgetc(stdin);
-	  (void)fflush(stdin);
-        } /* end while */
-        
-        if(usr_reply == 'n'){
-          nco_exit(EXIT_SUCCESS);
-        } /* end if */
-      } /* end if rcd_lcl != -1 */
-    } /* end if FORCE_OVERWRITE */
+    /* Obtain user consent, if needed, to overwrite output file (or die trying) */
+    if(!FORCE_OVERWRITE) nco_fl_overwrite_prm(fl_out);
     
     /* Copy input file to output file and then search through output, 
        changing names on the fly. This avoids possible XDR translation
        performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
 
-    /* Output file now guaranteed to exist. Perform stat() to check its permissions. */
-    rcd_lcl=stat(fl_out,&stat_sct);
-
-    /* 20120228 Ensure output file is writable even when input file is not 
-       stat structure includes st_mode field which includes following flags:
-       mode_t st_mode
-       S_IRWXU    00700     mask for file owner permissions
-       S_IWUSR    00200     owner has write permission
-       Method of checking: 
-       First  bit-wise "and" (& S_IRWXU) uses mask to strips full, multibyte, file mode flag of all but user/owner byte 
-       Second bit-wise "and" (& S_IWUSR) is only "true" (non-zero) is owner write permission is set */
-    fl_out_md=stat_sct.st_mode;
-    fl_out_usr_md=fl_out_md & S_IRWXU;
-    fl_out_usr_wrt_md=fl_out_usr_md & S_IWUSR;
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: Output file mode (octal)    = %lo\n",prg_nm,(unsigned long)stat_sct.st_mode);
-    if(!fl_out_usr_wrt_md){
-      /* Set user-write bit of output file */
-      fl_out_md=fl_out_md | S_IWUSR;
-      rcd_lcl=chmod(fl_out,fl_out_md);
-      if(rcd_lcl == -1){
-#ifndef __GNUG__
-	(void)fprintf(stdout,"%s: chmod() error is \"%s\"\n",prg_nm,strerror(errno));
-#endif /* __GNUG__ */
-	(void)fprintf(stdout,"%s: ERROR Unable to make output file writable by user, exiting...\n",prg_nm_get());
-	nco_exit(EXIT_FAILURE);
-      } /* endif rcd_lcl */
-    } /* end if chmod */
+    /* Ensure output file is user/owner-writable */
+    (void)nco_fl_chmod(fl_out);
   } /* end if OUTPUT_TO_NEW_NETCDF_FILE */
   
   /* Open file enabled for writing. Place file in define mode for renaming. */
