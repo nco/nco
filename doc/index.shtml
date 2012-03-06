@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.677 2012-03-01 18:07:46 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.678 2012-03-06 01:44:08 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -363,15 +363,15 @@ By supporting groups in a generic fashion, NCO hopes to remove one of
 the barriers to more widespread adoption of netCDF4 features.</p>
 
 <p>We plan to recruit two personnel, a programmer (aka software engineer)
-and a graduate student (scientific specialist) each for at least two
-years, to accomplish our ACCESS objectives. 
+and a graduate student (scientific specialist) both based at UCI for
+at least two years, to accomplish our ACCESS objectives. 
 As described in the proposal, the responsibilities of positions are
 roughly segregated as follows: 
 The 
 <a href="http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf">programmer</a> 
-will re-factor the code-base to support groups (50%),
-improve the NCO build system and user support (25%), 
-and support NASA ESDSWG activities (25%).
+will re-factor the code-base to support groups (70%),
+support NASA ESDSWG activities (20%), and
+improve the NCO build system and user support (10%).
 The 
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_03_adv.pdf">graduate student researcher</a> 
 analyze and intercompare snow cover and snow albedo datasets from
