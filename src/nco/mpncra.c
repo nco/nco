@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.114 2012-03-02 04:42:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.115 2012-03-07 04:09:06 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.114 2012-03-02 04:42:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.115 2012-03-07 04:09:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.115 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -196,6 +196,8 @@ main(int argc,char **argv)
   
   lmt_sct **lmt=NULL_CEWI;
   lmt_sct *lmt_rec=NULL_CEWI;
+  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
+  lmt_all_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
   
   long idx_rec; /* [idx] Index of current record in current input file */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -537,6 +539,11 @@ main(int argc,char **argv)
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  /* Initialize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
   
@@ -547,7 +554,7 @@ main(int argc,char **argv)
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
+  if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
   
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
@@ -557,14 +564,55 @@ main(int argc,char **argv)
   } /* end loop over idx */
   
   /* Create stand-alone limit structure just for record dimension */
-  if(prg == ncra || prg == ncrcat){
-    if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
+  if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
+    if(prg == ncra || prg == ncrcat){
       (void)fprintf(stdout,gettext("%s: ERROR input file %s lacks a record dimension\n"),prg_nm_get(),fl_in);
       if(fl_nbr == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* endif */
+  }else{ /* Record dimension exists */
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
-  } /* endif */
+    /* Initialize record coordinate re-basing */
+    if(prg == ncra || prg == ncrcat){
+      int var_id;
+      
+      lmt_rec->lmt_cln=cln_nil; 
+      lmt_rec->origin=0.0; 
+      lmt_rec->rbs_sng=NULL;
+
+      /* Obtain metadata for record coordinate */
+      rcd=nco_inq_varid_flg(in_id,lmt_rec->nm,&var_id);
+      if(rcd == NC_NOERR){ 
+	char *cln_att_sng=NULL;
+	lmt_rec->rbs_sng=nco_lmt_get_udu_att(in_id,var_id,"units"); 
+	cln_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
+	lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
+	if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
+      } /* endif record coordinate exists */
+    } /* endif ncra, ncrcat */
+  } /* endif record dimension exists */
+  
+  if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+    for(idx=0;idx<nbr_dmn_fl;idx++){
+      if(!strcmp(lmt_rec->nm,lmt_all_lst[idx]->dmn_nm)){
+        lmt_all_rec=lmt_all_lst[idx];
+	/* Can only have one record limit */
+        if(lmt_all_rec->lmt_dmn_nbr > 1L){
+	  (void)fprintf(stdout,"%s: Although this program allows multiple hyperslab limits for a single dimension, it allows only one unwrapped limit for the record dimension \"%s\". You have specified %i.\n",prg_nm_get(),lmt_all_rec->dmn_nm,lmt_all_rec->lmt_dmn_nbr);
+	  nco_exit(EXIT_FAILURE);
+	} /* end if */
+        if(prg==ncra || prg==ncrcat){
+	  /* Change record dim in lmt_all_lst so that cnt=1 */
+	  lmt_all_lst[idx]->dmn_cnt=1L;
+	  lmt_all_lst[idx]->lmt_dmn[0]->srt=0L;
+	  lmt_all_lst[idx]->lmt_dmn[0]->end=0L;           
+	  lmt_all_lst[idx]->lmt_dmn[0]->cnt=1L;                   
+	  lmt_all_lst[idx]->lmt_dmn[0]->srd=1L;
+	} /* endif ncra || ncrcat */
+	break;
+      } /* endif current limit applies to record dimension */
+    } /* end loop over all dimensions */
+  } /* end if file has record dimension */
   
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);
@@ -649,7 +697,8 @@ main(int argc,char **argv)
     TKN_WRT_FREE=False;
 #endif /* !ENABLE_MPI */
     /* Copy variable data for non-processed variables */
-    (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+    /* (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix); */
+    (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
 #ifdef ENABLE_MPI
     /* Close output file so workers can open it */
     nco_close(out_id);

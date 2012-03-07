@@ -1,3 +1,7 @@
+2012-03-06  Charlie Zender  <zender@uci.edu>
+
+	* Merge aux and lmt_all changes from ncpdq.c, ncra.c to mpncpdq.c mpncra.c
+
 2012-03-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.1.0 release procedure:
@@ -1065,7 +1069,7 @@
 	ncrcat -v time -d time,3.0,30.0,8 t1.nc t2.nc out.nc
 
 2010-02-09  Charlie Zender  <zender@uci.edu>
-pp
+
 	* Remove MPI print line from non-MPI code in mpncra.c to fix build
 	bug reported by Mark Van Moer
 
@@ -3251,7 +3255,7 @@ pp
 
 	* New code checked out OK with valgrind
 
-	* Need to add code to check that first operand is valid Lvalue 
+	* Need to add code to check that first operand is valid Lvalue
 	  -also need some new regression tests to fully test this new feature
 
 2006-07-12  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.86 2012-03-02 04:42:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.87 2012-03-07 04:09:06 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -116,10 +116,12 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.86 2012-03-02 04:42:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.86 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.87 2012-03-07 04:09:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.87 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
+  cnk_sct **cnk=NULL_CEWI;
+
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
   dmn_sct **dmn_rdr=NULL; /* [sct] Dimension structures to be re-ordered */
@@ -172,7 +174,9 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   
-  lmt_sct **lmt;
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
+  lmt_sct **lmt=NULL_CEWI;
+  lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
   nm_id_sct *dmn_lst;
   nm_id_sct *dmn_rdr_lst;
@@ -268,6 +272,7 @@ main(int argc,char **argv)
       {"unpack",no_argument,0,'U'},
       {"upk",no_argument,0,'U'},
       {"variable",required_argument,0,'v'},
+      {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
@@ -419,6 +424,11 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
       break;
+    case 'X': /* Copy auxiliary coordinate argument for later processing */
+      aux_arg[aux_nbr]=(char *)strdup(optarg);
+      aux_nbr++;
+      MSA_USR_RDR=True; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */      
+      break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
@@ -458,6 +468,19 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
+  /* Parse auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
+  
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id_in);
   (void)nco_inq_format(in_id,&fl_in_fmt);
@@ -484,6 +507,11 @@ main(int argc,char **argv)
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  /* Initialize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
   
@@ -493,9 +521,6 @@ main(int argc,char **argv)
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
-  /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
-  
   /* Duplicate input dimension structures for output dimension structures */
   nbr_dmn_out=nbr_dmn_xtr;
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_out*sizeof(dmn_sct *));
@@ -503,6 +528,9 @@ main(int argc,char **argv)
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over idx */
+  
+  /* Merge hyperslab limit information into dimension structures */
+  if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
   
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
@@ -836,7 +864,7 @@ main(int argc,char **argv)
     TKN_WRT_FREE=False;
 #endif /* !ENABLE_MPI */
     /* Copy variable data for non-processed variables */
-    (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+    (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
 #ifdef ENABLE_MPI
     /* Close output file so workers can open it */
     nco_close(out_id);
@@ -939,8 +967,7 @@ main(int argc,char **argv)
 	  
 	  /* Retrieve variable from disk into memory */
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-	  (void)nco_var_get(in_id,var_prc[idx]);
-	  
+	  (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 	  if(dmn_rdr_nbr > 0){
 	    if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
 	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
@@ -1123,6 +1150,13 @@ main(int argc,char **argv)
       } /* nco_pck_plc == nco_pck_plc_upk */
     } /* nco_pck_plc == nco_pck_plc_nil */
     
+    /* NB: lmt now referenced within lmt_all_lst[idx]  */
+    for(idx=0;idx<nbr_dmn_fl;idx++)
+      for(jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);   
+    lmt=(lmt_sct**)nco_free(lmt); 
+	
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1141,7 +1175,8 @@ main(int argc,char **argv)
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
