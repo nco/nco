@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.150 2012-03-02 04:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.151 2012-03-08 05:25:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -149,6 +149,8 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
      Uses chmod() C-library call rather than chmod shell program
      Routine assumes that output file already exists, but is of unknown mode */
 
+  //  blksize_t fl_sys_blk_sz; /* [nbr] File system blocksize for I/O */
+
   const char fnc_nm[]="nco_fl_chmod()"; /* [sng] Function name */
   
   int rcd_sys;
@@ -171,9 +173,11 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
      First  bit-wise "and" (& S_IRWXU) uses mask to strips full, multibyte, file mode flag of all but user/owner byte 
      Second bit-wise "and" (& S_IWUSR) is only "true" (non-zero) is owner write permission is set */
   fl_md=stat_sct.st_mode;
+  // fl_sys_blk_sz=stat_sct.st_blksize;
   fl_usr_md=fl_md & S_IRWXU;
   fl_usr_wrt_md=fl_usr_md & S_IWUSR;
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports permissions for file %s are (octal) = %lo\n",prg_nm_get(),fnc_nm,fl_nm,(unsigned long)stat_sct.st_mode);
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports permissions for file %s are (octal) = %lo\n",prg_nm_get(),fnc_nm,fl_nm,(unsigned long)fl_md);
+  // if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports preferred filesystem I/O block size: %ld bytes\n",prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
   if(!fl_usr_wrt_md){
     /* Set user-write bit of output file */
     fl_md=fl_md | S_IWUSR;

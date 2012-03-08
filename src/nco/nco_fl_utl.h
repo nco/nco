@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.50 2012-03-02 04:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.51 2012-03-08 05:25:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -29,8 +29,8 @@
 #include <netinet/in.h> /* needed for _res */
 #include <pwd.h> /* password structures for getpwuid() */
 #ifndef WIN32
-#include <arpa/nameser.h> /* needed for _res */
-#include <resolv.h> /* Internet structures for _res */
+# include <arpa/nameser.h> /* needed for _res */
+# include <resolv.h> /* Internet structures for _res */
 #endif /* !WIN32 */
 
 /* 3rd party vendors */
