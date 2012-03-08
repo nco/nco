@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.115 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.116 2012-03-08 17:28:34 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -145,9 +145,25 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     (void)cast_void_nctype(var->type,&mss_val_crr);
     (void)cast_void_nctype(var->type,&mss_val_new);
   
+ 
+
     switch(var->type){
-    case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;
-    case NC_DOUBLE: for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;} break;
+      /*    case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;*/
+      /*    case NC_DOUBLE: for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;} break;*/
+    case NC_FLOAT: 
+      if(isnormal(*mss_val_crr.fp)){
+	for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;}
+      }else{ /* Old missing value is NaN-like so comparisons to it are always false---must use macros */
+	for(idx=0L;idx<var_sz;idx++) {if(!isnormal(var_val.fp[idx])) {var_val.fp[idx]=*mss_val_new.fp;}}
+      } /* endif NaN */
+      break;
+    case NC_DOUBLE:
+      if(isnormal(*mss_val_crr.dp)){
+	for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;}
+      }else{ /* Old missing value is NaN-like so comparisons to it are always false---must use macros */
+	for(idx=0L;idx<var_sz;idx++) {if(!isnormal(var_val.dp[idx])){var_val.dp[idx]=*mss_val_new.dp;}}
+      } /* endif NaN */
+      break;
     case NC_INT: for(idx=0L;idx<var_sz;idx++) {if(var_val.ip[idx] == *mss_val_crr.ip) var_val.ip[idx]=*mss_val_new.ip;} break;
     case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
     case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;

@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.134 2012-03-01 18:07:46 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.135 2012-03-08 17:28:33 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -294,6 +294,16 @@ variables:
 	fll_val_mss_val:long_name = "_FillValue example";
 	fll_val_mss_val:_FillValue = -999.0f;
 	fll_val_mss_val:missing_value = -999.0f;
+
+	float nan_arr(lat);
+	nan_arr:long_name = "Intended for array representation of IEEE NaN";
+	nan_arr:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
+	nan_arr:_FillValue = nan;
+
+	float nan_scl;
+	nan_scl:long_name = "Intended for scalar representation of IEEE NaN";
+	nan_scl:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
+	nan_scl:_FillValue = nan;
 
 	float nm_spc;
 	nm_spc:long_name = "Variable name with space (invalid)";
@@ -970,6 +980,8 @@ data:
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
 	mss_val_fst=-999,73,-999,73;
 	mss_val_scl=1.0e36;
+	nan_arr=1,nan;
+	nan_scl=nan;
 	negative_one=-1.;
 	nm_pnd=1;
 	nm_spc=1;

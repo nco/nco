@@ -1,6 +1,12 @@
+2012-03-08  Charlie Zender  <zender@uci.edu>
+
+	* Allow ncatted to change missing value's that are NaNs
+	Arithmetic operators will still treat NaNs incorrectly, but this
+	allows users to get rid of all NaNs first
+
 2012-03-07  Charlie Zender  <zender@uci.edu>
 
-	* Insert stubs to determine filesystem blocksize
+	* Insert hooks to determine filesystem blocksize
 
 2012-03-06  Charlie Zender  <zender@uci.edu>
 

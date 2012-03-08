@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1150 2012-03-08 05:25:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1151 2012-03-08 17:28:34 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -751,7 +751,9 @@ nco1033. ncrcat: warn when first file has more variables than subsequent files
 nco1034. ncatted: allow option to append md5 attribute to each variable
 nco1035. rewrite nco_var_cnf_typ() to use default rather than truncated missing values
 nco1036. ncks: implement rew's copy workaround in nco_cpy_var_val()
-nco1037. 
+nco1037. nco: support NaN's in math, comparison, averagers in nco_var_rth()? use isnan()?
+         ncwa -O -a lat -v nan_arr ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
+nco1038. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
