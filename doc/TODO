@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1148 2012-03-02 18:20:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1149 2012-03-08 04:22:22 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -750,7 +750,8 @@ nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them tho
 nco1033. ncrcat: warn when first file has more variables than subsequent files
 nco1034. ncatted: allow option to append md5 attribute to each variable
 nco1035. rewrite nco_var_cnf_typ() to use default rather than truncated missing values
-nco1036. 
+nco1036. ncks: implement rew's copy workaround
+nco1037. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
