@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.151 2012-03-08 05:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.152 2012-03-09 11:47:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -173,6 +173,8 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
      First  bit-wise "and" (& S_IRWXU) uses mask to strips full, multibyte, file mode flag of all but user/owner byte 
      Second bit-wise "and" (& S_IWUSR) is only "true" (non-zero) is owner write permission is set */
   fl_md=stat_sct.st_mode;
+  /* Blocksize information in stat structure:
+     blksize_t st_blksize blocksize for file system I/O */
   // fl_sys_blk_sz=stat_sct.st_blksize;
   fl_usr_md=fl_md & S_IRWXU;
   fl_usr_wrt_md=fl_usr_md & S_IWUSR;

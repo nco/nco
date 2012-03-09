@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.678 2012-03-06 01:44:08 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.679 2012-03-09 11:47:52 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -607,6 +607,7 @@ World peace?
 MD5 digests;
 netCDF4 groups;
 <b>ncrename</b> chmods;
+<b>ncatted</b> NaN support;
 Stride works with DAP?;
 <li><b>NCO 4.0.9</b>: 
 Fix over-zealous <tt>ncap2</tt> packing;
@@ -1028,6 +1029,8 @@ The second best way is to download the source as a compressed tarfile:
 </li>
 </ul>
 
+<!-- Equivalent source browsing in Unidata's netCDF SVN repository:
+     http://svn.unidata.ucar.edu/repos/netcdf/trunk/ncdump/nccopy.c -->
 <p>NCO's browsable
 <a href="http://nco.cvs.sf.net/nco/nco">CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay

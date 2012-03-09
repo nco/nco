@@ -1,24 +1,30 @@
+2012-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Add stubs to ncks for faster copies on Large Blocksize Filesystems (LBFs)
+
 2012-03-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.1.0 release procedure:
+ 	Changes since nco-4_0_9: sorts & maps, MD5, chmod, NaNs
+	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
+	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
 
 	* Allow ncatted to change missing value's that are NaNs
 	Arithmetic operators will still treat NaNs incorrectly, but this
 	allows users to get rid of all NaNs first
 
+	* Add some NaNs to in.nc for testing
+
 2012-03-07  Charlie Zender  <zender@uci.edu>
 
-	* Insert hooks to determine filesystem blocksize
+	* Try hooks to determine filesystem blocksize in prep for Rew workaround
 
 2012-03-06  Charlie Zender  <zender@uci.edu>
 
 	* Merge aux and lmt_all changes from ncpdq.c, ncra.c to mpncpdq.c mpncra.c
 
 2012-03-01  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.1.0 release procedure:
- 	Changes since nco-4_0_9: sorts & maps, MD5, chmod
-	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
-	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
 
 	* Clean-up ncap2.cc
 

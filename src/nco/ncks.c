@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.286 2012-03-02 04:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.287 2012-03-09 11:47:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -102,6 +102,7 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+  nco_bool USE_LBF_WORKAROUND=False; /* [flg] Faster copy on Large Blocksize Filesystems */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -126,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.286 2012-03-02 04:42:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.286 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.287 2012-03-09 11:47:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.287 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -676,18 +677,28 @@ main(int argc,char **argv)
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
     
-    /* Copy variable data */
-    for(idx=0;idx<nbr_xtr;idx++){
-      if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
-      if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-      /* Old hyperslab routines */
-      /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
-      /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
-      /* Multi-slab routines */
-      /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
-      if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
-    } /* end loop over idx */
-    
+    /* fxm: 20120309 Implement special case here to improve copy speed on large blocksize filesystems (LBFs) */
+    if(!USE_LBF_WORKAROUND || (lmb_nbr > 0)){
+      /* Copy all data variable-by-variable */
+      for(idx=0;idx<nbr_xtr;idx++){
+	if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
+	if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
+	/* Old hyperslab routines */
+	/* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
+	/* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
+	/* Multi-slab routines */
+	/* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
+	if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+      } /* end loop over idx */
+    }else{
+      /* Split data into fixed and record data */
+      ;
+      /* Copy fixed data variable-by-variable */
+      ;
+      /* Copy record data record-by-record */
+      ;
+    } /* endif */
+
     /* [fnc] Close unformatted binary data file */
     if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
     

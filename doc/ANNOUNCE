@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.460 2012-03-02 00:20:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.461 2012-03-09 11:47:52 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
@@ -50,6 +50,14 @@ A. ncrename/ncatted succeed when output file is specified and input
    Thanks to Paida for reporting this.
 
 A. Fix bug where ncap2 could fail when averaging degenerate arrays
+
+A. Allow ncatted to change missing value's to/from IEEE NaNs
+   With this feature, one can now perform arithmetic on variables that
+   contain NaNs simply by changing the _FillValue to a normal number,
+   then performing arithmetic, then changing back:
+   ncatted -O -D 3 -a _FillValue,nan_arr,o,f,1.0e36 # Change from NaN
+   ncwa, ncra, etc. # Perform any arithmetic
+   ncatted -O -D 3 -a _FillValue,fll_val,o,f,nan # Change to NaN
 
 KNOWN BUGS NOT YET FIXED:
 
