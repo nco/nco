@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.150 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.151 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -934,7 +934,7 @@ nco_var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
 } /* end nco_var_lst_copy() */
 
 nm_id_sct *
-nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
+nco_var_lst_sub(nm_id_sct *xtr_lst,int *xtr_nbr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
   int idx;
@@ -945,10 +945,10 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
   
   nm_id_sct *xtr_new_lst=NULL;
   
-  if(*nbr_xtr == 0) return xtr_lst;
+  if(*xtr_nbr == 0) return xtr_lst;
   
-  xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct)); 
-  for(idx=0;idx<*nbr_xtr;idx++){
+  xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*xtr_nbr)*sizeof(nm_id_sct)); 
+  for(idx=0;idx<*xtr_nbr;idx++){
     match=False;
     for(xtr_idx=0;xtr_idx<nbr_lst_b;xtr_idx++)
       if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[xtr_idx].nm)){match=True;break;}
@@ -959,46 +959,46 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
   /* realloc to actual size */
   xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
   /* free old list */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,*nbr_xtr);
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,*xtr_nbr);
   
-  *nbr_xtr=xtr_nbr_new;
+  *xtr_nbr=xtr_nbr_new;
   return xtr_new_lst;     
 }/* end nco_var_lst_sub */
 
 nm_id_sct *
-nco_var_lst_add(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
+nco_var_lst_add(nm_id_sct *xtr_lst,int *xtr_nbr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
 {
   /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;
   int xtr_idx;
-  int nbr_xtr_crr;
+  int xtr_nbr_crr;
   
   nm_id_sct *xtr_new_lst;
   
   nco_bool match;
   
-  nbr_xtr_crr=*nbr_xtr;
-  if(nbr_xtr_crr > 0){
-    xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));
-    for(idx=0;idx<nbr_xtr_crr;idx++){
+  xtr_nbr_crr=*xtr_nbr;
+  if(xtr_nbr_crr > 0){
+    xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*xtr_nbr)*sizeof(nm_id_sct));
+    for(idx=0;idx<xtr_nbr_crr;idx++){
       xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
       xtr_new_lst[idx].id=xtr_lst[idx].id;
     } /* end loop over variables */
   }else{
-    *nbr_xtr=nbr_lst_a;
+    *xtr_nbr=nbr_lst_a;
     return nco_var_lst_copy(xtr_lst_a,nbr_lst_a);
   }/* end if */
   
   for(idx=0;idx<nbr_lst_a;idx++){
     match=False;
-    for(xtr_idx=0;xtr_idx<*nbr_xtr;xtr_idx++)
+    for(xtr_idx=0;xtr_idx<*xtr_nbr;xtr_idx++)
       if(!strcmp(xtr_lst[xtr_idx].nm,xtr_lst_a[idx].nm)){match=True;break;}
     if(match) continue;
-    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(nbr_xtr_crr+1)*sizeof(nm_id_sct));
-    xtr_new_lst[nbr_xtr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
-    xtr_new_lst[nbr_xtr_crr++].id=xtr_lst_a[idx].id;
+    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(xtr_nbr_crr+1)*sizeof(nm_id_sct));
+    xtr_new_lst[xtr_nbr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
+    xtr_new_lst[xtr_nbr_crr++].id=xtr_lst_a[idx].id;
   } /* end for */
-  *nbr_xtr=nbr_xtr_crr;
+  *xtr_nbr=xtr_nbr_crr;
   return xtr_new_lst;           
 } /* nco_var_lst_add */
 
@@ -1006,11 +1006,11 @@ nm_id_sct *
 nco_nm_id_lst_crd_make
 (int nc_id,
  nm_id_sct *xtr_lst,
- int *nbr_xtr)
+ int *xtr_nbr)
      /* 
 	int nc_id: I netCDF file ID
 	nm_id_sct *xtr_lst: I/O current extraction list 
-	int *nbr_xtr: I/O number of variables in current extraction list: Overwritten by new list 
+	int *xtr_nbr: I/O number of variables in current extraction list: Overwritten by new list 
 	nm_id_sct nco_nm_id_lst_crd_make: list of coordinate dimensions 
      */
 {
@@ -1035,7 +1035,7 @@ nco_nm_id_lst_crd_make
     rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
     if(rcd == NC_NOERR){
       /* Is this coordinate already on extraction list? */
-      for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
+      for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
 	if(!strcmp(dmn_nm,xtr_lst[idx_var].nm)){
 	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(size_t)(nbr_new_lst+1)*sizeof(nm_id_sct));
@@ -1047,7 +1047,7 @@ nco_nm_id_lst_crd_make
     } /* end if */
   } /* end for */
   
-  *nbr_xtr=nbr_new_lst;
+  *xtr_nbr=nbr_new_lst;
   return new_lst;
 } /* end nco_nm_id_lst_crd_make() */
 

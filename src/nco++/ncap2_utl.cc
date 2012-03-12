@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.139 2012-01-01 20:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.140 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -720,11 +720,11 @@ nco_var_lst_copy      /* [fnc] Purpose: Copy xtr_lst and return new list */
 } /* end nco_var_lst_copy() */
 
 nm_id_sct *             /* O [sct] New list */
-nco_var_lst_sub(
-		nm_id_sct *xtr_lst,     /* I [sct] input list */   
-		int *nbr_xtr,           /* I/O [ptr] size of xtr_lst and new list */
-		nm_id_sct *xtr_lst_b,   /* I [sct] list to be subtracted */   
-		int nbr_lst_b)          /* I [nbr] size eof xtr_lst_b */ 
+nco_var_lst_sub
+(nm_id_sct *xtr_lst,     /* I [sct] input list */   
+ int *xtr_nbr,           /* I/O [ptr] size of xtr_lst and new list */
+ nm_id_sct *xtr_lst_b,   /* I [sct] list to be subtracted */   
+ int nbr_lst_b)          /* I [nbr] size eof xtr_lst_b */ 
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
   int idx;
@@ -735,10 +735,10 @@ nco_var_lst_sub(
   
   nm_id_sct *xtr_new_lst=NULL;
   
-  if(*nbr_xtr == 0) return xtr_lst;
+  if(*xtr_nbr == 0) return xtr_lst;
   
-  xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct)); 
-  for(idx=0;idx<*nbr_xtr;idx++){
+  xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*xtr_nbr)*sizeof(nm_id_sct)); 
+  for(idx=0;idx<*xtr_nbr;idx++){
     match=False;
     for(xtr_idx=0;xtr_idx<nbr_lst_b;xtr_idx++)
       if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[xtr_idx].nm)){match=True;break;}
@@ -749,50 +749,50 @@ nco_var_lst_sub(
   /* realloc to actual size */
   xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
   /* free old list */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,*nbr_xtr);
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,*xtr_nbr);
   
-  *nbr_xtr=xtr_nbr_new;
+  *xtr_nbr=xtr_nbr_new;
   return xtr_new_lst;     
 }/* end nco_var_lst_sub */
 
 nm_id_sct *            /* O [sct] -- new list */
 nco_var_lst_add
 (nm_id_sct *xtr_lst,    /* I [sct] input list */ 
- int *nbr_xtr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
+ int *xtr_nbr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
  nm_id_sct *xtr_lst_a,  /* I [sct] list of elemenst to be added to new list */
  int nbr_lst_a)         /* I [nbr] size of xtr_lst_a */
 {
   /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;
   int xtr_idx;
-  int nbr_xtr_crr;
+  int xtr_nbr_crr;
   
   nm_id_sct *xtr_new_lst;
   
   nco_bool match;
   
-  nbr_xtr_crr=*nbr_xtr;
-  if(nbr_xtr_crr > 0){
-    xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));
-    for(idx=0;idx<nbr_xtr_crr;idx++){
+  xtr_nbr_crr=*xtr_nbr;
+  if(xtr_nbr_crr > 0){
+    xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*xtr_nbr)*sizeof(nm_id_sct));
+    for(idx=0;idx<xtr_nbr_crr;idx++){
       xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
       xtr_new_lst[idx].id=xtr_lst[idx].id;
     } /* end loop over variables */
   }else{
-    *nbr_xtr=nbr_lst_a;
+    *xtr_nbr=nbr_lst_a;
     return nco_var_lst_copy(xtr_lst_a,nbr_lst_a);
   }/* end if */
   
   for(idx=0;idx<nbr_lst_a;idx++){
     match=False;
-    for(xtr_idx=0;xtr_idx<*nbr_xtr;xtr_idx++)
+    for(xtr_idx=0;xtr_idx<*xtr_nbr;xtr_idx++)
       if(!strcmp(xtr_lst[xtr_idx].nm,xtr_lst_a[idx].nm)){match=True;break;}
     if(match) continue;
-    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(nbr_xtr_crr+1)*sizeof(nm_id_sct));
-    xtr_new_lst[nbr_xtr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
-    xtr_new_lst[nbr_xtr_crr++].id=xtr_lst_a[idx].id;
+    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(xtr_nbr_crr+1)*sizeof(nm_id_sct));
+    xtr_new_lst[xtr_nbr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
+    xtr_new_lst[xtr_nbr_crr++].id=xtr_lst_a[idx].id;
   } /* end for */
-  *nbr_xtr=nbr_xtr_crr;
+  *xtr_nbr=xtr_nbr_crr;
   return xtr_new_lst;           
 } /* end nco_var_lst_add */
 

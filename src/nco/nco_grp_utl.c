@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.22 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.23 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -251,7 +251,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const var_nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
+ int * const var_xtr_nbr) /* I/O [nbr] Number of variables in current extraction list */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
   
@@ -388,8 +388,8 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
   /* Return all variables if none were specified and not -c ... */
-  if(*var_nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
-    *var_nbr_xtr=var_nbr_all;
+  if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
+    *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
   } /* end if */
   
@@ -397,7 +397,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
   
   /* Loop through user-specified variable list */
-  for(idx=0;idx<*var_nbr_xtr;idx++){
+  for(idx=0;idx<*var_xtr_nbr;idx++){
     var_sng=var_lst_in[idx];
     
     /* Convert pound signs (back) to commas */
@@ -464,11 +464,11 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
   /* Store values for return */
-  *var_nbr_xtr=var_nbr_tmp;    
+  *var_xtr_nbr=var_nbr_tmp;    
 
   if(dbg_lvl_get() >= nco_dbg_var){
-    (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_nbr_xtr,(*var_nbr_xtr > 1) ? "s" : "");
-    for(idx=0;idx<*var_nbr_xtr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+    (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
+    for(idx=0;idx<*var_xtr_nbr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
 
   return xtr_lst;
@@ -537,7 +537,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 (const int nc_id, /* I [enm] netCDF file ID */
  char * const * const grp_lst_in, /* I [sng] User-specified list of group names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const grp_nbr_xtr) /* I/O [nbr] Number of groups in current extraction list */
+ int * const grp_xtr_nbr) /* I/O [nbr] Number of groups in current extraction list */
 {
   /* Purpose: Create group extraction list with or without regular expressions
      Code adapted from nco_var_lst_mk() and nearly identical in all respects
@@ -576,8 +576,8 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   } /* end loop over idx */
   
   /* Return all top-level groups if none were specified ... */
-  if(*grp_nbr_xtr == 0){
-    *grp_nbr_xtr=grp_nbr_top;
+  if(*grp_xtr_nbr == 0){
+    *grp_xtr_nbr=grp_nbr_top;
     return grp_lst_all;
   } /* end if */
   
@@ -585,7 +585,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   grp_xtr_rqs=(nco_bool *)nco_calloc((size_t)grp_nbr_top,sizeof(nco_bool));
   
   /* Loop through user-specified group list */
-  for(idx=0;idx<*grp_nbr_xtr;idx++){
+  for(idx=0;idx<*grp_xtr_nbr;idx++){
     grp_sng=grp_lst_in[idx];
     
     /* Convert pound signs (back) to commas */
@@ -649,6 +649,6 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   grp_lst_all=(nm_id_sct *)nco_free(grp_lst_all);
   grp_xtr_rqs=(nco_bool *)nco_free(grp_xtr_rqs);
 
-  *grp_nbr_xtr=grp_nbr_tmp;    
+  *grp_xtr_nbr=grp_nbr_tmp;    
   return grp_lst;
 } /* end nco_grp_lst_mk() */

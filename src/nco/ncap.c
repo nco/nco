@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.251 2012-03-02 04:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.252 2012-03-12 06:29:18 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.251 2012-03-02 04:42:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.251 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.252 2012-03-12 06:29:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.252 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;
@@ -213,7 +213,7 @@ main(int argc,char **argv)
   int nbr_var_fl;/* number of vars in a file */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_var_ycc=0; /* [nbr] Number of vars to be defined after 1st parse */
-  int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
+  int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -440,7 +440,7 @@ main(int argc,char **argv)
       break;
     case 'v': /* Variables to extract/exclude */
       PROCESS_ALL_VARS=False;
-      nbr_xtr=0;
+      xtr_nbr=0;
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -701,10 +701,10 @@ main(int argc,char **argv)
     rcd=nco_inq(in_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
     
     /* Form initial list of all variables in input file */
-    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,False,&nbr_xtr);
+    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,False,&xtr_nbr);
   }else{
     /* Make list of variables of new attributes whose parent variable is only in input file */
-    xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
+    xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&xtr_nbr);
   } /* endif */
   
     /* Find dimensions associated with xtr_lst */
@@ -723,7 +723,7 @@ main(int argc,char **argv)
     /* Finally extract variables on list */
   
   /* Subtract list A */
-  if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
+  if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&xtr_nbr,xtr_lst_a,nbr_lst_a);
   
   /* Put file in define mode to allow metadata writing */
   (void)nco_redef(out_id);
@@ -732,7 +732,7 @@ main(int argc,char **argv)
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_in);
 
   /* Make list of dimensions of variables in xtr_lst */
-  if(nbr_xtr > 0) dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
+  if(xtr_nbr > 0) dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_ass);
   
   /* Find and add any new dimensions to output */
   for(idx=0;idx<nbr_dmn_ass;idx++)
@@ -769,14 +769,14 @@ main(int argc,char **argv)
       } /* end if */
       /* Add coordinate variable to extraction list, dimension has already been output */
       if(dmn_in[idx]->xrf){
-	for(jdx=0;jdx<nbr_xtr;jdx++)
+	for(jdx=0;jdx<xtr_nbr;jdx++)
 	  if(!strcmp(xtr_lst[jdx].nm,dmn_in[idx]->nm)) break;
 
-	if(jdx != nbr_xtr) continue;
+	if(jdx != xtr_nbr) continue;
 	/* If coordinate is not on list then add it to extraction list */
-	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(nbr_xtr+1)*sizeof(nm_id_sct));
-	xtr_lst[nbr_xtr].nm=(char *)strdup(dmn_in[idx]->nm);
-	xtr_lst[nbr_xtr++].id=dmn_in[idx]->cid;
+	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(xtr_nbr+1)*sizeof(nm_id_sct));
+	xtr_lst[xtr_nbr].nm=(char *)strdup(dmn_in[idx]->nm);
+	xtr_lst[xtr_nbr++].id=dmn_in[idx]->cid;
       } /* endif */
     } /* end loop over idx */	      
   } /* end if */ 
@@ -785,18 +785,18 @@ main(int argc,char **argv)
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Add coordinates defined by CF convention */
-  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&xtr_nbr);
 
   /* Subtract list A again (it may contain re-defined coordinates) */
-  if(nbr_xtr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
+  if(xtr_nbr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&xtr_nbr,xtr_lst_a,nbr_lst_a);
   
   /* Sort extraction list for faster I/O */
-  if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
+  if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,False);
   
   /* Write "fixed" variables */
-  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
-  for(idx=0;idx<nbr_xtr;idx++){
+  var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(idx=0;idx<xtr_nbr;idx++){
     var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dmn_in,nbr_dmn_in);
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
@@ -805,11 +805,11 @@ main(int argc,char **argv)
 
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
   
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<nbr_att;idx++){
@@ -866,7 +866,7 @@ main(int argc,char **argv)
     if(nbr_att >0 ) att_lst=(aed_sct **)nco_free(att_lst);
     
     /* Free extraction lists */ 
-    xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+    xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
     xtr_lst_a=nco_nm_id_lst_free(xtr_lst_a,nbr_lst_a);
     
     /* Free command line algebraic arguments, if any */
@@ -900,8 +900,8 @@ main(int argc,char **argv)
     if(nbr_dmn_in > 0) dmn_in=nco_dmn_lst_free(dmn_in,nbr_dmn_in);
     if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
     /* Free variable lists */
-    if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
-    if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+    if(xtr_nbr > 0) var=nco_var_lst_free(var,xtr_nbr);
+    if(xtr_nbr > 0) var_out=nco_var_lst_free(var_out,xtr_nbr);
     var_prc=(var_sct **)nco_free(var_prc);
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix=(var_sct **)nco_free(var_fix);

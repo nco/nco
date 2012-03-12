@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.10 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.11 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -104,7 +104,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const var_nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
+ int * const var_xtr_nbr); /* I/O [nbr] Number of variables in current extraction list */
   /* nco4_var_lst_mk() */
 
 nm_id_sct * /* O [sct] Group extraction list */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.152 2012-03-09 11:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.153 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1209,6 +1209,57 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   /* Return new filename */
   return(fl_nm);
 } /* end nco_fl_nm_prs() */
+
+nco_bool /* O [flg] Faster copy on Large Blocksize Filesystems */
+nco_use_lbf_workaround /* [fnc] Use faster copy on Large Blocksize Filesystems? */
+(const int nc_id, /* I [id] File ID */
+ const int fl_fmt) /* I [enm] File format */
+{
+  /* Purpose: Determine whether to copy algorithm designed to speed writes on 
+     netCDF3 files containing multiple record variables.
+     In such cases massive slowdowns are common on Large Blocksize Filesystems
+     Based on Russ Rew's code in nccopy.c 20120306 */
+
+  int dmn_nbr;
+  int idx;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rec_var_nbr=0; /* [nbr] Number of record variables */
+  int var_nbr=0; /* [nbr] Number of variables */
+
+  int *dmn_id;
+
+  nco_bool USE_LBF_WORKAROUND=False; /* [flg] Faster copy on Large Blocksize Filesystems */
+
+  /* No advantage to workaround unless writing to netCDF3 file */
+  if(fl_fmt == NC_FORMAT_CLASSIC && fl_fmt == NC_FORMAT_64BIT){
+    /* Subsequently, assume output is netCDF3 file */
+    /* If file contains record dimension (and netCDF3 files can have only one record dimension) */
+    rcd=nco_inq_unlimdim_flg(nc_id,&rec_dmn_id);
+    if(rcd == NC_NOERR){
+      /* Slowdown only occurs in files with more than one record variable */
+      rcd+=nco_inq_nvars(nc_id,&var_nbr);
+      if(var_nbr > 0){
+	for(idx=0;idx<var_nbr;idx++){
+	  rcd+=nco_inq_varndims(nc_id,idx,&dmn_nbr);
+	  if(dmn_nbr > 0){
+	    dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+	    rcd+=nco_inq_vardimid(nc_id,idx,dmn_id);
+	    /* netCDF3 requires record dimension to be first dimension */
+	    if(dmn_id[0] == rec_dmn_id){
+	      rec_var_nbr++;
+	      if(rec_var_nbr > 1) USE_LBF_WORKAROUND=True;
+	    } /* endif record dimnesion */
+	    if(dmn_id) dmn_id=nco_free(dmn_id);
+	  } /* endif dmn_nbr > 0 */
+	  if(USE_LBF_WORKAROUND) break;
+	} /* end loop over variables */
+      } /* endif var_nbr > 0 */
+    } /* endif file contains record dimnsion */
+  } /* endif file is netCDF3 */
+    
+    return USE_LBF_WORKAROUND;
+} /* end nco_use_lbf_workaround() */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */

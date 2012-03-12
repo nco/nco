@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.287 2012-03-09 11:47:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.288 2012-03-12 06:29:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.287 2012-03-09 11:47:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.287 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.288 2012-03-12 06:29:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.288 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -164,7 +164,7 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
   int nbr_var_fl;
-  int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
+  int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
@@ -488,7 +488,7 @@ main(int argc,char **argv)
       (void)nco_lst_comma2hash(optarg_lcl);
       var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
-      nbr_xtr=var_lst_in_nbr;
+      xtr_nbr=var_lst_in_nbr;
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);
@@ -555,23 +555,23 @@ main(int argc,char **argv)
   } /* endif rec_dmn_nm */
 
   /* Form initial extraction list which may include extended regular expressions */
-  /*  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);*/
-  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
+  /*  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);*/
+  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 
   /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
+  if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
 
   /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&nbr_xtr,CNV_CCM_CCSM_CF);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
 
   /* Sort extraction list alphabetically or by variable ID */
-  if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
+  if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
     
   /* We now have final list of variables to extract. Phew. */
 
@@ -648,7 +648,7 @@ main(int argc,char **argv)
     if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
     if(grp_nbr > 0) rcd+=nco_grp_dfn(out_id,grp_lst,grp_nbr);
 
-    for(idx=0;idx<nbr_xtr;idx++){
+    for(idx=0;idx<xtr_nbr;idx++){
       int var_out_id;
 
       /* Define variable in output file */
@@ -678,9 +678,12 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
     
     /* fxm: 20120309 Implement special case here to improve copy speed on large blocksize filesystems (LBFs) */
-    if(!USE_LBF_WORKAROUND || (lmb_nbr > 0)){
+    USE_LBF_WORKAROUND=nco_use_lbf_workaround(in_id,fl_out_fmt);
+    /* Until workaround works in nco_cpy_var_val_mlt_lmt() */
+    if(lmt_nbr > 0) USE_LBF_WORKAROUND=False; 
+    if(!USE_LBF_WORKAROUND){
       /* Copy all data variable-by-variable */
-      for(idx=0;idx<nbr_xtr;idx++){
+      for(idx=0;idx<xtr_nbr;idx++){
 	if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
 	if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
 	/* Old hyperslab routines */
@@ -691,12 +694,22 @@ main(int argc,char **argv)
 	if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
       } /* end loop over idx */
     }else{
+      nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
+      nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
+      int fix_nbr; /* [nbr] Number of fixed-length variables */
+      int rec_nbr; /* [nbr] Number of record variables */
       /* Split data into fixed and record data */
-      ;
-      /* Copy fixed data variable-by-variable */
-      ;
+      (void)nco_var_lst_fix_rec_dvd(out_id,xtr_lst,xtr_nbr,fix_lst,&fix_nbr,rec_lst,&rec_nbr);
+      /* Copy fixed-length data variable-by-variable */
+      for(idx=0;idx<fix_nbr;idx++){
+	if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
+	if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
+	(void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
+      } /* end loop over idx */
       /* Copy record data record-by-record */
-      ;
+      ; /* fxm */
+      if(fix_lst) fix_lst=nco_free(fix_lst);
+      if(rec_lst) rec_lst=nco_free(rec_lst);
     } /* endif */
 
     /* [fnc] Close unformatted binary data file */
@@ -722,7 +735,7 @@ main(int argc,char **argv)
     } /* endif PRN_GLB_METADATA */
     
     if(PRN_VAR_METADATA){
-      for(idx=0;idx<nbr_xtr;idx++){
+      for(idx=0;idx<xtr_nbr;idx++){
 	/* Print variable's definition */
 	(void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
 	/* Print variable's attributes */
@@ -732,13 +745,13 @@ main(int argc,char **argv)
     
     if(PRN_VAR_DATA){
       /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-      for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+      for(idx=0;idx<xtr_nbr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
     } /* end if PRN_VAR_DATA */
     
   } /* !fl_out */
   
   /* Extraction list no longer needed */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   
   /* Close input netCDF file */
   nco_close(in_id);

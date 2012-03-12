@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1151 2012-03-08 17:28:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1152 2012-03-12 06:29:17 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -293,7 +293,7 @@ nco573. Consolidate -4, --64bit into one option a la ncks --fl_fmt
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: remove dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
-nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
+nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow xtr_nbr_out=max(xtr_nbr_1,xtr_nbr_2) when xtr_nbr_2>xtr_nbr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for xtr_nbr_1>xtr_nbr_2)
 nco587. Command line MPI on AIX PPE with poe
 	Promising documentation at:
         http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_42/am10600203.html

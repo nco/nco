@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.30 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.31 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -48,7 +48,7 @@ nm_id_sct * /* O [sct] Extraction list */
 nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
- int * const nbr_xtr); /* I/O number of variables in current extraction list */
+ int * const xtr_nbr); /* I/O number of variables in current extraction list */
 
 int /* [rcd] Return code */
 nco_cnv_cf_cll_mth_add /* [fnc] Add cell_methods attributes */

@@ -1,3 +1,7 @@
+2012-03-11  Charlie Zender  <zender@uci.edu>
+
+	* Implement nco_var_lst_fix_rec_dvd() as part of LBF workaround
+
 2012-03-09  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs to ncks for faster copies on Large Blocksize Filesystems (LBFs)

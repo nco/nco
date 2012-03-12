@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.139 2012-03-02 04:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.140 2012-03-12 06:29:18 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.139 2012-03-02 04:42:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.139 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.140 2012-03-12 06:29:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.140 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -345,13 +345,13 @@ main(int argc,char **argv)
       for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
     }else if(strpbrk(aed_lst[idx].var_nm,".*^$\\[]()<>+?|{}")){
       /* Variable name contains a "regular expression" (rx) ... */
-      int nbr_xtr=1;
+      int xtr_nbr=1;
       nm_id_sct *xtr_lst=NULL;
-      xtr_lst=nco_var_lst_mk(nc_id,nbr_var_fl,&aed_lst[idx].var_nm,False,False,&nbr_xtr);
+      xtr_lst=nco_var_lst_mk(nc_id,nbr_var_fl,&aed_lst[idx].var_nm,False,False,&xtr_nbr);
       /* Edit attribute for each matching variable */
-      for(idx_var=0;idx_var<nbr_xtr;idx_var++) (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
+      for(idx_var=0;idx_var<xtr_nbr;idx_var++) (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
       /* Free Extraction list  */
-      xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+      xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
     }else if(!strcmp(aed_lst[idx].var_nm,"global")){
       /* Variable name indicates a global attribute ... */
       (void)nco_aed_prc(nc_id,NC_GLOBAL,aed_lst[idx]);

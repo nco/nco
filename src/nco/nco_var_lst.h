@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.56 2012-02-14 01:10:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.57 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -51,14 +51,14 @@ nco_var_lst_mk /* [fnc] Create variable extraction list */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const var_nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
+ int * const var_xtr_nbr); /* I/O [nbr] Number of variables in current extraction list */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id, /* I netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
- int * const nbr_xtr); /* I/O [nbr] Number of variables in exclusion/extraction list */
+ int * const xtr_nbr); /* I/O [nbr] Number of variables in exclusion/extraction list */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
@@ -66,7 +66,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
  const int nbr_dim, /* I [nbr] Number of dimensions in input file */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
- int * const nbr_xtr, /* I/O [nbr] Number of variables in current extraction list */
+ int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
 
 nco_bool /* [flg] Variable is listed in a "bounds" attribute */
@@ -83,7 +83,7 @@ nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
- int * const nbr_xtr, /* I/O number of variables in current extraction list */
+ int * const xtr_nbr, /* I/O number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
 
 nm_id_sct * /* O [sct] List with coordinate excluded */
@@ -91,13 +91,23 @@ nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
  const int dmn_id, /* I [id] Dimension ID of coordinate to remove from extraction list */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
- int * const nbr_xtr); /* I/O [nbr] Number of variables in extraction list */
+ int * const xtr_nbr); /* I/O [nbr] Number of variables in extraction list */
+
+void
+nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record data */
+(const int nc_id, /* I [id] netCDF file ID */
+ nm_id_sct *xtr_lst, /* I/O [sct] Extraction list (pointers to it are constructed) */
+ const int xtr_nbr, /* I [nbr] Number of variables in extraction list */
+ nm_id_sct **fix_lst, /* I/O [sct] Fixed-length variables */
+ int * const fix_nbr, /* I [nbr] Number of fixed-length variables */
+ nm_id_sct **rec_lst, /* I/O [sct] Record variables */
+ int * const rec_nbr); /* I [nbr] Number of record variables */
 
 void
 nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
 (const int nc_id, /* I [enm] netCDF file ID */
  nm_id_sct *xtr_lst, /* I [sct] Current extraction list (destroyed) */
- const int nbr_xtr, /* I [nbr] Number of variables in input file */
+ const int xtr_nbr, /* I [nbr] Number of variables in input file */
  dmn_sct * const * const dim, /* I [sct] Dimensions associated with input variable list */
  const int nbr_dmn_xtr, /* I [nbr] Number of dimensions in list  */
  var_sct *** const var_ptr, /* O [sct] Variable list (for input file) */

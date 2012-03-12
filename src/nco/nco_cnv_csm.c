@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.56 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.57 2012-03-12 06:29:18 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -137,7 +137,7 @@ nm_id_sct * /* O [sct] Extraction list */
 nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
- int * const nbr_xtr) /* I/O number of variables in current extraction list */
+ int * const xtr_nbr) /* I/O number of variables in current extraction list */
 {
   /* Purpose: Detect coordinates specified by CF convention and add them to extraction list
      http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#grid_ex2 */
@@ -164,7 +164,7 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
   nc_type att_typ;
   
   /* ...for each variable in extraction list... */
-  for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
+  for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
     /* Eschew indirection */
     var_id=xtr_lst[idx_var].id;
     /* Find number of attributes */
@@ -199,15 +199,15 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 	  if(rcd == NC_NOERR){
 	    /* idx_var2 labels inner loop over variables */
 	    /* Is "coordinate" already on extraction list? */
-	    for(idx_var2=0;idx_var2<*nbr_xtr;idx_var2++){
+	    for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
 	      if(crd_id == xtr_lst[idx_var2].id) break;
 	    } /* end loop over idx_var2 */
-	    if(idx_var2 == *nbr_xtr){
+	    if(idx_var2 == *xtr_nbr){
 	      /* Add coordinate to list */
-	      xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
-	      xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_lst[idx_crd]);
-	      xtr_lst[*nbr_xtr].id=crd_id;
-	      (*nbr_xtr)++; /* NB: Changes size of current loop! */
+	      xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+	      xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_lst[idx_crd]);
+	      xtr_lst[*xtr_nbr].id=crd_id;
+	      (*xtr_nbr)++; /* NB: Changes size of current loop! */
 	      /* Continue to next coordinate in loop */
 	      continue;
 	    } /* end if coordinate was not already in list */
