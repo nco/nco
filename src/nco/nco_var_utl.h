@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.65 2012-03-13 05:36:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.66 2012-03-13 05:54:27 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -87,8 +87,8 @@ extern "C" {
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
    const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
-   const nm_id_sct **rec_lst, /* I  [sct] Record variables to be extracted */
-   const int rec_nbr); /* I [nbr] Number of record variables */
+   CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
+   const int var_nbr); /* I [nbr] Number of record variables */
 
   void 
   nco_var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
