@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.57 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.58 2012-03-13 06:43:05 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -98,10 +98,10 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
 (const int nc_id, /* I [id] netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O [sct] Extraction list (pointers to it are constructed) */
  const int xtr_nbr, /* I [nbr] Number of variables in extraction list */
- nm_id_sct **fix_lst, /* I/O [sct] Fixed-length variables */
- int * const fix_nbr, /* I [nbr] Number of fixed-length variables */
- nm_id_sct **rec_lst, /* I/O [sct] Record variables */
- int * const rec_nbr); /* I [nbr] Number of record variables */
+ nm_id_sct ***fix_lst, /* O [sct] Fixed-length variables */
+ int * const fix_nbr, /* O [nbr] Number of fixed-length variables */
+ nm_id_sct ***rec_lst, /* O [sct] Record variables */
+ int * const rec_nbr); /* O [nbr] Number of record variables */
 
 void
 nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID list */

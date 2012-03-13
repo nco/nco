@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.110 2012-03-13 06:22:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.111 2012-03-13 06:43:05 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -318,10 +318,10 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
 (const int nc_id, /* I [id] netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O [sct] Extraction list (pointers to it are constructed) */
  const int xtr_nbr, /* I [nbr] Number of variables in extraction list */
- nm_id_sct **fix_lst, /* I/O [sct] Fixed-length variables */
- int * const fix_nbr, /* I [nbr] Number of fixed-length variables */
- nm_id_sct **rec_lst, /* I/O [sct] Record variables */
- int * const rec_nbr) /* I [nbr] Number of record variables */
+ nm_id_sct ***fix_lst, /* O [sct] Fixed-length variables */
+ int * const fix_nbr, /* O [nbr] Number of fixed-length variables */
+ nm_id_sct ***rec_lst, /* O [sct] Record variables */
+ int * const rec_nbr) /* O [nbr] Number of record variables */
 {
   /* Purpose: Divide extraction list into fixed-length and record variables
      These lists will be used by netCDF3 Large Blocksize Filesystem (LBF) workaround
@@ -340,8 +340,8 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
   *rec_nbr=0;
 
   /* Allocate too much space */
-  fix_lst=(nm_id_sct **)nco_malloc(xtr_nbr*sizeof(nm_id_sct *));
-  rec_lst=(nm_id_sct **)nco_malloc(xtr_nbr*sizeof(nm_id_sct *));
+  *fix_lst=(nm_id_sct **)nco_malloc(xtr_nbr*sizeof(nm_id_sct *));
+  *rec_lst=(nm_id_sct **)nco_malloc(xtr_nbr*sizeof(nm_id_sct *));
 
   /* Assume file contains record dimension (and netCDF3 files can have only one record dimension) */
   rcd+=nco_inq_unlimdim(nc_id,&rec_dmn_id);
@@ -358,16 +358,16 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
     } /* endif dmn_nbr > 0 */
     if(flg_crr_var_rec){
       /* Current variable is record variable */
-      rec_lst[*rec_nbr]=xtr_lst+idx;
+      *rec_lst[*rec_nbr]=xtr_lst+idx;
       ++*rec_nbr;
     }else{
       /* Current variable is fixed-length */
-      fix_lst[*fix_nbr]=xtr_lst+idx;
+      *fix_lst[*fix_nbr]=xtr_lst+idx;
       ++*fix_nbr;
     } /* endif no record variable in file */
   } /* end loop over variables */
-  fix_lst=(nm_id_sct **)nco_realloc((void *)fix_lst,*fix_nbr*sizeof(nm_id_sct *));
-  rec_lst=(nm_id_sct **)nco_realloc((void *)rec_lst,*rec_nbr*sizeof(nm_id_sct *));
+  *fix_lst=(nm_id_sct **)nco_realloc((void *)*fix_lst,*fix_nbr*sizeof(nm_id_sct *));
+  *rec_lst=(nm_id_sct **)nco_realloc((void *)*rec_lst,*rec_nbr*sizeof(nm_id_sct *));
 
 } /* end nco_var_lst_fix_rec_dvd() */
 

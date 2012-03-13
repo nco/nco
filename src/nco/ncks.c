@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.291 2012-03-13 06:21:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.292 2012-03-13 06:43:05 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.291 2012-03-13 06:21:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.291 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.292 2012-03-13 06:43:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.292 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -700,7 +700,7 @@ main(int argc,char **argv)
       int rec_nbr; /* [nbr] Number of record variables */
       if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using LBF-workaround to hasten copying of record variables\n",prg_nm_get());
       /* Split list into fixed-length and record variables */
-      (void)nco_var_lst_fix_rec_dvd(out_id,xtr_lst,xtr_nbr,fix_lst,&fix_nbr,rec_lst,&rec_nbr);
+      (void)nco_var_lst_fix_rec_dvd(in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
       /* Copy fixed-length data variable-by-variable */
       for(idx=0;idx<fix_nbr;idx++){
 	if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
