@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.108 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.109 2012-03-13 06:21:40 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -348,10 +348,10 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
   for(idx=0;idx<xtr_nbr;idx++){
     /* Assume current variable is fixed */
     flg_crr_var_rec=False;
-    rcd+=nco_inq_varndims(nc_id,idx,&dmn_nbr);
+    rcd+=nco_inq_varndims(nc_id,xtr_lst[idx]->id,&dmn_nbr);
     if(dmn_nbr > 0){
       dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
-      rcd+=nco_inq_vardimid(nc_id,idx,dmn_id);
+      rcd+=nco_inq_vardimid(nc_id,xtr_lst[idx]->idx,dmn_id);
       /* netCDF3 requires record dimension to be first dimension */
       if(dmn_id[0] == rec_dmn_id) flg_crr_var_rec=True;
       if(dmn_id) dmn_id=nco_free(dmn_id);
