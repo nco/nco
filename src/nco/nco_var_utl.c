@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.181 2012-03-13 05:54:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.182 2012-03-13 06:21:40 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -402,6 +402,10 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
     for(var_idx=0;var_idx<var_nbr;var_idx++){
       /* Re-initialize accumulated variables */
       var_sz=1L;
+      /* Mimic standard code path debugging information */
+      if(dbg_lvl_get() >= nco_dbg_var && !NCO_BNR_WRT && rec_idx == 0) (void)fprintf(stderr,"%s, ",var_lst[var_idx]->nm);
+      if(dbg_lvl_get() >= nco_dbg_var && rec_idx == 0) (void)fflush(stderr);
+
       /* Get ID of requested variable from both files */
       (void)nco_inq_varid(in_id,var_lst[var_idx]->nm,&var_in_id);
       (void)nco_inq_varid(out_id,var_lst[var_idx]->nm,&var_out_id);
