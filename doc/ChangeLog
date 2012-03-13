@@ -1,4 +1,16 @@
+2012-03-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.1.0 release procedure:
+ 	Changes since nco-4_0_9: sorts & maps, MD5, chmod, NaNs, LBF
+	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
+	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
+
+	* Implement nco_cpy_rec_var_val() to finish ncks LBF-workaround
+
 2012-03-11  Charlie Zender  <zender@uci.edu>
+
+	* For unknown reasons, regression tests started passing again (!)
 
 	* Implement nco_var_lst_fix_rec_dvd() as part of LBF workaround
 
@@ -7,12 +19,6 @@
 	* Add stubs to ncks for faster copies on Large Blocksize Filesystems (LBFs)
 
 2012-03-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.1.0 release procedure:
- 	Changes since nco-4_0_9: sorts & maps, MD5, chmod, NaNs
-	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
-	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
 
 	* Allow ncatted to change missing value's that are NaNs
 	Arithmetic operators will still treat NaNs incorrectly, but this

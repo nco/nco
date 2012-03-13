@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.288 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.289 2012-03-13 05:36:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.288 2012-03-12 06:29:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.288 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.289 2012-03-13 05:36:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.289 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -677,11 +677,10 @@ main(int argc,char **argv)
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
     
-    /* fxm: 20120309 Implement special case here to improve copy speed on large blocksize filesystems (LBFs) */
+    /* 20120309 Special case to improve copy speed on large blocksize filesystems (LBFs) */
     USE_LBF_WORKAROUND=nco_use_lbf_workaround(in_id,fl_out_fmt);
-    /* Until workaround works in nco_cpy_var_val_mlt_lmt() */
-    if(lmt_nbr > 0) USE_LBF_WORKAROUND=False; 
-    if(!USE_LBF_WORKAROUND){
+    if(lmt_nbr > 0) USE_LBF_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+    if(!USE_LBF_WORKAROUND){  
       /* Copy all data variable-by-variable */
       for(idx=0;idx<xtr_nbr;idx++){
 	if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
@@ -694,11 +693,12 @@ main(int argc,char **argv)
 	if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
       } /* end loop over idx */
     }else{
+      /* LBF workaround algorithm */
       nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
       nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
       int fix_nbr; /* [nbr] Number of fixed-length variables */
       int rec_nbr; /* [nbr] Number of record variables */
-      /* Split data into fixed and record data */
+      /* Split list into fixed-length and record variables */
       (void)nco_var_lst_fix_rec_dvd(out_id,xtr_lst,xtr_nbr,fix_lst,&fix_nbr,rec_lst,&rec_nbr);
       /* Copy fixed-length data variable-by-variable */
       for(idx=0;idx<fix_nbr;idx++){
@@ -707,7 +707,7 @@ main(int argc,char **argv)
 	(void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
       } /* end loop over idx */
       /* Copy record data record-by-record */
-      ; /* fxm */
+      (void)nco_cpy_rec_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
       if(fix_lst) fix_lst=nco_free(fix_lst);
       if(rec_lst) rec_lst=nco_free(rec_lst);
     } /* endif */

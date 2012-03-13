@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.179 2012-02-20 16:46:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.180 2012-03-13 05:36:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -247,7 +247,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
 
   int *dmn_id;
   int idx;
-  int nbr_dim;
+  int dmn_nbr;
   int nbr_dmn_in;
   int nbr_dmn_out;
   int var_in_id;
@@ -273,19 +273,19 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     (void)fprintf(stdout,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  nbr_dim=nbr_dmn_out;
+  dmn_nbr=nbr_dmn_out;
   
   /* Allocate space to hold dimension IDs */
-  dmn_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-  dmn_sz=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+  dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
   
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   
   /* Get dimension sizes from input file */
-  for(idx=0;idx<nbr_dim;idx++){
+  for(idx=0;idx<dmn_nbr;idx++){
     /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
        Until record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
        Thus we read input file for dimension sizes */
@@ -297,7 +297,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   } /* end loop over dim */
       
   /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
-  if(nbr_dim > 0){
+  if(dmn_nbr > 0){
     int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
     int rcd=NC_NOERR; /* [rcd] Return code */
     long rec_dmn_sz=0L; /* [nbr] Record dimension size in output file */
@@ -314,7 +314,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
 	  if(rec_dmn_sz > 0){
 	    /* ... then check input vs. output record dimension sizes ... */
 	    if(rec_dmn_sz != dmn_cnt[0]){
-	      (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s will likely be corrupt.\n",prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
+	      (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
 	    } /* endif sizes are incommensurate */
 	  } /* endif records exist in output file */
 	} /* endif output file has record dimension */
@@ -326,7 +326,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Get variable */
-  if(nbr_dim==0){
+  if(dmn_nbr==0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
   }else{ /* end if variable is scalar */
@@ -350,6 +350,169 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   void_ptr=nco_free(void_ptr);
 
 } /* end nco_cpy_var_val() */
+
+void
+nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
+(const int in_id, /* I [id] netCDF input file ID */
+ const int out_id, /* I [id] netCDF output file ID */
+ FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
+ const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
+ const nm_id_sct **var_lst, /* I  [sct] Record variables to be extracted */
+ const int var_nbr) /* I [nbr] Number of record variables */
+{
+  /* Purpose: Copy all record variables from input netCDF file to output netCDF file
+     Routine does not account for user-specified limits, it just copies what it finds
+     Routine copies record-by-record, for all variables, old-style, called only by ncks
+     Used only by LBF workaround and therefore routine assumes:
+     1. Output file is netCDF3
+     2. All variables in var_lst are record variables */
+
+  const char fnc_nm[]="nco_cpy_rec_var_val()"; /* [sng] Function name */
+
+  int *dmn_id;
+  int dmn_idx;
+  int dmn_nbr;
+  int nbr_dmn_in;
+  int nbr_dmn_out;
+  int rec_dmn_id;
+  int rec_dmn_out_id;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int var_idx;
+  int var_in_id;
+  int var_out_id;
+
+  long *dmn_cnt;
+  long *dmn_sz;
+  long *dmn_srt;
+  long rec_idx;
+  long rec_sz; /* [nbr] Size of record-dimension in input file */
+  long rec_out_sz; /* [nbr] Size of record-dimension in output file */
+  long var_sz=1L;
+
+  nc_type var_type;
+
+  void *void_ptr;
+
+  /* Assume file contains record dimension (and netCDF3 files can have only one record dimension) */
+  rcd+=nco_inq_unlimdim(in_id,&rec_dmn_id);
+  rcd+=nco_inq_dimlen(in_id,rec_dmn_id,&rec_sz);
+
+  for(rec_idx=0;rec_idx<rec_sz;rec_idx++){
+    for(var_idx=0;var_idx<var_nbr;var_idx++){
+      /* Re-initialize accumulated variables */
+      var_sz=1L;
+      /* Get ID of requested variable from both files */
+      (void)nco_inq_varid(in_id,var_lst[var_idx]->nm,&var_in_id);
+      (void)nco_inq_varid(out_id,var_lst[var_idx]->nm,&var_out_id);
+      (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+      if(nbr_dmn_out != nbr_dmn_in){
+	(void)fprintf(stdout,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\n",prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out);
+	nco_exit(EXIT_FAILURE);
+      } /* endif */
+      dmn_nbr=nbr_dmn_out;
+
+      /* Allocate space to hold dimension IDs */
+      dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+      dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+      dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
+      dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  
+      /* Get dimension IDs from input file */
+      (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
+  
+     /* Get non-record dimension sizes from input file */
+      for(dmn_idx=1;dmn_idx<dmn_nbr;dmn_idx++){
+	(void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+	/* Initialize indicial offset and stride arrays */
+	dmn_srt[dmn_idx]=0L;
+	var_sz*=dmn_cnt[dmn_idx];
+      } /* end loop over dim */
+      /* Configure hyperslab access for current record */
+      dmn_id[0]=rec_dmn_id;
+      dmn_cnt[0]=1L;
+      dmn_srt[0]=rec_idx;
+      
+      /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
+	 One check of this condition, per variable, is enough
+	 In regular (non-LBF workaround) case, we check this condition before reading/writing variable
+	 In LBF workaround-case, check condition when writing last record */
+      if(rec_idx == rec_sz-1){ 
+	rcd+=nco_inq_unlimdim(out_id,&rec_dmn_out_id); 
+	/* ... and if output file has record dimension ... */
+	(void)nco_inq_dimlen(out_id,rec_dmn_out_id,&rec_out_sz);
+	/* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
+	if(rec_out_sz > 0){
+	  /* ... then check input vs. output record dimension sizes ... */
+	  if(rec_sz != rec_out_sz){
+	    (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_lst[var_idx]->nm,rec_sz,rec_out_sz,var_lst[var_idx]->nm);
+	  } /* endif sizes are incommensurate */
+	} /* endif records exist in output file */
+      } /* endif last record in variable */
+
+      /* Allocate enough space to hold one record of this variable */
+      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
+
+      /* Get and put one record of variable */
+      if(var_sz > 0){ /* Allow for zero-size record variables */
+	nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+	nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+      } /* end if var_sz */
+      
+      /* Free space that held dimension IDs */
+      dmn_cnt=(long *)nco_free(dmn_cnt);
+      dmn_id=(int *)nco_free(dmn_id);
+      dmn_sz=(long *)nco_free(dmn_sz);
+      dmn_srt=(long *)nco_free(dmn_srt);
+
+      /* Free space that held variable */
+      void_ptr=nco_free(void_ptr);
+
+    } /* end loop over variables */
+  } /* end loop over records */
+
+  /* Corner cases require a loop over variables but not records */
+  if(MD5_DIGEST || NCO_BNR_WRT){
+    for(var_idx=0;var_idx<var_nbr;var_idx++){
+      /* Re-initialize accumulated variables */
+      var_sz=1L;
+      /* Get ID of requested variable from both files */
+      (void)nco_inq_varid(in_id,var_lst[var_idx]->nm,&var_in_id);
+      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&dmn_nbr,(int *)NULL,(int *)NULL);
+      /* Allocate space to hold dimension IDs */
+      dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+      dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+      dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
+      dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+      /* Get dimension IDs from input file */
+      (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
+      /* Get dimension sizes from input file */
+      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	(void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+	/* Initialize indicial offset and stride arrays */
+	dmn_srt[dmn_idx]=0L;
+	var_sz*=dmn_cnt[dmn_idx];
+      } /* end loop over dim */
+      /* Allocate enough space to hold this entire variable */
+      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when doing MD5 or binary write on variable",fnc_nm);
+      /* Get variable */
+      if(var_sz > 0) nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+      /* Perform MD5 digest of input and output data if requested */
+      if(MD5_DIGEST) (void)nco_md5_chk(var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_type),out_id,dmn_srt,dmn_cnt,void_ptr);
+      /* Write unformatted binary data */
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_type,void_ptr);
+      /* Free space that held dimension IDs */
+      dmn_cnt=(long *)nco_free(dmn_cnt);
+      dmn_id=(int *)nco_free(dmn_id);
+      dmn_sz=(long *)nco_free(dmn_sz);
+      dmn_srt=(long *)nco_free(dmn_srt);
+      /* Free space that held variable */
+      void_ptr=nco_free(void_ptr);
+    } /* end loop over variables */
+  } /* end if */
+    
+} /* end nco_cpy_rec_var_val() */
 
 void
 nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simple hyperslabs */
@@ -377,7 +540,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 
   int dmn_idx;
   int lmt_idx;
-  int nbr_dim;
+  int dmn_nbr;
   int nbr_dmn_in;
   int nbr_dmn_out;
   int var_in_id;
@@ -408,22 +571,22 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  nbr_dim=nbr_dmn_out;
+  dmn_nbr=nbr_dmn_out;
   
   /* Allocate space to hold dimension IDs */
-  dmn_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-  dmn_in_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_map=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_out_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_srd=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_sz=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+  dmn_in_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  dmn_map=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  dmn_out_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  dmn_srd=(long *)nco_malloc(dmn_nbr*sizeof(long));
+  dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
   
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   
   /* Get dimension sizes from input file */
-  for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
   /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
      Until a record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
      Thus we read input file for dimension sizes */
@@ -457,7 +620,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Copy variable */
-  if(nbr_dim == 0){ /* Copy scalar */
+  if(dmn_nbr == 0){ /* Copy scalar */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
     if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
@@ -474,16 +637,16 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     long *dmn_cnt_1=NULL;
     long *dmn_cnt_2=NULL;
     
-    dmn_in_srt_1=(long *)nco_malloc(nbr_dim*sizeof(long));
-    dmn_in_srt_2=(long *)nco_malloc(nbr_dim*sizeof(long));
-    dmn_out_srt_1=(long *)nco_malloc(nbr_dim*sizeof(long));
-    dmn_out_srt_2=(long *)nco_malloc(nbr_dim*sizeof(long));
-    dmn_cnt_1=(long *)nco_malloc(nbr_dim*sizeof(long));
-    dmn_cnt_2=(long *)nco_malloc(nbr_dim*sizeof(long));
+    dmn_in_srt_1=(long *)nco_malloc(dmn_nbr*sizeof(long));
+    dmn_in_srt_2=(long *)nco_malloc(dmn_nbr*sizeof(long));
+    dmn_out_srt_1=(long *)nco_malloc(dmn_nbr*sizeof(long));
+    dmn_out_srt_2=(long *)nco_malloc(dmn_nbr*sizeof(long));
+    dmn_cnt_1=(long *)nco_malloc(dmn_nbr*sizeof(long));
+    dmn_cnt_2=(long *)nco_malloc(dmn_nbr*sizeof(long));
     
     /* Variable contains a wrapped dimension, requires two reads */
     /* For each dimension in the input variable */
-    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
       
       /* dmn_cnt may be overwritten by user-specified limits */
       (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
@@ -533,7 +696,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     if(dbg_lvl_get() >= 5){
       (void)fprintf(stderr,"\nvar = %s\n",var_nm);
       (void)fprintf(stderr,"dim\tcnt\tsrtin1\tcnt1\tsrtout1\tsrtin2\tcnt2\tsrtout2\n");
-      for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) (void)fprintf(stderr,"%d\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t\n",dmn_idx,dmn_cnt[dmn_idx],dmn_in_srt_1[dmn_idx],dmn_cnt_1[dmn_idx],dmn_out_srt_1[dmn_idx],dmn_in_srt_2[dmn_idx],dmn_cnt_2[dmn_idx],dmn_out_srt_2[dmn_idx]);
+      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stderr,"%d\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t\n",dmn_idx,dmn_cnt[dmn_idx],dmn_in_srt_1[dmn_idx],dmn_cnt_1[dmn_idx],dmn_out_srt_1[dmn_idx],dmn_in_srt_2[dmn_idx],dmn_cnt_2[dmn_idx],dmn_out_srt_2[dmn_idx]);
       (void)fflush(stderr);
     } /* end if dbg */
 
@@ -549,7 +712,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 
       long idx;
 
-      if(nbr_dim == 1){
+      if(dmn_nbr == 1){
 	char dmn_nm[NC_MAX_NAME];
 	
 	(void)nco_inq_dimname(in_id,dmn_id[0],dmn_nm);

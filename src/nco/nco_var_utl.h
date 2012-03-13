@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.64 2012-02-20 04:26:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.65 2012-03-13 05:36:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -80,6 +80,16 @@ extern "C" {
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
  
+  void
+  nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const int out_id, /* I [id] netCDF output file ID */
+   FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+   const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
+   const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
+   const nm_id_sct **rec_lst, /* I  [sct] Record variables to be extracted */
+   const int rec_nbr); /* I [nbr] Number of record variables */
+
   void 
   nco_var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
   (const nc_type var_typ, /* I [enm] netCDF type */

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.679 2012-03-09 11:47:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.680 2012-03-13 05:36:59 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -603,12 +603,14 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO 4.1.1</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 World peace?
+Stride works with DAP?;
+netCDF4 groups;
 <li><b>NCO 4.1.0</b>: (<i>In Progress, features already in beta include the following</i>)
 MD5 digests;
-netCDF4 groups;
-<b>ncrename</b> chmods;
+<b>ncap2</b> sorts &amp; maps;
+<b>ncks</b> LBF workaround;
+<b>ncrename/ncatted</b> chmods;
 <b>ncatted</b> NaN support;
-Stride works with DAP?;
 <li><b>NCO 4.0.9</b>: 
 Fix over-zealous <tt>ncap2</tt> packing;
 Fix <tt>ncea -y ttl</tt>;
