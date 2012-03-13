@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.111 2012-03-13 06:43:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.112 2012-03-13 06:51:11 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -358,11 +358,11 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
     } /* endif dmn_nbr > 0 */
     if(flg_crr_var_rec){
       /* Current variable is record variable */
-      *rec_lst[*rec_nbr]=xtr_lst+idx;
+      (*rec_lst)[*rec_nbr]=xtr_lst+idx;
       ++*rec_nbr;
     }else{
       /* Current variable is fixed-length */
-      *fix_lst[*fix_nbr]=xtr_lst+idx;
+      (*fix_lst)[*fix_nbr]=xtr_lst+idx;
       ++*fix_nbr;
     } /* endif no record variable in file */
   } /* end loop over variables */

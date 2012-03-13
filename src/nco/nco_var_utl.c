@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.182 2012-03-13 06:21:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.183 2012-03-13 06:51:11 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -296,6 +296,24 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
       
+  /* Allocate enough space to hold variable */
+  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
+
+  /* Get variable */
+  if(dmn_nbr==0){
+    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
+    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
+  }else{ /* end if variable is scalar */
+    if(var_sz > 0){ /* Allow for zero-size record variables */
+      nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+      nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+    } /* end if var_sz */
+  } /* end if variable is an array */
+  /* Perform MD5 digest of input and output data if requested */
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,dmn_srt,dmn_cnt,void_ptr);
+  /* Write unformatted binary data */
+  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+
   /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
   if(dmn_nbr > 0){
     int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
@@ -322,24 +340,6 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     } /* endif input file has record dimension */
   } /* endif this variable is not a scalar */
     
-  /* Allocate enough space to hold variable */
-  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-
-  /* Get variable */
-  if(dmn_nbr==0){
-    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
-    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
-  }else{ /* end if variable is scalar */
-    if(var_sz > 0){ /* Allow for zero-size record variables */
-      nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
-      nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
-    } /* end if var_sz */
-  } /* end if variable is an array */
-  /* Perform MD5 digest of input and output data if requested */
-  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,dmn_srt,dmn_cnt,void_ptr);
-  /* Write unformatted binary data */
-  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
-
   /* Free space that held dimension IDs */
   dmn_cnt=(long *)nco_free(dmn_cnt);
   dmn_id=(int *)nco_free(dmn_id);
@@ -438,10 +438,19 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       dmn_cnt[0]=1L;
       dmn_srt[0]=rec_idx;
       
+      /* Allocate enough space to hold one record of this variable */
+      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
+
+      /* Get and put one record of variable */
+      if(var_sz > 0){ /* Allow for zero-size record variables */
+	nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+	nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+      } /* end if var_sz */
+      
       /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
 	 One check of this condition, per variable, is enough
-	 In regular (non-LBF workaround) case, we check this condition before reading/writing variable
-	 In LBF workaround-case, check condition when writing last record */
+	 In regular (non-LBF workaround) case, we check this condition after reading/writing whole variable
+	 In LBF workaround-case, check condition after writing last record */
       if(rec_idx == rec_sz-1){ 
 	rcd+=nco_inq_unlimdim(out_id,&rec_dmn_out_id); 
 	/* ... and if output file has record dimension ... */
@@ -455,15 +464,6 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 	} /* endif records exist in output file */
       } /* endif last record in variable */
 
-      /* Allocate enough space to hold one record of this variable */
-      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
-
-      /* Get and put one record of variable */
-      if(var_sz > 0){ /* Allow for zero-size record variables */
-	nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
-	nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
-      } /* end if var_sz */
-      
       /* Free space that held dimension IDs */
       dmn_cnt=(long *)nco_free(dmn_cnt);
       dmn_id=(int *)nco_free(dmn_id);
