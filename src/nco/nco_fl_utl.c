@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.153 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.154 2012-03-13 06:04:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1232,7 +1232,7 @@ nco_use_lbf_workaround /* [fnc] Use faster copy on Large Blocksize Filesystems? 
   nco_bool USE_LBF_WORKAROUND=False; /* [flg] Faster copy on Large Blocksize Filesystems */
 
   /* No advantage to workaround unless writing to netCDF3 file */
-  if(fl_fmt == NC_FORMAT_CLASSIC && fl_fmt == NC_FORMAT_64BIT){
+  if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT){
     /* Subsequently, assume output is netCDF3 file */
     /* If file contains record dimension (and netCDF3 files can have only one record dimension) */
     rcd=nco_inq_unlimdim_flg(nc_id,&rec_dmn_id);
