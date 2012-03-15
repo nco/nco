@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.154 2012-03-13 06:04:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.155 2012-03-15 02:00:11 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1210,15 +1210,23 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   return(fl_nm);
 } /* end nco_fl_nm_prs() */
 
-nco_bool /* O [flg] Faster copy on Large Blocksize Filesystems */
-nco_use_lbf_workaround /* [fnc] Use faster copy on Large Blocksize Filesystems? */
+nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+nco_use_lbf_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
 (const int nc_id, /* I [id] File ID */
  const int fl_fmt) /* I [enm] File format */
 {
   /* Purpose: Determine whether to copy algorithm designed to speed writes on 
      netCDF3 files containing multiple record variables.
-     In such cases massive slowdowns are common on Large Blocksize Filesystems
-     Based on Russ Rew's code in nccopy.c 20120306 */
+     In such cases massive slowdowns are common on Multi-record Multi-variable netCDF3 files
+     Also the problem can occur with normal (4096 B) Blocksize Filesystems
+     Based on Russ Rew's code in nccopy.c 20120306
+
+     20120307: NCO Open Discussion Forum from Russ Rew:
+     "When accessing data from netCDF classic or 64-bit offset format files
+     that have multiple record variables and a lot of records on a file
+     system with large disk block size relative to a record's worth of data
+     for one or more record variables, access the data a record at a time
+     instead of a variable at a time." */
 
   int dmn_nbr;
   int idx;
@@ -1229,9 +1237,9 @@ nco_use_lbf_workaround /* [fnc] Use faster copy on Large Blocksize Filesystems? 
 
   int *dmn_id;
 
-  nco_bool USE_LBF_WORKAROUND=False; /* [flg] Faster copy on Large Blocksize Filesystems */
+  nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
 
-  /* No advantage to workaround unless writing to netCDF3 file */
+  /* No advantage to workaround unless reading from or writing to netCDF3 file */
   if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT){
     /* Subsequently, assume output is netCDF3 file */
     /* If file contains record dimension (and netCDF3 files can have only one record dimension) */
@@ -1248,17 +1256,17 @@ nco_use_lbf_workaround /* [fnc] Use faster copy on Large Blocksize Filesystems? 
 	    /* netCDF3 requires record dimension to be first dimension */
 	    if(dmn_id[0] == rec_dmn_id){
 	      rec_var_nbr++;
-	      if(rec_var_nbr > 1) USE_LBF_WORKAROUND=True;
+	      if(rec_var_nbr > 1) USE_MM3_WORKAROUND=True;
 	    } /* endif record dimnesion */
 	    if(dmn_id) dmn_id=nco_free(dmn_id);
 	  } /* endif dmn_nbr > 0 */
-	  if(USE_LBF_WORKAROUND) break;
+	  if(USE_MM3_WORKAROUND) break;
 	} /* end loop over variables */
       } /* endif var_nbr > 0 */
     } /* endif file contains record dimnsion */
   } /* endif file is netCDF3 */
     
-    return USE_LBF_WORKAROUND;
+    return USE_MM3_WORKAROUND;
 } /* end nco_use_lbf_workaround() */
 
 char * /* O [sng] Name of temporary file actually opened */

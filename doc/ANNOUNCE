@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.462 2012-03-13 05:36:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.463 2012-03-15 02:00:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
@@ -60,8 +60,8 @@ A. Allow ncatted to change missing value's to/from IEEE NaNs
    ncatted -O -D 3 -a _FillValue,fll_val,o,f,nan # Change to NaN
 
 A. Workaround slow copies of record variables.
-   Normally encountered on Large Blocksize Filesystems (LBFs), this is
-   also known as the LBF-workaround. 
+   Normally encountered on Multi-record Multi-variable netCDF3 files (MM3s), this is
+   also known as the MM3-workaround. 
    It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.
    Thanks to Gary Strand for reporting this problem, and to Russ Rew
    for creating the workaround algorithm, which is also now in nccopy.

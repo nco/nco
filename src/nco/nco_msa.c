@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.90 2012-02-21 05:51:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.91 2012-03-15 02:00:11 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -709,7 +709,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     dmn_map_srt[idx]=0L;
   } /* end for */
   
-  /* Initalize vara with in_id, var_in_id, nctype, etc. so recursive routine can read data */
+  /* Initalize vara with in_id, var_in_id, nctype, etc., so recursive routine can read data */
   vara.nm=var_nm;
   vara.id=var_in_id;
   vara.nc_id=in_id;
@@ -1395,8 +1395,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
       
     /*(void)nco_msa_var_get(in_id,var[idx],lmt_lst,nbr_dmn_fl); */  
   
-    /* PUT VARIABLE DATA */
-	  		  
+    /* Put variable data */
     if(var[idx]->nbr_dim == 0)
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->val.vp,var[idx]->type);
     else{ /* end if variable is scalar */

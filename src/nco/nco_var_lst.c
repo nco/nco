@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.112 2012-03-13 06:51:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.113 2012-03-15 02:00:11 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -324,7 +324,7 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
  int * const rec_nbr) /* O [nbr] Number of record variables */
 {
   /* Purpose: Divide extraction list into fixed-length and record variables
-     These lists will be used by netCDF3 Large Blocksize Filesystem (LBF) workaround
+     These lists will be used by netCDF3 Multi-record Multi-variable netCDF3 file (MM3) workaround
      Routine assumes file is in netCDF3 format */
   int dmn_nbr;
   int idx;

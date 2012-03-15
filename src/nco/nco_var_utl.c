@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.183 2012-03-13 06:51:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.184 2012-03-15 02:00:11 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -364,9 +364,10 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
   /* Purpose: Copy all record variables from input netCDF file to output netCDF file
      Routine does not account for user-specified limits, it just copies what it finds
      Routine copies record-by-record, for all variables, old-style, called only by ncks
-     Used only by LBF workaround and therefore routine assumes:
-     1. Output file is netCDF3
-     2. All variables in var_lst are record variables */
+     Used only by MM3 workaround and therefore routine assumes:
+     1. Output file is netCDF3 (fxm: need to)
+     2. All variables in var_lst are record variables
+     NB: Rationale for MM3 workaround is kept in header to routine nco_use_lbf_workaround() */
 
   const char fnc_nm[]="nco_cpy_rec_var_val()"; /* [sng] Function name */
 
@@ -449,8 +450,8 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       
       /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
 	 One check of this condition, per variable, is enough
-	 In regular (non-LBF workaround) case, we check this condition after reading/writing whole variable
-	 In LBF workaround-case, check condition after writing last record */
+	 In regular (non-MM3 workaround) case, we check this condition after reading/writing whole variable
+	 In MM3 workaround-case, check condition after writing last record */
       if(rec_idx == rec_sz-1){ 
 	rcd+=nco_inq_unlimdim(out_id,&rec_dmn_out_id); 
 	/* ... and if output file has record dimension ... */

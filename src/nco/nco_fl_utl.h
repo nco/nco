@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.52 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.53 2012-03-15 02:00:11 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -141,8 +141,8 @@ void
 nco_fl_rm /* [fnc] Remove file */
 (char *fl_nm); /* I [sng] File to be removed */
 
-nco_bool /* O [flg] Faster copy on Large Blocksize Filesystems */
-nco_use_lbf_workaround /* [fnc] Use faster copy on Large Blocksize Filesystems? */
+nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+nco_use_lbf_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
 (const int nc_id, /* I [id] File ID */
  const int fl_fmt); /* I [enm] File format */
 

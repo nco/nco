@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.680 2012-03-13 05:36:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.681 2012-03-15 02:00:11 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -608,7 +608,7 @@ netCDF4 groups;
 <li><b>NCO 4.1.0</b>: (<i>In Progress, features already in beta include the following</i>)
 MD5 digests;
 <b>ncap2</b> sorts &amp; maps;
-<b>ncks</b> LBF workaround;
+<b>ncks</b> MM3 workaround;
 <b>ncrename/ncatted</b> chmods;
 <b>ncatted</b> NaN support;
 <li><b>NCO 4.0.9</b>: 
@@ -815,8 +815,8 @@ the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
-<ul> <!-- http://nco.sf.net/src/nco-4.0.8.aix53.tar.gz -->
-<li><a href="src/nco-4.0.8.aix53.tar.gz">nco-4.0.8.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.0.8.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.0.8.aix53.tar.gz"-->)</li>
+<ul> <!-- http://nco.sf.net/src/nco-4.1.0.aix53.tar.gz -->
+<li><a href="src/nco-4.1.0.aix53.tar.gz">nco-4.1.0.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.1.0.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.1.0.aix53.tar.gz"-->)</li>
 Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>

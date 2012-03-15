@@ -1,10 +1,17 @@
-2012-03-12  Charlie Zender  <zender@uci.edu>
+2012-03-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.1.0 release procedure:
  	Changes since nco-4_0_9: sorts & maps, MD5, chmod, NaNs, LBF
 	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
+
+	* Verified LBF-workaround appears to work
+	Subsetting is now close	to raw /bin/cp speed on NCAR GLADE filesystem
+	/glade/home/zender/bin/LINUXAMD64/ncks -O -D 3 -x -v TH ~/gary.nc ~/out3_mrg_4.1.0.nc
+	/glade/home/zender/bin/AIX/ncks -O -D 3 -x -v TH ~/gary.nc ~/out3_blf_4.1.0.nc
+
+2012-03-12  Charlie Zender  <zender@uci.edu>
 
 	* Implement nco_cpy_rec_var_val() to finish ncks LBF-workaround
 
