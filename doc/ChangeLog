@@ -1,25 +1,35 @@
+2012-03-21  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up nco_msa.c
+
+	* Place MM3 stubs in ncecat
+
+	* nco_use_mm3_patchset() returns True for MM3->MM4 copies (i.e., case 3)
+
+	* Rename LBF-patchset to MM3-patchset (Multi-record Multi-variable netCDF3 files)
+
 2012-03-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.1.0 release procedure:
- 	Changes since nco-4_0_9: sorts & maps, MD5, chmod, NaNs, LBF
+ 	Changes since nco-4_0_9: sorts/maps, MD5, chmod, NaNs, MM3
 	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
 
-	* Verified LBF-workaround appears to work
+	* Verified MM3-workaround appears to work
 	Subsetting is now close	to raw /bin/cp speed on NCAR GLADE filesystem
 	/glade/home/zender/bin/LINUXAMD64/ncks -O -D 3 -x -v TH ~/gary.nc ~/out3_mrg_4.1.0.nc
 	/glade/home/zender/bin/AIX/ncks -O -D 3 -x -v TH ~/gary.nc ~/out3_blf_4.1.0.nc
 
 2012-03-12  Charlie Zender  <zender@uci.edu>
 
-	* Implement nco_cpy_rec_var_val() to finish ncks LBF-workaround
+	* Implement nco_cpy_rec_var_val() to finish ncks MM3-workaround
 
 2012-03-11  Charlie Zender  <zender@uci.edu>
 
 	* For unknown reasons, regression tests started passing again (!)
 
-	* Implement nco_var_lst_fix_rec_dvd() as part of LBF workaround
+	* Implement nco_var_lst_fix_rec_dvd() as part of MM3 workaround
 
 2012-03-09  Charlie Zender  <zender@uci.edu>
 

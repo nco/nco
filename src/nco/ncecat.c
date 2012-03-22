@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.195 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.196 2012-03-22 00:12:59 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -75,6 +75,7 @@ main(int argc,char **argv)
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+  nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -97,8 +98,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.195 2012-03-12 06:29:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.195 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.196 2012-03-22 00:12:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.196 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -564,15 +565,12 @@ main(int argc,char **argv)
     dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
     dmn_out[nbr_dmn_xtr-1]=rec_dmn;
 
-  } /* end if */
+  } /* end if ncecat */
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
-
-
-  
 
   if(True){
     /* Prepend record dimension to beginning of all vectors for processed variables */
@@ -606,8 +604,7 @@ main(int argc,char **argv)
       var_prc_out[idx]->srt[0]=-1L;
 		    
     } /* end loop over idx */
-    
-  } /* end if */
+  } /* end if ncecat */
 
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
@@ -650,6 +647,22 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
 
+    /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
+    USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id_arr[0],fl_out_fmt);
+    if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+    if(!USE_MM3_WORKAROUND){  
+      /* Copy all data variable-by-variable */
+      ;
+    }else{
+      /* MM3 workaround algorithm */
+      /* ncecat-specific MM3 characteristics:
+	 Only coordinates are "fixed" (non-processed) variables
+	 All other variables are "processed" 
+	 These variables may be fixed or record on input yet are all record on output 
+	 Makes sense to always use MM3? */
+      ;
+    } /* endif MM3 workaround */
+    
     /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,jdx,MD5_DIGEST)

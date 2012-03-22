@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.39 2012-02-21 05:51:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.40 2012-03-22 00:12:59 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -113,7 +113,7 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
 void            
 nco_msa_ram_2_dsk   /* [fnc] convert hyperlsab indices into indices relative to disk */ 
 (long *dmn_sbs_ram,   /* Input indices */
- lmt_all_sct** lmt_mult,   /* input hyperlab limits     */
+ lmt_all_sct** lmt_msa,   /* input hyperlab limits     */
  int nbr_dmn,         /* number of dimensions */    
  long *dmn_sbs_dsk,  /* Output - indices relative to disk */
  nco_bool FREE);        /* Free static space on last call */

@@ -1,27 +1,56 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.463 2012-03-15 02:00:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.464 2012-03-22 00:12:59 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements NCO's first data security/integrity checks,
-consisting of MD5 hashes of variables.
+This release contains 
 
-NASA has recently given us indications (nothing binding yet), that
-they may fund NCO to develop support for netCDF4 groups and to write
-some NCO wrappers for HDF-EOS files. More on that next time.
+Also notable is that this release implements NCO's first data
+security/integrity checks, consisting of MD5 hashes of data for 
+each variable. These optional checks are available in ncks and
+ncrcat. Thanks to Patrick from IPSL for suggesting this.
 
-http://nco.sf.net#bug_nofill
+A new "feature" of netCDF3 has been identified that can lead to
+unusually slow performance. Unfortunately, this problem is
+triggered by an triggered by an aggregate pattern of file access
+so the workaround must be implemented in the application software
+(i.e., NCO) rather than in the netCDF library itself.
+It is normally encountered on Multi-record Multi-variable netCDF3
+files (MM3s), so we call this the MM3-workaround. 
+If you encounter unusually slow NCO performance, and you are using
+NCO to analyze MM3 files on a large blocksize filesystem, chances
+are you are encountering an MM3-induced slowdown. 
+This NCO release implements the MM3-workaround for ncks.
+It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.
+MM3-induced slowdowns may be present in other NCO operators and we
+are prioritizing our MM3-patches to those encountered most often.
+Thanks to Gary Strand for reporting this problem, and to Russ Rew
+for creating the workaround algorithm, which is also now in nccopy.
 
-Work on NCO 4.1.1 is underway, focused on making a more robust 
-build/configuration environment and on simplifying issues described in 
-the KNOWN BUGS NOT YET FIXED section below.
+NASA has confirmed funding NCO to develop support for netCDF4 groups
+and to write NCO wrappers for HDF-EOS files. A job ad has been posted
+for a programmer position associated with this project:
+
+http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf
+
+Work on NCO 4.1.1 is underway, focused on making a more robust
+build/configuration environment, addressing the MM3 issue in other
+(non-ncks) operators, and on simplifying issues described in the 
+KNOWN BUGS NOT YET FIXED section below.
 
 Enjoy,
 Charlie
 
 Other "New stuff" in 4.1.0 summary (full details always in ChangeLog):
+
+A. Workaround slow copies of record variables.
+   Normally encountered on Multi-record Multi-variable netCDF3 files
+   (MM3s), this is also known as the MM3-workaround. 
+   It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.
+   Thanks to Gary Strand for reporting this problem, and to Russ Rew
+   for creating the workaround algorithm, which is also now in nccopy.
 
 A. MD5 digest support. Digests can help ensure data integrity.
    They will alert, e.g., some ocurrances of the NC_NOFILL bug.
@@ -41,7 +70,7 @@ A. Expand and redefine ncap2 treatment of sorting and maps:
    http://nco.sf.net/nco.html#sort
    Thanks to Henry Butowsky for this functionality
 
-A. Fix bug with ncap2 print() command
+A. Fix bug with ncap2 print() command. Thanks to Henry Butowsky.
 
 A. ncrename/ncatted succeed when output file is specified and input
    file is read-only. Formerly this failed:    
@@ -49,23 +78,16 @@ A. ncrename/ncatted succeed when output file is specified and input
    Now NCO executes chmod() so it succeeds. Ditto for ncatted.
    Thanks to Paida for reporting this.
 
-A. Fix bug where ncap2 could fail when averaging degenerate arrays
+A. Fix bug where ncap2 could fail when averaging degenerate arrays.
+   Thanks to Henry Butowsky.
 
 A. Allow ncatted to change missing value's to/from IEEE NaNs
    With this feature, one can now perform arithmetic on variables that
-   contain NaNs simply by changing the _FillValue to a normal number,
+   use NaN for _FillValue simply by changing NaN to a normal number,
    then performing arithmetic, then changing back:
    ncatted -O -D 3 -a _FillValue,nan_arr,o,f,1.0e36 # Change from NaN
    ncwa, ncra, etc. # Perform any arithmetic
    ncatted -O -D 3 -a _FillValue,fll_val,o,f,nan # Change to NaN
-
-A. Workaround slow copies of record variables.
-   Normally encountered on Multi-record Multi-variable netCDF3 files (MM3s), this is
-   also known as the MM3-workaround. 
-   It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.
-   Thanks to Gary Strand for reporting this problem, and to Russ Rew
-   for creating the workaround algorithm, which is also now in nccopy.
-   
 
 KNOWN BUGS NOT YET FIXED:
 

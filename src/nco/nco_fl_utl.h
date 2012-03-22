@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.53 2012-03-15 02:00:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.54 2012-03-22 00:12:59 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -142,9 +142,9 @@ nco_fl_rm /* [fnc] Remove file */
 (char *fl_nm); /* I [sng] File to be removed */
 
 nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
-nco_use_lbf_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
-(const int nc_id, /* I [id] File ID */
- const int fl_fmt); /* I [enm] File format */
+nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
+(const int in_id, /* I [id] Input file ID */
+ const int fl_out_fmt); /* I [enm] Output file format */
 
 #ifdef __cplusplus
 } /* end extern "C" */

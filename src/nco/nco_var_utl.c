@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.184 2012-03-15 02:00:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.185 2012-03-22 00:12:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -367,7 +367,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
      Used only by MM3 workaround and therefore routine assumes:
      1. Output file is netCDF3 (fxm: need to)
      2. All variables in var_lst are record variables
-     NB: Rationale for MM3 workaround is kept in header to routine nco_use_lbf_workaround() */
+     NB: Rationale for MM3 workaround is kept in header to routine nco_use_mm3_workaround() */
 
   const char fnc_nm[]="nco_cpy_rec_var_val()"; /* [sng] Function name */
 

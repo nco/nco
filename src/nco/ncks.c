@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.293 2012-03-15 02:00:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.294 2012-03-22 00:12:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.293 2012-03-15 02:00:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.293 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.294 2012-03-22 00:12:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.294 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -678,7 +678,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
     
     /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
-    USE_MM3_WORKAROUND=nco_use_lbf_workaround(in_id,fl_out_fmt);
+    USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
     if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
     if(!USE_MM3_WORKAROUND){  
       /* Copy all data variable-by-variable */
@@ -694,10 +694,10 @@ main(int argc,char **argv)
       } /* end loop over idx */
     }else{
       /* MM3 workaround algorithm */
-      nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
-      nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
       int fix_nbr; /* [nbr] Number of fixed-length variables */
       int rec_nbr; /* [nbr] Number of record variables */
+      nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
+      nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
       if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",prg_nm_get());
       /* Split list into fixed-length and record variables */
       (void)nco_var_lst_fix_rec_dvd(in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
@@ -711,7 +711,7 @@ main(int argc,char **argv)
       (void)nco_cpy_rec_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
       if(fix_lst) fix_lst=nco_free(fix_lst);
       if(rec_lst) rec_lst=nco_free(rec_lst);
-    } /* endif */
+    } /* endif MM3 workaround */
 
     /* [fnc] Close unformatted binary data file */
     if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);

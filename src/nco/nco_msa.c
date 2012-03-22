@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.91 2012-03-15 02:00:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.92 2012-03-22 00:12:59 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -282,7 +282,7 @@ nco_msa_clc_idx
 void
 nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices relative */
 (long *dmn_sbs_ram,   /* to disk. */
- lmt_all_sct **lmt_mult, 
+ lmt_all_sct **lmt_msa, 
  int nbr_dim,
  long *dmn_sbs_dsk,
  nco_bool FREE){
@@ -301,18 +301,18 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
     dmn_sbs_prv=(long *)nco_malloc(nbr_dim*sizeof(long));
     dmn_indices=(long **)nco_malloc(nbr_dim*sizeof(long *));
     for(idx=0;idx<nbr_dim;idx++){
-      dmn_indices[idx]=(long *)nco_malloc(lmt_mult[idx]->lmt_dmn_nbr*sizeof(long));
-      for(jdx=0;jdx<lmt_mult[idx]->lmt_dmn_nbr;jdx++)
-	dmn_indices[idx][jdx]=lmt_mult[idx]->lmt_dmn[jdx]->srt;
+      dmn_indices[idx]=(long *)nco_malloc(lmt_msa[idx]->lmt_dmn_nbr*sizeof(long));
+      for(jdx=0;jdx<lmt_msa[idx]->lmt_dmn_nbr;jdx++)
+	dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
       dmn_sbs_prv[idx]=-1L;
     }
     initialize=1;
   }
   for(idx=0;idx <nbr_dim;idx ++){
-    size=lmt_mult[idx]->lmt_dmn_nbr;
+    size=lmt_msa[idx]->lmt_dmn_nbr;
     if(dmn_sbs_ram[idx] == dmn_sbs_prv[idx]) continue;
     
-    if(lmt_mult[idx]->BASIC_DMN){
+    if(lmt_msa[idx]->BASIC_DMN){
       dmn_sbs_dsk[idx]=dmn_sbs_ram[idx];
       continue;
     }
@@ -320,16 +320,16 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
     /* re-initialize indices if 0*/
     if(dmn_sbs_ram[idx] == 0) 
       for(jdx=0;jdx<size;jdx++)
-       	dmn_indices[idx][jdx]=lmt_mult[idx]->lmt_dmn[jdx]->srt;
+       	dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
     
     /* Deal with wrapping - we have 2 hyperlsbas to deal with */
-    if(lmt_mult[idx]->WRP){
-      if(dmn_indices[idx][0]<lmt_mult[idx]->dmn_sz_org){
+    if(lmt_msa[idx]->WRP){
+      if(dmn_indices[idx][0]<lmt_msa[idx]->dmn_sz_org){
 	dmn_sbs_dsk[idx]=dmn_indices[idx][0];
-	dmn_indices[idx][0]+=lmt_mult[idx]->lmt_dmn[0]->srd;
+	dmn_indices[idx][0]+=lmt_msa[idx]->lmt_dmn[0]->srd;
       }else{
 	dmn_sbs_dsk[idx]=dmn_indices[idx][1];
-	dmn_indices[idx][1]+=lmt_mult[idx]->lmt_dmn[1]->srd;
+	dmn_indices[idx][1]+=lmt_msa[idx]->lmt_dmn[1]->srd;
       }
       continue;
     }
@@ -338,8 +338,8 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
     
     for(jdx=0;jdx<size;jdx++){
       if(mnm[jdx]){
-	dmn_indices[idx][jdx]+=lmt_mult[idx]->lmt_dmn[jdx]->srd;
-	if(dmn_indices[idx][jdx] > lmt_mult[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
+	dmn_indices[idx][jdx]+=lmt_msa[idx]->lmt_dmn[jdx]->srd;
+	if(dmn_indices[idx][jdx] > lmt_msa[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
       }
     } /* end for  jdx */
   } /* end for idx */ 
@@ -536,7 +536,7 @@ void
 nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multihyperslabs */
 (const int in_id,  /* I [id] netCDF input file ID */
  var_sct *var_in,
- lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
+ lmt_all_sct * const * lmt_lst, /* I [sct] multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
   int idx;
@@ -544,7 +544,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   int nbr_dim;
   nc_type typ_tmp;
   void *void_ptr;
-  lmt_all_sct **lmt_mult;
+  lmt_all_sct **lmt_msa;
   lmt_sct **lmt;
   
   nbr_dim=var_in->nbr_dim;	
@@ -561,14 +561,14 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
     goto do_unpck;
   } /* end if scalar */
   
-  lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+  lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
   
-  /* Initialize lmt_mult with multi-limits from lmt_lst limits */
+  /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   for(idx=0;idx<nbr_dim;idx++){
     for(jdx=0;jdx<nbr_dmn_fl;jdx++){
       if(!strcmp(var_in->dim[idx]->nm,lmt_lst[jdx]->dmn_nm)){
-	lmt_mult[idx]=lmt_lst[jdx];
+	lmt_msa[idx]=lmt_lst[jdx];
         break;
       } /* end if */
     } /* end loop over jdx */
@@ -578,12 +578,12 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk; 
-  void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var_in);
+  void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_msa,var_in);
   
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
   
-  (void)nco_free(lmt_mult);
+  (void)nco_free(lmt_msa);
   (void)nco_free(lmt);
   
  do_unpck:
@@ -648,7 +648,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   
   void *void_ptr;
   
-  lmt_all_sct **lmt_mult;
+  lmt_all_sct **lmt_msa;
   lmt_sct **lmt;
   
   /* Get var_id for requested variable from both files */
@@ -688,24 +688,24 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   
-  lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+  lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
   
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   
-  /* Initialize lmt_mult with multi-limits from lmt_lst limits */
+  /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<nbr_dim;idx++){
     for(jdx=0;jdx<nbr_dmn_fl;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
-	lmt_mult[idx]=lmt_lst[jdx];
+	lmt_msa[idx]=lmt_lst[jdx];
         break;
       } /* end if */
     } /* end loop over jdx */
     /* Create maps now---they maybe useful later */ 
     (void)nco_inq_dimlen(in_id,dmn_id[idx],&dmn_map_in[idx]);
-    dmn_map_cnt[idx]=lmt_mult[idx]->dmn_cnt;
+    dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
     dmn_map_srt[idx]=0L;
   } /* end for */
   
@@ -717,7 +717,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-  void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,&vara);
+  void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_msa,&vara);
   var_sz=vara.sz;
   
   /* Block is always critical */
@@ -734,7 +734,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
   (void)nco_free(dmn_id);
-  (void)nco_free(lmt_mult);
+  (void)nco_free(lmt_msa);
   (void)nco_free(lmt);
   
   return;
@@ -791,7 +791,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   dmn_sct *dim=NULL_CEWI;
   
-  lmt_all_sct **lmt_mult=NULL_CEWI;
+  lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
   
   var_sct var;
@@ -821,25 +821,25 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   } /* end if */
   
   dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));
-  lmt_mult=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
+  lmt_msa=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
   
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
   
-  /* Initialize lmt_mult with multi-limits from lmt_lst limits */
+  /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<var.nbr_dim;idx++)
     for(jdx=0;jdx<lmt_nbr;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
-	lmt_mult[idx]=lmt_lst[jdx];
+	lmt_msa[idx]=lmt_lst[jdx];
         break;
       } /* end if */
     } /* end loop over jdx */
   
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-  var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
+  var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_msa,&var);
   /* Call also initializes var.sz with final size */
   if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),in_id,(long *)NULL,(long *)NULL,var.val.vp);
 
@@ -968,13 +968,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     for(idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
     for(idx=0;idx<var.nbr_dim;idx++)
       for(jdx=idx+1;jdx<var.nbr_dim;jdx++)
-	mod_map_in[idx]*=lmt_mult[jdx]->dmn_sz_org;
+	mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
     
     /* Create mod_map_cnt */
     for(idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
     for(idx=0;idx<var.nbr_dim;idx++) 
       for(jdx=idx;jdx<var.nbr_dim;jdx++)
-	mod_map_cnt[idx]*=lmt_mult[jdx]->dmn_cnt;
+	mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
     
     /* Read coordinate dimensions if required */
     if(PRN_DMN_IDX_CRD_VAL){
@@ -983,7 +983,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
       for(idx=0;idx<var.nbr_dim;idx++){
 	dim[idx].val.vp=NULL;
-        dim[idx].nm=lmt_mult[idx]->dmn_nm;
+        dim[idx].nm=lmt_msa[idx]->dmn_nm;
         rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
 	/* If not a variable */
         if(rcd != NC_NOERR){
@@ -1000,7 +1000,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         var_crd.id=dim[idx].cid;
         /* Read coordinate variable with limits applied */
 	/* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx,&var_crd);
+	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_msa+idx,&var_crd);
 	
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
@@ -1014,7 +1014,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
 
       /* Calculate disk indices from RAM indices */
-      (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_mult,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
+      (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_msa,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
       
       /* Find variable index relative to disk */
       var_dsk=0;
@@ -1104,7 +1104,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	
         /* At beginning of character array */
 	if(dmn_sbs_ram[var.nbr_dim-1] == 0L) {
-          dmn_sz=lmt_mult[var.nbr_dim-1]->dmn_cnt;
+          dmn_sz=lmt_msa[var.nbr_dim-1]->dmn_cnt;
 	  prn_sng=(char *)nco_malloc((size_t)dmn_sz+1UL);
 	  var_dsk_srt=var_dsk;
           var_dsk_end=var_dsk;
@@ -1201,7 +1201,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   if(var.nbr_dim > 0){
     (void)nco_free(dmn_id);
-    (void)nco_free(lmt_mult);
+    (void)nco_free(lmt_msa);
     (void)nco_free(lmt);
   } /* end if */
 
@@ -1369,17 +1369,17 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
       var[idx]->val.vp=nco_malloc(nco_typ_lng(var[idx]->type));
       (void)nco_get_var1(in_id,var[idx]->id,0L,var[idx]->val.vp,var[idx]->type);
     }else{
-      lmt_all_sct **lmt_mult;
+      lmt_all_sct **lmt_msa;
       lmt_sct **lmt;
       
-      lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+      lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
       lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
       
-      /* Initialize lmt_mult with multi-limits from lmt_lst limits */
+      /* Initialize lmt_msa with multi-limits from lmt_lst limits */
       for(jdx=0;jdx<nbr_dim;jdx++){
 	for(kdx=0;kdx<nbr_dmn_fl;kdx++){
 	  if(!strcmp(var[idx]->dim[jdx]->nm,lmt_lst[kdx]->dmn_nm ) ){
-	    lmt_mult[jdx]=lmt_lst[kdx];
+	    lmt_msa[jdx]=lmt_lst[kdx];
 	    break;
 	  } /* end if */
 	} /* end loop over jdx */
@@ -1387,9 +1387,9 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
       
       /* Call super-dooper recursive routine */
       /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-      var[idx]->val.vp=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,var[idx]);
+      var[idx]->val.vp=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_msa,var[idx]);
   
-      (void)nco_free(lmt_mult);
+      (void)nco_free(lmt_msa);
       (void)nco_free(lmt);
     } /* end else nbr_dim */
       
