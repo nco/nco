@@ -1,14 +1,14 @@
 2012-03-23  Charlie Zender  <zender@uci.edu>
 
-	* Add nclist shell alias/function examples to manual
-
-2012-03-21  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.1.0 release procedure:
  	Changes since nco-4_0_9: sorts/maps, MD5, chmod, NaNs, MM3
 	cd ~/nco;cvs tag -d nco-4_1_0;cvs tag -d nco-4_1_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.1.0 release"
 	cvs tag -c nco-4_1_0;cvs tag -c nco-4_1_0-1
+
+	* Add nclist shell alias/function examples to manual
+
+2012-03-21  Charlie Zender  <zender@uci.edu>
 
 	* Clean-up nco_msa.c
 
