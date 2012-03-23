@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.666 2012-02-23 21:00:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.667 2012-03-23 16:02:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11160,6 +11160,41 @@ The @command{ncks} default behavior is to print variable metadata to
 screen if no netCDF output file is specified.
 Use @samp{-m} to print variable metadata to screen if a netCDF output is 
 specified. 
+
+@html
+<a name="nclist"></a> <!-- http://nco.sf.net/nco.html#nclist -->
+@end html
+@cindex @acronym{UNIX}
+@cindex @command{nclist}
+@cindex @file{.bashrc}
+@cindex filters
+@cindex alias
+@cindex shell
+@cindex Bash shell
+@cindex Csh shell
+@cindex Sh shell
+@cindex @command{bash}
+We encourage the use of standard @acronym{UNIX} pipes and filters to
+narrow the verbose output of @command{ncks} into more precise targets.
+For example, to obtain an uncluttered listing of the variables in a file
+try 
+@example
+ncks -m in.nc | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort
+@end example
+These sorts of filters are best stored as shell commands if they are
+used frequently.
+A Bash user could alias the previous filter to the shell command
+@command{nclist} by including the following line in her @file{.bashrc}
+file:  
+@example
+# NB: Untested on all platforms! Send me feedback! csz
+# Bash shell (/bin/bash) users place this in .bashrc
+function nclist @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+# Csh shell (/bin/csh) users place this in .cshrc
+nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+# Sh shell (/bin/sh) users place this in .profile
+nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+@end example
 
 @cindex @code{-P}
 @cindex @code{--print}
