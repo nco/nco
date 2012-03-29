@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.668 2012-03-23 16:03:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.669 2012-03-29 23:21:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2776,7 +2776,8 @@ The automatically generated @var{input-path} is constructed by stripping
 the input filename of everything following the final @samp{/} character
 (i.e., removing the stub).
 The @samp{-l @var{output-path}} option tells @acronym{NCO} where to
-store the remotely retrieved file and the output file.
+store the remotely retrieved file.
+It has no effect on locally-retrieved files, or on the output file.
 Often the path to a remotely retrieved file is quite different than the
 path on the local machine where you would like to store the file.
 If @samp{-l} is not specified then @acronym{NCO} internally generates an
@@ -2789,7 +2790,7 @@ Specifying @var{output-path} as @samp{-l ./} tells @acronym{NCO} to
 store the remotely retrieved file and the output file in the current
 directory. 
 Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
-recommended as it is syntactically more clear.
+syntactically more clear.
 
 @menu
 * OPeNDAP::                     
