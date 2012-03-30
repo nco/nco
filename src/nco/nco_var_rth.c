@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.59 2012-02-07 07:12:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.60 2012-03-30 17:48:40 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -550,7 +550,6 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
   /* Purpose: Add value of first operand to value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
-     nco_var_add() adds to tally if neither operand equals missing_value
      nco_var_add() does _not_ increment tally counter.
      nco_var_add_tll_ncflint() adds if neither operand equals missing value
      nco_var_add_tll_ncflint() does increment tally counter (unlike nco_var_add())

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.43 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.44 2012-03-30 17:48:40 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -83,7 +83,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_sqravg: /* Square of the mean */
     /* These operations all require subsequent normalization, where degenerate tallies are accounted for
-       Thus, the all call nco_var_add_tll_ncra() every iteration, without special treatment on first iteration */
+       Thus, they all call nco_var_add_tll_ncra() every iteration, without special treatment on first iteration */
     (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */

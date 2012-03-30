@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.66 2012-03-01 18:23:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.67 2012-03-30 17:48:40 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -335,7 +335,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     case nco_op_rmssdn: /* Operations: Previous=square, Current=sum, Next=normalize and root */
     case nco_op_ttl: /* Operations: Previous=none, Current=sum, Next=none */
     default:
-      (void)nco_var_avg_rdc_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
+      (void)nco_var_avg_rdc_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
       break;
     } /* end case */
     
@@ -482,40 +482,65 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
-      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.fp[idx_op1] != mss_val_flt){
-	    op2.fp[idx_op2]+=op1.fp[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
-      } /* end loop over idx_op2 */
+      if(isnormal(mss_val_flt)){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  const long blk_off=idx_op2*sz_blk;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    idx_op1=blk_off+idx_blk;
+	    if(op1.fp[idx_op1] != mss_val_flt){
+	      op2.fp[idx_op2]+=op1.fp[idx_op1];
+	      tally[idx_op2]++;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+	} /* end loop over idx_op2 */
+      }else{ /* Missing value exists and is NaN-like */
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  const long blk_off=idx_op2*sz_blk;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    idx_op1=blk_off+idx_blk;
+	    /* Missing value is NaN-like so comparisons to it are always false---must use macros */
+	    if(isnormal(op1.fp[idx_op1])){
+	      op2.fp[idx_op2]+=op1.fp[idx_op1];
+	      tally[idx_op2]++;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+	} /* end loop over idx_op2 */
+      } /* !Missing value exists and is NaN-like */
     } /* end else */
 #else /* __GNUC__ */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
 	  tally[idx_op2]=sz_blk;
 	} /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt){
-	      op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
-	} /* end loop over idx_op2 */
+	if(isnormal(mss_val_flt)){
+	  for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	    for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	      if(op1_2D[idx_op2][idx_blk] != mss_val_flt){
+		op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+		tally[idx_op2]++;
+	      } /* end if */
+	    } /* end loop over idx_blk */
+	    if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+	  } /* end loop over idx_op2 */
+	}else{ /* Missing value exists and is NaN-like */
+	  for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	    for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	      if(isnormal(op1_2D[idx_op2][idx_blk])){
+		op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+		tally[idx_op2]++;
+	      } /* end if */
+	    } /* end loop over idx_blk */
+	    if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+	  } /* end loop over idx_op2 */
+	} /* !Missing value exists and is NaN-like */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -547,9 +572,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -596,9 +619,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ip[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -645,9 +666,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_short op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -694,9 +713,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_ushort op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.usp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.usp[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -743,9 +760,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_uint op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.uip),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.uip[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -792,9 +807,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_int64 op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.i64p),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.i64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -841,9 +854,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_uint64 op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.ui64p),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ui64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -971,9 +982,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
@@ -994,10 +1003,8 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
-    
     break;
   case NC_DOUBLE:
-    
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
@@ -1026,9 +1033,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
@@ -1079,9 +1084,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.ip[idx_op2]=op1_2D[idx_op2][0];
@@ -1132,9 +1135,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_short op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
@@ -1185,9 +1186,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_ushort op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.usp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.usp[idx_op2]=op1_2D[idx_op2][0];
@@ -1238,9 +1237,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_uint op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.uip),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.uip[idx_op2]=op1_2D[idx_op2][0];
@@ -1291,9 +1288,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_int64 op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.i64p),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.i64p[idx_op2]=op1_2D[idx_op2][0];
@@ -1344,9 +1339,7 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_uint64 op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.ui64p),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.ui64p[idx_op2]=op1_2D[idx_op2][0];
@@ -1476,9 +1469,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
@@ -1499,10 +1490,8 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
-    
     break;
   case NC_DOUBLE:
-    
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
@@ -1531,9 +1520,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
@@ -1584,9 +1571,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.ip[idx_op2]=op1_2D[idx_op2][0];
@@ -1637,9 +1622,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_short op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
@@ -1690,9 +1673,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_ushort op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.usp),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.usp[idx_op2]=op1_2D[idx_op2][0];
@@ -1743,9 +1724,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_uint op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.uip),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.uip[idx_op2]=op1_2D[idx_op2][0];
@@ -1796,9 +1775,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_int64 op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.i64p),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.i64p[idx_op2]=op1_2D[idx_op2][0];
@@ -1849,9 +1826,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       nco_uint64 op1_2D[sz_op2][sz_blk];
-      
       (void)memcpy((void *)op1_2D,(void *)(op1.ui64p),sz_op1*nco_typ_lng(type));
-      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.ui64p[idx_op2]=op1_2D[idx_op2][0];

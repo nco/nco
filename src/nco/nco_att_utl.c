@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.116 2012-03-08 17:28:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.117 2012-03-30 17:48:40 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -144,8 +144,6 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     (void)cast_void_nctype(var->type,&var_val);
     (void)cast_void_nctype(var->type,&mss_val_crr);
     (void)cast_void_nctype(var->type,&mss_val_new);
-  
- 
 
     switch(var->type){
       /*    case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;*/
