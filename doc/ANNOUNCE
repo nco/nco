@@ -1,39 +1,40 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.464 2012-03-22 00:12:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.465 2012-03-30 00:09:10 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.1.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release contains 
-
-Also notable is that this release implements NCO's first data
-security/integrity checks, consisting of MD5 hashes of data for 
-each variable. These optional checks are available in ncks and
-ncrcat. Thanks to Patrick from IPSL for suggesting this.
+This release implements NCO's first data security/integrity checks,
+consisting of MD5 hashes of data for each variable. These optional
+checks are available in ncks and ncrcat. Thanks to Patrick from IPSL
+for suggesting this. 
 
 A new "feature" of netCDF3 has been identified that can lead to
-unusually slow performance. Unfortunately, this problem is
-triggered by an triggered by an aggregate pattern of file access
-so the workaround must be implemented in the application software
-(i.e., NCO) rather than in the netCDF library itself.
-It is normally encountered on Multi-record Multi-variable netCDF3
-files (MM3s), so we call this the MM3-workaround. 
-If you encounter unusually slow NCO performance, and you are using
-NCO to analyze MM3 files on a large blocksize filesystem, chances
-are you are encountering an MM3-induced slowdown. 
-This NCO release implements the MM3-workaround for ncks.
-It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.
-MM3-induced slowdowns may be present in other NCO operators and we
-are prioritizing our MM3-patches to those encountered most often.
-Thanks to Gary Strand for reporting this problem, and to Russ Rew
-for creating the workaround algorithm, which is also now in nccopy.
+unusually slow performance. Unfortunately, this problem is triggered
+by an aggregate pattern of file access so the workaround must be
+implemented in the application software (i.e., NCO) rather than in the
+netCDF library itself.  It is normally encountered on Multi-record
+Multi-variable netCDF3 files (MM3s), so we call this the
+MM3-workaround.  If you encounter unusually slow NCO performance while
+using NCO to analyze MM3 files on a large blocksize filesystem,
+chances are you are encountering an MM3-induced slowdown. 
+This NCO release implements the MM3-workaround for ncks.  It speeds-up
+common ncks sub-setting on NCAR's GLADE by 10-50x.  MM3-induced
+slowdowns may be present in other NCO operators and we are
+prioritizing our MM3-patches to those encountered most often.  Thanks
+to Gary Strand for reporting this problem, and to Russ Rew for
+creating the workaround algorithm, which is also now in nccopy.
+More on this story as it develops at
+
+   http://nco.sf.net#bug_mm3
 
 NASA has confirmed funding NCO to develop support for netCDF4 groups
 and to write NCO wrappers for HDF-EOS files. A job ad has been posted
 for a programmer position associated with this project:
 
 http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf
+http://ess.uci.edu/opportunity/zender20120327
 
 Work on NCO 4.1.1 is underway, focused on making a more robust
 build/configuration environment, addressing the MM3 issue in other
@@ -51,8 +52,9 @@ A. Workaround slow copies of record variables.
    It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.
    Thanks to Gary Strand for reporting this problem, and to Russ Rew
    for creating the workaround algorithm, which is also now in nccopy.
+   http://nco.sf.net#bug_mm3
 
-A. MD5 digest support. Digests can help ensure data integrity.
+B. MD5 digest support. Digests can help ensure data integrity.
    They will alert, e.g., some ocurrances of the NC_NOFILL bug.
    However, the execution time cost can be significant, requiring
    two MD5 digests and an extra-from-disk for all data.
@@ -60,7 +62,7 @@ A. MD5 digest support. Digests can help ensure data integrity.
    ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
    http://nco.sf.net/nco.html#md5
 
-A. Expand and redefine ncap2 treatment of sorting and maps:
+C. Expand and redefine ncap2 treatment of sorting and maps:
    var_out=sort(var_in,&srt_map); // Ascending sort
    var_out=asort(var_in,&srt_map); // Accending sort 
    var_out=dsort(var_in,&srt_map); // Desending sort     
@@ -70,18 +72,18 @@ A. Expand and redefine ncap2 treatment of sorting and maps:
    http://nco.sf.net/nco.html#sort
    Thanks to Henry Butowsky for this functionality
 
-A. Fix bug with ncap2 print() command. Thanks to Henry Butowsky.
+D. Fix bug with ncap2 print() command. Thanks to Henry Butowsky.
 
-A. ncrename/ncatted succeed when output file is specified and input
+E. ncrename/ncatted succeed when output file is specified and input
    file is read-only. Formerly this failed:    
    chmod 444 ~/foo.nc;ncrename -O -v one,uno ~/foo.nc ~/foo2.nc
    Now NCO executes chmod() so it succeeds. Ditto for ncatted.
    Thanks to Paida for reporting this.
 
-A. Fix bug where ncap2 could fail when averaging degenerate arrays.
+F. Fix bug where ncap2 could fail when averaging degenerate arrays.
    Thanks to Henry Butowsky.
 
-A. Allow ncatted to change missing value's to/from IEEE NaNs
+G. Allow ncatted to change missing value's to/from IEEE NaNs
    With this feature, one can now perform arithmetic on variables that
    use NaN for _FillValue simply by changing NaN to a normal number,
    then performing arithmetic, then changing back:
@@ -103,7 +105,7 @@ A. NOT YET FIXED
    ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
    ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
 
-   20120213: Verified problem still exists
+   20120329: Verified problem still exists
    Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
 
 B. NOT YET FIXED
@@ -116,7 +118,7 @@ B. NOT YET FIXED
    ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
    ncks -m ~/foo.nc
 
-   20120213: Verified problem still exists
+   20120329: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 C. NOT YET FIXED
@@ -125,9 +127,9 @@ C. NOT YET FIXED
    DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
-   ncks -O -C -D 3 -v var_nm.dot -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # Breaks with "NetCDF: DAP server error"
+   ncks -O -C -D 3 -v var_nm.dot -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # Fails to find variable
 
-   20110506: Verified problem still exists. Stopped testing because
+   20120329: Verified problem still exists. Stopped testing because
    inclusion of var_nm.dot broke all test scripts.
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
