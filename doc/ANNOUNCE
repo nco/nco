@@ -1,42 +1,25 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.465 2012-03-30 00:09:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.466 2012-03-30 01:16:27 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.1.0 are ready. 
+The netCDF operators NCO version 4.2.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements NCO's first data security/integrity checks,
-consisting of MD5 hashes of data for each variable. These optional
-checks are available in ncks and ncrcat. Thanks to Patrick from IPSL
-for suggesting this. 
+The minor release change in numbering of this release, from 4.1.0 to
+4.2.0, was made to mark the change in NCO status to funded (by NASA)
+status. It also helps to alleviate some confusion between netCDF and
+NCO version numbering. netCDF 4.2.x just came out and it seems less 
+confusing to call the NCO developed with it NCO 4.2.x rather than NCO
+4.1.x. 
 
-A new "feature" of netCDF3 has been identified that can lead to
-unusually slow performance. Unfortunately, this problem is triggered
-by an aggregate pattern of file access so the workaround must be
-implemented in the application software (i.e., NCO) rather than in the
-netCDF library itself.  It is normally encountered on Multi-record
-Multi-variable netCDF3 files (MM3s), so we call this the
-MM3-workaround.  If you encounter unusually slow NCO performance while
-using NCO to analyze MM3 files on a large blocksize filesystem,
-chances are you are encountering an MM3-induced slowdown. 
-This NCO release implements the MM3-workaround for ncks.  It speeds-up
-common ncks sub-setting on NCAR's GLADE by 10-50x.  MM3-induced
-slowdowns may be present in other NCO operators and we are
-prioritizing our MM3-patches to those encountered most often.  Thanks
-to Gary Strand for reporting this problem, and to Russ Rew for
-creating the workaround algorithm, which is also now in nccopy.
-More on this story as it develops at
-
-   http://nco.sf.net#bug_mm3
-
-NASA has confirmed funding NCO to develop support for netCDF4 groups
+NASA has started funding NCO to develop support for netCDF4 groups
 and to write NCO wrappers for HDF-EOS files. A job ad has been posted
 for a programmer position associated with this project:
 
 http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf
 http://ess.uci.edu/opportunity/zender20120327
 
-Work on NCO 4.1.1 is underway, focused on making a more robust
+Work on NCO 4.2.1 is underway, focused on making a more robust
 build/configuration environment, addressing the MM3 issue in other
 (non-ncks) operators, and on simplifying issues described in the 
 KNOWN BUGS NOT YET FIXED section below.
@@ -44,52 +27,14 @@ KNOWN BUGS NOT YET FIXED section below.
 Enjoy,
 Charlie
 
-Other "New stuff" in 4.1.0 summary (full details always in ChangeLog):
+Other "New stuff" in 4.2.0 summary (full details always in ChangeLog):
 
 A. Workaround slow copies of record variables.
    Normally encountered on Multi-record Multi-variable netCDF3 files
    (MM3s), this is also known as the MM3-workaround. 
-   It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.
-   Thanks to Gary Strand for reporting this problem, and to Russ Rew
-   for creating the workaround algorithm, which is also now in nccopy.
+   The first MM3 workaround went into ncks in NCO 4.1.0.
+   The latest NCO also includes MM3 speedups in fxm
    http://nco.sf.net#bug_mm3
-
-B. MD5 digest support. Digests can help ensure data integrity.
-   They will alert, e.g., some ocurrances of the NC_NOFILL bug.
-   However, the execution time cost can be significant, requiring
-   two MD5 digests and an extra-from-disk for all data.
-   ncks -O -D 1 -H -C --md5 -v md5_a,md5_abc ~/nco/data/in.nc
-   ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
-   http://nco.sf.net/nco.html#md5
-
-C. Expand and redefine ncap2 treatment of sorting and maps:
-   var_out=sort(var_in,&srt_map); // Ascending sort
-   var_out=asort(var_in,&srt_map); // Accending sort 
-   var_out=dsort(var_in,&srt_map); // Desending sort     
-   var_out=remap(var_in,srt_map); // Apply srt_map to var_in
-   var_out=unmap(var_in,srt_map); // Reverse what srt_map did to var_in
-   dsr_map=invert_map(srt_map); // Produce "de-sort" map that inverts srt_map
-   http://nco.sf.net/nco.html#sort
-   Thanks to Henry Butowsky for this functionality
-
-D. Fix bug with ncap2 print() command. Thanks to Henry Butowsky.
-
-E. ncrename/ncatted succeed when output file is specified and input
-   file is read-only. Formerly this failed:    
-   chmod 444 ~/foo.nc;ncrename -O -v one,uno ~/foo.nc ~/foo2.nc
-   Now NCO executes chmod() so it succeeds. Ditto for ncatted.
-   Thanks to Paida for reporting this.
-
-F. Fix bug where ncap2 could fail when averaging degenerate arrays.
-   Thanks to Henry Butowsky.
-
-G. Allow ncatted to change missing value's to/from IEEE NaNs
-   With this feature, one can now perform arithmetic on variables that
-   use NaN for _FillValue simply by changing NaN to a normal number,
-   then performing arithmetic, then changing back:
-   ncatted -O -D 3 -a _FillValue,nan_arr,o,f,1.0e36 # Change from NaN
-   ncwa, ncra, etc. # Perform any arithmetic
-   ncatted -O -D 3 -a _FillValue,fll_val,o,f,nan # Change to NaN
 
 KNOWN BUGS NOT YET FIXED:
 
@@ -161,10 +106,10 @@ E. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.1.0 with was built and tested with HDF5 hdf5-1.8.7 and with
+   NCO 4.2.0 with was built and tested with HDF5 hdf5-1.8.7 and with
    4.2-snapshot2012020522.
    NCO may not build with earlier, and should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.1.0 takes advantage of an
+   This is particularly true since NCO 4.2.0 takes advantage of an
    internal change to the netCDF nc_def_var_chunking() API in June 2009. 
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location

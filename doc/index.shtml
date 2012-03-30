@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.682 2012-03-30 00:09:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.683 2012-03-30 01:16:27 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -121,6 +121,8 @@ Keep the size &lt;250&times;250 pixels.<br>
 
 <ul>
 <li>2012 Apr&nbsp;01?: Funding for NASA <a href="#prp_access">ACCESS Project</a> begins</li>
+
+<li>2012 Mar&nbsp;29: NCO 4.1.0 (MD5 support, MM3)</li>
 
 <li>2012 Feb&nbsp;13: NCO 4.0.9</li>
 
@@ -341,7 +343,7 @@ funded our
 &ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
 from 20120401&ndash;20140331 as part of the 
 <a href="http://science.nasa.gov/earth-science/earth-science-data/access">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
-We appreciate the proposal reviewers for and staff of the 
+We appreciate the proposal reviewers for and the staff of the 
 <a href="http://science.nasa.gov/researchers/sara/division-corner/earth-science-division-corner">Earth Science Division (ESD) Research and Analysis (R\&A)</a>
 in the 
 <a href="http://science.nasa.gov/about-us/organization-and-leadership">Science Mission Directorate (SMD)</a>.
@@ -600,8 +602,8 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.1.2</b>: (<i>Future</i>) 
-<li><b>NCO 4.1.1</b>: (<i>In Progress, features already in beta include the following</i>)
+<li><b>NCO 4.2.1</b>: (<i>Future</i>) 
+<li><b>NCO 4.2.0</b>: (<i>In Progress, features already in beta include the following</i>)
 netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
