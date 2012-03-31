@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.156 2012-03-22 00:12:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.157 2012-03-31 01:19:16 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1220,6 +1220,9 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
      In such cases massive slowdowns are common on Multi-record Multi-variable netCDF3 files
      Also the problem can occur with normal (4096 B) Blocksize Filesystems
      Based on Russ Rew's code in nccopy.c 20120306
+
+     Testing:
+     ncks -O -C -D 4 -v one,two,one_dmn_rec_var,two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
 
      20120307: NCO Open Discussion Forum exchanges with Russ Rew:
      "When accessing data from netCDF classic or 64-bit offset format files

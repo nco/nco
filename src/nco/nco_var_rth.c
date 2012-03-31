@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.60 2012-03-30 17:48:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.61 2012-03-31 01:19:16 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -725,7 +725,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
 } /* end nco_var_add_tll_ncra() */
 
 void 
-nco_var_copy_tll /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
+nco_var_copy_tll /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2, accounting for missing values in tally */
 (const nc_type type, /* I [enm] netCDF type */
  const long sz, /* I [nbr] Number of elements to copy */
  const int has_mss_val, /* I [flg] Flag for missing values */

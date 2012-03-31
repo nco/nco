@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.44 2012-03-30 17:48:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.45 2012-03-31 01:19:16 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -66,16 +66,16 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
-  case nco_op_ttl: /* Total */ 
+  case nco_op_ttl: /* Total */
     /* NB: copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min], can work
-       However, the copying with nco_var_copy() would not change the tally variable, leaving it equal to zero
+       However, copying with nco_var_copy() would not change the tally variable, leaving it equal to zero
        Then an extra step would be necessary to set tally equal to one where missing values were not present
        Otherwise, e.g., ensemble averages of one file would never have non-zero tallies
        Hence, use special nco_var_copy_tll() function on to copy and change tally only in first loop iteration
        This way, tally is self-consistent with var_prc_out at all times
        Other option is to use nco_var_add_tll_ncra() below and then to post-process nco_op_ttl with nco_var_tll_zro_mss_val()
        in parent function (i.e., in ncra.c).
-       However, that method has downside that post-processing must be done in parent function
+       Downside of that method is that parent function must do post-processing
        By using nco_var_copy_tll() in first iteration here, we avoid performing post-processing in parent function */
     if(idx_rec == 0) (void)nco_var_copy_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val); else (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
@@ -233,19 +233,16 @@ nco_zero_long /* [fnc] Zero all values of long array */
 {
   /* Purpose: Zero all values of long array */
 
-  size_t sz_byt; /* [B] Number of bytes in variable buffer */
-  sz_byt=(size_t)sz*sizeof(long);
-  (void)memset((void *)op1,(long)0,sz_byt);
-
-#if 0
-  /* Presumably this old method used until 20050321 is slower because of pointer de-referencing */
-  long idx;
+  /* Presumably this old method used until 20050321, and then again after 20120330,
+     is slower than memset() because of pointer de-referencing. 
+     However, it does have the virtue of being correct. */
   if(op1 == NULL){
     (void)fprintf(stdout,"%s: ERROR nco_zero_long() asked to zero NULL pointer\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  for(idx=0;idx<sz;idx++) op1[idx]=0L;
-#endif /* !0 */
+  size_t sz_byt; /* [B] Number of bytes in variable buffer */
+  sz_byt=(size_t)sz*sizeof(long);
+  (void)memset((void *)op1,0,sz_byt);
 
 } /* end nco_zero_long() */
 
@@ -257,9 +254,12 @@ nco_set_long /* [fnc] Set all values of long array */
 {
   /* Purpose: Set all values of long array to input value */
 
-  size_t sz_byt; /* [B] Number of bytes in variable buffer */
-  sz_byt=(size_t)sz*sizeof(long);
-  (void)memset((void *)op1,(long)val,sz_byt);
+  long idx;
+  if(op1 == NULL){
+    (void)fprintf(stdout,"%s: ERROR nco_set_long() asked to set NULL pointer\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+  for(idx=0;idx<sz;idx++) op1[idx]=val;
 
 } /* end nco_set_long() */
 

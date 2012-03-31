@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1152 2012-03-12 06:29:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1153 2012-03-31 01:19:15 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -733,7 +733,7 @@ nco1015. nco: eliminate ncap2 -A option from documentation
 nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
 nco1020. nco: re-base record bounds variables (e.g., time_bnds) in ncrcat
 nco1021. nco: use owner axes for printing CF-time in bounds attributes 
-nco1022. nco: ncrcat core-dumps with double-free() error when concatenating record dimensions with non-time units
+nco1022. nco: ncrcat core-dumps with double-free() error when concatenating record dimensions with non-time units NCO SF Bug ID 3324270
 	 ncrcat -D 3 -O -h ~/foo_1.nc ~/foo_2.nc ~/foo.nc
 nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without asking, e.g.,
 	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
@@ -751,9 +751,14 @@ nco1033. ncrcat: warn when first file has more variables than subsequent files
 nco1034. ncatted: allow option to append md5 attribute to each variable
 nco1035. rewrite nco_var_cnf_typ() to use default rather than truncated missing values
 nco1036. ncks: implement rew's copy workaround in nco_cpy_var_val()
-nco1037. nco: support NaN's in math, comparison, averagers in nco_var_rth()? use isnan()?
-         ncwa -O -a lat -v nan_arr ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
-nco1038. 
+nco1037. nco: support NaN's in math, comparison, averagers following template in NC_FLOAT in nco_var_avg() using isnormal()
+         ncwa -O -v nan_arr ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
+         ncatted -O -D 3 -a _FillValue,nan_arr,o,f,1.0e36 ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
+         ncks -C -H -v nan_arr,nan_scl ~/nco/data/in.nc
+nco1038. ncks Cathy Smith fluffyhiker has unrepeatable problem with -d time,0,0 Like a link problem with ncks to old DAP?
+	 ncks -D 3 -d time,0,0 -v time http://goldsmr3.sci.gsfc.nasa.gov:80/dods/MAIMCPASM # Works for me
+nco1039. 
+
 qrk
 ************************************************************************
 End ncoXXX TODOs

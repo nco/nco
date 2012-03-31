@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.466 2012-03-30 01:16:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.467 2012-03-31 01:19:15 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -35,6 +35,17 @@ A. Workaround slow copies of record variables.
    The first MM3 workaround went into ncks in NCO 4.1.0.
    The latest NCO also includes MM3 speedups in fxm
    http://nco.sf.net#bug_mm3
+
+A. NaN means Not a Number in IEEE-speak
+   Recently I learned that some people use NaN for a missing value,
+   and that netCDF supports NaNs. So NCO should, too, but does not.
+   Currently the workaround is to change the missing value to non-NaN,
+   then perform arithmetic, then change the missing value back to Nan.
+   However, show of hands: How many people would like NCO to handle
+   missing values that are NaN without using a workaround? i.e., for 
+   NCO to do all the checking itself?
+   ncwa now correctly handles averages of missing values that are NaN.
+   Should we spend time supporting NaN for all arithmetic functions?
 
 KNOWN BUGS NOT YET FIXED:
 
