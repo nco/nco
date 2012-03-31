@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1154 2012-03-31 02:09:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1155 2012-03-31 02:15:53 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -757,10 +757,6 @@ nco1037. nco: support NaN's in math, comparison, averagers following template in
          ncks -C -H -v nan_arr,nan_scl ~/nco/data/in.nc
 nco1038. ncks Cathy Smith fluffyhiker has unrepeatable problem with -d time,0,0 Like a link problem with ncks to old DAP?
 	 ncks -D 3 -d time,0,0 -v time http://goldsmr3.sci.gsfc.nasa.gov:80/dods/MAIMCPASM # Works for me
-nco1039. nco: ncra -y ttl fails to respect missing values TODO nco1039
-      	 ncra -D 3 -O -y ttl ~/foo.nc ~/foo2.nc;ncks -H -v a ~/foo2.nc
-nco1040. nco: ncks print error on above ~/foo2.nc file:
-	 ncks -H -v a ~/foo2.nc # ncks prints a[1]=4294957297 while ncdump gets it right
 nco1041. 
 qrk
 ************************************************************************
