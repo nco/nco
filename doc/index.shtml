@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.683 2012-03-30 01:16:27 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.684 2012-03-31 02:09:47 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -603,17 +603,20 @@ You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.2.1</b>: (<i>Future</i>) 
-<li><b>NCO 4.2.0</b>: (<i>In Progress, features already in beta include the following</i>)
 netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
 netCDF4 groups;
+<li><b>NCO 4.2.0</b>: (<i>In Progress, features already in beta include the following</i>)
+<tt>ncks</tt> printing of <tt>NC_INT</tt>;
+<tt>ncra -y ttl</tt> fix;
+<tt>ncwa -y add</tt> NaN support;
 <li><b>NCO 4.1.0</b>: (<i>Current Stable Release</i>)
 MD5 digests;
-<b>ncap2</b> sorts &amp; maps;
-<b>ncks</b> MM3 <a href="#bug_mm3">workaround</a>;
-<b>ncrename/ncatted</b> chmods;
-<b>ncatted</b> NaN support;
+<tt>ncap2</tt> sorts &amp; maps;
+<tt>ncks</tt> MM3 <a href="#bug_mm3">workaround</a>;
+<tt>ncrename/ncatted</tt> chmods;
+<tt>ncatted</tt> NaN support;
 <li><b>NCO 4.0.9</b>: 
 Fix over-zealous <tt>ncap2</tt> packing;
 Fix <tt>ncea -y ttl</tt>;

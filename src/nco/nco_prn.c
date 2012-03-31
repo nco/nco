@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.72 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.73 2012-03-31 02:09:48 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -130,7 +130,7 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   /* Purpose: Provide sprintf() format string for specified type */
   static const char fmt_NC_FLOAT[]="%g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_DOUBLE[]="%.12g"; /* Specify 12 digits of precision for double precision */
-  static const char fmt_NC_INT[]="%li"; /* NCO currently stores NC_INT in native type long, but this will be deprecated when netCDF supports a 64 bit integer type */
+  static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
   static const char fmt_NC_SHORT[]="%hi";
   static const char fmt_NC_CHAR[]="%c";
   /* Formats useful in printing byte data as decimal notation */
@@ -143,7 +143,7 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 
   static const char fmt_NC_UBYTE[]="%hhu"; /*  */
   static const char fmt_NC_USHORT[]="%hu"; /*  */
-  static const char fmt_NC_UINT[]="%lu"; /*  */
+  static const char fmt_NC_UINT[]="%u"; /*  */
   static const char fmt_NC_INT64[]="%lli"; /*  */
   static const char fmt_NC_UINT64[]="%llu"; /*  */
   static const char fmt_NC_STRING[]="%s"; /*  */

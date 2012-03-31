@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.467 2012-03-31 01:19:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.468 2012-03-31 02:09:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -46,6 +46,13 @@ A. NaN means Not a Number in IEEE-speak
    NCO to do all the checking itself?
    ncwa now correctly handles averages of missing values that are NaN.
    Should we spend time supporting NaN for all arithmetic functions?
+
+A. ncks now prints variables of type NC_INT with %i instead of %li
+   formatting. This fixes TODO nco1040.
+
+A. ncra used to initialize counting arrays to one incorrectly.
+   This could cause a bug with the ncra -y ttl (i.e., total) function.
+   This fixes TODO nco1039. Thanks to Ken5746 for reporting this. 
 
 KNOWN BUGS NOT YET FIXED:
 

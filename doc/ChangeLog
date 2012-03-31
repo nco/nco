@@ -1,8 +1,13 @@
 2012-03-30  Charlie Zender  <zender@uci.edu>
 
+	* ncks now prints variables of type NC_INT with %i instead of %li
+	formatting. This fixes TODO nco1040.
+
 	* Fix fundamental mistake in use of memset() in	nco_set_long()
 	Buggy method tried to fill tally array with ones quickly
 	Revert to slower but obviously correct array deferencing to fill tally
+	Hard to believe this bug did not cause more errors
+	This fixes TODO nco1039. Thanks to Ken5746 for reporting this.
 
 	* Modify and test NC_FLOAT portion of nco_var_avg() for	NaN-compatibility
 	Verify that ncwa will work with missing value = NaN with this algorithm
