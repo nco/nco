@@ -2,8 +2,6 @@
 // Purpose: CDL file to generate netCDF4 test file for groups
 // Created: 20110801 based on in.cdl
 
-// Test var int64_var below is commented out until ncgen supports it
-
 // Usage:
 // NB: ncgen arguments depend on version:
 // "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
@@ -12,21 +10,6 @@
 // scp ~/nco/data/in_grp.cdl givre.ess.uci.edu:nco/data
 // scp ~/nco/data/in_grp.nc dust.ess.uci.edu:/var/www/html/nco
 // scp dust.ess.uci.edu:/var/www/html/nco/in_grp.nc ~/nco/data
-// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/in_grp.nc
-// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0001.nc
-// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0002.nc
-// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0003.nc
-// mswrite -t 365 ~/nco/data/in_grp.nc /ZENDER/tmp/h0004.nc
-// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/in_grp.nc
-// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0001.nc
-// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0002.nc
-// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0003.nc
-// msrcp -period 365 ~/nco/data/in_grp.nc mss:/ZENDER/tmp/h0004.nc
-
-// WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.pl test script
-// Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
-// In particular, do not change number of elements in record coordinate, time, without simultaneously changing number of data in all record variables
-// My convention is that the _FillValue, if any, of any packed variable should be of the same type as the expanded variable. Hence _FillValue, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
 
 // Data constants in CDL:
 // byte: 'a'
@@ -48,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.6 2011-08-23 19:47:46 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.7 2012-04-02 06:34:14 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -69,7 +52,10 @@ variables:
 	lon:units = "degrees_east";
 
 	double time(time);
+
+	float scl;
 data:
+	scl=1.0;
 	lat=-90,90;
 	lev=100,500,1000;
 	lon=0,90,180,270;
@@ -83,18 +69,22 @@ group: level_1_group_1 {
 	float lon(lon);
 	lon:long_name = "level_1_group_1 Longitude (typically midpoints)";
 	lon:units = "level_1_group_1 degrees_east";
+	float scl;
       data:
 	lat=-90,90;
 	lev=100,500,1000;
 	lon=0,90,180,270;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	scl=1.1;
 } // end level_1_group_1
 
 group: level_1_group_2 { 
       variables:
 	double time(time);
+	float scl;
       data:
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	scl=1.2;
 } // end level_1_group_2
 
 group: level_1_group_3 {
@@ -104,9 +94,11 @@ group: level_1_group_3 {
 	  :level_1_group_3_global_attribute = "level_1_group_3_global_attribute";
 	  float rz(rlev);
 	  double time2(time2);
+	  float scl;
 	data:
 	  time2=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.;
 	  rz=0,5000,17000;
+	  scl=1.3;
 } // end level_1_group_3
 
 } // end root group
