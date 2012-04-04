@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.684 2012-03-31 02:09:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.685 2012-04-04 20:38:20 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -608,7 +608,7 @@ World peace?
 Stride works with DAP?;
 netCDF4 groups;
 <li><b>NCO 4.2.0</b>: (<i>In Progress, features already in beta include the following</i>)
-<tt>ncks</tt> printing of <tt>NC_INT</tt>;
+<tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
 <tt>ncra -y ttl</tt> fix;
 <tt>ncwa -y add</tt> NaN support;
 <li><b>NCO 4.1.0</b>: (<i>Current Stable Release</i>)

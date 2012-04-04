@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.468 2012-03-31 02:09:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.469 2012-04-04 20:38:19 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -53,6 +53,13 @@ A. ncks now prints variables of type NC_INT with %i instead of %li
 A. ncra used to initialize counting arrays to one incorrectly.
    This could cause a bug with the ncra -y ttl (i.e., total) function.
    This fixes TODO nco1039. Thanks to Ken5746 for reporting this. 
+
+A. ncks allows specification of buffer size for reading files.
+   Specify size with --bfr_sz_hnt or --bufferr_size_hint:
+   ncks -O -D 3 --bfr_sz=1000000 ~/nco/data/in.nc ~/foo.nc
+   Larger sizes can increase access speed by reducing the number of 
+   system calls netCDF makes to read/write data from/to disk.
+   http://nco.sf.net/nco.html#ncks fxm
 
 KNOWN BUGS NOT YET FIXED:
 
