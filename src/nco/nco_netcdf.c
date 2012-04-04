@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.146 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.147 2012-04-04 04:30:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -406,6 +406,17 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
   const char fnc_nm[]="nco_open()";
   int rcd;
   rcd=nc_open(fl_nm,mode,nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco_open */
+
+int
+nco__open(const char * const fl_nm,const int mode,size_t bfr_sz_hnt,int * const nc_id)
+{
+  /* Purpose: Wrapper for nc__open() */
+  const char fnc_nm[]="nco__open()";
+  int rcd;
+  rcd=nc__open(fl_nm,mode,bfr_sz_hnt,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_open */

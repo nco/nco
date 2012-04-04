@@ -1,6 +1,6 @@
 2012-04-03  Charlie Zender  <zender@uci.edu>
 
-	* Add --bfr_sz_hnt option and nco_open() to ncks
+	* Add --bfr_sz_hnt option and nco__open() to ncks
 
 2012-03-30  Charlie Zender  <zender@uci.edu>
 
