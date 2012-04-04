@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.294 2012-03-22 00:12:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.295 2012-04-04 04:30:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.294 2012-03-22 00:12:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.294 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.295 2012-04-04 04:30:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.295 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -178,6 +178,7 @@ main(int argc,char **argv)
   nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
+  size_t bfr_sz_hnt=0UL; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
@@ -210,6 +211,8 @@ main(int argc,char **argv)
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
+      {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
+      {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
       {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
       {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
       {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
@@ -304,6 +307,10 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
+	bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
 	/* Copy limit argument for later processing */
 	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
@@ -528,7 +535,12 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file for reading */
-  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+  if(bfr_sz_hnt == 0UL) rcd=nco_open(fl_in,NC_NOWRITE,&in_id); else{
+    /* ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() requesting file buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
+    rcd=nco__open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
+  } /* end else */
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
