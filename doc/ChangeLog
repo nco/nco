@@ -1,3 +1,8 @@
+2012-04-04  Charlie Zender  <zender@uci.edu>
+
+	* Deprecate nco_open() in ncks in favor of nco__open() since
+	latter is equivalent to former with default arguments.
+
 2012-04-03  Charlie Zender  <zender@uci.edu>
 
 	* Add --bfr_sz_hnt option and nco__open() to ncks

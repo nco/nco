@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.295 2012-04-04 04:30:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.296 2012-04-04 20:30:35 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.295 2012-04-04 04:30:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.295 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.296 2012-04-04 20:30:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.296 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -178,7 +178,7 @@ main(int argc,char **argv)
   nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
-  size_t bfr_sz_hnt=0UL; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
@@ -535,12 +535,10 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file for reading */
-  if(bfr_sz_hnt == 0UL) rcd=nco_open(fl_in,NC_NOWRITE,&in_id); else{
-    /* ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() requesting file buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
-    rcd=nco__open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
-  } /* end else */
+  /* ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
+  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() requesting file buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
+  rcd=nco__open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
