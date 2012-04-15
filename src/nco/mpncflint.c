@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.95 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.96 2012-04-15 03:06:53 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.95 2012-04-15 01:34:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.95 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.96 2012-04-15 03:06:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.96 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -598,7 +598,7 @@ main(int argc,char **argv)
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
     
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
     
     /* Copy global attributes */
     (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -842,7 +842,7 @@ main(int argc,char **argv)
 	  
 	  /* Worker has token---prepare to write */
 	  if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	    rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
+	    rcd=nco_fl_open(fl_out_tmp,NC_WRITE|NC_SHARE,&bfr_sz_hnt,&out_id);
 	    /* Set chunksize parameters */
 	    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 	    

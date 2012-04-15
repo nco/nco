@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.94 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.95 2012-04-15 03:06:53 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -99,8 +99,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.94 2012-04-15 01:34:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.94 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.95 2012-04-15 03:06:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.95 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -542,7 +542,7 @@ main(int argc,char **argv)
     (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
     
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
     
     /* Copy global attributes */
     (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -704,7 +704,7 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"local file %s:\n",fl_in);
     
     /* Open file once per thread to improve caching */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
     
 #if 0
     /* fxm: netCDF4: Change to independent variable reads? */
@@ -810,7 +810,7 @@ main(int argc,char **argv)
 	    
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
+	      rcd=nco_fl_open(fl_out_tmp,NC_WRITE|NC_SHARE,&bfr_sz_hnt,&out_id);
 	      /* Set chunksize parameters */
 	      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 	      

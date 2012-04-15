@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
 	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
 
+	* Replace all nco_open() calls with nco_fl_open()
+
 	* Document --bfr_sz_hnt
 
 	* Functionalize nc__open() clause as nco_fl_open()

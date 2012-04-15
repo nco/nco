@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.178 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.179 2012-04-15 03:06:53 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.178 2012-04-15 01:34:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.178 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.179 2012-04-15 03:06:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.179 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -621,7 +621,7 @@ main(int argc,char **argv)
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
   if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Copy global attributes */
@@ -860,7 +860,7 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     /* Open file once per thread to improve caching */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
     
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);

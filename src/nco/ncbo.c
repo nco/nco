@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.176 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.177 2012-04-15 03:06:53 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.176 2012-04-15 01:34:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.177 2012-04-15 03:06:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.177 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -624,7 +624,7 @@ main(int argc,char **argv)
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
   
   /* Copy global attributes */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);

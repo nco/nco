@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.55 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.56 2012-04-15 03:06:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -129,6 +129,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const nco_bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
+ size_t * const bfr_sz_hnt, /* I/O [B] Buffer size hint */
  int * const out_id); /* O [id] File ID */
 
 void
@@ -145,7 +146,7 @@ int /* [rcd] Return code */
 nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
 (const char * const fl_nm, /* I [sng] Name of file to open */
  const int open_mode, /* I [] Mode flag for nco__open() call (NC_WRITE or NC_NOWRITE) */
- size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
+ size_t * const bfr_sz_hnt, /* I/O [B] Buffer size hint */
  int * const nc_id); /* O [id] File ID */
 
 nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.89 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.90 2012-04-15 03:06:53 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.89 2012-04-15 01:34:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.89 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.90 2012-04-15 03:06:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.90 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -640,7 +640,7 @@ main(int argc,char **argv)
     (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
     
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
     if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
     
     /* Copy global attributes */
@@ -891,7 +891,7 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in);
     
     /* Open file once per thread to improve caching */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
     
 #ifdef ENABLE_MPI
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
@@ -1010,7 +1010,7 @@ main(int argc,char **argv)
 	  
 	    /* Worker has token---prepare to write */
 	  if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	    rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
+	    rcd=nco_fl_open(fl_out_tmp,NC_WRITE|NC_SHARE,&bfr_sz_hnt,&out_id);
 	    /* Set chunksize parameters */
 	    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 	    
@@ -1061,7 +1061,7 @@ main(int argc,char **argv)
     if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){
       nco_bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
       /* ...put file in define mode to allow metadata writing... */
-      rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+      rcd=nco_fl_open(fl_out_tmp,NC_WRITE,&bfr_sz_hnt,&out_id);
       (void)nco_redef(out_id);
       /* ...loop through all variables that may have been packed... */
 #ifdef ENABLE_MPI

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.297 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.298 2012-04-15 03:06:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.297 2012-04-15 01:34:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.297 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.298 2012-04-15 03:06:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.298 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -642,7 +642,7 @@ main(int argc,char **argv)
     (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
     
     /* Copy global attributes */
     if(PRN_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
