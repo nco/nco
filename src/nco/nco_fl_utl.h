@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.54 2012-03-22 00:12:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.55 2012-04-15 01:34:13 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -140,6 +140,13 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
 void 
 nco_fl_rm /* [fnc] Remove file */
 (char *fl_nm); /* I [sng] File to be removed */
+
+int /* [rcd] Return code */
+nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
+(const char * const fl_nm, /* I [sng] Name of file to open */
+ const int open_mode, /* I [] Mode flag for nco__open() call (NC_WRITE or NC_NOWRITE) */
+ size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
+ int * const nc_id); /* O [id] File ID */
 
 nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
 nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */

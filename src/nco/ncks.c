@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.296 2012-04-04 20:30:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.297 2012-04-15 01:34:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.296 2012-04-04 20:30:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.296 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.297 2012-04-15 01:34:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.297 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -534,11 +534,8 @@ main(int argc,char **argv)
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-  /* Open file for reading */
-  /* ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
-  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() requesting file buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
-  rcd=nco__open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
-  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer of %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt);
+  /* Open file using appropriate buffer size hints and verbosity */
+  rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){

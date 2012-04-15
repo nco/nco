@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.158 2012-04-03 21:52:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.159 2012-04-15 01:34:13 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1341,6 +1341,29 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
     
     return USE_MM3_WORKAROUND;
 } /* end nco_use_mm3_workaround() */
+
+int /* [rcd] Return code */
+nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
+(const char * const fl_nm, /* I [sng] Name of file to open */
+ const int open_mode, /* I [] Mode flag for nco__open() call (NC_WRITE or NC_NOWRITE) */
+ size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
+ int * const nc_id) /* O [id] File ID */
+{
+  /* Purpose: Open file using appropriate buffer size hints and verbosity
+     ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  if(dbg_lvl_get() >= nco_dbg_scl){
+    if (bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",prg_nm_get()); else (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
+  } /* endif */
+
+  rcd=nco__open(fl_nm,open_mode,bfr_sz_hnt,nc_id);
+
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt);
+
+  return rcd;
+} /* end nco_fl_open */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */

@@ -1,10 +1,16 @@
-2012-04-04  Charlie Zender  <zender@uci.edu>
+2012-04-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.0 release procedure:
  	Changes since nco-4_1_0: ncra -y ttl, %i fmt, ncwa NaN, nc__open
 	cd ~/nco;cvs tag -d nco-4_2_0;cvs tag -d nco-4_2_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
 	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
+
+	* Document --bfr_sz_hnt
+
+	* Functionalize nc__open() clause as nco_fl_open()
+
+2012-04-04  Charlie Zender  <zender@uci.edu>
 
 	* Deprecate nco_open() in ncks in favor of nco__open() since
 	latter is equivalent to former with default arguments.
