@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.470 2012-04-15 01:34:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.471 2012-04-15 18:16:38 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -54,8 +54,8 @@ A. ncra used to initialize counting arrays to one incorrectly.
    This could cause a bug with the ncra -y ttl (i.e., total) function.
    This fixes TODO nco1039. Thanks to Ken5746 for reporting this. 
 
-A. All operators allow specification of buffer size for reading files.
-   Specify size with --bfr_sz_hnt or --buffer_size_hint:
+A. All operators allow specification of buffer size for reading and
+   creating files. Specify size with --bfr_sz_hnt or --buffer_size_hint: 
    # Request 2 MB file buffer instead of default 8 kB buffer
    ncks -O -D 3 --bfr_sz=2097152 ~/nco/data/in.nc ~/foo.nc
    Larger sizes can increase access speed by reducing the number of 

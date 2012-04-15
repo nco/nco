@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.671 2012-04-15 01:34:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.672 2012-04-15 18:16:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4892,7 +4892,7 @@ Long options: @samp{--bfr_sz_hnt}, @samp{--buffer_size_hint}@*
 @end cartouche
 
 As of @acronym{NCO} version 4.1.1 (May, 2012), @acronym{NCO} 
-allows the user to request specific buffer sizes to allocate for reading
+allows the user to request specific buffer sizes to allocate for reading 
 and writing files.
 This buffer size determines how many system calls the netCDF layer must
 invoke to read and write files.

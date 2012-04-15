@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.148 2012-04-10 14:50:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.149 2012-04-15 18:16:39 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -400,6 +400,17 @@ nco_create(const char * const fl_nm,const int cmode,int * const nc_id)
 } /* end nco_create */
 
 int
+nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t * const bfr_sz_hnt,int * const nc_id)
+{
+  /* Purpose: Wrapper for nc__create() */
+  const char fnc_nm[]="nco__create()";
+  int rcd;
+  rcd=nc__create(fl_nm,cmode,sz_ntl,bfr_sz_hnt,nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco__create */
+
+int
 nco_open(const char * const fl_nm,const int mode,int * const nc_id)
 {
   /* Purpose: Wrapper for nc_open() */
@@ -419,7 +430,7 @@ nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int 
   rcd=nc__open(fl_nm,mode,bfr_sz_hnt,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_open */
+} /* end nco__open */
 
 int
 nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)

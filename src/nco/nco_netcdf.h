@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.82 2012-04-10 14:50:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.83 2012-04-15 18:16:39 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -92,6 +92,7 @@ int ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int mode,MPI_Inf
 
 /* Begin file-level routines */
 int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);
+int nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t * const bfr_sz_hnt,int * const nc_id);
 int nco_open(const char * const fl_nm,const int mode,int * const nc_id);
 int nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id);
 int nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int * const nc_id);
