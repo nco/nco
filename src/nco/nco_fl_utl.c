@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.161 2012-04-15 18:16:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.162 2012-04-15 20:14:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1481,7 +1481,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* end if */
 
   if(FORCE_OVERWRITE){
-    rcd+=nco__create(fl_out_tmp,nccreate_mode,NULL,bfr_sz_hnt,out_id);
+    rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,bfr_sz_hnt,out_id);
     /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
@@ -1555,7 +1555,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       break;
     case 'O':
     case 'o':
-      rcd+=nco__create(fl_out_tmp,nccreate_mode,NULL,bfr_sz_hnt,out_id);
+      rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,bfr_sz_hnt,out_id);
       /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
       break;
     case 'A':
@@ -1571,7 +1571,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   }else{ /* Output file does not yet already exist */
     nccreate_mode=NC_NOCLOBBER;
     nccreate_mode=nco_create_mode_mrg(nccreate_mode,fl_out_fmt);
-    rcd+=nco__create(fl_out_tmp,nccreate_mode,NULL,bfr_sz_hnt,out_id);
+    rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,bfr_sz_hnt,out_id);
     /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
 

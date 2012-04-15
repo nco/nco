@@ -1,5 +1,7 @@
 2012-04-15  Charlie Zender  <zender@uci.edu>
 
+	* Pass NC_SIZEHINT_DEFAULT as initialsz to nco__create()
+
 	* Replace all nco_create() calls with nco__create()
 
 	* NCO 4.2.0 release procedure:
