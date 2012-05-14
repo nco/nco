@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.185 2012-03-22 00:12:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.186 2012-05-14 23:13:21 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1457,7 +1457,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",prg_nm_get(),dmn_nm);
-      (void)fprintf(stdout,"%s: HINT This could be a symptom of TODO nco111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",prg_nm_get());
+      if(prg_get() == ncap) (void)fprintf(stdout,"%s: HINT This could be a symptom of TODO nco1045. Workaround is avoid use of append mode (i.e., -A switch) in ncap2.\n",prg_nm_get()); else (void)fprintf(stdout,"%s: HINT This could be a symptom of TODO nco111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
 

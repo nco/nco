@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.672 2012-04-15 18:16:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.673 2012-05-14 23:13:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1384,6 +1384,7 @@ as the @var{input-file} without any danger of ``overlap''.
 @cindex @code{--ovr}
 @cindex @code{--overwrite}
 @cindex overwriting files
+@cindex appending variables
 @cindex appending to files
 Other safeguards exist to protect the user from inadvertently
 overwriting data.
@@ -1404,6 +1405,7 @@ interactive keyboard input.
 
 @html
 <a name="apn"></a> <!-- http://nco.sf.net/nco.html#apn -->
+<a name="append"></a> <!-- http://nco.sf.net/nco.html#append -->
 @end html
 @node Appending Variables, Simple Arithmetic and Interpolation, Temporary Output Files, Strategies
 @section Appending Variables
@@ -5650,6 +5652,8 @@ Specifying @samp{-A} tells the operator to attempt to append to any
 existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
+NB: As of 20120515, @command{ncap2} is unable to append to files that
+already contain the appended dimensions. 
 
 @html
 <a name="hst"></a> <!-- http://nco.sf.net/nco.html#hst -->
@@ -6106,6 +6110,9 @@ variables to be operated on as an argument to @samp{-v}
 Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap2} should output @emph{only} user-defined variables.
 @command{ncap2} neither accepts nor understands the @var{-x} switch.
+@cindex appending variables
+NB: As of 20120515, @command{ncap2} is unable to append to files that
+already contain the appended dimensions. 
 
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 

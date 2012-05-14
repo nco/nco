@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1157 2012-04-04 04:32:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1158 2012-05-14 23:13:21 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -80,7 +80,6 @@ nco114. Fix nco_var_cnf_dmn() so that returned weight always has same size tally
 nco115. SIGFPE when sum of denominator in ncwa (i.e., sum of weight) is zero
         Users should not be doing weighted averages if denominator sums to zero, but...
         Desired fix here is graceful exit instead of core dump
-nco127. Make mss: signal retrieval from NCAR mass store
 nco143. Add -W or -q switch to turn off squelch most warning messages in ncra, ncrcat (especially warnings about non-monotonicity)
 nco144. Add option(s) to select all N-D variables where N=0,1,2...
 nco145. Implement later netCDF and CF conventions, e.g., time_op in ncra
@@ -733,8 +732,6 @@ nco1015. nco: eliminate ncap2 -A option from documentation
 nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
 nco1020. nco: re-base record bounds variables (e.g., time_bnds) in ncrcat
 nco1021. nco: use owner axes for printing CF-time in bounds attributes 
-nco1022. nco: ncrcat core-dumps with double-free() error when concatenating record dimensions with non-time units NCO SF Bug ID 3324270
-	 ncrcat -D 3 -O -h ~/foo_1.nc ~/foo_2.nc ~/foo.nc
 nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without asking, e.g.,
 	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
 	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
@@ -759,7 +756,18 @@ nco1038. ncks Cathy Smith fluffyhiker has unrepeatable problem with -d time,0,0 
 	 ncks -D 3 -d time,0,0 -v time http://goldsmr3.sci.gsfc.nasa.gov:80/dods/MAIMCPASM # Works for me
 nco1041. nc__open() with NC_SIZEHINT_DEFAULT for MM3 problems or general switch?
 nco1042. nc_create() with NC_DISKLESS general switch?
-nco1043. 
+nco1043. Modify nco.spec to build on RHEL and Fedora
+nco1022. nco: ncrcat core-dumps with double-free() error when concatenating record dimensions with non-time units NCO SF Bug ID 3324270 possible dup of nco1044
+	 ncrcat -D 3 -O -h ~/foo_1.nc ~/foo_2.nc ~/foo.nc
+nco1044. nco: ncrcat core-dumps with double-free() when concatenating record dimensions possible dup of nco1022 https://sourceforge.net/projects/nco/forums/forum/9830/topic/3690093
+	 ncpdq -a lat,lon,time_counter stomate_history_lai_1.nc temp1.nc
+	 ncpdq -a lat,lon,time_counter stomate_history_lai_2.nc temp2.nc
+	 ncrcat temp1.nc temp2.nc out.nc
+nco1045. ncap2 append mode breaks when dimension already exists
+	 ncap2 -O -v -s 'time2=time' ~/nco/data/in.nc ~/foo.nc
+	 ncap2 -A -v -s 'foo=time' ~/nco/data/in.nc ~/foo.nc
+nco1046. 
+
 qrk
 ************************************************************************
 End ncoXXX TODOs
