@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.113 2012-03-15 02:00:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.114 2012-05-16 15:55:15 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -174,6 +174,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
  const int var_trg_id) /* I [id] Variable ID */
 {
   /* Purpose: Is variable specified in a "coordinates" attribute?
+     Typical variables that appear in a "coordinates" attribute include ...
      If so, it may be a "multi-dimensional coordinate" that should
      undergo special treatment by arithmetic operators. */
   nco_bool IS_SPC_IN_CRD_ATT=False; /* [flg] Variable is listed in a "coordinates" attribute  */
@@ -246,7 +247,8 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
  const int var_trg_id) /* I [id] Variable ID */
 {
   /* Purpose: Is variable specified in a "bounds" attribute?
-     If so, it may be a "multi-dimensional coordinate" that should
+     Typical variables that appear in a "bounds" attribute include "lat_bnds", "lon_bnds", etc.
+     Such variables may be "multi-dimensional coordinates" that should
      undergo special treatment by arithmetic operators.
      Routine based on nco_is_spc_in_crd_att() */
   nco_bool IS_SPC_IN_BND_ATT=False; /* [flg] Variable is listed in a "bounds" attribute  */
@@ -1055,10 +1057,14 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Check condition #3 from above: */
       if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
 
-      /* Debugging TODO nco1011 */
       if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id)) 
 	if(!(prg_id == ncra && var[idx]->is_rec_var)) /* not "time" */
 	  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is specified in a bounds attribute\n",prg_nm_get(),var[idx]->nm);
+
+      /* Auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...) should not be concatenated by ncecat */
+      if(prg_id == ncecat)
+	if(nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id) || nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id)) 
+	  var_op_typ[idx]=fix;
 
     } /* end if CNV_CCM_CCSM_CF */
 

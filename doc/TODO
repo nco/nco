@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1158 2012-05-14 23:13:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1159 2012-05-16 15:55:15 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -766,8 +766,8 @@ nco1044. nco: ncrcat core-dumps with double-free() when concatenating record dim
 nco1045. ncap2 append mode breaks when dimension already exists
 	 ncap2 -O -v -s 'time2=time' ~/nco/data/in.nc ~/foo.nc
 	 ncap2 -A -v -s 'foo=time' ~/nco/data/in.nc ~/foo.nc
-nco1046. 
-
+nco1046. ncecat should not concatenate auxiliary coordinate variables or bounds
+nco1047. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

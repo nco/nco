@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.472 2012-05-14 23:13:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.473 2012-05-16 15:55:15 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -62,6 +62,15 @@ A. All operators allow specification of buffer size for reading and
    system calls netCDF makes to read/write data from/to disk.
    http://nco.sf.net/nco.html#bfr
    Thanks to Andy Mai for reporting Rob Latham's suggestion for this.
+
+A. ncecat no longer glues a record dimension to any auxiliary coordinate
+   variables (latixy, longxy, ...) or bounds (lat_bnds, lon_bnds, ...). 
+   These are variables specified in the "coordinates" or "bounds" 
+   attribute, respectively.
+   Note that regular (1D) coordinate variables (lat, lon, time)
+   may also be listed as auxiliary coordinate variables.
+   But ncecat never added a record dimension to "normal" 1D coordinates.
+   Thanks to Pat Brock for this suggestion. 
 
 KNOWN BUGS NOT YET FIXED:
 

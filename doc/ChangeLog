@@ -1,3 +1,14 @@
+2012-05-16  Charlie Zender  <zender@uci.edu>
+
+	* ncecat no longer glues a record dimension to any auxiliary
+	coordinate variables (latixy, longxy, ...) or bounds (lat_bnds,
+	lon_bnds, ...). These are variables specified in the "coordinates"
+	or "bounds" attribute, respectively. Note that regular (1D)
+	coordinate variables (lat, lon, time) may also be listed as
+	auxiliary coordinate variables. But ncecat never added a record
+	dimension to "normal" 1D coordinates. Thanks to Pat Brock for this
+	suggestion.
+
 2012-05-14  Charlie Zender  <zender@uci.edu>
 
 	* Add scrutable hint for ncap2 -A append errors, and note in docs
