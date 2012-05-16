@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.473 2012-05-16 15:55:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.474 2012-05-16 18:44:58 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -71,6 +71,13 @@ A. ncecat no longer glues a record dimension to any auxiliary coordinate
    may also be listed as auxiliary coordinate variables.
    But ncecat never added a record dimension to "normal" 1D coordinates.
    Thanks to Pat Brock for this suggestion. 
+
+A. ncap2 append mode (i.e., ncap2 -A) now works when variables to be 
+   appended contain dimensions that already exist in the output file.
+   (The rest of NCO has always done this correctly, but ncap2 is 
+   architected quite differently).
+   Thanks to user mullers for reminding us about this bug, and to
+   Henry Butowsky for fixing it. fxm
 
 KNOWN BUGS NOT YET FIXED:
 

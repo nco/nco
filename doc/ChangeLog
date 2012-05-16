@@ -2340,7 +2340,7 @@
 	* ncap2 calls nco_thr_att_cat() to archive nco_openmp_thread_number
 
 2007-12-11  Henry Butowsky  <henryb@ntlworld.com>
-	
+
 	* Added print attributes function e.g., print(global@history)
 
 2007-12-10  Charlie Zender  <zender@uci.edu>
