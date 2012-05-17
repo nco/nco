@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.28 2011-07-31 21:49:55 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.29 2012-05-17 09:21:22 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -680,10 +680,10 @@ nbr_err_ttl=0;
 
   n2[lat,lon]={-1.0,0.0,2.0,3.0,10.0,20.0,30.0,40.0};
 
-  n2=dsort(n2,n1_map);
+  n2=remap(n2,n1_map);
 
   // Create map larger variable
-  n3=dsort(three_dmn_var_dbl,n1_map);
+  n3=remap(three_dmn_var_dbl,n1_map);
 
   if(n1.min() != n1_st(0,0) || n1.max()!=n1_st(7)){
         print("ERROR: n1: Basic sort test\n");
