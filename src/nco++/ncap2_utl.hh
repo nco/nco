@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.17 2010-04-09 05:18:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.18 2012-05-18 13:36:38 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -83,6 +83,7 @@ ncap_att_get	       /*   [fnc] Grab an attribute from input file */
 (int var_id,           /*   I  var id        */ 
  const char *var_nm,   /*   I [sng] var name */
  const char *att_nm,   /*   I [sng] att name */
+ int location,         /*   I [flg] 1 - att from INPUT file  2 - att from OUTPUT file */
  prs_cls *prs_arg);    /* I/O vectors of atts & vars & file names  */
 
 
@@ -90,6 +91,16 @@ var_sct *                /* O [sct] variable containing attribute */
 ncap_att_init(           /*   [fnc] Grab an attribute from input file */
 std::string va_nm,       /* I [sng] att name of form var_nm&att_nm */ 
 prs_cls *prs_arg);       /* I/O vectors of atts & vars & file names  */
+
+
+int
+ncap_att_gnrl
+(const std::string s_dst,
+ const std::string s_src,
+ int location,         /*   I [flg] 1 - att from INPUT file  2 - att from OUTPUT file */
+ prs_cls  *prs_arg);
+
+
 
 nco_bool                /* O [flg] true if var has been stretched */
 ncap_att_stretch    /* stretch a single valued attribute from 1 to sz */
