@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.140 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.141 2012-05-18 13:37:53 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -44,16 +44,24 @@ ncap_att_get
 (int var_id,
  const char *var_nm,
  const char *att_nm,
+ int location,         /*   I [flg] 1 - att from INPUT file  2 - att from OUTPUT file */
  prs_cls *prs_arg)
 {
-  long sz;
   int rcd;
+  int fl_id;
+  long sz;
+
   char *ln_nm;
   
   nc_type type;
   var_sct *var_ret;
   
-  rcd=nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&sz);
+  
+  if(location == 1 ) fl_id=prs_arg->in_id;  
+  if(location == 2 ) fl_id=prs_arg->out_id;  
+     
+
+  rcd=nco_inq_att_flg(fl_id,var_id,att_nm,&type,&sz);
   if (rcd == NC_ENOTATT) 
     return NULL_CEWI;
   
@@ -76,7 +84,7 @@ ncap_att_get
   // Fill with data if NOT an initial scan
   if(!prs_arg->ntl_scn){
     var_ret->val.vp=(void *)nco_malloc(sz*nco_typ_lng(type));
-    rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,var_ret->val.vp,type);
+    rcd=nco_get_att(fl_id,var_id,att_nm,var_ret->val.vp,type);
     if (rcd !=NC_NOERR) {
       var_ret=nco_var_free(var_ret);
       return NULL_CEWI;
@@ -114,7 +122,7 @@ ncap_att_init(             /*   [fnc] Grab an attribute from input file */
       return NULL_CEWI;
   }
   
-  var_ret=ncap_att_get(var_id,var_nm.c_str(),att_nm.c_str(),prs_arg);
+  var_ret=ncap_att_get(var_id,var_nm.c_str(),att_nm.c_str(),1,prs_arg);
   
   return var_ret;
 }
@@ -178,6 +186,7 @@ int
 ncap_att_gnrl
 (const std::string s_dst,
  const std::string s_src,
+ int location,         /*   I [flg] 1 - att from INPUT file  2 - att from OUTPUT file */
  prs_cls  *prs_arg
  ){
   int idx;
@@ -186,6 +195,7 @@ ncap_att_gnrl
   int rcd;
   int var_id; 
   int nbr_att;
+  int fl_id;
   char att_nm[NC_MAX_NAME]; 
   const char *tmp_att_nm;
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
@@ -202,19 +212,22 @@ ncap_att_gnrl
   NcapVarVector &var_vtr=prs_arg->var_vtr;
   NcapVarVector att_vtr; //hold new attributes.
   
+  if(location == 1 ) fl_id=prs_arg->in_id;  
+  if(location == 2 ) fl_id=prs_arg->out_id;  
+
 
   // get var_id
-  rcd=nco_inq_varid_flg(prs_arg->in_id,s_src.c_str(),&var_id);
+  rcd=nco_inq_varid_flg(fl_id,s_src.c_str(),&var_id);
   
   if(rcd == NC_NOERR){
-    (void)nco_inq_varnatts(prs_arg->in_id,var_id,&nbr_att);
+    (void)nco_inq_varnatts(fl_id,var_id,&nbr_att);
     // loop though attributes
     for(idx=0; idx <nbr_att ; idx++){
-      (void)nco_inq_attname(prs_arg->in_id,var_id,idx,att_nm);
+      (void)nco_inq_attname(fl_id,var_id,idx,att_nm);
       //skip missing value, scale_factor , add_offset
       if(!strcmp(att_nm,nco_mss_val_sng_get()) || !strcmp(att_nm,scl_fct_sng) || !strcmp(att_nm,add_fst_sng))
         continue;
-      var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
+      var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,location,prs_arg);
       // now add to list( change the name!!)
       if(var_att){ 
 	s_fll=s_dst+"@"+std::string(att_nm);
@@ -275,10 +288,10 @@ ncap_att_cpy
   int nbr_att=0;
   //Don't propagate if s_src is a tree-parser generated var
   if(prs_arg->ATT_PROPAGATE && s_dst != s_src && s_src[0]!='~' )
-    nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
+    nbr_att=ncap_att_gnrl(s_dst,s_src,1,prs_arg);
   
   if(prs_arg->ATT_INHERIT)
-    nbr_att=ncap_att_gnrl(s_dst,s_dst,prs_arg);
+    nbr_att=ncap_att_gnrl(s_dst,s_dst,1,prs_arg);
   
   return nbr_att;
 }
