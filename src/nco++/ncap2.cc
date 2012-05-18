@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.128 2012-04-15 03:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.129 2012-05-18 13:35:27 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -20,7 +20,7 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
    See the GNU General Public License for more details.
-   
+   a\
    The original author of this software, Charlie Zender, seeks to improve
    it with your suggestions, contributions, bug-reports, and patches.
    Please contact the NCO project at http://nco.sf.net or write to
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.128 2012-04-15 03:06:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.128 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.129 2012-05-18 13:35:27 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.129 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -151,8 +151,7 @@ main(int argc,char **argv)
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct *dmn_new;
   dmn_sct *dmn_item;
-  
-  // Template lists
+    // Template lists
   NcapVector<dmn_sct*> dmn_in_vtr;  
   NcapVector<dmn_sct*> dmn_out_vtr;  
   
@@ -594,6 +593,7 @@ main(int argc,char **argv)
   
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
+
   (void)nco_enddef(out_id);
   
   /* Set arguments for script execution NB: all these are used as references */
@@ -639,6 +639,54 @@ main(int argc,char **argv)
     
     prs_vtr.push_back(prs_tmp);
   } /* end loop over threads */
+
+  /* if output file contains dims/vars i.e -A switch */
+  if(FORCE_APPEND){
+    int nbr_dmn_out=0;  
+    int nbr_var_fl=0;
+    int nbr_xtr=0;
+    nm_id_sct *dmn_lst=NULL_CEWI;
+    nm_id_sct *xtr_lst=NULL_CEWI;
+    NcapVar *Nvar;
+
+    var_sct *var_tmp;
+
+    /* Form list of all dimensions in file */  
+    dmn_lst=nco_dmn_lst(out_id,&nbr_dmn_out);
+  
+    //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
+    for(idx=0;idx<nbr_dmn_out;idx++) dmn_out_vtr.push_back(nco_dmn_fll(out_id,dmn_lst[idx].id,dmn_lst[idx].nm));
+
+    //sort vector
+    dmn_out_vtr.sort();
+
+    /* xrf dmn_out with dmn_in_vtr */
+    for(idx=0; idx<nbr_dmn_out ; idx++){
+      dmn_item=dmn_in_vtr.find(dmn_out_vtr[idx]->nm);
+      if(dmn_item) nco_dmn_xrf(dmn_item,dmn_out_vtr[idx]);       
+    } 
+ 
+
+    /* Get number of variables in output file */
+    rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
+  
+    /* Make list of all new variables in output_file */  
+    xtr_lst=nco_var_lst_mk(out_id,nbr_var_fl,(char**)NULL,False,False,&nbr_xtr);      
+    for(idx=0;idx<nbr_var_fl;idx++){
+      var_tmp=prs_arg.ncap_var_init(xtr_lst[idx].nm,false);
+      Nvar = new NcapVar(var_tmp); 
+      Nvar->flg_stt=2;   
+      prs_arg.var_vtr.push(Nvar);
+      /* now copy output atts into var_vtr */
+      ncap_att_gnrl(xtr_lst[idx].nm, xtr_lst[idx].nm,2,&prs_arg);        
+    }
+    /* now free lists */
+    dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_out);
+    xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+
+  }
+
+
   
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
@@ -692,14 +740,13 @@ main(int argc,char **argv)
   
   /* Find and add any new dimensions to output */
   for(idx=0;idx<nbr_dmn_ass;idx++){
-    dmn_item=dmn_out_vtr.find(dmn_lst[idx].nm);
-    if(dmn_item) continue;    
-    dmn_item=dmn_in_vtr.find(dmn_lst[idx].nm);
-    if(dmn_item == NULL) continue;
-    dmn_new=nco_dmn_dpl(dmn_item);
-    (void)nco_dmn_dfn(fl_out,out_id,&dmn_new,1);
-    (void)nco_dmn_xrf(dmn_new,dmn_item);
-    (void)dmn_out_vtr.push_back(dmn_new);
+    /* see if dim already in Output */
+    if(dmn_out_vtr.find(dmn_lst[idx].nm)) 
+     continue;    
+    jdx=dmn_in_vtr.findi(dmn_lst[idx].nm);
+    (void)dmn_out_vtr.push_back(nco_dmn_dpl(dmn_in_vtr[jdx]));
+    (void)nco_dmn_dfn(fl_out,out_id,&dmn_out_vtr.back(),1);
+    (void)nco_dmn_xrf(dmn_out_vtr.back(),dmn_in_vtr[jdx]);
   }  /* end loop over idx */
   
   /* Free current list of all dimensions in input file */
@@ -725,7 +772,7 @@ main(int argc,char **argv)
       if(dmn_in_vtr[idx]->xrf){
 	for(jdx=0;jdx<xtr_nbr;jdx++)
 	  if(!strcmp(xtr_lst[jdx].nm,dmn_in_vtr[idx]->nm)) break;
-	
+  	
 	if(jdx != xtr_nbr) continue;
 	/* If coordinate is not on list then add it to extraction list */
 	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(xtr_nbr+1)*sizeof(nm_id_sct));
@@ -763,40 +810,77 @@ main(int argc,char **argv)
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+  //(void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,&dmn_out_vtr[0],(int)dmn_out_vtr.size(),nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
   
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
-    /* Write misssing value contained inside variable */
+
+   
     if(var_vtr[idx]->xpr_typ == ncap_var){
+      int rcd_inq_att;
       var_sct *var_ref;
       
       var_ref=var_vtr[idx]->var;
       rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
       
-      /* skip RAM vars and orphaned vars */
-      if(rcd!=NC_NOERR|| !var_ref->has_mss_val) continue;  
+      /* filter out ram vars */ 
+      if(rcd!=NC_NOERR || !var_ref->has_mss_val) continue;  
       
-      /* netCDF4 name hack */
-      if(prs_arg.NCAP4_FILL){
+      /* see if missing value already present */
+      rcd_inq_att=nco_inq_att_flg(out_id,var_id,nco_mss_val_sng_get(),&att_item.type,&att_item.sz);
+
+      /* type mismatch dont overwrite. This can occur when packed vars are in output from using the -A switch */
+      if(rcd_inq_att==NC_NOERR && var_ref->type != att_item.type) continue;   
+      
+      /* fill mode and att exists */ 
+      if(prs_arg.NCAP4_FILL && rcd_inq_att==NC_NOERR){
+        (void)nco_rename_att(out_id,var_id,nco_mss_val_sng_get(),att_nm_tmp);     
+        (void)nco_put_att(out_id,var_id,att_nm_tmp,var_ref->type,1,var_ref->mss_val.vp);   
+        (void)nco_rename_att(out_id,var_id,att_nm_tmp,nco_mss_val_sng_get());  
+        continue;
+      }
+
+      /* fill mode and att doesn't exist   */ 
+      if(prs_arg.NCAP4_FILL && rcd_inq_att!=NC_NOERR){
         (void)nco_put_att(out_id,var_id,att_nm_tmp,var_ref->type,1,var_ref->mss_val.vp);
         (void)nco_rename_att(out_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
-      }else{
-        (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);
-      } /* !prs_arg.NCAP4_FILL */
+        continue;
+      }
+
+      /* netcdf3 file just put att */
+      (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);      
       continue;
-    } /* !ncap_var */
+    }
+   
+
+     /* Write misssing value contained inside variable */
+     /* If missing value type is same as disk type  */  
+     /*
+    if(var_vtr[idx]->xpr_typ == ncap_var ){
+      if(!var_vtr[idx]->var->has_mss_val) continue;  
+      att_item.att_nm=strdup(nco_mss_val_sng_get());
+      att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
+      att_item.sz=1;
+      att_item.type=var_vtr[idx]->var->type;
+      att_item.val=var_vtr[idx]->var->mss_val;
+      att_item.mode=aed_overwrite;
+      //att_item.mode=aed_create;
+    }
+     */
+    if(var_vtr[idx]->xpr_typ == ncap_att){
+      /* Skip missing values (for now) */
+      if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;     
     
-    /* Skip missing values (for now) */
-    if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;     
-    
-    att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
-    att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
-    att_item.sz=var_vtr[idx]->var->sz;
-    att_item.type=var_vtr[idx]->var->type;
-    att_item.val=var_vtr[idx]->var->val;
-    att_item.mode=aed_overwrite;
-    
+      att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
+      att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
+      att_item.sz=var_vtr[idx]->var->sz;
+      att_item.type=var_vtr[idx]->var->type;
+      att_item.val=var_vtr[idx]->var->val;
+      att_item.mode=aed_overwrite;
+    } 
+   
+
     if(!strcmp(att_item.var_nm,"global")) 
       var_id=NC_GLOBAL;
     else{
@@ -811,8 +895,9 @@ main(int argc,char **argv)
     /* NB: These attributes should probably be written prior to last data mode */
     (void)nco_aed_prc(out_id,var_id,att_item);
     
-  cln_up: att_item.var_nm=(char*)nco_free(att_item.var_nm);
-    att_item.att_nm=(char*)nco_free(att_item.att_nm);
+ cln_up: ;
+   att_item.var_nm=(char*)nco_free(att_item.var_nm);
+   att_item.att_nm=(char*)nco_free(att_item.att_nm);
   } /* end for */
   
   /* Set chunksize parameters */
