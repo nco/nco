@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.46 2012-02-21 10:34:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.47 2012-05-18 13:39:02 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -298,7 +298,6 @@
 		dim_nw[idx]=nco_dmn_free(dim_nw[idx]);
               nco_free(dim_nw);
             }  		 
-               
             return var;                
 
   } // end agg_cls::fnd     
@@ -1305,9 +1304,9 @@
 
         case PUNPACK: 
           var_sct *var_att;
-	  var_att=ncap_att_get(var_in->id,var_in->nm,"scale_factor",prs_arg);
+	  var_att=ncap_att_get(var_in->id,var_in->nm,"scale_factor",1,prs_arg);
           if(var_att == (var_sct*)NULL) 
-	    var_att=ncap_att_get(var_in->id,var_in->nm,"add_offset",prs_arg);	
+	    var_att=ncap_att_get(var_in->id,var_in->nm,"add_offset",1,prs_arg);	
 
           if(var_att==(var_sct*)NULL){ 
             var_in=nco_var_free(var_in);     
