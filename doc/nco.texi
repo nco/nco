@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.674 2012-05-19 20:34:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.675 2012-05-19 21:06:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9576,17 +9576,19 @@ ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h] [--hdr_pad @var{nbr}
 @noindent
 DESCRIPTION
 
+@cindex @command{ncattget}
 @command{ncatted} edits attributes in a netCDF file.  
 If you are editing attributes then you are spending too much time in the
 world of metadata, and @command{ncatted} was written to get you back out as
 quickly and painlessly as possible.
 @command{ncatted} can @dfn{append}, @dfn{create}, @dfn{delete},
 @dfn{modify}, and @dfn{overwrite} attributes (all explained below).  
-Furthermore, @command{ncatted} allows each editing operation to be applied
+@command{ncatted} allows each editing operation to be applied
 to every variable in a file.
 This saves time when changing attribute conventions throughout a file. 
-Note that @command{ncatted} interprets character attributes
-(i.e., attributes of type @code{NC_CHAR}) as strings.
+@command{ncatted} is for @emph{writing} attributes.
+To @emph{read} attribute values in plain text, use @command{ncks -m -M},
+or define something like @command{ncattget} as a shell command (@pxref{Filters for @command{ncks}}).
 
 @cindex @code{history}
 @cindex @code{-h}
@@ -9881,6 +9883,8 @@ Because of these context-sensitive rules, one must use @command{ncatted}
 with care in order to store data, rather than text strings, in an 
 attribute of type @code{NC_CHAR}.
 
+Note that @command{ncatted} interprets character attributes
+(i.e., attributes of type @code{NC_CHAR}) as strings.
 @noindent
 @html
 <a name="xmp_ncatted"></a> <!-- http://nco.sf.net/nco.html#xmp_ncatted -->
@@ -11044,7 +11048,7 @@ Also @samp{--abc} and @samp{--alphabetize}.
 @item -B @file{file}
 Activate native machine binary output writing to the default binary
 file, @file{ncks.bnr}. 
-The @code{-B} switch is redundant when the @w{@code{-b} @file{file}}
+pThe @code{-B} switch is redundant when the @w{@code{-b} @file{file}}
 option is specified, and native binary output will be directed to the
 binary file @file{file}.
 Also @samp{--bnr} and @samp{--binary}.
@@ -11212,12 +11216,69 @@ screen if no netCDF output file is specified.
 Use @samp{-m} to print variable metadata to screen if a netCDF output is 
 specified. 
 
+@cindex @code{-P}
+@cindex @code{--print}
+@cindex @code{--prn}
+@item -P 
+Print data, metadata, and units to screen.
+The @samp{-P} switch is a convenience abbreviation for 
+@samp{-C -H -M -m -u}.
+Also activated using @samp{--print} or @samp{--prn}.
+This set of switches is useful for exploring file contents.
+
+@cindex @code{-Q}
+@item -Q 
+Toggle printing of dimension indices and coordinate values when printing
+arrays. 
+Each variable's name appears flush left in the output.
+This helps locate specific variables in lists with many variables and 
+different dimensions. 
+
+@cindex @code{-q}
+@cindex @code{--quiet}
+@cindex quiet
+@item -q 
+Turn off all printing to screen.
+This overrides the setting of all print-related switches, equivalent to
+@kbd{-H -M -m} when in single-file printing mode. 
+When invoked with @code{-R} (@pxref{Retaining Retrieved Files}), @command{ncks}
+automatically sets @code{-q}. 
+This allows @command{ncks} to retrieve remote files without
+automatically trying to print them.
+Also @samp{--quiet}.
+
+@cindex @code{-s}
+@cindex @code{--string}
+@cindex @code{--sng_fmt}
+@cindex @code{printf()}
+@cindex C language
+@item -s @var{format}
+String format for text output. 
+Accepts @w{C language} escape sequences and @code{printf()} formats. 
+Also @samp{--string}  and @samp{--sng_fmt}. 
+
+@cindex @code{-u}
+@cindex @code{--units}
+@item -u 
+Toggle the printing of a variable's @code{units} attribute, if any, 
+with its values.
+Also @samp{--units}.
+@end table
+
 @html
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
 <a name="nclist"></a> <!-- http://nco.sf.net/nco.html#nclist -->
 <a name="alias"></a> <!-- http://nco.sf.net/nco.html#alias -->
+<a name="filters"></a> <!-- http://nco.sf.net/nco.html#filters -->
 @end html
+@menu
+* Filters for @command{ncks}::  
+@end menu
+
+@node Filters for @command{ncks},  , ncks netCDF Kitchen Sink, ncks netCDF Kitchen Sink
+@subsection Filters for @command{ncks}
 @cindex @acronym{UNIX}
+@cindex @command{ncattget}
 @cindex @command{nclist}
 @cindex @file{.bashrc}
 @cindex filters
@@ -11303,55 +11364,6 @@ ncattget() @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" 
 nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
 ncattget() @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
 @end example
-
-@cindex @code{-P}
-@cindex @code{--print}
-@cindex @code{--prn}
-@item -P 
-Print data, metadata, and units to screen.
-The @samp{-P} switch is a convenience abbreviation for 
-@samp{-C -H -M -m -u}.
-Also activated using @samp{--print} or @samp{--prn}.
-This set of switches is useful for exploring file contents.
-
-@cindex @code{-Q}
-@item -Q 
-Toggle printing of dimension indices and coordinate values when printing
-arrays. 
-Each variable's name appears flush left in the output.
-This helps locate specific variables in lists with many variables and 
-different dimensions. 
-
-@cindex @code{-q}
-@cindex @code{--quiet}
-@cindex quiet
-@item -q 
-Turn off all printing to screen.
-This overrides the setting of all print-related switches, equivalent to
-@kbd{-H -M -m} when in single-file printing mode. 
-When invoked with @code{-R} (@pxref{Retaining Retrieved Files}), @command{ncks}
-automatically sets @code{-q}. 
-This allows @command{ncks} to retrieve remote files without
-automatically trying to print them.
-Also @samp{--quiet}.
-
-@cindex @code{-s}
-@cindex @code{--string}
-@cindex @code{--sng_fmt}
-@cindex @code{printf()}
-@cindex C language
-@item -s @var{format}
-String format for text output. 
-Accepts @w{C language} escape sequences and @code{printf()} formats. 
-Also @samp{--string}  and @samp{--sng_fmt}. 
-
-@cindex @code{-u}
-@cindex @code{--units}
-@item -u 
-Toggle the printing of a variable's @code{units} attribute, if any, 
-with its values.
-Also @samp{--units}.
-@end table
 
 @noindent
 @html
