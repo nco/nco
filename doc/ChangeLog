@@ -1,6 +1,6 @@
 2012-05-18  Charlie Zender  <zender@uci.edu>
 
-	* Henry committed ncap2 code that fixes 7310:
+	* Henry committed ncap2 code that fixes TODO nco7310:
 	ncap2 append mode breaks when dimension already exists
 	ncap2 -O -v -s 'time2=time' ~/nco/data/in.nc ~/foo.nc
 	ncap2 -A -v -s 'foo=time' ~/nco/data/in.nc ~/foo.nc
