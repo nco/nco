@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.673 2012-05-14 23:13:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.674 2012-05-19 20:34:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.0
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 14 April 2012
-@set update-month April 2012
+@set update-date 19 May 2012
+@set update-month May 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -3346,6 +3346,7 @@ indicates that @emph{only} user-defined variables should be output.
 @cindex regular expressions
 @cindex pattern matching
 @cindex wildcards
+@cindex @command{grep -E}
 @cindex @command{egrep}
 @cindex @command{ncatted}
 @cindex @acronym{GNU}
@@ -3355,8 +3356,8 @@ As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments
 to @command{ncatted} may contain @dfn{extended regular expressions}. 
 For example, @samp{-v '^DST'} selects all variables beginning with the 
 string @samp{DST}.
-Extended regular expressions are defined by the @acronym{GNU}
-@command{egrep} command.  
+Extended regular expressions are defined by the @acronym{POSIX}
+@command{grep -E} (aka @command{egrep}) command.  
 The meta-characters used to express pattern matching operations are
 @samp{^$+?.*[]@{@}|}. 
 If the regular expression pattern matches @emph{any} part of a variable 
@@ -3412,6 +3413,7 @@ consider a file with variables @code{Q}, @code{Q01}--@code{Q99},
 @code{Q100}, @code{QAA}--@code{QZZ}, @code{Q_H2O}, @code{X_H2O},
 @code{Q_CO2}, @code{X_CO2}.  
 @example
+ncks -v '.+' in.nc               # All variables
 ncks -v 'Q.?' in.nc              # Variables that contain Q
 ncks -v '^Q.?' in.nc             # Variables that start with Q
 ncks -v '^Q+.?.' in.nc           # Q, Q0--Q9, Q01--Q99, QAA--QZZ, etc.
@@ -11211,7 +11213,9 @@ Use @samp{-m} to print variable metadata to screen if a netCDF output is
 specified. 
 
 @html
+<a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
 <a name="nclist"></a> <!-- http://nco.sf.net/nco.html#nclist -->
+<a name="alias"></a> <!-- http://nco.sf.net/nco.html#alias -->
 @end html
 @cindex @acronym{UNIX}
 @cindex @command{nclist}
@@ -11230,19 +11234,74 @@ try
 @example
 ncks -m in.nc | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort
 @end example
-These sorts of filters are best stored as shell commands if they are
-used frequently.
 A Bash user could alias the previous filter to the shell command
-@command{nclist} by including the following line in her @file{.bashrc}
-file:  
+@command{nclist} as shown below.
+More complex examples could involve command line arguments.
+For example, a user may frequently be interested in obtaining the value
+of an attribute, e.g., for textual file examination or for passing to
+another shell command.
+Say the attribute is @code{purpose}, the variable is @code{z}, and the
+file is @code{in.nc}.
+In this example, @command{ncks -m -v z} is too verbose so a robust
+@command{grep} and @command{cut} filter is desirable, such as
 @example
-# NB: Untested on all platforms! Send me feedback! csz
-# Bash shell (/bin/bash) users place this in .bashrc
+ncks -M -m in.nc | grep -E -i "z attribute [0-9]+: purpose" | cut -f 11- -d ' ' | sort
+@end example
+The filters are clearly too complex to remember on-the-fly so the entire 
+procedure could be implemented as a shell command or function called,
+say, @command{ncattget}
+@example
+function ncattget @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
+@end example
+The shell @command{ncattget} is invoked with three arugments that are,
+in order, the names of the attribute, variable, and file to examine.
+Global attributes are indicated by using a variable name of @code{global}.
+This definition yields the following results
+@example
+% ncattget purpose z in.nc
+Height stored with a monotonically increasing coordinate
+% ncattget Purpose Z in.nc
+Height stored with a monotonically increasing coordinate
+% ncattget history z in.nc
+% ncattget history global in.nc
+History global attribute.
+@end example
+Note that case sensitivity has been turned off for the variable and
+attribute names (and could be turned on by removing the @samp{-i} switch
+to @command{grep}).
+Furthermore, extended regular expressions may be used for both the
+variable and attribute names.
+The next two commands illustrate this by searching for the values
+of @code{purpose} in all variables, and then for all attributes of
+the variable @code{z}:
+@example
+% ncattget purpose .+ in.nc
+1-D latitude coordinate referred to by geodesic grid variables
+1-D longitude coordinate referred to by geodesic grid variables
+...
+% ncattget .+ Z in.nc
+Height
+Height stored with a monotonically increasing coordinate
+meter
+@end example
+
+Extended filters are best stored as shell commands if they are
+used frequently.
+Shell commands may be re-used when they are defined in shell
+configuration files.
+These files are usually named @file{.bashrc}, @file{.cshrc}, and
+@file{.profile} for the Bash, Csh, and Sh shells, respectively.
+@example
+# NB: Untested on Csh, Ksh, Sh, Zsh! Send us feedback!
+# Bash shell (/bin/bash) users place these in .bashrc
 function nclist @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
-# Csh shell (/bin/csh) users place this in .cshrc
+function ncattget @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
+# Csh shell (/bin/csh) users place these in .cshrc
 nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
-# Sh shell (/bin/sh) users place this in .profile
+ncattget() @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
+# Sh shell (/bin/sh) users place these in .profile
 nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+ncattget() @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
 @end example
 
 @cindex @code{-P}

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.475 2012-05-19 00:47:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.476 2012-05-19 20:34:48 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -78,6 +78,15 @@ A. ncap2 append mode (i.e., ncap2 -A) now works when variables to be
    architected quite differently).
    Thanks to user mullers for reminding us about this bug, and to
    Henry Butowsky for fixing it. fxm
+
+A. The NCO documentation contains examples of shell commands defined
+   by post-processing the verbose output from ncks. Currently these
+   commands include nclist and ncattget, that produce, respectively,
+   uncluttered lists of the variables in a file and of the value of
+   an attribute. These examples should help users tailor NCO ouput
+   to their own needs: 
+   http://nco.sf.net/nco.html#nclist
+   http://nco.sf.net/nco.html#ncatted
 
 KNOWN BUGS NOT YET FIXED:
 

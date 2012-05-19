@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.687 2012-05-16 15:55:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.688 2012-05-19 20:34:48 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -120,7 +120,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2012 Apr&nbsp;01?: Funding for NASA <a href="#prp_access">ACCESS Project</a> begins</li>
+<li>2012 Apr&nbsp;23: Received funding for NASA <a href="#prp_access">ACCESS Project</a></li>
 
 <li>2012 Mar&nbsp;29: NCO 4.1.0 (MD5 support, MM3)</li>
 

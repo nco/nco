@@ -1,3 +1,7 @@
+2012-05-19  Charlie Zender  <zender@uci.edu>
+
+	* Add ncattget example to documentation
+
 2012-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Henry committed ncap2 code that fixes TODO nco7310:
