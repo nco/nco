@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.169 2012-03-02 04:17:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.170 2012-05-20 20:07:15 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -411,7 +411,7 @@ extern "C" {
     cln_365, /* No Leap year Calendar */ 
     cln_366, /* Leap year Calendar */ 
     cln_nil /* No calendar found */
-  } cln_typ; /* [enm] Calendar type */
+  } nco_cln_typ; /* [enm] Calendar type */
   
   /* Limit structure */
   typedef struct { /* lmt_sct */
@@ -421,7 +421,7 @@ extern "C" {
     char *nm; /* [sng] Dimension name */
     char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
     char *srd_sng; /* User-specified string for dimension stride */
-    cln_typ lmt_cln; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
+    nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
     double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
     double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
     double origin;   /* Used by ncra, ncrcat to re-base record coordinate */

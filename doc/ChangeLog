@@ -1,5 +1,7 @@
 2012-05-20  Charlie Zender  <zender@uci.edu>
 
+	* Clean-up TODO lists
+
 	* Annotate Contributors section of manual
 
 	* Place ut_free_system() after all other ut_*() cv_*() calls

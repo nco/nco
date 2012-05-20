@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.136 2012-03-31 01:19:15 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.137 2012-05-20 20:07:15 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -850,6 +850,7 @@ variables:
 	double time_udunits(time_udunits);
 	time_udunits:units = "hours since 1900-01-01 00:00:0.0";
 	time_udunits:delta_t = "0000-00-00 06:00:0.0";
+	time_udunits:purpose = "The dates specified in this variable are ~1999-12-08";
 
 	float u(time);
 	u:long_name = "Zonal wind speed";

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.162 2012-04-15 20:14:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.163 2012-05-20 20:07:15 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1354,13 +1354,25 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  if(dbg_lvl_get() >= nco_dbg_scl){
-    if (bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",prg_nm_get()); else (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
-  } /* endif */
+  /* Print implicit or explicit buffer request depending on debugging level */
+  /* Print implicit request if default buffer size and verbose output requested... */
+  if(bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT){ /* Implicit request */
+    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",prg_nm_get()); 
+  }else{ /* Explicit request */
+    /* Print explicit request if default buffer size and not-so-verbose output requested... */
+    if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
+  } /* Explicit request */
 
   rcd=nco__open(fl_nm,open_mode,bfr_sz_hnt,nc_id);
 
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt);
+  /*  */
+  if(
+     /* Sufficiently verbose implicit request */
+     ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_var)) ||
+     /* Less sufficiently verbose explicit request */
+     (!(bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_fl)) ||
+     False) 
+    (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt);
 
   return rcd;
 } /* end nco_fl_open */

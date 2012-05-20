@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.35 2012-05-20 17:58:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.36 2012-05-20 20:07:15 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -137,11 +137,11 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
 /* UDUnits2 routines */
 
 int /* [rcd] Return code */
-nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two co-ordinate units */
+nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two coordinate units */
 (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
  double crr_val,
- double *og_val) /* O difference between two units strings */
+ double *og_val) /* O [] Difference between two units strings */
 {
   const char fnc_nm[]="nco_cln_clc_dff()"; /* [sng] Function name */
   
@@ -200,7 +200,7 @@ nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two co-ordinate uni
   /* Finally do the conversion  */
   *og_val=cv_convert_double(ut_cnv,crr_val);
   
-  if(dbg_lvl_get() > nco_dbg_std) fprintf(stderr, "%s: INFO %s() reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
+  if(dbg_lvl_get() >= nco_dbg_var) fprintf(stderr, "%s: INFO %s() reports conversion between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
 
   ut_free(ut_sct_in);
   ut_free(ut_sct_out);
@@ -440,20 +440,20 @@ nco_cln_get_tm_typ /* returns time unit type or tm_void if not found */
   return ret_typ;
 } /* end nco_cln_get_tm_typ() */
 
-cln_typ               /* [enum] Calendar type */    
+nco_cln_typ /* [enum] Calendar type */    
 nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
 (const char *ud_sng) /* I [ptr] units string  */      
 {
   int idx;
   int len; 
   char *lcl_sng;  
-  cln_typ ret_typ;
+  nco_cln_typ ret_typ;
   
   if(!ud_sng) return cln_nil;
   
   lcl_sng=strdup(ud_sng);
   
-  /* initially set ret type to void */
+  /* Initially set return type to void */
   ret_typ=cln_nil;
   
   /* convert to lower case */
@@ -476,10 +476,11 @@ nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
   return ret_typ;
 } /* end nco_cln_get_cln_typ() */
 
-int                /* O [int] number of days */
-nco_cln_mth2day( /* [fnc] number of days in months */
-		cln_typ lmt_cln,   /* [enum] calendar type */
-		int months){       /* I [int] month */ 
+int /* O [nbr] Number of days */
+nco_cln_mth2day /* [fnc] Number of days in months */
+(nco_cln_typ lmt_cln, /* [enm] Calendar type */
+ int months) /* I [nbr] month */
+{ 
   int *days=NULL_CEWI;
   int idx;
   int idays=0;
@@ -499,12 +500,11 @@ nco_cln_mth2day( /* [fnc] number of days in months */
   case cln_jul:
   case cln_nil:
     break;
-  }
+  } /* end switch */
   
   months--;
   
-  for(idx=0 ;idx<months ;idx++)
-    idays+=days[idx];
+  for(idx=0;idx<months;idx++) idays+=days[idx];
   
   return idays;
 } /* end nco_cln_mth2day() */
@@ -549,7 +549,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
 double /* O [dbl] relative time */
 nco_cln_rel_val
 (double offset, /* I [dbl] time in base units */
- cln_typ lmt_cln, /* I [enm] Calendar type */ 
+ nco_cln_typ lmt_cln, /* I [enm] Calendar type */ 
  tm_typ bs_tm_typ) /* I [enm] Time units */
 {
   double *data=NULL_CEWI;
@@ -601,7 +601,7 @@ int /* [rcd] Successful conversion returns 0 */
 nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
- cln_typ lmt_cln, /* [enum] Calendar type of coordinate var */ 
+ nco_cln_typ lmt_cln, /* [enum] Calendar type of coordinate var */ 
  double *og_val){ /* O [ptr] */
   
   int rcd;
@@ -663,8 +663,8 @@ int /* [rcd] Successful conversion returns 0 */
 nco_cln_clc_org /* [fnc] Difference between two co-ordinate units */      
 (const char *fl_unt_sng, /* I [ptr] units attribute string from disk  */     
  const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
- cln_typ lmt_cln,        /* [enum] Calendar type of coordinate var */ 
- double *og_val)        /* O [ptr]                                   */
+ nco_cln_typ lmt_cln, /* [enm] Calendar type of coordinate var */ 
+ double *og_val) /* O [ptr] */
 {
   int rcd;
   
@@ -677,7 +677,7 @@ nco_cln_clc_org /* [fnc] Difference between two co-ordinate units */
     return rcd;
   }  
   
-  /* Now assume regular conversion where fl_unt_sng is of form <double_value units>, e.g., '10 inches', '100 ft' */
+  /* Assume regular conversion of fl_unt_sng of form <double_value units>, e.g., '10 inches', '100 ft' */
   usr_unt_sng=(char *)nco_calloc(strlen(fl_unt_sng)+1L, sizeof(char));
   sscanf(fl_unt_sng,"%lg %s",&crr_val,usr_unt_sng);
   rcd=nco_cln_clc_dff(usr_unt_sng,fl_bs_sng,crr_val,og_val);

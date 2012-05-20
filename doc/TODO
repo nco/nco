@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1161 2012-05-20 17:58:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1162 2012-05-20 20:07:15 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -597,16 +597,10 @@ nco886. Decide next project: SWAMP? paper on...ncap2? SWAMP? IPCC benchmarks?
 nco891. dbn: fix lintian RPATH messages like
 	Binary /usr/bin/ncwa compiled with an RPATH of /usr/lib/nco
 	libtool error: libtool --finish /usr/lib
-nco895. udunits2 implement new API http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html
-	/bin/rm ~/obj/LINUX/nco_lmt.o;cd ~/nco/bld;make OPTS=D UDUNITS2=Y NETCDF4=Y allinone
-	ncks -O -D 0 -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' ~/nco/data/in.nc
-nco900. Get UDUnits2 working with time coordinates:
-        ncks -O -D 0 -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' -p ~/nco/data in.nc ~/foo.nc
 nco901. mss_val in code and comments now (usually) refers to _FillValue (except in nco_mss_val.c). Change mss_val to fll_val?
 nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.c! The work-around is an extra function of global scope (nco_mss_val_sng_get()) that is worth getting rid of.
 nco906. Add regression test for DAP via THREDDS server:
 	ncks -m http://eclipse.ncdc.noaa.gov:8080/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC
-nco907. doc: document new wget capabilities
 nco909. Does autoconf for netCDF4-enabled NCO require additional -lm flag?
 nco911. Periods in attribute names choke OPeNDAP (had to remove att_nm.dot):
 	ncks -O -D 7 -v var_nm.dot -p ~/nco/data dap_dot_bug.nc ~/foo.nc # works fine
@@ -633,7 +627,7 @@ nco930. ERROR: ld.so: object 'libfakeroot-sysv.so' from LD_PRELOAD cannot be pre
 nco931. nco_c++ nc_put_var1_string wrapper currently kludged and untested
 nco932. ncwa and packed data: help forum 20080214: When using ncwa to calculate a weighted average from a packed file (NC_SHORT, scale_factor=0.1, _FillValue=32766), the data in the resulting file is in double precision. However, the _FillValue attribute is not changed to the double precision value (3276.6)....it is left at 32766. Shouldn't ncwa writeout the new _FillValue attribute?
 nco934. Add ncecat -M option to other operators?
-nco935. Make single-file operators (SFOs) default out.nc to in.nc
+nco935. Make single-file operators (SFOs) default out.nc to in.nc ?
 nco937. dupload fails with "GPG signature is missing"
 nco938. ncks -m problem: 
 	cd ~/Desktop;ncks -m NCEP-NAM-CONUS_80km_best.ncd.nc
@@ -654,18 +648,15 @@ nco943. Add regression test for
 	ncks -m -v cnv_CF_crd ~/nco/data/in.nc
 nco945. ncra problem with netcdf4 record mean of packed double with double missing values
 nco949. Make --no-clobber option for all operators
-nco950. Add --secret option to print secret/unsupported options
 nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attributes of variable lists, rather than all-or-nothing selections
 nco954. ncinsert functionality request posted to help forum 20081116
 nco960. Warn when attempted hyperslab on 2-D (or more) coordinates, e.g., https://sourceforge.net/forum/message.php?msg_id=6282324
 nco964. nco: fsync()?
-nco966. ncap2 failure on silt (and only silt!:
-        ncap2 -O -v -S /home/scapps/qscat/scripts/wnd_pfl/ncap2_wblpwr_truncated.nco /home/scapps/qscat/scripts/wnd_pfl/test.nc ~/out.nc
 nco969. nco: do not automatically try wget when DAP access fails ?
 nco970. nco: do not create really long paths with (especially failed) wget attempts
 nco971. wget: both following commands create and write mutilated directory
-	cd ~;ncks -M -R -p http://sand.ess.uci.edu/nco in.nc
-	cd ~;ncks -M -R http://sand.ess.uci.edu/nco/in.nc
+	cd ~;ncks -M -R -p http://dust.ess.uci.edu/nco in.nc
+	cd ~;ncks -M -R http://dust.ess.uci.edu/nco/in.nc
 	ls -lR ~/nco/in.n
 	ncks: INFO Retrieved files will be stored in directory ./nco/in.n
 	stores correctly in local directory but also creates ./nco/in.n
@@ -752,20 +743,9 @@ nco1037. nco: support NaN's in math, comparison, averagers following template in
          ncwa -O -v nan_arr ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
          ncatted -O -D 3 -a _FillValue,nan_arr,o,f,1.0e36 ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
          ncks -C -H -v nan_arr,nan_scl ~/nco/data/in.nc
-nco1038. ncks Cathy Smith fluffyhiker has unrepeatable problem with -d time,0,0 Like a link problem with ncks to old DAP?
-	 ncks -D 3 -d time,0,0 -v time http://goldsmr3.sci.gsfc.nasa.gov:80/dods/MAIMCPASM # Works for me
 nco1041. nc__open() with NC_SIZEHINT_DEFAULT for MM3 problems or general switch?
 nco1042. nc_create() with NC_DISKLESS general switch?
 nco1043. Modify nco.spec to build on RHEL and Fedora
-nco1022. nco: ncrcat core-dumps with double-free() error when concatenating record dimensions with non-time units NCO SF Bug ID 3324270 possible dup of nco1044
-	 ncrcat -D 3 -O -h ~/foo_1.nc ~/foo_2.nc ~/foo.nc
-nco1044. nco: ncrcat core-dumps with double-free() when concatenating record dimensions possible dup of nco1022 https://sourceforge.net/projects/nco/forums/forum/9830/topic/3690093
-	 ncpdq -O -a lat,lon,time_counter stomate_history_lai_1.nc temp1.nc
-	 ncpdq -O -a lat,lon,time_counter stomate_history_lai_2.nc temp2.nc
-	 ncrcat -O temp1.nc temp2.nc out.nc
-nco1045. ncap2 append mode breaks when dimension already exists
-	 ncap2 -O -v -s 'time2=time' ~/nco/data/in.nc ~/foo.nc
-	 ncap2 -A -v -s 'foo=time' ~/nco/data/in.nc ~/foo.nc
 nco1047. 
 qrk
 ************************************************************************
