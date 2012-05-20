@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.677 2012-05-20 20:07:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.678 2012-05-20 21:42:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13042,6 +13042,9 @@ Steve Emmerson,
 James Gallagher, 
 Ed Hartnett, 
 and Dennis Heimbigner.
+In addition to their roles in maintaining the software stack on which
+@acronym{NCO} depends, some of the above have provided specific advice
+or support to @acronym{NCO} which is acknowledged separately below.
 
 @cindex contributors
 The primary contributors to @acronym{NCO} development have been:
@@ -13080,6 +13083,9 @@ RPM support.
 @item Harry Mangalam
 Benchmarking.
 OPeNDAP configuration.
+@cindex Pedro Vicente
+@item Pedro Vicente
+Windows Visual Studio support.
 @cindex Russ Rew
 @item Russ Rew
 Advice on NCO structural algorithms
