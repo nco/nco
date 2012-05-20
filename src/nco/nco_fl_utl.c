@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.164 2012-05-20 23:51:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.165 2012-05-20 23:57:43 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1365,7 +1365,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
   rcd=nco__open(fl_nm,open_mode,bfr_sz_hnt,nc_id);
 
-  /*  */
+  /* Print results using same verbosity criteria */
   if(
      /* Sufficiently verbose implicit request */
      ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_var)) ||
