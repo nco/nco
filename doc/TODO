@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1160 2012-05-16 18:44:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1161 2012-05-20 17:58:44 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -760,9 +760,9 @@ nco1043. Modify nco.spec to build on RHEL and Fedora
 nco1022. nco: ncrcat core-dumps with double-free() error when concatenating record dimensions with non-time units NCO SF Bug ID 3324270 possible dup of nco1044
 	 ncrcat -D 3 -O -h ~/foo_1.nc ~/foo_2.nc ~/foo.nc
 nco1044. nco: ncrcat core-dumps with double-free() when concatenating record dimensions possible dup of nco1022 https://sourceforge.net/projects/nco/forums/forum/9830/topic/3690093
-	 ncpdq -a lat,lon,time_counter stomate_history_lai_1.nc temp1.nc
-	 ncpdq -a lat,lon,time_counter stomate_history_lai_2.nc temp2.nc
-	 ncrcat temp1.nc temp2.nc out.nc
+	 ncpdq -O -a lat,lon,time_counter stomate_history_lai_1.nc temp1.nc
+	 ncpdq -O -a lat,lon,time_counter stomate_history_lai_2.nc temp2.nc
+	 ncrcat -O temp1.nc temp2.nc out.nc
 nco1045. ncap2 append mode breaks when dimension already exists
 	 ncap2 -O -v -s 'time2=time' ~/nco/data/in.nc ~/foo.nc
 	 ncap2 -A -v -s 'foo=time' ~/nco/data/in.nc ~/foo.nc

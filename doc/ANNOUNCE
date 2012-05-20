@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.477 2012-05-19 21:06:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.478 2012-05-20 17:58:44 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -87,6 +87,11 @@ A. The NCO documentation contains examples of shell commands defined
    to their own needs: 
    http://nco.sf.net/nco.html#nclist
    http://nco.sf.net/nco.html#ncattget
+
+A. Fix double-free() error triggered by misordering UDUnits2 free(). 
+   Problem caused ncrcat to fail when concatenating record dimensions
+   with non-time units. Thanks to A. Wittenburg and to Peter Campbell
+   for reporting this. 
 
 KNOWN BUGS NOT YET FIXED:
 

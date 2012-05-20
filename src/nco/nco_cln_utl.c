@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.34 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.35 2012-05-20 17:58:44 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -202,10 +202,10 @@ nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two co-ordinate uni
   
   if(dbg_lvl_get() > nco_dbg_std) fprintf(stderr, "%s: INFO %s() reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
 
-  ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
   ut_free(ut_sct_in);
   ut_free(ut_sct_out);
   cv_free(ut_cnv);
+  ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
 
   return EXIT_SUCCESS;
 }  /* end UDUnits2 nco_cln_clc_dff() */
