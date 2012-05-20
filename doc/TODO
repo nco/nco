@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1162 2012-05-20 20:07:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1163 2012-05-20 23:51:21 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -719,7 +719,6 @@ nco1012. nco: nco_aed_prc() is called (too?) often (by nco_att_cpy()) to copy _F
 	 ncks -O -D 5 ~/nco/data/in.nc ~/foo.nc
 nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
-nco1015. nco: eliminate ncap2 -A option from documentation
 nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
 nco1020. nco: re-base record bounds variables (e.g., time_bnds) in ncrcat
 nco1021. nco: use owner axes for printing CF-time in bounds attributes 
@@ -746,7 +745,10 @@ nco1037. nco: support NaN's in math, comparison, averagers following template in
 nco1041. nc__open() with NC_SIZEHINT_DEFAULT for MM3 problems or general switch?
 nco1042. nc_create() with NC_DISKLESS general switch?
 nco1043. Modify nco.spec to build on RHEL and Fedora
-nco1047. 
+nco1047. ncra core dump with -y ttl option test case in crr.txt
+         ncra -D 3 -O -y ttl ~/foo.nc ~/foo2.nc
+nco1048. ncrcat Generates warnings like "ERROR: Conversion between user specified unit "days" and file units "" is meaningless" test case in crr.txt
+nco1049. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

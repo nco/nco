@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.280 2012-04-15 03:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.281 2012-05-20 23:51:21 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.280 2012-04-15 03:06:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.280 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.281 2012-05-20 23:51:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.281 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -581,6 +581,9 @@ main(int argc,char **argv)
 	cln_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
 	lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
 	if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
+      }else{ /* endif record coordinate exists */
+	/* Record dimension, but not record coordinate, exists, which is fine. Reset return code. */
+	rcd=NC_NOERR;
       } /* endif record coordinate exists */
     } /* endif ncra, ncrcat */
   } /* endif record dimension exists */

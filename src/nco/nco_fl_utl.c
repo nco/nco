@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.163 2012-05-20 20:07:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.164 2012-05-20 23:51:21 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1370,7 +1370,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
      /* Sufficiently verbose implicit request */
      ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_var)) ||
      /* Less sufficiently verbose explicit request */
-     (!(bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_fl)) ||
+     ((bfr_sz_hnt != NULL || *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_fl )) ||
      False) 
     (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt);
 
