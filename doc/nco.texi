@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.675 2012-05-19 21:06:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.676 2012-05-20 18:50:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13023,6 +13023,26 @@ So you could be the third!
 
 @node Contributors, Proposals for Institutional Funding, Contributing, Contributing
 @section Contributors
+@acronym{NCO} would not exist without the dedicated efforts of the
+remarkable software engineers who conceive, develop, and
+maintain netCDF, UDUnits, and OPeNDAP.
+@cindex Russ Rew
+@cindex John Caron
+@cindex Glenn Davis
+@cindex Steve Emmerson
+@cindex James Gallagher
+@cindex Ed Hartnett
+@cindex Dennis Heimbigner
+Since 1995 @acronym{NCO} has received support from, I believe, the
+entire staff of all these projects, including 
+Russ Rew, 
+John Caron,
+Glenn Davis, 
+Steve Emmerson, 
+James Gallagher, 
+Ed Hartnett, 
+and Dennis Heimbigner.
+
 @cindex contributors
 The primary contributors to @acronym{NCO} development have been:
 @table @asis
@@ -13060,6 +13080,9 @@ RPM support.
 @item Harry Mangalam
 Benchmarking.
 OPeNDAP configuration.
+@cindex Russ Rew
+@item Russ Rew
+Advice on NCO structural algorithms
 @cindex Brian Mays
 @item Brian Mays
 Original packaging for Debian GNU/Linux, @command{nroff} man pages.
@@ -13087,24 +13110,26 @@ Auxiliary coordinate support.
 @cindex Scott Capps
 @item Scott Capps
 Large work-load testing
-@cindex Mark Flanner
-@cindex Keith Lindsay
+@cindex Peter Campbell
 @cindex Martin Dix
+@cindex Mark Flanner
+@cindex Markus Liebig
+@cindex Keith Lindsay
+@cindex Stu Muller
 @cindex Mike Page
 @cindex Martin Schmidt
 @cindex Michael Schulz
+@cindex Gary Strand
+@cindex Andrew Wittenberg
 @cindex Remik Ziemlinski
-@item Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Remik Ziemlinski
+@item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Gary Strand, Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
-@cindex Markus Liebig
-@item Markus Liebig
-Proof-read the ncap documentation
 @cindex Daniel Baumann
+@cindex Luk Claes
 @cindex Barry deFreese
 @cindex Francesco Lovergine
 @cindex Matej Vela
-@cindex Luk Claes
-@item Daniel Baumann, Barry deFreese, Francesco Lovergine, Matej Vela, Luk Claes
+@item Daniel Baumann, Luk Claebs, Barry deFreese, Francesco Lovergine, Matej Vela
 Debian packaging
 @cindex Patrice Dumas
 @cindex Ed Hill

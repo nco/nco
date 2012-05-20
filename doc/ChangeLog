@@ -1,8 +1,10 @@
 2012-05-20  Charlie Zender  <zender@uci.edu>
 
+	* Annotate Contributors section of manual
+
 	* Place ut_free_system() after all other ut_*() cv_*() calls
 	This fixes double-free() error TODO nco1022 and nco1044 reported
-	independently by A. Wittenburg and Peter Campbell.
+	independently by Andrew Wittenburg and Peter Campbell.
 
 2012-05-19  Charlie Zender  <zender@uci.edu>
 

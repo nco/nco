@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.688 2012-05-19 20:34:48 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.689 2012-05-20 18:50:14 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -611,6 +611,7 @@ netCDF4 groups;
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;
 <tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
 <tt>ncra -y ttl</tt> fix;
+<tt>ncrcat</tt> UDUnits fix;
 <tt>ncwa -y add</tt> NaN support;
 <li><b>NCO 4.1.0</b>: (<i>Current Stable Release</i>)
 MD5 digests;
