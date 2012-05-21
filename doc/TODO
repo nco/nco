@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1166 2012-05-21 22:30:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1167 2012-05-21 23:36:43 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -747,10 +747,9 @@ nco1042. nc_create() with NC_DISKLESS general switch?
 nco1043. Modify nco.spec to build on RHEL and Fedora
 nco1048. ncrcat Generates warnings like "ERROR: Conversion between user specified unit "days" and file units "" is meaningless" test case in crr.txt
 nco1049. ncra bm rgr tst 01
-nco1050. ncra bm rgr tst 02
-      ncra -h -O -D 0 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc;ncks -C -H -s '%d' -v one_dmn_rec_var ~/foo.nc
-nco1051. ncra bm rgr tst 16
-nco052. 
+nco1051. ncra bm rgr tst 16 record ttl of float with double missing values across two files
+	 ncra -O -D 1 -y ttl -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc in.nc ~/foo.nc;ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl ~/foo.nc
+nco1052. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
