@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1164 2012-05-21 00:48:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1165 2012-05-21 00:48:36 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -745,8 +745,6 @@ nco1037. nco: support NaN's in math, comparison, averagers following template in
 nco1041. nc__open() with NC_SIZEHINT_DEFAULT for MM3 problems or general switch?
 nco1042. nc_create() with NC_DISKLESS general switch?
 nco1043. Modify nco.spec to build on RHEL and Fedora
-nco1047. ncra core dumps with -y ttl option test case in crr.txt
-         ncra -D 3 -O -y ttl ~/foo.nc ~/foo2.nc
 nco1048. ncrcat Generates warnings like "ERROR: Conversion between user specified unit "days" and file units "" is meaningless" test case in crr.txt
 nco1049. 
 qrk

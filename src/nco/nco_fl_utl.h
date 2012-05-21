@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.57 2012-05-21 00:15:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.58 2012-05-21 00:48:06 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -129,7 +129,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const nco_bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
- size_t * const bfr_sz_hnt, /* I/O [B] Buffer size hint */
+ const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const out_id); /* O [id] File ID */
 
 void
