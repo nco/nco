@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.167 2012-05-21 00:17:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.168 2012-05-21 00:48:06 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1353,32 +1353,31 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
      ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
+
+  nco_bool flg_rqs_vrb_mpl; /* [flg] Sufficiently verbose implicit request */
+  nco_bool flg_rqs_vrb_xpl; /* [flg] Sufficiently verbose explicit request */
+
   size_t bfr_sz_hnt_lcl; /* [B] Buffer size hint */
 
   /* Initialize local buffer size hint with user-input value */
   bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
-  /* Print implicit or explicit buffer request depending on debugging level */
-  /* Print implicit request if default buffer size and verbose output requested... */
-  if(bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT){ /* Implicit request */
-    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",prg_nm_get()); 
-  }else{ /* Explicit request */
-    /* Print explicit request if default buffer size and not-so-verbose output requested... */
-    if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
-  } /* Explicit request */
+  /* Is request implicit and sufficiently verbose? */
+  flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && dbg_lvl_get() >= nco_dbg_var) ? True : False;
 
-  /* Pass a local copy of the size hint otherwise user-specified value will be overwritten on first call */
+  /* Is request explicit and sufficiently verbose? */
+  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && dbg_lvl_get() >= nco_dbg_fl ) ? True : False;
+
+  /* Print implicit or explicit buffer request depending on debugging level */
+  if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",prg_nm_get()); 
+  if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
+
+  /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
   rcd=nco__open(fl_nm,open_mode,&bfr_sz_hnt_lcl,nc_id);
   
   /* Print results using same verbosity criteria
-     bfr_sz_hnt_lcl will not be NULL because nco__open() always returns a valid size */
-  if(
-     /* Sufficiently verbose implicit request */
-     (bfr_sz_hnt_lcl == NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_var) ||
-     /* Less sufficiently verbose explicit request */
-     (bfr_sz_hnt_lcl != NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_fl ) ||
-     False) 
-    (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt_lcl);
+     NB: bfr_sz_hnt_lcl is never NULL because nco__open() always returns a valid size */
+  if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt_lcl);
 
   return rcd;
 } /* end nco_fl_open */
@@ -1389,7 +1388,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const nco_bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
- size_t * const bfr_sz_hnt, /* I/O [B] Buffer size hint */
+ const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input
@@ -1413,6 +1412,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   long pid_sng_lng_max; /* [nbr] Maximum length of decimal representation of any PID */
 
   pid_t pid; /* Process ID */
+
+  size_t bfr_sz_hnt_lcl; /* [B] Buffer size hint */
 
   struct stat stat_sct;
 
@@ -1498,8 +1499,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
+  /* Initialize local buffer size hint with user-input value */
+  bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+
   if(FORCE_OVERWRITE){
-    rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,bfr_sz_hnt,out_id);
+    rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
     /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
@@ -1509,7 +1513,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       /* ncrename and ncatted allow single filename without question */
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,bfr_sz_hnt,out_id);
+      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1532,7 +1536,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     if(FORCE_APPEND){
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,bfr_sz_hnt,out_id);
+      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1573,14 +1577,14 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       break;
     case 'O':
     case 'o':
-      rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,bfr_sz_hnt,out_id);
+      rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
       /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
       break;
     case 'A':
     case 'a':
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,bfr_sz_hnt,out_id);
+      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       break;
     default: nco_dfl_case_nc_type_err(); break;
@@ -1589,7 +1593,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   }else{ /* Output file does not yet already exist */
     nccreate_mode=NC_NOCLOBBER;
     nccreate_mode=nco_create_mode_mrg(nccreate_mode,fl_out_fmt);
-    rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,bfr_sz_hnt,out_id);
+    rcd+=nco__create(fl_out_tmp,nccreate_mode,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
     /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
 
