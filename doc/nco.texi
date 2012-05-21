@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.678 2012-05-20 21:42:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.679 2012-05-21 22:30:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11306,7 +11306,7 @@ file is @code{in.nc}.
 In this example, @command{ncks -m -v z} is too verbose so a robust
 @command{grep} and @command{cut} filter is desirable, such as
 @example
-ncks -M -m in.nc | grep -E -i "z attribute [0-9]+: purpose" | cut -f 11- -d ' ' | sort
+ncks -M -m in.nc | grep -E -i "^z attribute [0-9]+: purpose" | cut -f 11- -d ' ' | sort
 @end example
 The filters are clearly too complex to remember on-the-fly so the entire 
 procedure could be implemented as a shell command or function called,
@@ -11333,8 +11333,8 @@ to @command{grep}).
 Furthermore, extended regular expressions may be used for both the
 variable and attribute names.
 The next two commands illustrate this by searching for the values
-of @code{purpose} in all variables, and then for all attributes of
-the variable @code{z}:
+of attribute @code{purpose} in all variables, and then for all
+attributes of the variable @code{z}:
 @example
 % ncattget purpose .+ in.nc
 1-D latitude coordinate referred to by geodesic grid variables
