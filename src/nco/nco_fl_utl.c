@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.166 2012-05-21 00:15:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.167 2012-05-21 00:17:21 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1374,11 +1374,11 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
      bfr_sz_hnt_lcl will not be NULL because nco__open() always returns a valid size */
   if(
      /* Sufficiently verbose implicit request */
-     (*bfr_sz_hnt_lcl == NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_var) ||
+     (bfr_sz_hnt_lcl == NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_var) ||
      /* Less sufficiently verbose explicit request */
-     (*bfr_sz_hnt_lcl != NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_fl ) ||
+     (bfr_sz_hnt_lcl != NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_fl ) ||
      False) 
-    (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt_lcl);
+    (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt_lcl);
 
   return rcd;
 } /* end nco_fl_open */
