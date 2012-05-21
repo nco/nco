@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.165 2012-05-20 23:57:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.166 2012-05-21 00:15:07 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1345,14 +1345,18 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
 int /* [rcd] Return code */
 nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
 (const char * const fl_nm, /* I [sng] Name of file to open */
- const int open_mode, /* I [] Mode flag for nco__open() call (NC_WRITE or NC_NOWRITE) */
- size_t * const bfr_sz_hnt, /* I/O [B] Buffer size hint */
+ const int open_mode, /* I [enm] Mode flag for nco__open() call (NC_WRITE or NC_NOWRITE) */
+ const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const nc_id) /* O [id] File ID */
 {
   /* Purpose: Open file using appropriate buffer size hints and verbosity
      ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
+  size_t bfr_sz_hnt_lcl; /* [B] Buffer size hint */
+
+  /* Initialize local buffer size hint with user-input value */
+  bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
   /* Print implicit or explicit buffer request depending on debugging level */
   /* Print implicit request if default buffer size and verbose output requested... */
@@ -1363,16 +1367,18 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
     if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
   } /* Explicit request */
 
-  rcd=nco__open(fl_nm,open_mode,bfr_sz_hnt,nc_id);
-
-  /* Print results using same verbosity criteria */
+  /* Pass a local copy of the size hint otherwise user-specified value will be overwritten on first call */
+  rcd=nco__open(fl_nm,open_mode,&bfr_sz_hnt_lcl,nc_id);
+  
+  /* Print results using same verbosity criteria
+     bfr_sz_hnt_lcl will not be NULL because nco__open() always returns a valid size */
   if(
      /* Sufficiently verbose implicit request */
-     ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_var)) ||
+     (*bfr_sz_hnt_lcl == NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_var) ||
      /* Less sufficiently verbose explicit request */
-     ((bfr_sz_hnt != NULL || *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && (dbg_lvl_get() >= nco_dbg_fl )) ||
+     (*bfr_sz_hnt_lcl != NC_SIZEHINT_DEFAULT && dbg_lvl_get() >= nco_dbg_fl ) ||
      False) 
-    (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt);
+    (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt_lcl);
 
   return rcd;
 } /* end nco_fl_open */
