@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.25 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.26 2012-05-22 01:08:29 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -41,7 +41,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 
 void 
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
-(const long idx_rec, /* I [idx] Index of current record */
+(const long idx_rec, /* I [idx] Index of current record (ncra) or file (ncea) */
  const int nco_op_typ, /* I [enm] Operation type */
  const var_sct * const var_prc, /* I [sct] Variable in input file */
  var_sct * const var_prc_out); /* I/O [sct] Variable in output file */

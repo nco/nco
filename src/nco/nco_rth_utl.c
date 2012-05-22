@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.45 2012-03-31 01:19:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.46 2012-05-22 01:08:29 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -35,7 +35,7 @@ nco_rth_prc_rnk /* [fnc] Rank precision of arithmetic type */
 
 void 
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
-(const long idx_rec, /* I [idx] Index of current record */
+(const long idx_rec, /* I [idx] Index of current record (ncra) or file (ncea) */
  const int nco_op_typ, /* I [enm] Operation type */
  const var_sct * const var_prc, /* I [sct] Variable in input file */
  var_sct * const var_prc_out) /* I/O [sct] Variable in output file */
@@ -71,8 +71,11 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
        However, copying with nco_var_copy() would not change the tally variable, leaving it equal to zero
        Then an extra step would be necessary to set tally equal to one where missing values were not present
        Otherwise, e.g., ensemble averages of one file would never have non-zero tallies
-       Hence, use special nco_var_copy_tll() function on to copy and change tally only in first loop iteration
+       Hence, use special nco_var_copy_tll() function to copy and change tally only in first loop iteration
        This way, tally is self-consistent with var_prc_out at all times
+       Moreover, the running total must never be set to the missing_value, because subsequent additions
+       only check the new addend (not the running sum) against the missing value.
+       Hence (as of 20120521) nco_var_copy_tll() specifically resets the sum to zero rather than the missing value
        Other option is to use nco_var_add_tll_ncra() below and then to post-process nco_op_ttl with nco_var_tll_zro_mss_val()
        in parent function (i.e., in ncra.c).
        Downside of that method is that parent function must do post-processing

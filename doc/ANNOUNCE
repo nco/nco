@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.479 2012-05-20 18:50:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.480 2012-05-22 01:11:25 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -50,9 +50,9 @@ A. NaN means Not a Number in IEEE-speak
 A. ncks now prints variables of type NC_INT with %i instead of %li
    formatting. This fixes TODO nco1040.
 
-A. ncra used to initialize counting arrays to one incorrectly.
+A. ncra properly initializes counting and accumlation arrays.
    This could cause a bug with the ncra -y ttl (i.e., total) function.
-   This fixes TODO nco1039. Thanks to Ken5746 for reporting this. 
+   This fixes TODO nco1039 and nco1051. Thanks to Ken5746 for reporting this. 
 
 A. All operators allow specification of buffer size for reading and
    writing files. Specify size with --bfr_sz_hnt or --buffer_size_hint: 

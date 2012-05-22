@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.61 2012-03-31 01:19:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.62 2012-05-22 01:08:29 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -747,10 +747,14 @@ nco_var_copy_tll /* [fnc] Copy hyperslab variables of type var_typ from op1 to o
   /* Use fast nco_var_copy() method to copy variable */
   (void)memcpy((void *)(op2.vp),(void *)(op1.vp),sz*nco_typ_lng(type));
 
-  /* Tally is one if no missing value is defined */
-  (void)nco_set_long(sz,1L,tally);
-
-  if(!has_mss_val) return;
+  if(has_mss_val){
+    /* Tally remains zero until verified (below) that datum is not missing value */
+    (void)nco_set_long(sz,0L,tally);
+  }else{ /* !has_mss_val */
+    /* Tally is one if no missing value is defined */
+    (void)nco_set_long(sz,1L,tally);
+    return;
+  } /* !has_mss_val */
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op2);
@@ -761,49 +765,49 @@ nco_var_copy_tll /* [fnc] Copy hyperslab variables of type var_typ from op1 to o
   case NC_FLOAT:
     {
       const float mss_val_flt=*mss_val.fp;
-      for(idx=0;idx<sz;idx++) if(op2.fp[idx] == mss_val_flt) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.fp[idx] == mss_val_flt) op2.fp[idx]=0.0f; else tally[idx]=1L;
     }
     break;
   case NC_DOUBLE:
     {
       const double mss_val_dbl=*mss_val.dp;
-      for(idx=0;idx<sz;idx++) if(op2.dp[idx] == mss_val_dbl) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.dp[idx] == mss_val_dbl) op2.dp[idx]=0.0; else tally[idx]=1L;
     }
     break;
   case NC_INT:
     {
       const nco_int mss_val_ntg=*mss_val.ip;
-      for(idx=0;idx<sz;idx++) if(op2.ip[idx] == mss_val_ntg) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.ip[idx] == mss_val_ntg) op2.ip[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_SHORT:
     {
       const nco_short mss_val_short=*mss_val.sp;
-      for(idx=0;idx<sz;idx++) if(op2.sp[idx] == mss_val_short) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.sp[idx] == mss_val_short) op2.sp[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_USHORT:
     {
       const nco_ushort mss_val_ushort=*mss_val.usp;
-      for(idx=0;idx<sz;idx++) if(op2.usp[idx] == mss_val_ushort) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.usp[idx] == mss_val_ushort) op2.usp[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_UINT:
     {
       const nco_uint mss_val_uint=*mss_val.uip;
-      for(idx=0;idx<sz;idx++) if(op2.uip[idx] == mss_val_uint) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.uip[idx] == mss_val_uint) op2.uip[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_INT64:
     {
       const nco_int64 mss_val_int64=*mss_val.i64p;
-      for(idx=0;idx<sz;idx++) if(op2.i64p[idx] == mss_val_int64) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.i64p[idx] == mss_val_int64) op2.i64p[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_UINT64:
     {
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
-      for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] == mss_val_uint64) tally[idx]=0L;
+      for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] == mss_val_uint64) op2.ui64p[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_BYTE: break; /* Do nothing */
