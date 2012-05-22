@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.192 2012-02-20 15:46:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.193 2012-05-22 15:34:14 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -523,7 +523,7 @@ C_COMMENT options {paraphrase="a C-style comment"; }
 // Numbers like .123, .2e3 ,.123f, 0.23d
 // csz: Treat "l" or "L" following decimal point as "long double" as per C++
 NUMBER_DOT options {paraphrase="a floating point number"; } 
-     :
+    :
       '.' (DGT)+ (XPN)? { $setType(DOUBLE); }  
       ( ('D'|'d')!     {  $setType(DOUBLE);}
        |('F'|'f')!     {  $setType(FLOAT);}
@@ -550,20 +550,41 @@ NUMBER:
 ;
 
 
-
 // Return var or att (var_nm@att_nm)
-VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
-        :  (LPH)(LPH|DGT)*   
+VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribute identifier"; } 
+     :  (LPH)(LPH|DGT)*   
             {
-            // check function/method vector
-            if( std::binary_search(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText)))
-               $setType(FUNC);             
-            else 
-               $setType(VAR_ID); 
-
-           }   
+             // try to intelligently guess the type to avoid un-necessary function search  
+            bool bDoSearch;
+            switch( LA(1) ){
+               case ' ': 
+               case '\t':
+               case '(':
+                 bDoSearch=true;
+                 $setType(VAR_ID); 
+                 break;
+               case '@':
+                 bDoSearch=false;
+                 $setType(ATT_ID);
+                 break;    
+               default: 
+                 bDoSearch=false;
+                 $setType(VAR_ID);
+                 break;
+            }  
+            if(bDoSearch){   
+               std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText));   
+               if(we!=prs_arg->fmc_vtr.end() && we->fnm()==$getText){
+                 int idx=we-prs_arg->fmc_vtr.begin();
+                 char buff[10]; 
+                 sprintf(buff,"%d",idx);
+                 $setText(buff);    
+                 $setType(FUNC);
+               }             
+            } 
+           }  
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
-   ;
+;
 
 
 // Return a quoted var or att (var_nm@att_nm)
@@ -2123,31 +2144,19 @@ out returns [var_sct *var]
 
     // Functions 
     |  #(m:FUNC args:FUNC_ARG) {
-          RefAST tr;
-          std::string sfnm(m->getText());
-          std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(sfnm));
-          // see if string found
-          if( we->fnm() == sfnm){
-            //Call function
-            var=we->vfnc()->fnd(tr ,args, *we,*this); 
-          } else { 
-              std::cout << "Function  " << sfnm << " not found" <<std::endl;
-              exit(1);
-          }
-     }
+          // The lexer has stored the index of the function in m:FUNC and NOT the function name !!
+          //  the index is into fmc_vtr  
+         int idx=atoi(m->getText().c_str());
+         RefAST tr;  
+         var=prs_arg->fmc_vtr[idx].vfnc()->fnd(tr ,args, prs_arg->fmc_vtr[idx],*this); 
+        }
 
     // Deal with methods 
     | #(DOT mtd:. mfnc:FUNC  margs:FUNC_ARG ){
-          std::string sfnm(mfnc->getText());
-          std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(sfnm));
-          // see if string found
-          if( we->fnm() == sfnm){
-            //Call function
-            var=we->vfnc()->fnd(mtd ,margs, *we,*this); 
-          } else { 
-              std::cout << "Method  " << sfnm << " not found" <<std::endl;
-              exit(1);
-          }
+          // The lexer has stored the index of the function in m:FUNC and NOT the function name !!
+          //  the index is into fmc_vtr  
+         int idx=atoi(mfnc->getText().c_str());
+         var=prs_arg->fmc_vtr[idx].vfnc()->fnd(mtd ,margs, prs_arg->fmc_vtr[idx],*this); 
      }
 
     |   dval:DIM_ID_SIZE
