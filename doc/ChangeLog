@@ -1,5 +1,14 @@
 2012-05-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.2.0 release procedure:
+ 	Changes since nco-4_1_0: ncra -y ttl, %i fmt, ncwa NaN, nc__open
+	cd ~/nco;cvs tag -d nco-4_2_0;cvs tag -d nco-4_2_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
+	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
+
+	* Eliminate two false negative in regression tests cause by,
+	respectively, new rounding behavior and new integer print format.
+
 	* Realized this fix introduced a new regression because now pure
 	missing value variables sum to zero rather than missing value.
 	Need to ensure at end that when tally is zero, value is missing.
@@ -17,12 +26,6 @@
 	Fixes TODO nco1050.
 
 	* Add newer regression test failures to TODO list
-
-	* NCO 4.2.0 release procedure:
- 	Changes since nco-4_1_0: ncra -y ttl, %i fmt, ncwa NaN, nc__open
-	cd ~/nco;cvs tag -d nco-4_2_0;cvs tag -d nco-4_2_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
-	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
 
 2012-05-20  Charlie Zender  <zender@uci.edu>
 
