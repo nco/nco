@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.111 2012-05-21 22:30:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.112 2012-05-22 02:25:14 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -819,9 +819,9 @@ sub tst_rgr {
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg -d time,,6 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01%"; 
-    $tst_cmd[2]="ncks -C -H  -s '%li' -v three_dmn_var_int %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H  -s '%d' -v three_dmn_var_int %tmp_fl_01%";
     $dsc_sng="Concatenate int variable with multislabs across two files";
-    $tst_cmd[3]="27";
+    $tst_cmd[3]="28";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
@@ -1515,7 +1515,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w val_half_half -v val_one_one_int $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
-    $tst_cmd[1]="ncks -C -H -s '%ld' -v val_one_one_int %tmp_fl_00%";;
+    $tst_cmd[1]="ncks -C -H -s '%d' -v val_one_one_int %tmp_fl_00%";;
     $dsc_sng="weights would cause SIGFPE without dbl_prc patch";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";

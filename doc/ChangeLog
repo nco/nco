@@ -1,5 +1,9 @@
 2012-05-21  Charlie Zender  <zender@uci.edu>
 
+	* Realized this fix introduced a new regression because now pure
+	missing value variables sum to zero rather than missing value.
+	Need to ensure at end that when tally is zero, value is missing.
+
 	* ncra -y ttl now works when first element is missing value
 	nco_var_copy_tll() now sets accumulator to zero in this case
 	Fixes TODO nco1051 and a regression.

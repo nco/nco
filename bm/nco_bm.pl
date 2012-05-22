@@ -2,11 +2,11 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.149 2010-09-16 00:15:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.150 2012-05-22 02:25:14 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
-# ~/nco/bm/nco_bm.pl ncra # Test one operator
+# ~/nco/bm/nco_bm.pl --regress ncra # Test one operator
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
 # ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
 # ~/nco/bm/nco_bm.pl --tst_fl=a --udpreport # Create all test files

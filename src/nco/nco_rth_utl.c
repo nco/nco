@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.46 2012-05-22 01:08:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.47 2012-05-22 02:25:14 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -73,9 +73,9 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
        Otherwise, e.g., ensemble averages of one file would never have non-zero tallies
        Hence, use special nco_var_copy_tll() function to copy and change tally only in first loop iteration
        This way, tally is self-consistent with var_prc_out at all times
-       Moreover, the running total must never be set to the missing_value, because subsequent additions
-       only check the new addend (not the running sum) against the missing value.
-       Hence (as of 20120521) nco_var_copy_tll() specifically resets the sum to zero rather than the missing value
+       Moreover, running total must never be set to missing_value, because subsequent additions
+       only check new addend (not running sum) against missing value.
+       Hence (as of 20120521) nco_var_copy_tll() specifically resets sum to zero rather than to missing value
        Other option is to use nco_var_add_tll_ncra() below and then to post-process nco_op_ttl with nco_var_tll_zro_mss_val()
        in parent function (i.e., in ncra.c).
        Downside of that method is that parent function must do post-processing
