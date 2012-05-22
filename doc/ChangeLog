@@ -1,5 +1,12 @@
 2012-05-21  Charlie Zender  <zender@uci.edu>
 
+	* ncra -y ttl now works when first element is missing value
+	nco_var_copy_tll() now sets accumulator to zero in this case
+	Fixes TODO nco1051 and a regression.
+
+	* ncra does not recognize first value of hyperslab as missing value
+	This is TODO nco1051.
+
 	* Change answer of ncra regression test #02 from 5 to 6 to reflect
 	integer rounding behavior implemented on 20111020 for NCO 4.0.9.
 	Fractions in [0.5) are rounded upward on conversion to integers.

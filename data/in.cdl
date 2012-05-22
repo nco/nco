@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.137 2012-05-20 20:07:15 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.138 2012-05-22 01:08:28 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -759,7 +759,7 @@ variables:
 	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
 	rec_var_flt_mss_val_dbl:_FillValue = 1.0e36f;
 	rec_var_flt_mss_val_dbl:missing_value = 1.0e36f;
-	rec_var_flt_mss_val_dbl:note = "The correct average of this variable is 5.0";
+	rec_var_flt_mss_val_dbl:note = "The correct average of this variable is 5.0. The correct sum of this variable is 35.";
 
 	float rec_var_flt_mss_val_int(time);
 	rec_var_flt_mss_val_int:long_name = "record variable, float, with integer missing values";
