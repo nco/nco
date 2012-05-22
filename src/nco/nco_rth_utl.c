@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.47 2012-05-22 02:25:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.48 2012-05-22 04:09:22 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -74,12 +74,9 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
        Hence, use special nco_var_copy_tll() function to copy and change tally only in first loop iteration
        This way, tally is self-consistent with var_prc_out at all times
        Moreover, running total must never be set to missing_value, because subsequent additions
-       only check new addend (not running sum) against missing value.
+       (with nco_var_add_tll_ncra()) only check new addend (not running sum) against missing value.
        Hence (as of 20120521) nco_var_copy_tll() specifically resets sum to zero rather than to missing value
-       Other option is to use nco_var_add_tll_ncra() below and then to post-process nco_op_ttl with nco_var_tll_zro_mss_val()
-       in parent function (i.e., in ncra.c).
-       Downside of that method is that parent function must do post-processing
-       By using nco_var_copy_tll() in first iteration here, we avoid performing post-processing in parent function */
+       Parent function (e.g., ncra.c) must post-process ttl buffers nco_op_ttl with nco_var_tll_zro_mss_val() */
     if(idx_rec == 0) (void)nco_var_copy_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val); else (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_avg: /* Average */

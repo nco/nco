@@ -6,6 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
 	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
 
+	* Invoke nco_var_tll_zro_mss_val() again as post-processing step
+	for ttl functions. Not terribly elegant solution to TODO nco1052.
+
 	* Eliminate two false negative in regression tests cause by,
 	respectively, new rounding behavior and new integer print format.
 

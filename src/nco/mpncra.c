@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.119 2012-05-20 23:57:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.120 2012-05-22 04:09:22 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.119 2012-05-20 23:57:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.119 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.120 2012-05-22 04:09:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.120 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -1279,7 +1279,8 @@ main(int argc,char **argv)
 	    break;
 	  case nco_op_min: /* Minimum is already in buffer, do nothing */
 	  case nco_op_max: /* Maximum is already in buffer, do nothing */
-	  case nco_op_ttl: /* Total is already in buffer, do nothing */
+	  case nco_op_ttl: /* Total is already in buffer, stuff missing values into elements with zero tally */
+	    (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	  default:
 	    break;
 	  } /* end switch */

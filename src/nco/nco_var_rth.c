@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.62 2012-05-22 01:08:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.63 2012-05-22 04:09:22 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1656,7 +1656,7 @@ nco_var_tll_zro_mss_val /* [fnc] Write missing value into elements with zero tal
      Such sums are usually normalized and set to missing if tally is zero.
      However, totals are integrals and thus are never normalized.
      Initialization value of zero will be output even if tally is zero,
-     _unless field is processed with this routine after summing and prior to writing. */
+     _unless field is processed with this routine after summing and prior to writing_ */
   
   /* Filter currently works as op1:=mss_val where tally == 0 */
   
