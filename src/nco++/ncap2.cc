@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.129 2012-05-18 13:35:27 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.130 2012-05-22 16:08:47 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.129 2012-05-18 13:35:27 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.129 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.130 2012-05-22 16:08:47 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.130 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -740,14 +740,13 @@ main(int argc,char **argv)
   
   /* Find and add any new dimensions to output */
   for(idx=0;idx<nbr_dmn_ass;idx++){
-    /* see if dim already in Output */
-    if(dmn_out_vtr.find(dmn_lst[idx].nm)) 
-     continue;    
-    jdx=dmn_in_vtr.findi(dmn_lst[idx].nm);
+    jdx=dmn_in_vtr.findis(dmn_lst[idx].nm);
+    if(dmn_in_vtr[jdx]->xrf ) continue;
+
     (void)dmn_out_vtr.push_back(nco_dmn_dpl(dmn_in_vtr[jdx]));
     (void)nco_dmn_dfn(fl_out,out_id,&dmn_out_vtr.back(),1);
     (void)nco_dmn_xrf(dmn_out_vtr.back(),dmn_in_vtr[jdx]);
-  }  /* end loop over idx */
+  }  
   
   /* Free current list of all dimensions in input file */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_ass);
@@ -757,11 +756,11 @@ main(int argc,char **argv)
      If EXTRACT_ALL_COORDINATES then write associated dimension to output */
   if(EXTRACT_ASSOCIATED_COORDINATES){
     for(idx=0;idx<dmn_in_vtr.size();idx++){
-      if(!dmn_in_vtr[idx]->is_crd_dmn) continue;
+      dmn_item=dmn_in_vtr[idx]; /*de-reference */
+      if(!dmn_item->is_crd_dmn) continue;
       
-      if(EXTRACT_ALL_COORDINATES && !dmn_in_vtr[idx]->xrf){
+      if(EXTRACT_ALL_COORDINATES && !dmn_item->xrf){
 	/* Add dimensions to output list dmn_out */
-	dmn_item=dmn_in_vtr[idx];
 	dmn_new=nco_dmn_dpl(dmn_item);
 	(void)nco_dmn_xrf(dmn_new,dmn_item);
 	/* Write dimension to output */
@@ -769,15 +768,15 @@ main(int argc,char **argv)
 	(void)dmn_out_vtr.push_back(dmn_new);
       } /* end if */
       /* Add coordinate variable to extraction list, dimension has already been output */
-      if(dmn_in_vtr[idx]->xrf){
+      if(dmn_item->xrf){
 	for(jdx=0;jdx<xtr_nbr;jdx++)
-	  if(!strcmp(xtr_lst[jdx].nm,dmn_in_vtr[idx]->nm)) break;
+	  if(!strcmp(xtr_lst[jdx].nm,dmn_item->nm)) break;
   	
 	if(jdx != xtr_nbr) continue;
 	/* If coordinate is not on list then add it to extraction list */
 	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(xtr_nbr+1)*sizeof(nm_id_sct));
-	xtr_lst[xtr_nbr].nm=(char *)strdup(dmn_in_vtr[idx]->nm);
-	xtr_lst[xtr_nbr++].id=dmn_in_vtr[idx]->cid;
+	xtr_lst[xtr_nbr].nm=(char *)strdup(dmn_item->nm);
+	xtr_lst[xtr_nbr++].id=dmn_item->cid;
       } /* endif */
     } /* end loop over idx */	      
   } /* end if */ 
@@ -810,8 +809,7 @@ main(int argc,char **argv)
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
-  //(void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,&dmn_out_vtr[0],(int)dmn_out_vtr.size(),nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
   
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
