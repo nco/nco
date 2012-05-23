@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.47 2012-05-18 13:39:02 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.48 2012-05-23 13:40:50 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -389,7 +389,8 @@
       // Initial scan
       if(prs_arg->ntl_scn) 
         if(var_tmp)  
-	  var_ret= ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),var_tmp->type,false);
+	  var_ret= ncap_sclr_var_mk(static_cast<std::string>
+("~utility_function"),var_tmp->type,false);
         else
 	  var_ret=ncap_var_udf("~utility_function");
 
@@ -415,6 +416,12 @@
      } // end GET_MISS 
 
 
+    if(prs_arg->ntl_scn) {
+      if(var) var=nco_var_free(var);
+      return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);  
+    }
+
+
 
     if(!Nvar ){
        wrn_prn(fnc_nm,sfnm+" unable to find variable: "+va_nm); 
@@ -422,10 +429,6 @@
        return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)rval);        
     }
 
-    if(prs_arg->ntl_scn) {
-      if(var) var=nco_var_free(var);
-      return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);  
-    }
 
     //De-reference
     var_in=Nvar->var;  
