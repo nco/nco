@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.130 2012-05-22 16:08:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.131 2012-05-23 15:02:21 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.130 2012-05-22 16:08:47 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.130 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.131 2012-05-23 15:02:21 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.131 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -663,7 +663,10 @@ main(int argc,char **argv)
     /* xrf dmn_out with dmn_in_vtr */
     for(idx=0; idx<nbr_dmn_out ; idx++){
       dmn_item=dmn_in_vtr.find(dmn_out_vtr[idx]->nm);
-      if(dmn_item) nco_dmn_xrf(dmn_item,dmn_out_vtr[idx]);       
+      if(!dmn_item) continue; 
+      (void)nco_dmn_xrf(dmn_item,dmn_out_vtr[idx]);
+      if(dmn_item->sz != dmn_out_vtr[idx]->sz) 
+	(void)fprintf(stdout,"%s: WARNING: dimension miss-match. dim \"%s\" is size=%ld in Input file and size=%ld in Output file. HINT Command may work if Append mode (-A) is not used",prg_nm_get(),dmn_item->nm, dmn_item->sz, dmn_out_vtr[idx]->sz ); 
     } 
  
 
