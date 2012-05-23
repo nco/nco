@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
 	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
 
+	* All operators except ncap2 now pass all regression tests
+
 	* Systematic overhaul of var list divide logic so that
 	"coordinates" and "bounds" attributes are treated consistently.
 
