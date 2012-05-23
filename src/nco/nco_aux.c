@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.37 2012-02-13 23:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.38 2012-05-23 04:42:39 zender Exp $ */
 
 /* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -50,7 +50,7 @@ nco_find_lat_lon
 
   long lenp;
 
-  nc_type var_type; /* [enm] variable type */
+  nc_type var_typ; /* [enm] variable type */
   
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
@@ -62,7 +62,7 @@ nco_find_lat_lon
   
   /* For each variable, see if standard name is latitude or longitude */
   for(idx=0;idx<nvars && ret<2;idx++){
-    nco_inq_var(nc_id,idx,var_nm,&var_type,&var_dmn_nbr,var_dimid,&var_att_nbr);
+    nco_inq_var(nc_id,idx,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
     lenp=0;
     if(!nco_inq_attlen_flg(nc_id,idx,"standard_name",&lenp)){
       NCO_GET_ATT_CHAR(nc_id,idx,"standard_name",value);
@@ -81,7 +81,7 @@ nco_find_lat_lon
 	if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
 
 	/* Assign type; assumed same for both lat and lon */
-	*crd_typ=var_type;
+	*crd_typ=var_typ;
 	ret++;
       } /* end if var is lattitude */
       
@@ -115,13 +115,13 @@ nco_get_dmn_info
   
   int rcd=NC_NOERR;
   
-  nc_type var_type;                   /* variable type */
+  nc_type var_typ;                   /* variable type */
   int var_dimid[NC_MAX_VAR_DIMS];    /* dimension ids */
   int var_att_nbr;                      /* number of attributes */
   int var_dmn_nbr;                      /* number of dims */
   
   /* Get dimension information */
-  rcd=nco_inq_var(nc_id,var_id,0,&var_type,&var_dmn_nbr,var_dimid,&var_att_nbr);
+  rcd=nco_inq_var(nc_id,var_id,0,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
   if(rcd == NC_NOERR){
     *dimid=var_dimid[0];
     rcd=nco_inq_dimlen(nc_id,var_dimid[0],dmn_sz);

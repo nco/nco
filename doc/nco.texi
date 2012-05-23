@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.679 2012-05-21 22:30:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.680 2012-05-23 04:42:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6342,7 +6342,7 @@ The binary operators are, in order of precedence:
 ----------------------------
 @end example
 
-To see all operators: @pxref{Operators precedence and associativity} 
+To see all operators: @pxref{Operator precedence and associativity} 
 Examples:
 @example
 tm1= time>2 && time <7;  // tm1 = 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 ; type double;
@@ -6352,11 +6352,11 @@ tm4= tm1 && tm2;         // tm4=  0, 0, 1, 0, 0, 1, 0, 0, 0, 0 ; type double;
 tm5= !tm4;               // tm5=  1, 1, 0, 1, 1, 0, 1, 1, 1, 1 ; type double;
 @end example
 	
-@noindent @strong{Regular Assign Operator} @*
+@noindent @strong{Regular Assign Operator}@*
 @noindent @emph{var1 '=' exp1} @*
-If var1 doesn't already exist in Output then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
+If var1 does not already exist in Output then var1 is written to Output with the values and dimensions from expr1. If var1 already exists in Output, then the only requirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted if necessary to the disk type.
 
-@noindent @strong{ Other Assign Operators +=,-=,*=./= } @*
+@noindent @strong{ Other Assign Operators +=,-=,*=./= }@*
         @noindent  @emph{var1 'ass_op' exp1 }@*
 if exp1 is a variable and it doesn't conform to var1 then an attempt is made to make it conform to var1. If exp1 is an attribute it must have unity size or else have the same number of elements as var1. If expr1 has a different type to var1 the it is converted to the var1 type.
 @example
@@ -8942,7 +8942,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 @html
 <a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
 @end html
-@node Intrinsic mathematical methods, Operators precedence and associativity , Examples ncap2, ncap2 netCDF Arithmetic Processor
+@node Intrinsic mathematical methods, Operator precedence and associativity , Examples ncap2, ncap2 netCDF Arithmetic Processor
 @subsection Intrinsic mathematical methods
 @command{ncap2} supports the standard mathematical functions supplied with
 most operating systems.
@@ -9442,8 +9442,8 @@ other OSs.}
 @html
 <a name="ncap_opts"></a> <!-- http://nco.sf.net/nco.html#ncap_opts -->
 @end html
-@node Operators precedence and associativity , ID Quoting, Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
-@subsection Operators precedence and associativity
+@node Operator precedence and associativity , ID Quoting, Intrinsic mathematical methods, ncap2 netCDF Arithmetic Processor
+@subsection Operator precedence and associativity
 This page lists the @command{ncap2} operators in order of precedence (highest to lowest). Their associativity indicates in what order operators of equal precedence in an expression are applied.
 
 @multitable @columnfractions .18 .62 .20
@@ -9481,12 +9481,10 @@ This page lists the @command{ncap2} operators in order of precedence (highest to
 @item @code{*= /=} @tab	Multiplication/division assignment
 @end multitable
 
-
-
 @html
 <a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
 @end html
-@node ID Quoting,  , Operators precedence and associativity , ncap2 netCDF Arithmetic Processor
+@node ID Quoting,  , Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
 In this section when I refer to a name I mean a variable name, attribute name or a dimension name
@@ -9508,7 +9506,7 @@ LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 name:    (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
 @end example
 
-@noindent Quote a variable: @*
+@noindent Quote a variable:@*
 'avg' , '10_+10','set_miss' '+-90field' , '--test'=10.0d@* @* 
 Quote a attribute: @*
 'three@@10', 'set_mss@@+10', '666@@hell', 't1@@+units'="kelvin" @* @*
@@ -9534,8 +9532,8 @@ netcdf-3.6.2 @*
  */
 @end example
 
-@noindent netcdf-3.6.3 @*
-netcdf-4.0 Final  2008/08/28 @*
+@noindent netcdf-3.6.3@*
+netcdf-4.0 Final  2008/08/28@*
 @example
 /*
  * Verify that a name string is valid syntax.  The allowed name

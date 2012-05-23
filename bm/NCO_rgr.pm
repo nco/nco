@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.112 2012-05-22 02:25:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.113 2012-05-23 04:42:38 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1017,15 +1017,14 @@ sub tst_rgr {
 ####################
     
 #        if ($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)) { # test hangs because of ncrcat TODO nco772
-    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_01% 2> %tmp_fl_02%";
-    $tst_cmd[1]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[2]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time %tmp_fl_00% %tmp_fl_00%";
-    $tst_cmd[3]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl %tmp_fl_01% %tmp_fl_00% %tmp_fl_00%";
-    $tst_cmd[4]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl %tmp_fl_00% %tmp_fl_00%";
-    $tst_cmd[5]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_01% 2> %tmp_fl_00%";
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[2]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[3]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl %tmp_fl_03% %tmp_fl_00%";
+    $tst_cmd[4]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
     $dsc_sng="record sdn of float with double missing values across two files";
-    $tst_cmd[6]="2";
-    $tst_cmd[7]="SS_OK";
+    $tst_cmd[5]="2";
+    $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 #    } else { print "NB: Current mpncra test skipped on sand because mpncrcat step hangs fxm TODO nco593\n";}

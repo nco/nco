@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.92 2012-03-22 00:12:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.93 2012-05-23 04:42:39 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -642,7 +642,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   long *dmn_map_srt;
   long var_sz=1L;
   
-  nc_type var_type;
+  nc_type var_typ;
   
   var_sct vara;/* To hold basic data in_id, var_id, nctype for recusive routine */
   
@@ -656,8 +656,8 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   nco_inq_varid(out_id,var_nm,&var_out_id);
   
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
     (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
@@ -667,18 +667,18 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   /* Deal with scalar variables */
   if(nbr_dim == 0){
     var_sz=1L;
-    void_ptr=nco_malloc(nco_typ_lng(var_type));
+    void_ptr=nco_malloc(nco_typ_lng(var_typ));
     /* Block is critical/thread-safe for identical/distinct in_id's */
     { /* Begin potential OpenMP critical */
-      (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
+      (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
     } /* end potential OpenMP critical */
     /* Block is always critical */
     { /* Begin OpenMP critical */
-      (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
+      (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
     } /* end OpenMP critical */
     /* Perform MD5 digest of input and output data if requested */
-    if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,(long *)NULL,(long *)NULL,void_ptr);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+    if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
+    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     (void)nco_free(void_ptr);
     return;
   } /* end if */
@@ -713,7 +713,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   vara.nm=var_nm;
   vara.id=var_in_id;
   vara.nc_id=in_id;
-  vara.type=var_type;
+  vara.type=var_typ;
   
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
@@ -722,12 +722,12 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   
   /* Block is always critical */
   { /* begin OpenMP critical */
-    (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_type);
+    (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
   } /* end OpenMP critical */
 
   /* Perform MD5 digest of input and output data if requested */
-  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
-  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
   
   (void)nco_free(void_ptr);
   (void)nco_free(dmn_map_in);

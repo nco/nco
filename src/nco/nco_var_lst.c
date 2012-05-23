@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.114 2012-05-16 15:55:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.115 2012-05-23 04:42:39 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -916,9 +916,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   int idx_xcl;
   int var_op_typ[NC_MAX_VARS];
 
+  nco_bool is_spc_in_bnd_att; /* [flg] Is specified in a "bounds"      attribute */
+  nco_bool is_spc_in_crd_att; /* [flg] Is specified in a "coordinates" attribute */
+  nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
   nco_bool var_typ_fnk=False; /* [flg] Variable type is too funky for arithmetic */ /* CEWI */
 
-  nc_type var_type=NC_NAT; /* NC_NAT present in netcdf.h version netCDF 3.5+ */
+  nc_type var_typ=NC_NAT; /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 
   var_sct **var_fix;
   var_sct **var_fix_out;
@@ -934,14 +937,20 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   var_prc=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_prc_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
 
+  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc);
+
   /* Find operation type for each variable: for now this is either fix or prc */
   for(idx=0;idx<nbr_var;idx++){
     
     /* Initialize operation type to processed. Change to fixed where warranted later. */
     var_op_typ[idx]=prc;
     var_nm=var[idx]->nm;
-    var_type=var[idx]->type;
-    if((var_type == NC_BYTE) || (var_type == NC_UBYTE) || (var_type == NC_CHAR) || (var_type == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
+    var_typ=var[idx]->type;
+    if((var_typ == NC_BYTE) || (var_typ == NC_UBYTE) || (var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
+
+    /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...) */
+    is_spc_in_crd_att=nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id);
+    is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id);
 
     /* Override operation type based depending on variable properties and program */
     switch(prg_id){
@@ -952,16 +961,18 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Do nothing */
       break;
     case ncbo:
-      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att || var_typ_fnk) var_op_typ[idx]=fix;
       break;
     case ncea:
-      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att || var_typ_fnk) var_op_typ[idx]=fix;
       break;
     case ncecat:
-      if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
+      /* Allow ncecat to concatenate funky variables */
+      if(var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att) var_op_typ[idx]=fix;
       break;
     case ncflint:
-      if(var_typ_fnk || (var[idx]->is_crd_var && !var[idx]->is_rec_var)) var_op_typ[idx]=fix;
+      /* Allow ncflint to interpolate record variables, not fixed coordinates */
+      if((var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att || var_typ_fnk) && !var[idx]->is_rec_var) var_op_typ[idx]=fix;
       break;
     case ncks:
       /* Do nothing */
@@ -976,10 +987,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncwa:
       if(nco_pck_plc != nco_pck_plc_nil){
 	/* Packing operation requested
-	   Variables are processed for packing/unpacking operator unless ... */
+	   Variables are processed for packing/unpacking operator unless... */
 	if(
 	   /* ...packing coordinate variables has few benefits... */
 	   (var[idx]->is_crd_var) ||
+	   /* ...likewise for variables listed in "coordinates" or "bounds" attributes... */
+	   (is_spc_in_crd_att || is_spc_in_bnd_att) ||
 	   /* ...unpacking requested for unpacked variable... */
 	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram) ||
 	   /* ...or packing unpacked requested and variable is already packed... */
@@ -1023,7 +1036,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if(CNV_CCM_CCSM_CF){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
       /* NB: all !strcmp()'s except "msk_" which uses strstr() */
-      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
+      if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
       /* Known "multi-dimensional coordinates" in CCSM-like model output:
 	 lat, lon, lev are normally 1-D coordinates
 	 Known exceptions:
@@ -1032,8 +1045,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	 latixy and longxy are "2-D coordinates" in CLM output
 	 CLM does not specify latixy and longxy in "coordinates" attribute of any fields
 	 NARCCAP output gives all "coordinate-like" fields an "axis" attribute
-	 This includes the record variable (i.e., "time") which both 
-	 ncra and ncwa _should_ process.
+	 This includes the record coordinate (i.e., "time") which both ncra and ncwa _should_ process
 	 CLM does not give an "axis" attribute to any fields
 	 One method of chasing down all "coordinate-like" fields is to look
 	 for the field name in the "coordinates" attribute of any variable.
@@ -1046,26 +1058,15 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	 satisfying these conditions:
 	 0. Traditional coordinate (1-D variable same name as its dimension)
 	 1. Present in a "coordinates" attribute (except "time" for ncra)
-	 2. Contain an "axis" attribute (except "time")
-	 3. Found in empirical list of variables
+	 2. Present in a "bounds" attribute (except "time_bnds" for ncra)
+	 3. Contain an "axis" attribute (except "time") fxm not done yet
+	 4. Found in empirical list of variables
 	 NB: In the above algorithm discussion, "time" is my shorthand 
 	 for "the record variable, if any" */
-      /* Check condition #1 from above: */
-      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id)) 
-	if(!(prg_id == ncra && var[idx]->is_rec_var)) /* not "time" */
-	   var_op_typ[idx]=fix;
-      /* Check condition #3 from above: */
-      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
 
-      if(nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc) && nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id)) 
-	if(!(prg_id == ncra && var[idx]->is_rec_var)) /* not "time" */
-	  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is specified in a bounds attribute\n",prg_nm_get(),var[idx]->nm);
-
-      /* Auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...) should not be concatenated by ncecat */
-      if(prg_id == ncecat)
-	if(nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id) || nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id)) 
-	  var_op_typ[idx]=fix;
-
+      /* Conditions #1 and #2 are already implemented above in the case() statement */
+      /* Check condition #4 above: */
+      if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
     } /* end if CNV_CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */
@@ -1204,7 +1205,7 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
     } /* end loop over idx_2 */
     /* ...and if variable was not found in second list... */
     if(idx_2 == *var_nbr_2){
-      (void)fprintf(stderr,"%s: ERROR %s variable \"%s\" is in list one and not in list two\n",prg_nm_get(),fnc_nm,var_1[idx_1]->nm);
+      (void)fprintf(stderr,"%s: ERROR %s variable \"%s\" is in file one and not in file two, i.e., the user is attempting to difference incommensurate sets of variables. %s allows the second file to have more process-able (e.g., differencable) variables than the first file, but disallows the reverse. All process-able variables in the first file must be in the second file (or manually excluded from the operation with the '-x' switch).\n",prg_nm_get(),fnc_nm,var_1[idx_1]->nm,prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if variable was not found in second list */
     /* ...otherwise assign variable to correct slot in output list */

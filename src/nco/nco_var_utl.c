@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.186 2012-05-14 23:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.187 2012-05-23 04:42:39 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -33,7 +33,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   int var_out_id;
   int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
   
-  nc_type var_type;
+  nc_type var_typ;
   
   /* Is requested variable already in output file? */
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
@@ -43,7 +43,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
   
   /* Get type of variable and number of dimensions */
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
 
   /* Get unlimited dimension in output */
   (void)nco_inq(out_id,(int*)NULL,(int*)NULL,(int*)NULL,&rec_dmn_out_id);
@@ -90,7 +90,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   } /* end loop over dim */
   
   /* Define variable in output file */
-  (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
+  (void)nco_def_var(out_id,var_nm,var_typ,nbr_dim,dmn_out_id,&var_out_id);
 
   /* Duplicate netCDF4 settings when possible */
   rcd=nco_inq_format(out_id,&fl_fmt);
@@ -142,7 +142,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   int var_out_id;
   int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
   
-  nc_type var_type;
+  nc_type var_typ;
 
   /* Is requested variable already in output file? */
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
@@ -152,7 +152,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
   
   /* Get type of variable and number of dimensions */
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
 
   /* Get unlimited dimension in output */
   (void)nco_inq(out_id,(int*)NULL,(int*)NULL,(int*)NULL,&rec_dmn_out_id);
@@ -201,7 +201,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   } /* end loop over dim */
   
   /* Define variable in output file */
-  (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
+  (void)nco_def_var(out_id,var_nm,var_typ,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Duplicate netCDF4 settings when possible */
   rcd=nco_inq_format(out_id,&fl_fmt);
@@ -258,7 +258,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   long *dmn_srt;
   long var_sz=1L;
 
-  nc_type var_type;
+  nc_type var_typ;
 
   void *void_ptr;
 
@@ -267,8 +267,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   (void)nco_inq_varid(out_id,var_nm,&var_out_id);
   
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
     (void)fprintf(stdout,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
@@ -297,22 +297,22 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   } /* end loop over dim */
       
   /* Allocate enough space to hold variable */
-  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
+  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Get variable */
   if(dmn_nbr==0){
-    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
-    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
+    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
+    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
   }else{ /* end if variable is scalar */
     if(var_sz > 0){ /* Allow for zero-size record variables */
-      nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
-      nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+      nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+      nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
     } /* end if var_sz */
   } /* end if variable is an array */
   /* Perform MD5 digest of input and output data if requested */
-  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_type),out_id,dmn_srt,dmn_cnt,void_ptr);
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
   /* Write unformatted binary data */
-  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
 
   /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
   if(dmn_nbr > 0){
@@ -391,7 +391,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
   long rec_out_sz; /* [nbr] Size of record-dimension in output file */
   long var_sz=1L;
 
-  nc_type var_type;
+  nc_type var_typ;
 
   void *void_ptr;
 
@@ -410,8 +410,8 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Get ID of requested variable from both files */
       (void)nco_inq_varid(in_id,var_lst[var_idx]->nm,&var_in_id);
       (void)nco_inq_varid(out_id,var_lst[var_idx]->nm,&var_out_id);
-      (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+      (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
       if(nbr_dmn_out != nbr_dmn_in){
 	(void)fprintf(stdout,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\n",prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out);
 	nco_exit(EXIT_FAILURE);
@@ -440,12 +440,12 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       dmn_srt[0]=rec_idx;
       
       /* Allocate enough space to hold one record of this variable */
-      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
+      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
       /* Get and put one record of variable */
       if(var_sz > 0){ /* Allow for zero-size record variables */
-	nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
-	nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+	nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+	nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       } /* end if var_sz */
       
       /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
@@ -484,7 +484,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       var_sz=1L;
       /* Get ID of requested variable from both files */
       (void)nco_inq_varid(in_id,var_lst[var_idx]->nm,&var_in_id);
-      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&dmn_nbr,(int *)NULL,(int *)NULL);
+      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
       /* Allocate space to hold dimension IDs */
       dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
       dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
@@ -500,13 +500,13 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 	var_sz*=dmn_cnt[dmn_idx];
       } /* end loop over dim */
       /* Allocate enough space to hold this entire variable */
-      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when doing MD5 or binary write on variable",fnc_nm);
+      void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when doing MD5 or binary write on variable",fnc_nm);
       /* Get variable */
-      if(var_sz > 0) nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+      if(var_sz > 0) nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       /* Perform MD5 digest of input and output data if requested */
-      if(MD5_DIGEST) (void)nco_md5_chk(var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_type),out_id,dmn_srt,dmn_cnt,void_ptr);
+      if(MD5_DIGEST) (void)nco_md5_chk(var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
       /* Write unformatted binary data */
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_type,void_ptr);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_typ,void_ptr);
       /* Free space that held dimension IDs */
       dmn_cnt=(long *)nco_free(dmn_cnt);
       dmn_id=(int *)nco_free(dmn_id);
@@ -561,7 +561,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 
   long var_sz=1L;
 
-  nc_type var_type;
+  nc_type var_typ;
 
   void *void_ptr;
 
@@ -570,8 +570,8 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   nco_inq_varid(out_id,var_nm,&var_out_id);
   
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
     (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
@@ -622,17 +622,17 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   } /* end loop over dim */
       
   /* Allocate enough space to hold variable */
-  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
+  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Copy variable */
   if(dmn_nbr == 0){ /* Copy scalar */
-    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
-    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
+    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
+    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
   }else if(!WRP){ /* Copy contiguous array */
-    if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_type); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_type);
-    nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_type);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+    if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_typ); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_typ);
+    nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_typ);
+    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
   }else if(WRP){ /* Copy wrapped array */
     /* For wrapped data */
     long *dmn_in_srt_1=NULL;
@@ -725,10 +725,10 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
       } /* end if */      
       
       if(CRD && MNT){ /* If requested, apply monotonicity filter to wrapped coordinate */
-	(void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_type);
+	(void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_typ);
 	/* Convert coordinate to double */
 	for(idx=0;idx<var_sz;idx++){
-	  switch(var_type){
+	  switch(var_typ){
 	  case NC_FLOAT: /* val_dbl=void_ptr.fp[idx]; */break; 
 	  case NC_DOUBLE:
 	  case NC_INT:
@@ -754,19 +754,19 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     
     /* fxm: Binary writes will not work for wrapped and stride variables until var_sz is changed to reflect actual size */
     if(!SRD){
-      (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_type);
-      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
-      (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_type);
-      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+      (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_typ);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_typ);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_typ);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     }else{ /* SRD */
-      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_type);
-      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
-      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_type);
-      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
+      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_typ);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_typ);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_typ);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     } /* end else SRD */
     
     dmn_in_srt_1=(long *)nco_free(dmn_in_srt_1);

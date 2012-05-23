@@ -2205,7 +2205,7 @@ const char* ncoParser::tokenNames[] = {
 	"a C-style comment",
 	"a floating point number",
 	"NUMBER",
-	"variable or attribute identifier",
+	"variable or function or attribute identifier",
 	"VAR_ATT_QT",
 	"DIM_QT",
 	"dimension identifier",
