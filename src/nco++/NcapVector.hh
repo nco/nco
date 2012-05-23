@@ -14,28 +14,21 @@ class NcapVector : public std::vector<T> {
 
 public:
 
-  /*
-  void push(const T &x) {
-    this->push_back(x);
-  }
-  
-  
-
-  T pop() {
-    T tret(0);
-    if(this->size() > 0 ) {
-      tret=this->back();
-      this->pop_back();
-      return tret;
-    }else{
-      return NULL;
-    }
+  // stop compiler warnings
+  int size(){
+    // Call base class version 
+    return (int)(std::vector<T>::size());
   }
 
-  */
-  
+  struct less_mag : public std::binary_function< T, T, bool> 
+   {
+       bool operator()( T t1, T t2) { 
+         return ( strcmp(t1->nm,t2->nm)<0) ; 
+         }
+  };
 
-  T find (const char *nm) {
+
+  T find(const char *nm) {
     int idx;
     int sz=this->size();
     for(idx=0 ; idx < sz; idx++)
@@ -49,6 +42,21 @@ public:
   T find(std::string snm) {
     return find(snm.c_str());
   }
+
+
+  int findi(const char *nm){
+    int idx;
+    int sz=this->size();
+
+    for(idx=0 ; idx < sz; idx++)
+      if(!strcmp(nm, (*this)[idx]->nm)) break;
+    if(idx < sz) 
+	return idx; 
+    else
+	 return -1;
+
+  }
+
 
   int findi(std::string snm){
     int idx;
@@ -64,21 +72,32 @@ public:
 
   }
 
-  // stop compiler warnings
-  int size(){
-    // Call base class version 
-    return (int)(std::vector<T>::size());
+  
+  // returns index -- nb vector must be sorted 
+  int findis( const char *nm){
+  int idx;
+  T t2;
+ 
+  t2=(T)malloc(sizeof(*t2));
+  t2->nm=strdup(nm);
+
+  idx=lower_bound( this->begin(), this->end(), t2, less_mag() )-this->begin();
+
+  if(idx ==size() || strcmp(t2->nm, (*this)[idx]->nm))
+    idx=-1;
+  
+  free(t2->nm);
+  free(t2);
+
+  return idx;      
+
   }
 
- 
-  struct less_mag : public std::binary_function< T, T, bool> 
-   {
-       bool operator()( T t1, T t2) { 
-         return ( strcmp(t1->nm,t2->nm)<0) ; 
-         }
-  };
 
-  
+
+  int findis(std::string snm){
+    return findis(snm.c_str());
+  }
 
 
     
@@ -87,6 +106,8 @@ public:
     if( strcmp(t1->nm,t2->nm)<0 )  return true;
     return false;
   }
+
+
   
      
  
@@ -96,33 +117,12 @@ public:
 
   // search -- only on a sorted vector
   bool bsearch(T t1){
+     bool bret;
+      
+     bret= std::binary_search( this->begin(),this->end(),t1,less_mag());
 
-     
-      bool bret;
-      /*
-      char *cpr;
-      size_t snbr; 
-       T t2;
-    */
-       //snbr=sizeof(T);
-       //std::cout<<"\n\nIndrection sizeof="<<snbr<<std::endl;
-       
-       //t2= (T)malloc(sizeof(*T));
-       //t2->nm=t1->nm;
-      // t2=t1;
-
- 
-      bret= std::binary_search( this->begin(),this->end(),t1,less_mag());
-      //delete t2;
-
-      return bret;
-  }       
- 
-  /*
-  T* ptr(long idx) {
-    return &((*this)[idx]);
-  }
-  */
+     return bret;
+}       
 
 };
 
