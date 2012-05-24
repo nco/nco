@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1174 2012-05-23 17:03:04 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1175 2012-05-24 23:50:26 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -19,6 +19,77 @@ ncoXXX: 15 high priority items are shown first, then another ~100 items
 Question marks indicate items or implementations are debatable
 Please help out wherever your experience allows.
 ******************************************************************************
+
+************************************************************************
+Begin ncwa bug
+************************************************************************
+nco.txt ncwa problems
+
+Here are my notes on the ncwa weighted average problem.
+This problem has perhaps been around for years.
+Hoping that registering it as a bug myself will motivate sleuthing to fix it.
+First are my hypotheses on the possible origin of the problem.
+Then MF's description of it, then a similar report by LS.
+
+Hypotheses:
+Primordial: problem has always existed on 64-bit platforms check on ashes
+Causes: confusion in NCO_TYP_INT?
+Commit 20091030: NCO_TYP_INT defaults to int rather than long
+Commit 20100126: Change ptr_typ union for NC_INT from lp to ip
+NCO 3.9.8, which suffers from bug on 64- but not 32-bit systems released 20090429.
+Primordial bug, if any, was present then.
+NCO 3.9.6, which suffers from bug on 64-bit systems, was released 20090122.
+Primordial bug, if any, probably pre-dates this.
+Triage: 
+Check latest NCO on 32-bit CPU (ashes) see if problem exists
+
+Flanner:
+I am writing about slight inconsistencies that I have noticed recently
+in global averages (order 0.02K) obtained with ncwa and Matlab/NCL.
+
+When I execute the attached script (operating on the attached nc file)
+on all of my work machines, the UM supercomputer, and NCAR's bluefire, I
+obtain:
+
+NCO global average with area weight: 289.246735
+NCO global average with gw weight: 289.226135
+
+When I compute the global mean of the same netcdf file using Matlab, I
+obtain:
+MATLAB global average with area weight:289.239964
+MATLAB global average with gw weight:289.239964
+
+and similarly using NCL:
+(0) NCL global average with area weight: 289.239960
+(0) NCL global average with gw weight: 289.239960
+
+The versions of ncwa used for the first example include 4.0.5 (snow,
+firn), 3.9.6 (bluefire, UM flux), and 3.9.8 (cryo). All of these
+machines are 64-bit.
+
+Interestingly, when I run the same script on my old 32-bit laptop, using
+ncwa version 3.9.8, I obtain answers comparable with Matlab and NCL, and
+equal with area and gaussian weights (as with Matlab/NCL):
+NCO global average with area weight: 289.239960
+NCO global average with gw weight: 289.239960
+
+There may be an issue with 64-bit versus 32-bit compile of nco or netcdf
+library. I will provide the full output of "ncwa -r" on all of these
+machines, if you would like. I should also mention that I installed nco
+with yum on most of my machines, but I doubt that is the case on
+bluefire, which exhibits the same behavior.
+
+sentman.txt: ncwa problems
+Lori Sentman
+ncks -O -v PS,gw  ${DATA}/dstmch90/dstmch90_clm.nc ~/dstmch90_ps.nc
+ncrename -O -v PS,ps_flt ~/dstmch90_ps.nc
+ncap2 -O -s 'ps_dbl=double(ps_flt)' ~/dstmch90_ps.nc ~/dstmch90_ps.nc
+ncwa -O -w gw ~/dstmch90_ps.nc ~/dstmch90_ps_xyt.nc
+ncks -H -C ~/dstmch90_ps_xyt.nc
+ncks -m -C ~/dstmch90_ps.nc
+************************************************************************
+End ncwa bug
+************************************************************************
 
 ************************************************************************
 Begin ncoXXX TODOs
