@@ -1,3 +1,11 @@
+2012-05-30  Henry Butowsky  <henryb@hush.com>
+
+	* added the following RAM vars in ncap2.cc
+	* double: nan, inf
+	* float: nanf,inff
+	Only problem with implementation may be with macro call 
+	double nan(const char *tagp) 
+
 2012-05-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.0 release procedure:
