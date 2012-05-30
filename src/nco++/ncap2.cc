@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.132 2012-05-30 15:23:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.133 2012-05-30 15:34:45 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.132 2012-05-30 15:23:52 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.132 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.133 2012-05-30 15:34:45 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.133 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -1054,6 +1054,8 @@ ram_vars_add
   
   var1=ncap_sclr_var_mk(std::string("__UINT64"),nco_int(NC_UINT64));
   prs_arg->ncap_var_write(var1,true);
+
+#endif // !ENABLE_NETCDF4
   
   #ifdef INFINITY
   var1=ncap_sclr_var_mk(std::string("inff"),INFINITY); //float
@@ -1080,5 +1082,5 @@ ram_vars_add
 
 
 
-#endif // !ENABLE_NETCDF4
+
 } // end ram_vars_add()
