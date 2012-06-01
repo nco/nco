@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.680 2012-05-23 04:42:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.681 2012-06-01 22:46:30 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6144,7 +6144,7 @@ already contain the appended dimensions.
 * GSL random number generation::  
 * Examples ncap2::              
 * Intrinsic mathematical methods::  
-* Operators precedence and associativity ::  
+* Operator precedence and associativity ::  
 * ID Quoting::                  
 @end menu
 
