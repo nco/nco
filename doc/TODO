@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1175 2012-05-24 23:50:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1176 2012-06-02 05:42:20 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -817,7 +817,11 @@ nco1041. nc__open() with NC_SIZEHINT_DEFAULT for MM3 problems or general switch?
 nco1042. nc_create() with NC_DISKLESS general switch?
 nco1043. Modify nco.spec to build on RHEL and Fedora
 nco1048. ncrcat Generates warnings like "ERROR: Conversion between user specified unit "days" and file units "" is meaningless" test case in crr.txt
-nco1053. 
+nco1053. nco: ncap2 rgr 10 Casting variable with same name as dimension (failure expected on netcdf4 ncap81) works for Henry not me. OS version related? e.g., app-armor-triggered? 
+	 ncap2 -O -C -v -s 'defdim("a",3);defdim("b",4); a[$a,$b]=10;c=a(1,1);' ~/nco/data/in.nc ~/foo.nc
+nco1054. nco: ncap2 rgr 11 Casting variable with a single dim of sz=1. works for Henry not me. OS version related? e.g., app-armor-triggered? 
+	 ncap2 -O -C -v -s 'defdim("a",1);b[$a]=10;c=b(0:0);' ~/nco/data/in.nc ~/foo.nc
+nco1055.
 qrk
 ************************************************************************
 End ncoXXX TODOs
@@ -1086,8 +1090,8 @@ ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
 ncap79. make abs() synonym for fabs() and pow() and ** synonyms for ^
 ncap80. ncap2+openmp+netCDF4 - script only works with threads>1 if there are no atts in input file
-ncap81  the script 'defdim("a",3);defdim("b",4);a[$a,$b]=10;' works on netCDF3 not netCDF4. Known bug with netCDF4. (Why? what causes it?) 
-ncap82. Unable to average a single/multi dimensional var  of total size 1 var in ncap2 
+ncap81. script 'defdim("a",3);defdim("b",4);a[$a,$b]=10;' works on netCDF3 not netCDF4. Known bug with netCDF4. (Why? what causes it?) 
+ncap82. Unable to average single/multi dimensional var of total size 1 var in ncap2 
 e.g defdim("X",10);defdim("Y",1); m[X,Y]=10; m.avg();- fails with seg fault  
 ************************************************************************
 End ncapXXX TODOs

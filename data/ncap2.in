@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.35 2012-02-09 16:03:37 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.36 2012-06-02 05:42:19 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for ncap2
 
@@ -181,7 +181,7 @@ j4= (i7<9 ? ++j2 : ++j3);
 // use the defdim function. Dimensions in the input file CANNOT
 // be redefined in the output. Dimensions are imutable and
 // once defined in  cannot be redefined
-// (nb defdim should return a bool value indicating success or failure)
+// (NB: defdim should return a bool value indicating success or failure)
 defdim("x",1);
 defdim("y",4);
 defdim("z",9);
