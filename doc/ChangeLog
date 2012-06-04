@@ -1,6 +1,6 @@
 2012-05-30  Henry Butowsky  <henryb@hush.com>
 
-	* Added following RAM vars in ncap2.cc: double: nan, inf; float: nanf,inff
+	* Added following RAM vars in ncap2.cc: double: nan, inf; float: nanf, inff
 	Only problem with implementation may be with macro call double nan(const char *tagp)
 
 2012-05-22  Charlie Zender  <zender@uci.edu>
