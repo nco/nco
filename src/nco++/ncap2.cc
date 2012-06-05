@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.134 2012-06-05 00:27:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.135 2012-06-05 21:49:04 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -54,7 +54,9 @@
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#include <unistd.h> /* POSIX stuff */
+#ifndef _MSC_VER
+# include <unistd.h> /* POSIX stuff */
+#endif
 
 /* GNU getopt() is independent system header on FREEBSD, LINUX, LINUXALPHA, LINUXAMD, LINUXARM, WIN32
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
@@ -141,8 +143,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.134 2012-06-05 00:27:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.134 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.135 2012-06-05 21:49:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.135 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

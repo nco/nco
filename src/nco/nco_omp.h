@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.26 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.27 2012-06-05 21:49:03 pvicente Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -16,7 +16,9 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, getenv, exit */
 #include <string.h> /* strcmp. . . */
-#include <unistd.h> /* POSIX stuff */
+#ifndef _MSC_VER
+# include <unistd.h> /* POSIX stuff */
+#endif
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

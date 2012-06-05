@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.58 2012-05-21 00:48:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.59 2012-06-05 21:49:03 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -23,11 +23,13 @@
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
-#include <unistd.h> /* POSIX stuff */
+#ifndef _MSC_VER
+# include <unistd.h> /* POSIX stuff */
+# include <netinet/in.h> /* needed for _res */
+# include <pwd.h> /* password structures for getpwuid() */
+#endif
 
 #include <sys/types.h> /* needed for _res */
-#include <netinet/in.h> /* needed for _res */
-#include <pwd.h> /* password structures for getpwuid() */
 #ifndef WIN32
 # include <arpa/nameser.h> /* needed for _res */
 # include <resolv.h> /* Internet structures for _res */

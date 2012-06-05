@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.94 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.95 2012-06-05 21:49:03 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -22,7 +22,9 @@
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
 #include <time.h> /* machine time */
-#include <unistd.h> /* POSIX stuff */
+#ifndef _MSC_VER
+# include <unistd.h> /* POSIX stuff */
+#endif
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
