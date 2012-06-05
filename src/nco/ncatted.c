@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.141 2012-04-15 01:34:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.142 2012-06-05 00:27:13 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -102,7 +102,7 @@
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#include <unistd.h> /* all sorts of POSIX stuff */
+#include <unistd.h> /* POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* HAVE_GETOPT_LONG */ 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.141 2012-04-15 01:34:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.141 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.142 2012-06-05 00:27:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.142 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

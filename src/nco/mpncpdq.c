@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.90 2012-04-15 03:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.91 2012-06-05 00:27:13 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -48,7 +48,7 @@
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
 #include <time.h> /* machine time */
-#include <unistd.h> /* all sorts of POSIX stuff */
+#include <unistd.h> /* POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* HAVE_GETOPT_LONG */ 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.90 2012-04-15 03:06:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.90 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.91 2012-06-05 00:27:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.91 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_sct **cnk=NULL_CEWI;

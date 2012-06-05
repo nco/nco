@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.689 2012-05-20 18:50:14 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.690 2012-06-05 00:27:12 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -936,8 +936,8 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin 
 </ul>
 <tt>nco.texi</tt> is the most up-to-date.
 Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are
-the most complete and contain all the mathematical formulae (typeset
-with TeX) missing from the screen-oriented formats.
+contain all the mathematical formulae (typeset with TeX) missing from
+the screen-oriented formats. 
 The screen-oriented formats&mdash;<tt>nco.html</tt>,
 <tt>nco.info</tt>, <tt>nco.txt</tt>, and <tt>nco.xml</tt>&mdash;contain 
 all the documentation except the highly mathematical sections.

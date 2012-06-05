@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.96 2012-04-15 03:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.97 2012-06-05 00:27:13 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -48,7 +48,7 @@
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#include <unistd.h> /* all sorts of POSIX stuff */
+#include <unistd.h> /* POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* HAVE_GETOPT_LONG */ 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.96 2012-04-15 03:06:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.96 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.97 2012-06-05 00:27:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.97 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;

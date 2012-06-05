@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.298 2012-04-15 03:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.299 2012-06-05 00:27:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -55,7 +55,7 @@
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#include <unistd.h> /* all sorts of POSIX stuff */
+#include <unistd.h> /* POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* HAVE_GETOPT_LONG */ 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.298 2012-04-15 03:06:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.298 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.299 2012-06-05 00:27:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.299 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
