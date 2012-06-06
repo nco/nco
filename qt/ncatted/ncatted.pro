@@ -7,6 +7,7 @@ CONFIG -= qt
 CONFIG += debug
 
 DEFINES += ENABLE_NETCDF4
+DEFINES += HAVE_NETCDF4_H
 
 HEADERS   = 
 SOURCES   = ../../src/nco/ncatted.c
