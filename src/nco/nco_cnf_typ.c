@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.62 2012-06-06 17:15:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.63 2012-06-06 21:09:45 pvicente Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -11,19 +11,19 @@
 /* MSVC does not define
    lround, lroundf, lroundl, llround, llroundf, llroundl - round to nearest integer */
 #ifdef _MSC_VER
-double llround(double val)
+static double llround(double val)
 {    
     return floor(val + 0.5);
 }
-double llroundf(float val)
+static double llroundf(float val)
+{    
+     return floor(val + 0.5);
+}
+static double lround(double val)
 {    
     return floor(val + 0.5);
 }
-double lround(double val)
-{    
-    return floor(val + 0.5);
-}
-double lroundf(float val)
+static double lroundf(float val)
 {    
     return floor(val + 0.5);
 }
