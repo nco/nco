@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.135 2012-06-05 21:49:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.136 2012-06-06 21:06:06 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -45,6 +45,7 @@
 
 // Standard C++ headers
 #include <string>
+#include <iterator> /* for inserter */
 
 // Standard C headers
 #include <assert.h>  /* assert() debugging macro */
@@ -143,8 +144,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.135 2012-06-05 21:49:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.135 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.136 2012-06-06 21:06:06 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.136 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -1076,10 +1077,12 @@ ram_vars_add
 
   char buff[20];
   double dnan;
+#ifndef _MSC_VER
   if( dnan=nan(buff) ){
     var1=ncap_sclr_var_mk(std::string("nan"),dnan);    //double
     prs_arg->ncap_var_write(var1,true);
   }
+#endif
 
 
 
