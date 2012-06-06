@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.170 2012-06-06 19:36:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.171 2012-06-06 22:14:40 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1402,7 +1402,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
 /* stub function for MSVC */
 #ifdef _MSC_VER
-char * nco_fl_out_open (const char*, nco_bool, nco_bool, int, size_t, int * ) { return NULL; }
+char * nco_fl_out_open (const char * const, const nco_bool, const nco_bool, const int, const size_t *, int * ) { return NULL; }
 #else
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
