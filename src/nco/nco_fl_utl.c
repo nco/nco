@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.168 2012-05-21 00:48:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.169 2012-06-06 18:03:05 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -7,6 +7,14 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_fl_utl.h" /* File manipulation */
+
+/* MSVC
+   The time period for the Win32 Sleep function is in milliseconds. 
+   In the Linux sleep function the time periods are measured in seconds */
+#ifdef _MSC_VER
+# include <windows.h> 
+# define sleep Sleep
+#endif
 
 int /* O [enm] Mode flag for nco_create() call */
 nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format */
