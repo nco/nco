@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.113 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.114 2012-06-06 19:43:03 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -539,7 +539,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     }  /* end else */
     
     /* Free space allocated for dimension */
-    dmn_val_dp=nco_free(dmn_val_dp);
+    dmn_val_dp=(double*)nco_free(dmn_val_dp);
     
     if(rec_dmn_and_mlt_fl_opr){ 
       /* No wrapping with multi-file operators */ 
