@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.300 2012-06-05 21:49:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.301 2012-06-06 20:47:29 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.300 2012-06-05 21:49:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.300 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.301 2012-06-06 20:47:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.301 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -718,8 +718,8 @@ main(int argc,char **argv)
       } /* end loop over idx */
       /* Copy record data record-by-record */
       (void)nco_cpy_rec_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
-      if(fix_lst) fix_lst=nco_free(fix_lst);
-      if(rec_lst) rec_lst=nco_free(rec_lst);
+      if(fix_lst) fix_lst=(nm_id_sct**)nco_free(fix_lst);
+      if(rec_lst) rec_lst=(nm_id_sct**)nco_free(rec_lst);
     } /* endif MM3 workaround */
 
     /* [fnc] Close unformatted binary data file */
