@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.169 2012-06-06 18:03:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.170 2012-06-06 19:36:30 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -149,6 +149,10 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
   
 } /* end nco_fl_overwrite_prm() */
 
+/* stub function for MSVC */
+#ifdef _MSC_VER
+void nco_fl_chmod (const char * const fl_nm) {}
+#else
 void
 nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
 (const char * const fl_nm) /* I [sng] Name of file */
@@ -202,6 +206,7 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
   } /* end if chmod */
   
 } /* end nco_fl_chmod() */
+#endif /* _MSC_VER */
 
 void
 nco_fl_cp /* [fnc] Copy first file to second */
@@ -228,6 +233,10 @@ nco_fl_cp /* [fnc] Copy first file to second */
   if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_cp() */
 
+/* stub function for MSVC */
+#ifdef _MSC_VER
+char * nco_fl_info_get (const char * ) { return NULL; }
+#else
 char * /* O [sng] Canonical file name*/
 nco_fl_info_get /* [fnc] Determine canonical filename and properties */
 (const char * const fl_nm_lcl) /* I [sng] Name of file */
@@ -265,6 +274,7 @@ nco_fl_info_get /* [fnc] Determine canonical filename and properties */
 
   return fl_nm_cnc;
 } /* end nco_fl_info_get() */
+#endif /* _MSC_VER */ 
 
 char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
@@ -1339,7 +1349,7 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
 	      rec_var_nbr++;
 	      if(rec_var_nbr > 1) USE_MM3_WORKAROUND=True;
 	    } /* endif record dimnesion */
-	    if(dmn_id) dmn_id=nco_free(dmn_id);
+	    if(dmn_id) dmn_id=(int*)nco_free(dmn_id);
 	  } /* endif dmn_nbr > 0 */
 	  if(USE_MM3_WORKAROUND) break;
 	} /* end loop over variables */
@@ -1390,6 +1400,10 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   return rcd;
 } /* end nco_fl_open */
 
+/* stub function for MSVC */
+#ifdef _MSC_VER
+char * nco_fl_out_open (const char*, nco_bool, nco_bool, int, size_t, int * ) { return NULL; }
+#else
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
@@ -1610,6 +1624,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   return fl_out_tmp;
 
 } /* end nco_fl_out_open() */
+#endif /* _MSC_VER */
 
 void
 nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
