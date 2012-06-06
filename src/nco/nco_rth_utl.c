@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.48 2012-05-22 04:09:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.49 2012-06-06 17:15:12 pvicente Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -7,6 +7,27 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
+
+/* MSVC does not define
+   lround, lroundf, lroundl, llround, llroundf, llroundl - round to nearest integer */
+#ifdef _MSC_VER
+double llround(double val)
+{    
+    return floor(val + 0.5);
+}
+double llroundf(float val)
+{    
+    return floor(val + 0.5);
+}
+double lround(double val)
+{    
+    return floor(val + 0.5);
+}
+double lroundf(float val)
+{    
+    return floor(val + 0.5);
+}
+#endif /* _MSC_VER */
 
 nco_rth_prc_rnk_enm /* [enm] Ranked precision of arithmetic type */
 nco_rth_prc_rnk /* [fnc] Rank precision of arithmetic type */
