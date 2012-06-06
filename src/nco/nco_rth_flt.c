@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.27 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.28 2012-06-06 18:21:03 pvicente Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -7,6 +7,10 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_rth_flt.h" /* Float-precision arithmetic */
+/* needed for time */
+#ifdef _MSC_VER
+# include <time.h>
+#endif 
 
 /* In ANSI C, <math.h> provides standard math intrinsics in double precision 
    On most architectures, single precision ("float") versions are also supplied 
@@ -104,7 +108,13 @@ rnd_nbr /* [fnc] Generate random fraction in [0,1] */
   long rnd_nbr_lng;
   double rnd_nbr_dbl_frc;
   x=x+0.0; /* CEWI */
+#ifdef _MSC_VER
+  /* seed the random-number generator with the current time */
+   srand( (unsigned)time( NULL ) );
+   rnd_nbr_lng=rand();
+#else
   rnd_nbr_lng=random();
+#endif
   rnd_nbr_dbl_frc=rnd_nbr_lng*1.0/RAND_MAX;
   return rnd_nbr_dbl_frc;
 } /* end rnd_nbr() */
