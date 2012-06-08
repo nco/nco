@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.172 2012-06-08 07:46:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.173 2012-06-08 17:21:09 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1221,7 +1221,11 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
     /* Allocate enough room for joining slash '/' and terminating NUL */
     fl_nm=(char *)nco_malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
     (void)strcpy(fl_nm,fl_pth);
+#ifdef _MSC_VER 
+    (void)strcat(fl_nm,"\\"); /* Windows uses backslash for path separator; escape the character */
+#else
     (void)strcat(fl_nm,"/");
+#endif
     (void)strcat(fl_nm,fl_nm_stub);
 
     /* Free filestub space */
