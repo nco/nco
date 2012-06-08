@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.173 2012-06-08 17:21:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.174 2012-06-08 18:31:28 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -12,8 +12,10 @@
    The time period for the Win32 Sleep function is in milliseconds. 
    In the Linux sleep function the time periods are measured in seconds */
 #ifdef _MSC_VER
+# include <process.h>
 # include <windows.h> 
 # define sleep Sleep
+typedef int pid_t;
 #endif
 
 int /* O [enm] Mode flag for nco_create() call */
@@ -1084,7 +1086,11 @@ nco_fl_mv /* [fnc] Move first file to second */
 {
   /* Purpose: Move first file to second */
   char *cmd_mv;
+#ifdef _MSC_VER
+  const char cmd_mv_fmt[]="move %s %s";
+#else
   const char cmd_mv_fmt[]="mv -f %s %s";
+#endif
 
   int rcd_sys; /* [rcd] Return code for system() */
   const int fmt_chr_nbr=4;
@@ -1408,10 +1414,8 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   return rcd;
 } /* end nco_fl_open */
 
-/* stub function for MSVC */
-#ifdef _MSC_VER
-char * nco_fl_out_open (const char * const, const nco_bool, const nco_bool, const int, const size_t *, int * ) { return NULL; }
-#else
+
+
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
@@ -1493,6 +1497,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* Free temporary memory */
   pid_sng=(char *)nco_free(pid_sng);
 
+#ifndef _MSC_VER
   if(dbg_lvl_get() == 8){
   /* Use built-in system routines to generate temporary filename
      This allows file to be built in fast directory like /tmp rather than local
@@ -1537,6 +1542,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     /*    rcd+=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
+#endif /* _MSC_VER */ 
 
   if(False){
     if(prg_get() == ncrename){
@@ -1632,7 +1638,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   return fl_out_tmp;
 
 } /* end nco_fl_out_open() */
-#endif /* _MSC_VER */
+
 
 void
 nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
