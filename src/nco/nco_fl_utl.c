@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.171 2012-06-06 22:14:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.172 2012-06-08 07:46:04 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -215,7 +215,11 @@ nco_fl_cp /* [fnc] Copy first file to second */
 {
   /* Purpose: Copy first file to second */
   char *cp_cmd;
+#ifdef _MSC_VER
+  const char cp_cmd_fmt[]="copy %s %s";
+#else
   const char cp_cmd_fmt[]="cp %s %s";
+#endif
 
   int rcd;
   const int fmt_chr_nbr=4;
