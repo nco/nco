@@ -6,7 +6,17 @@ TARGET = libnco_c++
 CONFIG += staticlib
 
 CONFIG -= qt
-CONFIG += debug
+CONFIG += debug_and_release
+
+#nco library
+CONFIG( debug, debug|release ) {
+    # debug
+	LIBS += ../libnco/debug/libnco_c++.lib
+} else {
+    # release
+	LIBS += ../libnco/release/libnco_c++.lib
+}
+
 
 # netCDF library
 unix {

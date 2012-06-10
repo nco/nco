@@ -6,7 +6,11 @@ TARGET = libnco
 CONFIG += staticlib
 
 CONFIG -= qt
-CONFIG += debug
+CONFIG += debug_and_release
+
+
+
+
 
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H

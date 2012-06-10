@@ -4,7 +4,16 @@ TEMPLATE = app
 TARGET = ncks
 
 CONFIG -= qt
-CONFIG += debug
+CONFIG += debug_and_release
+
+#nco library
+CONFIG( debug, debug|release ) {
+    # debug
+	LIBS += ../libnco/debug/libnco.lib
+} else {
+    # release
+	LIBS += ../libnco/release/libnco.lib
+}
 
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
@@ -12,8 +21,6 @@ DEFINES += HAVE_NETCDF4_H
 HEADERS   = 
 SOURCES   = ../../src/nco/ncks.c
 
-#NCO library
-LIBS += ../libnco/debug/libnco.lib
 
 # netCDF library
 unix {
@@ -29,11 +36,12 @@ win32 {
  LIBS += $(LIB_NETCDF4)
  LIBS += $(LIB_HDF5)
  LIBS += $(LIB_HDF5_HL)
- LIBS += $(LIB_SZIP)
  LIBS += $(LIB_ZLIB)
+ LIBS += $(LIB_SZIP)
  
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
  CONFIG += console
+
 
 }
