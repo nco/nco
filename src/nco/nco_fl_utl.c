@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.174 2012-06-08 18:31:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.175 2012-06-10 23:57:27 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1543,6 +1543,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     return fl_out_tmp;
   } /* end if */
 #endif /* _MSC_VER */ 
+
+#ifdef WRT_TMP_FL /* avoid generation of temporary file; currently defined only for MSVC */
+  strcpy(fl_out_tmp,fl_out);
+#endif
 
   if(False){
     if(prg_get() == ncrename){

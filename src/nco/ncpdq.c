@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.181 2012-06-05 21:49:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.182 2012-06-10 23:57:27 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.181 2012-06-05 21:49:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.181 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.182 2012-06-10 23:57:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.182 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -963,7 +963,9 @@ main(int argc,char **argv)
   } /* end loop over fl_idx */
   
   /* Close output file and move it from temporary to permanent location */
+#ifndef WRT_TMP_FL /* avoid generation of temporary file; currently defined only for MSVC */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+#endif
   
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
