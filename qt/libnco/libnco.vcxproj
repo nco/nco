@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E9FC0519-522D-3F3A-AB8B-13E7FE63EA2B}</ProjectGuid>
+    <RootNamespace>libnco</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <OutputDirectory>debug\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>debug\</IntermediateDirectory>
+    <PrimaryOutput>libnco</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <OutputDirectory>release\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>release\</IntermediateDirectory>
+    <PrimaryOutput>libnco</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(ConfigurationName)</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libnco</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(ConfigurationName)</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libnco</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(HEADER_NETCDF);j:\qt-everywhere-opensource-src-4.8.1\mkspecs\win32-msvc2010;.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>debug\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;ENABLE_NETCDF4;HAVE_NETCDF4_H;NEED_STRCASECMP;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;ENABLE_NETCDF4;HAVE_NETCDF4_H;NEED_STRCASECMP;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ResourceOutputFileName>$(OutDir)\$(InputName).res</ResourceOutputFileName>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(HEADER_NETCDF);j:\qt-everywhere-opensource-src-4.8.1\mkspecs\win32-msvc2010;.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>release\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;ENABLE_NETCDF4;HAVE_NETCDF4_H;NEED_STRCASECMP;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;ENABLE_NETCDF4;HAVE_NETCDF4_H;NEED_STRCASECMP;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ResourceOutputFileName>$(OutDir)\$(InputName).res</ResourceOutputFileName>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\nco\nco_att_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_aux.c" />
+    <ClCompile Include="..\..\src\nco\nco_bnr.c" />
+    <ClCompile Include="..\..\src\nco\nco_cln_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_cnf_dmn.c" />
+    <ClCompile Include="..\..\src\nco\nco_cnf_typ.c" />
+    <ClCompile Include="..\..\src\nco\nco_cnk.c" />
+    <ClCompile Include="..\..\src\nco\nco_cnv_arm.c" />
+    <ClCompile Include="..\..\src\nco\nco_cnv_csm.c" />
+    <ClCompile Include="..\..\src\nco\nco_ctl.c" />
+    <ClCompile Include="..\..\src\nco\nco_dbg.c" />
+    <ClCompile Include="..\..\src\nco\nco_dmn_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_fl_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_getopt.c" />
+    <ClCompile Include="..\..\src\nco\nco_grp_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_lmt.c" />
+    <ClCompile Include="..\..\src\nco\nco_lst_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_md5.c" />
+    <ClCompile Include="..\..\src\nco\nco_mmr.c" />
+    <ClCompile Include="..\..\src\nco\nco_msa.c" />
+    <ClCompile Include="..\..\src\nco\nco_mss_val.c" />
+    <ClCompile Include="..\..\src\nco\nco_netcdf.c" />
+    <ClCompile Include="..\..\src\nco\nco_omp.c" />
+    <ClCompile Include="..\..\src\nco\nco_pck.c" />
+    <ClCompile Include="..\..\src\nco\nco_prn.c" />
+    <ClCompile Include="..\..\src\nco\nco_rec_var.c" />
+    <ClCompile Include="..\..\src\nco\nco_rth_flt.c" />
+    <ClCompile Include="..\..\src\nco\nco_rth_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_scl_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_scm.c" />
+    <ClCompile Include="..\..\src\nco\nco_sng_utl.c" />
+    <ClCompile Include="..\..\src\nco\nco_var_avg.c" />
+    <ClCompile Include="..\..\src\nco\nco_var_lst.c" />
+    <ClCompile Include="..\..\src\nco\nco_var_rth.c" />
+    <ClCompile Include="..\..\src\nco\nco_var_scv.c" />
+    <ClCompile Include="..\..\src\nco\nco_var_utl.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\nco\libnco.h" />
+    <ClInclude Include="..\..\src\nco\ncap.h" />
+    <ClInclude Include="..\..\src\nco\ncap_yacc.h" />
+    <ClInclude Include="..\..\src\nco\nco.h" />
+    <ClInclude Include="..\..\src\nco\nco_att_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_aux.h" />
+    <ClInclude Include="..\..\src\nco\nco_bnr.h" />
+    <ClInclude Include="..\..\src\nco\nco_cln_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_cnf_dmn.h" />
+    <ClInclude Include="..\..\src\nco\nco_cnf_typ.h" />
+    <ClInclude Include="..\..\src\nco\nco_cnk.h" />
+    <ClInclude Include="..\..\src\nco\nco_cnv_arm.h" />
+    <ClInclude Include="..\..\src\nco\nco_cnv_csm.h" />
+    <ClInclude Include="..\..\src\nco\nco_ctl.h" />
+    <ClInclude Include="..\..\src\nco\nco_dbg.h" />
+    <ClInclude Include="..\..\src\nco\nco_dmn_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_fl_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_getopt.h" />
+    <ClInclude Include="..\..\src\nco\nco_grp_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_lmt.h" />
+    <ClInclude Include="..\..\src\nco\nco_lst_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_md5.h" />
+    <ClInclude Include="..\..\src\nco\nco_mmr.h" />
+    <ClInclude Include="..\..\src\nco\nco_mpi.h" />
+    <ClInclude Include="..\..\src\nco\nco_msa.h" />
+    <ClInclude Include="..\..\src\nco\nco_mss_val.h" />
+    <ClInclude Include="..\..\src\nco\nco_netcdf.h" />
+    <ClInclude Include="..\..\src\nco\nco_omp.h" />
+    <ClInclude Include="..\..\src\nco\nco_pck.h" />
+    <ClInclude Include="..\..\src\nco\nco_prn.h" />
+    <ClInclude Include="..\..\src\nco\nco_rec_var.h" />
+    <ClInclude Include="..\..\src\nco\nco_rth_flt.h" />
+    <ClInclude Include="..\..\src\nco\nco_rth_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_scl_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_scm.h" />
+    <ClInclude Include="..\..\src\nco\nco_sng_utl.h" />
+    <ClInclude Include="..\..\src\nco\nco_typ.h" />
+    <ClInclude Include="..\..\src\nco\nco_var_avg.h" />
+    <ClInclude Include="..\..\src\nco\nco_var_lst.h" />
+    <ClInclude Include="..\..\src\nco\nco_var_rth.h" />
+    <ClInclude Include="..\..\src\nco\nco_var_scv.h" />
+    <ClInclude Include="..\..\src\nco\nco_var_utl.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties QtVersion_x0020_Win32="4.8.1.static" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
