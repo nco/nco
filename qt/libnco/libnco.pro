@@ -8,12 +8,17 @@ CONFIG += staticlib
 CONFIG -= qt
 CONFIG += debug_and_release
 
+#nco avoid writing temporary file
+DEFINES += WRT_TMP_FL
 
 
+#nco avoid writing temporary file
+DEFINES += WRT_TMP_FL
 
-
+#netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
+
 DEFINES += NEED_STRCASECMP
 
 

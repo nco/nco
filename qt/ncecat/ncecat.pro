@@ -15,6 +15,10 @@ CONFIG( debug, debug|release ) {
 	LIBS += ../libnco/release/libnco.lib
 }
 
+#nco avoid writing temporary file
+DEFINES += WRT_TMP_FL
+
+#netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
 

@@ -16,7 +16,10 @@ CONFIG( debug, debug|release ) {
 }
 
 
+#nco avoid writing temporary file
+DEFINES += WRT_TMP_FL
 
+#netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
 
