@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.483 2012-06-11 18:52:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.484 2012-06-11 22:59:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -23,7 +23,19 @@ Charlie
 
 Other "New stuff" in 4.2.0 summary (full details always in ChangeLog):
 
-A. Microsoft Windows Visual Studio support.
+A. Microsoft Windows support. NCO source code now contains all
+   modifications required to build under Visual Studio 2010.
+   The necessary changes are generally indicated by the presence of
+   the _MSC_VER pre-processor token. Compilation is only supported
+   with the C++ compiler (since M$ does not support C99). Qt Project 
+   environment are provided as well in the nco/qt directory.
+   http://nco.sf.net/nco.html#windows
+
+A. Native, self-extracting binary executables for Microsoft Windows
+   are now distributed from the NCO homepage. We hope to keep these
+   exectuables up-to-date. They are not thoroughly tested yet.
+   Please send us feedback.
+   http://nco.sf.net#windows
 
 A. Workaround slow copies of record variables.
    Normally encountered on Multi-record Multi-variable netCDF3 files

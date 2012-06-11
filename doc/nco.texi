@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.681 2012-06-01 22:46:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.682 2012-06-11 22:59:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.0
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 19 May 2012
-@set update-month May 2012
+@set update-date 11 June 2012
+@set update-month June 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -819,6 +819,8 @@ platform, and the change in the wallclock time for execution.}.
 
 @html
 <a name="wnd"></a> <!-- http://nco.sf.net/nco.html#wnd -->
+<a name="windows"></a> <!-- http://nco.sf.net/nco.html#windows -->
+<a name="qt"></a> <!-- http://nco.sf.net/nco.html#qt -->
 @end html
 @node Windows Operating System,  , Compatability, Compatability
 @subsection Compiling @acronym{NCO} for Microsoft Windows @acronym{OS}
@@ -827,11 +829,24 @@ platform, and the change in the wallclock time for execution.}.
 @cindex XP (Microsoft operating system)
 @cindex NT (Microsoft operating system)
 @cindex Vista (Microsoft operating system)
+@cindex @acronym{MVS}
+@cindex Microsoft Visual Studio
 
 @acronym{NCO} has been successfully ported and tested on most Microsoft  
-Windows operating systems including: 95/98/NT/2000/XP/Vista.
-The switches necessary to accomplish this are included in the standard
+Windows operating systems including: XP SP2/Vista/7.
+Support is provided for compiling either native Windows executables,
+using the Microsoft Visual Studio 2010 Compiler, or with Cygwin, the
+UNIX-emulating compatibility layer with the GNU toolchain.
+The switches necessary to accomplish both are included in the standard
 distribution of @acronym{NCO}.
+
+@cindex Qt
+Using Microsoft Visual Studio (@acronym{MVS}), one must build
+@acronym{NCO} with the C++ compiler since MVS does not support C99.
+Qt, a convenient integrated development environment, was used to convert
+the project files to @acronym{MVS} format.
+The Qt files themselves are distributed in the @file{nco/qt} directory.
+
 Using the freely available Cygwin (formerly gnu-win32) development
 environment  
 @footnote{The Cygwin package is available from@*

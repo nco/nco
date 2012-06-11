@@ -1,15 +1,19 @@
+2012-06-11  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.2.0 release procedure:
+ 	Changes since nco-4_1_0: ncra -y ttl, %i fmt, ncwa NaN, nc__open, MVS
+	cd ~/nco;cvs tag -d nco-4_2_0;cvs tag -d nco-4_2_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
+	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
+
+	* Within last week Pedro committed Qt/MVS files and changes
+
 2012-05-30  Henry Butowsky  <henryb@hush.com>
 
 	* Added following RAM vars in ncap2.cc: double: nan, inf; float: nanf, inff
 	Only problem with implementation may be with macro call double nan(const char *tagp)
 
 2012-05-22  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.0 release procedure:
- 	Changes since nco-4_1_0: ncra -y ttl, %i fmt, ncwa NaN, nc__open
-	cd ~/nco;cvs tag -d nco-4_2_0;cvs tag -d nco-4_2_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.0 release"
-	cvs tag -c nco-4_2_0;cvs tag -c nco-4_2_0-1
 
 	* Look into ncap2 regression tests 10 and 11...
 
