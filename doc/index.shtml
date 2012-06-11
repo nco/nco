@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.692 2012-06-11 17:49:53 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.693 2012-06-11 18:22:12 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -905,26 +905,33 @@ Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if
   for NCO 3.9.9. Maintained by Takeshi Enomoto.</li>
 </ul>
 
-<a name="cygwin"></a><a name="dbn"></a> <!-- http://nco.sf.net#cygwin -->
-<a name="windows"></a><a name="ubn"></a> <!-- http://nco.sf.net#windows -->
-<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> running <a href="http://www.cygwin.org">Cygwin</a></h3>
+<a name="visual"></a> <!-- http://nco.sf.net#visual -->
+<a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
+<a name="windows"></a> <!-- http://nco.sf.net#windows -->
+<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a>
+(native build, compiled with <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a>, use this if unsure)</h3>
+These native Windows executables should be stand-alone, i.e., not
+require users to have any additional software. 
+This is a new feature as of 20120615, please send us feedback.
 <ul>
-<li><a href="src/nco-4.0.6.win32.cygwin.tar.gz">nco-4.0.6.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.6.win32.cygwin.tar.gz"-->): Executables Win32-compatible (last updated <!--#flastmod file="src/nco-4.0.6.win32.cygwin.tar.gz"-->).</li>
+<!-- Copy files from http://glace.ess.uci.edu
+wget http://glace.ess.uci.edu/~pvicente/windows_setup/nco-4.2.0.windows.mvs.exe -O /tmp/nco-4.2.0.windows.mvs.exe
+/usr/bin/scp /tmp/nco-4.2.0.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+scp /tmp/nco-4.2.0.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
+-->
+<li><a href="src/nco-4.2.0.windows.mvs.exe">nco-4.2.0.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.0.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included).
+</ul>
+
+<a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
+<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> (running <a href="http://www.cygwin.org">Cygwin</a> environment, compiled with GNU-toolchain)</h3>
+<ul>
+<li><a href="src/nco-4.0.6.win32.cygwin.tar.gz">nco-4.0.6.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.6.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.0.6.win32.cygwin.tar.gz"-->).</li>
 First install <tt>curl</tt> (in the "Web" category of Cygwin setup),
 and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the 
 <tt>udunits2.xml</tt> file, e.g., with
 <tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt>. 
 Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin over the years. 
 </ul>
-
-<!-- Visual Studio -->
-<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> with <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a></h3>
-<ul>
-<li><a href="src/nco.4.2.0.setup.exe">nco.4.2.0.setup.exe</a> (<!--#fsize file="src/nco.4.2.0.setup.exe"-->) : Windows Installer.
-</ul>
-<!-- http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express -->
-<!-- end Visual Studio -->
-
 
 <hr></p>
 <!-- End http://nco.sf.net#bnr -->
