@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.323 2012-06-08 00:09:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.324 2012-06-11 23:55:22 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -782,39 +782,8 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Stephanie, Susan, Stephanie\n";
+  return "Pedro\n";
 } /* end nco_nmn_get() */
-
-char*                      /* return substring */
-trim_name                  /* [fnc] strip a substring from a string starting at string end */
-(const char * const nm_in, /* I [sng] input name, i.e., argv[0] (may include path prefix) */
- const char ch_control)    /* I [sng] character to detect, i.e., a path separator, backslash (Windows) or forward slash (Unix) */
-{
-    int len;     /* input string lenght */
-    char *cp;
-    len = strlen(nm_in);
-    if (len==0)  /* empty input string */
-        return NULL; 
-
-    cp = (char *)(nm_in + len); /* point to the NULL ending the string */
-    cp--;                       /* back up one character */
-    while (cp != nm_in)         
-    { 
-        if (ch_control == *cp) /* found character */
-        { 
-            break;   
-        }
-        cp--;                  /* traverse from end */
-    }
-    if (cp != nm_in)
-    { 
-#ifdef NCO_DEBUG
-        printf( "name is %s\n",cp+1);
-#endif
-        return cp+1;
-    }
-    return NULL;
-}
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
 prg_prs /* [fnc] Strip program name to stub and return program ID */
@@ -830,15 +799,12 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   /* Get program name (use strrchr() first in case nm_in contains a path) */
   nm_out_orig=nm_out_tmp=(char *)strdup(nm_in);
 #ifdef _MSC_VER 
-  nm_out_tmp=trim_name(nm_out_orig,'\\'); /* Windows uses backslash for path separator; escape the character */
-  len=strlen(nm_out_tmp);                 /* cut '.exe' from name */
-  nm_out_tmp[len-4] = '\0'; 
-#ifdef NCO_DEBUG
-  printf( "name is %s\n",nm_out_tmp);
-#endif
-#else /* NCO_DEBUG */ 
+  nm_out_tmp=sng_xct_xtr(nm_out_orig,'\\'); /* Windows uses backslash for path separator; escape the character */
+  len=strlen(nm_out_tmp); /* cut '.exe' from name */
+  nm_out_tmp[len-4]='\0'; 
+#else /* !_MSC_VER */
   if(strrchr(nm_out_tmp,'/')) nm_out_tmp=strrchr(nm_out_tmp,'/')+1;
-#endif /* _MSC_VER */
+#endif /* !_MSC_VER */
 
   /* Skip possible libtool prefix */
   if(!strncmp(nm_out_tmp,"lt-",3)){nm_out_tmp+=3;}

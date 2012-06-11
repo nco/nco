@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.25 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.26 2012-06-11 23:55:22 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -54,6 +54,11 @@ nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
 (char * const sng); /* I/O [sng] String to process */
+
+char * /* O [sng] Exectuable name */
+sng_xct_xtr /* [fnc] Strip substring from string starting at string end */
+(const char * const nm_in, /* I [sng] Input name, i.e., argv[0] (may include path prefix) */
+ const char ch_control); /* I [sng] Character to detect, i.e., path separator, backslash (Windows) or forward slash (Unix) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
