@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.691 2012-06-11 16:10:21 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.692 2012-06-11 17:49:53 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -918,9 +918,9 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin 
 </ul>
 
 <!-- Visual Studio -->
-<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> with <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio</a></h3>
+<h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> with <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a></h3>
 <ul>
-<li>nco.4.2.0.setup.exe : Windows Installer
+<li><a href="src/nco.4.2.0.setup.exe">nco.4.2.0.setup.exe</a> (<!--#fsize file="src/nco.4.2.0.setup.exe"-->) : Windows Installer.
 </ul>
 <!-- http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express -->
 <!-- end Visual Studio -->
