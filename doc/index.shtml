@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.693 2012-06-11 18:22:12 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.694 2012-06-11 18:52:51 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -915,7 +915,7 @@ require users to have any additional software.
 This is a new feature as of 20120615, please send us feedback.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
-wget http://glace.ess.uci.edu/~pvicente/windows_setup/nco-4.2.0.windows.mvs.exe -O /tmp/nco-4.2.0.windows.mvs.exe
+wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.2.0.windows.mvs.exe -O /tmp/nco-4.2.0.windows.mvs.exe
 /usr/bin/scp /tmp/nco-4.2.0.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp /tmp/nco-4.2.0.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
 -->

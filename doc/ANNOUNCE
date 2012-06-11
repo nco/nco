@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.482 2012-06-04 20:07:00 pvicente Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.483 2012-06-11 18:52:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -12,17 +12,11 @@ NCO version numbering. netCDF 4.2.x just came out and it seems less
 confusing to call the NCO developed with it NCO 4.2.x rather than NCO
 4.1.x. 
 
-NASA has started funding NCO to develop support for netCDF4 groups
-and to write NCO wrappers for HDF-EOS files. A job ad has been posted
-for a programmer position associated with this project:
-
-http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf
-http://ess.uci.edu/opportunity/zender20120327
-
 Work on NCO 4.2.1 is underway, focused on making a more robust
-build/configuration environment, addressing the MM3 issue in other
-(non-ncks) operators, and on simplifying issues described in the 
-KNOWN BUGS NOT YET FIXED section below.
+build/configuration environment for RHEL, CentOS, and AIX, as well as
+addressing the MM3 issue in other (non-ncks) operators, and on
+simplifying issues described in the KNOWN BUGS NOT YET FIXED section
+below. 
 
 Enjoy,
 Charlie
