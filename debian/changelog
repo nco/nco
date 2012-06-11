@@ -1,8 +1,8 @@
 nco (4.2.0-1) unstable; urgency=low
 
-  * new upstream version (sorts/maps, MD5, chmod, NaNs, MM3)
+  * new upstream version (ncra -y ttl, %i fmt, ncwa NaN, nc__open, MVS)
 
- -- Charlie Zender <zender@uci.edu>  Fri, 30 Mar 2012 21:45:15 -0800
+ -- Charlie Zender <zender@uci.edu>  Mon, 11 Jun 2012 16:00:42 -0700
 
 nco (4.1.0-1) unstable; urgency=low
 
