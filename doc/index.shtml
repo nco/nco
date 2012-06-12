@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.696 2012-06-11 22:59:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.697 2012-06-12 00:35:16 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -120,6 +120,8 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
+<li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>
+
 <li>2012 Apr&nbsp;23: Received funding for NASA <a href="#prp_access">ACCESS Project</a></li>
 
 <li>2012 Mar&nbsp;29: NCO 4.1.0 (MD5 support, MM3)</li>
@@ -602,18 +604,20 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.2.1</b>: (<i>Future</i>) 
+<li><b>NCO 4.2.2</b>: (<i>Future</i>) 
+<li><b>NCO 4.2.1</b>: (<i>In Progress, features already in beta include the following</i>)
 netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
 netCDF4 groups;
-<li><b>NCO 4.2.0</b>: (<i>In Progress, features already in beta include the following</i>)
+<li><b>NCO 4.2.0</b>: (<i>Current Stable Release</i>) 
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;
 <tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
 <tt>ncra -y ttl</tt> fix;
 <tt>ncrcat</tt> UDUnits fix;
 <tt>ncwa -y add</tt> NaN support;
-<li><b>NCO 4.1.0</b>: (<i>Current Stable Release</i>)
+Microsoft Visual Studio support;
+<li><b>NCO 4.1.0</b>:
 MD5 digests;
 <tt>ncap2</tt> sorts &amp; maps;
 <tt>ncks</tt> MM3 <a href="#bug_mm3">workaround</a>;
