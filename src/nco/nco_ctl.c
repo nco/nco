@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.325 2012-06-12 00:15:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.326 2012-06-12 00:22:37 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -794,7 +794,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   char *nm_out;
   char *nm_out_tmp;
   char *nm_out_orig;
-  size_t len=0L;
+  size_t len=0L; /* CEWI */
 
   /* Get program name (use strrchr() first in case nm_in contains a path) */
   nm_out_orig=nm_out_tmp=(char *)strdup(nm_in);
