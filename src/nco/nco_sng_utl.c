@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.36 2012-06-11 23:55:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.37 2012-06-12 00:15:22 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -173,31 +173,22 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
 
 char * /* O [sng] Exectuable name */
 sng_xct_xtr /* [fnc] Strip substring from string starting at string end */
-(const char * const nm_in, /* I [sng] Input name, i.e., argv[0] (may include path prefix) */
+(char * const nm_in, /* I [sng] Input name, i.e., argv[0] (may include path prefix) */
  const char ch_control) /* I [sng] Character to detect, i.e., path separator, backslash (Windows) or forward slash (Unix) */
 {
-    int len;     /* input string lenght */
-    char *cp;
-    len = strlen(nm_in);
-    if (len==0)  /* empty input string */
-        return NULL; 
+  size_t len;     /* input string lenght */
+  char *cp;
 
-    cp = (char *)(nm_in + len); /* point to the NULL ending the string */
-    cp--;                       /* back up one character */
-    while (cp != nm_in)         
-    { 
-        if (ch_control == *cp) /* found character */
-        { 
-            break;   
-        }
-        cp--;                  /* traverse from end */
-    }
-    if (cp != nm_in)
-    { 
-#ifdef NCO_DEBUG
-        printf( "name is %s\n",cp+1);
-#endif
-        return cp+1;
-    }
-    return NULL;
+  len=strlen(nm_in);
+  if(len == 0) return NULL; 
+  
+  cp=(char *)(nm_in + len); /* point to the NULL ending the string */
+  cp--;                       /* back up one character */
+  while(cp != nm_in){ 
+    if(ch_control == *cp) break;   
+    cp--; /* traverse from end */
+  } /* end while */
+  
+  if (cp != nm_in) return cp+1;
+  return NULL;
 } /* end sng_xct_xtr() */
