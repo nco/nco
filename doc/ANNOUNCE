@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.485 2012-06-12 05:05:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.486 2012-06-12 16:07:57 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
@@ -37,14 +37,14 @@ B. Native, self-extracting binary executables for Microsoft Windows
    thoroughly tested. Please send us feedback.
    http://nco.sf.net#windows
 
-A. ncap2 append mode (i.e., ncap2 -A) now works when variables to be 
+C. ncap2 append mode (i.e., ncap2 -A) now works when variables to be 
    appended contain dimensions that already exist in the output file.
    (The rest of NCO has always done this correctly, but ncap2 is 
    architected quite differently).
    Thanks to user mullers for reminding us about this bug, and to
    Henry Butowsky for fixing it.
 
-A. The NCO documentation contains examples of shell commands defined
+D. The NCO documentation contains examples of shell commands defined
    by post-processing the verbose output from ncks. Currently these
    commands include nclist and ncattget, that produce, respectively,
    uncluttered lists of the variables in a file and of the value of
@@ -53,7 +53,7 @@ A. The NCO documentation contains examples of shell commands defined
    http://nco.sf.net/nco.html#nclist
    http://nco.sf.net/nco.html#ncattget
 
-A. ncecat no longer glues a record dimension to any auxiliary coordinate
+E. ncecat no longer glues a record dimension to any auxiliary coordinate
    variables (latixy, longxy, ...) or bounds (lat_bnds, lon_bnds, ...). 
    These are variables specified in the "coordinates" or "bounds" 
    attribute, respectively.
@@ -62,7 +62,7 @@ A. ncecat no longer glues a record dimension to any auxiliary coordinate
    But ncecat never added a record dimension to "normal" 1D coordinates.
    Thanks to Patrick Brockmann for this suggestion. 
 
-A. Microsoft Windows support. NCO source code now contains all
+F. Microsoft Windows support. NCO source code now contains all
    modifications required to build under Visual Studio 2010.
    The necessary changes are generally indicated by the presence of
    the _MSC_VER pre-processor token. Compilation is only supported
@@ -70,7 +70,7 @@ A. Microsoft Windows support. NCO source code now contains all
    environment settings are provided in the nco/qt directory. 
    http://nco.sf.net/nco.html#windows
 
-A. All operators allow specification of buffer size for reading and
+G. All operators allow specification of buffer size for reading and
    writing files. Specify size with --bfr_sz_hnt or --buffer_size_hint: 
    # Request 2 MB file buffer instead of default 8 kB buffer
    ncks -O -D 3 --bfr_sz=2097152 ~/nco/data/in.nc ~/foo.nc
@@ -79,7 +79,7 @@ A. All operators allow specification of buffer size for reading and
    Thanks to Andy Mai for reporting Rob Latham's suggestion for this.
    http://nco.sf.net/nco.html#bfr
 
-A. NaN means Not a Number in IEEE-speak
+H. NaN means Not a Number in IEEE-speak
    Recently I learned that some people use NaN for a missing value,
    and that netCDF supports NaNs. So NCO should, too, but did not.
    Currently the workaround is to change the missing value to non-NaN,
@@ -91,22 +91,27 @@ A. NaN means Not a Number in IEEE-speak
    Should we spend time supporting NaN for all arithmetic functions?
    http://nco.sf.net/nco.html#nan
 
-A. ncks now prints variables of type NC_INT with %i instead of %li
+I. ncks now prints variables of type NC_INT with %i instead of %li
    formatting. This fixes TODO nco1040.
 
-A. ncra properly initializes counting and accumlation arrays.
+J. ncra properly initializes counting and accumlation arrays.
    This could cause a bug with the ncra -y ttl (i.e., total) function.
    This fixes TODO nco1039 and nco1051. Thanks to Ken5746 for reporting this. 
 
-A. Fix double-free() error triggered by misordering UDUnits2 free(). 
+K. Fix double-free() error triggered by misordering UDUnits2 free(). 
    Problem caused ncrcat to fail when concatenating record dimensions
    with non-time units. Thanks to Andrew Wittenburg and to Peter Campbell
    for reporting this. 
 
 KNOWN BUGS NOT YET FIXED:
 
-   This section of the ANNOUNCE file is intended to make clear the
+   This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
+   These problems occur with NCO 4.2.0 built/tested with netCDF
+   4.2-snapshot2012040523 on top of HDF5 hdf5-1.8.8 with these methods: 
+
+   cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
+   cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
 
 A. NOT YET FIXED
    Correctly read netCDF4 input over DAP, write netCDF4 output, then read resulting file.
@@ -130,11 +135,11 @@ B. NOT YET FIXED
    ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
    ncks -m ~/foo.nc
 
-   20120607: Verified problem still exists
+   20120611: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 C. NOT YET FIXED
-   Unable to retrieve contents of variables with period '.' in name
+   Unable to retrieve contents of variables including period '.' in name
    Metadata is returned successfully, data is not.
    DAP non-transparency: Works locally, fails through DAP server.
 
@@ -143,25 +148,25 @@ C. NOT YET FIXED
 
    20120611: Verified problem still exists. 
    Stopped testing because inclusion of var_nm.dot broke all test scripts.
-   Problem may never be fixed since in DAP '.' is a structure delimiter in query string of HTTP requests.
+   NB: Problem hard to fix since DAP interprets '.' as structure delimiter in query string of HTTP requests.
 
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
 "Sticky" reminders:
 
-A. All operators support netCDF4 chunking options:
-   These options can improve performance on large datasets.
-   Large file users: Send us suggestions on useful chunking patterns!
-   ncks -O -4 --cnk_plc=all in.nc out.nc
-   http://nco.sf.net/nco.html#chunking
-
-B. Pre-built, up-to-date Debian Sid & Ubuntu packages:
+A. Pre-built, up-to-date Debian Sid & Ubuntu packages:
    http://nco.sf.net#debian
 
-C. Pre-built Fedora and CentOS RPMs:
+B. Pre-built Fedora and CentOS RPMs:
    http://nco.sf.net#rpm
 
-D. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
+C. Pre-built Windows (native) and Cygwin binaries:
+   http://nco.sf.net#windows
+
+D. Pre-built AIX binaries:
+   http://nco.sf.net#aix
+
+E. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    SWAMP efficiently schedules/executes NCO scripts on remote servers:  
 
    http://swamp.googlecode.com
@@ -170,22 +175,13 @@ D. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
    If you must transfer lots of data from a server to your client
    before you analyze it, then SWAMP will likely speed things up. 
 
-E. NCO support for netCDF4 features is tracked at
+F. NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.2.0 with was built and tested with HDF5 hdf5-1.8.8 and with
-   4.2-snapshot2012040523
-   NCO may not build with earlier, and should build with later, netCDF4 releases.
-   This is particularly true since NCO 4.2.0 takes advantage of an
-   internal change to the netCDF nc_def_var_chunking() API in June 2009. 
 
-   export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
-   cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
-   cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
-
-F. Have you seen the NCO logo candidates by Tony Freeman, Rich
+G. Have you seen the NCO logo candidates by Tony Freeman, Rich
    Signell, Rob Hetland, and Andrea Cimatoribus? 
    http://nco.sf.net
    Tell us what you think...
