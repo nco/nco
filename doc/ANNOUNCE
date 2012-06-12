@@ -1,9 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.484 2012-06-11 22:59:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.485 2012-06-12 05:05:59 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
+
+This release is notable for its improved support for "bounds" and
+"coordinates" attributes (often used in the CMIP5 archive), and for
+its native support for M$ Windows.
 
 The minor release change in numbering of this release, from 4.1.0 to
 4.2.0, was made to mark the change in NCO status to funded (by NASA)
@@ -23,69 +27,22 @@ Charlie
 
 Other "New stuff" in 4.2.0 summary (full details always in ChangeLog):
 
-A. Microsoft Windows support. NCO source code now contains all
-   modifications required to build under Visual Studio 2010.
-   The necessary changes are generally indicated by the presence of
-   the _MSC_VER pre-processor token. Compilation is only supported
-   with the C++ compiler (since M$ does not support C99). Qt Project 
-   environment are provided as well in the nco/qt directory.
-   http://nco.sf.net/nco.html#windows
+A. Operators now treat variables specified in "coordinates" and
+   "bounds" attributes more consistently.  
 
-A. Native, self-extracting binary executables for Microsoft Windows
+B. Native, self-extracting binary executables for Microsoft Windows
    are now distributed from the NCO homepage. We hope to keep these
-   exectuables up-to-date. They are not thoroughly tested yet.
-   Please send us feedback.
+   exectuables up-to-date. No compilation necessary. No UNIX
+   necessary. Your mother could use these. However, they are not yet
+   thoroughly tested. Please send us feedback.
    http://nco.sf.net#windows
-
-A. Workaround slow copies of record variables.
-   Normally encountered on Multi-record Multi-variable netCDF3 files
-   (MM3s), this is also known as the MM3-workaround. 
-   The first MM3 workaround went into ncks in NCO 4.1.0.
-   The latest NCO also includes MM3 speedups in fxm
-   http://nco.sf.net#bug_mm3
-
-A. NaN means Not a Number in IEEE-speak
-   Recently I learned that some people use NaN for a missing value,
-   and that netCDF supports NaNs. So NCO should, too, but does not.
-   Currently the workaround is to change the missing value to non-NaN,
-   then perform arithmetic, then change the missing value back to Nan.
-   However, show of hands: How many people would like NCO to handle
-   missing values that are NaN without using a workaround? i.e., for 
-   NCO to do all the checking itself?
-   ncwa now correctly handles averages of missing values that are NaN.
-   Should we spend time supporting NaN for all arithmetic functions?
-
-A. ncks now prints variables of type NC_INT with %i instead of %li
-   formatting. This fixes TODO nco1040.
-
-A. ncra properly initializes counting and accumlation arrays.
-   This could cause a bug with the ncra -y ttl (i.e., total) function.
-   This fixes TODO nco1039 and nco1051. Thanks to Ken5746 for reporting this. 
-
-A. All operators allow specification of buffer size for reading and
-   writing files. Specify size with --bfr_sz_hnt or --buffer_size_hint: 
-   # Request 2 MB file buffer instead of default 8 kB buffer
-   ncks -O -D 3 --bfr_sz=2097152 ~/nco/data/in.nc ~/foo.nc
-   Larger sizes can increase access speed by reducing the number of 
-   system calls netCDF makes to read/write data from/to disk.
-   http://nco.sf.net/nco.html#bfr
-   Thanks to Andy Mai for reporting Rob Latham's suggestion for this.
-
-A. ncecat no longer glues a record dimension to any auxiliary coordinate
-   variables (latixy, longxy, ...) or bounds (lat_bnds, lon_bnds, ...). 
-   These are variables specified in the "coordinates" or "bounds" 
-   attribute, respectively.
-   Note that regular (1D) coordinate variables (lat, lon, time)
-   may also be listed as auxiliary coordinate variables.
-   But ncecat never added a record dimension to "normal" 1D coordinates.
-   Thanks to Patrick Brockmann for this suggestion. 
 
 A. ncap2 append mode (i.e., ncap2 -A) now works when variables to be 
    appended contain dimensions that already exist in the output file.
    (The rest of NCO has always done this correctly, but ncap2 is 
    architected quite differently).
    Thanks to user mullers for reminding us about this bug, and to
-   Henry Butowsky for fixing it. fxm
+   Henry Butowsky for fixing it.
 
 A. The NCO documentation contains examples of shell commands defined
    by post-processing the verbose output from ncks. Currently these
@@ -96,13 +53,55 @@ A. The NCO documentation contains examples of shell commands defined
    http://nco.sf.net/nco.html#nclist
    http://nco.sf.net/nco.html#ncattget
 
+A. ncecat no longer glues a record dimension to any auxiliary coordinate
+   variables (latixy, longxy, ...) or bounds (lat_bnds, lon_bnds, ...). 
+   These are variables specified in the "coordinates" or "bounds" 
+   attribute, respectively.
+   Note that regular (1D) coordinate variables (lat, lon, time)
+   may also be listed as auxiliary coordinate variables.
+   But ncecat never added a record dimension to "normal" 1D coordinates.
+   Thanks to Patrick Brockmann for this suggestion. 
+
+A. Microsoft Windows support. NCO source code now contains all
+   modifications required to build under Visual Studio 2010.
+   The necessary changes are generally indicated by the presence of
+   the _MSC_VER pre-processor token. Compilation is only supported
+   with the C++ compiler (since M$ does not support C99). Qt Project 
+   environment settings are provided in the nco/qt directory. 
+   http://nco.sf.net/nco.html#windows
+
+A. All operators allow specification of buffer size for reading and
+   writing files. Specify size with --bfr_sz_hnt or --buffer_size_hint: 
+   # Request 2 MB file buffer instead of default 8 kB buffer
+   ncks -O -D 3 --bfr_sz=2097152 ~/nco/data/in.nc ~/foo.nc
+   Larger sizes can increase access speed by reducing the number of 
+   system calls netCDF makes to read/write data from/to disk.
+   Thanks to Andy Mai for reporting Rob Latham's suggestion for this.
+   http://nco.sf.net/nco.html#bfr
+
+A. NaN means Not a Number in IEEE-speak
+   Recently I learned that some people use NaN for a missing value,
+   and that netCDF supports NaNs. So NCO should, too, but did not.
+   Currently the workaround is to change the missing value to non-NaN,
+   then perform arithmetic, then change the missing value back to Nan.
+   However, show of hands: How many people would like NCO to handle
+   missing values that are NaN without using a workaround? i.e., for 
+   NCO to do all the checking itself?
+   ncwa now correctly handles averages of missing values that are NaN.
+   Should we spend time supporting NaN for all arithmetic functions?
+   http://nco.sf.net/nco.html#nan
+
+A. ncks now prints variables of type NC_INT with %i instead of %li
+   formatting. This fixes TODO nco1040.
+
+A. ncra properly initializes counting and accumlation arrays.
+   This could cause a bug with the ncra -y ttl (i.e., total) function.
+   This fixes TODO nco1039 and nco1051. Thanks to Ken5746 for reporting this. 
+
 A. Fix double-free() error triggered by misordering UDUnits2 free(). 
    Problem caused ncrcat to fail when concatenating record dimensions
    with non-time units. Thanks to Andrew Wittenburg and to Peter Campbell
    for reporting this. 
-
-A. Operators now treat variables specified in "coordinates" and
-   "bounds" attributes more consistently.  
 
 KNOWN BUGS NOT YET FIXED:
 
@@ -118,7 +117,7 @@ A. NOT YET FIXED
    ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
    ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
 
-   20120329: Verified problem still exists
+   20120611: Verified problem still exists
    Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
 
 B. NOT YET FIXED
@@ -131,7 +130,7 @@ B. NOT YET FIXED
    ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
    ncks -m ~/foo.nc
 
-   20120329: Verified problem still exists
+   20120607: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 C. NOT YET FIXED
@@ -142,8 +141,10 @@ C. NOT YET FIXED
    Demonstration:
    ncks -O -C -D 3 -v var_nm.dot -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # Fails to find variable
 
-   20120329: Verified problem still exists. Stopped testing because
-   inclusion of var_nm.dot broke all test scripts.
+   20120611: Verified problem still exists. 
+   Stopped testing because inclusion of var_nm.dot broke all test scripts.
+   Problem may never be fixed since in DAP '.' is a structure delimiter in query string of HTTP requests.
+
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
 "Sticky" reminders:
@@ -154,7 +155,7 @@ A. All operators support netCDF4 chunking options:
    ncks -O -4 --cnk_plc=all in.nc out.nc
    http://nco.sf.net/nco.html#chunking
 
-B. Pre-built, up-to-date Debian Sid & Ubuntu Maverick packages:
+B. Pre-built, up-to-date Debian Sid & Ubuntu packages:
    http://nco.sf.net#debian
 
 C. Pre-built Fedora and CentOS RPMs:
@@ -174,8 +175,8 @@ E. NCO support for netCDF4 features is tracked at
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, and chunking.
-   NCO 4.2.0 with was built and tested with HDF5 hdf5-1.8.7 and with
-   4.2-snapshot2012020522.
+   NCO 4.2.0 with was built and tested with HDF5 hdf5-1.8.8 and with
+   4.2-snapshot2012040523
    NCO may not build with earlier, and should build with later, netCDF4 releases.
    This is particularly true since NCO 4.2.0 takes advantage of an
    internal change to the netCDF nc_def_var_chunking() API in June 2009. 
