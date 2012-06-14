@@ -1,3 +1,11 @@
+2012-06-14  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.2.1 release procedure:
+ 	Changes since nco-4_2_0:
+	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
+	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
+
 2012-06-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.0 release procedure:

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.698 2012-06-12 16:07:57 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.699 2012-06-14 18:04:56 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -366,7 +366,8 @@ exploit.
 By supporting groups in a generic fashion, NCO hopes to remove one of
 the barriers to more widespread adoption of netCDF4 features.</p>
 
-<p>We plan to recruit two personnel, a programmer (aka software engineer)
+<p>We recruited (i.e., these positions have been filled) two
+personnel, a programmer (aka software engineer) 
 and a graduate student (scientific specialist) both based at UCI for
 at least two years, to accomplish our ACCESS objectives. 
 As described in the proposal, the responsibilities of positions are
@@ -382,9 +383,7 @@ analyze and intercompare snow cover and snow albedo datasets from
 NASA MODIS and MISR datasets (in HDF-EOS format) and NCAR CESM
 simulations (in netCDF format). 
 The analysis will inform the development of wrappers for NCO
-commands to analyze HDF-EOS datasets.
-Contact us if you are seriously interested in these positions on a
-full-time, part-time, or pay-per-feature basis.</p> 
+commands to analyze HDF-EOS datasets.</p> 
 
 <p>We continue to encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
@@ -839,7 +838,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.2.0</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.2.1</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
@@ -920,10 +919,10 @@ require users to have any additional software.
 This is a new feature as of 20120615, please send us feedback.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
-wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.2.0.windows.mvs.exe -O /tmp/nco-4.2.0.windows.mvs.exe
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.2.0.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.2.1.windows.mvs.exe -O /tmp/nco-4.2.1.windows.mvs.exe
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.2.1.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-scp /tmp/nco-4.2.0.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
+scp /tmp/nco-4.2.1.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
 -->
 <li><a href="src/nco-4.2.0.windows.mvs.exe">nco-4.2.0.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.0.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.2.0.windows.mvs.exe"-->).
 </ul>
@@ -1131,7 +1130,10 @@ Building NCO yourself can be painful, so we recommend you first try the pre-buil
 <dt>sudo aptitude install nco # Debian-based systems like Ubuntu</dt>
 <dt>sudo yum-install nco      # RPM-based systems like Fedora</dt>
 </tt>
-If the pre-built executables do not satisfy you, then the recommended first steps to build (i.e., compile, for the most part) NCO from source code are to install
+If the pre-built executables do not satisfy you, or are out-of-date
+and you want the latest, greatest NCO features, then the recommended
+first steps to build (i.e., compile, for the most part) NCO from
+source code are to install 
 <a href="http://www.antlr.org">ANTLR 2.7.x (not version 3.x!)</a> (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
