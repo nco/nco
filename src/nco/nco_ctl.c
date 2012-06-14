@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.328 2012-06-12 16:22:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.329 2012-06-14 20:20:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -782,7 +782,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Pedro to the rescue\n";
+  return "Lean Chuck\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -1052,7 +1052,7 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"4. Manual pages: \'man %s\', \'man nco\', ...\n",prg_nm_get());
   (void)fprintf(stdout,"5. Homepage:     http://nco.sf.net\n");
   (void)fprintf(stdout,"6. FAQ:          http://nco.sf.net#FAQ\n");
-  (void)fprintf(stdout,"7. Help Forum:   http://sourceforge.net/projects/nco/forums/forum/9830\n");
+  (void)fprintf(stdout,"7. Help Forum:   http://sf.net/projects/nco/forums/forum/9830\n");
   (void)fprintf(stdout,"8. Publications: http://nco.sf.net#pub\n");
   (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
 

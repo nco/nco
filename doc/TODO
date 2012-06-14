@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1176 2012-06-02 05:42:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1177 2012-06-14 20:20:14 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -721,7 +721,7 @@ nco945. ncra problem with netcdf4 record mean of packed double with double missi
 nco949. Make --no-clobber option for all operators
 nco953. ncatted: Add -v -C -c infrastructure to allow easy modification of attributes of variable lists, rather than all-or-nothing selections
 nco954. ncinsert functionality request posted to help forum 20081116
-nco960. Warn when attempted hyperslab on 2-D (or more) coordinates, e.g., https://sourceforge.net/forum/message.php?msg_id=6282324
+nco960. Warn when attempted hyperslab on 2-D (or more) coordinates, e.g., https://sf.net/forum/message.php?msg_id=6282324
 nco964. nco: fsync()?
 nco969. nco: do not automatically try wget when DAP access fails ?
 nco970. nco: do not create really long paths with (especially failed) wget attempts
@@ -737,7 +737,7 @@ nco973. ncks: allow for printing "units" attributes stored as NC_STRINGs
 nco975. add NCO global attribute to output files like
        :NCO = "netCDF Operators version 1.1.1 (http://nco.sf.net)" ;
 nco976. clean-up mess caused by eliminating nco_dmn_lmt_mrg in ncra, ncecat, ncpdq, ncflint (but not (why?) ncap,ncbo,ncwa)!
-nco977. fix -d syntax spec or nco_lmt_prs() as per https://sourceforge.net/forum/message.php?msg_id=7486118
+nco977. fix -d syntax spec or nco_lmt_prs() as per https://sf.net/forum/message.php?msg_id=7486118
 nco979. UDUnits1: time zone at end of user-specified limit string is ignored (bad)
         but time zone within units attribute of variable is parsed (good)
 	UDUnits2: handles time zone correctly in both locations (good)

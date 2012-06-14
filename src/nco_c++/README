@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/src/nco_c++/README,v 1.5 2004-06-25 18:47:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/src/nco_c++/README,v 1.6 2012-06-14 20:20:14 zender Exp $
 
 Purpose: Document libnco_c++
 
@@ -12,14 +12,14 @@ I'm very interested in comments, critcisms, and contributions to
 the basic design and API. You can download the latest version from 
 the NCO CVS repository on Sourceforge
 
-cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login
-cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco
+cvs -d:pserver:anonymous@cvs.nco.sf.net:/cvsroot/nco login
+cvs -z3 -d:pserver:anonymous@cvs.nco.sf.net:/cvsroot/nco co -kk nco
 
 All code is in the nco/src/nco_c++ directory, including the
 all important TODO and ChangeLog files. If you want to contribute
 patches or comments the appropriate venue is the developer's forum
 
-http://sourceforge.net/forum/forum.php?forum_id=9831 
+http://sf.net/forum/forum.php?forum_id=9831 
 
 Those with good patches to contribute will get CVS write access. 
 What follows is a description of the software design and status.

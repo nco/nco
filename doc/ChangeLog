@@ -1,5 +1,7 @@
 2012-06-14  Charlie Zender  <zender@uci.edu>
 
+	* Replace sourceforge.net with sf.net
+
 	* NCO 4.2.1 release procedure:
  	Changes since nco-4_2_0:
 	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1

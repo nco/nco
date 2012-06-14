@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Programs that manipulate netCDF files
 Group:          Applications/Engineering
 License:        GPL3
-URL:            http://nco.sourceforge.net/
+URL:            http://nco.sf.net/
 
 # Obtain NCO version 4.2.1-1 tar.gz from Sourceforge using CVS:
 # cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login

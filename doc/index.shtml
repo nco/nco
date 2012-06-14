@@ -1,8 +1,8 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.700 2012-06-14 18:26:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.701 2012-06-14 20:20:14 zender Exp $
 Purpose: NCO homepage
 
 URL:
-http://nco.sourceforge.net/index.shtml
+http://nco.sf.net/index.shtml
 http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
@@ -44,14 +44,14 @@ Try to disable Spammers' machines:
 
 <table width="100%"><tr><td align="left" valign="top">/
 <a href="http://lists.sf.net/mailman/listinfo/nco-announce">Announce</a> /
-<a href="http://sourceforge.net/projects/nco/forums/forum/9831">Developer</a> /
-<a href="http://sourceforge.net/projects/nco/forums/forum/9829">Discussion</a> /
-<a href="http://sourceforge.net/projects/nco/forums/forum/9830">Help</a> /
+<a href="http://sf.net/projects/nco/forums/forum/9831">Developer</a> /
+<a href="http://sf.net/projects/nco/forums/forum/9829">Discussion</a> /
+<a href="http://sf.net/projects/nco/forums/forum/9830">Help</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://nco.sf.net">Homepage</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
 <a href="http://nco.cvs.sf.net/nco/nco/src/nco">Source</a> /
-<a href="http://nco.wiki.sourceforge.net">Wiki</a> /
+<a href="http://nco.wiki.sf.net">Wiki</a> /
 </td>
 
 <td align="right" valign="top">
@@ -141,7 +141,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <li>2009 Jan&nbsp;22: NCO 3.9.6 (GSL special functions) (<i>upgrade highly recommended</i>)</li>
 <li>2008 Sep&nbsp;24: <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a></li>
 <li>2008 Aug&nbsp;31: <a href="http://www.nsf.gov">NSF</a> funding ends</a></li>
-<li>2008 Aug&nbsp;08: NCO <a href="http://nco.wiki.sourceforge.net">Wiki</a>!</li>
+<li>2008 Aug&nbsp;08: NCO <a href="http://nco.wiki.sf.net">Wiki</a>!</li>
 <li>2008 May&nbsp;22: SWAMP <a href="http://dust.ess.uci.edu/ppr/smn_WZJ08_ccgrid_200805.pdf">Talk</a> at CCGRID08 in Lyon, France</li>
 <li>2008 May&nbsp;11: NCO 3.9.5</li>
 <li>2008 Apr&nbsp;28: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview</a> paper in EMS</li>
@@ -810,7 +810,7 @@ NCO for Debian over the years.
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
-<li>Scripts for generating executables for recent (4.0.x, ~2011) versions of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5 platforms are described <a href="http://sourceforge.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.</li>
+<li>Scripts for generating executables for recent (4.0.x, ~2011) versions of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5 platforms are described <a href="http://sf.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.</li>
 <li>Older information on building x86_64 RPMs is available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a>.</li>
 Volunteers have updated and maintained fairly up-to-date NCO packages in Fedora since it was added by Ed Hill in about 2004.
 Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs over the years.
@@ -907,8 +907,8 @@ all the documentation except the highly mathematical sections.
 
 <h3>Wiki:</h3>
 <ul>
-<li>As of August, 2008, NCO has a <a href="http://nco.wiki.sourceforge.net">Wiki</a>.
-The Wiki contains a <a href="http://nco.wiki.sourceforge.net/Cookbook">Cookbook</a>
+<li>As of August, 2008, NCO has a <a href="http://nco.wiki.sf.net">Wiki</a>.
+The Wiki contains a <a href="http://nco.wiki.sf.net/Cookbook">Cookbook</a>
 of NCO examples not found in the manual. 
 Volunteers are encourage to add their own &ldquo;NCO Hacks&rdquo; to this cookbook!
 </ul>
@@ -1052,7 +1052,7 @@ Source documentation for NCO and NetCDF4(alpha13)</a></li>
 </ul>
 <p>Please be aware that the documentation may be slightly inaccurate and 
 infrequently updated. Comments and suggestions are certainly welcomed on the 
- <a href="http://sourceforge.net/projects/nco/forums/forum/9829">forums</a>.
+ <a href="http://sf.net/projects/nco/forums/forum/9829">forums</a>.
 </p>
 </ul>
 <hr></p>
@@ -1165,7 +1165,7 @@ contains gory details of successful (and failed) builds for many platforms.
 Scripts for generating executables for recent (4.0.x, ~2011) versions
 of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5
 platforms are described 
-<a href="http://sourceforge.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.
+<a href="http://sf.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.
 <br>
 
 All platforms continue to work fine with the <tt>nco/bld/Makefile</tt>
@@ -1556,7 +1556,7 @@ file with a non-buggy NCO version.
 <i>Version&nbsp;3.9.5 is buggy and should be upgraded ASAP</i>.
 Be careful with data processed using this NCO version on multi-core CPUs.
 The (one-line!) patch to fix this bug in 3.9.5 is 
-<a href="http://sourceforge.net/forum/message.php?msg_id=6217274">here</a>.
+<a href="http://sf.net/forum/message.php?msg_id=6217274">here</a>.
 </li>
 
 <!-- http://nco.sf.net#bug_idx_hyp -->
@@ -1836,7 +1836,7 @@ Pedro Vicente, software engineer.
 <i>Current Research</i>: 
 1.&nbsp;Support for hierarchical datasets.
 2.&nbsp;Optimization of hierarchical access.
-<i>Other Interests</i>: HDF and netCDF data visualization
+<i>Other Interests</i>: HDF and netCDF data visualization.
 </li>
 
 </ul>
@@ -1914,30 +1914,30 @@ Please read the Guide's suggestions for productive
 <a href="./nco.html#help">Help Requests and Bug Reports</a>.
 <ul>
 <li><i>Where should I ask my questions on how to use NCO?</i>
-On the <a href="http://sourceforge.net/projects/nco/forums/forum/9830">Help</a> site.
+On the <a href="http://sf.net/projects/nco/forums/forum/9830">Help</a> site.
 </li>
 <li><i>Where should I post suggestions/comments on NCO features and usage?</i>
-On the <a href="http://sourceforge.net/projects/nco/forums/forum/9829">Discussion</a> site.
+On the <a href="http://sf.net/projects/nco/forums/forum/9829">Discussion</a> site.
 </li>
 <li><i>Where are NCO development and bug-squashing discussed?</i>
-At the <a href="http://sourceforge.net/projects/nco/forums/forum/9831">Developer</a>
+At the <a href="http://sf.net/projects/nco/forums/forum/9831">Developer</a>
 site.</li>
 </ul>
 <hr></p>
 <!-- End Contacts -->
 
-<a href="http://sourceforge.net/projects/nco"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=3331&amp;type=12" width="120" height="30" alt="Get NCO netCDF Operators at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+<a href="http://sf.net/projects/nco"><img src="http://sflogo.sf.net/sflogo.php?group_id=3331&amp;type=12" width="120" height="30" alt="Get NCO netCDF Operators at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
 
 <table width="100%"><tr><td align="left" valign="top">/
 <a href="http://lists.sf.net/mailman/listinfo/nco-announce">Announce</a> /
-<a href="http://sourceforge.net/projects/nco/forums/forum/9831">Developer</a> /
-<a href="http://sourceforge.net/projects/nco/forums/forum/9829">Discussion</a> /
-<a href="http://sourceforge.net/projects/nco/forums/forum/9830">Help</a> /
+<a href="http://sf.net/projects/nco/forums/forum/9831">Developer</a> /
+<a href="http://sf.net/projects/nco/forums/forum/9829">Discussion</a> /
+<a href="http://sf.net/projects/nco/forums/forum/9830">Help</a> /
 <a href="http://nco.sf.net">Homepage</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
 <a href="http://nco.cvs.sf.net/nco/nco/src/nco/">Source</a> /
-<a href="http://nco.wiki.sourceforge.net">Wiki</a> /
+<a href="http://nco.wiki.sf.net">Wiki</a> /
 </td>
 
 <td align="right" valign="top">
