@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.699 2012-06-14 18:04:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.700 2012-06-14 18:26:42 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -120,123 +120,65 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
+<li>2012 Aug&nbsp;??: NCO 4.2.1</li>
 <li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>
-
 <li>2012 Apr&nbsp;23: Received funding for NASA <a href="#prp_access">ACCESS Project</a></li>
-
 <li>2012 Mar&nbsp;29: NCO 4.1.0 (MD5 support, MM3)</li>
-
 <li>2012 Feb&nbsp;13: NCO 4.0.9</li>
-
 <li>2011 Jun&nbsp;03: Submit NASA ACCESS <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">proposal</a></li>
-
 <li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL workaround, <i>upgrade recommended</i>)</li>
-
 <li>2011 Feb&nbsp;21: NCO 4.0.7 (<i>upgrade recommended</i>)</li>
-
 <li>2011 Jan&nbsp;15: NCO 4.0.6</li>
-
 <li>2010 Oct&nbsp;13: NCO 4.0.5</li>
-
 <li>2010 Sep&nbsp;24: NCO 4.0.4 (chunking everywhere)</li>
-
 <li>2010 Sep&nbsp;02: NCO 4.0.3</li>
-
 <li>2010 Jun&nbsp;27: NCO 4.0.2</li>
-
 <li>2010 Apr&nbsp;05: NCO 4.0.1</li>
-
 <li>2010 Jan&nbsp;05: NCO 4.0.0 (bilinear interpolation, calendar attributes)</li>
-
 <li>2009 Jul&nbsp;15: NCO 3.9.9 (chunking, re-basing, GSL stats/interp)</li>
-
 <li>2009 Apr&nbsp;29: NCO 3.9.8 (GSL RNG/PDF functions)</li>
-
 <li>2009 Mar&nbsp;18: NCO 3.9.7</li>
-
 <li>2009 Jan&nbsp;22: NCO 3.9.6 (GSL special functions) (<i>upgrade highly recommended</i>)</li>
-
 <li>2008 Sep&nbsp;24: <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a></li>
-
 <li>2008 Aug&nbsp;31: <a href="http://www.nsf.gov">NSF</a> funding ends</a></li>
-
 <li>2008 Aug&nbsp;08: NCO <a href="http://nco.wiki.sourceforge.net">Wiki</a>!</li>
-
 <li>2008 May&nbsp;22: SWAMP <a href="http://dust.ess.uci.edu/ppr/smn_WZJ08_ccgrid_200805.pdf">Talk</a> at CCGRID08 in Lyon, France</li>
-
 <li>2008 May&nbsp;11: NCO 3.9.5</li>
-
 <li>2008 Apr&nbsp;28: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">overview</a> paper in EMS</li>
-
 <li>2008 Mar&nbsp;04: NCO 3.9.4</li>
-
 <li>2007 Dec&nbsp;10: SWAMP <a href="http://dust.ess.uci.edu/ppr/pst_WZJ074.pdf">Poster</a> at Fall AGU, San Francisco, California</li>
-
 <li>2007 Dec&nbsp;07: NCO 3.9.3 (SWAMP!)</li>
-
 <li>2007 Dec&nbsp;04: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">scaling paper</a> in IJHPCA</li>
-
 <li>2007 Aug&nbsp;29: NCO 3.9.2 (<tt>_FillValue</tt>s)</li>
-
 <li>2007 Aug&nbsp;27: <a href="http://swamp.googlecode.com">SWAMP site</a> spins-off from NCO</li>
-
 <li>2007 Jun&nbsp;29: NCO 3.9.1 (netCDF4 deflation)</li>
-
 <li>2007 May&nbsp;26: NCO 3.9.0 (netCDF4 atomic types)</li>
-
 <li>2007 May&nbsp;02: SWAMP <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">Talk</a> at GPC, Paris, France</li> 
-
 <li>2007 Apr&nbsp;20: NCO 3.2.0</li>
-
 <li>2007 Mar&nbsp;29: NCO 3.1.9 x86_64 RPMs</li>
-
 <li>2007 Mar&nbsp;10: NCO 3.1.9 (i386/x86_64 debs and i386 RPMs)</li>
-
-<li>2007 Feb&nbsp;22: SWAMP
-<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">Talk</a> at OPeNDAP Developer's Workshop, Boulder, Colorado</li>
-
+<li>2007 Feb&nbsp;22: SWAMP <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">Talk</a> at OPeNDAP Developer's Workshop, Boulder, Colorado</li>
 <li>2007 Jan&nbsp;15: <a href="http://dust.ess.uci.edu/smn/smn_nco_ams_200701.pdf">Talk</a> and <a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">Extended Abstract</a> on NCO Scaling at AMS IIPS, San Antonio, Texas</li>
-
 <li>2007 Jan&nbsp;09: <a href="http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf">Poster</a> on NCO Scaling at Fall AGU, San Francisco, California</li>
-
 <li>2006 Dec&nbsp;09: <a href="http://dust.ess.uci.edu/ppr/pst_WZJ06.pdf">Poster</a> on SWAMP at Fall AGU, San Francisco, California</li>
-
 <li>2006 Dec&nbsp;06: NCO 3.1.8</li>
-
 <li>2006 Nov&nbsp;11: NCO 3.1.7</li>
-
 <li>2006 Sep&nbsp;18: NCO 3.1.6</li>
-
 <li>2006 Aug&nbsp;29: NCO 3.1.5</li>
-
 <li>2006 Jun&nbsp;07: NCO 3.1.4</li>
-
 <li>2006 May&nbsp;30: NCO 3.1.3</li>
-
 <li>2006 Apr&nbsp;21: NCO 3.1.2</li>
-
 <li>2006 Jan&nbsp;30: NCO 3.1.1</li>
-
 <li>2005 Dec&nbsp;02: NCO 3.1.0 (MPI!)</li>
-
 <li>2005 Oct&nbsp;28: NCO 3.0.3</li>
-
 <li>2005 Oct&nbsp;17: <a href="#BM">NCO parallel benchmarks</a></li>
-
 <li>2005 Aug&nbsp;22: NCO 3.0.2</li>
-
 <li>2005 Jun&nbsp;10: NCO 3.0.1</li>
-
 <li>2005 Mar&nbsp;24: NCO 3.0.0</li>
-
 <li>2004 Sep&nbsp;07: NCO 2.9.9 (<tt>ncpdq</tt> packs data quietly)</li>
-
 <li>2004 Sep&nbsp;01: Funding for NSF <a href="#prp_sei">SEI Project</a> begins</li>
-
 <li>2004 Aug&nbsp;07: NCO 2.9.8 (<a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> re-orders dimensions)</li>
-
 <li>2004 Mar&nbsp;04: Submit NSF <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">SEI proposal</a></li>
-
 <li><a href="./nco_news.shtml">Ancient NCO News &amp; Announcements</a></li>
 </ul>
 <hr></p>
@@ -1854,7 +1796,7 @@ Bug-fixes:
 <a name="people"></a> <!-- http://nco.sf.net#people -->
 <dt><a name="People"></a></dt> <!-- http://nco.sf.net#People -->
 <h2>People:</h2>
-<p>(Please <a href="#Contact">communicate</a> with us using the project forums rather than contacting us individually)
+<p>Current Developers (please <a href="#Contact">communicate</a> with us using the project forums rather than contacting us individually):
 <ul>
 
 <li>
@@ -1875,36 +1817,6 @@ netCDF4/HDF5 parallel filesystem features.
 <i>Other Interests</i>: Atmospheric Physics, Climate Change.
 </li>
 
-<li>
-<a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
-<a href="http://spds.ece.uci.edu/~sjenks">Stephen Jenks</a>,
-Former Assistant Professor of Electrical Engineering and Computer Science
-(<a href="http://www.eecs.uci.edu">EECS</a>) and 
-Director, Scalable Parallel and Distributed Systems 
-(<a href="http://spds.ece.uci.edu">SPDS</a>) lab.
-<i>Roles</i>: Collaborator. Thesis advisor.
-<i>Related Research</i>: 
-1.&nbsp;Consulting on SWAMP design and implementation.
-<i>Other Interests</i>: Cache memory usage
-</li>
-
-<li>
-<a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
-<a href="http://dust.ess.uci.edu/~wangd">Dr.&nbsp;Daniel Wang</a>:
-Earned EECS Ph.D. (2008) with Jenks and Zender at UCI, now at SLAC.
-<i>Role</i>: Architect distributed data reduction and analysis
-solutions for geoscience workflows
-<i>Related Research</i>: 
-1.&nbsp;Use of compiler techniques and whole program analysis to 
-discover and exploit parallelism in scripted workflows.
-2.&nbsp;Resource management in combined computation-data service environments.
-3.&nbsp;Design and implement 
-<a href="http://swamp.googlecode.com">SWAMP</a> to provide
-automated server-side data analysis capabilities to the geoscience 
-community. 
-<i>Other Interests</i>: Large data, data management, programming languages and practice.
-</li>
-
 <li><dt>
 <a name="butowsky"></a><a name="Butowsky"></a> <!-- http://nco.sf.net#butowsky -->
 <a href="http://dust.ess.uci.edu/hbutowsk">Henry Butowsky</a>, 
@@ -1916,16 +1828,66 @@ Henry Butowsky, software engineer.
 <i>Other Interests</i>: Compilers and interpreters.
 </li>
 
+<li><dt>
+<a name="vicente"></a><a name="Vicente"></a> <!-- http://nco.sf.net#vicente -->
+<a href="http://dust.ess.uci.edu/pvicente">Pedro Vicente</a>, 
+Pedro Vicente, software engineer.
+<i>Roles</i>: Scientific programmer
+<i>Current Research</i>: 
+1.&nbsp;Support for hierarchical datasets.
+2.&nbsp;Optimization of hierarchical access.
+<i>Other Interests</i>: HDF and netCDF data visualization
+</li>
+
+</ul>
+
+<p>Alumni Developers:
+<ul>
+
+<li>
+<a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
+<a href="http://spds.ece.uci.edu/~sjenks">Stephen Jenks</a>,
+Former Assistant Professor of Electrical Engineering and Computer Science
+(<a href="http://www.eecs.uci.edu">EECS</a>).
+<!--
+<i>Roles</i>: Collaborator. Thesis advisor.
+<i>Related Research</i>: 
+1.&nbsp;Consulting on SWAMP design and implementation.
+<i>Other Interests</i>: Cache memory usage
+-->
+</li>
+
 <li>
 <a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
 <a href="http://dust.ess.uci.edu/scapps/web">Dr.&nbsp;Scott Capps</a>, 
 Earned Earth System Science Ph.D. (2009) with Zender at UCI, now at UCLA.
+<!--
 <i>Related Research</i>: 
 1.&nbsp;Test NCO on real tera-scale geoscience analysis problems and
 identify necessary improvements in <tt>ncap2</tt> and in SWAMP.
 2.&nbsp;Role of satellite-observed sub-gridscale wind variability 
 on air-surface exchange.
 <i>Other Interests</i>: Weather, climate
+-->
+</li>
+
+<li>
+<a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
+<a href="http://dust.ess.uci.edu/~wangd">Dr.&nbsp;Daniel Wang</a>:
+Earned EECS Ph.D. (2008) with Jenks and Zender at UCI, now at SLAC.
+<!--
+<i>Role</i>: Architect distributed data reduction and analysis
+solutions for geoscience workflows
+<i>Related Research</i>: 
+1.&nbsp;Use of compiler techniques and whole program analysis to 
+discover and exploit parallelism in scripted workflows.
+2.&nbsp;Resource management in combined computation-data service environments.
+3.&nbsp;Design and implement 
+<a href="http://swamp.googlecode.com">SWAMP</a> to provide
+automated server-side data analysis capabilities to the geoscience 
+community. 
+<i>Other Interests</i>: Large data, data management, programming languages and practice.
+-->
 </li>
 
 <p>Thanks also to 

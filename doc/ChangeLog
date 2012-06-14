@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
 	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
+	* Clean-up contributors on homepage
+
 2012-06-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.0 release procedure:
