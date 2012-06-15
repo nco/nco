@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.702 2012-06-15 04:26:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.703 2012-06-15 17:34:22 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -810,8 +810,6 @@ NCO for Debian over the years.
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.x86_64.rpm">nco-3.9.5-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;5-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.x86_64.rpm"-->)</li>
-<li>Scripts for generating executables for recent (4.0.x, ~2011) versions of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5 platforms are described <a href="http://sf.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.</li>
-<li>Older information on building x86_64 RPMs is available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a>.</li>
 Volunteers have updated and maintained fairly up-to-date NCO packages in Fedora since it was added by Ed Hill in about 2004.
 Thanks to Patrice Dumas, Ed Hill, and Orion Poplawski for packaging NCO RPMs over the years.
 Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL and CentOS.
@@ -1162,11 +1160,6 @@ Please contribute patches required to get the <tt>configure</tt>
 mechanism working properly for NCO on your platform.
 The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
 contains gory details of successful (and failed) builds for many platforms.  
-
-Scripts for generating executables for recent (4.0.x, ~2011) versions
-of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5
-platforms are described 
-<a href="http://sf.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.
 <br>
 
 All platforms continue to work fine with the <tt>nco/bld/Makefile</tt>
@@ -1359,6 +1352,13 @@ The workaround is not to heed the regression tests, or to install a
 working <tt>cut</tt>, e.g., from the GNU <tt>coreutils</tt> package.
 </li>
 
+<!-- http://nco.sf.net#bld_rhel -->
+<a name="bld_rhel"></a>
+<li><i>RHEL build hints:</i>
+Scripts for generating executables for recent (4.0.x, ~2011) versions of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5 platforms are described <a href="http://sf.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.
+<li>Older information on building x86_64 RPMs is available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a>.
+</li>
+
 <!-- http://nco.sf.net#bld_slr -->
 <a name="bld_slr"></a>
 <li><i>Solaris build hints:</i>
@@ -1480,7 +1480,6 @@ prioritizing our MM3-patches to those encountered most often.
 Thanks to Gary Strand for reporting this problem, and to Russ Rew for 
 creating the workaround algorithm, which is also now in <tt>nccopy</tt>.
 </li>
-</ul>
 
 <!-- http://nco.sf.net#bug_nofill -->
 <a name="bug_nofill"></a>
@@ -1821,7 +1820,7 @@ netCDF4/HDF5 parallel filesystem features.
 <li><dt>
 <a name="butowsky"></a><a name="Butowsky"></a> <!-- http://nco.sf.net#butowsky -->
 <a href="http://dust.ess.uci.edu/hbutowsk">Henry Butowsky</a>, 
-Henry Butowsky, software engineer.
+software engineer.
 <i>Roles</i>: Scientific programmer
 <i>Current Research</i>: 
 1.&nbsp;Efficient complex data analysis with storage-layer constraints.
@@ -1832,7 +1831,7 @@ Henry Butowsky, software engineer.
 <li><dt>
 <a name="vicente"></a><a name="Vicente"></a> <!-- http://nco.sf.net#vicente -->
 <a href="http://dust.ess.uci.edu/pvicente">Pedro Vicente</a>, 
-Pedro Vicente, software engineer.
+software engineer.
 <i>Roles</i>: Scientific programmer
 <i>Current Research</i>: 
 1.&nbsp;Support for hierarchical datasets.
@@ -1848,7 +1847,7 @@ Pedro Vicente, software engineer.
 <li>
 <a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
 <a href="http://spds.ece.uci.edu/~sjenks">Stephen Jenks</a>,
-Former Assistant Professor of Electrical Engineering and Computer Science
+former Assistant Professor of Electrical Engineering and Computer Science
 (<a href="http://www.eecs.uci.edu">EECS</a>).
 <!--
 <i>Roles</i>: Collaborator. Thesis advisor.
@@ -1861,7 +1860,7 @@ Former Assistant Professor of Electrical Engineering and Computer Science
 <li>
 <a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
 <a href="http://dust.ess.uci.edu/scapps/web">Dr.&nbsp;Scott Capps</a>, 
-Earned Earth System Science Ph.D. (2009) with Zender at UCI, now at UCLA.
+earned Earth System Science Ph.D. (2009) with Zender at UCI, now at UCLA.
 <!--
 <i>Related Research</i>: 
 1.&nbsp;Test NCO on real tera-scale geoscience analysis problems and
@@ -1875,7 +1874,7 @@ on air-surface exchange.
 <li>
 <a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
 <a href="http://dust.ess.uci.edu/~wangd">Dr.&nbsp;Daniel Wang</a>:
-Earned EECS Ph.D. (2008) with Jenks and Zender at UCI, now at SLAC.
+earned EECS Ph.D. (2008) with Jenks and Zender at UCI, now at SLAC.
 <!--
 <i>Role</i>: Architect distributed data reduction and analysis
 solutions for geoscience workflows
