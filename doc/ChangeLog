@@ -24,12 +24,13 @@
 
 2012-05-30  Henry Butowsky  <henryb@hush.com>
 
-	* ncap2: Added following RAM variables: double: nan, inf; float: nanf, inff
+	* ncap2: Added RAM variables: double: nan, inf; float: nanf, inff
 	Problem may be with macro call double nan(const char *tagp)
 
 2012-05-22  Charlie Zender  <zender@uci.edu>
 
-	* Look into ncap2 regression tests 10 and 11...
+	* ncap2 regression tests 10 and 11 fail only on givre, roulee,
+	pass on all other computers, indicating...OpenMP issues?
 
 2012-05-22  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.701 2012-06-14 20:20:14 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.702 2012-06-15 04:26:47 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -885,6 +885,7 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin 
 
 <!-- http://nco.sf.net#RTFM -->
 <dt><a name="RTFM"></a></dt>
+<dt><a name="rtfm"></a></dt>
 <h2>Documentation and User's Guide</h2> 
 <p>The NCO User's Guide is available for reading in these formats:
 <ul>
