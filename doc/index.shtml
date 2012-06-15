@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.703 2012-06-15 17:34:22 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.704 2012-06-15 17:41:09 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1160,6 +1160,8 @@ Please contribute patches required to get the <tt>configure</tt>
 mechanism working properly for NCO on your platform.
 The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
 contains gory details of successful (and failed) builds for many platforms.  
+Plaform-specific build hints (CentOS, Mac OS&nbsp;X, RHEL, Solaris)
+are listed <a href="#bld_plt_spc">below</a>.
 <br>
 
 All platforms continue to work fine with the <tt>nco/bld/Makefile</tt>
@@ -1311,6 +1313,8 @@ This is done by configuring with <tt>--disable-nco_cplusplus</tt>.
 
 </ul>
 
+<!-- http://nco.sf.net#bld_plt_spc -->
+<a name="bld_plt_spc"></a>
 <ul><b>Platform-Specific Build Hints:</b>
 <!-- http://nco.sf.net#bld_aix -->
 <a name="bld_aix"></a>
@@ -1354,9 +1358,10 @@ working <tt>cut</tt>, e.g., from the GNU <tt>coreutils</tt> package.
 
 <!-- http://nco.sf.net#bld_rhel -->
 <a name="bld_rhel"></a>
+<a name="bld_centos"></a> <!-- http://nco.sf.net#bld_centos -->
 <li><i>RHEL build hints:</i>
 Scripts for generating executables for recent (4.0.x, ~2011) versions of NCO for RedHat Enterprise Linux&nbsp;5 (RHEL5) and CentOS5 platforms are described <a href="http://sf.net/projects/nco/forums/forum/9830/topic/4089501">here</a>.
-<li>Older information on building x86_64 RPMs is available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a>.
+Older information on building x86_64 RPMs is available <a href="http://dust.ess.uci.edu/wangd/s9y">here</a>.
 </li>
 
 <!-- http://nco.sf.net#bld_slr -->
