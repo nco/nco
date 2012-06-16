@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.685 2012-06-14 20:20:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.686 2012-06-16 00:06:19 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -471,9 +471,9 @@ Thus @acronym{NCO} will grow and evade bit-rot for the foreseeable future.
 
 On a personal level, I continue to receive with gratitude the thanks of
 @acronym{NCO} users at nearly every scientific meeting I attend. 
-People introduce themselves, shake my hand, and sometimes rather
-effusively, extol these tools for saving them time and frustration.
-These exchanges lighten me like an anti-gravity cannister in my belt.
+People introduce themselves, shake my hand and extol, sometimes rather
+effusively, these time-saving tools.
+These exchanges lighten me like anti-gravity.
 Sometimes I daydream how many hours @acronym{NCO} has turned from grunt
 work to productive research, or from research into early happy hours.
 It's a cool feeling.
@@ -4631,6 +4631,7 @@ and tastes of @acronym{NCO} users working with scripts and from the
 command line.
 
 @cindex chunking map
+@cindex degenerate dimension
 @cindex @var{cnk_map}
 @cindex @code{-M @var{cnk_map}}
 @cindex @code{--cnk_map @var{cnk_map}}
@@ -4677,6 +4678,7 @@ Mnemonic: E@emph{XPL}icitly specified dimensions@*
 Definition: The product of the chunksizes for each variable
 (approximately) equals the size specified with the @samp{--cnk_scl}
 option.
+A dimension of size one is said to be @emph{degenerate}.
 For a variable of rank @var{R} (i.e., with @var{R} non-degenerate
 dimensions), the chunksize in each non-degenerate dimension is the
 @var{R}th root of @var{cnk_scl}.@*
@@ -5360,7 +5362,8 @@ ncwa -y rms -v prs_sfc -a time in.nc foo.nc
 The previous two commands give the same answer but @command{ncra} is
 preferred because it has a smaller memory footprint.
 @cindex degenerate dimension
-Also, by default, @command{ncra} leaves the (degenerate) @code{time}
+A dimension of size one is said to be @dfn{degenerate}.
+By default, @command{ncra} leaves the (degenerate) @code{time}
 dimension in the output file (which is usually useful) whereas
 @command{ncwa} removes the @code{time} dimension (unless @samp{-b} is
 given).
@@ -8935,7 +8938,8 @@ In such cases it may be necessary to use the shell backslash character
 @findex ncra
 @cindex degenerate dimension
 @cindex @samp{-b}
-Whether a degenerate record dimension is desirable or undesirable
+A dimension of size one is said to be @emph{degenerate}.
+Whether a degenerate record dimension is desirable or not
 depends on the application.
 Often a degenerate @var{time} dimension is useful, e.g., for
 concatentating, but it may cause problems with arithmetic.
