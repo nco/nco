@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.686 2012-06-16 00:06:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.687 2012-06-18 05:44:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -657,14 +657,17 @@ Given this, the only difficulty in implementing @acronym{NCO} on a
 particular platform is standardization of various @w{C}-language API
 system calls. 
 @acronym{NCO} code is tested for @acronym{ANSI} compliance by
-compiling with @w{C compilers} including those from 
+compiling with @w{C99 compilers} including those from 
 @cindex @command{CC}
 @cindex @command{c++}
 @cindex @command{cc}
+@cindex @command{clang}
 @cindex @command{como}
 @cindex @command{cxx}
 @cindex @command{gcc}
+@cindex @command{g++}
 @cindex @command{icc}
+@cindex @command{MVS}
 @cindex @command{pgcc}
 @cindex @command{pgCC}
 @cindex @command{pathcc}
@@ -681,6 +684,8 @@ Cray (@samp{cc}),
 @acronym{HP}/Compaq/@acronym{DEC} (@samp{cc}),
 @acronym{IBM} (@samp{xlc -c -qlanglvl=extc99}),
 Intel (@samp{icc -std=c99}),
+@cindex @acronym{LLVM}
+@acronym{LLVM} (@samp{clang}),
 @acronym{NEC} (@samp{cc}),
 PathScale (QLogic) (@samp{pathcc -std=c99}),
 @acronym{PGI} (@samp{pgcc -c9x}),
@@ -699,6 +704,7 @@ Cray (@samp{CC}),
 @acronym{HP}/Compaq/@acronym{DEC} (@samp{cxx}),
 @acronym{IBM} (@samp{xlC}),
 Intel (@samp{icc}),
+Microsoft (@samp{MVS}),
 @acronym{NEC} (@samp{c++}),
 PathScale (Qlogic) (@samp{pathCC}),
 @acronym{PGI} (@samp{pgCC}),
@@ -845,6 +851,7 @@ The switches necessary to accomplish both are included in the standard
 distribution of @acronym{NCO}.
 
 @cindex Qt
+@cindex C99
 Using Microsoft Visual Studio (@acronym{MVS}), one must build
 @acronym{NCO} with the C++ compiler since MVS does not support C99.
 Qt, a convenient integrated development environment, was used to convert
