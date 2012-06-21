@@ -32,10 +32,21 @@ SOURCES   = ../../src/nco/ncrename.c
 
 # netCDF library
 # gcc settings to use C99
+# HDF5 and netCDF LIB order is important
+# _BSD_SOURCE and _POSIX_SOURCE needed
 unix {
- INCLUDEPATH +=
- LIBS +=
+ DEFINES += HAVE_CONFIG_H
+ INCLUDEPATH += ../../
+ DEFINES += _BSD_SOURCE
+ DEFINES += _POSIX_SOURCE
  QMAKE_CFLAGS += -std=c99
+ INCLUDEPATH += ~/libs/install/netcdf-4.2/include
+
+ LIBS += ~/libs/install/netcdf-4.2/lib/libnetcdf.a
+ LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5_hl.a
+ LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5.a
+ LIBS += ~/libs/install/zlib-1.2.7/lib/libz.a
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)
