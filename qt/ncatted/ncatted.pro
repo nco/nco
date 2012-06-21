@@ -9,10 +9,12 @@ CONFIG += debug_and_release
 #nco library
 CONFIG( debug, debug|release ) {
     # debug
-	LIBS += ../libnco/debug/libnco.lib
+        win32:LIBS += ../libnco/debug/libnco.lib
+        unix:LIBS  += ../libnco/debug/liblibnco.a
 } else {
     # release
-	LIBS += ../libnco/release/libnco.lib
+        win32:LIBS += ../libnco/release/libnco.lib
+        unix:LIBS  += ../libnco/release/liblibnco.a
 }
 
 
@@ -27,12 +29,17 @@ HEADERS   =
 SOURCES   = ../../src/nco/ncatted.c
 
 
+
 # netCDF library
 # gcc settings to use C99
 unix {
- INCLUDEPATH +=
+ DEFINES += HAVE_CONFIG_H
+ INCLUDEPATH += ../../
+ DEFINES += _BSD_SOURCE
+ DEFINES += _POSIX_SOURCE
  LIBS +=
  QMAKE_CFLAGS += -std=c99
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)

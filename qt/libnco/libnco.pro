@@ -8,8 +8,14 @@ CONFIG += staticlib
 CONFIG -= qt
 CONFIG += debug_and_release
 
-#nco avoid writing temporary file
-DEFINES += WRT_TMP_FL
+#nco library
+unix:CONFIG( debug, debug|release ) {
+    # debug
+        DESTDIR = ./debug
+} else {
+    # release
+        DESTDIR = ./release
+}
 
 
 #nco avoid writing temporary file
@@ -26,9 +32,15 @@ DEFINES += NEED_STRCASECMP
 # netCDF library
 # gcc settings to use C99
 unix {
- INCLUDEPATH += 
- LIBS += 
+ DEFINES += HAVE_CONFIG_H
+ INCLUDEPATH += ../../
+ DEFINES += _BSD_SOURCE
+ DEFINES += _POSIX_SOURCE
+ LIBS +=
  QMAKE_CFLAGS += -std=c99
+
+
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF) 

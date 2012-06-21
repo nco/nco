@@ -1,4 +1,6 @@
 TEMPLATE = subdirs
+CONFIG += ordered
+SUBDIRS += libnco
 SUBDIRS += ncatted
 SUBDIRS += ncbo
 SUBDIRS += ncecat
@@ -7,7 +9,6 @@ SUBDIRS += ncks
 SUBDIRS += ncpdq
 SUBDIRS += ncra
 SUBDIRS += ncrename
-SUBDIRS += libnco
 SUBDIRS += nco_c++
 SUBDIRS += tst_nco_c++
 SUBDIRS += nco++
