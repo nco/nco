@@ -28,9 +28,11 @@ SOURCES   = ../../src/nco/ncecat.c
 
 
 # netCDF library
+# gcc settings to use C99
 unix {
- INCLUDEPATH += 
- LIBS += 
+ INCLUDEPATH +=
+ LIBS +=
+ QMAKE_CFLAGS += -std=c99
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)
