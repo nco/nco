@@ -38,20 +38,16 @@ unix {
  DEFINES += _POSIX_SOURCE
  LIBS +=
  QMAKE_CFLAGS += -std=c99
-
-
-
 }
 win32 {
- INCLUDEPATH += $(HEADER_NETCDF) 
- 
- SOURCES += ../../src/nco/nco_getopt.c
- HEADERS += ../../src/nco/nco_getopt.h
- 
+ INCLUDEPATH += $(HEADER_NETCDF)  
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
-
 }
+
+
+SOURCES += ../../src/nco/nco_getopt.c
+HEADERS += ../../src/nco/nco_getopt.h
 
 
 # header files
