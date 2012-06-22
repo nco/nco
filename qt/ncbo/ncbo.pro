@@ -46,6 +46,9 @@ unix {
  LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5.a
  LIBS += ~/libs/install/zlib-1.2.7/lib/libz.a
 
+ LIBS += ~/libs/install/udunits-2.1.24/lib/libudunits2.a
+ LIBS += ~/libs/install/expat-2.1.0/lib/libexpat.a
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)

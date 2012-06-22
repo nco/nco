@@ -9,12 +9,17 @@ CONFIG += debug_and_release
 #nco library
 CONFIG( debug, debug|release ) {
     # debug
-	LIBS += ../libnco/debug/libnco.lib
-    LIBS += $(LIB_ANTLR)
+    win32:LIBS += ../libnco/debug/libnco.lib
+    win32:LIBS += $(LIB_ANTLR)
+
+    unix:LIBS += ../libnco/debug/liblibnco.a
 } else {
     # release
-	LIBS += ../libnco/release/libnco.lib
-    LIBS += $(LIB_ANTLR_REL)
+    win32:LIBS += ../libnco/release/libnco.lib
+    win32:LIBS += $(LIB_ANTLR_REL)
+
+    unix:LIBS += ../libnco/release/liblibnco.a 
+    
 }
 
 
@@ -80,7 +85,19 @@ SOURCES   = ../../src/nco++/Invoke.cc \
 #netCDF library
 unix {
  INCLUDEPATH += 
- LIBS += 
+ 
+ LIBS += ~/libs/install/netcdf-4.2/lib/libnetcdf.a
+ LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5_hl.a
+ LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5.a
+ LIBS += ~/libs/install/zlib-1.2.7/lib/libz.a
+
+ LIBS += ~/libs/install/udunits-2.1.24/lib/libudunits2.a
+ LIBS += ~/libs/install/expat-2.1.0/lib/libexpat.a
+
+ LIBS += ~/libs/install/antlr-2.7.7/lib/libantlr.a
+
+
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)

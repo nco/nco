@@ -8,14 +8,19 @@ CONFIG += staticlib
 CONFIG -= qt
 CONFIG += debug_and_release
 
-#nco library
-CONFIG( debug, debug|release ) {
+INCLUDEPATH += ../../src/nco_c++
+
+
+#nco_c++ library
+unix:CONFIG( debug, debug|release ) {
     # debug
-	LIBS += ../libnco/debug/libnco_c++.lib
+        DESTDIR = ./debug
 } else {
     # release
-	LIBS += ../libnco/release/libnco_c++.lib
+        DESTDIR = ./release
 }
+
+
 
 #nco avoid writing temporary file
 DEFINES += WRT_TMP_FL
@@ -27,12 +32,10 @@ DEFINES += HAVE_NETCDF4_H
 
 # netCDF library
 unix {
- INCLUDEPATH += 
- LIBS += 
+ INCLUDEPATH +=  
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF) 
- INCLUDEPATH += ../../src/nco_c++
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
 }

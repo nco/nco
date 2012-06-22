@@ -9,10 +9,12 @@ CONFIG += debug_and_release
 #nco++ library
 CONFIG( debug, debug|release ) {
     # debug
-	LIBS += ../nco_c++/debug/libnco_c++.lib
+	win32:LIBS += ../nco_c++/debug/libnco_c++.lib
+        unix:LIBS  += ../nco_c++/debug/liblibnco_c++.a
 } else {
     # release
-	LIBS += ../nco_c++/release/libnco_c++.lib
+	win32:LIBS += ../nco_c++/release/libnco_c++.lib
+        unix:LIBS  += ../nco_c++/release/liblibnco_c++.a
 }
 
 
@@ -28,7 +30,16 @@ SOURCES   = ../../src/nco_c++/tst.cc
 #netCDF library
 unix {
  INCLUDEPATH += 
- LIBS += 
+ 
+ LIBS += ~/libs/install/netcdf-4.2/lib/libnetcdf.a
+ LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5_hl.a
+ LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5.a
+ LIBS += ~/libs/install/zlib-1.2.7/lib/libz.a
+
+ LIBS += ~/libs/install/udunits-2.1.24/lib/libudunits2.a
+ LIBS += ~/libs/install/expat-2.1.0/lib/libexpat.a
+
+ 
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)
