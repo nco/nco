@@ -1,3 +1,7 @@
+2012-06-21  Charlie Zender  <zender@uci.edu>
+
+	* Successfully built and tested with netCDF 4.2.1-rc1
+
 2012-06-14  Charlie Zender  <zender@uci.edu>
 
 	* Replace sourceforge.net with sf.net
