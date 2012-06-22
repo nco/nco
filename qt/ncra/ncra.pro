@@ -41,7 +41,8 @@ unix {
  DEFINES += _BSD_SOURCE
  DEFINES += _POSIX_SOURCE
  QMAKE_CFLAGS += -std=c99
- INCLUDEPATH += ~/libs/install/netcdf-4.2/include
+ INCLUDEPATH += /usr/local/include
+ INCLUDEPATH += /usr/local
 
  LIBS += ~/libs/install/netcdf-4.2/lib/libnetcdf.a
  LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5_hl.a

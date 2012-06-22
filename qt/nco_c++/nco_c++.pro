@@ -32,7 +32,8 @@ DEFINES += HAVE_NETCDF4_H
 
 # netCDF library
 unix {
- INCLUDEPATH +=  
+ INCLUDEPATH += /usr/local/include
+ INCLUDEPATH += /usr/local
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF) 

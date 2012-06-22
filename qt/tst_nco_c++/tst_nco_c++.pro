@@ -29,7 +29,8 @@ SOURCES   = ../../src/nco_c++/tst.cc
 
 #netCDF library
 unix {
- INCLUDEPATH += 
+ INCLUDEPATH += /usr/local/include
+ INCLUDEPATH += /usr/local
  
  LIBS += ~/libs/install/netcdf-4.2/lib/libnetcdf.a
  LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5_hl.a
