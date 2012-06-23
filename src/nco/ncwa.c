@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.299 2012-06-05 00:27:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.300 2012-06-23 04:32:56 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -92,6 +92,8 @@ main(int argc,char **argv)
   nco_bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
   nco_bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */
   nco_bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -121,8 +123,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.299 2012-06-05 00:27:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.299 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.300 2012-06-23 04:32:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.300 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -219,6 +221,10 @@ main(int argc,char **argv)
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"delete-degenerate-dimensions",no_argument,0,0}, /* [flg] Delete degenerate dimensions */
+      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
+      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
@@ -349,6 +355,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
@@ -699,7 +707,7 @@ main(int argc,char **argv)
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,&out_id);
   if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Copy all global attributes */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.175 2012-06-10 23:57:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.176 2012-06-23 04:32:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1414,8 +1414,6 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   return rcd;
 } /* end nco_fl_open */
 
-
-
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
@@ -1423,6 +1421,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
+ const int ram_create, /* I [flg] Create file in RAM */
+ const int ram_open, /* I [flg] Open (netCDF3) file(s) in RAM */
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.302 2012-06-23 00:44:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.303 2012-06-23 04:32:56 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
-  nco_bool RAM_CREATE=False; /* [flg] Open (netCDF3) file(s) in RAM */
-  nco_bool RAM_OPEN=False; /* [flg] Create file(s) in RAM */
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.302 2012-06-23 00:44:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.302 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.303 2012-06-23 04:32:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.303 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -212,11 +212,9 @@ main(int argc,char **argv)
       {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"no_nm_prn",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"ram_create",no_argument,0,0}, /* [flg] Create file(s) in RAM */
-      {"ram_open",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
+      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"diskless_create",no_argument,0,0}, /* [flg] Create file(s) in RAM */
-      {"diskless_open",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"secret",no_argument,0,0},
       {"shh",no_argument,0,0},
       {"version",no_argument,0,0},
@@ -386,8 +384,8 @@ main(int argc,char **argv)
         if(cp) cp=(char *)nco_free(cp);
         nco_exit(EXIT_SUCCESS);
       } /* endif "tst_udunits" */
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"ram_create") || !strcmp(opt_crr,"diskless_all") || !strcmp(opt_crr,"diskless_create")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"ram_open") || !strcmp(opt_crr,"diskless_all") || !strcmp(opt_crr,"diskless_open")) RAM_OPEN=True; /* [flg] Create file(s) in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
 	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMD5 digests\t\t--md5_digest\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest udunits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
@@ -648,19 +646,16 @@ main(int argc,char **argv)
     
   if(fl_out){
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
-    int out_id;  
+    int out_id;
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-
-    /* Implement RAM disk request */
-    if(RAM_CREATE) fl_out_fmt|=NC_DISKLESS;
 
     /* Verify output file format supports requested actions */
     (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,&out_id);
     
     /* Copy global attributes */
     if(PRN_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);

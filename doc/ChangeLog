@@ -1,6 +1,9 @@
 2012-06-22  Charlie Zender  <zender@uci.edu>
 
-	* Implement NC_DISKLESS in nco_open() in ncks.c via --ram_open switch
+	* Pass RAM_CREATE, RAM_OPEN flags to all operators via ram_all,
+	create_ram, open_ram and diskless_all switches
+
+	* Implement NC_DISKLESS in nco_open() in ncks.c via --ram_all switch
 
 2012-06-21  Charlie Zender  <zender@uci.edu>
 
