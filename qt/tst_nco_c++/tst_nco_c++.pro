@@ -32,10 +32,10 @@ unix {
  INCLUDEPATH += /usr/local/include
  INCLUDEPATH += /usr/local
  
- LIBS += ~/libs/install/netcdf-4.2/lib/libnetcdf.a
- LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5_hl.a
- LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5.a
- LIBS += ~/libs/install/zlib-1.2.7/lib/libz.a
+ LIBS += /usr/local/lib/libnetcdf.a
+ LIBS += /usr/local/lib/libhdf5_hl.a
+ LIBS += /usr/local/lib/libhdf5.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libz.a
 
  LIBS += ~/libs/install/udunits-2.1.24/lib/libudunits2.a
  LIBS += ~/libs/install/expat-2.1.0/lib/libexpat.a

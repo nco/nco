@@ -19,7 +19,7 @@ CONFIG( debug, debug|release ) {
 
 
 #nco avoid writing temporary file
-DEFINES += WRT_TMP_FL
+win32:DEFINES += WRT_TMP_FL
 
 #netCDF
 DEFINES += ENABLE_NETCDF4
@@ -27,8 +27,6 @@ DEFINES += HAVE_NETCDF4_H
 
 HEADERS   = 
 SOURCES   = ../../src/nco/ncatted.c
-
-
 
 # netCDF library
 # gcc settings to use C99
@@ -42,11 +40,6 @@ unix {
  QMAKE_CFLAGS += -std=c99
  INCLUDEPATH += /usr/local/include
  INCLUDEPATH += /usr/local
-
- #LIBS += ~/libs/install/netcdf-4.2/lib/libnetcdf.a
- #LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5_hl.a
- #LIBS += ~/libs/install/hdf5-1.8.5-patch1/lib/libhdf5.a
- #LIBS += ~/libs/install/zlib-1.2.7/lib/libz.a
 
  LIBS += /usr/local/lib/libnetcdf.a
  LIBS += /usr/local/lib/libhdf5_hl.a
