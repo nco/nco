@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.118 2012-06-23 04:32:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.119 2012-06-23 17:51:21 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.118 2012-06-23 04:32:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.119 2012-06-23 17:51:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.119 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -173,6 +173,7 @@ main(int argc,char **argv)
   int in_id_1;  
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int md_open=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
   int nbr_dmn_fl_1;
   int nbr_dmn_fl_2;
   int nbr_dmn_xtr_1;

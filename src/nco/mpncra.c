@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.122 2012-06-23 04:32:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.123 2012-06-23 17:51:21 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.122 2012-06-23 04:32:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.123 2012-06-23 17:51:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.123 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -180,6 +180,7 @@ main(int argc,char **argv)
   int idx=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int md_open=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
@@ -523,7 +524,8 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
-  rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+  if(RAM_OPEN) md_open|=NC_DISKLESS;
+  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);

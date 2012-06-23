@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.303 2012-06-23 04:32:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.304 2012-06-23 17:51:21 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.303 2012-06-23 04:32:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.303 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.304 2012-06-23 17:51:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.304 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -157,7 +157,6 @@ main(int argc,char **argv)
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
-  int fl_in_open_flg=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
@@ -167,6 +166,7 @@ main(int argc,char **argv)
   int in_id;  
   int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int md_open=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
   int nbr_dmn_fl;
   int nbr_var_fl;
   int opt;
@@ -387,7 +387,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMD5 digests\t\t--md5_digest\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest udunits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMD5 digests\t\t--md5_digest\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -532,8 +532,6 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-  if(RAM_OPEN) fl_in_open_flg|=NC_DISKLESS;
-
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
@@ -548,7 +546,8 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
-  rcd+=nco_fl_open(fl_in,fl_in_open_flg,&bfr_sz_hnt,&in_id);
+  if(RAM_OPEN) md_open|=NC_DISKLESS;
+  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){

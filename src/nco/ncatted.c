@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.144 2012-06-23 04:32:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.145 2012-06-23 17:51:21 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.144 2012-06-23 04:32:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.145 2012-06-23 17:51:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -170,7 +170,7 @@ main(int argc,char **argv)
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
   int nbr_var_fl;
   int nc_id;  
-  int ncopen_mode=NC_WRITE; /* [enm] Mode flag for nco_open() call */
+  int md_open=NC_WRITE; /* [enm] Mode flag for nco_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
@@ -345,8 +345,8 @@ main(int argc,char **argv)
   } /* end if FL_OUT_NEW */
 
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
-  /*  if(dbg_lvl == 8) ncopen_mode|=NC_SHARE;*/
-  rcd+=nco_fl_open(fl_out,ncopen_mode,&bfr_sz_hnt,&nc_id);
+  /*  if(dbg_lvl == 8) md_open|=NC_SHARE;*/
+  rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
   (void)nco_redef(nc_id);
 
   /* Get number of variables in file */

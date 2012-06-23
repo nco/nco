@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.138 2012-06-23 04:32:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.139 2012-06-23 17:51:22 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.138 2012-06-23 04:32:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.138 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.139 2012-06-23 17:51:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.139 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -188,6 +188,7 @@ main(int argc,char **argv)
   int idx;
   int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int md_open=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
   int nbr_dmn_ass=int_CEWI;/* Number of dimensions in temporary list */
   int nbr_dmn_in=int_CEWI; /* Number of dimensions in dim_in */
   int nbr_lst_a=0; /* size of xtr_lst_a */
@@ -562,7 +563,8 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
-  rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+  if(RAM_OPEN) md_open|=NC_DISKLESS;
+  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
   
   /* Form list of all dimensions in file */  

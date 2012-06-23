@@ -1,3 +1,7 @@
+2012-06-23  Charlie Zender  <zender@uci.edu>
+
+	* Propagate RAM_OPEN to nco_fl_utl()...
+
 2012-06-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.1 release procedure:

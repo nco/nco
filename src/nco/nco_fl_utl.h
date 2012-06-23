@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.60 2012-06-23 04:32:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.61 2012-06-23 17:51:21 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -132,8 +132,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
- const int ram_create, /* I [flg] Create file in RAM */
- const int ram_open, /* I [flg] Open (netCDF3) file(s) in RAM */
+ const int RAM_CREATE, /* I [flg] Create file in RAM */
+ const int RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
  int * const out_id); /* O [id] File ID */
 
 void
@@ -149,7 +149,7 @@ nco_fl_rm /* [fnc] Remove file */
 int /* [rcd] Return code */
 nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
 (const char * const fl_nm, /* I [sng] Name of file to open */
- const int open_mode, /* I [enm] Mode flag for nco__open() call (NC_WRITE or NC_NOWRITE) */
+ const int md_open, /* I [enm] Mode flag for nco__open() call (NC_WRITE or NC_NOWRITE) */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const nc_id); /* O [id] File ID */
 
