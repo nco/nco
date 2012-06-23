@@ -51,7 +51,7 @@ unix {
  LIBS += /usr/local/lib/libnetcdf.a
  LIBS += /usr/local/lib/libhdf5_hl.a
  LIBS += /usr/local/lib/libhdf5.a
- LIBS += /usr/local/lib/libz.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libz.a
 
 }
 win32 {
