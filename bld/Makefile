@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.598 2012-06-14 18:04:56 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.599 2012-06-23 00:44:40 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -24,6 +24,7 @@
 # make ZNETCDF=Y                     # znetCDF features
 
 # Usage (Compilation):
+# cd ~/nco/qt;qmake;make;cd -        # Qt
 # cd ~/nco/bld;make;cd -             # Default build
 # cd ~/nco/bld;make cln bin_cln;cd - # Clean all dependencies for fresh build
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build

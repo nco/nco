@@ -1,3 +1,7 @@
+2012-06-22  Charlie Zender  <zender@uci.edu>
+
+	* Implement NC_DISKLESS in nco_open() in ncks.c via --ram_open switch
+
 2012-06-21  Charlie Zender  <zender@uci.edu>
 
 	* Successfully built and tested with netCDF 4.2.1-rc1

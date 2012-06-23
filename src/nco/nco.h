@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.172 2012-06-11 23:55:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.173 2012-06-23 00:44:40 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -43,11 +43,8 @@
 extern "C" {
 #endif /* !__cplusplus */
 
-/* Uncomment next line to remove C99 restrict type-qualifier from all source */
-/* #define restrict */
-
 /* Replace restrict by __restrict in g++ compiler
-   Substitute whitespace for __restrict in all other C++ compilers */
+   Substitute whitespace for restrict in all other C++ compilers */
 #ifdef __cplusplus
 # ifdef __GNUG__
 #  define restrict __restrict
@@ -211,11 +208,14 @@ extern "C" {
 
 /* Six compatibility tokens not all available until netCDF 3.6.1 netcdf.h
    NC_64BIT_OFFSET is used (so far) only in nco_fl_utl.c */
-#ifndef NC_64BIT_OFFSET
-# define NC_64BIT_OFFSET (0x0200) /* Use large (64-bit) file offsets */
-#endif
 #ifndef NC_CLASSIC_MODEL
-# define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
+# define NC_CLASSIC_MODEL 0x0100 /**< Enforce classic model. Mode flag for nc_create(). */
+#endif
+#ifndef NC_64BIT_OFFSET
+# define NC_64BIT_OFFSET 0x0200 /* Use large (64-bit) file offsets */
+#endif
+#ifndef NC_DISKLESS
+# define NC_DISKLESS 0x0008 /* Use diskless file. Mode flag for nc_open() or nc_create(). */
 #endif
 #ifndef NC_FORMAT_CLASSIC
 # define NC_FORMAT_CLASSIC (1)

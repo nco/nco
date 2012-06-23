@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.110 2012-06-14 18:04:56 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.111 2012-06-23 00:44:40 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -37,12 +37,12 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = .
-DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
+DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
-	autobld/config.guess autobld/config.sub autobld/depcomp \
-	autobld/install-sh autobld/ltmain.sh autobld/missing \
-	autobld/mkinstalldirs autobld/texinfo.tex autobld/ylwrap
+	$(top_srcdir)/configure COPYING INSTALL autobld/config.guess \
+	autobld/config.sub autobld/depcomp autobld/install-sh \
+	autobld/ltmain.sh autobld/missing autobld/mkinstalldirs \
+	autobld/texinfo.tex autobld/ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.in

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.301 2012-06-06 20:47:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.302 2012-06-23 00:44:40 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -103,6 +103,8 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
+  nco_bool RAM_CREATE=False; /* [flg] Open (netCDF3) file(s) in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Create file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -129,8 +131,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.301 2012-06-06 20:47:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.301 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.302 2012-06-23 00:44:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.302 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -155,6 +157,7 @@ main(int argc,char **argv)
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
+  int fl_in_open_flg=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
@@ -166,12 +169,12 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
   int nbr_var_fl;
-  int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rec_dmn_nbr; /* O [nbr] Number of record dimensions in file */
   int var_lst_in_nbr=0;
+  int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
     
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
@@ -208,6 +211,12 @@ main(int argc,char **argv)
       {"no_clobber",no_argument,0,0},
       {"no_dmn_var_nm",no_argument,0,0}, /* [flg] Print dimension/variable names */
       {"no_nm_prn",no_argument,0,0}, /* [flg] Print dimension/variable names */
+      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"ram_create",no_argument,0,0}, /* [flg] Create file(s) in RAM */
+      {"ram_open",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"diskless_create",no_argument,0,0}, /* [flg] Create file(s) in RAM */
+      {"diskless_open",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"secret",no_argument,0,0},
       {"shh",no_argument,0,0},
       {"version",no_argument,0,0},
@@ -377,6 +386,8 @@ main(int argc,char **argv)
         if(cp) cp=(char *)nco_free(cp);
         nco_exit(EXIT_SUCCESS);
       } /* endif "tst_udunits" */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"ram_create") || !strcmp(opt_crr,"diskless_all") || !strcmp(opt_crr,"diskless_create")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"ram_open") || !strcmp(opt_crr,"diskless_all") || !strcmp(opt_crr,"diskless_open")) RAM_OPEN=True; /* [flg] Create file(s) in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
 	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMD5 digests\t\t--md5_digest\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest udunits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
 	nco_exit(EXIT_SUCCESS);
@@ -523,6 +534,8 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
+  if(RAM_OPEN) fl_in_open_flg|=NC_DISKLESS;
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
@@ -537,7 +550,7 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
-  rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+  rcd+=nco_fl_open(fl_in,fl_in_open_flg,&bfr_sz_hnt,&in_id);
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
@@ -639,6 +652,9 @@ main(int argc,char **argv)
     
     /* Make output and input files consanguinous */
     if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+
+    /* Implement RAM disk request */
+    if(RAM_CREATE) fl_out_fmt|=NC_DISKLESS;
 
     /* Verify output file format supports requested actions */
     (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
