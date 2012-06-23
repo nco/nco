@@ -46,6 +46,10 @@ unix {
  LIBS += /usr/local/lib/libhdf5.a
  LIBS += /usr/lib/x86_64-linux-gnu/libz.a
 
+ LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a
+ 
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)

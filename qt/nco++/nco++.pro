@@ -92,10 +92,10 @@ unix {
  LIBS += /usr/local/lib/libhdf5.a
  LIBS += /usr/lib/x86_64-linux-gnu/libz.a
 
- LIBS += ~/libs/install/udunits-2.1.24/lib/libudunits2.a
- LIBS += ~/libs/install/expat-2.1.0/lib/libexpat.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a
 
- LIBS += ~/libs/install/antlr-2.7.7/lib/libantlr.a
+ LIBS += /usr/lib/libantlr.a
 
 
 
