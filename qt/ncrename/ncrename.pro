@@ -48,6 +48,7 @@ unix {
  LIBS += /usr/local/lib/libhdf5.a
  LIBS += /usr/lib/x86_64-linux-gnu/libz.a
 
+ LIBS += /usr/lib/x86_64-linux-gnu/libcurl.a
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)

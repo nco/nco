@@ -52,6 +52,8 @@ unix {
  LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a
  LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a
 
+ LIBS += /usr/lib/x86_64-linux-gnu/libcurl.a
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)
