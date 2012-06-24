@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.301 2012-06-23 17:51:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.302 2012-06-24 22:04:29 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.301 2012-06-23 17:51:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.301 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.302 2012-06-24 22:04:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.302 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -168,7 +168,7 @@ main(int argc,char **argv)
   int idx_avg;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int md_open=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
+  int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_out=0;
   int nbr_dmn_xtr;
@@ -554,7 +554,7 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
-  if(RAM_OPEN) md_open|=NC_DISKLESS;
+  if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
@@ -767,7 +767,7 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     /* Open file once per thread to improve caching */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
     in_id=in_id_arr[0];
     
     /* Perform various error-checks on input file */

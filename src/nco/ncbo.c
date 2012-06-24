@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.181 2012-06-23 17:51:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.182 2012-06-24 22:04:29 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.181 2012-06-23 17:51:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.181 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.182 2012-06-24 22:04:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.182 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -174,7 +174,7 @@ main(int argc,char **argv)
   int in_id_1;  
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int md_open=NC_NOWRITE; /* [enm] Mode flag for nco_open() call */
+  int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl_1;
   int nbr_dmn_fl_2;
   int nbr_dmn_xtr_1;
@@ -467,7 +467,8 @@ main(int argc,char **argv)
   if(dbg_lvl >= nco_dbg_fl && FILE_1_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_1);
   if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
-  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_1,NC_NOWRITE,&bfr_sz_hnt,in_id_1_arr+thr_idx);
+  if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_1,md_open,&bfr_sz_hnt,in_id_1_arr+thr_idx);
   in_id_1=in_id_1_arr[0];
 
   fl_idx=1; /* Input file _2 */
@@ -478,7 +479,8 @@ main(int argc,char **argv)
   if(dbg_lvl >= nco_dbg_fl && FILE_2_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_2);
   if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
-  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,NC_NOWRITE,&bfr_sz_hnt,in_id_2_arr+thr_idx);
+  if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
   
   /* Parse auxiliary coordinates */
