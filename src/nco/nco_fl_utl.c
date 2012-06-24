@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.178 2012-06-24 22:04:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.179 2012-06-24 22:53:38 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -9,8 +9,8 @@
 #include "nco_fl_utl.h" /* File manipulation */
 
 /* MSVC
-   The time period for the Win32 Sleep function is in milliseconds. 
-   In the Linux sleep function the time periods are measured in seconds */
+   Time period for Win32 Sleep function is measured in milliseconds. 
+   Time period for Linux sleep function is measured in seconds */
 #ifdef _MSC_VER
 # include <process.h>
 # include <windows.h> 
@@ -153,7 +153,7 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
 
 /* stub function for MSVC */
 #ifdef _MSC_VER
-void nco_fl_chmod (const char * const fl_nm) {}
+void nco_fl_chmod (const char * const fl_nm){}
 #else
 void
 nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
@@ -239,9 +239,9 @@ nco_fl_cp /* [fnc] Copy first file to second */
   if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_cp() */
 
-/* stub function for MSVC */
 #ifdef _MSC_VER
-char * nco_fl_info_get (const char * ) { return NULL; }
+/* Stub function for MSVC */
+char * nco_fl_info_get(const char *){return NULL;}
 #else
 char * /* O [sng] Canonical file name*/
 nco_fl_info_get /* [fnc] Determine canonical filename and properties */
@@ -548,7 +548,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Filename has http:// prefix so try DAP access to unadulterated filename */
     int in_id; /* [id] Temporary input file ID */
 
-    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
+    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file.
+       Do not worry about NC_DISKLESS here since any file will be immediately closed. */
     rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
     
     if(rcd == NC_NOERR){
@@ -1466,6 +1467,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* [fnc] Merge clobber mode with user-specified file format */
   md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
 
+  if(RAM_CREATE) md_create|=NC_DISKLESS;
+
   if(FORCE_OVERWRITE && FORCE_APPEND){
     (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",prg_nm_get());
     (void)fprintf(stdout,"%s: HINT: Overwrite (-O) and Append (-A) options are mutually exclusive. Re-run your command, setting at most one of these switches.\n",prg_nm_get());
@@ -1544,16 +1547,18 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* end if */
 #endif /* _MSC_VER */ 
 
-#ifdef WRT_TMP_FL /* avoid generation of temporary file; currently defined only for MSVC */
-  strcpy(fl_out_tmp,fl_out);
-#endif
+#ifdef WRT_TMP_FL /* Avoid generation of temporary file---currently defined only for MSVC */
+  (void)strcpy(fl_out_tmp,fl_out);
+#endif /* !WRT_TMP_FL */
 
   if(False){
     if(prg_get() == ncrename){
       /* ncrename and ncatted allow single filename without question */
       /* Incur expense of copying current file to temporary file */
+      int md_open; /* [enm] Mode flag for nc_open() call */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,&bfr_sz_hnt_lcl,out_id);
+      if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
+      rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1565,9 +1570,12 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   if(rcd_stt != -1){
     char *rcd_fgets=NULL; /* Return code from fgets */
     char usr_rpl[NCO_USR_RPL_MAX_LNG];
+    int md_open; /* [enm] Mode flag for nc_open() call */
     int usr_rpl_int;
     short nbr_itr=0;
     size_t usr_rpl_lng;
+    
+    if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
 
     /* Initialize user reply string */
     usr_rpl[0]='z';
@@ -1576,7 +1584,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     if(FORCE_APPEND){
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,&bfr_sz_hnt_lcl,out_id);
+      rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1624,7 +1632,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     case 'a':
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
-      rcd+=nco_fl_open(fl_out_tmp,NC_WRITE,&bfr_sz_hnt_lcl,out_id);
+      rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       break;
     default: nco_dfl_case_nc_type_err(); break;
@@ -1633,6 +1641,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   }else{ /* Output file does not yet already exist */
     md_create=NC_NOCLOBBER;
     md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
+    if(RAM_CREATE) md_create|=NC_DISKLESS;
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
     /*    rcd+=nco_create(fl_out_tmp,md_create|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
@@ -1642,7 +1651,6 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   return fl_out_tmp;
 
 } /* end nco_fl_out_open() */
-
 
 void
 nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
