@@ -9,7 +9,8 @@
 <body>
 
 <h2>NCO Qt/MSVC build</h2>
-This page contains instructions regarding building NCO with the Qt system and with Microsoft Windows Visual Studio 2010 (MSVC).
+This page contains instructions regarding building NCO with the Qt system and with Microsoft Windows Visual Studio 2010 (MSVC). 
+This page is mostly important for developers that want to build NCO from source using Qt or MSVC.
 <br>
 <br>
 
