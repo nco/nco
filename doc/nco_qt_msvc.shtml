@@ -43,6 +43,7 @@ To build Qt from the command line, do:
 <br><tt>/usr/lib/x86_64-linux-gnu/libz.a</tt>
 <br><tt>/usr/lib/x86_64-linux-gnu/libudunits2.a</tt>
 <br><tt>/usr/lib/x86_64-linux-gnu/libexpat.a</tt>
+<br><tt>/usr/lib/x86_64-linux-gnu/libcurl.a</tt>
 <br>
 <br>
 
