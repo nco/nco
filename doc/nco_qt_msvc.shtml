@@ -74,30 +74,33 @@ Additionnaly, the following environment variable must also be defined for the lo
 
 <h2>netCDF 4.2.0 built with MSVC</h2>
 
-For convenience, we include MSVC projects that allow to build all the NCO dependency libraries. The following file has MSVC build projects for:
-<br>
-<br>
-<tt>netCDF 4.2</tt>
-<br><tt>HDF5 1.8.5 patch1</tt>
-<br><tt>Antlr 2.7.7</tt>
+For convenience, we include Microsoft Visual Studio 2010 projects that allow to build all the NCO dependency libraries. The following files have MSVC build projects for:
 <br>
 <br>
 
-<table border="0" width="30%" >
+<table border="1" width="70%" >
 <tr>
-<td><b>File</b></td><td><b>Size</b></td><td><b>Date</b></td>
+<td><b>Library</b></td><td><b>Description</b></td><td><b>File</b></td><td><b>Size</b></td><td><b>Date</b></td>
 </tr>
+<!-- netCDF -->
 <tr>
-<td><a href="netcdf-4.2.tar.gz">netcdf-4.2.0.tar.gz</a></td><td>4.8MB<br></td><td>June 24, 2012<br></td>
+<td><tt>netCDF 4.2.0</tt></td><td>Contains the projects:<br>/libsrc<br>/libdispatch<br>/libsrc4<br>/ncdump</td>
+<td><a href="http://glace.ess.uci.edu/libs/netcdf-4.2.tar.gz">netcdf-4.2.0.tar.gz</a></td><td>1.8MB<br></td><td>June 24, 2012<br></td>
 </tr>
+<!-- HDF5 -->
+<tr>
+<td><tt>HDF5 1.8.5 patch1</tt></td><td>Contains the projects:<br>/hdf5<br>/hdf5_hl<br>/h5tinit<br>/h5libsettings</td>
+<td><a href="http://glace.ess.uci.edu/libs/hdf5-1.8.5.patch1.tar.gz">hdf5-1.8.5.patch1.tar.gz</a></td><td>1.8MB<br></td><td>June 24, 2012<br></td>
+</tr>
+<!-- antlr -->
+<tr>
+<td><tt>antlr-2.7.7</tt></td><td>Contains the projects:<br>/antlr</td>
+<td><a href="http://glace.ess.uci.edu/libs/antlr-2.7.7.tar.gz">antlr-2.7.7.tar.gz</a></td><td>4.5MB<br></td><td>June 24, 2012<br></td>
+</tr>
+
 </table>
-
 <br>
-<b>Description</b>
-<p>Contains the projects:</p>
-/libsrc
-<br>/libdispatch
-<br>/ncdump
+
 
 
 <table border="0" width="100%">
