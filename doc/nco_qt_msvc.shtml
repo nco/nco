@@ -78,6 +78,7 @@ To build NCO with MSVC, open the file /qt/nco.sln with Visual Studio.
 <br><tt>LIB_HDF5_HL</tt>
 <br><tt>LIB_ZLIB</tt>
 <br><tt>LIB_SZIP</tt>
+<br><tt>LIB_ANTLR</tt>
 <br><tt>LIB_UDUNITS</tt>
 <br><tt>LIB_EXPAT</tt>
 <br>
