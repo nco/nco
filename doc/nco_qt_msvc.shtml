@@ -1,3 +1,9 @@
+<!--
+Usage:
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco_qt_msvc.shtml ~/nco/doc/logo_vs2010.png ~/nco/doc/logo_qt.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/index.shtml ~/nco/doc/nco_qt_msvc.shtml ~/nco/doc/logo_vs2010.png ~/nco/doc/logo_qt.png  dust.ess.uci.edu:/var/www/html/nco
+-->
+
 <html>
 
 <head>
