@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.487 2012-06-14 18:04:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.488 2012-06-25 04:54:29 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -18,7 +18,9 @@ Charlie
 
 Other "New stuff" in 4.2.1 summary (full details always in ChangeLog):
 
-A. fxm
+A. RAM disks
+   ncks --ram ~/nco/data/in.nc ~/foo.nc
+   http://nco.sf.net/nco.html#ram
 
 KNOWN BUGS NOT YET FIXED:
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.140 2012-06-23 04:32:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.141 2012-06-25 04:54:30 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -95,8 +95,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.140 2012-06-23 04:32:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.140 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.141 2012-06-25 04:54:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.141 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -112,6 +112,7 @@ main(int argc,char **argv)
   int abb_arg_nbr=0;
   int fl_nbr=0;
   int idx;
+  int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_att_rnm=0; /* Option a. NB: nbr_att_rnm gets incremented */
   int nbr_dmn_rnm=0; /* Option d. NB: nbr_dmn_rnm gets incremented */
   int nbr_var_rnm=0; /* Option v. NB: nbr_var_rnm gets incremented */
@@ -303,7 +304,8 @@ main(int argc,char **argv)
   } /* end if FL_OUT_NEW */
   
   /* Open file enabled for writing. Place file in define mode for renaming. */
-  rcd+=nco_fl_open(fl_out,NC_WRITE,&bfr_sz_hnt,&nc_id);
+  if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
+  rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
   (void)nco_redef(nc_id);
 
   /* Timestamp end of metadata setup and disk layout */

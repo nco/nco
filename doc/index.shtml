@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.704 2012-06-15 17:41:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.705 2012-06-25 04:54:29 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -120,7 +120,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2012 Aug&nbsp;??: NCO 4.2.1</li>
+<li>2012 Aug&nbsp;??: NCO 4.2.1 (RAM disks)</li>
 <li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>
 <li>2012 Apr&nbsp;23: Received funding for NASA <a href="#prp_access">ACCESS Project</a></li>
 <li>2012 Mar&nbsp;29: NCO 4.1.0 (MD5 support, MM3)</li>
@@ -549,9 +549,10 @@ You can also retrieve the source of tagged versions directly
 netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
+more Robust RHEL/CentOS autoconf support?;
 <tt>ncks</tt> netCDF4 groups;
 <li><b>NCO 4.2.1</b>: (<i>In Progress, features already in beta include the following</i>)
-Robust RHEL/CentOS autoconf support;
+Support RAM disks
 <li><b>NCO 4.2.0</b>: (<i>Current Stable Release</i>) 
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;
 <tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
