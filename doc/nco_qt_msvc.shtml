@@ -19,7 +19,14 @@ This page contains instructions regarding building NCO with the Qt system and wi
   </tr>
 </table>
 
-<h2>Build NCO with Qt</h2>
+<table border="0" width="25%">
+<tr>
+<td><h2>Build NCO with Qt</h2></td><td><img src="logo_qt.png" align=left></td>
+</tr>
+<tr>
+</table>
+
+
 
 <a target="_top" href="http://qt.nokia.com/products/">Qt</a> is a cross platform build system. As of NCO 4.2.1, it is possible to build NCO with Qt, in a Linux, Mac OSX or 
 Windows enviroment. NCO can be built either from the Qt IDE, QtCreator, or from the command line. To build NCO with QtCreator, just open the file /qt/nco.pro. 
@@ -44,7 +51,13 @@ To build Qt from the command line, do:
   </tr>
 </table>
 
-<h2>Build NCO with MSVC</h2>
+<table border="0" width="35%">
+<tr>
+<td><h2>Build NCO with MSVC</h2></td><td><img src="logo_vs2010.png" align=left></td>
+</tr>
+<tr>
+</table>
+
 
 As of NCO 4.2.0, it is possible to build NCO with <a target="_top" href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a>. 
 To build NCO with MSVC, open the file /qt/nco.sln with Visual Studio.
@@ -71,6 +84,7 @@ Additionnaly, the following environment variable must also be defined for the lo
     <td width="100%" bgcolor="#C0C0C0"></td>
   </tr>
 </table>
+
 
 <h2>netCDF 4.2.0 built with MSVC</h2>
 
@@ -109,7 +123,10 @@ For convenience, we include Microsoft Visual Studio 2010 projects that allow to 
   </tr>
 </table>
 
-
+<table width="100%"><tr><td align="left" valign="top">
+<a href="http://nco.sf.net">Homepage</a> 
+</td>
+</table>
 
 </body>
 </html>
