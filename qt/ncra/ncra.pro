@@ -20,7 +20,7 @@ CONFIG( debug, debug|release ) {
 }
 
 #nco avoid writing temporary file
-win32:DEFINES += WRT_TMP_FL
+win32:DEFINES += NO_TMP_FL
 
 #netCDF
 DEFINES += ENABLE_NETCDF4

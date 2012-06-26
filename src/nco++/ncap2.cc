@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.140 2012-06-24 22:04:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.141 2012-06-26 21:45:32 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.140 2012-06-24 22:04:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.140 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.141 2012-06-26 21:45:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.141 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -942,11 +942,7 @@ main(int argc,char **argv)
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
   
   /* Close output file and move it from temporary to permanent location */
-#ifndef WRT_TMP_FL /* avoid generation of temporary file; currently defined only for MSVC */
   if(FL_OUT_NEW) (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id); else nco_close(out_id);
-#else
-  nco_close(out_id);
-#endif
   
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){

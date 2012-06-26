@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.180 2012-06-26 04:52:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.181 2012-06-26 21:45:31 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1541,9 +1541,9 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* endif dbg */
 #endif /* _MSC_VER */ 
 
-#ifdef WRT_TMP_FL /* Bypass generation of temporary file---currently defined only for MSVC */
-  (void)strcpy(fl_out_tmp,fl_out);
-#endif /* !WRT_TMP_FL */
+#ifdef NO_TMP_FL /* Bypass generation of temporary file---currently defined only for MSVC */
+  if(NO_TMP_FL) (void)strcpy(fl_out_tmp,fl_out);
+#endif /* !NO_TMP_FL */
 
   rcd_stt=stat(fl_out_tmp,&stat_sct);
 
@@ -1682,7 +1682,13 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
-  (void)nco_fl_mv(fl_out_tmp,fl_out);
+  /* Only bother to perform system() call if files are not identical */
+  if(!strcmp(fl_out_tmp,fl_out)){
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical. No need to move.",prg_nm_get(),fl_out);
+    return;
+  }else{
+    (void)nco_fl_mv(fl_out_tmp,fl_out);
+  } /* end if */
 
 } /* end nco_fl_out_cls() */
 
