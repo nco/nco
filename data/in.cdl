@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.138 2012-05-22 01:08:28 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.139 2012-06-26 05:17:15 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -299,12 +299,16 @@ variables:
 	nan_arr:long_name = "Intended for array representation of IEEE NaN";
 	nan_arr:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
 	nan_arr:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
+	nan_arr:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
+	nan_arr:note4 = "If your NCO build fails because your version of netCDF does not support nan, then cd to the directory that contains the file nco/data/in.cdl and run the command in note5 first and then try to build again";
+	nan_arr:note5 = "sed -e 's/nan;/1.0f;/' in.cdl > foo.cdl;ncgen -b -o in.nc foo.cdl";
 	nan_arr:_FillValue = nan;
 
 	float nan_scl;
 	nan_scl:long_name = "Intended for scalar representation of IEEE NaN";
 	nan_scl:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
 	nan_scl:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
+	nan_scl:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
 	nan_scl:_FillValue = nan;
 
 	float nm_spc;

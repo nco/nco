@@ -1,5 +1,7 @@
 2012-06-25  Charlie Zender  <zender@uci.edu>
 
+	* Handle NaNs better in in.cdl
+
 	* Work on most- and longest-requested NCO feature: avoid temporary files
 	This is TODO nco326, nco567, nco781, and nco1014.
 
