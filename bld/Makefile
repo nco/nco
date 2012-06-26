@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.599 2012-06-23 00:44:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.600 2012-06-26 05:38:12 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -100,6 +100,7 @@ MY_DAT_DIR := ../data
 MY_DBN_DIR := ../debian
 MY_DOC_DIR := ../doc
 MY_DPN_DIR := ${MY_OBJ_DIR}
+MY_QT_DIR := ../qt
 MY_SRC_DIR := ../src/nco
 MY_INC_DIR := ${MY_SRC_DIR}
 NCO_CXX_SRC_DIR := ${MY_SRC_DIR}/../nco_c++
@@ -541,6 +542,9 @@ MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefil
 MDL_BLD_SRC += $(addprefix ${MY_BM_DIR}/,NCO_bm.pm NCO_benchmarks.pm NCO_rgr.pm nco_bm.pl nco_bm.sh mk_bm_plots.pl) # `make tags' includes these files
 # Files, if any, to exclude from tags
 TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc .//lex.${NCO_YY_PFX}.c
+
+# Variables having to do with Qt build system
+MDL_QT_SRC := $(addprefix ${MY_QT_DIR}/,nco.pro libnco/libnco.pro ncatted/ncatted.pro ncbo/ncbo.pro ncecat/ncecat.pro ncflint/ncflint.pro ncks/ncks.pro ncpdq/ncpdq.pro ncra/ncra.pro ncrename/ncrename.pro nco_c++/nco_c++.pro tst_nco_c++/tst_nco_c++.pro nco++/nco++.pro) # `make tags' includes these files
 
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
@@ -1956,7 +1960,7 @@ dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f in.nc in_rec_zero.nc *~
 tags: 
-	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC}
+	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
 
 # Reset internal YACC and LEX patterns
 %.c : %.y

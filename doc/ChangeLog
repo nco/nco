@@ -1,5 +1,7 @@
 2012-06-25  Charlie Zender  <zender@uci.edu>
 
+	* Add Qt directories to 'make tags' sources
+
 	* Handle NaNs better in in.cdl
 
 	* Work on most- and longest-requested NCO feature: avoid temporary files
