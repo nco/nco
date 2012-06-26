@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.174 2012-06-26 20:46:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.175 2012-06-26 20:47:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -233,10 +233,10 @@ extern "C" {
   /* Two backwards-compatibility tokens implemented in 201106 do diagnose problems with DAP
      Currently used only in nco_fl_utl.c */
 #ifndef NC_ECANTREAD
-# define (-102)    /**< Can't read. */
+# define NC_ECANTREAD (-102)    /**< Can't read. */
 #endif
 #ifndef NC_EDAPSVC
-# define (-70)      /**< DAP server error */
+# define NC_EDAPSVC (-70)      /**< DAP server error */
 #endif
 
   /* NCO began using MIN/MAX tokens in nco_pck.c on 20101130
