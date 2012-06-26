@@ -6,7 +6,7 @@ TARGET = ncap2
 CONFIG -= qt
 CONFIG += debug_and_release
 
-#nco library
+# NCO library
 CONFIG( debug, debug|release ) {
     # debug
     win32:LIBS += ../libnco/debug/libnco.lib
@@ -22,11 +22,10 @@ CONFIG( debug, debug|release ) {
     
 }
 
-
-#nco avoid writing temporary file
+# NCO avoid writing temporary file
 win32:DEFINES += NO_TMP_FL
 
-#netCDF
+# netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
 
@@ -36,7 +35,7 @@ INCLUDEPATH += ../../src/nco++
 #fmc_all_cls.hh fmc_cls.hh Invoke.hh libnco++.hh map_srt_tmp.hh ncap2.hh ncap2_utl.hh NcapVar.hh NcapVarVector.hh 
 #NcapVector.hh ncoEnumTokenTypes.hpp ncoTree.hpp prs_cls.hh sdo_utl.hh sym_cls.hh VarOp.hh vtl_cls.hh
 
-#gsl
+# GSL
 #fmc_gsl_cls.hh
 
 HEADERS   = ../../src/nco++/fmc_all_cls.hh \

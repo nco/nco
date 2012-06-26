@@ -22,7 +22,7 @@ unix:CONFIG( debug, debug|release ) {
 
 
 
-#nco avoid writing temporary file
+# NCO avoid writing temporary file
 win32:DEFINES += NO_TMP_FL
 
 #netCDF

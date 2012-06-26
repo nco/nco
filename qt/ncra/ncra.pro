@@ -3,8 +3,6 @@ TEMPLATE = app
 # name
 TARGET = ncra
 
-
-
 CONFIG -= qt
 CONFIG += debug_and_release
 
@@ -19,7 +17,7 @@ CONFIG( debug, debug|release ) {
         unix:LIBS  += ../libnco/release/liblibnco.a
 }
 
-#nco avoid writing temporary file
+# NCO avoid writing temporary file
 win32:DEFINES += NO_TMP_FL
 
 #netCDF
