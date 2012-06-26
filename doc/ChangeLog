@@ -1,3 +1,12 @@
+2012-06-25  Charlie Zender  <zender@uci.edu>
+
+	* Work on most- and longest-requested NCO feature: avoid temporary files
+	This is TODO nco326, nco567, nco781, and nco1014.
+
+	* Do not mv/cp in nco_fl_mv()/nco_fl_cp() when files are identical
+
+	* Change nco_fl_out_open() logic to define bfr_sz_hnt_lcl before use on MSVC
+
 2012-06-24  Charlie Zender  <zender@uci.edu>
 
 	* Propagate RAM_OPEN to nc_open() for all input files

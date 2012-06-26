@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1177 2012-06-14 20:20:14 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1178 2012-06-26 04:52:04 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -249,7 +249,6 @@ nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
 nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
 nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
 nco324. Add release date to "Version Summary" section on homepage
-nco326. Add manual override of writing *tmp* file for intermediate results?
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
@@ -348,7 +347,6 @@ nco560. Change FTP access script to facilitate mget *?
 nco564. Implement --64bit switch in ncatted?
 nco565. bm: Add ncatted bm to quantify nc__enddef() tuning improvements
 nco566. Implement --64bit switch in ncrename?
-nco567. Add option to turn off default-creation of .tmp file?
 nco568. bm: test NC_SHARE in ncatted/ncrename?
 nco569. bm: Add SRB test
         Sifang Lu <sifang@sdsc.edu>
@@ -571,7 +569,6 @@ nco779. Add non-record stride checks to regression tests e.g.,
 	ncks -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
 	ncks -C -v three_dmn_rec_var ~/foo.nc
-nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first? Seems unlikely this will save time.
 nco784. Build NCO on NMI test lab http://nmi.cs.wisc.edu/
 nco789. Add regression test for behavior when _FillValue defined and missing_value not	      
 	ncwa -O -a lon -v fll_val,mss_val ~/nco/data/in.nc ~/foo.nc
@@ -746,12 +743,6 @@ nco983. change default to netcdf3 64bit? or compile-time option to do so?
 nco984. remove makeinfo dependency trigger from nco configure build
 nco991. ncap2 functions to return all variable and dimension names
 nco995. chunking in ncap2
-nco996. ncap2 fails netCDF4 test:
-	ncap2 -O -4 -D 4 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc # fails
-	ncap2 -O    -D 4 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc # works
-nco997. Bug triggered by using stride argument when accessing a file through DAP protocol
-	ncks -O -F -D 9 -v weasdsfc -d time,100,110,5 http://nomad3.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-2/6hr/flx/flx ~/foo.nc # Fails as of 20110114, old DAP server?
-	ncks -O -F -D 9 -v three_dmn_rec_var -d time,1,10,5 http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc ~/foo.nc # Works as of 20110114
 nco999. nco: replace a character array without RHS padding?
         ncks -v fl_nm ~/nco/data/in.nc
         ncap2 -O -s 'fl_nm(:)="01234567890123456789012345678901234567890123456789012345678901234567890123456789"' ~/nco/data/in.nc ~/foo.nc
@@ -788,9 +779,6 @@ nco1010. nco: support degenerate auxiliary hyperslabs. Related to nco1007 posted
 	 ncks -H ~/foo.nc
 nco1012. nco: nco_aed_prc() is called (too?) often (by nco_att_cpy()) to copy _FillValue attributes
 	 ncks -O -D 5 ~/nco/data/in.nc ~/foo.nc
-nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
-	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
-nco1016. nco: re-test TODO nco997 with netcdf 4.1.2
 nco1020. nco: re-base record bounds variables (e.g., time_bnds) in ncrcat
 nco1021. nco: use owner axes for printing CF-time in bounds attributes 
 nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without asking, e.g.,
@@ -814,14 +802,19 @@ nco1037. nco: support NaN's in math, comparison, averagers following template in
          ncatted -O -D 3 -a _FillValue,nan_arr,o,f,1.0e36 ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
          ncks -C -H -v nan_arr,nan_scl ~/nco/data/in.nc
 nco1041. nc__open() with NC_SIZEHINT_DEFAULT for MM3 problems or general switch?
-nco1042. nc_create() with NC_DISKLESS general switch?
 nco1043. Modify nco.spec to build on RHEL and Fedora
 nco1048. ncrcat Generates warnings like "ERROR: Conversion between user specified unit "days" and file units "" is meaningless" test case in crr.txt
 nco1053. nco: ncap2 rgr 10 Casting variable with same name as dimension (failure expected on netcdf4 ncap81) works for Henry not me. OS version related? e.g., app-armor-triggered? 
 	 ncap2 -O -C -v -s 'defdim("a",3);defdim("b",4); a[$a,$b]=10;c=a(1,1);' ~/nco/data/in.nc ~/foo.nc
 nco1054. nco: ncap2 rgr 11 Casting variable with a single dim of sz=1. works for Henry not me. OS version related? e.g., app-armor-triggered? 
 	 ncap2 -O -C -v -s 'defdim("a",1);b[$a]=10;c=b(0:0);' ~/nco/data/in.nc ~/foo.nc
-nco1055.
+nco1055. MSVC: bfr_sz_hnt_lcl appears to be used uninitialized in nco_fl_out_open() under MSVC
+nco326. Add manual override of writing *tmp* file for intermediate results?
+nco567. Add option to turn off default-creation of .tmp file?
+nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first? Seems unlikely this will save time.
+nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
+	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
+nco1056. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

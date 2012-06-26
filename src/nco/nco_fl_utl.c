@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.179 2012-06-24 22:53:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.180 2012-06-26 04:52:04 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -20,22 +20,22 @@ typedef int pid_t;
 
 int /* O [enm] Mode flag for nco_create() call */
 nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format */
-(const int clobber_mode, /* I [enm] Clobber mode (NC_CLOBBER or NC_NOCLOBBER) */
+(const int md_clobber, /* I [enm] Clobber mode (NC_CLOBBER or NC_NOCLOBBER) */
  const int fl_out_fmt) /* I [enm] Output file format */
 {
   /* Purpose: Merge clobber mode with flag determined by fl_out_fmt
      to produce output mode flag
-     clobber_mode: Either NC_CLOBBER or NC_NOCLOBBER
-     md_create: clobber_mode OR'd with (user-specified) file format mode */
+     md_clobber: Either NC_CLOBBER or NC_NOCLOBBER
+     md_create: md_clobber OR'd with (user-specified) file format mode */
 
   int md_create; /* O [enm] Mode flag for nco_create() call */
 
-  if(clobber_mode != NC_CLOBBER && clobber_mode != NC_NOCLOBBER){
-    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown clobber_mode\n",prg_nm_get());
+  if(md_clobber != NC_CLOBBER && md_clobber != NC_NOCLOBBER){
+    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown clobber mode md_clobber\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-  md_create=clobber_mode;
+  md_create=md_clobber;
   if(fl_out_fmt == NC_FORMAT_64BIT){
     md_create|=NC_64BIT_OFFSET;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4){
@@ -225,6 +225,12 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   int rcd;
   const int fmt_chr_nbr=4;
+
+  /* Only bother to perform system() call if files are not identical */
+  if(!strcmp(fl_src,fl_dst)){
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical. No need to copy.",prg_nm_get(),fl_src);
+    return;
+  } /* end if */
 
   /* Construct and execute copy command */
   cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
@@ -1096,9 +1102,15 @@ nco_fl_mv /* [fnc] Move first file to second */
   int rcd_sys; /* [rcd] Return code for system() */
   const int fmt_chr_nbr=4;
 
+  /* Only bother to perform system() call if files are not identical */
+  if(!strcmp(fl_src,fl_dst)){
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical. No need to move.",prg_nm_get(),fl_src);
+    return;
+  } /* end if */
+
   /* Construct and execute copy command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...\n",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src,fl_dst);
   rcd_sys=system(cmd_mv);
   if(rcd_sys == -1){
@@ -1461,12 +1473,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* netCDF4 */
 #endif /* ENABLE_NETCDF4 */
 
-  /* Set default clobber mode (clobber) then modify for specified file format */
+  /* Set default clobber mode then modify for specified file format */
   md_create=NC_CLOBBER; /* [enm] Mode flag for nco_create() call */
-
   /* [fnc] Merge clobber mode with user-specified file format */
   md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
-
   if(RAM_CREATE) md_create|=NC_DISKLESS;
 
   if(FORCE_OVERWRITE && FORCE_APPEND){
@@ -1495,7 +1505,6 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
   if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: %s reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),fnc_nm,(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
-  rcd_stt=stat(fl_out_tmp,&stat_sct);
 
   /* Free temporary memory */
   pid_sng=(char *)nco_free(pid_sng);
@@ -1530,6 +1539,13 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
     fl_out_tmp_sys=(char *)nco_free(fl_out_tmp_sys);
   } /* endif dbg */
+#endif /* _MSC_VER */ 
+
+#ifdef WRT_TMP_FL /* Bypass generation of temporary file---currently defined only for MSVC */
+  (void)strcpy(fl_out_tmp,fl_out);
+#endif /* !WRT_TMP_FL */
+
+  rcd_stt=stat(fl_out_tmp,&stat_sct);
 
   /* If temporary file already exists, prompt user to remove temporary files and exit */
   if(rcd_stt != -1){
@@ -1542,17 +1558,18 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   if(FORCE_OVERWRITE){
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
-    /*    rcd+=nco_create(fl_out_tmp,md_create|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
-#endif /* _MSC_VER */ 
 
-#ifdef WRT_TMP_FL /* Avoid generation of temporary file---currently defined only for MSVC */
-  (void)strcpy(fl_out_tmp,fl_out);
-#endif /* !WRT_TMP_FL */
-
+  /* This code block could be potentially be used by ncrename and ncatted
+     Doing so would align file I/O for these operators with rest of NCO
+     However, this would also require abandoning their "special treatment"
+     which both requires them to work on local (not remote or DAP) files, 
+     and prevents them from creating intermediate files.
+     Changing towards greater NCO-wide consistency would be a good thing? 
+     No one has yet complained about ncatted/ncrename locality requirement, though. */
   if(False){
-    if(prg_get() == ncrename){
+    if(prg_get() == ncrename || prg_get() == ncatted){
       /* ncrename and ncatted allow single filename without question */
       /* Incur expense of copying current file to temporary file */
       int md_open; /* [enm] Mode flag for nc_open() call */
@@ -1566,7 +1583,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   rcd_stt=stat(fl_out,&stat_sct);
 
-  /* If permanent file already exists, query user whether to overwrite, append, or exit */
+  /* If permanent output file already exists, query user whether to overwrite, append, or exit */
   if(rcd_stt != -1){
     char *rcd_fgets=NULL; /* Return code from fgets */
     char usr_rpl[NCO_USR_RPL_MAX_LNG];
@@ -1626,7 +1643,6 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     case 'O':
     case 'o':
       rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
-      /*    rcd+=nco_create(fl_out_tmp,md_create|NC_SHARE,out_id);*/
       break;
     case 'A':
     case 'a':
@@ -1643,7 +1659,6 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
     if(RAM_CREATE) md_create|=NC_DISKLESS;
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
-    /*    rcd+=nco_create(fl_out_tmp,md_create|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);

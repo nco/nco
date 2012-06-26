@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.689 2012-06-25 04:54:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.690 2012-06-26 04:52:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.1
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 11 June 2012
+@set update-date 25 June 2012
 @set update-month June 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1355,9 +1355,9 @@ usage is detailed in @ref{Memory Requirements}.
 @acronym{NCO} was developed at @acronym{NCAR} to aid analysis and
 manipulation of datasets produced by General Circulation Models
 (@acronym{GCM}s).  
-Datasets produced by @acronym{GCM}s share many features with all gridded
-scientific datasets and so provide a useful paradigm for the explication
-of the @acronym{NCO} operator set.
+@acronym{GCM} datasets share many features with other gridded scientific
+datasets and so provide a useful paradigm for the explication of the
+@acronym{NCO} operator set. 
 Examples in this manual use a @acronym{GCM} paradigm because latitude,
 longitude, time, temperature and other fields related to our natural
 environment are as easy to visualize for the layman as the expert.
@@ -1371,12 +1371,14 @@ environment are as easy to visualize for the layman as the expert.
 @cindex error tolerance
 @cindex safeguards
 @cindex temporary output files
+@cindex temporary files
 @acronym{NCO} operators are designed to be reasonably fault tolerant, so
-that if there is a system failure or the user aborts the operation (e.g.,
-with @kbd{C-c}), then no data are lost. 
+that a system failure or user-abort of the operation (e.g., with
+@kbd{C-c}) does not cause loss of data.
 The user-specified @var{output-file} is only created upon successful
 completion of the operation  
-@footnote{The @command{ncrename} operator is an exception to this rule.
+@footnote{The @command{ncrename} and @command{ncatted} operators are
+exceptions to this rule.
 @xref{ncrename netCDF Renamer}.}.
 This is accomplished by performing all operations in a temporary copy
 of @var{output-file}.
@@ -1385,6 +1387,9 @@ The name of the temporary output file is constructed by appending
 user-specified @var{output-file} name.  
 When the operator completes its task with no fatal errors, the temporary
 output file is moved to the user-specified @var{output-file}.
+This imbues the process with fault-tolerance since fatal error
+(e.g., disk space fills up) affect only the temporary output file,
+leaving the final output file not created if it did not already exist. 
 Note the construction of a temporary output file uses more disk space
 than just overwriting existing files ``in place'' (because there may be
 two copies of the same file on disk until the @acronym{NCO} operation
@@ -1395,9 +1400,35 @@ existing @var{output-file}).
 @cindex speed
 @cindex execution time
 Also, note this feature increases the execution time of the operator
-by approximately the time it takes to copy the @var{output-file}.
-Finally, note this feature allows the @var{output-file} to be the same 
-as the @var{input-file} without any danger of ``overlap''.
+by approximately the time it takes to copy the @var{output-file}
+@footnote{The OS-specific system move command is used.
+This is @command{mv} for UNIX, and @command{move} for Windows.}.
+Finally, note this fault-tolerant feature allows the @var{output-file}
+to be the same as the @var{input-file} without any danger of
+``overlap''. 
+
+@cindex @code{--no_tmp_fl}
+Over time many ``power users'' have requested a way to turn-off the
+fault-tolerance safety feature of automatically creating a temporary
+file. 
+Often these users are building and executing production data analysis 
+scripts that are repeated frequently on large datasets, and where 
+canceling the extra file write conserves disk space and time.
+For this purpose @acronym{NCO} implemented the @samp{--no_tmp_fl} switch
+in version 4.2.1 in July, 2012. 
+When eschewing temporary files, users may forsake the ability to have
+the same name for both @var{output-file} and @var{input-file} since, as   
+described above, the temporary file prevented overlap issues.
+However, if the user creates the output file in RAM (@pxref{RAM disks})
+then it is still possible to have the same name for both
+@var{output-file} and @var{input-file}.
+
+fxm is this true?
+@example
+ncks in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
+ncks --no_tmp_fl in.nc out.nc # create out.nc directly on disk
+ncks --create_ram --no_tmp_fl in.nc out.nc # fxm
+@end example
 
 @html
 <a name="-A"></a> <!-- http://nco.sf.net/nco.html#-A -->
