@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.175 2012-06-26 20:47:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.176 2012-06-26 20:53:34 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -230,7 +230,13 @@ extern "C" {
 # define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
 #endif
 
-  /* Two backwards-compatibility tokens implemented in 201106 do diagnose problems with DAP
+  /* Backwards-compatibility error codes for netCDF4
+     Currently used only in nco_grp_utl.c */
+#ifndef NC_EBADGRPID
+# define NC_EBADGRPID (-116)    /**< Bad group ID. */
+#endif
+
+  /* Two backwards-compatibility error codes implemented in 201106 to diagnose problems with DAP
      Currently used only in nco_fl_utl.c */
 #ifndef NC_ECANTREAD
 # define NC_ECANTREAD (-102)    /**< Can't read. */

@@ -1,6 +1,8 @@
 2012-06-26  Charlie Zender  <zender@uci.edu>
 
-	* Add NC_ECANTREAD and NC_EDAPSVC backwards-compatibility definitions to nco.h
+	* Add NC_EBADGRPID backwards-compatibility error code to nco.h
+
+	* Add NC_ECANTREAD and NC_EDAPSVC backwards-compatibility error codes to nco.h
 
 2012-06-25  Charlie Zender  <zender@uci.edu>
 
