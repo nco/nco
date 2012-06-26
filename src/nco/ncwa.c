@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.302 2012-06-24 22:04:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.303 2012-06-26 18:31:25 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -50,7 +50,9 @@
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#include <unistd.h> /* POSIX stuff */
+#ifndef _MSC_VER
+# include <unistd.h> /* POSIX stuff */
+#endif
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* HAVE_GETOPT_LONG */ 
@@ -123,8 +125,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.302 2012-06-24 22:04:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.302 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.303 2012-06-26 18:31:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.303 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
