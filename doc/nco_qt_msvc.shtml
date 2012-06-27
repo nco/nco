@@ -43,16 +43,6 @@ To build Qt from the command line, do:
 <br><tt>$ qmake</tt>
 <br><tt>$ make</tt></p>
 
-<p>NCO depends on several pre-installed libraries, namely HDF5 (including HDF5 High-Level), netCDF, zlib, UDunits and Expat. The NCO supplied Qt projects assume static builds of these libraries in the following locations:</p>
-<tt>/usr/local/lib/libnetcdf.a</tt>
-<br><tt>/usr/local/lib/libhdf5_hl.a</tt>
-<br><tt>/usr/lib/x86_64-linux-gnu/libz.a</tt>
-<br><tt>/usr/lib/x86_64-linux-gnu/libudunits2.a</tt>
-<br><tt>/usr/lib/x86_64-linux-gnu/libexpat.a</tt>
-<br><tt>/usr/lib/x86_64-linux-gnu/libcurl.a</tt>
-<br>
-<br>
-
 <table border="0" width="100%">
   <tr>
     <td width="100%" bgcolor="#C0C0C0"></td>
@@ -79,8 +69,6 @@ To build NCO with MSVC, open the file /qt/nco.sln with Visual Studio.
 <br><tt>LIB_ZLIB</tt>
 <br><tt>LIB_SZIP</tt>
 <br><tt>LIB_ANTLR</tt>
-<br><tt>LIB_UDUNITS</tt>
-<br><tt>LIB_EXPAT</tt>
 <br>
 <br>
 Additionnaly, the following environment variable must also be defined for the location of the netCDF header files:
