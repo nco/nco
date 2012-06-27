@@ -8,7 +8,7 @@ CONFIG += staticlib
 CONFIG -= qt
 CONFIG += debug_and_release
 
-#nco library
+# NCO library
 unix:CONFIG( debug, debug|release ) {
     # debug
         DESTDIR = ./debug
@@ -18,16 +18,10 @@ unix:CONFIG( debug, debug|release ) {
 }
 
 
-# NCO avoid writing temporary file
-win32:DEFINES += NO_TMP_FL
-
-#netCDF
+# netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
-
 DEFINES += NEED_STRCASECMP
-
-
 
 # netCDF library
 # gcc settings to use C99

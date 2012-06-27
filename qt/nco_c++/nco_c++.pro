@@ -21,11 +21,7 @@ unix:CONFIG( debug, debug|release ) {
 }
 
 
-
-# NCO avoid writing temporary file
-win32:DEFINES += NO_TMP_FL
-
-#netCDF
+# netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
 
@@ -41,7 +37,6 @@ win32 {
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
 }
 
-#libnco_c++.hh nco_dmn.hh nco_hgh.hh nco_var.hh nco_att.hh nco_fl.hh nco_utl.hh
 # header files
 HEADERS += ../../src/nco_c++/libnco_c++.hh \
 ../../src/src/nco_c++/nco_dmn.hh \
@@ -51,9 +46,6 @@ HEADERS += ../../src/nco_c++/libnco_c++.hh \
 ../../src/nco_c++/nco_fl.hh \
 ../../src/nco_c++/nco_utl.hh 
 
-
-
-#libnco_c___la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nco_var.cc
 # source files
 SOURCES += ../../src/nco_c++/nco_att.cc \
 ../../src/nco_c++/nco_dmn.cc \

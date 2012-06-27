@@ -9,34 +9,61 @@ CONFIG += debug_and_release
 # NCO library
 CONFIG( debug, debug|release ) {
     # debug
-    win32:LIBS += ../libnco/debug/libnco.lib
-    win32:LIBS += $(LIB_ANTLR)
-
-    unix:LIBS += ../libnco/debug/liblibnco.a
+        win32:LIBS += ../libnco/debug/libnco.lib
+        unix:LIBS  += ../libnco/debug/liblibnco.a
 } else {
     # release
-    win32:LIBS += ../libnco/release/libnco.lib
-    win32:LIBS += $(LIB_ANTLR_REL)
-
-    unix:LIBS += ../libnco/release/liblibnco.a 
-    
+        win32:LIBS += ../libnco/release/libnco.lib
+        unix:LIBS  += ../libnco/release/liblibnco.a
 }
-
-# NCO avoid writing temporary file
-win32:DEFINES += NO_TMP_FL
 
 # netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
 
+# netCDF library
+# gcc settings to use C99
+# HDF5 and netCDF LIB order is important
+# _BSD_SOURCE and _POSIX_SOURCE needed
+unix {
+ DEFINES += HAVE_CONFIG_H
+ INCLUDEPATH += ../../
+ DEFINES += _BSD_SOURCE
+ DEFINES += _POSIX_SOURCE
+ QMAKE_CFLAGS += -std=c99
+ INCLUDEPATH += /usr/local/include
+ INCLUDEPATH += /usr/local
+ LIBS += /usr/local/lib/libnetcdf.a
+ LIBS += /usr/local/lib/libhdf5_hl.a
+ LIBS += /usr/local/lib/libhdf5.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libz.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a
+ LIBS += /usr/lib/x86_64-linux-gnu/libcurl.a
+ LIBS += /usr/lib/libantlr.a
+}
+win32 {
+ INCLUDEPATH += $(HEADER_NETCDF)
+ INCLUDEPATH += $(HEADER_ANTLR)
+ LIBS += $(LIB_NETCDF)
+ LIBS += $(LIB_DISPATCH)
+ LIBS += $(LIB_NETCDF4)
+ LIBS += $(LIB_HDF5)
+ LIBS += $(LIB_HDF5_HL)
+ LIBS += $(LIB_ZLIB)
+ LIBS += $(LIB_SZIP)
+ LIBS += $(LIB_ANTLR)
+ DEFINES += _CRT_SECURE_NO_WARNINGS
+ DEFINES += _CRT_NONSTDC_NO_DEPRECATE
+ CONFIG += console
+}
+
+# SOURCES
+# HEADERS
+
 INCLUDEPATH += ../../src/nco
 INCLUDEPATH += ../../src/nco++
 
-#fmc_all_cls.hh fmc_cls.hh Invoke.hh libnco++.hh map_srt_tmp.hh ncap2.hh ncap2_utl.hh NcapVar.hh NcapVarVector.hh 
-#NcapVector.hh ncoEnumTokenTypes.hpp ncoTree.hpp prs_cls.hh sdo_utl.hh sym_cls.hh VarOp.hh vtl_cls.hh
-
-# GSL
-#fmc_gsl_cls.hh
 
 HEADERS   = ../../src/nco++/fmc_all_cls.hh \
 ../../src/nco++/fmc_cls.hh \
@@ -60,10 +87,6 @@ HEADERS   = ../../src/nco++/fmc_all_cls.hh \
 ../../src/nco++/VarOp.hh \
 ../../src/nco++/vtl_cls.hh
 
-#ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc sym_cls.cc fmc_cls.cc fmc_all_cls.cc fmc_gsl_cls.cc prs_cls.cc 
-#NcapVar.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
-
-# prs_cls.cc
 
 SOURCES   = ../../src/nco++/Invoke.cc \
 ../../src/nco++/ncap2.cc \
@@ -80,41 +103,3 @@ SOURCES   = ../../src/nco++/Invoke.cc \
 ../../src/nco++/ncoTree.cpp \
 ../../src/nco++/prs_cls.cc
 
-
-#netCDF library
-unix {
- INCLUDEPATH += /usr/local/include
- INCLUDEPATH += /usr/local
- 
- LIBS += /usr/local/lib/libnetcdf.a
- LIBS += /usr/local/lib/libhdf5_hl.a
- LIBS += /usr/local/lib/libhdf5.a
- LIBS += /usr/lib/x86_64-linux-gnu/libz.a
-
- LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a
- LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a
-
- LIBS += /usr/lib/x86_64-linux-gnu/libcurl.a
-
- LIBS += /usr/lib/libantlr.a
-
-
-
-}
-win32 {
- INCLUDEPATH += $(HEADER_NETCDF)
- LIBS += $(LIB_NETCDF)
- LIBS += $(LIB_DISPATCH)
- LIBS += $(LIB_NETCDF4)
- LIBS += $(LIB_HDF5)
- LIBS += $(LIB_HDF5_HL)
- LIBS += $(LIB_ZLIB)
- LIBS += $(LIB_SZIP)
- INCLUDEPATH += $(HEADER_ANTLR)
- 
- 
- DEFINES += _CRT_SECURE_NO_WARNINGS
- DEFINES += _CRT_NONSTDC_NO_DEPRECATE
- CONFIG += console
- 
-}
