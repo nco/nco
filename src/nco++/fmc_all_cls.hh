@@ -94,12 +94,12 @@ public:
 //Utility Functions /****************************************/
 class utl_cls: public vtl_cls {
 private:
-   enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,RAM_WRITE,RAM_DELETE};
+  enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,IS_MISS,RAM_WRITE,RAM_DELETE};
    bool _flg_dbg;
 public:
   utl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
+  var_sct *is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
 };
 
 
