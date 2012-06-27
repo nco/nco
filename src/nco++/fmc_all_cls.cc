@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.48 2012-05-23 13:40:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.49 2012-06-27 12:36:45 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -313,6 +313,7 @@
       fmc_vtr.push_back( fmc_cls("get_miss",this,(int)GET_MISS));
       fmc_vtr.push_back( fmc_cls("change_miss",this,(int)CH_MISS));
       fmc_vtr.push_back( fmc_cls("delete_miss",this,(int)DEL_MISS));
+      fmc_vtr.push_back( fmc_cls("is_miss",this,(int)IS_MISS));
       fmc_vtr.push_back( fmc_cls("ram_write",this,(int)RAM_WRITE));
       fmc_vtr.push_back( fmc_cls("ram_delete",this,(int)RAM_DELETE));
      
@@ -321,6 +322,7 @@
 
   var_sct *utl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fnd");
+    bool is_mtd;
     int rval=0;
     int nbr_args; 
     int fdx=fmc_obj.fdx();   //index
@@ -338,7 +340,8 @@
     std::vector<RefAST> vtr_args; 
 
     sfnm =fmc_obj.fnm(); //method name
-    styp=(expr ? "method":"function");
+    is_mtd=(expr ? true: false);
+    styp= (expr? "method":"function");
     nbr_args=0;
 
     if(expr)
@@ -354,8 +357,12 @@
       
      if(nbr_args ==0) 
        err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
-      
-
+     
+     // deal with is_miss in a seperate function     
+     if(fdx==IS_MISS)
+       return is_fnd(is_mtd, vtr_args,fmc_obj,walker);           
+   
+  
 
     if( fdx==SET_MISS || fdx==CH_MISS) {
 
@@ -536,6 +543,67 @@
 
   }// end function
 
+  
+var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("srt_cls::imap_fnd");
+    int nbr_args;
+    int fdx=fmc_obj.fdx();
+    long icnt;
+    var_sct *var=NULL_CEWI;
+    nc_type styp=NC_INT; // used to hold the mapping type either NC_INT or NC_UINT64 
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string var_nm;
+    std::string susg;
+    prs_cls *prs_arg=walker.prs_arg;    
+
+    
+#ifdef ENABLE_NETCDF4
+  { /* scope for fl_fmt temporary */
+    int fl_fmt; 
+    (void)nco_inq_format(walker.prs_arg->out_id,&fl_fmt);
+    if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC)
+      styp=NC_UINT64;
+    else    
+     styp=NC_INT;   
+  } /* end scope */
+
+#endif 
+  
+
+    nbr_args=args_vtr.size(); 
+    var=walker.out(args_vtr[0] );
+
+    if(prs_arg->ntl_scn){
+       nco_var_free(var);     
+       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),styp,false);         
+    }  
+
+    // from now on dealing with a final scan !!
+    if(var->has_mss_val){
+      char *cp_out=(char*)var->val.vp; 
+      long idx;
+      size_t slb_sz;  
+
+      icnt=0;       
+
+      slb_sz=nco_typ_lng(var->type); 
+      for(idx=0 ;idx<var->sz;idx++){
+        if( !memcmp(cp_out,var->mss_val.vp,slb_sz))
+	  icnt++;
+        cp_out+=(ptrdiff_t)slb_sz;
+      }   
+    }else{
+       icnt=0; 
+    }     
+
+    nco_var_free(var); 
+
+    if(styp==NC_UINT64) 
+       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_uint64)icnt);
+    else 
+      return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)icnt);
+}  
+    
 
 
 
