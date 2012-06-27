@@ -12,5 +12,5 @@ SUBDIRS += ncrename
 SUBDIRS += nco_c++
 SUBDIRS += tst_nco_c++
 SUBDIRS += nco++
-unix:SUBDIRS += ncwa
+#unix:SUBDIRS += ncwa
 

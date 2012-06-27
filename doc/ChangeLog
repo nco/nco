@@ -1,6 +1,7 @@
 2012-06-26  Pedro Vicente  <pvicente@uci.edu>
 
         * removed symbol NO_TMP_FL from Qt/MSVC projects, to match WRT_TMP_FL variable (ensure/cancel temporary files)
+        * add /qt/nco.pri file with common compiler and dependency libraries for Qt/MSVC build
 
 2012-06-26  Charlie Zender  <zender@uci.edu>
 
