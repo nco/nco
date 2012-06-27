@@ -27,14 +27,19 @@ DEFINES += HAVE_NETCDF4_H
 unix {
  INCLUDEPATH += /usr/local/include 
  INCLUDEPATH += /usr/local 	 	  
- LIBS += /usr/local/lib/libnetcdf.a 
- LIBS += /usr/local/lib/libhdf5_hl.a 
- LIBS += /usr/local/lib/libhdf5.a 
- LIBS += /usr/lib/x86_64-linux-gnu/libz.a 
- LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a 
- LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a 
- LIBS += /usr/lib/x86_64-linux-gnu/libcurl.a 
- LIBS += /usr/lib/libantlr.a 
+# LIBS += /usr/local/lib/libnetcdf.a 
+# LIBS += /usr/local/lib/libhdf5_hl.a 
+# LIBS += /usr/local/lib/libhdf5.a 
+# LIBS += /usr/lib/x86_64-linux-gnu/libz.a 
+# LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a 
+# LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a 
+# LIBS += /usr/lib/x86_64-linux-gnu/libcurl.a 
+# LIBS += /usr/lib/libantlr.a 
+
+  LIBS += -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5
+  LIBS += -L/usr/lib/x86_64-linux-gnu/ -lz -ludunits2 -lexpat -lcurl
+  LIBS += -lantlr
+
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)
