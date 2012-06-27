@@ -1,3 +1,7 @@
+2012-06-26  Pedro Vicente  <pvicente@uci.edu>
+
+        * removed symbol NO_TMP_FL from Qt/MSVC projects, to match WRT_TMP_FL variable (ensure/cancel temporary files)
+
 2012-06-26  Charlie Zender  <zender@uci.edu>
 
 	* Add WRT_TMP_FL and wrt_tmp_fl/no_tmp_fl switches to ensure/cancel temporary files
