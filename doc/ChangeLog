@@ -1,11 +1,10 @@
 2012-06-27  Henry Butowsky  <henryb@hush.com>
 
-	* Added is_miss() function- returns the number of values in an 
-	  expr/var that are set to missing_value/fill_Value
+	* Add is_miss() to return number of missing values in expr/var
 
 2012-06-26  Pedro Vicente  <pvicente@uci.edu>
 
-        * Remove symbol NO_TMP_FL from Qt/MSVC projects, to match WRT_TMP_FL variable (ensure/cancel temporary files)
+        * Remove NO_TMP_FL from Qt/MSVC projects, to match WRT_TMP_FL variable (ensure/cancel temporary files)
 
         * Add /qt/nco.pri file with common compiler and dependency libraries for Qt/MSVC build
 
