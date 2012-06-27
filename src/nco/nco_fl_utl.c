@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.182 2012-06-27 00:18:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.183 2012-06-27 05:28:33 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -228,7 +228,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_src,fl_dst)){
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical. No need to copy.",prg_nm_get(),fl_src);
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to copy.\n",prg_nm_get(),fl_src);
     return;
   } /* end if */
 
@@ -517,9 +517,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   const char http_url_sng[]="http://";
   const char sftp_url_sng[]="sftp://";
   int rcd; /* [rcd] Return code */
-  int rcd_stt=0; /* [rcd] Return code for stat() */
-  int rcd_sys; /* [rcd] Return code for system() */
-  int rcd_frd; /* [rcd] Return code for fread() and fclose() */
+  int rcd_stt=0; /* [rcd] Return code from stat() */
+  int rcd_sys; /* [rcd] Return code from system() */
+  int rcd_frd; /* [rcd] Return code from fread() and fclose() */
   size_t url_sng_lng=0L; /* CEWI */
   struct stat stat_sct;
   int prg_id; /* Program ID */
@@ -1099,12 +1099,12 @@ nco_fl_mv /* [fnc] Move first file to second */
   const char cmd_mv_fmt[]="mv -f %s %s";
 #endif
 
-  int rcd_sys; /* [rcd] Return code for system() */
+  int rcd_sys; /* [rcd] Return code from system() */
   const int fmt_chr_nbr=4;
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_src,fl_dst)){
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical. No need to move.",prg_nm_get(),fl_src);
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",prg_nm_get(),fl_src);
     return;
   } /* end if */
 
@@ -1478,7 +1478,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   md_create=NC_CLOBBER; /* [enm] Mode flag for nco_create() call */
   /* [fnc] Merge clobber mode with user-specified file format */
   md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
-  if(RAM_CREATE) md_create|=NC_DISKLESS;
+  if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
 
   if(FORCE_OVERWRITE && FORCE_APPEND){
     (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",prg_nm_get());
@@ -1491,14 +1491,14 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
      Maximum length of PID depends on pid_t
      Until about 1995 most OSs set pid_t = short = 16 or 32 bits
      Now some OSs have /usr/include/sys/types.h set pid_t = long = 32 or 64 bits
-     20000126: Use sizeof(pid_t) rather than hardcoded size to fix longstanding bug on SGIs
-  */
+     20000126: Use sizeof(pid_t) rather than hardcoded size to fix longstanding bug on SGIs */
+
   /* Maximum length of decimal representation of PID is number of bits in PID times log10(2) */
   pid_sng_lng_max=(long)ceil(8*sizeof(pid_t)*log10(2.0));
   pid_sng=(char *)nco_malloc((pid_sng_lng_max+1UL)*sizeof(char));
   pid=getpid();
   (void)sprintf(pid_sng,"%ld",(long)pid);
-  /* Theoretical length of decimal representation of PID is 1+ceil(log10(PID)) where the 1 is required iff PID is an exact power of 10 */
+  /* Theoretical length of decimal representation of PID is 1+ceil(log10(PID)) where the 1 is required iff PID is exact power of 10 */
   pid_sng_lng=1L+(long)ceil(log10((double)pid));
   /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
   fl_out_tmp_lng=strlen(fl_out)+1UL+strlen(tmp_sng_1)+strlen(pid_sng)+1UL+strlen(prg_nm_get())+1UL+strlen(tmp_sng_2)+1UL;
@@ -1533,7 +1533,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 #ifdef HAVE_MKSTEMP
     fl_out_hnd=mkstemp(fl_out_tmp_sys);
 #else /* !HAVE_MKSTEMP */
-    /* 20020812: Cray does not support mkstemp() */
+    /* 20020812: Cray OS does not support mkstemp() */
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
 #endif /* !HAVE_MKSTEMP */
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
@@ -1542,12 +1542,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* endif dbg */
 #endif /* _MSC_VER */ 
 
-  /* Define "temporary output file" with same name as final output file and voilà, no temporary file! */
+  /* Name "temporary output file" same as final output file et voilà, no temporary file! */
   if(!WRT_TMP_FL) (void)strcpy(fl_out_tmp,fl_out);
 
-  rcd_stt=stat(fl_out_tmp,&stat_sct);
-
   /* If temporary file already exists, prompt user to remove temporary files and exit */
+  rcd_stt=stat(fl_out_tmp,&stat_sct);
   if(rcd_stt != -1){
     (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",prg_nm_get(),fl_out_tmp);
     nco_exit(EXIT_FAILURE);
@@ -1561,13 +1560,13 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     return fl_out_tmp;
   } /* end if */
 
-  /* This code block could be potentially be used by ncrename and ncatted
+  /* Following code block could be potentially be used by ncrename and ncatted
      Doing so would align file I/O for these operators with rest of NCO
      However, this would also require abandoning their "special treatment"
      which both requires them to work on local (not remote or DAP) files, 
      and prevents them from creating intermediate files.
      Changing towards greater NCO-wide consistency would be a good thing? 
-     No one has yet complained about ncatted/ncrename locality requirement, though. */
+     No complaints yet about ncatted/ncrename locality requirement, though */
   if(False){
     if(prg_get() == ncrename || prg_get() == ncatted){
       /* ncrename and ncatted allow single filename without question */
@@ -1581,9 +1580,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     } /* end if */
   } /* end if false */
 
-  rcd_stt=stat(fl_out,&stat_sct);
-
   /* If permanent output file already exists, query user whether to overwrite, append, or exit */
+  rcd_stt=stat(fl_out,&stat_sct);
   if(rcd_stt != -1){
     char *rcd_fgets=NULL; /* Return code from fgets */
     char usr_rpl[NCO_USR_RPL_MAX_LNG];
@@ -1592,11 +1590,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     short nbr_itr=0;
     size_t usr_rpl_lng;
     
-    if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
-
     /* Initialize user reply string */
     usr_rpl[0]='z';
     usr_rpl[1]='\0';
+
+    if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
 
     if(FORCE_APPEND){
       /* Incur expense of copying current file to temporary file */
@@ -1608,6 +1606,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
     /* Ensure one exit condition for each valid switch in following case statement */
     while(strcasecmp(usr_rpl,"o") && strcasecmp(usr_rpl,"a") && strcasecmp(usr_rpl,"e")){
+      /* fxm: i18n necessary here */
       /* int cnv_nbr; *//* [nbr] Number of scanf conversions performed this scan */
       if(nbr_itr++ > NCO_MAX_NBR_USR_INPUT_RETRY){
 	(void)fprintf(stdout,"\n%s: ERROR %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
@@ -1631,7 +1630,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 	    usr_rpl[usr_rpl_lng-1]='\0';
 
       if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: INFO %s reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),fnc_nm,(rcd_fgets == NULL) ? "NULL" : usr_rpl);
-    } /* end while */
+    } /* end while user reply is not yet "o", "a", or "e" */
 
     /* Ensure one case statement for each exit condition in preceding while loop */
     usr_rpl_int=(int)usr_rpl[0];
@@ -1654,10 +1653,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
 
-  }else{ /* Output file does not yet already exist */
+  }else{ /* Output file does not already exist */
     md_create=NC_NOCLOBBER;
     md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
-    if(RAM_CREATE) md_create|=NC_DISKLESS;
+    if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
   } /* end if output file does not already exist */
 
@@ -1684,7 +1683,7 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_out_tmp,fl_out)){
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical. No need to move.",prg_nm_get(),fl_out);
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",prg_nm_get(),fl_out);
     return;
   }else{
     (void)nco_fl_mv(fl_out_tmp,fl_out);

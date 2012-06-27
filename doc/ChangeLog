@@ -1,10 +1,14 @@
 2012-06-26  Pedro Vicente  <pvicente@uci.edu>
 
-        * removed symbol NO_TMP_FL from Qt/MSVC projects, to match WRT_TMP_FL variable (ensure/cancel temporary files)
-        * add /qt/nco.pri file with common compiler and dependency libraries for Qt/MSVC build
-        * use -L -l syntax for library dependencies in Qt Unix projects
+        * Remove symbol NO_TMP_FL from Qt/MSVC projects, to match WRT_TMP_FL variable (ensure/cancel temporary files)
+
+        * Add /qt/nco.pri file with common compiler and dependency libraries for Qt/MSVC build
+
+        * Use -L -l syntax for library dependencies in Qt Unix projects
 
 2012-06-26  Charlie Zender  <zender@uci.edu>
+
+	* RAM_OPEN and RAM_CREATE now appear to work
 
 	* Add WRT_TMP_FL and wrt_tmp_fl/no_tmp_fl switches to ensure/cancel temporary files
 
