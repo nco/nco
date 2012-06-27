@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.690 2012-06-26 04:52:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.691 2012-06-27 00:48:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1408,14 +1408,27 @@ to be the same as the @var{input-file} without any danger of
 ``overlap''. 
 
 @cindex @code{--no_tmp_fl}
+@cindex @code{--wrt_tmp_fl}
+@cindex @code{--write_tmp_fl}
 Over time many ``power users'' have requested a way to turn-off the
 fault-tolerance safety feature of automatically creating a temporary
 file. 
 Often these users are building and executing production data analysis 
 scripts that are repeated frequently on large datasets, and where 
 canceling the extra file write conserves disk space and time.
-For this purpose @acronym{NCO} implemented the @samp{--no_tmp_fl} switch
-in version 4.2.1 in July, 2012. 
+For this purpose @acronym{NCO} has, since version 4.2.1 in July, 2012, 
+made configurable the controls over temporary file creation.
+The @samp{--wrt_tmp_fl} and equivalent @samp{--write_tmp_fl} switches 
+ensure @acronym{NCO} writes output to an intermediate temporary file.
+This is and has always been the default behavior so there is currently
+no need to specify these switches.
+However, the default may change some day, especially since writing to
+RAM disks (@pxref{RAM disks}) may some day become the default.
+The @samp{--no_tmp_fl} switch causes @acronym{NCO} to write directly to
+the final output file instead of to an intermediate temporary file. 
+It is expected that ``power users'' may wish to invoke this switch
+to increase performance (i.e., reduce wallclock time) when manipulating 
+large files. 
 When eschewing temporary files, users may forsake the ability to have
 the same name for both @var{output-file} and @var{input-file} since, as   
 described above, the temporary file prevented overlap issues.
