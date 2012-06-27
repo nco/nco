@@ -1,6 +1,6 @@
 2012-06-27  Charlie Zender  <zender@uci.edu>
 
-	* Add stubs for netCDF4 group routines
+	* Add stubs for netCDF4 group routines. Fixes all known	problems compiling NCO 4.2.x without netCDF4.
 
 2012-06-27  Henry Butowsky  <henryb@hush.com>
 
