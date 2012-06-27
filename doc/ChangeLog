@@ -1,3 +1,8 @@
+2012-06-27  Henry Butowsky  <henryb@hush.com>
+
+	* Added is_miss() function- returns the number of values in an 
+	  expr/var that are set to missing_value/fill_Value
+
 2012-06-26  Pedro Vicente  <pvicente@uci.edu>
 
         * Remove symbol NO_TMP_FL from Qt/MSVC projects, to match WRT_TMP_FL variable (ensure/cancel temporary files)
@@ -68,7 +73,6 @@
 
 	* Within last week Pedro committed Qt/MVS files and changes
 
-2012-05-30  Henry Butowsky  <henryb@hush.com>
 
 	* ncap2: Added RAM variables: double: nan, inf; float: nanf, inff
 	Problem may be with macro call double nan(const char *tagp)
