@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.181 2012-06-26 21:45:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.182 2012-06-27 00:18:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1436,6 +1436,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  const int RAM_CREATE, /* I [flg] Create file in RAM */
  const int RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
+ const int WRT_TMP_FL, /* I [flg] Write output to temporary file */
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input
@@ -1541,9 +1542,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* endif dbg */
 #endif /* _MSC_VER */ 
 
-#ifdef NO_TMP_FL /* Bypass generation of temporary file---currently defined only for MSVC */
-  if(NO_TMP_FL) (void)strcpy(fl_out_tmp,fl_out);
-#endif /* !NO_TMP_FL */
+  /* Define "temporary output file" with same name as final output file and voilà, no temporary file! */
+  if(!WRT_TMP_FL) (void)strcpy(fl_out_tmp,fl_out);
 
   rcd_stt=stat(fl_out_tmp,&stat_sct);
 

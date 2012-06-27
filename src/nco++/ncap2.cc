@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.141 2012-06-26 21:45:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.142 2012-06-27 00:18:18 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -107,6 +107,8 @@ main(int argc,char **argv)
   /* fxm TODO nco652 */
   double rnd_nbr(double);
   
+  nco_bool ATT_INHERIT=True;          
+  nco_bool ATT_PROPAGATE=True;        
   nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -122,8 +124,6 @@ main(int argc,char **argv)
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
-  nco_bool ATT_PROPAGATE=True;        
-  nco_bool ATT_INHERIT=True;          
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL_CEWI; /* Option n */
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.141 2012-06-26 21:45:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.141 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.142 2012-06-27 00:18:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.142 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -236,6 +236,9 @@ main(int argc,char **argv)
       {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
       {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+      {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+      {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
@@ -345,6 +348,8 @@ main(int argc,char **argv)
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
+      if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
+      if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -589,7 +594,7 @@ main(int argc,char **argv)
   /* Open output file */
   if(FL_OUT_NEW){
     /* Normal case, like rest of NCO, where writes are made to temporary file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
   }else{ /* Existing file */
     /* ncap2, like ncrename and ncatted, directly modifies fl_in if fl_out is omitted
        If fl_out resolves to _same name_ as fl_in, method above is employed */

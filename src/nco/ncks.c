@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.305 2012-06-24 22:04:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.306 2012-06-27 00:18:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -107,6 +107,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+  nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -131,8 +132,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.305 2012-06-24 22:04:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.305 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.306 2012-06-27 00:18:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.306 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -217,6 +218,9 @@ main(int argc,char **argv)
       {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
       {"secret",no_argument,0,0},
       {"shh",no_argument,0,0},
+      {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+      {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+      {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
@@ -394,6 +398,8 @@ main(int argc,char **argv)
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
+      if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
+      if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -654,7 +660,7 @@ main(int argc,char **argv)
     (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
     /* Copy global attributes */
     if(PRN_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);

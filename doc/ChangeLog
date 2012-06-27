@@ -1,8 +1,8 @@
 2012-06-26  Charlie Zender  <zender@uci.edu>
 
-	* Add NC_EBADGRPID backwards-compatibility error code to nco.h
+	* Add WRT_TMP_FL and wrt_tmp_fl/no_tmp_fl switches to ensure/cancel temporary files
 
-	* Add NC_ECANTREAD and NC_EDAPSVC backwards-compatibility error codes to nco.h
+	* Add NC_ECANTREAD, NC_EDAPSVC, and NC_EBADGRPID backward-compatibility error codes to nco.h
 
 2012-06-25  Charlie Zender  <zender@uci.edu>
 

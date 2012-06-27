@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.147 2012-06-25 04:54:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.148 2012-06-27 00:18:18 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -133,7 +133,6 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool FL_OUT_NEW=False;
-  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -149,8 +148,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.147 2012-06-25 04:54:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.147 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.148 2012-06-27 00:18:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.148 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -247,7 +246,6 @@ main(int argc,char **argv)
 	hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);

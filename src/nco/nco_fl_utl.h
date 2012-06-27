@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.63 2012-06-26 04:52:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.64 2012-06-27 00:18:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -134,6 +134,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  const int RAM_CREATE, /* I [flg] Create file in RAM */
  const int RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
+ const int WRT_TMP_FL, /* I [flg] Write output to temporary file */
  int * const out_id); /* O [id] File ID */
 
 void
