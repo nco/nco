@@ -1,3 +1,7 @@
+2012-06-27  Charlie Zender  <zender@uci.edu>
+
+	* Add stubs for netCDF4 group routines
+
 2012-06-27  Henry Butowsky  <henryb@hush.com>
 
 	* Add is_miss() to return number of missing values in expr/var

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.149 2012-04-15 18:16:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.150 2012-06-27 18:59:34 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1535,6 +1535,19 @@ int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,siz
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=0;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
 int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){if(chk_typ) *chk_typ=NC_NOCHECKSUM;return 1;}
+#endif /* HAVE_NETCDF4_H */
+#ifndef HAVE_NETCDF4_H
+/* Stubs for netCDF4 group routines */
+int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){return 1};
+int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){return 1};
+int nco_inq_grpname(const int nc_id,char * const grp_nm){return 1};
+int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){return 1};
+int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){return 1};
+int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){return 1};
+int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id){return 1};
+int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id){return 1};
+int nco_inq_grp_parent(const int nc_id,int * const prn_id){return 1};
+int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){return 1};
 #endif /* HAVE_NETCDF4_H */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
