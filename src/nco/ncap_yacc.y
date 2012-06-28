@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.60 2012-01-01 20:51:53 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.61 2012-06-28 04:50:07 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -6,7 +6,7 @@
   
 /* Copyright (C) 1995--2012 Charlie Zender
      
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -249,7 +249,7 @@ PRINT '(' var_xpr ')' ';' {
   (void)cast_nctype_void((nc_type)NC_CHAR,&ptr_aed->val);    
   
   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
-  (void)nco_yyerror(prs_arg, ncap_err_sng);
+  (void)nco_yyerror(prs_arg,ncap_err_sng);
   $1.var_nm=(char *)nco_free($1.var_nm);
   $1.att_nm=(char *)nco_free($1.att_nm);
   $3=(char *)nco_free($3);

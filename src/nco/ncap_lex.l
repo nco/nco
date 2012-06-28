@@ -1,11 +1,11 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.76 2010-12-21 20:12:07 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.77 2012-06-28 04:50:07 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
 
-  /* Copyright (C) 1995--2011 Charlie Zender
+  /* Copyright (C) 1995--2012 Charlie Zender
      
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -49,7 +49,6 @@
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strdup */
-
 
   /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -318,7 +317,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
   if(sscanf((char *)yytext,"%e",&float_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad float: %s",yytext);
-    nco_yyerror(prs_arg, ncap_err_sng);
+    nco_yyerror(prs_arg,ncap_err_sng);
     return EPROVOKE;
   } /* endif */
   lval_ptr->scv.val.f=float_tkn;
@@ -413,7 +412,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
   if(sscanf((char *)yytext,"%hhi",&byte_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
-    nco_yyerror(prs_arg, ncap_err_sng);
+    nco_yyerror(prs_arg,ncap_err_sng);
     return EPROVOKE;
   } /* endif err */
   lval_ptr->scv.val.b=byte_tkn;
@@ -427,7 +426,7 @@ XPN [eE][+-]?[0-9]+
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ubyte %s\n",yytext); 
   if(sscanf((char *)yytext,"%hhu",&ubyte_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
-    nco_yyerror(prs_arg, ncap_err_sng);
+    nco_yyerror(prs_arg,ncap_err_sng);
     return EPROVOKE;
   } /* endif err */
   lval_ptr->scv.val.ub=ubyte_tkn;
@@ -567,7 +566,7 @@ M_PI {return NAMED_CONSTANT;}
       rcd=nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&att_sz);
       if (rcd == NC_ENOTATT){
 	(void)sprintf(ncap_err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
-	(void)nco_yyerror(prs_arg, ncap_err_sng);
+	(void)nco_yyerror(prs_arg,ncap_err_sng);
 	lval_ptr->scv.val.b=0;
 	lval_ptr->scv.type=NC_BYTE;
 	return SCV;
@@ -615,7 +614,7 @@ M_PI {return NAMED_CONSTANT;}
       return OUT_ATT;
     }else{
       (void)sprintf(ncap_err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
-      (void)nco_yyerror(prs_arg, ncap_err_sng);
+      (void)nco_yyerror(prs_arg,ncap_err_sng);
       return EPROVOKE; 
     } /* end else */
   } /* end if */
@@ -719,7 +718,7 @@ M_PI {return NAMED_CONSTANT;}
    if(jdx != prs_arg->nbr_dmn_in) continue;
    /* Exit action if dimension not found */
    (void)sprintf(ncap_err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
-   (void)nco_yyerror(prs_arg, ncap_err_sng);
+   (void)nco_yyerror(prs_arg,ncap_err_sng);
    (void)nco_enddef(prs_arg->out_id);
    goto end_LHS_sbs;                     
   } /* endif */
@@ -729,7 +728,7 @@ M_PI {return NAMED_CONSTANT;}
   for(idx=1;idx<dmn_nbr;idx++)
     if(dmn[idx]->is_rec_dmn){
       (void)sprintf(ncap_err_sng,"Warning:\"%s\" is the record dimension. It can only be the first dimension in a list",dmn[idx]->nm);
-      (void)nco_yyerror(prs_arg, ncap_err_sng);
+      (void)nco_yyerror(prs_arg,ncap_err_sng);
       goto end_LHS_sbs;                     
     } /* endif */
 
@@ -820,12 +819,10 @@ M_PI {return NAMED_CONSTANT;}
   BEGIN INITIAL;
 } /* end LHS subscripted variables */
 
-
-
 <RHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
   /* RHS_SUBSCRIPT */
   (void)sprintf(ncap_err_sng,"Warning RHS subscripts are not yet implemented");
-  (void)nco_yyerror(prs_arg, ncap_err_sng);
+  (void)nco_yyerror(prs_arg,ncap_err_sng);
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
 } /* end RHS_SUBSCRIPT */
