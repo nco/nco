@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.691 2012-06-27 00:48:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.692 2012-06-28 02:37:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1407,6 +1407,10 @@ Finally, note this fault-tolerant feature allows the @var{output-file}
 to be the same as the @var{input-file} without any danger of
 ``overlap''. 
 
+@html
+<a name="no_tmp_fl"></a> <!-- http://nco.sf.net/nco.html#no_tmp_fl -->
+<a name="wrt_tmp_fl"></a> <!-- http://nco.sf.net/nco.html#wrt_tmp_fl -->
+@end html
 @cindex @code{--no_tmp_fl}
 @cindex @code{--wrt_tmp_fl}
 @cindex @code{--write_tmp_fl}

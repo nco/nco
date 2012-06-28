@@ -1,5 +1,7 @@
 2012-06-27  Charlie Zender  <zender@uci.edu>
 
+	* Tidy nco_fl_utl.c for MSVC compilation
+
 	* Add stubs for netCDF4 group routines. Fixes all known	problems compiling NCO without netCDF4.
 	Realized compilation without netCDF4 may have been broken since	~201108, i.e., NCO 4.0.9!
 

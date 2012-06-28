@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.183 2012-06-27 05:28:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.184 2012-06-28 02:37:23 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -500,12 +500,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
      return name of file on local system */
 
   FILE *fp_in;
+
   nco_bool DAP_URL=False; /* DAP handles netCDF API, no retrieval necessary */
   nco_bool FTP_URL=False; /* Retrieve remote file via FTP */
   nco_bool FTP_NETRC=False; /* Retrieve remote file via FTP with .netrc file */
   nco_bool FTP_OR_SFTP_URL; /* FTP or SFTP */
   nco_bool HTTP_URL=False; /* Retrieve remote file via wget */
   nco_bool SFTP_URL=False; /* Retrieve remote file via SFTP */
+
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
   char *fl_nm_lcl_tmp;
@@ -516,14 +518,17 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   const char ftp_url_sng[]="ftp://";
   const char http_url_sng[]="http://";
   const char sftp_url_sng[]="sftp://";
+
+#ifdef ENABLE_DAP
   int rcd; /* [rcd] Return code */
+#endif /* !ENABLE_DAP */
   int rcd_stt=0; /* [rcd] Return code from stat() */
   int rcd_sys; /* [rcd] Return code from system() */
   int rcd_frd; /* [rcd] Return code from fread() and fclose() */
+
   size_t url_sng_lng=0L; /* CEWI */
+
   struct stat stat_sct;
-  int prg_id; /* Program ID */
-  prg_id=prg_get(); /* [enm] Program ID */
 
   /* Assume local filename is input filename */
   fl_nm_lcl=(char *)strdup(fl_nm);
@@ -539,9 +544,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
 
   if(FTP_OR_SFTP_URL){
-    /* If FTP rearrange fl_nm_lcl to remove ftp://hostname part, and
+    /* If FTP  rearrange fl_nm_lcl to remove  ftp://hostname  part, and
        if SFTP rearrange fl_nm_lcl to remove sftp://hostname: part,
-       before searching for file on local disk */
+       then search for file on local disk */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
@@ -559,6 +564,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
     
     if(rcd == NC_NOERR){
+      int prg_id; /* Program ID */
+      prg_id=prg_get(); /* [enm] Program ID */
+
       /* Fail gracefully if ncatted or ncrename try to use DAP */
       switch(prg_id){
       case ncatted:
