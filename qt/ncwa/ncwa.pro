@@ -38,25 +38,25 @@ BISONSOURCES = ../../src/nco/ncap_yacc.y
 flex.name = flex ${QMAKE_FILE_IN}
 flex.input = FLEXSOURCES
 flex.output = ../../src/nco/ncap_lex.c
-flex.commands = flex -o ../../src/nco/ncap_lex.c ${QMAKE_FILE_IN}
-flex.variable_out = GENERATED_SOURCES
+flex.commands = flex -Pnco_yy -o ../../src/nco/ncap_lex.c ${QMAKE_FILE_IN}
+flex.variable_out = SOURCES
 silent:flex.commands = @echo Lex ${QMAKE_FILE_IN} && $$flex.commands
 QMAKE_EXTRA_COMPILERS += flex
 
 bison.name = bison ${QMAKE_FILE_IN}
 bison.input = BISONSOURCES
-bison.commands = bison -d -o ../../src/nco/ncap_yacc.c ${QMAKE_FILE_IN}
+bison.commands = bison -d -p nco_yy -o ../../src/nco/ncap_yacc.c ${QMAKE_FILE_IN}
 bison.output = ../../src/nco/ncap_yacc.c
-bison.variable_out = GENERATED_SOURCES
+bison.variable_out = SOURCES
 bison.CONFIG += target_predeps
 silent:bison.commands = @echo Bison ${QMAKE_FILE_IN} && $$bison.commands
 QMAKE_EXTRA_COMPILERS += bison
 
-bisonheader.commands = bison -d -o ../../src/nco/ncap_yacc.c ${QMAKE_FILE_IN}
+bisonheader.commands = bison -d -p nco_yy -o ../../src/nco/ncap_yacc.c ${QMAKE_FILE_IN}
 bisonheader.input = BISONSOURCES
 bisonheader.output = ../../src/nco/ncap_yacc.c
 bisonheader.variable_out = HEADERS
-bisonheader.name = bison header
+bisonheader.name = bisonheader ${QMAKE_FILE_IN}
 silent:bisonheader.commands = @echo Bison ${QMAKE_FILE_IN} && $$bison.commands
 QMAKE_EXTRA_COMPILERS += bisonheader
 }
