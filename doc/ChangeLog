@@ -1,3 +1,7 @@
+2012-06-28  Pedro Vicente  <pvicente@uci.edu>
+
+        * Add /qt/ncwa.pro unix project (uses flex/bison); NCO unix Qt build now includes all operators
+
 2012-06-27  Charlie Zender  <zender@uci.edu>
 
 	* Tidy nco_fl_utl.c for MSVC compilation
