@@ -49,7 +49,6 @@ HEADERS += ../../src/nco/nco_getopt.h
 # header files
 HEADERS += ../../src/nco/libnco.h \
 ../../src/nco/ncap.h \
-../../src/nco/ncap_yacc.h \
 ../../src/nco/nco.h \
 ../../src/nco/nco_att_utl.h \
 ../../src/nco/nco_aux.h \
