@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.141 2012-06-29 05:00:48 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.142 2012-06-29 05:20:11 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -304,7 +304,7 @@ variables:
 	nan_arr:note5 = "sed -e 's/nan;/1.0f;/' in.cdl > foo.cdl;ncgen -b -o in.nc foo.cdl";
 	nan_arr:note6 = "It's too hard to distribute in.cdl with any reference to NaNs because users always build with old netCDF that does not support it. So just comment out nan's for now.";
 //	nan_arr:_FillValue = nan;
-	nan_arr:_FillValue = 1.0;
+	nan_arr:_FillValue = 1.0f;
 
 	float nan_scl;
 	nan_scl:long_name = "Intended for scalar representation of IEEE NaN";
@@ -313,7 +313,7 @@ variables:
 	nan_scl:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
 	nan_scl:note6 = "It's too hard to distribute in.cdl with any reference to NaNs because users always build with old netCDF that does not support it. So just comment out nan's for now.";
 //	nan_scl:_FillValue = nan;
-	nan_scl:_FillValue = 1.0;
+	nan_scl:_FillValue = 1.0f;
 
 	float nm_spc;
 	nm_spc:long_name = "Variable name with space (invalid)";

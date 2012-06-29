@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.307 2012-06-29 04:58:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.308 2012-06-29 05:20:12 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.307 2012-06-29 04:58:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.307 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.308 2012-06-29 05:20:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.308 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -571,10 +571,10 @@ main(int argc,char **argv)
   /* Get number of variables, dimensions, and global attributes in file */
 #ifdef ENABLE_NETCDF4
   (void)nco4_inq(in_id,&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&rec_dmn_nbr,&rec_dmn_id);
-  (void)nco_inq_format(in_id,&fl_in_fmt);
 #else /* !ENABLE_NETCDF4 */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
 #endif /* ENABLE_NETCDF4 */
+  (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Get record dimension name name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
   if(!FIX_REC_DMN && !rec_dmn_nm && (rec_dmn_id != NCO_REC_DMN_UNDEFINED)){ 
