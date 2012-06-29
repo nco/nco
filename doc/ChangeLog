@@ -1,5 +1,7 @@
 2012-06-28  Charlie Zender  <zender@uci.edu>
 
+	* Remove NaN values from in.cdl for backwards compatibility (netCDF 4.1.1 does not support)
+
 	* Fix ncks netCDF4 backwards compatibility problem by using #ifdef ENABLE_NETCDF4
 
 	* Tidy Invoke.cc and make ncap2 debug printing systematically quieter
