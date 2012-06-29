@@ -1,6 +1,10 @@
+2012-06-28  Charlie Zender  <zender@uci.edu>
+
+	* Do not check for existence of temporary file when bypassing temporary file
+
 2012-06-28  Pedro Vicente  <pvicente@uci.edu>
 
-        * Add /qt/ncwa.pro unix project (uses flex/bison); NCO unix Qt build now includes all operators
+        * Add /qt/ncwa.pro unix project (uses flex/bison); NCO Unix Qt build now includes all operators
 
 2012-06-27  Charlie Zender  <zender@uci.edu>
 

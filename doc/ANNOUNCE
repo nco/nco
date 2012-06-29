@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.488 2012-06-25 04:54:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.489 2012-06-29 03:24:00 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -18,9 +18,23 @@ Charlie
 
 Other "New stuff" in 4.2.1 summary (full details always in ChangeLog):
 
-A. RAM disks
+A. Diskless files aka RAM-disk files
    ncks --ram ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net/nco.html#ram
+
+A. Bypass intermediate temporary files
+   ncks --no_tmp_fl ~/nco/data/in.nc ~/foo.nc
+   http://nco.sf.net/nco.html#no_tmp_fl
+
+A. Complete Windows builds
+   Windows builds now include last two operators, ncwa and ncap.
+   Eliminated some behavioral differences on Windows vs. UNIX NCO. 
+   Windows NCO now uses temporary files by default, like UNIX.
+   Windows NCO still lacks networking capabilities, e.g., scp/sftp.
+   http://nco.sf.net/nco.html#windows
+
+A. Building NCO using the cross-platform Qt framework improved.
+   Now works on Ubuntu Linux using default .deb-based software stack. 
 
 KNOWN BUGS NOT YET FIXED:
 

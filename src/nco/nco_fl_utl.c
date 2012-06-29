@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.184 2012-06-28 02:37:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.185 2012-06-29 03:24:00 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1550,15 +1550,17 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* endif dbg */
 #endif /* _MSC_VER */ 
 
-  /* Name "temporary output file" same as final output file et voilà, no temporary file! */
-  if(!WRT_TMP_FL) (void)strcpy(fl_out_tmp,fl_out);
-
-  /* If temporary file already exists, prompt user to remove temporary files and exit */
-  rcd_stt=stat(fl_out_tmp,&stat_sct);
-  if(rcd_stt != -1){
-    (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",prg_nm_get(),fl_out_tmp);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
+  if(WRT_TMP_FL){
+    /* If temporary file already exists, prompt user to remove temporary files and exit */
+    rcd_stt=stat(fl_out_tmp,&stat_sct);
+    if(rcd_stt != -1){
+      (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",prg_nm_get(),fl_out_tmp);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+  }else{ /* !WRT_TMP_FL */
+    /* Name "temporary output file" same as final output file et voilà, no temporary file! */
+    (void)strcpy(fl_out_tmp,fl_out);
+  } /* !WRT_TMP_FL */
 
   /* Initialize local buffer size hint with user-input value */
   bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */

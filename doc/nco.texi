@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.692 2012-06-28 02:37:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.693 2012-06-29 03:24:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1408,6 +1408,7 @@ to be the same as the @var{input-file} without any danger of
 ``overlap''. 
 
 @html
+<a name="tmp_fl"></a> <!-- http://nco.sf.net/nco.html#tmp_fl -->
 <a name="no_tmp_fl"></a> <!-- http://nco.sf.net/nco.html#no_tmp_fl -->
 <a name="wrt_tmp_fl"></a> <!-- http://nco.sf.net/nco.html#wrt_tmp_fl -->
 @end html
