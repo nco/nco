@@ -56,7 +56,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.142 2012-06-29 05:20:11 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.143 2012-06-29 05:26:49 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -704,13 +704,17 @@ variables:
 	double rec_var_dbl_mss_val_sht_upk(time);
 	rec_var_dbl_mss_val_sht_upk:long_name = "record variable, double, with double missing values";
 	rec_var_dbl_mss_val_sht_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_sht_pck, so its _FillValue should not be out of range, i.e., it should be representable by a short. However, the _FillValue should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
-	rec_var_dbl_mss_val_sht_upk:_FillValue = -999s;
+//	Using intended _FillValue type breaks ncgen (with "_FillValue type mismatch")in netCDF 4.1.1 so comment-out for simplicity
+//	rec_var_dbl_mss_val_sht_upk:_FillValue = -999s;
+	rec_var_dbl_mss_val_sht_upk:_FillValue = -999.0;
 	rec_var_dbl_mss_val_sht_upk:missing_value = -999s;
 
 	short rec_var_dbl_mss_val_dbl_pck(time);
 	rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, packed as short, with double missing values";
 	rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk";
-	rec_var_dbl_mss_val_dbl_pck:_FillValue = -999.;
+//	Using intended _FillValue type breaks ncgen (with "_FillValue type mismatch")in netCDF 4.1.1 so comment-out for simplicity
+//	rec_var_dbl_mss_val_dbl_pck:_FillValue = -999.;
+	rec_var_dbl_mss_val_dbl_pck:_FillValue = -999s;
 	rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
         rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck:add_offset = 5.;
@@ -771,7 +775,9 @@ variables:
 
 	float rec_var_flt_mss_val_int(time);
 	rec_var_flt_mss_val_int:long_name = "record variable, float, with integer missing values";
-	rec_var_flt_mss_val_int:_FillValue = -999;
+//	Using intended _FillValue type breaks ncgen (with "_FillValue type mismatch")in netCDF 4.1.1 so comment-out for simplicity
+//	rec_var_flt_mss_val_int:_FillValue = -999;
+	rec_var_flt_mss_val_int:_FillValue = -999f;
 	rec_var_flt_mss_val_int:missing_value = -999;
 
 	int rec_var_int_mss_val_int(time);
@@ -780,7 +786,9 @@ variables:
 
 	int rec_var_int_mss_val_flt(time);
 	rec_var_int_mss_val_flt:long_name = "record variable, integer, with float missing values";
-	rec_var_int_mss_val_flt:_FillValue = -999.0f;
+//	Using intended _FillValue type breaks ncgen (with "_FillValue type mismatch")in netCDF 4.1.1 so comment-out for simplicity
+//	rec_var_int_mss_val_flt:_FillValue = -999.0f;
+	rec_var_int_mss_val_flt:_FillValue = -999;
 	rec_var_int_mss_val_flt:missing_value = -999.0f;
 
 	int rec_var_int_mss_val_dbl(time);
@@ -791,7 +799,9 @@ variables:
 	int rec_var_dbl_mss_val_dbl_pck_lng(time);
 	rec_var_dbl_mss_val_dbl_pck_lng:long_name = "record variable, double packed as long, with double missing values";
 	rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) offers considerable space savings";
-	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999.0;
+//	Using intended _FillValue type breaks ncgen (with "_FillValue type mismatch")in netCDF 4.1.1 so comment-out for simplicity
+//	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999.0;
+	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999;
 	rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999.0;
         rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5.;
