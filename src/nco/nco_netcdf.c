@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.151 2012-06-27 19:18:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.152 2012-06-29 09:37:37 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1536,7 +1536,7 @@ int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const 
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=0;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
 int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){if(chk_typ) *chk_typ=NC_NOCHECKSUM;return 1;}
 #endif /* HAVE_NETCDF4_H */
-#ifndef HAVE_NETCDF4_H
+#if !defined(HAVE_NETCDF4_H) || !defined(ENABLE_NETCDF4)
 /* Stubs for netCDF4 group routines */
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){return 1;}
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){return 1;}
