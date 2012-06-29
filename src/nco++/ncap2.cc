@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.144 2012-06-27 00:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.145 2012-06-29 03:53:25 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.144 2012-06-27 00:52:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.145 2012-06-29 03:53:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -534,14 +534,11 @@ main(int argc,char **argv)
   
   if(ncap_gsl_mode_prec<0 || ncap_gsl_mode_prec>2) ncap_gsl_mode_prec=0;
 
-  /* create a generator chosen by the 
-    environment variables GSL_RNG_TYPE ,GSL_RNG_SEED */
-     
+  /* create generator chosen by environment variables GSL_RNG_TYPE, GSL_RNG_SEED */
   gsl_rng_env_setup();
-
 #endif // !ENABLE_GSL
   
-  //Sort Vector 
+  // Sort Vector 
   std::sort(fmc_vtr.begin(),fmc_vtr.end());
   
   if(PRN_FNC_TBL){
@@ -579,7 +576,7 @@ main(int argc,char **argv)
   //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_in;idx++) dmn_in_vtr.push_back(nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm));
   
-  //sort vector
+  // Sort vector
   dmn_in_vtr.sort();
   dmn_in=&dmn_in_vtr[0];
   
@@ -612,7 +609,6 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-  
 
   (void)nco_enddef(out_id);
   

@@ -1,13 +1,9 @@
-/*
- * Different version of the calculator which parses the command line arguments.
- * To do this the argv[] strings are first written to a ostringstream then
- * a istringstream is constructed with the string from the ostringstream and
- * fed to the lexer.
- */
+/* Different version of calculator which parses command line arguments.
+   To do this argv[] strings are first written to an ostringstream then
+   an istringstream is constructed with string from the ostringstream and
+   fed to lexer. */
 
-
-// this defines an anonymous enum containing parser tokens
-
+// Define an anonymous enum containing parser tokens
 #include <stdio.h>
 #include <malloc.h>
 #include <fstream>
@@ -25,23 +21,17 @@
 
 #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
-
 TokenStreamSelector selector;
 ncoLexer *lexer=NULL;
 ncoParser *parser=NULL;
 
-
-
-
-//forward declaration
-
-int           /* Evaluate expressions -execute nb - contains static members*/
+// Forward declaration
+int /* Evaluate expressions -execute nb - contains static members*/
 ncap_omp_exe(
 std::vector< std::vector<RefAST> > &all_ast_vtr,
 ncoTree** wlk_ptr_in,
-int nbr_wlk_in)
+int wlk_nbr_in)
 {
-
 int idx;
 int jdx;
 int kdx;
@@ -51,33 +41,28 @@ int nbr_sz;
 var_sct *var;
 RefAST tr;
 
-static int nbr_wlk; //same as number of threads
-static ncoTree** wlk_ptr;
+ static int wlk_nbr; // Same as number of threads
+ static ncoTree** wlk_ptr;
 
  ncoTree* wlk_lcl;
 
  std::vector<RefAST> inn_vtr;
 
 // Initialize statics then exit
- if( nbr_wlk_in > 0) {
-   nbr_wlk=nbr_wlk_in;
+ if( wlk_nbr_in > 0) {
+   wlk_nbr=wlk_nbr_in;
    wlk_ptr=wlk_ptr_in;
    return 2;
  }
 
- //Set all symbol table refs to ntl_scn=false;
- for(idx=0 ; idx< nbr_wlk ; idx++)
-   wlk_ptr[idx]->prs_arg->ntl_scn=False;
+ // Set all symbol table refs to ntl_scn=false;
+ for(idx=0;idx<wlk_nbr;idx++) wlk_ptr[idx]->prs_arg->ntl_scn=False;
   
-
-
  // Each block has two lists
  // The first list is of the expressions that contain Lvalues which 
  // are NOT defined in Output (nb this also applies to RAM vars)
  // The second list if of expressions that have all Lvalues defined in
  // output.
-
-
         
  for(idx=0 ; idx<(int)all_ast_vtr.size();idx+=2){
 
@@ -93,12 +78,9 @@ static ncoTree** wlk_ptr;
      continue; 
    } 
 
-  
-   // do an nc_sync for all output threads
+   // do nc_sync() for all output threads
    (void)nco_sync(wlk_ptr[0]->prs_arg->out_id);      
-   for(mdx=0; mdx<nbr_wlk; mdx++)
-     (void)nco_sync(wlk_ptr[mdx]->prs_arg->out_id_readonly); 
-
+   for(mdx=0; mdx<wlk_nbr; mdx++) (void)nco_sync(wlk_ptr[mdx]->prs_arg->out_id_readonly); 
    
    inn_vtr=all_ast_vtr[idx+1];
    /*
@@ -118,7 +100,7 @@ static ncoTree** wlk_ptr;
    } //end OPENMP parallel loop
 
    // Copy all atts defined in thread in to var_vtr
-   for(kdx=0; kdx<nbr_wlk; kdx++){
+   for(kdx=0; kdx<wlk_nbr; kdx++){
      //dereference
      NcapVarVector &lcl_vtr=wlk_ptr[kdx]->prs_arg->thr_vtr;
      if(lcl_vtr.empty())
@@ -131,20 +113,15 @@ static ncoTree** wlk_ptr;
 
    // do an nc_sync for all output threads
    (void)nco_sync(wlk_ptr[0]->prs_arg->out_id);      
-   for(mdx=0; mdx<nbr_wlk; mdx++)
-     (void)nco_sync(wlk_ptr[mdx]->prs_arg->out_id_readonly); 
-
+   for(mdx=0; mdx<wlk_nbr; mdx++) (void)nco_sync(wlk_ptr[mdx]->prs_arg->out_id_readonly); 
 
  } // end for idx
 
-
-
  return 1;
-}
+} /* end ncap_omp_exe() */
 
 int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
 {
-  
   ANTLR_USING_NAMESPACE(std);
   ANTLR_USING_NAMESPACE(antlr);
   
@@ -174,9 +151,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
   
   std::vector< std::vector<RefAST> > all_ast_vtr(0);
 
-
   try {
-    
     if( cmd_ln_sng ){
       sin= new  istringstream(cmd_ln_sng);
       lexer= new ncoLexer( *sin, prs_arg);
@@ -189,8 +164,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
       selector.select(filename);
 
     }     
-    
-    
+
     lexer->setFilename(filename);
     
     parser= new ncoParser(selector);
@@ -208,7 +182,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
     t=a;
 
     // Print parser tree
-    if(dbg_lvl_get() > 0){
+    if(dbg_lvl_get() >= nco_dbg_scl){
       dbg_prn(fnc_nm,"Printing parser tree...");
       while( t ) {
 	cout << t->toStringTree() << endl;
@@ -216,7 +190,6 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
       }
       dbg_prn(fnc_nm,"Parser tree printed");
     } // endif dbg
-    
   }  
   
   catch (RecognitionException& pe) {
@@ -250,24 +223,17 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
 
     // initialize static members 
     (void)ncap_omp_exe(all_ast_vtr,&wlk_vtr[0],thd_nbr);
-    if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walkers initialized");
+    if(dbg_lvl_get() >= nco_dbg_fl) dbg_prn(fnc_nm,"Walkers initialized");
   
     wlk_vtr[0]->run_exe(t,0);
-
-
-    
   }  catch(std::exception& e) {
     cerr << "exception: " << e.what() << endl;
   }	
   
-  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walkers completed");
-  
-   
+  if(dbg_lvl_get() >= nco_dbg_fl) dbg_prn(fnc_nm,"Walkers completed");
   
   // delete walker pointers
-  for(idx=0 ; idx<(int)wlk_vtr.size() ; idx++)
-    delete wlk_vtr[idx];
-
+  for(idx=0 ; idx<(int)wlk_vtr.size() ; idx++) delete wlk_vtr[idx];
 
   delete lexer;
   delete parser;        
@@ -277,7 +243,4 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
   //(void)nco_free(filename);
   
   return 1;
-}
-
-
-
+} /* end parse_antlr() */

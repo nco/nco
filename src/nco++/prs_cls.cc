@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.25 2012-02-09 16:03:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.26 2012-06-29 03:53:25 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -27,9 +27,7 @@
 /* Begin prs_cls methods */
 
 var_sct * 
-prs_cls::ncap_var_init(
-		       const std::string &snm, 
-		       bool bfll){
+prs_cls::ncap_var_init(const std::string &snm,bool bfll){
   
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
@@ -66,7 +64,7 @@ prs_cls::ncap_var_init(
     bfll=false;
   }
   
-  if(dbg_lvl_get() > 2 && !ntl_scn) {
+  if(dbg_lvl_get() >= nco_dbg_fl && !ntl_scn) {
     std::ostringstream os;
     os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
     dbg_prn(fnc_nm,os.str());  
@@ -198,7 +196,7 @@ prs_cls::ncap_var_init(
 	(void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
 	(void)dmn_out_vtr.push_back(dmn_nw);
 	
-	if(dbg_lvl_get() > 2) {
+	if(dbg_lvl_get() >= nco_dbg_fl){
           std::ostringstream os;
           os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " <<fl_in;
           os << ". Defining dimension " << dmn_nw->nm << " in output file " << fl_out;
@@ -335,8 +333,7 @@ prs_cls::ncap_var_write_omp(
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
-  
-  
+    
   // INITIAL SCAN
   if(ntl_scn){
     Nvar=var_vtr.find(var->nm);
@@ -525,7 +522,7 @@ prs_cls::ncap_var_write_omp(
 #ifdef NCO_RUSAGE_DBG
   /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
   /* Print rusage memory usage statistics */
-  if(dbg_lvl_get() >= 0) {
+  if(dbg_lvl_get() >= nco_dbg_fl) {
     std::ostringstream os;
     os<<" Writing variable "<<var_nm; <<" to disk.";
     dbg_prn(fnc_nm,os.str());
@@ -567,7 +564,7 @@ void prs_cls::ncap_def_ntl_scn(void)
   
   const std::string fnc_nm("prs_cls::ncap_def_ntl_scn"); 
   
-  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm, "Entered function");
+  if(dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm, "Entered function");
   
   sz=int_vtr.size();
   
@@ -577,7 +574,7 @@ void prs_cls::ncap_def_ntl_scn(void)
     var1=Nvar->var;
     if(!Nvar->flg_udf && Nvar->xpr_typ==ncap_var){
       
-      if(dbg_lvl_get() > 0) dbg_prn(fnc_nm, Nvar->getFll()+ (!Nvar->flg_mem ? " defined in output": " RAM variable"));
+      if(dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm, Nvar->getFll()+ (!Nvar->flg_mem ? " defined in output": " RAM variable"));
       
       // Define variable
       if(!Nvar->flg_mem){

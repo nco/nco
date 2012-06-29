@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.114 2012-05-23 04:42:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.115 2012-06-29 03:53:25 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -277,7 +277,7 @@ public:
      ncap_omp_exe(
      std::vector< std::vector<RefAST> > &all_ast_vtr,
      ncoTree** wlk_ptr,
-     int nbr_wlk);
+     int wlk_nbr);
 
      if(tr== ANTLR_USE_NAMESPACE(antlr)nullAST)
         err_prn("run_dbl"," REPORTS given a null AST Refrence\n");
