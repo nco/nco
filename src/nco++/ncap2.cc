@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.145 2012-06-29 03:53:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.146 2012-06-30 19:23:29 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -101,7 +101,7 @@ int
 main(int argc,char **argv)
 {
   const char fnc_nm[]="main"; 
-  FILE *yyin; /* file handle used to check file existance */
+  FILE *yyin; /* File handle used to check file existance */
   int parse_antlr(std::vector<prs_cls> &prs_vtr ,char*,char*);
   
   /* fxm TODO nco652 */
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.145 2012-06-29 03:53:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.145 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.146 2012-06-30 19:23:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.146 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -598,7 +598,7 @@ main(int argc,char **argv)
        If fl_out resolves to _same name_ as fl_in, method above is employed */
     fl_out_tmp=(char *)strdup(fl_out);
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
-    rcd=nco_open(fl_out_tmp,md_open,&out_id);
+    rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&out_id);
     (void)nco_redef(out_id);
   } /* Existing file */
   
@@ -619,9 +619,8 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
-  //rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_arg.out_id_readonly); /* Read Output file */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
-  rcd=nco_open(fl_out_tmp,md_open,&prs_arg.out_id_readonly); /* Read Output file */
+  rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&prs_arg.out_id_readonly);
   
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
@@ -646,11 +645,10 @@ main(int argc,char **argv)
     
     /* Open files for each thread */
     if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
-    rcd=nco_open(fl_in,md_open,&prs_tmp.in_id);
+    rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&prs_tmp.in_id);
     
     /* Handle to read output only */
-    /* rcd=nco_open(fl_out_tmp, NC_NOWRITE|NC_SHARE,&prs_tmp.out_id_readonly); */
-    rcd=nco_open(fl_out_tmp,md_open,&prs_tmp.out_id_readonly);
+    rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&prs_tmp.out_id_readonly);
     
     /* Only one handle for reading and writing */
     prs_tmp.out_id=out_id;
@@ -686,7 +684,6 @@ main(int argc,char **argv)
       if(dmn_item->sz != dmn_out_vtr[idx]->sz) 
 	(void)fprintf(stdout,"%s: WARNING: dimension miss-match. dim \"%s\" is size=%ld in Input file and size=%ld in Output file. HINT Command may work if Append mode (-A) is not used",prg_nm_get(),dmn_item->nm, dmn_item->sz, dmn_out_vtr[idx]->sz ); 
     } 
- 
 
     /* Get number of variables in output file */
     rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
@@ -704,11 +701,8 @@ main(int argc,char **argv)
     /* now free lists */
     dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_out);
     xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
-
   }
 
-
-  
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0) err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");

@@ -1,6 +1,10 @@
+2012-06-30  Charlie Zender  <zender@uci.edu>
+
+	* Use nco_fl_open() instead of nco_open() in ncap2
+
 2012-06-28  Charlie Zender  <zender@uci.edu>
 
-	* Always harmonize _FillValue with variable type in in.cdl (backwards compatibility with netCDF 4.1.1)
+	* Harmonize _FillValue with variable type in in.cdl (backwards compatibility with netCDF 4.1.1)
 
 	* Remove NaN values from in.cdl for backwards compatibility (netCDF 4.1.1 does not support)
 

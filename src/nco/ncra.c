@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.288 2012-06-27 00:18:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.289 2012-06-30 19:23:29 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.288 2012-06-27 00:18:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.288 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.289 2012-06-30 19:23:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.289 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -179,7 +179,7 @@ main(int argc,char **argv)
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
-  int nbr_var_fl;
+  int nbr_var_fll;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
