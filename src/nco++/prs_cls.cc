@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.26 2012-06-29 03:53:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.27 2012-06-30 22:27:47 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -82,35 +82,34 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
   if(!ntl_scn){
     Nvar=var_vtr.find(var_nm);
     
-    // var is defined in O and populated
-    if(Nvar && Nvar->flg_stt==2 && !Nvar->flg_mem){
+    // Variable is defined in O and populated
+    if(Nvar && Nvar->flg_stt == 2 && !Nvar->flg_mem){
       var=Nvar->cpyVarNoData();
       
 #ifdef _OPENMP
-      fl_id= ( omp_in_parallel() ?out_id_readonly : out_id );
+      fl_id=(omp_in_parallel() ? out_id_readonly : out_id);
 #else    
       fl_id=out_id;  
 #endif
       var->tally=(long *)NULL;
+
       /* Retrieve variable values from disk into memory */
-      if(bfll)
-        (void)nco_var_get(fl_id,var); 
+      if(bfll) (void)nco_var_get(fl_id,var); 
       
       return var;
-    }
+    } /* !ntl_scn */
     
-    // var is defined in O and populated && a RAM variable
+    // Variable is defined in O and populated and is a RAM variable
     if(Nvar && Nvar->flg_stt==2 && Nvar->flg_mem){
       var=Nvar->cpyVar();
       return var;
     }
     
-    // var is defined in O but NOT populated
+    // Variable is defined in O but NOT populated
     // Set flag so read is tried only from input
     // Maybe not the best solution ?
     // what else ??? 
-    if(Nvar && Nvar->flg_stt==1 )
-      bskp_npt=true;
+    if(Nvar && Nvar->flg_stt == 1) bskp_npt=true;
     
   } // end !ntl_scn
   
@@ -119,7 +118,7 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
   if(rcd == NC_NOERR && !bskp_npt){
     
 #ifdef _OPENMP
-    fl_id= ( omp_in_parallel() ?out_id_readonly : out_id );
+    fl_id= (omp_in_parallel() ? out_id_readonly : out_id);
 #else    
     fl_id=out_id;  
 #endif
@@ -127,8 +126,7 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
     var=nco_var_fll(fl_id,var_id,var_nm,&dmn_out_vtr[0],dmn_out_vtr.size());
     var->tally=(long *)NULL;
     /* Retrieve variable values from disk into memory */
-    if(bfll)
-      (void)nco_var_get(fl_id,var); 
+    if(bfll) (void)nco_var_get(fl_id,var); 
     
     return var;
   }
@@ -144,14 +142,12 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
     return NULL_CEWI;
   } /* end if */
   
-  /* Find dimensions used in var
+  /* Find dimensions used in variable
      Learn which are not already in output list dmn_out and output file
      Add these to output list and output file */
-  
   fl_id=in_id;
-  
   (void)nco_inq_varndims(fl_id,var_id,&dmn_var_nbr);
-  if(dmn_var_nbr>0){
+  if(dmn_var_nbr > 0){
     int *dim_id=NULL_CEWI;
     dmn_sct *dmn_fd; 
     dmn_sct *dmn_nw;
@@ -173,22 +169,17 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
         os<<"Unable to find dimension " <<dmn_nm << " in " << fl_in <<" or " << fl_out;
         err_prn(fnc_nm,os.str());
       }
-      
       dmn_tp_out.push_back(dmn_fd);
-      
     } // end idx
     
     // no longer needed
     (void)nco_free(dim_id);
     
     // define new dims in output if necessary  
-    if(dmn_tp_out.size() >0){
-      
+    if(dmn_tp_out.size() > 0){
 #ifdef _OPENMP
-      if( omp_in_parallel())
-	err_prn(fnc_nm,"Attempt to go into netcdf define mode while in OPENMP parallel mode");
+      if(omp_in_parallel()) err_prn(fnc_nm,"Attempt to go into netCDF define mode while in OpenMP parallel mode");
 #endif
-      
       (void)nco_redef(out_id);
       for(idx=0; idx< (int)dmn_tp_out.size();idx++){
         dmn_nw=nco_dmn_dpl(dmn_tp_out[idx]);
@@ -198,16 +189,13 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
 	
 	if(dbg_lvl_get() >= nco_dbg_fl){
           std::ostringstream os;
-          os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " <<fl_in;
+          os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " << fl_in;
           os << ". Defining dimension " << dmn_nw->nm << " in output file " << fl_out;
           dbg_prn(fnc_nm,os.str());
 	}
-      }// end idx
-      
+      } // end idx
       (void)nco_enddef(out_id);
-      
     } // end if 
-    
   } // end if
   
   var=nco_var_fll(fl_id,var_id,var_nm,&dmn_out_vtr[0],dmn_out_vtr.size());
@@ -245,13 +233,11 @@ prs_cls::ncap_var_init_chk(
   
   // Check output file for ID 
   rcd=nco_inq_varid_flg(out_id,var_nm.c_str(),&var_id);
-  if(rcd == NC_NOERR)
-    return 1;
+  if(rcd == NC_NOERR) return 1;
   
   // Check input file for ID 
   rcd=nco_inq_varid_flg(in_id,var_nm.c_str(),&var_id);
-  if(rcd == NC_NOERR)
-    return 1;
+  if(rcd == NC_NOERR) return 1;
   
   // Variable not in Input or Output or int_vtr
   return 0;
@@ -462,20 +448,14 @@ prs_cls::ncap_var_write_omp(
     var_inf=nco_var_free(var_inf);
     
     var_out_id=var->id;
-    
   } 
-  
-  
   rcd=nco_inq_varid_flg(out_id,var->nm,&var_out_id);
-  
   
   // Only go into define mode if necessary
   if(!bdef || var->pck_ram ){  
     
 #ifdef _OPENMP
-    if( omp_in_parallel())
-      err_prn(fnc_nm, "Attempt to go into netcdf define mode while in OPENMP parallel mode");
-    
+    if(omp_in_parallel()) err_prn(fnc_nm, "Attempt to go into netCDF define mode while in OpenMP parallel mode");
 #endif
     (void)nco_redef(out_id);
     

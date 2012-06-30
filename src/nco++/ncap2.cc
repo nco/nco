@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.146 2012-06-30 19:23:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.147 2012-06-30 22:27:47 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.146 2012-06-30 19:23:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.146 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.147 2012-06-30 22:27:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.147 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -625,7 +625,7 @@ main(int argc,char **argv)
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
   prs_arg.ATT_INHERIT=ATT_INHERIT;
-  prs_arg.NCAP_MPI_SORT=(thr_nbr>1 ? true:false);
+  prs_arg.NCAP_MPI_SORT=(thr_nbr > 1 ? true:false);
   
   prs_arg.dfl_lvl=dfl_lvl;  /* [enm] Deflate level */
   prs_arg.cnk_sz=(size_t*)NULL; /* Chunk sizes NULL for now */ 
@@ -640,6 +640,8 @@ main(int argc,char **argv)
   
   prs_vtr.push_back(prs_arg); 
   
+  /* NB: 20120630 bug to open these files multiple times without storing the returned unique nc_id's for later use */
+  /* NB: Off-by-one bug in loop counter? */
   for(idx=1;idx<thr_nbr;idx++){
     prs_cls prs_tmp(prs_arg);
     
@@ -656,7 +658,7 @@ main(int argc,char **argv)
     prs_vtr.push_back(prs_tmp);
   } /* end loop over threads */
 
-  /* if output file contains dims/vars i.e -A switch */
+  /* If we are appending (-A) then output file already contains dimensions/variables */
   if(FORCE_APPEND){
     int nbr_dmn_out=0;  
     int nbr_var_fl=0;
@@ -673,17 +675,17 @@ main(int argc,char **argv)
     //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
     for(idx=0;idx<nbr_dmn_out;idx++) dmn_out_vtr.push_back(nco_dmn_fll(out_id,dmn_lst[idx].id,dmn_lst[idx].nm));
 
-    //sort vector
+    // Sort vector
     dmn_out_vtr.sort();
 
     /* xrf dmn_out with dmn_in_vtr */
-    for(idx=0; idx<nbr_dmn_out ; idx++){
+    for(idx=0;idx<nbr_dmn_out;idx++){
       dmn_item=dmn_in_vtr.find(dmn_out_vtr[idx]->nm);
       if(!dmn_item) continue; 
       (void)nco_dmn_xrf(dmn_item,dmn_out_vtr[idx]);
       if(dmn_item->sz != dmn_out_vtr[idx]->sz) 
-	(void)fprintf(stdout,"%s: WARNING: dimension miss-match. dim \"%s\" is size=%ld in Input file and size=%ld in Output file. HINT Command may work if Append mode (-A) is not used",prg_nm_get(),dmn_item->nm, dmn_item->sz, dmn_out_vtr[idx]->sz ); 
-    } 
+	(void)fprintf(stdout,"%s: WARNING: dimension miss-match. Dimension \"%s\" is size=%ld in input file and size=%ld in output file.\nHINT: Command may work if Append mode (-A) is not used.\n",prg_nm_get(),dmn_item->nm,dmn_item->sz,dmn_out_vtr[idx]->sz);
+    } /* end loop over dimensions */
 
     /* Get number of variables in output file */
     rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
@@ -692,16 +694,17 @@ main(int argc,char **argv)
     xtr_lst=nco_var_lst_mk(out_id,nbr_var_fl,(char**)NULL,False,False,&nbr_xtr);      
     for(idx=0;idx<nbr_var_fl;idx++){
       var_tmp=prs_arg.ncap_var_init(xtr_lst[idx].nm,false);
-      Nvar = new NcapVar(var_tmp); 
+      Nvar=new NcapVar(var_tmp); 
       Nvar->flg_stt=2;   
       prs_arg.var_vtr.push(Nvar);
-      /* now copy output atts into var_vtr */
+      /* Copy output attributes into var_vtr */
       ncap_att_gnrl(xtr_lst[idx].nm, xtr_lst[idx].nm,2,&prs_arg);        
-    }
-    /* now free lists */
+    } /* end loop over variables */
+
+    /* Free lists */
     dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_out);
     xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
-  }
+  } /* !FORCE_APPEND */
 
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */

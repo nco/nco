@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.141 2012-05-18 13:37:53 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.142 2012-06-30 22:27:47 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -35,7 +35,6 @@ ncap_var_udf(const char *var_nm)
   // Temporary solution -- set the type to NC_INT 
   //var_ret->type=NC_INT;
 
-
   return var_ret;
 }
 
@@ -44,7 +43,7 @@ ncap_att_get
 (int var_id,
  const char *var_nm,
  const char *att_nm,
- int location,         /*   I [flg] 1 - att from INPUT file  2 - att from OUTPUT file */
+ int location, /* I [flg] 1 - att from INPUT file  2 - att from OUTPUT file */
  prs_cls *prs_arg)
 {
   int rcd;
@@ -56,21 +55,17 @@ ncap_att_get
   nc_type type;
   var_sct *var_ret;
   
-  
-  if(location == 1 ) fl_id=prs_arg->in_id;  
-  if(location == 2 ) fl_id=prs_arg->out_id;  
-     
+  if(location == 1) fl_id=prs_arg->in_id;  
+  if(location == 2) fl_id=prs_arg->out_id;  
 
   rcd=nco_inq_att_flg(fl_id,var_id,att_nm,&type,&sz);
-  if (rcd == NC_ENOTATT) 
-    return NULL_CEWI;
-  
+  if(rcd == NC_ENOTATT) return NULL_CEWI;
   
   var_ret=(var_sct*)nco_malloc(sizeof(var_sct));
   (void)var_dfl_set(var_ret);
   
   // Make name of the form var_nm@att_nm
-  ln_nm=(char*)nco_malloc( (strlen(var_nm)+strlen(att_nm)+2)*sizeof(char));
+  ln_nm=(char *)nco_malloc((strlen(var_nm)+strlen(att_nm)+2)*sizeof(char));
   strcpy(ln_nm,var_nm);strcat(ln_nm,"@");strcat(ln_nm,att_nm);
   
   var_ret->nm=ln_nm;
@@ -85,7 +80,7 @@ ncap_att_get
   if(!prs_arg->ntl_scn){
     var_ret->val.vp=(void *)nco_malloc(sz*nco_typ_lng(type));
     rcd=nco_get_att(fl_id,var_id,att_nm,var_ret->val.vp,type);
-    if (rcd !=NC_NOERR) {
+    if (rcd != NC_NOERR) {
       var_ret=nco_var_free(var_ret);
       return NULL_CEWI;
     }
@@ -1972,7 +1967,7 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
 
 #ifdef _OPENMP
        if( omp_in_parallel())
-	 err_prn(fnc_nm,"Attempt to go into netcdf define mode while in OPENMP parallel mode");
+	 err_prn(fnc_nm,"Attempt to go into netCDF define mode while in OpenMP parallel mode");
       
 #endif
 
