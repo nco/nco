@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.354 2012-06-14 18:04:56 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.355 2012-07-01 07:28:07 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -245,6 +245,10 @@ AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
 echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
+
+echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
+echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
 AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features (same as enable-netcdf-4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
 # 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
 if test "x${enable_netcdf4}" = 'xno' ; then
@@ -253,15 +257,22 @@ fi # !netCDF4
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
+echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
+        echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
     else
 	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
+        echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
     fi
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
+else
+echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
 fi
+echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
 echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
@@ -366,6 +377,7 @@ echo "DEBUG: After library checks LIBS=$LIBS"
 echo "#################################"
 echo "#  Testing for ANTLR support    #"
 echo "#################################"
+
 AC_ARG_VAR(ANTLR_ROOT,Location of ANTLR version 2.7.x installation (compile-time))
 AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build libnco++ and ncap2 (same as enable-ncap2) [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
 AC_ARG_ENABLE(ncap2,AS_HELP_STRING([--enable-ncap2],[Build ncap2 and libnco++ (same as enable-ncoxx) [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
@@ -403,17 +415,34 @@ if test "${enable_ncoxx}" != 'no'; then
 # Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
+#close {enable_ncoxx}
+fi
+
+# AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
-    AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],[],[],${PATH})
-    if test "x${HAVE_ANTLR}" = 'xyes'; then
+#AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],[],[],${PATH})
+AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],no,${PATH},[]) 
+
+echo "DEBUG: HAVE_ANTLR  = ${HAVE_ANTLR}"
+
+# issue a message if the antlr library was found or not
+if test "${HAVE_ANTLR}" != 'no' ; then
+    AC_MSG_NOTICE([antlr library was found])
+else
+    AC_MSG_NOTICE([antlr library was not found, disabling ncap2 build])
+fi
+
+
+
+if test "x${HAVE_ANTLR}" = 'xyes'; then
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
 # AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
 	AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
 	if test "${enable_ncoxx}" = 'yes'; then
 	    echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
 	fi
-    fi
 fi
+
 if test "${enable_ncoxx}" != 'yes'; then
     echo "INFO: ANTLR support not found. To build ncap2, please install ANTLR and its C++ development package, e.g., 'sudo aptitude install antlr libantlr-dev' or 'sudo yum install antlr antlr-c++-devel'"
 fi
@@ -997,14 +1026,16 @@ else
 fi
 AC_SUBST(NCO_CXX)
 
-#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
-if test "${enable_ncoxx}" = 'yes' ; then
+#if the antlr library was not found just don't build ncap2
+if test "${enable_ncoxx}" = 'yes'  \
+    && test "${HAVE_ANTLR}" != 'no' ; then
     AC_CONFIG_FILES(src/nco++/Makefile)
     NCOXX="nco++"
 else
     NCOXX=""
 fi
 echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
+
 AC_SUBST(NCOXX)
 # End config
 
@@ -1031,18 +1062,18 @@ echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
+echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
+echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
-echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
+echo "HAVE_ANTLR........... ${HAVE_ANTLR}"  
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
-echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
-
 # Inform users of the very useful configure.eg
 echo "*******************************************************************"
 echo "Configuration complete. You are now ready to run 'make'."

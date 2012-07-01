@@ -17388,6 +17388,10 @@ $as_echo "#define NO_NETCDF_2 1" >>confdefs.h
 echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
+
+echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
+echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
 # Check whether --enable-netcdf4 was given.
 if test "${enable_netcdf4+set}" = set; then :
   enableval=$enable_netcdf4; enable_netcdf4=${enableval}
@@ -17408,15 +17412,22 @@ fi # !netCDF4
 
 # Test if user set NETCDF4_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
+echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
+        echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
     else
 	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
+        echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
     fi
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
+else
+echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
 fi
+echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
 echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
@@ -18525,6 +18536,7 @@ echo "#################################"
 echo "#  Testing for ANTLR support    #"
 echo "#################################"
 
+
 # Check whether --enable-ncoxx was given.
 if test "${enable_ncoxx+set}" = set; then :
   enableval=$enable_ncoxx; enable_ncoxx=${enableval}
@@ -18578,8 +18590,13 @@ if test "${enable_ncoxx}" != 'no'; then
 # Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
+#close {enable_ncoxx}
+fi
+
+# AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
-    for ac_prog in runantlr antlr
+#AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],[],[],${PATH})
+for ac_prog in runantlr antlr
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -18592,7 +18609,7 @@ else
   ac_cv_prog_HAVE_ANTLR="$HAVE_ANTLR" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+for as_dir in ${PATH}
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -18620,8 +18637,23 @@ fi
 
   test -n "$HAVE_ANTLR" && break
 done
+test -n "$HAVE_ANTLR" || HAVE_ANTLR="no"
 
-    if test "x${HAVE_ANTLR}" = 'xyes'; then
+
+echo "DEBUG: HAVE_ANTLR  = ${HAVE_ANTLR}"
+
+# issue a message if the antlr library was found or not
+if test "${HAVE_ANTLR}" != 'no' ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: antlr library was found" >&5
+$as_echo "$as_me: antlr library was found" >&6;}
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: antlr library was not found, disabling ncap2 build" >&5
+$as_echo "$as_me: antlr library was not found, disabling ncap2 build" >&6;}
+fi
+
+
+
+if test "x${HAVE_ANTLR}" = 'xyes'; then
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
 # AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
 	ac_fn_cxx_check_header_mongrel "$LINENO" "antlr/CommonToken.hpp" "ac_cv_header_antlr_CommonToken_hpp" "$ac_includes_default"
@@ -18635,8 +18667,8 @@ fi
 	if test "${enable_ncoxx}" = 'yes'; then
 	    echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
 	fi
-    fi
 fi
+
 if test "${enable_ncoxx}" != 'yes'; then
     echo "INFO: ANTLR support not found. To build ncap2, please install ANTLR and its C++ development package, e.g., 'sudo aptitude install antlr libantlr-dev' or 'sudo yum install antlr antlr-c++-devel'"
 fi
@@ -19768,8 +19800,9 @@ else
 fi
 
 
-#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
-if test "${enable_ncoxx}" = 'yes' ; then
+#if the antlr library was not found just don't build ncap2
+if test "${enable_ncoxx}" = 'yes'  \
+    && test "${HAVE_ANTLR}" != 'no' ; then
     ac_config_files="$ac_config_files src/nco++/Makefile"
 
     NCOXX="nco++"
@@ -19777,6 +19810,7 @@ else
     NCOXX=""
 fi
 echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
+
 
 # End config
 
@@ -22466,18 +22500,18 @@ echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
+echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
+echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
-echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
+echo "HAVE_ANTLR........... ${HAVE_ANTLR}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
-echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
-
 # Inform users of the very useful configure.eg
 echo "*******************************************************************"
 echo "Configuration complete. You are now ready to run 'make'."
