@@ -1,3 +1,7 @@
+2012-07-01  Pedro Vicente  <pvicente@uci.edu>
+
+        * Test the presence of antlr by configure, and if not found, do not build ncap2
+
 2012-06-30  Charlie Zender  <zender@uci.edu>
 
 	* Use nco_fl_open() instead of nco_open() in ncap2
