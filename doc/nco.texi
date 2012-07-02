@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.693 2012-06-29 03:24:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.694 2012-07-02 02:14:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5016,8 +5016,32 @@ Long options: @samp{--ram_all}, @samp{--create_ram}, @samp{--open_ram},
 @end cartouche
 
 As of @acronym{NCO} version 4.2.1 (July, 2012), @acronym{NCO} supports
-the use of RAM disks for file access and creation.
-fxm
+the use of diskless files, aka RAM disks, for file access and creation. 
+Two independent switches control this feature.
+The @samp{--open_ram} switch causes input files to copied to RAM when
+opened. 
+All further metadata and data access occurs in RAM and thus avoids
+access time delays caused by disk-head movement.
+Usually input data is read at most once so it is unlikely that
+requesting input files be stored in RAM will save much time.
+The likeliest exceptions are files that are accessed numerous times,
+such as those analyzed extensively analyzed by @command{ncap2}. 
+
+The @samp{--create_ram} switch causes output files to be created in RAM,
+rather than on disk. 
+These files are copied to disk when closed, i.e., when the operation is
+finished. 
+It is more likely that creating files in RAM will save time. 
+Examples include iterative computations (e.g., loops) with
+@command{ncap2}, 
+@example
+ncks in.nc out.nc # Default: Open in.nc on disk, write out.nc to disk
+ncks --open_ram   in.nc out.nc # Open   in.nc in RAM, write out.nc to disk
+ncks --create_ram in.nc out.nc # Create out.nc in RAM, then write to disk
+# Open in.nc in RAM, create out.nc in RAM, then write out.nc to disk
+ncks --open_ram --create_ram in.nc out.nc
+ncks --ram_all in.nc out.nc # Same as above
+@end example
 
 @html
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1178 2012-06-26 04:52:04 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1179 2012-07-02 02:14:36 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -808,10 +808,6 @@ nco1053. nco: ncap2 rgr 10 Casting variable with same name as dimension (failure
 	 ncap2 -O -C -v -s 'defdim("a",3);defdim("b",4); a[$a,$b]=10;c=a(1,1);' ~/nco/data/in.nc ~/foo.nc
 nco1054. nco: ncap2 rgr 11 Casting variable with a single dim of sz=1. works for Henry not me. OS version related? e.g., app-armor-triggered? 
 	 ncap2 -O -C -v -s 'defdim("a",1);b[$a]=10;c=b(0:0);' ~/nco/data/in.nc ~/foo.nc
-nco1055. MSVC: bfr_sz_hnt_lcl appears to be used uninitialized in nco_fl_out_open() under MSVC
-nco326. Add manual override of writing *tmp* file for intermediate results?
-nco567. Add option to turn off default-creation of .tmp file?
-nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first? Seems unlikely this will save time.
 nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
 nco1056. 
