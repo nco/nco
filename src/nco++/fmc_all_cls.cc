@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.49 2012-06-27 12:36:45 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.50 2012-07-02 10:53:03 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -615,6 +615,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       fmc_vtr.push_back( fmc_cls("size",this,(int)PSIZE));
       fmc_vtr.push_back( fmc_cls("type",this,(int)PTYPE));
       fmc_vtr.push_back( fmc_cls("ndims",this,(int)PNDIMS));
+      fmc_vtr.push_back( fmc_cls("exists",this,(int)PEXISTS));
 
     }
   }
@@ -624,16 +625,17 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
 
     int fdx=fmc_obj.fdx();   //index
     int nbr_args;
+    std::string va_nm;
+    std::string susg; 
+    std::string sfnm =fmc_obj.fnm(); //method name
+
+    nc_type mp_typ=NC_INT;
     var_sct *var=NULL_CEWI;
     var_sct *var1=NULL_CEWI;
-    nc_type mp_typ=NC_INT;
     prs_cls* prs_arg=walker.prs_arg;
       
     RefAST tr;
     vtl_typ lcl_typ;
-
-    std::string susg; 
-    std::string sfnm =fmc_obj.fnm(); //method name
     std::vector<RefAST> vtr_args;
 
 
@@ -680,6 +682,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
 
 
     lcl_typ=expr_typ(tr);          
+   
 
     // If initial scan
     if(prs_arg->ntl_scn){
@@ -691,10 +694,34 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       }
       return ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nc_type)NC_INT,false);        
     }
+       
+    // from here on dealing with final scan
+    va_nm=tr->getText();
 
-    if(!prs_arg->ntl_scn) {
 
-      std::string va_nm=tr->getText();
+    // deal with PEXISTS here 
+    if(fdx==PEXISTS){
+      int iret=0;
+      switch(lcl_typ){
+        case VVAR: 
+           if(prs_arg->ncap_var_init_chk(va_nm)) iret=1;
+           break;
+        case VATT:
+	  if( prs_arg->var_vtr.find(va_nm) !=NULL)
+	    iret=1;
+          else if( (var1=ncap_att_init(va_nm,prs_arg))!=NULL) ;      
+            iret=1;
+          break;   
+
+      default:
+	 var1=walker.out(tr);  
+         iret=1; 
+         break;
+      }   
+      
+      if(var1) nco_var_free(var1);    
+      return ncap_sclr_var_mk(static_cast<std::string>("~basic_function"),(nco_int)iret);
+    }
 
      
       if(lcl_typ==VVAR)
@@ -719,12 +746,8 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       } // end switch        
       
       var1=nco_var_free(var1);
-       
-
-
-    } //end if      
-    return var;		 
- }       
+      return var;		 
+  }       
 
   
 //Math Functions /******************************************/
