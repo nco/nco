@@ -107,7 +107,7 @@ public:
 //Basic Functions /****************************************/
 class bsc_cls: public vtl_cls {
 private:
-   enum {PSIZE,PTYPE,PNDIMS };
+  enum {PSIZE,PTYPE,PNDIMS,PEXISTS };
    bool _flg_dbg;
 public:
   bsc_cls(bool flg_dbg);
