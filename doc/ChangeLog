@@ -1,6 +1,6 @@
 2012-07-02  Pedro Vicente  <pvicente@uci.edu>
 
-        * print $prefix (nco installation path) on the configure output
+        * Print $prefix (nco installation path) on the configure output
 
 2012-07-02  Henry Butowsky  <henryb@hush.com>
 
