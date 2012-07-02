@@ -1,6 +1,10 @@
+2012-07-02  Pedro Vicente  <pvicente@uci.edu>
+
+        * print $prefix (nco installation path) on the configure output
+
 2012-07-02  Henry Butowsky  <henryb@hush.com>
 
-	* added exists(var_nm/att_nm) function
+	* Added exists(var_nm/att_nm) function
 	  returns 1 if "var" or "att" exist in Input or Output
 
 2012-07-01  Pedro Vicente  <pvicente@uci.edu>
