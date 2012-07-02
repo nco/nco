@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.694 2012-07-02 02:14:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.695 2012-07-02 05:40:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5006,6 +5006,7 @@ ncks: INFO nc__open() opened file with buffer size = 2097152 bytes
 @cindex @code{--open_ram}
 @cindex @code{--diskless_all}
 @cindex RAM disks
+@cindex RAM files
 @cindex @code{NC_DISKLESS}
 @cindex diskless files
 @cartouche
@@ -5017,7 +5018,22 @@ Long options: @samp{--ram_all}, @samp{--create_ram}, @samp{--open_ram},
 
 As of @acronym{NCO} version 4.2.1 (July, 2012), @acronym{NCO} supports
 the use of diskless files, aka RAM disks, for file access and creation. 
-Two independent switches control this feature.
+Two independent switches, @samp{--open_ram} and @samp{--create_ram},
+control this feature. 
+Before describing the specifics of these switches, we describe why many 
+@acronym{NCO} operations will not benefit from them.
+Essentially, reading/writing from/to RAM rather than disk only hastens 
+the task when reads/writes to disk are avoided.
+Most @acronym{NCO} operations are simple enough that they require a
+single read-from/write-to disk for every block of input/output. 
+Diskless access does not change this, but it does add an extra
+read-from/write-to RAM. 
+However this extra RAM write/read does avoid contention for limited
+system resources like disk-head access.
+Operators which may benefit from RAM disks include @command{ncwa}, which
+may need to read weighting variables multiple times, and @command{ncap2}
+scripts which may be arbitrarily long and convoluted. 
+
 The @samp{--open_ram} switch causes input files to copied to RAM when
 opened. 
 All further metadata and data access occurs in RAM and thus avoids
@@ -5027,20 +5043,28 @@ requesting input files be stored in RAM will save much time.
 The likeliest exceptions are files that are accessed numerous times,
 such as those analyzed extensively analyzed by @command{ncap2}. 
 
+@cindex RAM variables
 The @samp{--create_ram} switch causes output files to be created in RAM,
 rather than on disk. 
-These files are copied to disk when closed, i.e., when the operation is
-finished. 
-It is more likely that creating files in RAM will save time. 
-Examples include iterative computations (e.g., loops) with
-@command{ncap2}, 
+These files are copied to disk only when closed, i.e., when the
+operator completes.
+Creating files in RAM may save time, especially with @command{ncap2}
+computations that are iterative, e.g., loops. 
+RAM files provide many of the same benefits as RAM variables in such
+cases (@pxref{RAM variables}). 
+
+Two switches, @samp{--ram_all} and @samp{--diskless_all}, are convenient
+shortcuts for specifying both @samp{--create_ram} and
+@samp{--diskless_ram}. 
+Thus
 @example
 ncks in.nc out.nc # Default: Open in.nc on disk, write out.nc to disk
-ncks --open_ram   in.nc out.nc # Open   in.nc in RAM, write out.nc to disk
+ncks --open_ram in.nc out.nc # Open in.nc in RAM, write out.nc to disk
 ncks --create_ram in.nc out.nc # Create out.nc in RAM, then write to disk
 # Open in.nc in RAM, create out.nc in RAM, then write out.nc to disk
 ncks --open_ram --create_ram in.nc out.nc
 ncks --ram_all in.nc out.nc # Same as above
+ncks --diskless_all in.nc out.nc # Same as above
 @end example
 
 @html
@@ -7356,8 +7380,12 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 The list of mathematical methods is system dependant.
 For the full list @pxref{Intrinsic mathematical methods} 
 
-All the mathematical methods take a single operand ,with the exception of @code{atan2} and @code{pow} which take two.
-If the operand type is less than @emph{float} then the result will be of type @emph{float}. If the operand is type @emph{double} then the result will be type @emph{double}. Like the other methods, you are free to use the mathematical methods as functions.
+All the mathematical methods take a single argument except @code{atan2()}
+and @code{pow()} which take two. 
+If the operand type is less than @emph{float} then the result will be of
+type @emph{float}. 
+Arguments of type @emph{double} yield results of type @emph{double}. 
+Like the other methods, you are free to use the mathematical methods as functions. 
 
 @example
 n1=pow(2,3.0f)    // n1 type float
@@ -7368,6 +7396,7 @@ n3=1/(three_dmn_var_dbl.cos().pow(2))-tan(three_dmn_var_dbl)^2; // n3 type doubl
 @html
 <a name="ncap_ram"></a> <!-- http://nco.sf.net/nco.html#ncap_ram -->
 @end html
+@cindex RAM variables
 @node RAM variables, Where statement, Methods and functions, ncap2 netCDF Arithmetic Processor
 @subsection RAM variables
 Unlike regular variables, @acronym{RAM} variables are never written to disk.
