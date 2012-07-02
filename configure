@@ -22512,6 +22512,7 @@ echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
+echo "install prefix ...... ${prefix}"
 # Inform users of the very useful configure.eg
 echo "*******************************************************************"
 echo "Configuration complete. You are now ready to run 'make'."

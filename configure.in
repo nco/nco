@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.355 2012-07-01 07:28:07 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.356 2012-07-02 20:07:05 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1074,6 +1074,7 @@ echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
+echo "install prefix ...... ${prefix}"
 # Inform users of the very useful configure.eg
 echo "*******************************************************************"
 echo "Configuration complete. You are now ready to run 'make'."
