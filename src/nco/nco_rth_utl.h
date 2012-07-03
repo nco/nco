@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.27 2012-06-05 21:49:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.28 2012-07-03 19:44:30 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -30,6 +30,9 @@
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
+#ifdef _MSC_VER
+# include "nco_rth_flt.h" /* Float-precision arithmetic */
+#endif 
 #include "nco_var_utl.h" /* Variable utilities */
 #include "nco_var_rth.h" /* Variable arithmetic */
 

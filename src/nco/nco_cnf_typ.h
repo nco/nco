@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.36 2012-07-03 19:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.37 2012-07-03 19:44:30 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -24,7 +24,9 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
-#include "nco_rth_flt.h" /* Float-precision arithmetic */
+#ifdef _MSC_VER
+# include "nco_rth_flt.h" /* Float-precision arithmetic */
+#endif 
 
 #ifdef __cplusplus
 extern "C" {
