@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.148 2012-07-03 21:30:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.149 2012-07-03 22:25:01 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -31,7 +31,7 @@
 
 /* Usage:
    ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-   ncap2 -O -D 1 -v -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc
+   ncap2 -O -D 1 -v -S ~/nco/data/ncap2_tst.nco  ~/nco/data/in.nc ~/foo.nc
    ncap2 -O -D 1 -s two=one+two ~/nco/data/in.nc ~/foo.nc
    ncap2 -O -v -s 'foo=exp(0.61)' ~/nco/data/in.nc ~/foo.nc;ncks -C ~/foo.nc
    ncap2 -O -v -s 'defdim("dmn_tmp")=5;foo[$dmn_tmp]={0,2,4,6,8};foo2=one_dmn_rec_var(foo);print(foo);print(foo2);' ~/nco/data/in.nc ~/foo.nc;
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.148 2012-07-03 21:30:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.149 2012-07-03 22:25:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.37 2012-06-12 00:15:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.38 2012-07-03 22:25:01 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -16,8 +16,10 @@ strtoll /* [fnc] Convert string to a long long integer */
  int base)
 {
   /* Purpose: Compatibility function for strtoll()
-     Needed by some C++ compilers, e.g., AIX xlC */
-  long long nbr_out=0LL;
+     Needed by some C++ compilers, e.g., AIX xlC
+     20120703: rewrite to cast result of strtol() to long long and return */
+  long long nbr_out;
+  nbr_out=(long long)strtol(nptr,endptr,base);
   return nbr_out;
 } /* end strtoll() */
 #endif /* !NEED_STRTOLL */

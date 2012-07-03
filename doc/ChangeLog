@@ -1,5 +1,7 @@
 2012-07-03  Charlie Zender  <zender@uci.edu>
 
+	* Un-break strtoll() compatibility function for AIX xlC
+
 	* Make MSVC file opening Sleep() for same duration as UNIX sleep()
 
 	* Write MSVC lround(),llround(),llround(),llroundf() definitions to obey standard prototypes
