@@ -94,7 +94,7 @@ public:
 //Utility Functions /****************************************/
 class utl_cls: public vtl_cls {
 private:
-  enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,IS_MISS,RAM_WRITE,RAM_DELETE};
+  enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,NUM_MISS,HAS_MISS, RAM_WRITE,RAM_DELETE};
    bool _flg_dbg;
 public:
   utl_cls(bool flg_dbg);
