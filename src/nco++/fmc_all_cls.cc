@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.50 2012-07-02 10:53:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.51 2012-07-03 09:25:15 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -313,7 +313,8 @@
       fmc_vtr.push_back( fmc_cls("get_miss",this,(int)GET_MISS));
       fmc_vtr.push_back( fmc_cls("change_miss",this,(int)CH_MISS));
       fmc_vtr.push_back( fmc_cls("delete_miss",this,(int)DEL_MISS));
-      fmc_vtr.push_back( fmc_cls("is_miss",this,(int)IS_MISS));
+      fmc_vtr.push_back( fmc_cls("number_miss",this,(int)NUM_MISS));
+      fmc_vtr.push_back( fmc_cls("has_miss",this,(int)HAS_MISS));
       fmc_vtr.push_back( fmc_cls("ram_write",this,(int)RAM_WRITE));
       fmc_vtr.push_back( fmc_cls("ram_delete",this,(int)RAM_DELETE));
      
@@ -359,7 +360,7 @@
        err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
      
      // deal with is_miss in a seperate function     
-     if(fdx==IS_MISS)
+     if(fdx==NUM_MISS)
        return is_fnd(is_mtd, vtr_args,fmc_obj,walker);           
    
   
