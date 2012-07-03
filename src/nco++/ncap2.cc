@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.147 2012-06-30 22:27:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.148 2012-07-03 21:30:33 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.147 2012-06-30 22:27:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.147 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.148 2012-07-03 21:30:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.148 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -640,8 +640,6 @@ main(int argc,char **argv)
   
   prs_vtr.push_back(prs_arg); 
   
-  /* NB: 20120630 bug to open these files multiple times without storing the returned unique nc_id's for later use */
-  /* NB: Off-by-one bug in loop counter? */
   for(idx=1;idx<thr_nbr;idx++){
     prs_cls prs_tmp(prs_arg);
     

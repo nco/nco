@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.185 2012-06-29 03:24:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.186 2012-07-03 21:30:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -7,16 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_fl_utl.h" /* File manipulation */
-
-/* MSVC
-   Time period for Win32 Sleep function is measured in milliseconds. 
-   Time period for Linux sleep function is measured in seconds */
-#ifdef _MSC_VER
-# include <process.h>
-# include <windows.h> 
-# define sleep Sleep
-typedef int pid_t;
-#endif
 
 int /* O [enm] Mode flag for nco_create() call */
 nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format */
@@ -151,9 +141,8 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
   
 } /* end nco_fl_overwrite_prm() */
 
-/* stub function for MSVC */
 #ifdef _MSC_VER
-void nco_fl_chmod (const char * const fl_nm){}
+void nco_fl_chmod(const char * const fl_nm){}
 #else
 void
 nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
@@ -208,7 +197,7 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
   } /* end if chmod */
   
 } /* end nco_fl_chmod() */
-#endif /* _MSC_VER */
+#endif /* !_MSC_VER */
 
 void
 nco_fl_cp /* [fnc] Copy first file to second */
@@ -246,7 +235,6 @@ nco_fl_cp /* [fnc] Copy first file to second */
 } /* end nco_fl_cp() */
 
 #ifdef _MSC_VER
-/* Stub function for MSVC */
 char * nco_fl_info_get(const char *){return NULL;}
 #else
 char * /* O [sng] Canonical file name*/
@@ -286,7 +274,7 @@ nco_fl_info_get /* [fnc] Determine canonical filename and properties */
 
   return fl_nm_cnc;
 } /* end nco_fl_info_get() */
-#endif /* _MSC_VER */ 
+#endif /* !_MSC_VER */ 
 
 char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
@@ -1033,6 +1021,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       int tm_nbr=100; /* Maximum number of sleep periods before error exit */
       int tm_idx;
       int tm_sleep_scn=10; /* [s] Seconds per stat() check for successful return */
+#ifdef _MSC_VER
+      /* MSVC NB: Win32 Sleep() function measured in milliseconds, Linux sleep() function measured in seconds */
+      int tm_sleep_ms=tm_sleep_scn*1000; /* [ms] Milliseconds per stat() check for successful return */
+#endif /* !_MSC_VER */
 
       /* Asynchronous retrieval uses sleep-and-poll technique */
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
@@ -1048,7 +1040,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	  } /* end if */
 	} /* end if */
 	/* Sleep for specified time */
+#ifdef _MSC_VER
+	(void)Sleep((unsigned)tm_sleep_ms);
+#else /* !_MSC_VER */
 	(void)sleep((unsigned)tm_sleep_scn);
+#endif /* !_MSC_VER */
 	if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,".");
 	(void)fflush(stderr);
       } /* end for */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.64 2012-06-27 00:18:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.65 2012-07-03 21:30:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -27,7 +27,12 @@
 # include <unistd.h> /* POSIX stuff */
 # include <netinet/in.h> /* needed for _res */
 # include <pwd.h> /* password structures for getpwuid() */
-#endif
+#endif /* !_MSC_VER */
+#ifdef _MSC_VER
+# include <process.h> /* MSVC getpid() */
+# include <windows.h> /* MSVC sleep() */
+typedef int pid_t;
+#endif /* !_MSC_VER */
 
 #include <sys/types.h> /* needed for _res */
 #ifndef WIN32
