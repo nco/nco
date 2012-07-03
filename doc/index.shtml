@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.708 2012-07-03 00:31:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.709 2012-07-03 18:27:24 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -771,8 +771,8 @@ the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
-<ul> <!-- http://nco.sf.net/src/nco-4.1.0.aix53.tar.gz -->
-<li><a href="src/nco-4.1.0.aix53.tar.gz">nco-4.1.0.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.1.0.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.1.0.aix53.tar.gz"-->)</li>
+<ul> <!-- http://nco.sf.net/src/nco-4.2.0.aix53.tar.gz -->
+<li><a href="src/nco-4.2.0.aix53.tar.gz">nco-4.2.0.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.0.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.0.aix53.tar.gz"-->)</li>
 Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
