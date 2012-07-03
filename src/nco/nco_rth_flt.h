@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.35 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.36 2012-07-03 19:31:24 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -22,6 +22,9 @@
 /* fxm stdio only needed for TODO ncap57 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
+#ifdef _MSC_VER
+# include <time.h>
+#endif 
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -32,6 +35,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+  /* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer */
+#ifdef _MSC_VER
+  long long llround(double x);
+  long long llroundf(float x);
+  long lround(double x);
+  long lroundf(float x);
+#endif /* !_MSC_VER */ 
 
 #if !defined(HPUX) && !defined(__INTEL_COMPILER)
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX

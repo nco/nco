@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.28 2012-06-06 18:21:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.29 2012-07-03 19:31:24 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -7,10 +7,14 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_rth_flt.h" /* Float-precision arithmetic */
-/* needed for time */
+
+/* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer */
 #ifdef _MSC_VER
-# include <time.h>
-#endif 
+long long llround(double x){return floor(x+0.5);}
+long long llroundf(float x){return floorf(x+0.5f);}
+long lround(double x){return floor(x+0.5);}
+long lroundf(float x){return floorf(x+0.5f);}
+#endif /* !_MSC_VER */ 
 
 /* In ANSI C, <math.h> provides standard math intrinsics in double precision 
    On most architectures, single precision ("float") versions are also supplied 
@@ -109,9 +113,9 @@ rnd_nbr /* [fnc] Generate random fraction in [0,1] */
   double rnd_nbr_dbl_frc;
   x=x+0.0; /* CEWI */
 #ifdef _MSC_VER
-  /* seed the random-number generator with the current time */
-   srand( (unsigned)time( NULL ) );
-   rnd_nbr_lng=rand();
+  /* Seed random-number generator with current time */
+  srand((unsigned)time(NULL));
+  rnd_nbr_lng=rand();
 #else
   rnd_nbr_lng=random();
 #endif

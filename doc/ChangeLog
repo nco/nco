@@ -1,5 +1,8 @@
 2012-07-03  Charlie Zender  <zender@uci.edu>
 
+	* Write MSVC lround(),llround(),llround(),llroundf() definitions to obey standard prototypes
+	Move their definitions/declarations to nco_rth_flt.[ch]
+
 	* NCO 4.2.1 release procedure:
  	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS
 	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1

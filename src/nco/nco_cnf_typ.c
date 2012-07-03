@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.63 2012-06-06 21:09:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.64 2012-07-03 19:31:24 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -7,27 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_cnf_typ.h" /* Conform variable types */
-
-/* MSVC does not define
-   lround, lroundf, lroundl, llround, llroundf, llroundl - round to nearest integer */
-#ifdef _MSC_VER
-static double llround(double val)
-{    
-    return floor(val + 0.5);
-}
-static double llroundf(float val)
-{    
-     return floor(val + 0.5);
-}
-static double lround(double val)
-{    
-    return floor(val + 0.5);
-}
-static double lroundf(float val)
-{    
-    return floor(val + 0.5);
-}
-#endif /* _MSC_VER */ 
 
 void
 cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
