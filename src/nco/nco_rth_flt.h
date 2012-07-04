@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.37 2012-07-03 19:44:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.38 2012-07-04 00:07:54 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -24,7 +24,7 @@
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #ifdef _MSC_VER
 # include <time.h> /* time() seed for rand() */
-#endif 
+#endif /* !_MSC_VER */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

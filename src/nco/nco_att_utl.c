@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.119 2012-07-03 22:25:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.120 2012-07-04 00:07:54 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -8,8 +8,7 @@
 
 #include "nco_att_utl.h" /* Attribute utilities */
 
-/* Microsoft standard C library does not have a definition for strtoll(), 
-   which converts from a C string to a long long */ 
+/* Microsoft standard C library lacks standard definitions for strtoll(), strtoull() */
 #ifdef _MSC_VER
 # define strtoull _strtoui64 
 # define strtoll  _strtoi64

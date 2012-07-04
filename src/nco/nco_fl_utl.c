@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.186 2012-07-03 21:30:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.187 2012-07-04 00:07:54 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -134,16 +134,15 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
       (void)fflush(stdin);
     } /* end while */
     
-    if(usr_rpl == 'n'){
-      nco_exit(EXIT_SUCCESS);
-    } /* end if */
+    if(usr_rpl == 'n') nco_exit(EXIT_SUCCESS);
+
   } /* end if rcd_sys != -1 */
   
 } /* end nco_fl_overwrite_prm() */
 
 #ifdef _MSC_VER
 void nco_fl_chmod(const char * const fl_nm){}
-#else
+#else /* !_MSC_VER */
 void
 nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
 (const char * const fl_nm) /* I [sng] Name of file */
@@ -208,9 +207,9 @@ nco_fl_cp /* [fnc] Copy first file to second */
   char *cp_cmd;
 #ifdef _MSC_VER
   const char cp_cmd_fmt[]="copy %s %s";
-#else
+#else /* !_MSC_VER */
   const char cp_cmd_fmt[]="cp %s %s";
-#endif
+#endif /* !_MSC_VER */
 
   int rcd;
   const int fmt_chr_nbr=4;
@@ -236,7 +235,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
 #ifdef _MSC_VER
 char * nco_fl_info_get(const char *){return NULL;}
-#else
+#else /* !_MSC_VER */
 char * /* O [sng] Canonical file name*/
 nco_fl_info_get /* [fnc] Determine canonical filename and properties */
 (const char * const fl_nm_lcl) /* I [sng] Name of file */
@@ -1099,9 +1098,9 @@ nco_fl_mv /* [fnc] Move first file to second */
   char *cmd_mv;
 #ifdef _MSC_VER
   const char cmd_mv_fmt[]="move %s %s";
-#else
+#else /* !_MSC_VER */
   const char cmd_mv_fmt[]="mv -f %s %s";
-#endif
+#endif /* !_MSC_VER */
 
   int rcd_sys; /* [rcd] Return code from system() */
   const int fmt_chr_nbr=4;
@@ -1246,9 +1245,9 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
     (void)strcpy(fl_nm,fl_pth);
 #ifdef _MSC_VER 
     (void)strcat(fl_nm,"\\"); /* Windows uses backslash for path separator; escape the character */
-#else
+#else /* !_MSC_VER */
     (void)strcat(fl_nm,"/");
-#endif
+#endif /* !_MSC_VER */
     (void)strcat(fl_nm,fl_nm_stub);
 
     /* Free filestub space */
