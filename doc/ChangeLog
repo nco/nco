@@ -1,3 +1,8 @@
+2012-07-05  Pedro Vicente  <pvicente@uci.edu>
+
+        * Conditional build of doc/Makefile; if the 'makeinfo' program is not installed, doc is not built:
+        (refers to TODO nco1056) 
+
 2012-07-05  Charlie Zender  <zender@uci.edu>
 
 	* Update man pages

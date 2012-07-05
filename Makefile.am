@@ -1,6 +1,7 @@
-# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.16 2012-06-10 07:20:19 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.17 2012-07-05 23:18:50 pvicente Exp $ -*-makefile-*-
 
-SUBDIRS = data src man doc
+#SUBDIRS = data src man doc
+SUBDIRS = data src man @DOC_FOLDER@
 
 # Separately add desired files from nco/bld/ to distribution
 # Autoconf does not know about the bld directory 

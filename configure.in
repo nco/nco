@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.356 2012-07-02 20:07:05 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.357 2012-07-05 23:18:50 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1015,8 +1015,16 @@ if test "${enable_static}" = 'yes'; then
 fi
 # End Static
 
+# 07/05/2012 Test for makeinfo; if not present, do not build doc/Makefile
+# Note: debian install with 'sudo apt-get install texinfo'
+# AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
+AC_CHECK_PROGS(have_makeinfo,[makeinfo],no,${PATH},[]) 
+
+echo "DEBUG: have_makeinfo  = ${have_makeinfo}"
+
 # Begin config
-AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
+#AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile])
 if test "${ac_cv_cxx_have_valarray}" = 'yes' \
     && test "${enable_nco_cxx}" = 'yes' ; then
     AC_CONFIG_FILES(src/nco_c++/Makefile)
@@ -1037,6 +1045,21 @@ fi
 echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 
 AC_SUBST(NCOXX)
+
+#Conditional build of doc/Makefile
+if test "${have_makeinfo}" != 'no' ; then
+    AC_CONFIG_FILES(doc/Makefile)
+    DOC_FOLDER="doc"
+else
+    DOC_FOLDER=""
+fi
+
+AC_SUBST(DOC_FOLDER)
+
+
+
+
+
 # End config
 
 # Prefix Flex output symbols with NCO string to avoid namespace conflict with flex-generated symbols from other programs/libraries
