@@ -4,7 +4,9 @@ ncatted \- netCDF Attribute Editor
 .SH SYNTAX
 ncatted [-a 
 .IR att_dsc ]
-[-a ...] [-D] [-h]
+[-a ...] [-D
+.IR dbg_lvl]
+ [-h]
 [-l path] [-O] [-p path] [-R] [-r] 
 .I input-file
 [
@@ -465,20 +467,20 @@ C-language escape sequences and other special characters like
 backslashes and question marks. 
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncatted.1,v 1.9 2011-05-05 17:28:15 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncatted.1,v 1.10 2012-07-05 18:22:45 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
 .\" that says "Append man_end.txt here"
 .SH AUTHOR
 .B NCO
-manual pages written by Charlie Zender and Brian Mays.
+manual pages written by Charlie Zender and originally formatted by Brian Mays.
 
 .SH "REPORTING BUGS"
 Report bugs to <http://sf.net/bugs/?group_id=3331>.
 
 .SH COPYRIGHT
-Copyright \(co 1995-2011 Charlie Zender
+Copyright \(co 1995-2012 Charlie Zender
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

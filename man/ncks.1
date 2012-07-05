@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.22 2011-05-05 17:28:15 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.23 2012-07-05 18:22:45 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncks
 .\" Usage:
 .\" nroff -man ~/nco/man/ncks.1
@@ -6,28 +6,37 @@
 .SH NAME
 ncks \- netCDF Kitchen Sink
 .SH SYNTAX
-ncks [\-3] [\-4] [\-6] [\-A] [\-a] [\-C] [\-c] 
+ncks [\-3] [\-4] [\-6] [\-A] [\-a] [\-B] [\-b
+.IR bnr_fl] 
+[\-C] [\-c] 
 [\-\-cnk_dmn 
-.IR nm,sz ]
+.IR nm,sz]
 [\-\-cnk_map 
 .IR map ]
 [\-\-cnk_plc 
 .IR plc ]
 [\-\-cnk_scl 
 .IR sz] 
-[\-D] [\-d 
+[\-D
+.IR dbg_lvl]
+[\-d 
 .IR dim ,[
 .IR min ][,[
 .IR max ]][,[
 .IR stride ]]]
-[\-F] [\-H] [\-h] [\-L 
+[\-F] [\-\-fix_rec_dmn] [\-H] [\-h] 
+[\-\-hdr_pad
+.IR sz]
+[\-L 
 .IR dfl_lvl ] 
 [\-l 
 .IR path ]
-[\-M] [\-m] [\-O] [\-p 
+[\-M] [\-m] [\-\-md5] [\-\-no_tmp_fl] [\-O] [-o 
+.IR output\-file ] 
+[\-P] [\-p 
 .IR path ]
-[\-q]
-[\-R] [\-r] [\-s 
+[-Q] [\-q]
+[\-R] [\-r] [\-\-ram_all] [\-s 
 .IR format ]
 [\-u] [\-v 
 .IR var [,...]] 
@@ -575,20 +584,20 @@ ncks \-d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.22 2011-05-05 17:28:15 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.23 2012-07-05 18:22:45 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
 .\" that says "Append man_end.txt here"
 .SH AUTHOR
 .B NCO
-manual pages written by Charlie Zender and Brian Mays.
+manual pages written by Charlie Zender and originally formatted by Brian Mays.
 
 .SH "REPORTING BUGS"
 Report bugs to <http://sf.net/bugs/?group_id=3331>.
 
 .SH COPYRIGHT
-Copyright \(co 1995-2011 Charlie Zender
+Copyright \(co 1995-2012 Charlie Zender
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
