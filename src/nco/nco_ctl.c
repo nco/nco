@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.334 2012-07-04 00:07:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.335 2012-07-06 20:05:42 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -925,7 +925,7 @@ nco_usg_prn(void)
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-6]")) (void)fprintf(stdout,"-6, --64, --fl_fmt=64bit\tOutput file in netCDF3 64-bit offset storage format\n");
   if(strstr(opt_sng,"[-A]")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");
-  if(strstr(opt_sng,"[-a]")){
+  if(strstr(opt_sng,"[-a ...]")){
     if(prg_lcl == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");
 #ifdef ENABLE_NETCDF4
     if(prg_lcl == ncatted) (void)fprintf(stdout,"\t\t\tnetCDF4 att_typ's = ub,us,u,ll,ull\n");
@@ -951,7 +951,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--cnk_plc")) (void)fprintf(stdout,"    --cnk_plc, --chunk_policy plc\tChunking policy [all,g2d,g3d,xpl,uck]\n");
   if(strstr(opt_sng,"--cnk_scl")) (void)fprintf(stdout,"    --cnk_scl, --chunk_scalar sz\tChunksize scalar (for all dimensions)\n");
   if(strstr(opt_sng,"[-D]")) (void)fprintf(stdout,"-D, --dbg_lvl, --debug-level dbg_lvl\tDebugging level\n");
-  if(strstr(opt_sng,"[-d]")){
+  if(strstr(opt_sng,"[-d ...]")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-d, --dmn, --dimension old_dim,new_dim Dimension's old and new names\n");
     else (void)fprintf(stdout,"-d, --dmn, --dimension dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
   } /* end if -d */
@@ -989,7 +989,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--md5_digest")) (void)fprintf(stdout,"    --md5_digest\tPerform MD5 digests\n");
   if(strstr(opt_sng,"--mk_rec_dmn")) (void)fprintf(stdout,"    --mk_rec_dmn dim\tDefine dim as record dimension in output file\n");
   if(strstr(opt_sng,"[-N]")) (void)fprintf(stdout,"-N, --nmr, --numerator\tNo normalization\n");
-  if(!strcmp(opt_sng,"[-n]")){
+  if(strstr(opt_sng,"[-n ...]")){
     /*    if(prg_lcl == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
     if(prg_lcl != ncwa) (void)fprintf(stdout,"-n, --nintap nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
   } /* end if -n */
@@ -1018,7 +1018,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-u, --ulm_nm --rcd_nm\t\tNew unlimited (record) dimension name\n");
   } /* end if */
   if(strstr(opt_sng,"[-U]")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");
-  if(strstr(opt_sng,"[-v]")){
+  if(strstr(opt_sng,"[-v ...]")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");
 	if(prg_lcl == ncap) (void)fprintf(stdout,"-v, --variable \t\tOutput file includes ONLY user-defined variables\n");
     if(prg_lcl != ncrename && prg_lcl != ncap) (void)fprintf(stdout,"-v, --variable var1[,var2[...]] Variable(s) to process (regular expressions supported)\n");

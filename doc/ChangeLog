@@ -1,3 +1,7 @@
+2012-07-06  Charlie Zender  <zender@uci.edu>
+
+	* Fix -? ... command line option help in nco_ctl.c
+
 2012-07-05  Pedro Vicente  <pvicente@uci.edu>
 
         * Build doc/Makefile iff 'makeinfo' program is installed (TODO nco1056)
