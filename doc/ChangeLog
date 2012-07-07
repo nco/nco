@@ -1,5 +1,7 @@
 2012-07-06  Charlie Zender  <zender@uci.edu>
 
+	* Die when netCDF4 output explicitly requested from netCDF3-only NCO
+
 	* Fix -? ... command line option help in nco_ctl.c
 
 2012-07-05  Pedro Vicente  <pvicente@uci.edu>
