@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.357 2012-07-05 23:18:50 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.358 2012-07-07 01:29:49 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -360,7 +360,7 @@ NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
 NCO_CHECK_FUNCS([ceilf floorf])
 NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
 NCO_CHECK_FUNCS([getopt_long])
-NCO_CHECK_FUNCS([strdup strcasecmp])
+NCO_CHECK_FUNCS([strdup strcasecmp strcasestr])
 
 echo "##########################################################"
 echo "#     Sorting out MacOSX build parameters                #"

@@ -286,6 +286,9 @@
 /* Define to 1 if compiler finds external `strcasecmp' function */
 #undef HAVE_STRCASECMP
 
+/* Define to 1 if compiler finds external `strcasestr' function */
+#undef HAVE_STRCASESTR
+
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
 
@@ -476,6 +479,9 @@
 
 /* Define to 1 if compiler needs external `strcasecmp' function */
 #undef NEED_STRCASECMP
+
+/* Define to 1 if compiler needs external `strcasestr' function */
+#undef NEED_STRCASESTR
 
 /* Define to 1 if compiler needs external `strdup' function */
 #undef NEED_STRDUP
