@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.601 2012-06-26 21:45:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.602 2012-07-07 01:23:16 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -619,7 +619,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 
 # Manually define autotools tokens normally defined with HAVE_CONFIG_H in config.h 
 # Initialize OS-specific tokens to empty
-CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -DHAVE_GETRUSAGE
+CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -DHAVE_GETRUSAGE -DNEED_STRCASESTR
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY

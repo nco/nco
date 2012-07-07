@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.38 2012-07-03 22:25:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.39 2012-07-07 01:23:17 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -7,22 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_sng_utl.h" /* String utilities */
-
-#ifdef NEED_STRTOLL
-long long int /* O [nbr] String as long long integer */
-strtoll /* [fnc] Convert string to a long long integer */
-(const char *nptr, 
- char **endptr, 
- int base)
-{
-  /* Purpose: Compatibility function for strtoll()
-     Needed by some C++ compilers, e.g., AIX xlC
-     20120703: rewrite to cast result of strtol() to long long and return */
-  long long nbr_out;
-  nbr_out=(long long)strtol(nptr,endptr,base);
-  return nbr_out;
-} /* end strtoll() */
-#endif /* !NEED_STRTOLL */
 
 #ifdef NEED_STRCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
@@ -42,6 +26,30 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 } /* end strcasecmp() */
 #endif /* !NEED_STRCASECMP */
 
+#ifdef NEED_STRCASESTR
+char * /* O [sng] Pointer to sng_2 in sng_1 */
+strcasestr /* [fnc] Lexicographical case-insensitive string search */
+(const char *sng_1, /* I [sng] First string */
+ const char *sng_2) /* I [sng] Second string */
+{
+  /* 20120706 fxm: find/write version that does not discard const */
+  char *p, *startn = 0, *np = 0;
+  for (p = sng_1; *p; p++) {
+    if (np) {
+      if (toupper(*p) == toupper(*np)) {
+	if (!*++np)
+	  return startn;
+      } else
+	np = 0;
+    } else if (toupper(*p) == toupper(*sng_2)) {
+      np = sng_2 + 1;
+      startn = p;
+    }
+  }
+  return 0;
+} /* end strcasestr() */
+#endif /* !NEED_STRCASESTR */
+
 #ifdef NEED_STRDUP
 char * /* [sng] Copy of input string */
 strdup /* [fnc] Duplicate string */
@@ -57,6 +65,22 @@ strdup /* [fnc] Duplicate string */
   return sng_out;
 } /* end strdup() */
 #endif /* !NEED_STRDUP */
+
+#ifdef NEED_STRTOLL
+long long int /* O [nbr] String as long long integer */
+strtoll /* [fnc] Convert string to a long long integer */
+(const char *nptr, 
+ char **endptr, 
+ int base)
+{
+  /* Purpose: Compatibility function for strtoll()
+     Needed by some C++ compilers, e.g., AIX xlC
+     20120703: rewrite to cast result of strtol() to long long and return */
+  long long nbr_out;
+  nbr_out=(long long)strtol(nptr,endptr,base);
+  return nbr_out;
+} /* end strtoll() */
+#endif /* !NEED_STRTOLL */
 
 char * /* O [sng] Parsed command line */
 nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */

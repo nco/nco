@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.188 2012-07-07 00:39:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.189 2012-07-07 01:23:17 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -50,26 +50,27 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Careful! Some valid format strings are subsets of other valid format strings */
-  if(strstr("classic",fl_fmt_sng) && !strstr(fl_fmt_sng,"netcdf4")){
+  if(strcasestr("classic",fl_fmt_sng) && !strcasestr(fl_fmt_sng,"netcdf4")){
     /* If "classic" contains string and string does not contain "netcdf4" */
     *fl_fmt_enm=NC_FORMAT_CLASSIC;
-  }else if(strstr("64bit",fl_fmt_sng)){
+  }else if(strcasestr("64bit",fl_fmt_sng)){
     /* If "64bit" contains string */
     *fl_fmt_enm=NC_FORMAT_64BIT;
-  }else if(strstr(fl_fmt_sng,"netcdf4")){
+  }else if(strcasestr(fl_fmt_sng,"netcdf4")){
+    /* If string contains "netcdf4" */
 #ifdef ENABLE_NETCDF4
-    if(strstr("netcdf4",fl_fmt_sng)){
+    if(strcasestr("netcdf4",fl_fmt_sng)){
       /* If "netcdf4" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4;
-    }else if(strstr("netcdf4_classic",fl_fmt_sng)){
+    }else if(strcasestr("netcdf4_classic",fl_fmt_sng)){
       /* If "netcdf4_classic" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
 #else /* !ENABLE_NETCDF4 */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64 bit\" options.\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit\" options.\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
-  }else if(strstr("znetcdf",fl_fmt_sng)){
+  }else if(strcasestr("znetcdf",fl_fmt_sng)){
 #ifdef ENABLE_ZNETCDF
     /* If "znetcdf" contains string */
     *fl_fmt_enm=NC_COMPRESS;

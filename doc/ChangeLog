@@ -1,5 +1,7 @@
 2012-07-06  Charlie Zender  <zender@uci.edu>
 
+	* Use strcasestr() instead of strstr() for fl_fmt conversions
+
 	* Die when netCDF4 output explicitly requested from netCDF3-only NCO
 
 	* Fix -? ... command line option help in nco_ctl.c

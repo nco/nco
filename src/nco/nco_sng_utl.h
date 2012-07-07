@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.27 2012-06-12 00:15:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.28 2012-07-07 01:23:17 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -19,8 +19,8 @@
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <string.h> /* strcmp. . . */
-#ifdef NEED_STRCASECMP
-#include <ctype.h> /* tolower. . . */
+#if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
+# include <ctype.h> /* tolower. . . */
 #endif /* !NEED_STRCASECMP */
 
 /* 3rd party vendors */
@@ -38,6 +38,13 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 (const char *sng_1, /* I [sng] First string */
  const char *sng_2); /* I [sng] Second string */
 #endif /* !NEED_STRCASECMP */
+
+#ifdef NEED_STRCASESTR
+char * /* O [sng] Pointer to sng_2 in sng_1 */
+strcasestr /* [fnc] Lexicographical case-insensitive string search */
+(const char *sng_1, /* I [sng] First string */
+ const char *sng_2); /* I [sng] Second string */
+#endif /* !NEED_STRCASESTR */
 
 #ifdef NEED_STRDUP
 char * /* O [sng] Copy of input string */
