@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.125 2012-06-27 00:18:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.126 2012-07-08 22:39:24 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.125 2012-06-27 00:18:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.125 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.126 2012-07-08 22:39:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.126 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -271,6 +271,7 @@ main(int argc,char **argv)
       {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
       {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
+      {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},

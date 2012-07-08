@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.491 2012-07-08 20:56:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.492 2012-07-08 22:40:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -18,6 +18,8 @@ Charlie
 
 Other "New stuff" in 4.2.1 summary (full details always in ChangeLog):
 
+NEW FEATURES:
+
 A. Diskless files aka RAM-disk files
    ncks --ram ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net/nco.html#ram
@@ -36,10 +38,14 @@ A. Building NCO using the cross-platform Qt framework improved.
    Now works on Ubuntu Linux using default .deb-based software stack. 
    Qt Unix build now includes ncwa.
 
+BUG FIXES:
+
 A. When invoked for min/max operations, ncra/ncea now computea means
    of coordinate variables, as documented. Thanks to user Roux for
-   reporting and supplying patch for this bug.
+   reporting this issue and supplying the patch.
 
+A. Enable --fl_fmt switch synonym to --file_format on all applicable
+   operators. 
 
 KNOWN BUGS NOT YET FIXED:
 

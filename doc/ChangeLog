@@ -1,5 +1,7 @@
 2012-07-08  Charlie Zender  <zender@uci.edu>
 
+	* Enable --fl_fmt switch synonym to --file_format on all applicable operators
+
 	* Apply bugfix from Roux so ncra always averages coordinate variables
 
 2012-07-06  Charlie Zender  <zender@uci.edu>

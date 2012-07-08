@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.183 2012-06-27 00:18:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.184 2012-07-08 22:39:24 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.183 2012-06-27 00:18:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.183 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.184 2012-07-08 22:39:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.184 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -249,6 +249,7 @@ main(int argc,char **argv)
       {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
       {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
+      {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
