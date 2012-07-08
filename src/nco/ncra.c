@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.290 2012-07-01 09:15:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.291 2012-07-08 20:11:31 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.290 2012-07-01 09:15:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.290 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.291 2012-07-08 20:11:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.291 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -897,7 +897,7 @@ main(int argc,char **argv)
       if(var_prc[idx]->is_crd_var){
 	/* Return linear averages of coordinates unless computing extrema
 	   Prevent coordinate variables from encountering nco_var_nrm_sdn() */
-	if((nco_op_typ != nco_op_min) && (nco_op_typ != nco_op_max)) (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	(void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
       }else{ /* !var_prc[idx]->is_crd_var */
 	switch(nco_op_typ){
 	case nco_op_avg: /* Normalize sum by tally to create mean */

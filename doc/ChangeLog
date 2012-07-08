@@ -1,3 +1,7 @@
+2012-07-08  Charlie Zender  <zender@uci.edu>
+
+	* Apply bugfix from Roux so ncra always averages coordinate variables
+
 2012-07-06  Charlie Zender  <zender@uci.edu>
 
 	* Use strcasestr() instead of strstr() for fl_fmt conversions
