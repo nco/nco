@@ -17398,7 +17398,7 @@ echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
 if test "${enable_netcdf4+set}" = set; then :
   enableval=$enable_netcdf4; enable_netcdf4=${enableval}
 else
-  enable_netcdf4=no
+  enable_netcdf4=yes
 fi
 
 # 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
@@ -17407,7 +17407,7 @@ if test "x${enable_netcdf4}" = 'xno' ; then
 if test "${enable_netcdf_4+set}" = set; then :
   enableval=$enable_netcdf_4; enable_netcdf4=${enableval}
 else
-  enable_netcdf4=no
+  enable_netcdf4=yes
 fi
 
 fi # !netCDF4
