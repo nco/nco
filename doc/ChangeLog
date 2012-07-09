@@ -1,3 +1,7 @@
+2012-07-09  Charlie Zender  <zender@uci.edu>
+
+	* Negative integer as min or max element of hyperslab specification indicates offset from end
+
 2012-07-09  Pedro Vicente  <pvicente@uci.edu>
 
         * Set configure option --enable-netcdf4 to yes by default

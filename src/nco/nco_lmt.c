@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.114 2012-06-06 19:43:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.115 2012-07-09 21:56:50 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -249,7 +249,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   dmn_sz=dim.sz;
   
   /* Bomb if dmn_sz < 1 */
-  if(dmn_sz < 1){
+  if(dmn_sz < 1L){
     (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
     nco_exit(EXIT_FAILURE);
   } /* end if */
@@ -290,7 +290,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stdout,"Limits on dimension \"%s\" must be of same numeric type:\n",lmt.nm);
     (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.min_sng,(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
     (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.max_sng,(max_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
-    (void)fprintf(stdout,"(Limit arguments containing a decimal point are interpreted as coordinate values; arguments without a decimal point are interpreted as zero-based or one-based (depending on -F switch) dimensional indices.)\n");
+    (void)fprintf(stdout,"(Limit arguments containing a decimal point (or in exponential format) are interpreted as coordinate values; arguments without a decimal point are interpreted as zero-based or one-based (depending on -F switch) dimensional indices.)\n");
     nco_exit(EXIT_FAILURE);
   } /* end if */
   lmt.lmt_typ=min_lmt_typ;
@@ -318,7 +318,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
     } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
-  } /* end rcd */
+  } /* end if limit is coordinate */
   
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
     double *dmn_val_dp;
@@ -355,7 +355,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     dim.type=NC_DOUBLE;
     
     /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */
-    if(dmn_sz == 1){
+    if(dmn_sz == 1L){
       monotonic_direction=increasing;
     }else{
       if(dmn_val_dp[0] > dmn_val_dp[1]) monotonic_direction=decreasing; else monotonic_direction=increasing;
@@ -568,7 +568,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;  
       lmt.end=lmt.srt+cnt_rmn_crr*lmt.srd;    
       
-      if(lmt.end==lmt.srt) lmt.srd=1;
+      if(lmt.end==lmt.srt) lmt.srd=1L;
       
       lmt.rec_skp_nsh_spf+=dmn_sz;
       
@@ -620,10 +620,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     
     /* Adjust indices if FORTRAN style input was specified */
     if(FORTRAN_IDX_CNV){
-      lmt.min_idx--;
-      lmt.max_idx--;
+      /* 20120709: Adjust positive indices only */
+      if(lmt.min_idx > 0L) lmt.min_idx--;
+      if(lmt.max_idx > 0L) lmt.max_idx--;
     } /* end if */
     
+    /* 20120709 Negative integer as min or max element of hyperslab specification indicates offset from end */
+    if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz-1L;
+    if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz-1L;
+
     /* Exit if requested indices are always invalid for all operators... */
     if(lmt.min_idx < 0 || lmt.max_idx < 0 || 
        /* ...or are invalid for non-record dimensions or single file operators */
@@ -631,7 +636,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
       (void)fprintf(stdout,"\n");
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    } /* end if impossible indices */
     
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!rec_dmn_and_mlt_fl_opr || !lmt.is_usr_spc_lmt){
@@ -834,11 +839,9 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
 (const int lmt_nbr, /* I [nbr] number of dimensions with limits */
  CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg)) /* I [sng] List of user-specified dimension limits */
 {
-  /* Purpose: Set name, min_sng, max_sng elements of 
-     comma separated list of names and ranges. This routine
-     merely evaluates syntax of input expressions and
-     does not attempt to validate dimensions or their ranges
-     against those present in input netCDF file. */
+  /* Purpose: Set name, min_sng, max_sng elements of comma separated list of names and ranges. 
+     Routine merely evaluates syntax of input expressions and does validate dimensions or
+     ranges against those present in input netCDF file. */
   
   /* Valid syntax adheres to nm,[min_sng][,[max_sng][,[srd_sng]]] */
   
@@ -917,7 +920,7 @@ nco_lmt_typ /* [fnc] Determine limit type */
   /* Purpose: Determine type of user-specified limit */
   
   /* Test for UDUnits unit string, then for simple coordinate, 
-     then date/time string (ie YYYY-mm-DD), else default to dimensional index */
+     then date/time string (i.e., YYYY-MM-DD), else default to dimensional index */
   if(strchr(sng,' ')) /* Space delimits user-specified units */
     return lmt_udu_sng;
   if(strchr(sng,'.') ) /* Decimal point (most common so check first) */
@@ -927,10 +930,9 @@ nco_lmt_typ /* [fnc] Determine limit type */
     /* Limit is "simple" (non-UDUnits) coordinate value */
     return lmt_crd_val;
   if(strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng)){
-    /* check for a date like string */   
-    int y,m,d;
-    if( sscanf(sng,"%d-%d-%d",&y,&m,&d)==3 ) 
-      return lmt_udu_sng;
+    /* Check for date-like string */   
+    int yyyy,mm,dd;
+    if(sscanf(sng,"%d-%d-%d",&yyyy,&mm,&dd) == 3) return lmt_udu_sng;
   }  
   /* Default: Limit is dimension index */
   return lmt_dmn_idx;

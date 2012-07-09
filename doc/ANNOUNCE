@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.492 2012-07-08 22:40:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.493 2012-07-09 21:56:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -37,6 +37,14 @@ A. Complete Windows builds
 A. Building NCO using the cross-platform Qt framework improved.
    Now works on Ubuntu Linux using default .deb-based software stack. 
    Qt Unix build now includes ncwa.
+
+A. Negative integers as min or max elements of hyperslab specification
+   indicate offsets from end (Python also uses this convention).
+   Previously, for example, -d time,-2,-1 caused a domain error. 
+   Now this means select the second-to-last and penultimate timesteps.
+   Negative integers work for min and mix indices but not for stride.
+   Fortran index conventions are not applied to negative indices.
+   http://nco.sf.net/nco.html#hyp
 
 BUG FIXES:
 

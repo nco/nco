@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1181 2012-07-09 05:22:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1182 2012-07-09 21:56:49 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -810,7 +810,8 @@ nco1054. nco: ncap2 rgr 11 Casting variable with a single dim of sz=1. works for
 	 ncap2 -O -C -v -s 'defdim("a",1);b[$a]=10;c=b(0:0);' ~/nco/data/in.nc ~/foo.nc
 nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
-nco1057. 
+nco1057. nco: negative integer as min or max element of hyperslab specification indicates offset from end
+nco1058. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
