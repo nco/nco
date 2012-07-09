@@ -1,3 +1,7 @@
+2012-07-09  Pedro Vicente  <pvicente@uci.edu>
+
+        * Set configure option --enable-netcdf4 to yes by default
+
 2012-07-08  Charlie Zender  <zender@uci.edu>
 
 	* Update man pages with related commands
@@ -16,7 +20,7 @@
 
 2012-07-05  Pedro Vicente  <pvicente@uci.edu>
 
-        * Build doc/Makefile iff 'makeinfo' program is installed (TODO nco1056)
+        * Build doc/Makefile if 'makeinfo' program is installed (TODO nco1056)
 
 2012-07-05  Charlie Zender  <zender@uci.edu>
 
