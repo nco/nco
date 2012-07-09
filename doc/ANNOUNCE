@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.493 2012-07-09 21:56:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.494 2012-07-09 22:12:38 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -21,11 +21,14 @@ Other "New stuff" in 4.2.1 summary (full details always in ChangeLog):
 NEW FEATURES:
 
 A. Diskless files aka RAM-disk files
+   This feature requires the newest netCDF library, version 4.2.1.
    ncks --ram ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net/nco.html#ram
 
 A. Bypass intermediate temporary files
    ncks --no_tmp_fl ~/nco/data/in.nc ~/foo.nc
+   At least four people, including Remik Ziemlinski, have requested
+   this feature since at least 2004. Thanks to all of them.
    http://nco.sf.net/nco.html#no_tmp_fl
 
 A. Complete Windows builds
@@ -44,16 +47,17 @@ A. Negative integers as min or max elements of hyperslab specification
    Now this means select the second-to-last and penultimate timesteps.
    Negative integers work for min and mix indices but not for stride.
    Fortran index conventions are not applied to negative indices.
+   Thanks to Nick Bower for requesting this feature (in 2008!).
    http://nco.sf.net/nco.html#hyp
 
 BUG FIXES:
 
-A. When invoked for min/max operations, ncra/ncea now computea means
+A. When invoked for min/max operations, ncra/ncea now computes means
    of coordinate variables, as documented. Thanks to user Roux for
    reporting this issue and supplying the patch.
 
 A. Enable --fl_fmt switch synonym to --file_format on all applicable
-   operators. 
+   operators. The operators now conform with the documentation.
 
 KNOWN BUGS NOT YET FIXED:
 

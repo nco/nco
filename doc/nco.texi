@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.697 2012-07-05 18:22:44 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.698 2012-07-09 22:12:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.1
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 25 June 2012
-@set update-month June 2012
+@set update-date 9 July 2012
+@set update-month July 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -13289,11 +13289,12 @@ Large work-load testing
 @item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Gary Strand, Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Daniel Baumann
+@cindex Nick Bower
 @cindex Luk Claes
 @cindex Barry deFreese
 @cindex Francesco Lovergine
 @cindex Matej Vela
-@item Daniel Baumann, Luk Claebs, Barry deFreese, Francesco Lovergine, Matej Vela
+@item Daniel Baumann, Nick Bower, Luk Claebs, Barry deFreese, Francesco Lovergine, Matej Vela
 Debian packaging
 @cindex Patrice Dumas
 @cindex Ed Hill
