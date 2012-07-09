@@ -1,17 +1,17 @@
-.\" $Header: /data/zender/nco_20150216/nco/doc/man_end.txt,v 1.7 2006-11-12 22:40:14 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/doc/man_end.txt,v 1.8 2012-07-09 05:22:43 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
 .\" that says "Append man_end.txt here"
 .SH AUTHOR
 .B NCO
-manual pages written by Charlie Zender and Brian Mays.
+manual pages written by Charlie Zender and originally formatted by Brian Mays.
 
 .SH "REPORTING BUGS"
 Report bugs to <http://sf.net/bugs/?group_id=3331>.
 
 .SH COPYRIGHT
-Copyright \(co 1995-2006 Charlie Zender
+Copyright \(co 1995-2012 Charlie Zender
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -46,6 +46,7 @@ should give you access to the complete manual, except for the
 TeX-intensive portions.
 
 .BR ncap (1), 
+.BR ncap2 (1),
 .BR ncatted (1), 
 .BR ncbo (1), 
 .BR ncdiff (1), 

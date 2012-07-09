@@ -1,12 +1,14 @@
 2012-07-08  Charlie Zender  <zender@uci.edu>
 
+	* Update man pages with related commands
+
 	* Enable --fl_fmt switch synonym to --file_format on all applicable operators
 
 	* Apply bugfix from Roux so ncra always averages coordinate variables
 
 2012-07-06  Charlie Zender  <zender@uci.edu>
 
-	* Use strcasestr() instead of strstr() for fl_fmt conversions
+	* Use strcasestr() instead of strstr() for fl_fmt conversions (i.e., netCDF4 = netcdf4)
 
 	* Die when netCDF4 output explicitly requested from netCDF3-only NCO
 
@@ -143,7 +145,6 @@
 2012-06-11  Charlie Zender  <zender@uci.edu>
 
 	* Within last week Pedro committed Qt/MVS files and changes
-
 
 	* ncap2: Added RAM variables: double: nan, inf; float: nanf, inff
 	Problem may be with macro call double nan(const char *tagp)
@@ -4285,7 +4286,7 @@
 	* Added cheesy random number generator function rnd_nbr() to ncap
 	ncap -O -v -s 'x=rnd_nbr(lat)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 	for generating fake data. Search source for TODO nco652 and improve!
-	
+
 2005-11-14  Harry Mangalam  <hjm@tacgi.com>
 
 	* retired following TODOs
@@ -4309,7 +4310,7 @@
 
 	* Added UDP reporting query to regression and benchmark runs
 	if users explicitly agree, to capture failures in regressiions
-	automatically for better profiling.  Queries users if they will 
+	automatically for better profiling.  Queries users if they will
 	allow data to be returned UNLESS the --udpreport is already set
 
 	* Changes to Makefile.am in src/nco to enable MPI binaries to
