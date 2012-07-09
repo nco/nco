@@ -21,11 +21,11 @@
 
 	* Die when netCDF4 output explicitly requested from netCDF3-only NCO
 
-	* Fix -? ... command line option help in nco_ctl.c
+	* Fix [-? ...] command line option help in nco_ctl.c
 
 2012-07-05  Pedro Vicente  <pvicente@uci.edu>
 
-        * Build doc/Makefile if 'makeinfo' program is installed (TODO nco1056)
+        * Build doc/Makefile (and thus documentation) iff 'makeinfo' program is installed
 
 2012-07-05  Charlie Zender  <zender@uci.edu>
 

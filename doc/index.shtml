@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.710 2012-07-07 00:24:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.711 2012-07-09 22:20:32 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -552,8 +552,9 @@ Stride works with DAP?;
 more Robust RHEL/CentOS autoconf support?;
 <tt>ncks</tt> netCDF4 groups;
 <li><b>NCO 4.2.1</b>: (<i>In Progress, features already in beta include the following</i>)
-Support <a href="http://nco.sf.net/nco.html#diskless">diskless files</a>;
-<a href="http://nco.sf.net/nco.html#no_tmp_fl">Bypass</a> temporary output files;
+<tt>--ram_all</tt> for <a href="http://nco.sf.net/nco.html#diskless">diskless files</a>;
+<tt>--no_tmp_fl</tt> to <a href="http://nco.sf.net/nco.html#no_tmp_fl">bypass</a> temporary files;
+Negative indices for <a href="http://nco.sf.net/nco.html#hyp">hyperslabs</a>;
 <li><b>NCO 4.2.0</b>: (<i>Current Stable Release</i>) 
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;
 <tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
