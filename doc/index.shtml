@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.711 2012-07-09 22:20:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.712 2012-07-10 00:41:34 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -555,6 +555,7 @@ more Robust RHEL/CentOS autoconf support?;
 <tt>--ram_all</tt> for <a href="http://nco.sf.net/nco.html#diskless">diskless files</a>;
 <tt>--no_tmp_fl</tt> to <a href="http://nco.sf.net/nco.html#no_tmp_fl">bypass</a> temporary files;
 Negative indices for <a href="http://nco.sf.net/nco.html#hyp">hyperslabs</a>;
+<tt>ncpdq</tt> unpacks coordinate variables;
 <li><b>NCO 4.2.0</b>: (<i>Current Stable Release</i>) 
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;
 <tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;

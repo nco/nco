@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.51 2012-07-03 09:25:15 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.52 2012-07-10 00:41:34 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2247,12 +2247,12 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
   } // end fnc
 
-// Generic function for biliner interpolation
+// Generic function for bilinear interpolation
 // function assumes all arguments are of type double and that
-// v_xin & v_yin are montonic(increasing or decreasing with respect to var->sz
+// v_xin & v_yin are monotonic(increasing or decreasing with respect to var->sz
 void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct *v_xout,var_sct *v_yout, var_sct *v_dout,bool bwrp,std::string sfnm){
-   bool b_rev_x; // flg v_xin montonic( increasing - false dcreasing true ) 
-   bool b_rev_y; // flg v_yin montonic( increasing - false dcreasing true ) 
+   bool b_rev_x; // flg v_xin monotonic( increasing - false dcreasing true ) 
+   bool b_rev_y; // flg v_yin monotonic( increasing - false dcreasing true ) 
    long x_sz;    // size of X dim in OUTPUT  
    long y_sz;    // size of Y dim in OUTPUT  
    long jdx;

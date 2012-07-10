@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.699 2012-07-09 22:20:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.700 2012-07-10 00:41:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8005,9 +8005,9 @@ with co-ordinate vars @code{lat[lat], lon[lon]}.
 We wish to find the temperature at an arbitary point [@var{X},@var{Y}]
 within the grid. 
 If we can locate lat_min,lat_max and lon_min,lon_max such that 
-@code{lat_min <= X <= lat_max} and @code{lon_min <=Y <=lon_max} 
-then we can interpolate in two dimensions to find the temperature at
-[@var{X},@var{Y}].
+@code{lat_min <= X <= lat_max} and @code{lon_min <= Y <= lon_max} 
+then we can interpolate in two dimensions the temperature at
+[@var{X},@var{Y}]. 
 
 The general form of the @command{ncap2} interpolation function is
 @example
@@ -8028,9 +8028,9 @@ It must be of size @code{grid_out_x.size()*grid_out_y.size()}
 @item grid_out_y
 @var{Y} output values 
 @item grid_in_x
-@var{X} input values values. Must be montonic (increasing or decreasing).
+@var{X} input values values. Must be monotonic (increasing or decreasing).
 @item grid_in_y
-@var{Y} input values values. Must be montonic (increasing or decreasing).
+@var{Y} input values values. Must be monotonic (increasing or decreasing).
 @end table
 @noindent
 Prior to calculations all arguments are converted to type
@@ -8038,7 +8038,7 @@ Prior to calculations all arguments are converted to type
 After calculations @code{var_out} is converted to the input type of
 @code{grid_in}. 
 
-Suppose the first part of an ncap2 script is
+Suppose the first part of an @command{ncap2} script is
 @example
 defdim("X",4);
 defdim("Y",5);
@@ -11781,6 +11781,10 @@ grid properties no differently from other variables.
 However, coordinate variables are one-dimensional, so packing saves
 little space on large files, and the resulting files are difficult for
 humans to read. 
+@command{ncpdq} will, of course, @emph{unpack} coordinate variables and
+weights, for example, in case some other, non-@acronym{NCO} software
+packed them in the first place.
+
 Concurrently, Gaussian and area weights and other grid properties are
 often used to derive fields in re-inflated (unpacked) files, so packing
 such grid properties causes a considerable loss of precision in 

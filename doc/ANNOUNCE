@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.494 2012-07-09 22:12:38 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.495 2012-07-10 00:41:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -58,6 +58,8 @@ A. When invoked for min/max operations, ncra/ncea now computes means
 
 A. Enable --fl_fmt switch synonym to --file_format on all applicable
    operators. The operators now conform with the documentation.
+
+A. ncpdq now unpacks coordinate variables when appropriate fxm
 
 KNOWN BUGS NOT YET FIXED:
 
