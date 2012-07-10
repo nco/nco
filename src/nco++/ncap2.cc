@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.150 2012-07-08 22:39:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.151 2012-07-10 10:24:46 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.150 2012-07-08 22:39:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.150 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.151 2012-07-10 10:24:46 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.151 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -495,6 +495,8 @@ main(int argc,char **argv)
   arr_cls arr_obj(true); 
   // Bilinear interpolation functions
   bil_cls bil_obj(true); 
+  // Co-ordinates functions
+  cod_cls cod_obj(true); 
 
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
@@ -510,6 +512,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&unr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&arr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bil_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&cod_obj);
    
   // GSL functions
 #ifdef ENABLE_GSL
