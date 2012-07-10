@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1182 2012-07-09 21:56:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1183 2012-07-10 19:06:59 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -811,7 +811,10 @@ nco1054. nco: ncap2 rgr 11 Casting variable with a single dim of sz=1. works for
 nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
 nco1057. nco: negative integer as min or max element of hyperslab specification indicates offset from end
-nco1058. 
+nco1058. ncap2: allow new variables within where() statement
+	 ncap2 -v -O -s 'valid=0*time;where(time<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # works
+	 ncap2 -v -O -s 'valid=0*time;time2=time;where(time2<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # fails
+nco1059. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
@@ -820,6 +823,18 @@ End ncoXXX TODOs
 ************************************************************************
 Begin bug examples
 ************************************************************************
+Sent 20120709:
+What I find is that the first command below succeeds and the second fails:
+
+ncap2 -v -O -s 'valid=0*time;where(time<  7) valid=time;' \
+~/nco/data/in.nc ~/foo.nc # works
+ncap2 -v -O -s 'valid=0*time;time2=time;where(time2<  7) valid=time;' \
+~/nco/data/in.nc ~/foo.nc # fails
+
+Can you please verify this and explain why the second command fails?
+Is it not possible to use "new" variables in the masking condition
+for the where() statement?
+
 Sent 20120209:
 Hi Henry,
 
