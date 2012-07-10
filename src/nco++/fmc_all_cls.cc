@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.52 2012-07-10 00:41:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.53 2012-07-10 10:37:25 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2494,4 +2494,113 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
 
 
+//Coordinate Functions /***********************************/ 
+  cod_cls::cod_cls(bool flg_dbg){
+    //Populate only on  constructor call
+    if(fmc_vtr.empty()){
+          fmc_vtr.push_back( fmc_cls("min_coords",this,PCOORD)); 
+
+    }		      
+  } 
+
+  var_sct * cod_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("cod_cls::fnd");
+  int fdx;
+  int nbr_args;
+  int nbr_dim;
+  long lret;
+  dmn_sct **dim;
+  var_sct *var1=NULL_CEWI;
+  var_sct *var2=NULL_CEWI;
+  var_sct *var_ret;
+           
+  std::string susg;
+  std::string sfnm=fmc_obj.fnm();
+
+  RefAST tr;
+  std::vector<RefAST> args_vtr; 
+  std::vector<std::string> cst_vtr;              
+
+  // de-reference 
+  prs_cls *prs_arg=walker.prs_arg;            
+  vtl_typ lcl_typ;
+
+  fdx=fmc_obj.fdx();
  
+
+  if(expr)
+      args_vtr.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+      do  
+	args_vtr.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
+      
+  nbr_args=args_vtr.size();  
+
+  
+  susg="usage: crd_idx="+sfnm+"(crd_var,crd_value)"; 
+
+  
+  if(nbr_args<2)
+      err_prn(sfnm,"Function has been called with less than two arguments\n"+susg); 
+
+
+
+  if(nbr_args >2 &&!prs_arg->ntl_scn) 
+      wrn_prn(sfnm,"Function been called with more than two arguments"); 
+
+   
+  var1=walker.out(args_vtr[0]);  
+  var2=walker.out(args_vtr[1]);  
+
+  
+  if(prs_arg->ntl_scn  ){
+    nco_var_free(var1);
+    nco_var_free(var2);
+    return ncap_sclr_var_mk(static_cast<std::string>("~coord_function"),(nc_type)NC_INT,false);  ;
+  }
+
+
+  {
+    long idx;
+    long sz;
+    double dval;
+    double dmin; 
+    double *dp_crd; 
+    
+    var1=nco_var_cnf_typ(NC_DOUBLE,var1);
+    var2=nco_var_cnf_typ(NC_DOUBLE,var2);
+
+    // convert everything to type double         
+    (void)cast_void_nctype(NC_DOUBLE,&(var1->val));
+    (void)cast_void_nctype(NC_DOUBLE,&(var2->val));
+
+    dp_crd=var1->val.dp;  
+    dval=var2->val.dp[0];   
+    sz=var1->sz;  
+    
+    // check limits  
+    if(dval<dp_crd[0] || dval>dp_crd[sz-1]) 
+      lret=-1;  
+    else{
+    
+      for(idx=0 ; idx<sz-1 ; idx++)
+        if( dval >= dp_crd[idx] && dval <= dp_crd[idx+1] ){  
+	  lret=(dval-dp_crd[idx]<= dp_crd[idx+1]-dval ? idx: idx+1 );    
+          break;
+	}  
+
+    }
+    (void)cast_nctype_void(NC_DOUBLE,&var1->val);
+    (void)cast_nctype_void(NC_DOUBLE,&var2->val);
+   
+  }
+
+  nco_var_free(var1);   
+  nco_var_free(var2);
+
+  return ncap_sclr_var_mk(static_cast<std::string>("~coord_function"),(nco_int)lret);        
+  }
+
