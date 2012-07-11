@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.116 2012-06-06 19:43:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.117 2012-07-11 07:25:13 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -990,11 +990,15 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	   Variables are processed for packing/unpacking operator unless... */
 	if(
 	   /* ...packing coordinate variables has few benefits... */
-	   (var[idx]->is_crd_var) ||
+	   (var[idx]->is_crd_var
+     /* unless if it's NOT a record variable and the policy is unpack 
+        this is nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them though) */
+      && !(var[idx]->is_rec_var && nco_pck_plc == nco_pck_plc_upk ) ) ||
 	   /* ...likewise for variables listed in "coordinates" or "bounds" attributes... */
 	   (is_spc_in_crd_att || is_spc_in_bnd_att) ||
 	   /* ...unpacking requested for unpacked variable... */
-	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram) ||
+     /* nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them though) */
+	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram && !var[idx]->is_rec_var) ||
 	   /* ...or packing unpacked requested and variable is already packed... */
 	   (nco_pck_plc == nco_pck_plc_all_xst_att && var[idx]->pck_ram) ||
 	   /* ...or re-packing packed requested and variable is unpacked... */
