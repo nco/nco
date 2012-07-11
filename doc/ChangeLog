@@ -1,10 +1,12 @@
 2012-07-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.1 release procedure:
- 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d args,
+ 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d args
 	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
 	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
+
+	* Add --hdr_pad, --bfr_sz to man pages
 
 	* Remove 'convert' and nco.png from tags
 

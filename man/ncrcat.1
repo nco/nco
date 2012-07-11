@@ -1,12 +1,13 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.19 2012-07-09 18:28:40 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.20 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncrcat
 .\" Usage:
-.\" nroff -man ~/nco/man/ncrcat.1
+.\" nroff -man ~/nco/man/ncrcat.1 | less
 .TH NCRCAT 1
 .SH NAME
 ncrcat \- netCDF Record Concatenator
 .SH SYNTAX
-ncrcat [\-3] [\-4] [\-6] [\-A] [\-C] [\-c] [\-D
+ncrcat [\-3] [\-4] [\-6] [\-A] [\-\-bfr
+.IR sz ] [\-C] [\-c] [\-D
 .IR dbg_lvl ]
 [\-d 
 .IR dim ,[
@@ -122,7 +123,7 @@ ncrcat \-d time,6.,54. ??.nc 8506_8906.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.19 2012-07-09 18:28:40 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.20 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

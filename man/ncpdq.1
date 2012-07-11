@@ -1,14 +1,15 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.20 2012-07-09 18:28:40 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.21 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncpdq 
 .\" Usage:
-.\" nroff -man ~/nco/man/ncpdq.1
+.\" nroff -man ~/nco/man/ncpdq.1 | less
 .TH NCPDQ 1
 .SH NAME
 ncpdq \- netCDF Permute Dimensions Quickly, Pack Data Quietly...
 .SH SYNTAX
 ncpdq [\-3] [\-4] [\-6] [\-A] [\-a 
 .IR dim [,...]]
-[\-C] [\-c] [\-D 
+[\-\-bfr
+.IR sz ] [\-C] [\-c] [\-D 
 .IR dbg_lvl ]
 [\-d 
 .IR dim ,[
@@ -104,7 +105,7 @@ The specified re-ordering will fail if it requires creating more than
 one record dimension amongst all the output variables.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.20 2012-07-09 18:28:40 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.21 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

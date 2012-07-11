@@ -1,22 +1,23 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.24 2012-07-09 05:22:43 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.25 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncks
 .\" Usage:
-.\" nroff -man ~/nco/man/ncks.1
+.\" nroff -man ~/nco/man/ncks.1 | less
 .TH NCKS 1
 .SH NAME
 ncks \- netCDF Kitchen Sink
 .SH SYNTAX
 ncks [\-3] [\-4] [\-6] [\-A] [\-a] [\-B] [\-b
 .IR bnr_fl] 
-[\-C] [\-c] 
+[\-\-bfr
+.IR sz ] [\-C] [\-c] 
 [\-\-cnk_dmn 
-.IR nm,sz]
+.IR nm,sz ]
 [\-\-cnk_map 
 .IR map ]
 [\-\-cnk_plc 
 .IR plc ]
 [\-\-cnk_scl 
-.IR sz] 
+.IR sz ] 
 [\-D
 .IR dbg_lvl]
 [\-d 
@@ -26,13 +27,13 @@ ncks [\-3] [\-4] [\-6] [\-A] [\-a] [\-B] [\-b
 .IR stride ]]]
 [\-F] [\-\-fix_rec_dmn] [\-H] [\-h] 
 [\-\-hdr_pad
-.IR sz]
+.IR sz ]
 [\-L 
 .IR dfl_lvl ] 
 [\-l 
 .IR path ]
-[\-M] [\-m] [\-\-md5] [\-\-no_tmp_fl] [\-O] [-o 
-.IR output\-file ] 
+[\-M] [\-m] [\-\-md5] [\-\-no_tmp_fl] [\-O] [\-o 
+.IR output-file ] 
 [\-P] [\-p 
 .IR path ]
 [-Q] [\-q]
@@ -584,7 +585,7 @@ ncks \-d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.24 2012-07-09 05:22:43 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.25 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

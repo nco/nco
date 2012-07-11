@@ -1,13 +1,19 @@
+.\" $Header: /data/zender/nco_20150216/nco/man/ncatted.1,v 1.12 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for ncatted
+.\" Usage:
+.\" nroff -man ~/nco/man/ncatted.1 | less
 .TH NCATTED 1
 .SH NAME
 ncatted \- netCDF Attribute Editor
 .SH SYNTAX
-ncatted [-a 
+ncatted [\-a 
 .IR att_dsc ]
-[-a ...] [-D
+[\-a ...] [\-\-bfr
+.IR sz ] [\-D
 .IR dbg_lvl]
- [-h]
-[-l path] [-O] [-p path] [-R] [-r] 
+ [\-h] [\-\-hdr_pad
+.IR nbr]
+[\-l path] [\-O] [\-p path] [\-R] [\-r] 
 .I input-file
 [
 .IR output-file ]
@@ -467,7 +473,7 @@ C-language escape sequences and other special characters like
 backslashes and question marks. 
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncatted.1,v 1.11 2012-07-09 05:22:43 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncatted.1,v 1.12 2012-07-11 23:58:04 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
