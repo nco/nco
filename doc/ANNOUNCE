@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.495 2012-07-10 00:41:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.496 2012-07-11 23:34:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -31,7 +31,7 @@ A. Bypass intermediate temporary files
    this feature since at least 2004. Thanks to all of them.
    http://nco.sf.net/nco.html#no_tmp_fl
 
-A. Complete Windows builds
+A. Windows builds
    Eliminated some behavioral differences on Windows vs. UNIX NCO. 
    Windows NCO now uses temporary files by default, like UNIX.
    Windows NCO still lacks networking capabilities, e.g., scp/sftp.
@@ -41,12 +41,12 @@ A. Building NCO using the cross-platform Qt framework improved.
    Now works on Ubuntu Linux using default .deb-based software stack. 
    Qt Unix build now includes ncwa.
 
-A. Negative integers as min or max elements of hyperslab specification
-   indicate offsets from end (Python also uses this convention).
+A. One can now extract the last N elements of a hyperslab.
+   Negative integers as min or max elements of hyperslab specifications 
+   indicate offsets from the end (Python also uses this convention).
    Previously, for example, -d time,-2,-1 caused a domain error. 
    Now this means select the second-to-last and penultimate timesteps.
    Negative integers work for min and mix indices but not for stride.
-   Fortran index conventions are not applied to negative indices.
    Thanks to Nick Bower for requesting this feature (in 2008!).
    http://nco.sf.net/nco.html#hyp
 
