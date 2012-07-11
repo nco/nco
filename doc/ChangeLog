@@ -1,3 +1,8 @@
+2012-07-10  Pedro Vicente  <pvicente@uci.edu>
+
+        * Qt/MSVC changes for the introduction of strcasestr; enabled NEED_STRCASECMP in Qt project and 
+        minor changes to NCO supplied strcasestr
+
 2012-07-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.1 release procedure:
@@ -31,7 +36,7 @@
 
 2012-07-05  Pedro Vicente  <pvicente@uci.edu>
 
-        * Build doc/Makefile (and thus documentation) iff 'makeinfo' program is installed
+        * Build doc/Makefile (and thus documentation) if 'makeinfo' program is installed
 
 2012-07-05  Charlie Zender  <zender@uci.edu>
 
