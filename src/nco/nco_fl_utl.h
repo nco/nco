@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.65 2012-07-03 21:30:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.66 2012-07-11 06:05:59 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -30,7 +30,6 @@
 #endif /* !_MSC_VER */
 #ifdef _MSC_VER
 # include <process.h> /* MSVC getpid() */
-# include <windows.h> /* MSVC sleep() */
 typedef int pid_t;
 #endif /* !_MSC_VER */
 

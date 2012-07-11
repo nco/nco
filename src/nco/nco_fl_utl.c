@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.189 2012-07-07 01:23:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.190 2012-07-11 06:05:59 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -7,6 +7,11 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_fl_utl.h" /* File manipulation */
+
+#ifdef _MSC_VER
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h> /* MSVC sleep() */
+#endif /* !_MSC_VER */
 
 int /* O [enm] Mode flag for nco_create() call */
 nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format */

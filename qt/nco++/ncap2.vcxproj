@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../libnco/debug/libnco.lib;$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);$(LIB_ANTLR);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../libnco/debug/libnco.lib;$(LIB_ANTLR);$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -115,7 +115,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../libnco/release/libnco.lib;$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);$(LIB_ANTLR);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../libnco/release/libnco.lib;$(LIB_ANTLR_REL);$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>

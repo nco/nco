@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.40 2012-07-09 21:56:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.41 2012-07-11 06:05:59 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -37,7 +37,7 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
   char *startn=0;
   char *np=0;
   /* Loop exits on NUL */
-  for(hys_ptr=sng_1;*hys_ptr;hys_ptr++){
+  for(hys_ptr=(char*)sng_1;*hys_ptr;hys_ptr++){
     if(np){
       if(toupper(*hys_ptr) == toupper(*np)){
 	if(!*++np) return startn;
@@ -45,7 +45,7 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
 	np=0;
       } /* endif uppercases match */
     }else if(toupper(*hys_ptr) == toupper(*sng_2)){
-      np=sng_2+1;
+      np=(char*)sng_2+1;
       startn=hys_ptr;
     } /* else if */
   } /* end loop over haystack */
