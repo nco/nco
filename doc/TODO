@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1183 2012-07-10 19:06:59 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1184 2012-07-12 05:44:50 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -814,7 +814,8 @@ nco1057. nco: negative integer as min or max element of hyperslab specification 
 nco1058. ncap2: allow new variables within where() statement
 	 ncap2 -v -O -s 'valid=0*time;where(time<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # works
 	 ncap2 -v -O -s 'valid=0*time;time2=time;where(time2<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # fails
-nco1059. 
+nco1059. nco: ncatted keep type same by default when modifying/overwriting attribute
+nco1060. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

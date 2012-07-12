@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.120 2012-07-04 00:07:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.121 2012-07-12 05:44:50 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -605,24 +605,23 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
      One mode must be set for each edited attribute: append (a), create (c), delete (d), modify (m), or overwrite (o).
      -a: Attribute append mode
      Append value att_val to current var_nm attribute att_nm value att_val, if any. 
-     If var_nm does not have an attribute att_nm, there is not effect.
+     If var_nm does not have an attribute att_nm, there is no effect.
 
      -c: Attribute create mode
      Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist. 
-     If var_nm already has an attribute att_nm, there is not effect.
+     If var_nm already has an attribute att_nm, there is no effect.
 
      -d: Attribute delete mode
      Delete current var_nm attribute att_nm.
-     If var_nm does not have an attribute att_nm, there is not effect.
+     If var_nm does not have an attribute att_nm, there is no effect.
 
      -m: Attribute modify mode
      Change value of current var_nm attribute att_nm to value att_val.
-     If var_nm does not have an attribute att_nm, there is not effect.
+     If var_nm does not have an attribute att_nm, there is no effect.
 
      -o: Attribute overwrite mode
      Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
-     This is default mode.
-   */
+     This is default mode. */
 
   char **arg_lst;
 
@@ -635,23 +634,31 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
   int idx;
   int arg_nbr;
 
+  nco_bool ATT_TYP_INHERIT; /* [flg] Inherit attribute type from pre-existing attribute */
+
   aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
 
   for(idx=0;idx<nbr_aed;idx++){
+    ATT_TYP_INHERIT=False; /* [flg] Inherit attribute type from pre-existing attribute */
 
     /* Process attribute edit specifications as normal text list */
     arg_lst=nco_lst_prs_2D(aed_arg[idx],dlm_sng,&arg_nbr);
 
     /* Check syntax */
-    if(
-       arg_nbr < 5 || /* Need more info */
-       /* arg_lst[0] == NULL || */ /* att_nm not specified */
-       arg_lst[2] == NULL || /* mode not specified */
-       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || (arg_lst[idx_att_val_arg] == NULL && *(arg_lst[3]) != 'c'))) || /* att_typ and att_val must be specified when mode is not delete, except that att_val = "" is valid for character type */
-       False){
-      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s\n",prg_nm_get(),aed_arg[idx]);
+    if(arg_nbr < 5){ /* Need more info */
+      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nSpecification has fewer than five arguments---need more information\n",prg_nm_get(),aed_arg[idx]);
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    }else if(arg_lst[2] == NULL){ /* mode not specified ... */
+      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nMode must be explicitly specified\n",prg_nm_get(),aed_arg[idx]);
+      nco_exit(EXIT_FAILURE);
+    }else if(arg_lst[3] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[2]) != 'm'){
+      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nType must be explicitly specified for all modes except delete and modify\n",prg_nm_get(),aed_arg[idx]);
+      nco_exit(EXIT_FAILURE);
+    }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[3]) == 'c'){
+      /* ... value is not specified except that att_val = "" is valid for character type */
+      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nValue must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_NCAR)\n",prg_nm_get(),aed_arg[idx]);
+      nco_exit(EXIT_FAILURE);
+    } /* end else */
 
     /* Initialize structure */
     /* aed strings not explicitly set by user remain NULL,
@@ -692,8 +699,16 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       break;
     } /* end switch */
 
+    /* For modify-mode, type may be inherited when not explicitly specified */
+    if(aed_lst[idx].mode == aed_modify && arg_lst[3] == NULL){
+      /* 20120711: Problem is that nc_id info is needed now to get the att_typ so file validation becomes involved */
+      ATT_TYP_INHERIT=True;
+      (void)fprintf(stderr,"%s: ERROR: Inherited attribute type not yet supported. TODO nco1060 fxm.",prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* !ATT_TYP_INHERIT */
+
     /* Attribute type and value do not matter if we are deleting it */
-    if(aed_lst[idx].mode != aed_delete){
+    if(aed_lst[idx].mode != aed_delete && !ATT_TYP_INHERIT){
 
       /* Set type of current aed structure */
       /* Convert single letter code to type enum */
@@ -718,6 +733,9 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	  nco_exit(EXIT_FAILURE);} /*  end if error */
       break;
       } /* end switch */
+    } /* end if not delete mode and !ATT_TYP_INHERIT */
+
+    if(aed_lst[idx].mode != aed_delete){
       
       /* Re-assemble string list values which inadvertently contain delimiters */
       if(aed_lst[idx].type == NC_CHAR && arg_nbr > idx_att_val_arg+1){

@@ -10,6 +10,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
 	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
+	* Work on allowing inherited att_typ when aed_mode = modify
+
 	* Add --hdr_pad, --bfr_sz to man pages
 
 	* Remove 'convert' and nco.png from tags
