@@ -12,9 +12,7 @@
 
 	* Work on allowing inherited att_typ when aed_mode = modify
 
-	* Add --no_tmp_fl, --ram_all to man pages
-
-	* Add --hdr_pad, --bfr_sz to man pages
+	* Add --hdr_pad, --bfr_sz, --no_tmp_fl, --ram_all to man pages
 
 	* Remove 'convert' and nco.png from tags
 

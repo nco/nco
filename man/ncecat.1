@@ -1,12 +1,13 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.20 2012-07-09 18:28:40 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.21 2012-07-12 06:29:36 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncecat
 .\" Usage:
-.\" nroff -man ~/nco/man/ncecat.1
+.\" nroff -man ~/nco/man/ncecat.1 | less
 .TH NCECAT 1
 .SH NAME
 ncecat \- netCDF Ensemble Concatenator
 .SH SYNTAX
-ncecat [\-3] [\-4] [\-6] [\-A] [\-C] [\-c] [\-D 
+ncecat [\-3] [\-4] [\-6] [\-A] [\-\-bfr
+.IR sz ] [\-C] [\-c] [\-D 
 .IR dbg_lvl ]
 [\-d 
 .IR dim ,[
@@ -19,9 +20,9 @@ ncecat [\-3] [\-4] [\-6] [\-A] [\-C] [\-c] [\-D
 .IR path ]
 [\-M] [\-n 
 .IR loop ]
-[\-O] [\-p 
+[\-\-no_tmp_fl] [\-O] [\-p 
 .IR path ]
-[\-R] [\-r] [\-t
+[\-R] [\-r] [\-\-ram_all] [\-t
 .IR thr_nbr ]
 [\-u 
 .IR ulm_nm ]
@@ -104,7 +105,7 @@ It contains 60 months of data (which might or might not be stored in the
 record dimension, depending on the input files).
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.20 2012-07-09 18:28:40 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.21 2012-07-12 06:29:36 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
