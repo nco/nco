@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1184 2012-07-12 05:44:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1185 2012-07-12 17:35:28 pvicente Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -792,7 +792,6 @@ nco1026. ncwa weighted average bug reported by Lori Sentman, then by Mark Flanne
 	 ncwa -O -C -w area_asm -a lat -v area2 ~/nco/data/in.nc ~/foo.nc # 10
 	 ncks -H -C -v area -m ~/foo.nc
 nco1028. ncap2: create maintainable list of reserved words and put in manual
-nco1030. nco: ncpdq unpack coordinate variables! (by default don't pack them though)
 nco1033. ncrcat: warn when first file has more variables than subsequent files
 nco1034. ncatted: allow option to append md5 attribute to each variable
 nco1035. rewrite nco_var_cnf_typ() to use default rather than truncated missing values
