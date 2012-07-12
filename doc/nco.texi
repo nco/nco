@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.700 2012-07-10 00:41:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.701 2012-07-12 06:48:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6226,8 +6226,8 @@ in-depth examples of @command{ncap2} solutions to complex problems.
 SYNTAX
 @example
 ncap2 [-3] [-4] [-6] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] [-F] [-f] [-L @var{dfl_lvl}] 
-[-l @var{path}] [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[--ram_all] [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
+[-l @var{path}] [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
+[-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
 @var{input-file} [@var{output-file}]  
 @end example
  
@@ -9726,7 +9726,7 @@ netcdf-4.0 Final  2008/08/28@*
 SYNTAX
 @example
 ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h] [--hdr_pad @var{nbr}]
-[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
+[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 @var{input-file} [[@var{output-file}]]
 @end example
  
@@ -10166,8 +10166,8 @@ SYNTAX
 ncbo [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h]
-[-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
-[--ram_all] [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
+[-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{file_3}] [-p @var{path}] 
+[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -11058,8 +11058,8 @@ ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_dmn] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
-[--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] 
-[--ram_all] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
+[-R] [-r] [--ram_all] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 @var{input-file} [[@var{output-file}]]
 @end example
 
