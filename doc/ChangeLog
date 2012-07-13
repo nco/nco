@@ -1,5 +1,7 @@
 2012-07-13  Charlie Zender  <zender@uci.edu>
 
+	* ncks: only add NCO version attribute when HISTORY_ATT_CAT == True
+
 	* Add data/hdr_pad.sh to check size of metadata headers and --hdr_pad
 
 2012-07-13  Pedro Vicente  <pvicente@uci.edu>

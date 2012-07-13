@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.308 2012-06-29 05:20:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.309 2012-07-13 20:17:40 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.308 2012-06-29 05:20:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.308 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.309 2012-07-13 20:17:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.309 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -673,7 +673,7 @@ main(int argc,char **argv)
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-    if(True) (void)nco_vrs_att_cat(out_id);
+    if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
     
     /* Define requested/necessary input groups in output file */
     if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
