@@ -1,6 +1,10 @@
+2012-07-13  Charlie Zender  <zender@uci.edu>
+
+	* Add data/hdr_pad.sh to check size of metadata headers and --hdr_pad
+
 2012-07-13  Pedro Vicente  <pvicente@uci.edu>
 
-        * Qt/MSVC add projects for ncrcat and ncea 
+        * Qt/MSVC add projects for ncrcat and ncea
 
 2012-07-11  Pedro Vicente  <pvicente@uci.edu>
 
