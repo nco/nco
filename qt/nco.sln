@@ -49,10 +49,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnco_c++", "nco_c++\libnc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tst", "tst_nco_c++\tst.vcxproj", "{296289DB-1DF2-3DC7-A8CC-854CCFE40953}"
 	ProjectSection(ProjectDependencies) = postProject
-		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+		{B3C40D3E-62C8-3A3C-B081-D1795375ABF1} = {B3C40D3E-62C8-3A3C-B081-D1795375ABF1}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncap2", "nco++\ncap2.vcxproj", "{14790F63-49B4-3DAD-95BF-FF66B8B2893A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncrcat", "ncrcat\ncrcat.vcxproj", "{CFE0A48E-C2B6-3EDF-B88D-0BEC62133B78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncea", "ncea\ncea.vcxproj", "{66719B04-EAB5-384A-A2E5-3A567D48A1B7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
 	EndProjectSection
@@ -111,6 +121,14 @@ Global
 		{14790F63-49B4-3DAD-95BF-FF66B8B2893A}.Debug|Win32.Build.0 = Debug|Win32
 		{14790F63-49B4-3DAD-95BF-FF66B8B2893A}.Release|Win32.ActiveCfg = Release|Win32
 		{14790F63-49B4-3DAD-95BF-FF66B8B2893A}.Release|Win32.Build.0 = Release|Win32
+		{CFE0A48E-C2B6-3EDF-B88D-0BEC62133B78}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CFE0A48E-C2B6-3EDF-B88D-0BEC62133B78}.Debug|Win32.Build.0 = Debug|Win32
+		{CFE0A48E-C2B6-3EDF-B88D-0BEC62133B78}.Release|Win32.ActiveCfg = Release|Win32
+		{CFE0A48E-C2B6-3EDF-B88D-0BEC62133B78}.Release|Win32.Build.0 = Release|Win32
+		{66719B04-EAB5-384A-A2E5-3A567D48A1B7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{66719B04-EAB5-384A-A2E5-3A567D48A1B7}.Debug|Win32.Build.0 = Debug|Win32
+		{66719B04-EAB5-384A-A2E5-3A567D48A1B7}.Release|Win32.ActiveCfg = Release|Win32
+		{66719B04-EAB5-384A-A2E5-3A567D48A1B7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

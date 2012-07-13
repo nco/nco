@@ -13,4 +13,6 @@ SUBDIRS += nco_c++
 SUBDIRS += tst_nco_c++
 SUBDIRS += nco++
 unix:SUBDIRS += ncwa
+SUBDIRS += ncrcat
+SUBDIRS += ncea
 
