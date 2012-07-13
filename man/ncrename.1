@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.14 2012-07-12 06:48:24 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.15 2012-07-13 21:38:22 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncrename
 .\" Usage:
 .\" nroff -man ~/nco/man/ncrename.1 | less
@@ -13,7 +13,9 @@ ncrename [\-a
 [\-d 
 .IR old_name,new_name ]
 [\-d
-\ .\|.\|.\ ] [\-h] [\-l path] [\-O] [\-p path]
+\ .\|.\|.\ ] [\-h] [\-\-hdr_pad
+.IR sz ]
+[\-l path] [\-O] [\-p path]
 [\-R] [\-r] [\-\-ram_all] [\-v 
 .IR old_name,new_name ]
 [\-v \ .\|.\|.\ ]
@@ -176,7 +178,7 @@ ncrename \-a _FillValue,missing_value \-a Zaire,Congo in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.14 2012-07-12 06:48:24 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.15 2012-07-13 21:38:22 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
