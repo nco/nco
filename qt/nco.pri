@@ -17,7 +17,7 @@ unix {
 # LIBS += /usr/lib/x86_64-linux-gnu/libudunits2.a
 # LIBS += /usr/lib/x86_64-linux-gnu/libexpat.a
 # LIBS += /usr/lib/x86_64-linux-gnu/libcurl.a
-  LIBS += -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5 
+  LIBS += -L/usr/local/lib -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5 
   LIBS += -L/usr/lib/x86_64-linux-gnu/ -lz -ludunits2 -lexpat -lcurl
 
 }
