@@ -1,3 +1,7 @@
+2012-07-13  Pedro Vicente  <pvicente@uci.edu>
+
+        * Qt/MSVC add projects for ncrcat and ncea 
+
 2012-07-11  Pedro Vicente  <pvicente@uci.edu>
 
         * ncpdq unpack coordinate variables (nco1030)
