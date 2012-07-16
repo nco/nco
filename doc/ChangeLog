@@ -1,5 +1,7 @@
 2012-07-15  Charlie Zender  <zender@uci.edu>
 
+	* ncks: Print "Coordinate" or "Record Coordinate" instead of "(CRD)(REC)"
+
 	* Add srandom() seed to UNIX to match MSVC implementation of rnd_nbr()
 
 	* NCO 4.2.1 release procedure:
