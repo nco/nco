@@ -1,3 +1,7 @@
+2012-07-16  Pedro Vicente  <pvicente@uci.edu>
+
+        * Detect presence of netCDF library in configure; exit if not present
+
 2012-07-15  Charlie Zender  <zender@uci.edu>
 
 	* ncks: Print "Coordinate" or "Record Coordinate" instead of "(CRD)(REC)"
