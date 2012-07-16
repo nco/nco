@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.701 2012-07-12 06:48:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.702 2012-07-16 01:26:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.1
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 9 July 2012
+@set update-date 15 July 2012
 @set update-month July 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1440,13 +1440,20 @@ described above, the temporary file prevented overlap issues.
 However, if the user creates the output file in RAM (@pxref{RAM disks})
 then it is still possible to have the same name for both
 @var{output-file} and @var{input-file}.
-
-fxm is this true?
 @example
-ncks in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
-ncks --no_tmp_fl in.nc out.nc # create out.nc directly on disk
-ncks --create_ram --no_tmp_fl in.nc out.nc # fxm
+ncks -O in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
+ncks -O --wrt_tmp_fl in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
+ncks -O --no_tmp_fl in.nc out.nc # Create out.nc directly on disk
+ncks -O --no_tmp_fl in.nc in.nc # Overwrite in.nc with sub-set of itself
+ncks -O --create_ram --no_tmp_fl in.nc in.nc # Create in.nc in RAM; then write to disk
 @end example
+@noindent
+Note that, at this time, the @acronym{NCO} authors have no compelling
+use cases for utilizing the RAM switches, much less combining them with
+@samp{--no_tmp_fl}. 
+We have implemented both options because they are largely independent of
+eachother, and we leave it to ``power users'' to discover which best fit
+their needs.
 
 @html
 <a name="-A"></a> <!-- http://nco.sf.net/nco.html#-A -->
@@ -3689,6 +3696,23 @@ the @var{min} limit and omitting a trailing comma.
 Dimensions not mentioned are passed with no reduction in range.
 The dimensionality of variables is not reduced (in the case of a
 cross-section, the size of the constant dimension will be one). 
+@example
+# First and second indices of lon dimension
+ncks -F -d lon,1,2 in.nc out.nc
+# Second and third indices of lon dimension
+ncks -d lon,1,2 in.nc out.nc
+@end example
+
+@cindex stride
+Coordinate values should be specified using real notation with a decimal 
+point required in the value, whereas dimension indices are specified
+using integer notation without a decimal point. 
+This convention serves only to differentiate coordinate values from
+dimension indices.
+It is independent of the type of any netCDF coordinate variables.
+For a given dimension, the specified limits must both be coordinate
+values (with decimal points) or dimension indices (no decimal points).
+
 If values of a coordinate-variable are used to specify a range or
 cross-section, then the coordinate variable must be monotonic (values
 either increasing or decreasing). 
@@ -3700,19 +3724,40 @@ values until one falls outside the range.
 The coordinate value for a cross-section is the coordinate-variable
 value closest to the specified value and must lie within the range or
 coordinate-variable values. 
-
-@cindex stride
-Coordinate values should be specified using real notation with a decimal 
-point required in the value, whereas dimension indices are specified
-using integer notation without a decimal point. 
-This convention serves only to differentiate coordinate values from
-dimension indices.
-It is independent of the type of any netCDF coordinate variables.
-For a given dimension, the specified limits must both be coordinate
-values (with decimal points) or dimension indices (no decimal points).
-The @var{stride} option, if any, must be a dimension index, not a
+The @var{stride} argument, if any, must be a dimension index, not a
 coordinate value.
 @xref{Stride}, for more information on the @var{stride} option.
+@example
+# All longitude values between 1 and 2 degrees
+ncks -d lon,1.0,2.0 in.nc out.nc
+# All longitude values between 1 and 2 degrees
+ncks -F -d lon,1.0,2.0 in.nc out.nc
+# Every other longitude value between 0 and 90 degrees
+ncks -F -d lon,0.0,90.0,2 in.nc out.nc
+@end example
+
+As of version 4.2.1 (July, 2012), @acronym{NCO} allows one to extract
+the last @var{N} elements of a hyperslab.
+Negative integers as @var{min} or @var{max} elements of a hyperslab specification
+indicate offsets from the end (Python also uses this convention).
+Previously, for example, @samp{-d time,-2,-1} caused a domain error. 
+Now it means select the second-to-last and penultimate timesteps.
+Negative integers work for @var{min} and @var{max} indices but not for
+@var{stride}. 
+@example
+# Last two indices of lon dimension
+ncks -F -d lon,1,-2 in.nc out.nc
+# First to penultimate indices of lon dimension
+ncks -F -d lon,1,-2 in.nc out.nc
+# Third-to-last to last index of lon dimension
+ncks -F -d lon,-3,-1 in.nc out.nc
+# Third-to-last to last index of lon dimension
+ncks -F -d lon,-3, in.nc out.nc
+@end example
+@noindent
+As shown, we recommend using a full floating point suffix of @code{.0}
+instead of simply @code{.} in order to make obvious the selection of
+hyperslab elements based on coordinate value rather than index.
 
 @cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
@@ -4327,8 +4372,8 @@ indicates that a UDUnits date conversion is requested.
 As of version 4.0.0 (January, 2010), @acronym{NCO} supports some
 calendar attributes specified by the CF conventions. 
 @table @asis
-@item @strong{Supported types:  } 
- "365_day"/"noleap", "360_day", "gregorian", "standard" 
+@item @strong{Supported types:} 
+"365_day"/"noleap", "360_day", "gregorian", "standard" 
 @item  @strong{Unsupported types:} 
 "366_day"/"all_leap","proleptic_gregorian","julian","none" 
 @end table

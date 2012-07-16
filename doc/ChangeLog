@@ -1,3 +1,13 @@
+2012-07-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.2.1 release procedure:
+ 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d args
+	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
+	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
+
+	* Document diskless/RAM and --no_tmp_fl options, and -'ve -d args
+
 2012-07-13  Charlie Zender  <zender@uci.edu>
 
 	* ncks: only add NCO version attribute when HISTORY_ATT_CAT == True
@@ -13,12 +23,6 @@
         * ncpdq unpack coordinate variables (nco1030)
 
 2012-07-11  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.1 release procedure:
- 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d args
-	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
-	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
 	* Work on allowing inherited att_typ when aed_mode = modify
 

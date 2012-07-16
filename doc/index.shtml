@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.712 2012-07-10 00:41:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.713 2012-07-16 01:26:11 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1338,7 +1338,7 @@ The workaround is to configure with <tt>--disable-shared</tt>.
 <!-- http://nco.sf.net#bld_irix -->
 <a name="bld_irix"></a>
 <li><i>IRIX build hints:</i>
-The most common problem with building on SGI IRIX is and out-of-date toolchain.
+The most common problem with building on SGI IRIX is an out-of-date toolchain.
 </li>
 
 <!-- http://nco.sf.net#bld_osx -->
@@ -1408,7 +1408,7 @@ for more details.
 
 <!--Qt/MSVC -->
 <li><i>Windows build with Qt/MSVC:</i>
-As of NCO 4.2.0, it is possible to build from source using MSVC or Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
+As of NCO 4.2.0, you build NCO from source using MSVC and Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
 </li>
 
 </ul>
