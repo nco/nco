@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.38 2012-07-04 00:07:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.39 2012-07-16 02:15:25 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -22,9 +22,7 @@
 /* fxm stdio only needed for TODO ncap57 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
-#ifdef _MSC_VER
-# include <time.h> /* time() seed for rand() */
-#endif /* !_MSC_VER */
+#include <time.h> /* time() seed for random()/rand() */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1185 2012-07-12 17:35:28 pvicente Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1186 2012-07-16 02:15:24 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -323,19 +323,12 @@ nco527. Purify ncatted memory:
 # Commas at end of following aed_sct appear never to be free()'d, are responsible for three unfree'd bytes
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
-nco540. bm: regression tests report some apparent successes as failures on SUNMP, e.g., 
-	Result: [1e+36] != Expected: [1e+36]
-	always recorded as failure. 
-	Seems like any "Expected's" containing "+" string may fail.
-	Perl problem?
 nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put created files
 nco546. Use makeatletter command in CCSM example in nco.texi?
-nco547. Format CCSM example in nco.texi
+nco547. doc: Format CCSM example in nco.texi
 nco548. Hyper-link all switches to explanatory sections?
-nco552. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 1: allow smaller variables to be in file_1 (pre-compute broadcast size and place in var_out before var_def(out_id,var_out))
 nco560. Change FTP access script to facilitate mget *?
-	NCO cannot process files obtained this way unless mget feeds
-	information on files obtained back to main()
+	NCO cannot process files obtained this way unless mget feeds information on files obtained back to main()
 	Script modification would be simple:
 	ftp -i climate.llnl.gov << END
 	bin
@@ -344,76 +337,22 @@ nco560. Change FTP access script to facilitate mget *?
 	mget *
 	quit
 	END
-nco564. Implement --64bit switch in ncatted?
 nco565. bm: Add ncatted bm to quantify nc__enddef() tuning improvements
+nco564. Implement --64bit switch in ncatted?
 nco566. Implement --64bit switch in ncrename?
 nco568. bm: test NC_SHARE in ncatted/ncrename?
-nco569. bm: Add SRB test
-        Sifang Lu <sifang@sdsc.edu>
-        /home/zender.uci-esmf/zender/nco/data/in.nc
-        Sinit -v
-        Scd zender
-        Sls
-        Sput ~/nco/data/in.nc nco/data
-        Sget nco/data/in.nc
-nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
-nco573. Consolidate -4, --64bit into one option a la ncks --fl_fmt
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: remove dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
+nco552. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 1: allow smaller variables to be in file_1 (pre-compute broadcast size and place in var_out before var_def(out_id,var_out))
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow xtr_nbr_out=max(xtr_nbr_1,xtr_nbr_2) when xtr_nbr_2>xtr_nbr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for xtr_nbr_1>xtr_nbr_2)
-nco587. Command line MPI on AIX PPE with poe
-	Promising documentation at:
-        http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_42/am10600203.html
-	echo ${HOST} > ~/nco/bld/host.list
-        cd ~/nco/bld;poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
-        zender@esmf04m:~/nco/bld$ cd ~/nco/bld;poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
-        ERROR: 0031-212  pmd: node esmf04m: user zender denied from access from host esmf04m
-        ERROR: 0031-024  esmf04m: no response; rc = -1
-        AIX POE sample hello world at http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_411/am105001/am10500113.html
-        ocd ~/nco/bld;poe -infolevel 6 -node 1 -tasks_per_node 3 -rmpool 1 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
-nco593. mpncrcat "sometimes" hangs while concatenating
-	command line: -np 2 seems to always work on sand, ashes, elnino
-	command line: -np 3 rarely hangs on ashes, usually hangs on sand, never hangs on elnino
-                      When it does hang on ashes, it hangs after this message:
-                      DEBUG: prc_rnk 1 waiting for msg from Mgr for final write
-	command line: -np 4 always hangs on ashes and sand, never hangs on elnino
-        ncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
-	mpirun -np 2 mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (fails, depending on np and machine)
-        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI_FAKE=Y mpncra
-	mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1 (perfect)
-        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI=Y mpncra
-        Shorten for GDB:
-        ncks -O -C -d time,0,1 -v one_dmn_rec_var ~/nco/data/in.nc ~/in_short.nc
-        mpirun -np 3 $MY_BIN_DIR/mpncrcat -O -C -D 1 -v one_dmn_rec_var ~/in_short.nc ~/foo3.nc (hangs)
-
-        DEBUG: input file opened in prc_rnk 0 inside the loop
-        **** prc 0 hangs somewhere between these lines ***
-        DEBUG: prc_rnk 0 at the end of ncra/rcat
-        DEBUG: prc_rnk 0 is out of file idx loop
-
-        ~/nco/bm/nco_bm.pl --mpi_prc=3 --regress ncrcat
-        mpirun -np 2 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
-	Hangs occur _only_ on sand with LAM in nco_bm.pl, not from command line!
-	valgrind shows no NCO-related memory problems on sand with -np 2 or 3
-        ~/nco/bm/nco_bm.pl --mpi_prc=3 --regress ncea
-        ncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (works)
-        mpirun -np 2 /home/zender/bin/LINUXAMD64/mpncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (leaves processes hanging in nco_free(var_out[0]))
-        mpirun -np 2 /usr/local/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncea -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-	Daniel finds mpncea tries to free dangling pointer on sand with:
-        mpirun -np 4 valgrind -v /home/zender/bin/LINUXAMD64/mpncra -Y ncea -h -O -D 2 -C -v pck -p ../data in.nc ~/foo.nc > ~/foo 2>&1
-	Charlie cannot reproduce that.
-	Charlie finds that master exits but workers reproducibly hang on sand with:
-        mpirun -np 2 valgrind -v /home/zender/bin/LINUXAMD64/mpncra -Y ncea -h -O -D 2 -C -v pck -p ../data in.nc ~/foo.nc > ~/foo 2>&1
-nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
-nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
-nco609. Tune (or remove?) sleep interval in MPI operators
+nco599. mpi: Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
+nco607. mpi: mpnc*: Define structures (rather than int arrays) for MPI messages
+nco609. mpi: Tune (or remove?) sleep interval in MPI operators
 nco612. ncks ncdump-like features for netCDF4 files structures
 nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum
 nco622. NULL'ify opt_crr unless opt_lng detected?
-nco624. Document MPI in users guide/manual
+nco624. mpi: Document MPI in users guide/manual
 nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_att_cat()?
 nco631. Change usleep() to nanosleep()
 nco635. ncwa: MACOSX "regressions" caused by broken FREEBSD/MACOSX 'cut' binary
@@ -422,44 +361,34 @@ nco635. ncwa: MACOSX "regressions" caused by broken FREEBSD/MACOSX 'cut' binary
         ncwa -h -O -D 0 -y min -v three_dmn_var_dbl -a lon -p ~/nco/data in.nc ${DATA}/nco_bm/foo.nc
         ncks -C -H -s '%f,' -v three_dmn_var_dbl ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo
         cut -d, -f 7 ${DATA}/nco_bm/foo # (breaks on MACOSX,FREEBSD? fine on AIX, LINUX)
-nco636. Try pnetcdf: http://www-unix.mcs.anl.gov/parallel-netcdf/
+nco636. mpi: Try pnetcdf: http://www-unix.mcs.anl.gov/parallel-netcdf/
 nco639. Fix packing code to be parallel over in_id without requiring 
 	extra var->nc_id initialization everywhere
-nco640. Naming: mpnc* (as currently implemented) or ncmpi* (as in pnetcdf)?
-nco641. Use netCDF4 MPI I/O hooks in nco_open/nco_create (mpncecat.c is testbed)
-nco642. Create nco_pnetcdf.h, nco_pnetcdf.c wrapper replacements?
+nco640. mpi: Naming: mpnc* (as currently implemented) or ncmpi* (as in pnetcdf)?
+nco641. mpi: Use netCDF4 MPI I/O hooks in nco_open/nco_create (mpncecat.c is testbed)
+nco642. mpi: Create nco_pnetcdf.h, nco_pnetcdf.c wrapper replacements?
 nco643. bld/Makefile fails with netCDF4 and MPI simultaneously enabled
 	make NETCDF4=Y MPI=Y ends with error in first compile (nco_att_utl.o)
 	/usr/include/mpi.h:95: error: two or more data types in declaration specifiers
 	/usr/include/mpi.h:278: error: two or more data types in declaration specifiers
-nco644. Where is nc_open_par()? not in libnetcdf.a?
-nco645. Does wrapping MPI-IO routines for netCDF4 and pnetCDF require ENABLE_MPI?
+nco645. mpi: Does wrapping MPI-IO routines for netCDF4 and pnetCDF require ENABLE_MPI?
 	Perhaps same MPI must be used to build netCDF4 as is used for NCO?
-nco646. pnetCDF builds on elnino, not ashes. Why?
-        ashes pnetCDF builds fail with both LAM and MPICH2 here in system header:
-	/usr/bin/mpicc -c -O -g -I.   -O -g mpinetcdf.c
-	In file included from nc.h:14,
-                 from mpinetcdf.c:8:
-	/usr/lib/gcc/i486-linux-gnu/4.0.3/include/stddef.h:152: error: two or more data types in declaration specifiers
-	/usr/lib/gcc/i486-linux-gnu/4.0.3/include/stddef.h:214: error: duplicate unsignednco
-nco648. Does mpncra create dangling pointers when it packs/unpacks variables?
+nco648. mpi: Does mpncra create dangling pointers when it packs/unpacks variables?
 nco649. Add ncks --prn_cln switch to print coords/vars naked (no names, indices)
 nco651. Use hdr_pad standard to add documentation for long switches without short counterparts, e.g., --cmp, --mpi 
 nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
-nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
+nco653. mpi: Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
 nco658. netCDF4 regression in ncrename test #1: Regression re-verified 20060924, 20070831, 20080220, 20080512 PBN4
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
         ncrename -O -d lat_T42,lat -v lat_T42,lat ~/foo.nc
-nco659. C++: nco_mmr.c: errno presence triggers g++ error: undefined reference to `__errno_location()'
-nco660. C++: NCO does not link to libudunits.a
-nco664. ncatted & ncrename will not work with DAP because there is not any
+nco664. dap: ncatted & ncrename will not work with DAP because there is not any
 	way currently to retrieve the DAP files to local files for them to
-	operate on.  see nco_fl_utl.c:~813 in nco_fl_mk_lcl().  
+	operate on. see nco_fl_utl.c:~813 in nco_fl_mk_lcl().  
 	Currently just fails semi-gracefully.
-nco665  Change _FillValue attribute from 1.0e36 to 0.0 - not working on NETCDF4";
+nco665  Change _FillValue attribute from 1.0e36 to 0.0 - not working on NETCDF4;
 nco666. Grid regridding/interpolation operator ncrebin?
 nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to avoid underflow?

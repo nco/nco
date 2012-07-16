@@ -1,5 +1,7 @@
 2012-07-15  Charlie Zender  <zender@uci.edu>
 
+	* Add srandom() seed to UNIX to match MSVC implementation of rnd_nbr()
+
 	* NCO 4.2.1 release procedure:
  	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d args
 	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1

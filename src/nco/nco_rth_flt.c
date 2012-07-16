@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.29 2012-07-03 19:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.30 2012-07-16 02:15:25 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -116,9 +116,11 @@ rnd_nbr /* [fnc] Generate random fraction in [0,1] */
   /* Seed random-number generator with current time */
   srand((unsigned)time(NULL));
   rnd_nbr_lng=rand();
-#else
+#else /* !_MSC_VER */
+  /* Seed random-number generator with current time */
+  srandom((unsigned)time(NULL));
   rnd_nbr_lng=random();
-#endif
+#endif /* !_MSC_VER */
   rnd_nbr_dbl_frc=rnd_nbr_lng*1.0/RAND_MAX;
   return rnd_nbr_dbl_frc;
 } /* end rnd_nbr() */
