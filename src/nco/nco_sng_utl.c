@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.41 2012-07-11 06:05:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.42 2012-07-17 10:23:20 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -200,24 +200,4 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
   return trn_nbr;
 } /* end sng_ascii_trn() */
 
-char * /* O [sng] Exectuable name */
-sng_xct_xtr /* [fnc] Strip substring from string starting at string end */
-(char * const nm_in, /* I [sng] Input name, i.e., argv[0] (may include path prefix) */
- const char ch_control) /* I [sng] Character to detect, i.e., path separator, backslash (Windows) or forward slash (Unix) */
-{
-  size_t len;     /* input string lenght */
-  char *cp;
 
-  len=strlen(nm_in);
-  if(len == 0) return NULL; 
-  
-  cp=(char *)(nm_in + len); /* point to the NULL ending the string */
-  cp--;                       /* back up one character */
-  while(cp != nm_in){ 
-    if(ch_control == *cp) break;   
-    cp--; /* traverse from end */
-  } /* end while */
-  
-  if (cp != nm_in) return cp+1;
-  return NULL;
-} /* end sng_xct_xtr() */
