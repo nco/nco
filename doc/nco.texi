@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.702 2012-07-16 01:26:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.703 2012-07-18 18:43:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11470,8 +11470,11 @@ Also @samp{--units}.
 @html
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
 <a name="nclist"></a> <!-- http://nco.sf.net/nco.html#nclist -->
+<a name="ncdmnsz"></a> <!-- http://nco.sf.net/nco.html#ncdmnsz -->
+<a name="ncrecsz"></a> <!-- http://nco.sf.net/nco.html#ncrecsz -->
 <a name="alias"></a> <!-- http://nco.sf.net/nco.html#alias -->
 <a name="filters"></a> <!-- http://nco.sf.net/nco.html#filters -->
+<a name="flt"></a> <!-- http://nco.sf.net/nco.html#flt -->
 @end html
 @menu
 * Filters for @command{ncks}::  
@@ -11482,6 +11485,8 @@ Also @samp{--units}.
 @cindex @acronym{UNIX}
 @cindex @command{ncattget}
 @cindex @command{nclist}
+@cindex @command{ncdmnsz}
+@cindex @command{ncrecsz}
 @cindex @file{.bashrc}
 @cindex filters
 @cindex alias
@@ -11557,14 +11562,20 @@ These files are usually named @file{.bashrc}, @file{.cshrc}, and
 @example
 # NB: Untested on Csh, Ksh, Sh, Zsh! Send us feedback!
 # Bash shell (/bin/bash) users place these in .bashrc
-function nclist @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
 function ncattget @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
+function ncdmnsz @{ ncks -m -M $@{2@} | grep -E -i ": $@{1@}, size =" | cut -f 7 -d ' ' | uniq ; @}
+function nclist @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+function ncrecsz @{ ncks -M $@{1@} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; @}
 # Csh shell (/bin/csh) users place these in .cshrc
-nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
 ncattget() @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
+ncdmnsz() @{ ncks -m -M $@{2@} | grep -E -i ": $@{1@}, size =" | cut -f 7 -d ' ' | uniq ; @}
+nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+ncrecsz() @{ ncks -M $@{1@} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; @}
 # Sh shell (/bin/sh) users place these in .profile
-nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
 ncattget() @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
+ncdmnsz() @{ ncks -m -M $@{2@} | grep -E -i ": $@{1@}, size =" | cut -f 7 -d ' ' | uniq ; @}
+nclist() @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+ncrecsz() @{ ncks -M $@{1@} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; @}
 @end example
 
 @noindent
