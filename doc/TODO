@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1188 2012-07-18 00:00:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1189 2012-07-18 00:33:17 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -693,8 +693,8 @@ nco1060. ncra: allow stride argument to determine averaging length, and store mu
 	 ncra -O -C -F -d time,1,10,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Averages every-other slice
 	 ncrcat -O -C -F -d time,1,10,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Concats every-other slice
 	 New:
-	 ncra -O -C -F -d time,1,10,,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Averages every two slices
-	 ncrcat -O -C -F -d time,1,10,,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Concats every two slices
+	 ncra -O -C -F -d time,1,10,,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Averages every two slices, stores 5 slices
+	 ncrcat -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Concats every two slices, stores slices 1,2,5,6,9,10
 nco1061. 
 qrk
 ************************************************************************

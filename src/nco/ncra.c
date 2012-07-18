@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.292 2012-07-08 22:39:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.293 2012-07-18 00:33:17 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.292 2012-07-08 22:39:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.292 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.293 2012-07-18 00:33:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.293 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -621,7 +621,7 @@ main(int argc,char **argv)
 	  nco_exit(EXIT_FAILURE);
 	} /* end if */
         if(prg==ncra || prg==ncrcat){
-	  /* Change record dim in lmt_all_lst so that cnt=1 */
+	  /* Change record dimension in lmt_all_lst so that cnt=1 */
 	  lmt_all_lst[idx]->dmn_cnt=1L;
 	  lmt_all_lst[idx]->lmt_dmn[0]->srt=0L;
 	  lmt_all_lst[idx]->lmt_dmn[0]->end=0L;           
