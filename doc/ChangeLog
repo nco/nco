@@ -4,6 +4,8 @@
 
 2012-07-18  Charlie Zender  <zender@uci.edu>
 
+	* Rework error reporting in nco_aed_prs(), nco_lmt_prs()
+
 	* Branch ncra.c into ncra2.c to develop hyperslab duration (drn) option
 
 	* Add filters ncdmnsz and ncrecsz

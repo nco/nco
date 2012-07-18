@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.115 2012-07-09 21:56:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.116 2012-07-18 19:38:55 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -843,11 +843,13 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
      Routine merely evaluates syntax of input expressions and does validate dimensions or
      ranges against those present in input netCDF file. */
   
-  /* Valid syntax adheres to nm,[min_sng][,[max_sng][,[srd_sng]]] */
+  /* Valid syntax adheres to nm,[min_sng][,[max_sng][,[srd_sng][,[drn_sng]]]] */
   
   void nco_usg_prn(void);
   
   char **arg_lst;
+
+  char *msg_err=NULL;
   
   const char dlm_sng[]=",";
   
@@ -856,24 +858,40 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   int idx;
   int arg_nbr;
   
+  nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in hyperslab specification */
+
   if(lmt_nbr > 0) lmt=(lmt_sct **)nco_malloc(lmt_nbr*sizeof(lmt_sct *));
   for(idx=0;idx<lmt_nbr;idx++){
     /* Process hyperslab specifications as normal text list */
     arg_lst=nco_lst_prs_2D(lmt_arg[idx],dlm_sng,&arg_nbr);
     
     /* Check syntax */
-    if(
-       arg_nbr < 2 || /* Need more than just dimension name */
-       arg_nbr > 4 || /* Too much information */
-       arg_lst[0] == NULL || /* Dimension name not specified */
-       (arg_nbr == 2 && arg_lst[1] == NULL) || /* No min specified */
-       (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */
-       (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */
-       False){
-      (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net/nco.html#hyp\n",prg_nm_get(),lmt_arg[idx],prg_nm_get());
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
+    if(arg_nbr < 2){ /* Need more than just dimension name */
+      msg_err=strdup("Need more than just dimension name");
+      NCO_SYNTAX_ERROR=True;
+    }else if(arg_nbr > 4){ /* Too much information */
+      msg_err=strdup("Too much information");
+      NCO_SYNTAX_ERROR=True;
+    }else if(arg_lst[0] == NULL){ /* Dimension name not specified */
+      msg_err=strdup("Dimension name not specified");
+      NCO_SYNTAX_ERROR=True;
+    }else if(arg_nbr == 2 && arg_lst[1] == NULL){ /* No min specified */
+      msg_err=strdup("No min specified");
+      NCO_SYNTAX_ERROR=True;
+    }else if(arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL){ /* No min or max when stride not specified */
+      msg_err=strdup("No min or max when stride not specified");
+      NCO_SYNTAX_ERROR=True;
+    }else if(arg_nbr == 4 && arg_lst[3] == NULL){ /* Stride should be specified */
+      msg_err=strdup("Stride should be specified");
+      NCO_SYNTAX_ERROR=True;
+    } /* end else */
     
+    if(NCO_SYNTAX_ERROR){
+      (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n%s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net/nco.html#hyp\n",prg_nm_get(),lmt_arg[idx],msg_err,prg_nm_get());
+      msg_err=(char *)nco_free(msg_err);
+      nco_exit(EXIT_FAILURE);
+    } /* !NCO_SYNTAX_ERROR */
+
     /* Initialize structure */
     /* lmt strings that are not explicitly set by user remain NULL, i.e., 
        specifying default setting will appear as if nothing at all was set.

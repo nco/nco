@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.121 2012-07-12 05:44:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.122 2012-07-18 19:38:55 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -623,18 +623,21 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
      Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
      This is default mode. */
 
+  aed_sct *aed_lst;
+
   char **arg_lst;
+
+  char *msg_err=NULL;
 
   const char * const dlm_sng=",";
 
   const long idx_att_val_arg=4L; /* Number of required delimiters preceding attribute values in -a argument list */
 
-  aed_sct *aed_lst;
-
   int idx;
   int arg_nbr;
 
   nco_bool ATT_TYP_INHERIT; /* [flg] Inherit attribute type from pre-existing attribute */
+  nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in attribute-edit specification */
 
   aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
 
@@ -646,19 +649,25 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
     /* Check syntax */
     if(arg_nbr < 5){ /* Need more info */
-      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nSpecification has fewer than five arguments---need more information\n",prg_nm_get(),aed_arg[idx]);
-      nco_exit(EXIT_FAILURE);
+      msg_err=strdup("Specification has fewer than five arguments---need more information");
+      NCO_SYNTAX_ERROR=True;
     }else if(arg_lst[2] == NULL){ /* mode not specified ... */
-      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nMode must be explicitly specified\n",prg_nm_get(),aed_arg[idx]);
-      nco_exit(EXIT_FAILURE);
+      msg_err=strdup("Mode must be explicitly specified");
+      NCO_SYNTAX_ERROR=True;
     }else if(arg_lst[3] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[2]) != 'm'){
-      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nType must be explicitly specified for all modes except delete and modify\n",prg_nm_get(),aed_arg[idx]);
-      nco_exit(EXIT_FAILURE);
+      msg_err=strdup("Type must be explicitly specified for all modes except delete and modify");
+      NCO_SYNTAX_ERROR=True;
     }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[3]) == 'c'){
       /* ... value is not specified except that att_val = "" is valid for character type */
-      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s:\nValue must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_NCAR)\n",prg_nm_get(),aed_arg[idx]);
-      nco_exit(EXIT_FAILURE);
+      msg_err=strdup("Value must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_NCAR)");
+      NCO_SYNTAX_ERROR=True;
     } /* end else */
+
+    if(NCO_SYNTAX_ERROR){
+      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s: %s\n",prg_nm_get(),aed_arg[idx],msg_err);
+      msg_err=(char *)nco_free(msg_err);
+      nco_exit(EXIT_FAILURE);
+    } /* !NCO_SYNTAX_ERROR */
 
     /* Initialize structure */
     /* aed strings not explicitly set by user remain NULL,
