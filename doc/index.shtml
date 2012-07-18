@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.713 2012-07-16 01:26:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.714 2012-07-18 21:10:54 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1113,7 +1113,7 @@ modern Debian-based systems with
 <dt><a name="yum"></a></dt> <!-- http://nco.sf.net#yum -->
 </tt>or, on RPM-based systems, with
 <tt>
-<dt>sudo yum install antlr antlr-c++-devel # ANTLR</dt>
+<dt>sudo yum install antlr antlr-C++ # ANTLR</dt>
 <dt>sudo yum install curl-devel libxml2-devel # DAP-prereqs</dt>
 <dt>sudo yum install libdap libdap-devel libnc-dap libnc-dap-devel # DAP</dt>
 <dt>sudo yum install bison flex gcc g++ # GNU toolchain</dt>
