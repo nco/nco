@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1187 2012-07-16 04:23:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1188 2012-07-18 00:00:44 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -688,7 +688,14 @@ nco1058. ncap2: allow new variables within where() statement
 	 ncap2 -v -O -s 'valid=0*time;where(time<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # works
 	 ncap2 -v -O -s 'valid=0*time;time2=time;where(time2<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # fails
 nco1059. nco: ncatted keep type same by default when modifying/overwriting attribute
-nco1060. 
+nco1060. ncra: allow stride argument to determine averaging length, and store multiple time-averages in output, e.g.,
+	 Old:
+	 ncra -O -C -F -d time,1,10,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Averages every-other slice
+	 ncrcat -O -C -F -d time,1,10,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Concats every-other slice
+	 New:
+	 ncra -O -C -F -d time,1,10,,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Averages every two slices
+	 ncrcat -O -C -F -d time,1,10,,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Concats every two slices
+nco1061. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
