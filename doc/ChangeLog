@@ -1,3 +1,7 @@
+2012-07-18  Pedro Vicente  <pvicente@uci.edu>
+
+        * Add a new Windows installer; avoids the need for the winzip utility
+
 2012-07-18  Charlie Zender  <zender@uci.edu>
 
 	* Branch ncra.c into ncra2.c to develop hyperslab duration (drn) option
