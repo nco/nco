@@ -1,5 +1,7 @@
 2012-07-18  Charlie Zender  <zender@uci.edu>
 
+	* Branch ncra.c into ncra2.c to develop hyperslab duration (drn) option
+
 	* Add filters ncdmnsz and ncrecsz
 
 2012-07-16  Pedro Vicente  <pvicente@uci.edu>

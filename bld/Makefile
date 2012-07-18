@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.605 2012-07-11 23:34:51 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.606 2012-07-18 18:52:41 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -500,7 +500,7 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
-MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncra2 ncrename ncwa # NCO binary targets
 MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 ifeq (${MPI},Y)
  MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
@@ -1642,6 +1642,12 @@ ${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -s -f ncra ncea
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -s -f ncra ncrcat
+ncra2:   ${MY_BIN_DIR}/ncra2
+${MY_BIN_DIR}/ncra2:	${MY_OBJ_DIR}/ncra2.o lib
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+	cd ${MY_BIN_DIR}; rm -f ncea; ln -s -f ncra2 ncea2
+	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -s -f ncra2 ncrcat2
 ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.341 2012-07-18 01:12:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.342 2012-07-18 18:52:41 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -825,6 +825,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
   /* ncea and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncea")){*prg_lcl=ncea;}
+  else if(!strcmp(nm_out_tmp,"ncea2")){*prg_lcl=ncea;}
   else if(!strcmp(nm_out_tmp,"mpncea")){*prg_lcl=ncea;}
   /* ncecat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
@@ -841,9 +842,11 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out_tmp,"ncunpack")){*prg_lcl=ncpdq;}
   /* ncra and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncra")){*prg_lcl=ncra;}
+  else if(!strcmp(nm_out_tmp,"ncra2")){*prg_lcl=ncra;}
   else if(!strcmp(nm_out_tmp,"mpncra")){*prg_lcl=ncra;}
   /* ncrcat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
+  else if(!strcmp(nm_out_tmp,"ncrcat2")){*prg_lcl=ncrcat;}
   else if(!strcmp(nm_out_tmp,"mpncrcat")){*prg_lcl=ncrcat;}
   /* ncrename and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncrename")){*prg_lcl=ncrename;}
