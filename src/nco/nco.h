@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.176 2012-06-26 20:53:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.177 2012-07-18 23:32:59 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -431,18 +431,19 @@ extern "C" {
   /* Limit structure */
   typedef struct { /* lmt_sct */
     /* Following four flags are used only by multi-file operators ncra and ncrcat: */
+    char *drn_sng; /* User-specified string for dimension duration */
     char *max_sng; /* User-specified string for dimension maximum */
     char *min_sng; /* User-specified string for dimension minimum */
     char *nm; /* [sng] Dimension name */
     char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
     char *srd_sng; /* User-specified string for dimension stride */
-    nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
     double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
     double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
     double origin;   /* Used by ncra, ncrcat to re-base record coordinate */
     int id; /* Dimension ID */
     int lmt_typ; /* crd_val or dmn_idx */
     long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
+    long drn; /* Duration of hyperslab */
     long end; /* Index to end of hyperslab */
     long max_idx; /* Index of maximum requested value in dimension */
     long min_idx; /* Index of minimum requested value in dimension */
@@ -454,6 +455,7 @@ extern "C" {
     nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
     nco_bool is_usr_spc_max; /* True if user-specified, else False */
     nco_bool is_usr_spc_min; /* True if user-specified, else False */
+    nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
   } lmt_sct;
 
   /* Container holding all limit structures indexible by dimension */
@@ -461,7 +463,7 @@ extern "C" {
     char *dmn_nm; /* [sng] Dimension name */
     long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
     long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
-    int lmt_dmn_nbr; /* [nbr] Number of lmt args */
+    int lmt_dmn_nbr; /* [nbr] Number of lmt arguments */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
