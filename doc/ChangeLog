@@ -1,6 +1,6 @@
 2012-07-19  Pedro Vicente  <pvicente@uci.edu>
 
-        * add configure support for udunits2 in recent RPM systems (Fedora 1.7)
+        * add configure support for udunits2 in recent RPM systems (Fedora 17)
 
 2012-07-19  Charlie Zender  <zender@uci.edu>
 
