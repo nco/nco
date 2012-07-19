@@ -19113,6 +19113,20 @@ echo "#     Testing for UDUNITS support      #"
 echo "########################################"
 # Begin UDUnits support
 echo "Beginning generic tests for UDUnits"
+
+#AC_CHECK_LIB([udunits2],[ut_parse],[LIBS="-ludunits2 ${LIBS}"],[AC_MSG_NOTICE([cannot find udunits2 library])])
+echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
+echo "DEBUG: NETCDF_INC = ${NETCDF_INC}"
+echo "DEBUG: Before UDUnits2 tests LIBS = ${LIBS}"
+
+
+#Fedora 1.7 has /usr/include/udunits2/udunits2.h
+CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"
+
+echo "DEBUG: Before UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
+
+
+
 # Check whether --enable-udunits was given.
 if test "${enable_udunits+set}" = set; then :
   enableval=$enable_udunits; enable_udunits=${enableval}
@@ -19199,7 +19213,7 @@ fi
 # /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
 # Not sure of location in more recent Fedora systems...
 # Updating patch from Fedora Core 6 nco.spec:
-	for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml ; do
+	for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml /usr/share/udunits/udunits2.xml; do
 	    if test -e "$udunits2_data_file" ; then
 		nco_udunits2_xml="$udunits2_data_file"
 	    fi
@@ -19235,6 +19249,30 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define UDUNITS2_PATH "$nco_udunits2_xml"
 _ACEOF
+
+    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
+    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
+
+    #Fedora 1.7
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2/udunits2.h" >&5
+$as_echo_n "checking for /usr/include/udunits2/udunits2.h... " >&6; }
+if ${ac_cv_file__usr_include_udunits2_udunits2_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/include/udunits2/udunits2.h"; then
+  ac_cv_file__usr_include_udunits2_udunits2_h=yes
+else
+  ac_cv_file__usr_include_udunits2_udunits2_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_include_udunits2_udunits2_h" >&5
+$as_echo "$ac_cv_file__usr_include_udunits2_udunits2_h" >&6; }
+if test "x$ac_cv_file__usr_include_udunits2_udunits2_h" = xyes; then :
+  have_udunits2_extra=yes
+fi
+
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:" >&5
 $as_echo "$as_me: NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:" >&6;}
@@ -19311,6 +19349,8 @@ else
   enable_udunits2=no
 fi
 
+#  elif test "${have_udunits2_extra}"; then
+#       AC_CHECK_FILE([/usr/include/udunits2/udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
     else
 	ac_fn_c_check_header_mongrel "$LINENO" "udunits2.h" "ac_cv_header_udunits2_h" "$ac_includes_default"
 if test "x$ac_cv_header_udunits2_h" = xyes; then :
