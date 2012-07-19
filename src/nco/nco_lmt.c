@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.118 2012-07-19 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.119 2012-07-19 00:38:46 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -18,6 +18,7 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   lmt->min_sng=(char *)nco_free(lmt->min_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
+  lmt->drn_sng=(char *)nco_free(lmt->drn_sng);
   lmt->rbs_sng=(char*)nco_free(lmt->rbs_sng);   
   
   lmt=(lmt_sct *)nco_free(lmt);
