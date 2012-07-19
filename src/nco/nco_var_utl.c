@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.187 2012-05-23 04:42:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.188 2012-07-19 00:08:18 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1582,13 +1582,13 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
 } /* end nco_var_mtd_refresh() */
 
 void
-nco_var_srd_srt_set /* [fnc] Assign zero-start and unity-stride vectors to variables */
-(var_sct ** const var, /* I [sct] Variables whose start and stride arrays to set */
+nco_var_srd_srt_set /* [fnc] Assign zero to start and unity to stride vectors in variables */
+(var_sct ** const var, /* I [sct] Variables whose duration, start, and stride arrays to set */
  const int nbr_var) /* I [nbr] Number of structures in variable structure list */
 {
   /* Purpose: Zero start (srt) and stride (srd) arrays of variable 
-     This is useful for setting variables to the default output state, in
-     which data is written in a block with no offset */
+     This is useful for setting variables to default output state, 
+     in which data is written in a block with no offset */
 
   int idx;
   int idx_dmn;

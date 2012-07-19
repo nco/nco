@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.184 2012-07-08 22:39:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.185 2012-07-19 00:08:18 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.184 2012-07-08 22:39:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.184 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.185 2012-07-19 00:08:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.185 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -670,7 +670,7 @@ main(int argc,char **argv)
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
   
-  /* Assign zero-start and unity-stride vectors to output variables */
+  /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr_1);
   
   /* Copy variable data for non-processed variables */

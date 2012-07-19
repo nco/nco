@@ -1,5 +1,7 @@
 2012-07-18  Charlie Zender  <zender@uci.edu>
 
+	* Legalize drn in nco_lmt_prs() and nco_lmt_evl()
+
 	* Add drn to lmt structures
 
 	* Rework error reporting in nco_aed_prs(), nco_lmt_prs(), nco_lmt_evl()

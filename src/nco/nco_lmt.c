@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.117 2012-07-18 23:32:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.118 2012-07-19 00:08:18 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -671,6 +671,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       nco_exit(EXIT_FAILURE);
     } /* !NCO_SYNTAX_ERROR */
 
+    /* NB: Duration is officially supported only for ncra and ncrcat (record dimension only) */
+    if(lmt.drn != 1L && !rec_dmn_and_mlt_fl_opr) (void)fprintf(stderr,"%s: WARNING Duration argument is only supported for record dimension on multi-file operators, use at your own risk...\n",prg_nm_get());
+
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!rec_dmn_and_mlt_fl_opr || !lmt.is_usr_spc_lmt){
       /* For non-record dimensions and for record dimensions where limit 
@@ -694,10 +697,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	   Then user-specified maximum index may exceed number of records in any one file
 	   Thus lmt.srt does not necessarily equal lmt.min_idx and 
 	   lmt.end does not necessarily equal lmt.max_idx */
-	/* NB: Stride is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only)
-	   Duration is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only) */
+	/* NB: Stride is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only) */
 	if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
-	
 	{ /* Block to hide scope of local internal variables */
           long min_lcl;
           long max_lcl; 

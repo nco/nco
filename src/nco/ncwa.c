@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.305 2012-07-08 22:39:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.306 2012-07-19 00:08:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.305 2012-07-08 22:39:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.305 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.306 2012-07-19 00:08:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.306 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -756,7 +756,7 @@ main(int argc,char **argv)
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
   
-  /* Assign zero-start and unity-stride vectors to output variables */
+  /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
   /* Copy variable data for non-processed variables */

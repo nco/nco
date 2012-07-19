@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.66 2012-03-13 05:54:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.67 2012-07-19 00:08:18 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -146,10 +146,9 @@ extern "C" {
    var_sct * const var); /* I/O [sct] Variable to update */
   
   void
-  nco_var_srd_srt_set /* [fnc] Assign zero-start and unity-stride vectors to variables */
-  (var_sct ** const var, /* I [sct] Variables whose start and stride arrays to set */
+  nco_var_srd_srt_set /* [fnc] Assign zero to start and unity to stride vectors in variables */
+  (var_sct ** const var, /* I [sct] Variables whose duration, start, and stride arrays to set */
    const int nbr_var); /* I [nbr] Number of structures in variable structure list */
-
   
   void
   nco_var_dmn_refresh /* [fnc] Refresh var hyperslab info with var->dim[] info */
