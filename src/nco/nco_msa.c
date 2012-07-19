@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.93 2012-05-23 04:42:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.94 2012-07-19 02:20:49 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -182,8 +182,7 @@ nco_msa_prn_idx(lmt_all_sct *lmt_i)
   
   for(idx=0;idx<size;idx++) indices[idx]=lmt_i->lmt_dmn[idx]->srt;
   
-  while(nco_msa_clc_idx(False,lmt_i,&indices[0],&lmt,&slb_nbr))
-    printf("slb_nbr=%d srt=%ld end=%ld cnt=%ld srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
+  while(nco_msa_clc_idx(False,lmt_i,&indices[0],&lmt,&slb_nbr)) printf("slb_nbr=%d, srt=%ld, end=%ld, cnt=%ld, srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
 } /* end nco_msa_prn_idx() */
 
 nco_bool /* [flg] There are more limits to process in the slab */
@@ -194,10 +193,9 @@ nco_msa_clc_idx
  lmt_sct *lmt, /* O Output hyperslab */
  int *slb) /* slab which above limit refers to */ 
 {
-  /* A very messy unclear in-efficient routine that needs re-writing
-     if NORMALIZE then It returns the slab number and the hyperslab in lmt- Note
-     VERY IMPORTANT - This is the slab WHITH-IN the slab
-     So the stride is ALWAYS 1 */
+  /* A messy, unclear, inefficient routine that needs re-writing
+     if NORMALIZE then return the slab number and the hyperslab in lmt
+     NB: This is the slab _WITHIN_ the slab so stride is ALWAYS 1 */
   int sz_idx;
   int size=lmt_a->lmt_dmn_nbr;
   nco_bool *mnm;
@@ -280,14 +278,14 @@ nco_msa_clc_idx
 } /* end nco_msa_clc_idx() */
 
 void
-nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices relative */
-(long *dmn_sbs_ram,   /* to disk. */
+nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices relative to disk */
+(long *dmn_sbs_ram,   
  lmt_all_sct **lmt_msa, 
  int nbr_dim,
  long *dmn_sbs_dsk,
  nco_bool FREE){
   /*  It does not really convert RAM indices to disk indices, but given a set 
-      of RAM indices finds the next set of dsk incdices. 
+      of RAM indices, it finds the next set of disk incdices. 
       So it only works if the indices fed to it are continuous */
   int idx;
   int jdx;
@@ -317,12 +315,12 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
       continue;
     }
     
-    /* re-initialize indices if 0*/
+    /* Re-initialize indices if 0 */
     if(dmn_sbs_ram[idx] == 0) 
       for(jdx=0;jdx<size;jdx++)
        	dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
     
-    /* Deal with wrapping - we have 2 hyperlsbas to deal with */
+    /* Deal with wrapping, i.e., we have 2 hyperslabs */
     if(lmt_msa[idx]->WRP){
       if(dmn_indices[idx][0]<lmt_msa[idx]->dmn_sz_org){
 	dmn_sbs_dsk[idx]=dmn_indices[idx][0];
@@ -354,7 +352,7 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
     (void)nco_free(dmn_indices);
     initialize=0;
   }
-}
+} /* end nco_msa_ram_2_dsk() */
 
 void 
 nco_msa_clc_cnt
@@ -421,7 +419,7 @@ nco_msa_ovl
       if( lmt[jdx]->srt <= lmt[idx]->end) return True;  
   
   return False;
-}
+} /* end nco_msa_ovl() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
@@ -430,12 +428,12 @@ nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
 {
   const lmt_sct * const lmt1=*((const lmt_sct * const *)vp1);
   const lmt_sct * const lmt2=*((const lmt_sct * const *)vp2); 
-  /* fxm: need to compiler warnings. will following work?
+  /* fxm: need to avoid compiler warnings. will following work?
      const lmt_sct * const lmt1=(const lmt_sct *)vp1;
      const lmt_sct * const lmt2=(const lmt_sct *)vp2; */
   
   return lmt1->srt < lmt2->srt ? -1 : (lmt1->srt > lmt2->srt);
-}
+} /* end nco_cmp_lmt_srt() */
 
 void nco_msa_qsort_srt
 (lmt_all_sct *lmt_lst)
@@ -449,7 +447,7 @@ void nco_msa_qsort_srt
   if(sz <= 1) return;
   
   (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
-}
+} /* end nco_msa_qsort_srt() */
 
 void
 nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
@@ -609,7 +607,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   } /* endif arithmetic operator */
   
   return;
-} /* end nco_msa_var_get */
+} /* end nco_msa_var_get() */
 
 void
 nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
@@ -1256,9 +1254,11 @@ nco_msa_lmt_all_int
     lmt_rgl->end=dmn_sz-1L;
     lmt_rgl->cnt=dmn_sz;
     lmt_rgl->srd=1L;
+    lmt_rgl->drn=1L;
     lmt_rgl->min_sng=NULL;
     lmt_rgl->max_sng=NULL;
     lmt_rgl->srd_sng=NULL;
+    lmt_rgl->drn_sng=NULL;
     lmt_rgl->rbs_sng=NULL;
     lmt_rgl->origin=0.0;
 

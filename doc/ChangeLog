@@ -1,6 +1,6 @@
 2012-07-18  Charlie Zender  <zender@uci.edu>
 
-	* Legalize drn in nco_lmt_prs() and nco_lmt_evl()
+	* Legalize drn in nco_lmt_prs(), nco_lmt_evl(), nco_msa_lmt_all_int()
 
 	* Add drn to lmt structures
 
