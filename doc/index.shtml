@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.716 2012-07-19 19:19:50 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.717 2012-07-19 22:36:01 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1120,7 +1120,7 @@ modern Debian-based systems with
 <dt>sudo yum install gsl gsl-devel # GSL</dt>
 <dt>sudo yum install netcdf netcdf-devel # netCDF</dt>
 <dt>sudo yum install librx librx-devel # RX</dt>
-<dt>sudo yum install udunits udunits-devel # UDUnits</dt>
+<dt>sudo yum install udunits2 udunits2-devel # UDUnits</dt>
 </tt>
 </li>
 
