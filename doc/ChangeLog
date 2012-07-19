@@ -1,3 +1,7 @@
+2012-07-19  Pedro Vicente  <pvicente@uci.edu>
+
+        * add configure support for udunits2 in recent RPM systems (Fedora 1.7)
+
 2012-07-19  Charlie Zender  <zender@uci.edu>
 
 	* Restructured main initialize/compute/normalize/write logic of ncra2
