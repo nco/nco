@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.67 2012-07-19 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.68 2012-07-19 22:03:08 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -25,9 +25,6 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-#ifdef _OPENMP
-#include <omp.h> /* OpenMP pragmas */
-#endif /* !_OPENMP */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */

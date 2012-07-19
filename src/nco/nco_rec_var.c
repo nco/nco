@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.21 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.22 2012-07-19 22:03:08 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
@@ -68,18 +68,18 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
     default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
-  if(idx_rec_out > 1){
+  if(idx_rec_out > 1L){
     if(((rec_crd_val_crr > rec_crd_val_lst) && monotonic_direction == decreasing) ||
        ((rec_crd_val_crr < rec_crd_val_lst) && monotonic_direction == increasing)){
       if(idx_rec-1 == -1){
 	/* Inter-file non-monotonicity */
-	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO/WARNING Inter-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between last specified record of previous input file (whose name is not cached locally and thus currently unavailable for printing) and first specified record (i.e., record index = %ld) of current input file (%s). This message is often informational only and may usually be safely ignored. It is quite common when joining files with \"wrapped\" record coordinates, e.g., joining a January file to a December file when the time coordinate is enumerated as day of year. It is also common when joining files which employ a \"time=base_time+time_offset\" convention. Sometimes, however, this message is a warning which signals that the user has joined files together in a different order than intended and that corrective action should be taken to re-order the input files. Output file %s will contain these non-monotonic record coordinate values (%f, %f) at record indices %ld, %ld.\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),idx_rec,fl_in,fl_out,rec_crd_val_lst,rec_crd_val_crr,idx_rec_out-1,idx_rec_out);
+	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO/WARNING Inter-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between last specified record of previous input file (whose name is not cached locally and thus currently unavailable for printing) and first specified record (i.e., record index = %ld) of current input file (%s). This message is often informational only and may usually be safely ignored. It is quite common when joining files with \"wrapped\" record coordinates, e.g., joining a January file to a December file when the time coordinate is enumerated as day of year. It is also common when joining files which employ a \"time=base_time+time_offset\" convention. Sometimes, however, this message is a warning which signals that the user has joined files together in a different order than intended and that corrective action should be taken to re-order the input files. Output file %s will contain these non-monotonic record coordinate values (%f, %f) at record indices %ld, %ld.\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),idx_rec,fl_in,fl_out,rec_crd_val_lst,rec_crd_val_crr,idx_rec_out-1L,idx_rec_out);
       }else{
 	/* Intra-file non-monotonicity */
-	(void)fprintf(stderr,"%s: WARNING Intra-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %f, %f\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
+	(void)fprintf(stderr,"%s: WARNING Intra-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %f, %f\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1L,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
       } /* end if Intra-file non-monotonicity */
     } /* end if not monotonic */
-  }else if(idx_rec_out == 1){
+  }else if(idx_rec_out == 1L){
     if(rec_crd_val_crr > rec_crd_val_lst) monotonic_direction=increasing; else monotonic_direction=decreasing;
   } /* end if */
     

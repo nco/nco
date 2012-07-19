@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.293 2012-07-18 00:33:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.294 2012-07-19 22:03:08 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.293 2012-07-18 00:33:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.293 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.294 2012-07-19 22:03:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.294 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -756,10 +756,10 @@ main(int argc,char **argv)
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	/* Process all variables in current record */
-	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,idx_rec_out);
         
         /* Update hyperslab start indices */
-        /* Beware lmt_all_rec points to the record limit of record struct of lmt_lst_all */
+        /* Beware lmt_all_rec points to the record limit of record struct of lmt_all_lst */
         lmt_all_rec->lmt_dmn[0]->srt=idx_rec;
         lmt_all_rec->lmt_dmn[0]->end=idx_rec;
         lmt_all_rec->lmt_dmn[0]->cnt=1L;
@@ -816,7 +816,7 @@ main(int argc,char **argv)
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
+	      if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	      /* Perform MD5 digest of input and output data if requested */
 	      if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
 	    } /* end if ncrcat */

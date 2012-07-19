@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.119 2012-07-19 00:38:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.120 2012-07-19 22:03:08 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -84,7 +84,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  const nco_bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Purpose: Create stand-alone limit structure just for given dimension
-     ncra calls nco_lmt_sct_mk() to generate record dimension limit structure */
+     ncra.c calls nco_lmt_sct_mk() to generate record dimension limit structure */
   
   int idx;
   int rcd; /* [rcd] Return code */

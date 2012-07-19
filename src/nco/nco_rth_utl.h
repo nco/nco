@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.28 2012-07-03 19:44:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.29 2012-07-19 22:03:08 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -19,7 +19,10 @@
 #include <string.h> /* strcmp. . . */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
-#endif
+#endif /* !_MSC_VER */
+#ifdef _OPENMP
+# include <omp.h> /* OpenMP pragmas */
+#endif /* !_OPENMP */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -32,7 +35,7 @@
 #include "nco_mmr.h" /* Memory management */
 #ifdef _MSC_VER
 # include "nco_rth_flt.h" /* Float-precision arithmetic */
-#endif 
+#endif /* !_MSC_VER */
 #include "nco_var_utl.h" /* Variable utilities */
 #include "nco_var_rth.h" /* Variable arithmetic */
 
@@ -43,6 +46,13 @@ extern "C" {
 int /* O [enm] Arithmetic operation */
 nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 (const char * const nco_op_sng); /* I [sng] User-specified operation */
+
+void 
+nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
+(const int nco_op_typ, /* I [enm] Operation type */
+ const int nbr_var_prc, /* I [nbr] Number of processed variables */
+ X_CST_PTR_CST_PTR_Y(var_sct,var_prc), /* I [sct] Variables in input file */
+ X_CST_PTR_CST_PTR_Y(var_sct,var_prc_out)); /* I/O [sct] Variables in output file */
 
 void 
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */

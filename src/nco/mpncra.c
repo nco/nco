@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.127 2012-07-19 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.128 2012-07-19 22:03:08 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.127 2012-07-19 00:08:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.128 2012-07-19 22:03:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -790,7 +790,7 @@ main(int argc,char **argv)
     idx_rec=lmt_rec->srt;
     if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
     /* Process all variables in first record */
-    if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+    if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,idx_rec_out);
     
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -901,7 +901,7 @@ main(int argc,char **argv)
 	      
 	      /* Turn off default filling behavior to enhance efficiency */
 	      nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
+	      if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	      else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	      /* Close output file and increment written counter */
 	      nco_close(out_id);
@@ -1096,7 +1096,7 @@ main(int argc,char **argv)
 	      idx=lcl_idx_lst[jdx];
 #endif /* !ENABLE_MPI */
 	      /* Process all variables in current record */
-	      if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+	      if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #if 0
 	      /* NB: Immediately preceding MPI for scope confounds Emacs indentation
 		 Fake end scope restores correct indentation, simplifies code-checking */

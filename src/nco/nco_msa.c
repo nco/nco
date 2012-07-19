@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.94 2012-07-19 02:20:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.95 2012-07-19 22:03:08 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -556,7 +556,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   if(nbr_dim == 0){
     var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
     (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
-    goto do_unpck;
+    goto do_upk;
   } /* end if scalar */
   
   lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
@@ -584,7 +584,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   (void)nco_free(lmt_msa);
   (void)nco_free(lmt);
   
- do_unpck:
+ do_upk:
   /* Following code copied from nco_var_get() */
   
   if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);

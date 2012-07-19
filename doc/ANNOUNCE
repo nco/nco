@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.497 2012-07-16 01:26:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.498 2012-07-19 22:03:07 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -19,6 +19,15 @@ Charlie
 Other "New stuff" in 4.2.1 summary (full details always in ChangeLog):
 
 NEW FEATURES:
+
+A. Sub-cycle over records in multi-file operators (MFOs). Huh?
+   In plain English, ncra and ncrcat now handle a fourth hyperslab
+   parameter that specifies the number of consecutive records over
+   which the operation should act. Now MFOs can, say, stride along the
+   time dimension by leaps of twelve indices, averaging three
+   consecutive records at a time. Yes, like a seasonal average!
+   This is perhaps the most powerful new NCO feature in many moons.
+   http://nco.sf.net/nco.html#drn fxm
 
 A. Bypass intermediate temporary files
    ncks --no_tmp_fl ~/nco/data/in.nc ~/foo.nc
