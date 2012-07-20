@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.124 2012-07-20 21:03:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.125 2012-07-20 21:16:57 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -424,10 +424,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
-      if(lmt.min_sng) lmt.min_val=strtod(lmt.min_sng,&sng_cnv_rcd);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.min_sng,"strtod",sng_cnv_rcd);
-      if(lmt.max_sng) lmt.max_val=strtod(lmt.max_sng,&sng_cnv_rcd);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.max_sng,"strtod",sng_cnv_rcd);
+      if(lmt.min_sng){
+	lmt.min_val=strtod(lmt.min_sng,&sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.min_sng,"strtod",sng_cnv_rcd);
+      } /* !lmt.min_sng */
+      if(lmt.max_sng){
+	lmt.max_val=strtod(lmt.max_sng,&sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.max_sng,"strtod",sng_cnv_rcd);
+      } /* !lmt.max_sng */
       
       /* Re-base coordinates as necessary in multi-file operatators (MFOs)
          lmt.origin was calculated earlier in routine */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1190 2012-07-20 20:45:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1191 2012-07-20 21:17:21 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -697,8 +697,6 @@ nco1060. ncra: allow stride argument to determine averaging length, and store mu
 	 ncrcat -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc # Concats every two slices, stores slices 1,2,5,6,9,10
 nco1061. ncrcat coordinate-selected hyperslabs get srt wrong on all files except first:
 	 ncrcat -O -C -d time,2.,3. -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc
-nco1062. ncrcat segfaults on valid input where min omitted and max specified:
-	 ncrcat -O -C -d time,,1. -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
 nco1063. 
 qrk
 ************************************************************************
