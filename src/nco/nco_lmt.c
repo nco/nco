@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.126 2012-07-20 22:33:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.127 2012-07-20 23:03:43 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -589,8 +589,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	/* Skipped records remains zero until valid records are processed */
 	lmt.rec_skp_vld_prv=0L;  
       }else if(rec_in_cml > 0L){
-	/* Otherwise, account for previous records in strides across file boundaries */
-        lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
+	/* Otherwise, adjust starting index by records skipped in jumps across file boundaries */
+        lmt.srt+=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
 	if(lmt.srt>lmt.end){
 	  /* Do not allow record dimension wrapping in MFOs */
 	  flg_no_data_ok=True;
@@ -612,8 +612,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
       /* Save current rec_skp_vld_prv for diagnostics */
       rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-      /* rec_skp_vld_prv for next file is stride minus number of unused records
-	 ast end of this file (dmn_sz-1L-lmt.end) minus one */
+      /* Next file needs to know how many records in this file come after
+	 (and thus will be skipped) the last used record in this file.
+	 
+	 stride minus number of unused records
+	 at end of this file (dmn_sz-1L-lmt.end) minus one */
       lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
       /*      assert(lmt.rec_skp_vld_prv >= 0);*/
     } /* end if rec_dmn_and_mfo */

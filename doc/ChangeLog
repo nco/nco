@@ -1,7 +1,7 @@
 2012-07-20  Charlie Zender  <zender@uci.edu>
 
-	* Add regression for concatenation of record coordinate-bounded
-	variable across two non-monotonic files (TODO nco1061)
+	* Add regression test for and fix concatenation of record
+	coordinate-bounded variable across non-monotonic files
 
 	* Fix segfault parsing coordinate value hyperslabs where max
 	specified and min omitted (TODO nco1062)
