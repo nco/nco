@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.343 2012-07-20 20:45:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.344 2012-07-20 22:17:11 pvicente Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -798,7 +798,10 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   /* Get program name (use strrchr() first in case nm_in contains a path) */
   nm_out_orig=nm_out_tmp=(char *)strdup(nm_in);
 #ifdef _MSC_VER 
+  int len;
   if(strrchr(nm_out_tmp,'\\')) nm_out_tmp=strrchr(nm_out_tmp,'\\')+1;
+  len=strlen(nm_out_tmp); /* cut '.exe' from name */ 
+  nm_out_tmp[len-4]='\0';  
 #else /* !_MSC_VER */
   if(strrchr(nm_out_tmp,'/')) nm_out_tmp=strrchr(nm_out_tmp,'/')+1;
 #endif /* !_MSC_VER */
