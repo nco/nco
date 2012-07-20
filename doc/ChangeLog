@@ -1,10 +1,19 @@
-2012-07-19  Pedro Vicente  <pvicente@uci.edu>
-
-        * add configure support for udunits2 in recent RPM systems (Fedora 17)
-
 2012-07-19  Charlie Zender  <zender@uci.edu>
 
-	* Restructured main initialize/compute/normalize/write logic of ncra2
+	* Differentiate indices necessary to implement multi-record outputs
+
+	* Rename idx_rec_out as rec_in_cml, and idx_rec as idx_rec_crr_in,
+	and add new idx_rec_out that means what it says.
+
+	* Remove superfluous OpenMP headers from some library files
+
+	* Functionalize ncea/ncra normalization in nco_opr_nrm()
+
+	* Restructure initialize/compute/normalize/write logic of ncra2
+
+2012-07-19  Pedro Vicente  <pvicente@uci.edu>
+
+        * Configure support for UDUnits2 in recent RPM systems (Fedora 17)
 
 2012-07-18  Charlie Zender  <zender@uci.edu>
 

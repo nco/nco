@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.h,v 1.17 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.h,v 1.18 2012-07-20 00:32:26 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
@@ -37,7 +37,7 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
  const char * const fl_in, /* I [sng] Input filename */
  const char * const fl_out, /* I [sng] Output filename */
  const long idx_rec, /* I [idx] Index of record coordinate in input file */
- const long idx_rec_out); /* I [idx] Index of record coordinate in output file */
+ const long rec_in_cml); /* I [idx] Index of record coordinate in output file */
 
 #ifdef __cplusplus
 } /* end extern "C" */

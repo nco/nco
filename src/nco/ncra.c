@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.294 2012-07-19 22:03:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.295 2012-07-20 00:32:26 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.294 2012-07-19 22:03:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.294 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.295 2012-07-20 00:32:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.295 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -199,7 +199,7 @@ main(int argc,char **argv)
   lmt_all_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
   
   long idx_rec; /* [idx] Index of current record in current input file */
-  long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
+  long rec_in_cml=0L; /* [idx] Index of current record in output file (0 is first, ...) */
   
   nco_int base_time_srt=nco_int_CEWI;
   nco_int base_time_crr=nco_int_CEWI;
@@ -740,7 +740,7 @@ main(int argc,char **argv)
     
     /* Files may have different numbers of records to process
        NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
+    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) (void)nco_lmt_evl(in_id,lmt_rec,rec_in_cml,FORTRAN_IDX_CNV);
     
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
     if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -756,7 +756,7 @@ main(int argc,char **argv)
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	/* Process all variables in current record */
-	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,idx_rec_out);
+	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,rec_in_cml);
         
         /* Update hyperslab start indices */
         /* Beware lmt_all_rec points to the record limit of record struct of lmt_all_lst */
@@ -766,7 +766,7 @@ main(int argc,char **argv)
         lmt_all_rec->lmt_dmn[0]->srd=1L;   
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,rec_in_cml,in_id_arr,LAST_RECORD,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    in_id=in_id_arr[omp_get_thread_num()];
@@ -793,23 +793,23 @@ main(int argc,char **argv)
 	    if(prg == ncra){
               /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
 		 Stuff first record into output buffer regardless of nco_op_typ,
-		 and ignore later records (idx_rec_out > 1). 
+		 and ignore later records (rec_in_cml > 1). 
 		 Temporarily fixes TODO nco941 */
               if(var_prc[idx]->type == NC_CHAR){
-                if(!idx_rec_out) nco_opr_drv(idx_rec_out,nco_op_min,var_prc[idx],var_prc_out[idx]);
+                if(!rec_in_cml) nco_opr_drv(rec_in_cml,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
 	        /* Convert char, short, long, int types to doubles before arithmetic
 		   Output variable type is "sticky" so only convert on first record */
-	        if(idx_rec_out == 0L) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	        if(rec_in_cml == 0L) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	        var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 		/* Perform arithmetic operations: avg, min, max, ttl, ... */
-	        nco_opr_drv(idx_rec_out,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	        nco_opr_drv(rec_in_cml,nco_op_typ,var_prc[idx],var_prc_out[idx]);
               } /* end else */ 
 	    } /* end if ncra */
 	    
 	    /* Append current record to output file */
 	    if(prg == ncrcat){
-	      var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
+	      var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=rec_in_cml;
 	      var_prc_out[idx]->cnt[0]=1L;
 	      /* Replace this time_offset value with time_offset from initial file base_time */
 	      if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
@@ -822,7 +822,7 @@ main(int argc,char **argv)
 	    } /* end if ncrcat */
 	    
 	    /* Warn if record coordinate, if any, is not monotonic */
-	    if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
+	    if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_in_cml);
 	    /* Convert missing_value, if any, back to unpacked type
 	       Otherwise missing_value will be double-promoted when next record read 
 	       Do not convert after last record otherwise normalization fails 
@@ -831,17 +831,17 @@ main(int argc,char **argv)
 	    /* Free current input buffer */
 	    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	  } /* end (OpenMP parallel for) loop over variables */
-	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
+	  rec_in_cml++; /* [idx] Index of current record in output file (0 is first, ...) */
 	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 	} /* end loop over idx_rec */
 	/* Warn if fewer than number of requested records were read and final file has been processed */
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
 	  long rec_nbr_rqs; /* Number of records user requested */
 	  rec_nbr_rqs=1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
-	  if(dbg_lvl >= nco_dbg_std && fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+	  if(dbg_lvl >= nco_dbg_std && fl_idx == fl_nbr-1 && rec_nbr_rqs != rec_in_cml) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,rec_in_cml);
 	} /* end if */
 	/* Error if no records were read and final file has been processed */
-	if(idx_rec_out <= 0 && fl_idx == fl_nbr-1){
+	if(rec_in_cml <= 0 && fl_idx == fl_nbr-1){
 	  (void)fprintf(fp_stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),prg_nm_get());
 	  nco_exit(EXIT_FAILURE);
 	} /* end if */
@@ -871,7 +871,7 @@ main(int argc,char **argv)
 	     Output variable type is "sticky" so only convert on first record */
 	  if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	  var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-	  /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not idx_rec_out! */
+	  /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_in_cml! */
 	  nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
 	  
 	  /* Free current input buffer */
