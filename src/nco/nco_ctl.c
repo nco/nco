@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.342 2012-07-18 18:52:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.343 2012-07-20 20:45:50 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -510,7 +510,7 @@ nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, th
 } /* end nco_exit_gracefully() */
 
 nco_bool /* [flg] Program is multi-file operator */
-nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
+nco_is_mfo /* [fnc] Query whether program is multi-file operator */
 (const int prg_id) /* [enm] Program ID */
 {
   /* Purpose: Is this a multi-file operator (MFO)?
@@ -537,7 +537,7 @@ nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
   return False;
-} /* end nco_is_mlt_fl_opr() */
+} /* end nco_is_mfo() */
 
 nco_bool /* [flg] Program does arithmetic */
 nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
@@ -965,7 +965,7 @@ nco_usg_prn(void)
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-H]")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --data, --hieronymus\tToggle printing data\n");
-    if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tDo not create \"input_file_list\" global attribute\n");
+    if(nco_is_mfo(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tDo not create \"input_file_list\" global attribute\n");
   } /* end if -H */
   /* Disambiguate -h from --hdr_pad */
   if(strstr(opt_sng,"[-h]")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
@@ -1038,7 +1038,7 @@ nco_usg_prn(void)
   if(prg_lcl == ncbo || prg_lcl == ncflint){
     (void)fprintf(stdout,"in_1.nc in_2.nc\t\tInput file names\n");
   }else{
-    if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"in.nc [...]\t\tInput file names\n"); else (void)fprintf(stdout,"in.nc\t\t\tInput file name\n");
+    if(nco_is_mfo(prg_lcl)) (void)fprintf(stdout,"in.nc [...]\t\tInput file names\n"); else (void)fprintf(stdout,"in.nc\t\t\tInput file name\n");
   } /* endif in.nc */
   if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"out.nc\t\t\tOutput file name (or use -o switch)\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/

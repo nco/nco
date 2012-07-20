@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.115 2012-06-02 05:42:19 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.116 2012-07-20 20:45:49 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -804,6 +804,14 @@ sub tst_rgr {
     $tst_cmd[1]="ncks -C -H -d time,11 -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
     $dsc_sng="Concatenate float with double missing values across two files";
     $tst_cmd[2]="2";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc in.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncks -C -H -s '%d ' -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="Concatenate record coordinate-bounded variable across two non-monotonic files";
+    $tst_cmd[2]="2 3 2 3";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array

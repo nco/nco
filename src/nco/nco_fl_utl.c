@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.191 2012-07-11 23:34:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.192 2012-07-20 20:45:50 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -328,7 +328,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* end loop over idx */
 
   /* All operators except multi-file operators must have at least one positional argument */
-  if(!nco_is_mlt_fl_opr(prg_id) && psn_arg_nbr == 0){
+  if(!nco_is_mfo(prg_id) && psn_arg_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one\n",prg_nm_get(),psn_arg_nbr);
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
@@ -377,7 +377,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     if(psn_arg_nbr < 2-psn_arg_fst){
 
       /* If multi-file operator has no positional arguments for input files... */
-      if(nco_is_mlt_fl_opr(prg_id) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
+      if(nco_is_mfo(prg_id) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
 	/* ...then try to obtain input files from stdin... */
 	char *fl_in=NULL; /* [sng] Input file name */
 	FILE *fp_in; /* [enm] Input file handle */

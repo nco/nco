@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.195 2012-06-29 20:17:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.196 2012-07-20 20:45:52 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -838,8 +838,8 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
      lmt_ptr->is_usr_spc_min=False;
      lmt_ptr->is_usr_spc_max=False;
 
-     /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
-     lmt_ptr->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
+     /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
+     lmt_ptr->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
     
     /* Fill-in structure */
     if( lcl_ind[0] >= 0){ 

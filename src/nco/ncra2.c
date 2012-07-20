@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.3 2012-07-20 00:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.4 2012-07-20 20:45:51 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -105,9 +105,9 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool LAST_DESIRED_RECORD_IN_FILE=False;
-  nco_bool LAST_RECORD_BEFORE_NORMALIZATION_OF_CURRENT_GROUP=False;
+  nco_bool LAST_RECORD_OF_CURRENT_GROUP=False;
   nco_bool FIRST_RECORD_OF_CURRENT_GROUP=False;
-  nco_bool OPERATE_ON_AND_OUTPUT_EACH_GROUP_SEPARATELY=False;
+  nco_bool FLG_MRO=False;
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.3 2012-07-20 00:32:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.3 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.4 2012-07-20 20:45:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.4 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -751,6 +751,7 @@ main(int argc,char **argv)
     /* Files may have different numbers of records to process
        NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) (void)nco_lmt_evl(in_id,lmt_rec,rec_in_cml,FORTRAN_IDX_CNV);
+    if(lmt_rec->flg_mro) FLG_MRO=True;
     
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
     if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -772,17 +773,23 @@ main(int argc,char **argv)
 	     idx_srd: Starting index, on disk, of current strided record group (increments by srd)
 	     idx_drn: Offset of current record from start of current strided record group (increments by 1 for drn)
 	     idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
-	     rec_in_cml: Cumulative number of input records read (and written by ncrcat or used by ncra)
+	     rec_in_cml: Cumulative number of input records read (and written by ncrcat or used by ncra), aka valid records
 	     idx_rec_out: Index of record in output file */
 	  idx_rec_crr_in=idx_srd+idx_drn;
 	  if(fl_idx == fl_nbr-1 && idx_srd >= lmt_rec->end-lmt_rec->srd+lmt_rec->drn) LAST_DESIRED_RECORD_IN_FILE=True;
-	  /* fxm */
+
+	  /* Determine whether this is first record in current group */
 	  if(False) FIRST_RECORD_OF_CURRENT_GROUP=True;
-	  /* fxm */
-	  if(False) LAST_RECORD_BEFORE_NORMALIZATION_OF_CURRENT_GROUP=True;
-	  /* fxm */
-	  if(False) OPERATE_ON_AND_OUTPUT_EACH_GROUP_SEPARATELY=True;
-	  
+
+	  /* Determine whether this is last record in current group (LRCG)
+	     Must know this inside srd/drn loops to use ncra normalization/writing code for both MRO and non-MRO
+	     if FLG_MRO then LRCG occurs dnr_nbr records after FRCG
+	     if !FLG_MRO then LRCG true iff last valid input record */
+	  if((fl_idx == fl_nbr-1) && /* Last file */
+	     (idx_srd+lmt_rec->srd > lmt_rec->end) && /* Last stride */
+	     (idx_drn+1L > drn_nbr)) /* Last record */
+	    LAST_RECORD_OF_CURRENT_GROUP=True;
+
 	  /* Process all variables in current record */
 	  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s contributes to output record %ld\n"),idx_srd,fl_in,rec_in_cml);
         
@@ -794,7 +801,7 @@ main(int argc,char **argv)
 	  lmt_all_rec->lmt_dmn[0]->srd=1L;   
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_drn,idx_rec_crr_in,idx_rec_out,rec_in_cml,idx_srd,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,LAST_DESIRED_RECORD_IN_FILE,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,OPERATE_ON_AND_OUTPUT_EACH_GROUP_SEPARATELY,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_drn,idx_rec_crr_in,idx_rec_out,rec_in_cml,idx_srd,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,LAST_DESIRED_RECORD_IN_FILE,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    in_id=in_id_arr[omp_get_thread_num()];
@@ -820,7 +827,7 @@ main(int argc,char **argv)
 	    
 	    if(prg == ncra){
 	      /* Initialize tally and accumululation arrays when appropriate */
-	      if(!rec_in_cml || (OPERATE_ON_AND_OUTPUT_EACH_GROUP_SEPARATELY && FIRST_RECORD_OF_CURRENT_GROUP)){
+	      if(!rec_in_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)){
 		(void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
 		(void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
 	      } /* end if FIRST_RECORD_OF_CURRENT_GROUP */
@@ -829,11 +836,11 @@ main(int argc,char **argv)
 		 Stuff first record into output buffer regardless of nco_op_typ; ignore later records (rec_in_cml > 1)
 		 Temporarily fixes TODO nco941 */
               if(var_prc[idx]->type == NC_CHAR){
-                if(!rec_in_cml) nco_opr_drv(rec_in_cml,nco_op_min,var_prc[idx],var_prc_out[idx]);
+                if(!rec_in_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) nco_opr_drv(rec_in_cml,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
 	        /* Convert char, short, long, int types to doubles before arithmetic
 		   Output variable type is "sticky" so only convert on first record */
-	        if(rec_in_cml == 0L) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	        if(!rec_in_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	        var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 		/* Perform arithmetic operations: avg, min, max, ttl, ... */
 	        nco_opr_drv(rec_in_cml,nco_op_typ,var_prc[idx],var_prc_out[idx]);
@@ -865,7 +872,7 @@ main(int argc,char **argv)
 	    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	  } /* end (OpenMP parallel for) loop over variables */
 
-	  if(prg == ncra && LAST_RECORD_BEFORE_NORMALIZATION_OF_CURRENT_GROUP){
+	  if(prg == ncra && LAST_RECORD_OF_CURRENT_GROUP){
 	    /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
 	       except ncra normalizes after every fxm records, while ncea normalizes once, after all files. */
 	    (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
@@ -884,7 +891,7 @@ main(int argc,char **argv)
 	      } /* end if variable is an array */
 	    } /* end loop over idx */
 	    idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	  } /* end if LAST_RECORD_BEFORE_NORMALIZATION_OF_CURRENT_GROUP */
+	  } /* end if LAST_RECORD_OF_CURRENT_GROUP */
 
 	  if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	  rec_in_cml++; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
@@ -908,7 +915,6 @@ main(int argc,char **argv)
 	  nco_exit(EXIT_FAILURE);
 	} /* end if */
       } /* end if */
-
 
       /* End of ncra, ncrcat section */
     }else{ /* ncea */

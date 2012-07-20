@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.41 2012-06-05 21:49:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.42 2012-07-20 20:45:50 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -62,7 +62,7 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
  const int nco_pck_plc); /* I [enm] Packing policy */
 
 nco_bool /* [flg] Program is multi-file operator */
-nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
+nco_is_mfo /* [fnc] Query whether program is multi-file operator */
 (const int prg_id); /* [enm] Program ID */
 
 int /* O [rcd] Return code */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.122 2012-07-20 04:57:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.123 2012-07-20 20:45:50 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -98,8 +98,8 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   lmt_dim->is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
   lmt_dim->is_usr_spc_max=False; /* True if user-specified, else False */
   lmt_dim->is_usr_spc_min=False; /* True if user-specified, else False */
-  /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
-  lmt_dim->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
+  /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
+  lmt_dim->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
   
   for(idx=0;idx<lmt_nbr;idx++){
     /* Copy user-specified limits, if any */
@@ -188,7 +188,7 @@ void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 (int nc_id, /* I [idx] netCDF file ID */
  lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
- long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
+ long rec_in_cml, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
@@ -200,9 +200,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   char *msg_sng=NULL_CEWI; /* [sng] Error message */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  nco_bool flg_no_data_error=False; /* True if domain brackets no data (and not an MFO/record coordinate) */
-  nco_bool flg_no_data=False; /* True if file contains no data for hyperslab */
-  nco_bool rec_dmn_and_mlt_fl_opr=False; /* True if record dimension in multi-file operator */
+  nco_bool flg_no_data_err=False; /* True if domain brackets no data (and not an MFO/record coordinate) */
+  nco_bool flg_no_data_ok=False; /* True if file contains no data for hyperslab */
+  nco_bool rec_dmn_and_mfo=False; /* True if record dimension in multi-file operator */
   nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in hyperslab specification */
   
   dmn_sct dim;
@@ -251,7 +251,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      Program defensively and define this flag in all cases. */
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
-  if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mlt_fl_opr=True; else rec_dmn_and_mlt_fl_opr=False;
+  if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
   
   /* Get dimension size */
   (void)nco_inq_dimlen(nc_id,lmt.id,&dim.sz);
@@ -337,7 +337,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"units"); /* Units attribute of coordinate variable */
     cln_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* Calendar attribute */
     
-    if(rec_dmn_and_mlt_fl_opr && fl_udu_sng && lmt.rbs_sng){ 
+    if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
       if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != EXIT_SUCCESS) lmt.origin=0.0;
@@ -346,7 +346,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     
     /* ncra and ncrcat read the "calendar" attribute in main() 
        Avoid multiple reads of calendar attritbute in multi-file operations */
-    if(!rec_dmn_and_mlt_fl_opr){
+    if(!rec_dmn_and_mfo){
       if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
     } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
@@ -431,7 +431,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       
       /* Re-base coordinates as necessary in multi-file operatators (MFOs)
          lmt.origin was calculated earlier in routine */
-      if(rec_dmn_and_mlt_fl_opr){ 
+      if(rec_dmn_and_mfo){ 
         if(lmt.min_sng) lmt.min_val-=lmt.origin;
         if(lmt.max_sng) lmt.max_val-=lmt.origin;   
       }  /* endif MFO */
@@ -455,15 +455,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  hyperslabs will choose the closest value rather than skip the file
 	  (I believe). This should be verified. */
        /* User specified single point, coordinate is not wrapped, and both extrema fall outside valid crd range */
-       (rec_dmn_and_mlt_fl_opr && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
+       (rec_dmn_and_mfo && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
        /* User did not specify single point, coordinate is not wrapped, and either extrema falls outside valid crd range */
        ((lmt.min_val < lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
        /* User did not specify single point, coordinate is wrapped, and both extrema fall outside valid crd range */
        ((lmt.min_val > lmt.max_val) && ((lmt.min_val > dmn_max) && (lmt.max_val < dmn_min))) ||
        False){
       /* Allow for possibility that current file is superfluous */
-      if(rec_dmn_and_mlt_fl_opr){
-	flg_no_data=True;
+      if(rec_dmn_and_mfo){
+	flg_no_data_ok=True;
 	goto no_data_ok;
       }else{
 	(void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid coordinate range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dmn_min,lmt.nm,dmn_max);
@@ -522,13 +522,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	   This returned all values but should have returned none
 	   Algorithm was broken because, although valid min and max indices existed,
 	   they contained the empty set. 
-	   Now when this happens, set flg_no_data_error block */
+	   Now when this happens, set flg_no_data_err block */
 	if( /* Points are not wrapped ... */
 	   (lmt.min_val < lmt.max_val) && 
 	   /* ... and valid indices were found for both bracketing points... */
 	   (lmt.min_idx != -1L && lmt.max_idx != -1L) &&
 	   /* ...and indices contain empty set, i.e., min_idx > max_idx for increasing data... */
-   	   lmt.min_idx > lmt.max_idx) flg_no_data_error=True;
+   	   lmt.min_idx > lmt.max_idx) flg_no_data_err=True;
 	/* end if monotonic_direction == increasing */
       }else{ /* monotonic_direction == decreasing */
 	if(lmt.min_sng){
@@ -548,7 +548,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	   /* ... and valid indices were found for both bracketing points... */
 	   (lmt.min_idx != -1L && lmt.max_idx != -1L) &&
 	   /* ...and indices contain empty set, i.e., min_idx < max_idx for decreasing data... */
-   	   lmt.min_idx < lmt.max_idx) flg_no_data_error=True;
+   	   lmt.min_idx < lmt.max_idx) flg_no_data_err=True;
       } /* end else monotonic_direction == decreasing */
       
       /* Case where both min_idx and max_idx = -1 was flagged as error above
@@ -573,36 +573,36 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Free space allocated for dimension */
     dmn_val_dp=(double*)nco_free(dmn_val_dp);
     
-    if(rec_dmn_and_mlt_fl_opr){ 
+    if(rec_dmn_and_mfo){ 
       /* No wrapping with multi-file operators */ 
       if((monotonic_direction == increasing && lmt.min_val > lmt.max_val) ||
 	 (monotonic_direction == decreasing && lmt.min_val < lmt.max_val)){
-	flg_no_data=True; 
+	flg_no_data_ok=True; 
 	goto no_data_ok;   
       } /* endif */
       
-      if(cnt_crr == 0L){
+      if(rec_in_cml == 0L){
 	/* Skipped records remains zero until valid records are processed */
 	lmt.rec_skp_vld_prv=0L;  
-      }else if(cnt_crr > 0L){
+      }else if(rec_in_cml > 0L){
 	/* Otherwise, account for previous records in strides across file boundaries */
         lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
 	if(lmt.srt>lmt.end){
 	  /* Do not allow record dimension wrapping in MFOs */
-	  flg_no_data=True;
+	  flg_no_data_ok=True;
 	  goto no_data_ok;
 	} /* endif  */
       } /* endif */
       
       /* If we are here then there are valid records in current file */ 
        
-      /* Integer arithmetic */ 
+      /* NB: This is---and must be---performed as integer arithmetic */ 
       cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;  
       lmt.end=lmt.srt+cnt_rmn_crr*lmt.srd;    
       
       if(lmt.end==lmt.srt) lmt.srd=1L;
       
-      lmt.rec_skp_nsh_spf+=dmn_sz;
+      lmt.rec_skp_ntl_spf+=dmn_sz;
       
       /* Compute diagnostic count for this file only */
       cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
@@ -612,7 +612,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 at end of this file (dmn_sz-1L-lmt.end) minus one */
       lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
       /*      assert(lmt.rec_skp_vld_prv >= 0);*/
-    } /* end if rec_dmn_and_mlt_fl_opr */
+    } /* end if rec_dmn_and_mfo */
     
   }else{ /* end if limit arguments were coordinate values */
     /* Convert limit strings to zero-based indicial offsets */
@@ -672,7 +672,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       (void)fprintf(stdout,"%s: ERROR User-specified duration exceeds stride for %s: %li > %li\n",prg_nm_get(),lmt.nm,lmt.drn,lmt.srd);
       msg_sng=strdup("Duration exceeds stride");
       NCO_SYNTAX_ERROR=True;
-    }else if(!rec_dmn_and_mlt_fl_opr && lmt.min_idx >= dmn_sz){
+    }else if(!rec_dmn_and_mfo && lmt.min_idx >= dmn_sz){
       msg_sng=strdup("Minimum index greater than size in non-MFO");
       NCO_SYNTAX_ERROR=True;
       (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
@@ -685,10 +685,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* !NCO_SYNTAX_ERROR */
 
     /* NB: Duration is officially supported only for ncra and ncrcat (record dimension only) */
-    if(lmt.drn != 1L && !rec_dmn_and_mlt_fl_opr) (void)fprintf(stderr,"%s: WARNING Duration argument is only supported for record dimension on multi-file operators, use at your own risk...\n",prg_nm_get());
+    if(lmt.drn != 1L && !rec_dmn_and_mfo) (void)fprintf(stderr,"%s: WARNING Duration argument is only supported for the record dimension on ncra and ncrcat operations\n",prg_nm_get());
 
     /* Logic depends on whether this is record dimension in multi-file operator */
-    if(!rec_dmn_and_mlt_fl_opr || !lmt.is_usr_spc_lmt){
+    if(!rec_dmn_and_mfo || !lmt.is_usr_spc_lmt){
       /* For non-record dimensions and for record dimensions where limit 
 	 was automatically generated (to include whole file), starting
 	 and ending indices are simply minimum and maximum indices already 
@@ -700,46 +700,46 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
 	 rec_skp_vld_prv is used only by multi-file operators
 	 rec_skp_vld_prv counts records skipped at end of previous valid file
-	 cnt_crr and rec_skp_nsh_spf are both zero only for first file
+	 rec_in_cml and rec_skp_ntl_spf are both zero only for first file
 	 No records were skipped in previous files */
 
-        if(cnt_crr == 0L && lmt.rec_skp_nsh_spf == 0L) lmt.rec_skp_vld_prv=0L;
+      if(rec_in_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
       
-	/* For record dimensions with user-specified limit, allow for possibility 
-	   that limit pertains to record dimension in a multi-file operator.
-	   Then user-specified maximum index may exceed number of records in any one file
-	   Thus lmt.srt does not necessarily equal lmt.min_idx and 
-	   lmt.end does not necessarily equal lmt.max_idx */
-	/* NB: Stride is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only) */
-	if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
-	{ /* Block to hide scope of local internal variables */
-          long min_lcl;
-          long max_lcl; 
-	  
-          min_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : 0L); 
-          max_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_skp_nsh_spf+dmn_sz-1L); 
-	  
-	  /* Are we passed max_lcl? */
-          if(max_lcl < lmt.rec_skp_nsh_spf){
-	    flg_no_data=True;
-	    goto no_data_ok;
-	  } /* endif passed max_lcl */
-
+      /* For record dimensions with user-specified limit, allow for possibility 
+	 that limit pertains to record dimension in a multi-file operator.
+	 Then user-specified maximum index may exceed number of records in any one file
+	 Thus lmt.srt does not necessarily equal lmt.min_idx and 
+	 lmt.end does not necessarily equal lmt.max_idx */
+      /* NB: Stride is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only) */
+      if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
+      { /* Block to hide scope of local internal variables */
+	long min_lcl;
+	long max_lcl; 
+	
+	min_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : 0L); 
+	max_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_skp_ntl_spf+dmn_sz-1L); 
+	
+	/* Are we passed max_lcl? */
+	if(max_lcl < lmt.rec_skp_ntl_spf){
+	  flg_no_data_ok=True;
+	  goto no_data_ok;
+	} /* endif passed max_lcl */
+	
           /* Is min_idx in current record? */
-          if(min_lcl > lmt.rec_skp_nsh_spf+dmn_sz-1L){
-	    flg_no_data=True;
-	    goto no_data_ok;
-	  } /* endif min_idx in current record */
-	  
+	if(min_lcl > lmt.rec_skp_ntl_spf+dmn_sz-1L){
+	  flg_no_data_ok=True;
+	  goto no_data_ok;
+	} /* endif min_idx in current record */
+	
 	  /* Start index is min_idx adjusted for any skipped initial superfluous files */  
-	  if(cnt_crr == 0L) lmt.srt=min_lcl-lmt.rec_skp_nsh_spf; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
-	  
-          if(lmt.srt > dmn_sz-1L){
-	    flg_no_data=True;
+	if(rec_in_cml == 0L) lmt.srt=min_lcl-lmt.rec_skp_ntl_spf; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
+	
+	if(lmt.srt > dmn_sz-1L){
+	    flg_no_data_ok=True;
 	    goto no_data_ok;
 	  } /* endif */
 	  
-          lmt.end=(max_lcl < lmt.rec_skp_nsh_spf+dmn_sz) ? max_lcl-lmt.rec_skp_nsh_spf : dmn_sz-1L;
+          lmt.end=(max_lcl < lmt.rec_skp_ntl_spf+dmn_sz) ? max_lcl-lmt.rec_skp_ntl_spf : dmn_sz-1L;
 	  /* Integer arithmetic */
 	  cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;
 	  lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
@@ -748,7 +748,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         /* 20101202: hmb set stride to one */
 	if(lmt.end == lmt.srt) lmt.srd=1;
 	
-	lmt.rec_skp_nsh_spf+=dmn_sz;	
+	lmt.rec_skp_ntl_spf+=dmn_sz;	
 	/* Compute diagnostic count for this file only */
 	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
 	/* Save current rec_skp_vld_prv for diagnostics */
@@ -803,7 +803,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* Cases where domain bracketed no data, in error have counts reset to zero here
      This kludge allows codepaths for both WRP and out-of-domain to flow without goto statements
      Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
-  if(flg_no_data_error) lmt.cnt=0L;
+  if(flg_no_data_err) lmt.cnt=0L;
 
   /* Exit when valid bracketed range contains no coordinates and that is not legal,
      i.e., this is not a superfluous file in an MFO */
@@ -816,23 +816,23 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
      Index-valued limits with no values in current file flow here naturally */
  no_data_ok: /* end goto */
-  if(flg_no_data){
+  if(flg_no_data_ok){
     /* File is superfluous (contributes no data) to specified hyperslab
        Set output parameters to well-defined state
        This state must not cause ncra or ncrcat to retrieve any data
-       Since ncra and ncrcat use loops for the record dimension, this
-       may be accomplished by returning loop control values that cause
-       loop always to be skipped, never entered, e.g., lmt_rec.srt > lmt_rec.end */
+       ncra and ncrcat use loops for the record dimension, so this is
+       accomplished by setting loop control values (lmt_rec.srt > lmt_rec.end)
+       that cause record loop always to be skipped (never entered) */
     lmt.srt=-1L;
     lmt.end=lmt.srt-1L;
     lmt.cnt=-1L;
     /* Keep track of number of records skipped in initial superfluous files */
-    /* if(cnt_crr == 0L) lmt.rec_skp_nsh_spf+=dmn_sz; */
-    /* total number of records processed */
-    lmt.rec_skp_nsh_spf+=dmn_sz; 
-    /* number records skipped since last good one */ 
+    /* if(rec_in_cml == 0L) lmt.rec_skp_ntl_spf+=dmn_sz; */
+    /* Total number of records processed fxm */
+    lmt.rec_skp_ntl_spf+=dmn_sz; 
+    /* Number records skipped since last good one fxm */ 
     lmt.rec_skp_vld_prv+=dmn_sz;  
-    /* Set variables to preserve utility of diagnostic routines at end of routine */
+    /* Set variables to preserve utility of diagnostics at end of routine */
     cnt_rmn_crr=rec_skp_vld_prv_dgn=0L;
   } /* endif */
   
@@ -845,9 +845,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"Limit type is %s\n",(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
     (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
     (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
-    (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data) ? "is superfluous to" : "is required by",(flg_no_data) ? "will not" : "will");
-    if(rec_dmn_and_mlt_fl_opr) (void)fprintf(stderr,"Records skipped in initial superfluous files (20120718: fxm wrong for first file) = %li\n",lmt.rec_skp_nsh_spf);
-    if(rec_dmn_and_mlt_fl_opr) (void)fprintf(stderr,"Records read from previous files = %li\n",cnt_crr);
+    (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data_ok) ? "is superfluous to" : "is required by",(flg_no_data_ok) ? "will not" : "will");
+    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files (20120718: fxm wrong for first file) = %li\n",lmt.rec_skp_ntl_spf);
+    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Valid records read (and used) from previous files = %li\n",rec_in_cml);
     if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
     if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
     if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv_dgn (previous file, if any) = %li \n",rec_skp_vld_prv_dgn);
@@ -870,11 +870,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
     (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
     (void)fprintf(stderr,"DRN = %s\n",lmt.drn != 1L ? "YES" : "NO");
-    (void)fprintf(stderr,"MRO = %s\n",lmt.flg_mro ? "YES" : "NO");
-    (void)fprintf(stderr,"no_data = %s\n\n",flg_no_data ? "True" : "False");
+    (void)fprintf(stderr,"MRO = %s\n\n",lmt.flg_mro ? "YES" : "NO");
   } /* end dbg */
   
-  if(lmt.srt > lmt.end && !flg_no_data){
+  if(lmt.srt > lmt.end && !flg_no_data_ok){
     if(prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
     if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try multislabbing (http://nco.sf.net/nco.html#msa) wrapped dimension using ncks first, and then apply %s to the resulting file\n",prg_nm_get());
   } /* end dbg */
@@ -959,8 +958,8 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     lmt[idx]->srd_sng=NULL;
     lmt[idx]->drn_sng=NULL;
     lmt[idx]->mro_sng=NULL;
-    /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
-    lmt[idx]->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
+    /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
+    lmt[idx]->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
     
     /* Fill-in structure */
     lmt[idx]->nm=arg_lst[0];
