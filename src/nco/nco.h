@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.177 2012-07-18 23:32:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.178 2012-07-20 04:23:56 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -434,6 +434,7 @@ extern "C" {
     char *drn_sng; /* User-specified string for dimension duration */
     char *max_sng; /* User-specified string for dimension maximum */
     char *min_sng; /* User-specified string for dimension minimum */
+    char *mro_sng; /* User-specified string for multi-record output */
     char *nm; /* [sng] Dimension name */
     char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
     char *srd_sng; /* User-specified string for dimension stride */
@@ -451,6 +452,7 @@ extern "C" {
     long rec_skp_vld_prv; /* Records skipped since prevous good one (multi-file record dimension only) */
     long srd; /* Stride of hyperslab */
     long srt; /* Index to start of hyperslab */
+    nco_bool flg_mro; /* True for multi-record output (used by ncra only) */
     nco_bool is_rec_dmn; /* True if record dimension, else False */
     nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
     nco_bool is_usr_spc_max; /* True if user-specified, else False */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.39 2012-07-19 00:38:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.40 2012-07-20 04:23:56 zender Exp $ */
 
 /* Copyright (C) 1995--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -214,8 +214,10 @@ nco_aux_evl
   base.is_usr_spc_lmt=True; 
   base.is_usr_spc_min=True; 
   base.is_usr_spc_max=True;
+  base.flg_mro=False;
   base.srd_sng=(char *)strdup("1");
   base.drn_sng=(char *)strdup("1");
+  base.mro_sng=(char *)strdup("m");
   base.is_rec_dmn=0;
   base.id=dmn_id;
   base.min_idx=0;

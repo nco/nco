@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.95 2012-07-19 22:03:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.96 2012-07-20 04:23:56 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1255,10 +1255,12 @@ nco_msa_lmt_all_int
     lmt_rgl->cnt=dmn_sz;
     lmt_rgl->srd=1L;
     lmt_rgl->drn=1L;
+    lmt_rgl->flg_mro=False;
     lmt_rgl->min_sng=NULL;
     lmt_rgl->max_sng=NULL;
     lmt_rgl->srd_sng=NULL;
     lmt_rgl->drn_sng=NULL;
+    lmt_rgl->mro_sng=NULL;
     lmt_rgl->rbs_sng=NULL;
     lmt_rgl->origin=0.0;
 

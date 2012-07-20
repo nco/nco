@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.120 2012-07-19 22:03:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.121 2012-07-20 04:23:56 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -15,11 +15,12 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated limit structure */
   lmt->nm=(char *)nco_free(lmt->nm);
-  lmt->min_sng=(char *)nco_free(lmt->min_sng);
-  lmt->max_sng=(char *)nco_free(lmt->max_sng);
-  lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
   lmt->drn_sng=(char *)nco_free(lmt->drn_sng);
-  lmt->rbs_sng=(char*)nco_free(lmt->rbs_sng);   
+  lmt->max_sng=(char *)nco_free(lmt->max_sng);
+  lmt->min_sng=(char *)nco_free(lmt->min_sng);
+  lmt->mro_sng=(char *)nco_free(lmt->mro_sng);
+  lmt->rbs_sng=(char *)nco_free(lmt->rbs_sng);   
+  lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
   
   lmt=(lmt_sct *)nco_free(lmt);
   
@@ -118,6 +119,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
       } /* end if */
       if(lmt[idx]->srd_sng) lmt_dim->srd_sng=(char *)strdup(lmt[idx]->srd_sng); else lmt_dim->srd_sng=NULL;
       if(lmt[idx]->drn_sng) lmt_dim->drn_sng=(char *)strdup(lmt[idx]->drn_sng); else lmt_dim->drn_sng=NULL;
+      if(lmt[idx]->mro_sng) lmt_dim->mro_sng=(char *)strdup(lmt[idx]->mro_sng); else lmt_dim->mro_sng=NULL;
       lmt_dim->nm=(char *)strdup(lmt[idx]->nm);
       break;
     } /* end if */
@@ -141,6 +143,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
     lmt_dim->nm=(char *)strdup(dmn_nm);
     lmt_dim->srd_sng=NULL;
     lmt_dim->drn_sng=NULL;
+    lmt_dim->mro_sng=NULL;
     /* Generate min and max strings to look as if user had specified them
        Adjust accordingly if FORTRAN_IDX_CNV was requested for other dimensions
        These sizes will later be decremented in nco_lmt_evl() where all information
@@ -228,6 +231,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   prg_id=prg_get(); /* Program ID */
   
   /* Initialize limit structure */
+  lmt.flg_mro=False;
   lmt.drn=1L;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
@@ -259,6 +263,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   if(dmn_sz < 1L){
     (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
     nco_exit(EXIT_FAILURE);
+  } /* end if */
+  
+  if(lmt.mro_sng){
+    if(!strcasecmp(lmt.mro_sng,"m")){
+      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for \"%s\", %s, must be \"m\" or \"M\"\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    lmt.flg_mro=True;
   } /* end if */
   
   if(lmt.drn_sng){
@@ -570,7 +582,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       } /* endif */
       
       if(cnt_crr == 0L){
-	/* If no valid records yet processed, initialize skipped records to zero */
+	/* Skipped records remains zero until valid records are processed */
 	lmt.rec_skp_vld_prv=0L;  
       }else if(cnt_crr > 0L){
 	/* Otherwise, account for previous records in strides across file boundaries */
@@ -844,6 +856,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
     (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
     (void)fprintf(stderr,"drn_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.drn_sng);
+    (void)fprintf(stderr,"mro_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.mro_sng);
     (void)fprintf(stderr,"monotonic_direction = %s\n",(monotonic_direction == not_checked) ? "not checked" : (monotonic_direction == increasing) ? "increasing" : "decreasing");
     (void)fprintf(stderr,"min_val = %g\n",lmt.min_val);
     (void)fprintf(stderr,"max_val = %g\n",lmt.max_val);
@@ -857,6 +870,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
     (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
     (void)fprintf(stderr,"DRN = %s\n",lmt.drn != 1L ? "YES" : "NO");
+    (void)fprintf(stderr,"MRO = %s\n",lmt.flg_mro ? "YES" : "NO");
     (void)fprintf(stderr,"no_data = %s\n\n",flg_no_data ? "True" : "False");
   } /* end dbg */
   
@@ -920,10 +934,13 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     }else if(arg_nbr == 5 && arg_lst[4] == NULL){ /* Duration should be specified */
       msg_sng=strdup("Duration should be specified");
       NCO_SYNTAX_ERROR=True;
+    }else if(arg_nbr == 6 && arg_lst[5] == NULL){ /* Group-mode should be specified */
+      msg_sng=strdup("Group-mode should be specified");
+      NCO_SYNTAX_ERROR=True;
     } /* end else */
     
     if(NCO_SYNTAX_ERROR){
-      (void)fprintf(stdout,"%s: ERROR parsing hyperslab specification for dimension %s\n%s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net/nco.html#hyp\n",prg_nm_get(),lmt_arg[idx],msg_sng,prg_nm_get());
+     (void)fprintf(stdout,"%s: ERROR parsing hyperslab specification for dimension %s\n%s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net/nco.html#hyp\n",prg_nm_get(),lmt_arg[idx],msg_sng,prg_nm_get());
       msg_sng=(char *)nco_free(msg_sng);
       nco_exit(EXIT_FAILURE);
     } /* !NCO_SYNTAX_ERROR */
@@ -941,6 +958,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     lmt[idx]->max_sng=NULL;
     lmt[idx]->srd_sng=NULL;
     lmt[idx]->drn_sng=NULL;
+    lmt[idx]->mro_sng=NULL;
     /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
     lmt[idx]->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
     
@@ -952,6 +970,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     if(arg_nbr > 2) lmt[idx]->max_sng=arg_lst[2]; 
     if(arg_nbr > 3) lmt[idx]->srd_sng=arg_lst[3];
     if(arg_nbr > 4) lmt[idx]->drn_sng=arg_lst[4];
+    if(arg_nbr > 5) lmt[idx]->mro_sng=arg_lst[5];
     
     if(lmt[idx]->max_sng == NULL) lmt[idx]->is_usr_spc_max=False; else lmt[idx]->is_usr_spc_max=True;
     if(lmt[idx]->min_sng == NULL) lmt[idx]->is_usr_spc_min=False; else lmt[idx]->is_usr_spc_min=True;

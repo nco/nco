@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.45 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.46 2012-07-20 04:23:56 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -21,6 +21,7 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
+#include <strings.h> /* strcasecmp() */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
