@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1193 2012-07-20 21:42:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1194 2012-07-20 21:44:23 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -690,13 +690,13 @@ nco1058. ncap2: allow new variables within where() statement
 nco1059. nco: ncatted keep type same by default when modifying/overwriting attribute
 nco1060. ncra: allow stride argument to determine averaging length, and store multiple time-averages in output, e.g.,
 	 Old:
-	 ncra -O -C -F -d time,1,10,4 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Average every fourth slice, store 1
-	 ncrcat -O -C -F -d time,1,10,4 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Concat every fourth slice, store 3
+	 ncra -O -C -F -d time,1,10,4 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average every fourth slice, store 1
+	 ncrcat -O -C -F -d time,1,10,4 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Concat every fourth slice, store 3
 	 New:
-	 ncra2 -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Average every fourth pair of slices, store 1 (norm at end)
-	 ncra2 -O -C -F -d time,1,10,4,2,M -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Average every fourth pair of slices, store 3 (norm/write as you go)
-	 ncra2 -O -C -F -d time,1,10,2,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Average (in pairs) every slice, store 1 (norm at end)
-	 ncrcat2 -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Concat every fourth pair of slices, store 1,2,5,6,9,10
+	 ncra2 -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average every fourth pair of slices, store 1 (norm at end)
+	 ncra2 -O -C -F -d time,1,10,4,2,M -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average every fourth pair of slices, store 3 (norm/write as you go)
+	 ncra2 -O -C -F -d time,1,10,2,2 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average (in pairs) every slice, store 1 (norm at end)
+	 ncrcat2 -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Concat every fourth pair of slices, store 1,2,5,6,9,10
 nco1061. ncrcat coordinate-selected hyperslabs get srt wrong on all files except first:
 	 ncrcat -O -C -d time,2.,3. -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc
 nco1063. use '--with-nc-config=path' in configure when possible (rich signell idea) 
