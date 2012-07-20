@@ -1,5 +1,9 @@
 2012-07-19  Charlie Zender  <zender@uci.edu>
 
+	* #include <strings.h> for strcasecmp() prototype
+
+	* Add Multi-record Output (MRO) flag handling
+
 	* Differentiate indices necessary to implement multi-record outputs
 
 	* Rename idx_rec_out as rec_in_cml, and idx_rec as idx_rec_crr_in,
