@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.121 2012-07-20 04:23:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.122 2012-07-20 04:57:49 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -261,13 +261,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   /* Bomb if dmn_sz < 1 */
   if(dmn_sz < 1L){
-    (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
+    (void)fprintf(stdout,"%s: ERROR Size of dimension %s is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   
   if(lmt.mro_sng){
-    if(!strcasecmp(lmt.mro_sng,"m")){
-      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for \"%s\", %s, must be \"m\" or \"M\"\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
+    if(strcasecmp(lmt.mro_sng,"m")){
+      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be \"m\" or \"M\"\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.flg_mro=True;
@@ -275,26 +275,26 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   if(lmt.drn_sng){
     if(strchr(lmt.drn_sng,'.') || strchr(lmt.drn_sng,'e') || strchr(lmt.drn_sng,'E') || strchr(lmt.drn_sng,'d') || strchr(lmt.drn_sng,'D')){
-      (void)fprintf(stdout,"%s: ERROR Requested duration for \"%s\", %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.drn_sng);
+      (void)fprintf(stdout,"%s: ERROR Requested duration for %s, %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.drn_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.drn=strtol(lmt.drn_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.drn_sng,"strtol",sng_cnv_rcd);
     if(lmt.drn < 1L){
-      (void)fprintf(stdout,"%s: ERROR Duration for \"%s\" is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.drn);
+      (void)fprintf(stdout,"%s: ERROR Duration for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.drn);
       nco_exit(EXIT_FAILURE);
     } /* end if */
   } /* end if */
   
   if(lmt.srd_sng){
     if(strchr(lmt.srd_sng,'.') || strchr(lmt.srd_sng,'e') || strchr(lmt.srd_sng,'E') || strchr(lmt.srd_sng,'d') || strchr(lmt.srd_sng,'D')){
-      (void)fprintf(stdout,"%s: ERROR Requested stride for \"%s\", %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
+      (void)fprintf(stdout,"%s: ERROR Requested stride for %s, %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.srd=strtol(lmt.srd_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.srd_sng,"strtol",sng_cnv_rcd);
     if(lmt.srd < 1L){
-      (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
+      (void)fprintf(stdout,"%s: ERROR Stride for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
       nco_exit(EXIT_FAILURE);
     } /* end if */
   } /* end if */
@@ -916,7 +916,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     if(arg_nbr < 2){ /* Need more than just dimension name */
       msg_sng=strdup("Need more than just dimension name");
       NCO_SYNTAX_ERROR=True;
-    }else if(arg_nbr > 5){ /* Too much information */
+    }else if(arg_nbr > 6){ /* Too much information */
       msg_sng=strdup("Too much information");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_lst[0] == NULL){ /* Dimension name not specified */
