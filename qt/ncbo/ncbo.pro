@@ -21,6 +21,8 @@ CONFIG( debug, debug|release ) {
 # netCDF
 DEFINES += ENABLE_NETCDF4
 DEFINES += HAVE_NETCDF4_H
+win32:DEFINES += NEED_STRCASECMP
+win32:DEFINES += NEED_STRCASESTR
 
 # common NCO settings
 include (../nco.pri)
