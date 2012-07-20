@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.127 2012-07-20 23:03:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.128 2012-07-20 23:37:21 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -223,7 +223,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   long dmn_sz;
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
-  long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
+  long cnt_rmn_ttl=-1L; /* Total records to be read from this and all remaining files */
   long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file, if any (diagnostic only) */
   
   lmt=*lmt_ptr;
@@ -598,25 +598,25 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	} /* endif  */
       } /* endif */
       
-      /* If we are here then there are valid records in current file */ 
+      /* If we are here then there are valid records in current file */
        
       /* NB: This is---and must be---performed as integer arithmetic */ 
-      cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;  
-      lmt.end=lmt.srt+cnt_rmn_crr*lmt.srd;    
+      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
+      lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;    
       
-      if(lmt.end==lmt.srt) lmt.srd=1L;
+      /* 20101202: hmb set stride to one
+	 20120720: csz why did hmb do this? */
+      if(lmt.end == lmt.srt) lmt.srd=1L;
       
-      lmt.rec_skp_ntl_spf+=dmn_sz;
+      /* 20120720: Remove this */
+      /*      lmt.rec_skp_ntl_spf+=dmn_sz;*/
       
       /* Compute diagnostic count for this file only */
       cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
       /* Save current rec_skp_vld_prv for diagnostics */
       rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
       /* Next file needs to know how many records in this file come after
-	 (and thus will be skipped) the last used record in this file.
-	 
-	 stride minus number of unused records
-	 at end of this file (dmn_sz-1L-lmt.end) minus one */
+	 (and thus will be skipped) the last used record in this file. */
       lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
       /*      assert(lmt.rec_skp_vld_prv >= 0);*/
     } /* end if rec_dmn_and_mfo */
@@ -738,7 +738,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  goto no_data_ok;
 	} /* endif min_idx in current record */
 	
-	  /* Start index is min_idx adjusted for any skipped initial superfluous files */  
+	/* Start index is min_idx adjusted for any skipped initial superfluous files */  
 	if(rec_in_cml == 0L) lmt.srt=min_lcl-lmt.rec_skp_ntl_spf; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
 	
 	if(lmt.srt > dmn_sz-1L){
@@ -752,18 +752,19 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
 	} /* end block to hide scope of local internal variables */
 	
-        /* 20101202: hmb set stride to one */
-	if(lmt.end == lmt.srt) lmt.srd=1;
-	
-	lmt.rec_skp_ntl_spf+=dmn_sz;	
-	/* Compute diagnostic count for this file only */
-	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
-	/* Save current rec_skp_vld_prv for diagnostics */
-	rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-	/* rec_skp_vld_prv for next file is stride minus number of unused records
-	   at end of this file (dmn_sz-1L-lmt.end) minus one */
-	lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
-	/*  assert(lmt.rec_skp_vld_prv >= 0);*/
+      /* 20101202: hmb set stride to one
+	 20120720: csz why did hmb do this? */
+      if(lmt.end == lmt.srt) lmt.srd=1;
+      
+      lmt.rec_skp_ntl_spf+=dmn_sz;	
+      /* Compute diagnostic count for this file only */
+      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
+      /* Save current rec_skp_vld_prv for diagnostics */
+      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+      /* rec_skp_vld_prv for next file is stride minus number of unused records
+	 at end of this file (dmn_sz-1L-lmt.end) minus one */
+      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+      /*  assert(lmt.rec_skp_vld_prv >= 0);*/
       
     } /* endif user-specified limits to record dimension */
     
@@ -836,9 +837,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Keep track of number of records skipped in initial superfluous files */
     /* if(rec_in_cml == 0L) lmt.rec_skp_ntl_spf+=dmn_sz; */
     /* Total number of records processed fxm */
-    lmt.rec_skp_ntl_spf+=dmn_sz; 
+    lmt.rec_skp_ntl_spf+=dmn_sz;
     /* Number records skipped since last good one fxm */ 
-    lmt.rec_skp_vld_prv+=dmn_sz;  
+    lmt.rec_skp_vld_prv+=dmn_sz;
     /* Set variables to preserve utility of diagnostics at end of routine */
     cnt_rmn_crr=rec_skp_vld_prv_dgn=0L;
   } /* endif */
