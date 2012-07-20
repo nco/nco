@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.97 2012-06-30 19:23:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.98 2012-07-20 23:05:26 pvicente Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -21,7 +21,7 @@
     // C Standard Headers
     #include <assert.h>
     #include <ctype.h>
-    #include <malloc.h>
+    #include <stdlib.h>
     #include <math.h>
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
