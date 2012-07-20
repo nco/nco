@@ -17436,9 +17436,9 @@ echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
 
-echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
+#echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+#echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
+#echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
 # Check whether --enable-netcdf4 was given.
 if test "${enable_netcdf4+set}" = set; then :
   enableval=$enable_netcdf4; enable_netcdf4=${enableval}
@@ -17459,23 +17459,23 @@ fi # !netCDF4
 
 # Test if user set NETCDF4_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
-echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
+#echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
-        echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
+ #       echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
     else
 	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
-        echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
+ #       echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
     fi
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
-else
-echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
+#else
+#echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
 fi
-echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
+#echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+#echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
+#echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
@@ -18584,7 +18584,7 @@ fi
 echo "##########################################################"
 echo "#     Sorting out MacOSX build parameters                #"
 echo "##########################################################"
-echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
+#echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
 if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
     echo "Phew, NOT MacOSX, adding -lnco to LIBS"
     LIBS="-lnco ${LIBS}"
@@ -19112,19 +19112,36 @@ echo "########################################"
 echo "#     Testing for UDUNITS support      #"
 echo "########################################"
 # Begin UDUnits support
-echo "Beginning generic tests for UDUnits"
+#echo "Beginning generic tests for UDUnits"
 
 #AC_CHECK_LIB([udunits2],[ut_parse],[LIBS="-ludunits2 ${LIBS}"],[AC_MSG_NOTICE([cannot find udunits2 library])])
-echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
-echo "DEBUG: NETCDF_INC = ${NETCDF_INC}"
-echo "DEBUG: Before UDUnits2 tests LIBS = ${LIBS}"
+#echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
+#echo "DEBUG: NETCDF_INC = ${NETCDF_INC}"
+#echo "DEBUG: Before UDUnits2 tests LIBS = ${LIBS}"
 
-
+#echo "DEBUG: Before UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
 #Fedora 1.7 has /usr/include/udunits2/udunits2.h
-CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"
+#add this path to CPPFLAGS if it exists, otherwise do nothing
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2/udunits2.h" >&5
+$as_echo_n "checking for /usr/include/udunits2/udunits2.h... " >&6; }
+if ${ac_cv_file__usr_include_udunits2_udunits2_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/include/udunits2/udunits2.h"; then
+  ac_cv_file__usr_include_udunits2_udunits2_h=yes
+else
+  ac_cv_file__usr_include_udunits2_udunits2_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_include_udunits2_udunits2_h" >&5
+$as_echo "$ac_cv_file__usr_include_udunits2_udunits2_h" >&6; }
+if test "x$ac_cv_file__usr_include_udunits2_udunits2_h" = xyes; then :
+  CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"
+fi
 
-echo "DEBUG: Before UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
-
+#echo "DEBUG: After UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
 
 
 # Check whether --enable-udunits was given.
@@ -19142,7 +19159,7 @@ else
 fi
 
 # Are both UDUnits and UDUnits2 requested?
-echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_udunits2}"
+#echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_udunits2}"
 if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
 # Override UDUnits request
     echo "WARNING: Requested both UDUnits and UDUnits2 support---overriding UDUnits"
@@ -19250,28 +19267,9 @@ cat >>confdefs.h <<_ACEOF
 #define UDUNITS2_PATH "$nco_udunits2_xml"
 _ACEOF
 
-    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
-    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
 
-    #Fedora 1.7
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2/udunits2.h" >&5
-$as_echo_n "checking for /usr/include/udunits2/udunits2.h... " >&6; }
-if ${ac_cv_file__usr_include_udunits2_udunits2_h+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/include/udunits2/udunits2.h"; then
-  ac_cv_file__usr_include_udunits2_udunits2_h=yes
-else
-  ac_cv_file__usr_include_udunits2_udunits2_h=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_include_udunits2_udunits2_h" >&5
-$as_echo "$ac_cv_file__usr_include_udunits2_udunits2_h" >&6; }
-if test "x$ac_cv_file__usr_include_udunits2_udunits2_h" = xyes; then :
-  have_udunits2_extra=yes
-fi
+#    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
+#    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:" >&5
@@ -19349,8 +19347,6 @@ else
   enable_udunits2=no
 fi
 
-#  elif test "${have_udunits2_extra}"; then
-#       AC_CHECK_FILE([/usr/include/udunits2/udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
     else
 	ac_fn_c_check_header_mongrel "$LINENO" "udunits2.h" "ac_cv_header_udunits2_h" "$ac_includes_default"
 if test "x$ac_cv_header_udunits2_h" = xyes; then :
@@ -19379,7 +19375,7 @@ $as_echo "$as_me: UDUnits2 support enabled" >&6;}
 #   AC_ARG_VAR([UDUNITS2_PATH],Location of UDUnits2 database 'udunits2.xml' (run-time))
 
 fi
-echo "DEBUG: After UDUnits2 tests LIBS = ${LIBS}"
+#echo "DEBUG: After UDUnits2 tests LIBS = ${LIBS}"
 # This would activate conditional UDUnits2 tests, if there were any
 # AM_CONDITIONAL(TEST_UDUNITS2,[test "${enable_udunits2}" = 'yes'])
 # End UDUnits2

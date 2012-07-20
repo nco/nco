@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.361 2012-07-19 22:27:29 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.362 2012-07-20 19:32:35 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -247,9 +247,9 @@ echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
 
-echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
+#echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+#echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
+#echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
 AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features (same as enable-netcdf-4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=yes)
 # 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
 if test "x${enable_netcdf4}" = 'xno' ; then
@@ -258,23 +258,23 @@ fi # !netCDF4
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
-echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
+#echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
-        echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
+ #       echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
     else
 	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
-        echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
+ #       echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
     fi
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
-else
-echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
+#else
+#echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
 fi
-echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
+#echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
+#echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
+#echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
@@ -366,7 +366,7 @@ NCO_CHECK_FUNCS([strdup strcasecmp strcasestr])
 echo "##########################################################"
 echo "#     Sorting out MacOSX build parameters                #"
 echo "##########################################################"
-echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
+#echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
 if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
     echo "Phew, NOT MacOSX, adding -lnco to LIBS"
     LIBS="-lnco ${LIBS}"
@@ -597,25 +597,24 @@ echo "########################################"
 echo "#     Testing for UDUNITS support      #"
 echo "########################################"
 # Begin UDUnits support
-echo "Beginning generic tests for UDUnits"
+#echo "Beginning generic tests for UDUnits"
 
 #AC_CHECK_LIB([udunits2],[ut_parse],[LIBS="-ludunits2 ${LIBS}"],[AC_MSG_NOTICE([cannot find udunits2 library])])
-echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
-echo "DEBUG: NETCDF_INC = ${NETCDF_INC}"
-echo "DEBUG: Before UDUnits2 tests LIBS = ${LIBS}"
+#echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
+#echo "DEBUG: NETCDF_INC = ${NETCDF_INC}"
+#echo "DEBUG: Before UDUnits2 tests LIBS = ${LIBS}"
 
-
+#echo "DEBUG: Before UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
 #Fedora 1.7 has /usr/include/udunits2/udunits2.h
-CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"
-
-echo "DEBUG: Before UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
-
+#add this path to CPPFLAGS if it exists, otherwise do nothing
+AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
+#echo "DEBUG: After UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
 
 
 AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=no]]]),enable_udunits=${enableval},enable_udunits=yes)
 AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [[default=yes]]]),enable_udunits2=${enableval},enable_udunits2=yes)
 # Are both UDUnits and UDUnits2 requested?
-echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_udunits2}"
+#echo "DEBUG: enable_udunits = ${enable_udunits} and enable_udunits2 = ${enable_udunits2}"
 if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
 # Override UDUnits request
     echo "WARNING: Requested both UDUnits and UDUnits2 support---overriding UDUnits"
@@ -652,18 +651,15 @@ if test "${enable_udunits2}" != 'no'; then
     AC_CHECK_FILE([$nco_udunits2_xml],,AC_WARN([file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.]))
 # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
     AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_xml"],[Location of UDUnits2 data file])
-    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
-    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
+ 
+#    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
+#    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
 
-    #Fedora 1.7
-    AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [have_udunits2_extra=yes], [])
 
     AC_MSG_NOTICE([NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:])
     AC_CHECK_LIB([udunits2],[ut_read_xml],,enable_udunits2=no)
     if test "${UDUNITS2_PATH}"; then
 	AC_CHECK_FILE([${UDUNITS2_PATH}/include/udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
-#  elif test "${have_udunits2_extra}"; then
-#       AC_CHECK_FILE([/usr/include/udunits2/udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
     else
 	AC_CHECK_HEADER([udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
     fi
@@ -679,7 +675,7 @@ if test "${enable_udunits2}" != 'no'; then
 #   AC_ARG_VAR([UDUNITS2_PATH],Location of UDUnits2 database 'udunits2.xml' (run-time))
     AC_ARG_VAR([UDUNITS2_PATH],Root directory of UDUnits2 (normally contains [bin, include, lib, share] subdirectories))
 fi
-echo "DEBUG: After UDUnits2 tests LIBS = ${LIBS}"
+#echo "DEBUG: After UDUnits2 tests LIBS = ${LIBS}"
 # This would activate conditional UDUnits2 tests, if there were any
 # AM_CONDITIONAL(TEST_UDUNITS2,[test "${enable_udunits2}" = 'yes'])
 # End UDUnits2
