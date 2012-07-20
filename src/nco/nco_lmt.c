@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.125 2012-07-20 21:16:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.126 2012-07-20 22:33:19 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -224,7 +224,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   long dmn_sz;
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
   long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
-  long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file (diagnostic only) */
+  long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file, if any (diagnostic only) */
   
   lmt=*lmt_ptr;
   
@@ -613,7 +613,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       /* Save current rec_skp_vld_prv for diagnostics */
       rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
       /* rec_skp_vld_prv for next file is stride minus number of unused records
-	 at end of this file (dmn_sz-1L-lmt.end) minus one */
+	 ast end of this file (dmn_sz-1L-lmt.end) minus one */
       lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
       /*      assert(lmt.rec_skp_vld_prv >= 0);*/
     } /* end if rec_dmn_and_mfo */
@@ -850,7 +850,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
     (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
     (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data_ok) ? "is superfluous to" : "is required by",(flg_no_data_ok) ? "will not" : "will");
-    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files (20120718: fxm wrong for first file) = %li\n",lmt.rec_skp_ntl_spf);
+    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files (20120718: fxm wrong for first file?) = %li\n",lmt.rec_skp_ntl_spf);
     if(rec_dmn_and_mfo) (void)fprintf(stderr,"Valid records read (and used) from previous files = %li\n",rec_in_cml);
     if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
     if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.296 2012-07-20 21:03:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.297 2012-07-20 22:33:19 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.296 2012-07-20 21:03:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.296 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.297 2012-07-20 22:33:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.297 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -759,7 +759,7 @@ main(int argc,char **argv)
 	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,rec_in_cml);
         
         /* Update hyperslab start indices */
-        /* Beware lmt_all_rec points to the record limit of record struct of lmt_all_lst */
+        /* Beware lmt_all_rec points to record limit of record struct of lmt_all_lst */
         lmt_all_rec->lmt_dmn[0]->srt=idx_rec;
         lmt_all_rec->lmt_dmn[0]->end=idx_rec;
         lmt_all_rec->lmt_dmn[0]->cnt=1L;

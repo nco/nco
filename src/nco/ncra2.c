@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.5 2012-07-20 21:03:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.6 2012-07-20 22:33:19 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.5 2012-07-20 21:03:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.5 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.6 2012-07-20 22:33:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.6 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -773,7 +773,7 @@ main(int argc,char **argv)
 	     idx_srd: Starting index, on disk, of current strided record group (increments by srd)
 	     idx_drn: Offset of current record from start of current strided record group (increments by 1 for drn)
 	     idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
-	     rec_in_cml: Cumulative number of input records read (and written by ncrcat or used by ncra), aka valid records
+	     rec_in_cml: Cumulative number of input records read (and written by ncrcat or used by ncra)
 	     idx_rec_out: Index of record in output file */
 	  idx_rec_crr_in=idx_srd+idx_drn;
 	  if(fl_idx == fl_nbr-1 && idx_srd >= lmt_rec->end-lmt_rec->srd+lmt_rec->drn) LAST_DESIRED_RECORD_IN_FILE=True;
@@ -791,10 +791,10 @@ main(int argc,char **argv)
 	    LAST_RECORD_OF_CURRENT_GROUP=True;
 
 	  /* Process all variables in current record */
-	  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s contributes to output record %ld\n"),idx_srd,fl_in,rec_in_cml);
+	  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s contributes to output record %ld\n"),idx_rec_crr_in,fl_in,idx_rec_out);
         
 	  /* Update hyperslab start indices */
-	  /* Beware lmt_all_rec points to the record limit of record struct of lmt_all_lst */
+	  /* Beware lmt_all_rec points to record limit of record struct of lmt_all_lst */
 	  lmt_all_rec->lmt_dmn[0]->srt=idx_rec_crr_in;
 	  lmt_all_rec->lmt_dmn[0]->end=idx_rec_crr_in;
 	  lmt_all_rec->lmt_dmn[0]->cnt=1L;
