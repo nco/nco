@@ -4,8 +4,8 @@
    fed to lexer. */
 
 // Define an anonymous enum containing parser tokens
+#include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
 #include <fstream>
 #include <sstream>
 #include <antlr/AST.hpp>

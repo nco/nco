@@ -1,7 +1,7 @@
 #ifndef INC_NcapVector_hh_
 #define INC_NcapVector_hh_
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include <functional>
 #include <string>
