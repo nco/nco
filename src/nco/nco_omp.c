@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.54 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.55 2012-07-20 21:03:11 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -42,7 +42,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
      Copy appropriate filehandle to variable scoped shared in parallel clause */
 
   char *nvr_OMP_NUM_THREADS; /* [sng] Environment variable OMP_NUM_THREADS */
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
   nco_bool USR_SPC_THR_RQS=False;

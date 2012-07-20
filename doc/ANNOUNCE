@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.498 2012-07-19 22:03:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.499 2012-07-20 21:03:10 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
@@ -73,6 +73,10 @@ A. ncpdq -U now unpacks coordinate variables. ncpdq does not, by
    manual. Yet NCO may be used on files that were packed by other
    software and then it needs to unpack coordinate variables so...
    http://nco.sf.net/nco.html#ncpdq
+
+A. ncra/ncrcat averaging/concatenation of record coordinate-bounded
+   variable across two non-monotonic files now selects correct records
+   in all cases. fxm.
 
 KNOWN BUGS NOT YET FIXED:
 

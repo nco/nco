@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.97 2012-07-19 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.98 2012-07-20 21:03:11 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -114,13 +114,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.97 2012-07-19 00:08:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.98 2012-07-20 21:03:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_sct **cnk=NULL_CEWI;

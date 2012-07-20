@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.123 2012-07-20 20:45:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.124 2012-07-20 21:03:11 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -198,7 +198,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI; /* [sng] Error message */
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
   nco_bool flg_no_data_err=False; /* True if domain brackets no data (and not an MFO/record coordinate) */
   nco_bool flg_no_data_ok=False; /* True if file contains no data for hyperslab */

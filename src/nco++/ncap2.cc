@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.151 2012-07-10 10:24:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.152 2012-07-20 21:03:12 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -142,13 +142,13 @@ main(int argc,char **argv)
   char *fl_spt_usr=NULL_CEWI; /* Option s */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL_CEWI; /* [sng] String representation of current long-option name */
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.151 2012-07-10 10:24:46 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.151 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.152 2012-07-20 21:03:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.152 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

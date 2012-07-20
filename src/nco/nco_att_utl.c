@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.123 2012-07-18 23:32:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.124 2012-07-20 21:03:11 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -780,7 +780,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       if(aed_lst[idx].type == NC_CHAR){
 	aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
       }else{
-	char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+	char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 	double *val_arg_dbl=NULL_CEWI;
 	long long *val_arg_lng_lng=NULL_CEWI;
 	unsigned long long *val_arg_ulng_lng=NULL_CEWI;

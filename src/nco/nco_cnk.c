@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.34 2012-02-13 23:09:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.35 2012-07-20 21:03:11 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -120,7 +120,7 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
   void nco_usg_prn(void);
   
   char **arg_lst;
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   
   const char dlm_sng[]=",";
   

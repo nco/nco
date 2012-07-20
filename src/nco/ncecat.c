@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.204 2012-07-19 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.205 2012-07-20 21:03:11 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -101,10 +101,10 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.204 2012-07-19 00:08:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.204 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.205 2012-07-20 21:03:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.205 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;

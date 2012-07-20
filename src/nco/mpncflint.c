@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.103 2012-07-19 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.104 2012-07-20 21:03:11 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -111,10 +111,10 @@ main(int argc,char **argv)
   char *ntp_nm=NULL; /* Option i */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.103 2012-07-19 00:08:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.104 2012-07-20 21:03:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.104 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;

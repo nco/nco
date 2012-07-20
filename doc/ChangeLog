@@ -1,10 +1,12 @@
 2012-07-20  Charlie Zender  <zender@uci.edu>
 
-	* Fix segfault parsing coordinate value hyperslabs where max
-	specified and min omitted (TODO nco1062)
-
 	* Add regression for concatenation of record coordinate-bounded
-	variable across two non-monotonic files (TODO nco1061) 
+	variable across two non-monotonic files (TODO nco1061)
+
+	* Fix segfault parsing coordinate value hyperslabs where max
+	specified and min omitted (TODO nco1062) fxm
+
+	* Initialize sng_cnv_rcd with NULL_CEWI instead of CHAR_CEWI
 
 2012-07-19  Charlie Zender  <zender@uci.edu>
 
