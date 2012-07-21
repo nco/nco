@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.128 2012-07-20 23:37:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.129 2012-07-21 07:12:38 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -98,8 +98,10 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   lmt_dim->is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
   lmt_dim->is_usr_spc_max=False; /* True if user-specified, else False */
   lmt_dim->is_usr_spc_min=False; /* True if user-specified, else False */
-  /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
+  /* rec_skp_ntl_spf, rec_skp_vld_prv, and rec_in_cml are used for only for record dimension in MFOs */
   lmt_dim->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
+  lmt_dim->rec_skp_vld_prv=0L; /* Number of records skipped since previous good one */
+  lmt_dim->rec_in_cml=0L; /* Number of records, read or not, in previously processed files */
   
   for(idx=0;idx<lmt_nbr;idx++){
     /* Copy user-specified limits, if any */
@@ -188,7 +190,7 @@ void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 (int nc_id, /* I [idx] netCDF file ID */
  lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
- long rec_in_cml, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
+ long rec_usd_cml, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
@@ -419,7 +421,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       } /* end if */
       
       if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val)) nco_exit(EXIT_FAILURE);
-      
       if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val)) nco_exit(EXIT_FAILURE);
       
     }else{ /* end UDUnits conversion */
@@ -585,10 +586,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	goto no_data_ok;   
       } /* endif */
       
-      if(rec_in_cml == 0L){
+      if(rec_usd_cml == 0L){
 	/* Skipped records remains zero until valid records are processed */
 	lmt.rec_skp_vld_prv=0L;  
-      }else if(rec_in_cml > 0L){
+      }else if(rec_usd_cml > 0L){
 	/* Otherwise, adjust starting index by records skipped in jumps across file boundaries */
         lmt.srt+=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
 	if(lmt.srt>lmt.end){
@@ -603,22 +604,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       /* NB: This is---and must be---performed as integer arithmetic */ 
       cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
       lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;    
-      
-      /* 20101202: hmb set stride to one
-	 20120720: csz why did hmb do this? */
-      if(lmt.end == lmt.srt) lmt.srd=1L;
-      
-      /* 20120720: Remove this */
-      /*      lmt.rec_skp_ntl_spf+=dmn_sz;*/
-      
-      /* Compute diagnostic count for this file only */
-      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
-      /* Save current rec_skp_vld_prv for diagnostics */
-      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-      /* Next file needs to know how many records in this file come after
-	 (and thus will be skipped) the last used record in this file. */
-      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
-      /*      assert(lmt.rec_skp_vld_prv >= 0);*/
     } /* end if rec_dmn_and_mfo */
     
   }else{ /* end if limit arguments were coordinate values */
@@ -707,10 +692,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
 	 rec_skp_vld_prv is used only by multi-file operators
 	 rec_skp_vld_prv counts records skipped at end of previous valid file
-	 rec_in_cml and rec_skp_ntl_spf are both zero only for first file
-	 No records were skipped in previous files */
-
-      if(rec_in_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
+	 rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
+      if(rec_usd_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
       
       /* For record dimensions with user-specified limit, allow for possibility 
 	 that limit pertains to record dimension in a multi-file operator.
@@ -732,14 +715,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  goto no_data_ok;
 	} /* endif passed max_lcl */
 	
-          /* Is min_idx in current record? */
+	/* Is min_idx in current record? */
 	if(min_lcl > lmt.rec_skp_ntl_spf+dmn_sz-1L){
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
 	} /* endif min_idx in current record */
 	
 	/* Start index is min_idx adjusted for any skipped initial superfluous files */  
-	if(rec_in_cml == 0L) lmt.srt=min_lcl-lmt.rec_skp_ntl_spf; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
+	if(rec_usd_cml == 0L) lmt.srt=min_lcl-lmt.rec_skp_ntl_spf; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
 	
 	if(lmt.srt > dmn_sz-1L){
 	    flg_no_data_ok=True;
@@ -752,25 +735,22 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
 	} /* end block to hide scope of local internal variables */
 	
-      /* 20101202: hmb set stride to one
-	 20120720: csz why did hmb do this? */
-      if(lmt.end == lmt.srt) lmt.srd=1;
-      
-      lmt.rec_skp_ntl_spf+=dmn_sz;	
-      /* Compute diagnostic count for this file only */
+      /* Diagnostic count for this file only */
       cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
-      /* Save current rec_skp_vld_prv for diagnostics */
-      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-      /* rec_skp_vld_prv for next file is stride minus number of unused records
-	 at end of this file (dmn_sz-1L-lmt.end) minus one */
-      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
-      /*  assert(lmt.rec_skp_vld_prv >= 0);*/
-      
+
     } /* endif user-specified limits to record dimension */
     
   } /* end else limit arguments are hyperslab indices */
   
-  /* Compute cnt from srt, end, and srd
+  if(rec_dmn_and_mfo){ 
+    /* Save current rec_skp_vld_prv for diagnostics */
+    rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+    /* Next file needs to know how many records in this file come after
+       (and thus will be skipped) the last used record in this file. */
+    lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+  } /* !rec_dmn_and_mfo */      
+
+ /* Compute cnt from srt, end, and srd
      This is fine for multi-file record dimensions since those operators read-in one
      record at a time and thus never actually use lmt.cnt for record dimension. */
   if(lmt.srd == 1L){
@@ -834,16 +814,17 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     lmt.srt=-1L;
     lmt.end=lmt.srt-1L;
     lmt.cnt=-1L;
-    /* Keep track of number of records skipped in initial superfluous files */
-    /* if(rec_in_cml == 0L) lmt.rec_skp_ntl_spf+=dmn_sz; */
-    /* Total number of records processed fxm */
-    lmt.rec_skp_ntl_spf+=dmn_sz;
-    /* Number records skipped since last good one fxm */ 
+    /* Augment number of records skipped in initial superfluous files */
+    if(rec_usd_cml == 0L) lmt.rec_skp_ntl_spf+=dmn_sz; 
+    /* Augment records skipped since last good one */ 
     lmt.rec_skp_vld_prv+=dmn_sz;
     /* Set variables to preserve utility of diagnostics at end of routine */
     cnt_rmn_crr=rec_skp_vld_prv_dgn=0L;
   } /* endif */
   
+  /* Accumulate count of records in all processed files, including this one */
+  lmt.rec_in_cml+=dmn_sz;
+
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
   
@@ -854,8 +835,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
     (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
     (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data_ok) ? "is superfluous to" : "is required by",(flg_no_data_ok) ? "will not" : "will");
+    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Cumulative number of records in all files including this one = %li\n",lmt.rec_in_cml);
     if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files (20120718: fxm wrong for first file?) = %li\n",lmt.rec_skp_ntl_spf);
-    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Valid records read (and used) from previous files = %li\n",rec_in_cml);
+    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Valid records read (and used) from previous files = %li\n",rec_usd_cml);
     if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
     if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
     if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv_dgn (previous file, if any) = %li \n",rec_skp_vld_prv_dgn);

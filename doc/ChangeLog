@@ -1,3 +1,7 @@
+2012-07-21  Charlie Zender  <zender@uci.edu>
+
+	* De-conflate rec_skp_ntl_spf from rec_in_cml
+
 2012-07-20  Charlie Zender  <zender@uci.edu>
 
 	* Add regression test for and fix concatenation of record

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.179 2012-07-20 20:45:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.180 2012-07-21 07:12:38 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -448,8 +448,9 @@ extern "C" {
     long end; /* Index to end of hyperslab */
     long max_idx; /* Index of maximum requested value in dimension */
     long min_idx; /* Index of minimum requested value in dimension */
-    long rec_skp_ntl_spf; /* Sum of records in already processed files (multi-file record dimension only) */
-    long rec_skp_vld_prv; /* Records skipped since prevous good one (multi-file record dimension only) */
+    long rec_in_cml; /* Number of records, read or not, in all processed files (multi-file record dimension only) */
+    long rec_skp_ntl_spf; /* Records skipped in initial superfluous files (multi-file record dimension only) */
+    long rec_skp_vld_prv; /* Records skipped since previous good one (multi-file record dimension only) */
     long srd; /* Stride of hyperslab */
     long srt; /* Index to start of hyperslab */
     nco_bool flg_mro; /* True for multi-record output (used by ncra only) */
