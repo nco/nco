@@ -20,7 +20,7 @@
 
 	* Differentiate indices necessary to implement multi-record outputs
 
-	* Rename idx_rec_out as rec_in_cml, and idx_rec as idx_rec_crr_in,
+	* Rename idx_rec_out as rec_usd_cml, and idx_rec as idx_rec_crr_in,
 	and add new idx_rec_out that means what it says.
 
 	* Remove superfluous OpenMP headers from some library files
