@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.132 2012-07-23 21:05:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.133 2012-07-23 21:09:11 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -754,10 +754,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end else limit arguments are hyperslab indices */
   
   if(rec_dmn_and_mfo){ 
-    /* Save current rec_skp_vld_prv for diagnostics */
+    /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
     rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-    /* Next file needs to know how many records in this file come after
-       (and thus will be skipped) the last used record in this file. */
+    /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
     lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
   } /* !rec_dmn_and_mfo */      
 
