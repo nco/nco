@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.133 2012-07-23 21:09:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.134 2012-07-23 21:24:20 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -606,9 +606,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       
       /* If we are here then there are valid records in current file */
        
-      /* NB: This is---and must be---performed as integer arithmetic */ 
-      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
-      lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;    
     } /* end if rec_dmn_and_mfo */
     
   }else{ /* end if limit arguments were coordinate values */
@@ -744,16 +741,18 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  
 	lmt.end=(max_end_lcl < lmt.rec_in_cml+dmn_sz) ? max_end_lcl-lmt.rec_in_cml : dmn_sz-1L;
 	
-	/* NB: This is---and must be---performed as integer arithmetic */ 
-	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
-	lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;    
       } /* end block hides scope of local internal variables */
 	
+      /* If we are here then there are valid records in current file */
+       
     } /* endif user-specified limits to record dimension */
     
   } /* end else limit arguments are hyperslab indices */
   
   if(rec_dmn_and_mfo){ 
+    /* NB: This is---and must be---performed as integer arithmetic */ 
+    cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
+    lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;    
     /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
     rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
     /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
