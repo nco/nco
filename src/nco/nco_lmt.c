@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.130 2012-07-23 05:17:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.131 2012-07-23 18:24:20 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -715,7 +715,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	min_srt_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : 0L); 
 	max_end_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_in_cml+dmn_sz-1L); 
 	
-	/* Are we past max_end_lcl? */
+	/* Are we past the file containing max_end_lcl yet? */
 	if(max_end_lcl < lmt.rec_in_cml){
 	  /* This and all subsequent files are superfluous because all requested records have already been read 
 	     TODO nco1064 optimize by adding an "input complete" flag to jump out of MFO file loop
@@ -724,12 +724,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  goto no_data_ok;
 	} /* endif past max_end_lcl */
 	
-	/* Have we reached the file containing min_idx yet? */
+	/* Have we reached the file containing min_srt_lcl yet? */
 	if(min_srt_lcl > lmt.rec_in_cml+dmn_sz-1L){
 	  /* This and all previous files are superfluous because the starting record is in a subsequent file */
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
-	} /* endif min_idx in current file */
+	} /* endif min_srt_lcl in future file */
 	
 	/* Until records have been used, start index is min_idx adjusted for records contained in all previous files
 	   After that fxm */  
