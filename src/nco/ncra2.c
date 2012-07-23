@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.7 2012-07-21 07:12:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.8 2012-07-23 05:17:20 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -107,6 +107,7 @@ main(int argc,char **argv)
   nco_bool LAST_DESIRED_RECORD_IN_FILE=False;
   nco_bool LAST_RECORD_OF_CURRENT_GROUP=False;
   nco_bool FIRST_RECORD_OF_CURRENT_GROUP=False;
+  nco_bool FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
   nco_bool FLG_MRO=False;
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
@@ -137,8 +138,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.7 2012-07-21 07:12:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.7 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.8 2012-07-23 05:17:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.8 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -763,6 +764,15 @@ main(int argc,char **argv)
 	
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
 
+      /* 20120722: fxm Replacement loop control structure that works with DRN
+	 if(rec_rmn_prv_drn > 0L) 
+	 idx_rec_crr_in=lmt_rec->srt-rec_rmn_prv_drn;
+	 while(idx_rec_crr_in >= 0 && idx_rec_crr_in <= lmt_rec->end){
+	 
+	 idx_rec_crr_in+=lmt_rec->srd;
+	 } // end while loop over idx_srd and idx_drn
+       */
+
       /* Loop over each strided record in current file */
       for(idx_srd=lmt_rec->srt;idx_srd<=lmt_rec->end;idx_srd+=lmt_rec->srd){
 
@@ -801,7 +811,7 @@ main(int argc,char **argv)
 	  lmt_all_rec->lmt_dmn[0]->srd=1L;   
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_drn,idx_rec_crr_in,idx_rec_out,rec_usd_cml,idx_srd,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,LAST_DESIRED_RECORD_IN_FILE,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_drn,idx_rec_crr_in,idx_rec_out,rec_usd_cml,idx_srd,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,LAST_DESIRED_RECORD_IN_FILE,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,FLG_BFR_NEEDS_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    in_id=in_id_arr[omp_get_thread_num()];
@@ -811,6 +821,7 @@ main(int argc,char **argv)
 	    /* Retrieve variable from disk into memory */
 	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
             (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+	    if(prg == ncra) FLG_BFR_NEEDS_NRM=True; /* [flg] Current output buffers need normalization */
 
             /* Re-base record coordinate if necessary */
             if(var_prc[idx]->is_crd_var && lmt_rec->origin != 0.0){
@@ -876,6 +887,7 @@ main(int argc,char **argv)
 	    /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
 	       except ncra normalizes after every fxm records, while ncea normalizes once, after all files. */
 	    (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
+	    if(prg == ncra) FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
 
 	    /* Copy averages to output file */
 	    for(idx=0;idx<nbr_var_prc;idx++){
@@ -928,7 +940,7 @@ main(int argc,char **argv)
 	lmt_all_rec->dmn_cnt=lmt_rec->cnt; 
       } /* endif record dimension exists */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,in_id_arr,lmt_rec,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,FLG_BFR_NEEDS_NRM,in_id_arr,lmt_rec,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	in_id=in_id_arr[omp_get_thread_num()];
@@ -944,6 +956,7 @@ main(int argc,char **argv)
 	var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
 	nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	FLG_BFR_NEEDS_NRM=True; /* [flg] Current output buffers need normalization */
 	
 	/* Free current input buffer */
 	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
@@ -961,8 +974,11 @@ main(int argc,char **argv)
   } /* end loop over fl_idx */
   
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
-     except ncra normalizes after every fxm records, while ncea normalizes once, after all files. */
-  if(prg == ncea) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
+     except ncra normalizes after every fxm records, while ncea normalizes once, after all files.
+     Occassionally the last input file ends mid-group, or contains no valid records
+     In such cases ncra has accumulated an irregular number of records to normalize
+     FLG_BFR_NEEDS_NRM is true in such cases, and is always true for ncea */
+  if(FLG_BFR_NEEDS_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
   if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,xtr_nbr);

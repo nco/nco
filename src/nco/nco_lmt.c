@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.129 2012-07-21 07:12:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.130 2012-07-23 05:17:20 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -65,7 +65,7 @@ nco_lmt_all_lst_free /* [fnc] Free memory associated with lmt_all structure list
  const int lmt_all_nbr) /* I [nbr] Number of limit strucgtures in list */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Free all memory associated with dynamically allocated limit structure list */
+  /* Purpose: Free all memory associated with dynamically allocated lmt_all_sct structure list */
   int idx;
   
   for(idx=0;idx<lmt_all_nbr;idx++) lmt_all_lst[idx]=nco_lmt_all_free(lmt_all_lst[idx]);
@@ -85,7 +85,11 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  const nco_bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Purpose: Create stand-alone limit structure just for given dimension
-     ncra.c calls nco_lmt_sct_mk() to generate record dimension limit structure */
+     ncra.c calls nco_lmt_sct_mk() to generate record dimension limit structure
+     
+     This is a complex routine fundamental to most of NCO
+     It is easy to make subtle errors when changing it
+     Please ask CSZ to review any significant patches to this routine */
   
   int idx;
   int rcd; /* [rcd] Return code */
@@ -98,10 +102,11 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   lmt_dim->is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
   lmt_dim->is_usr_spc_max=False; /* True if user-specified, else False */
   lmt_dim->is_usr_spc_min=False; /* True if user-specified, else False */
-  /* rec_skp_ntl_spf, rec_skp_vld_prv, and rec_in_cml are used for only for record dimension in MFOs */
+  /* rec_skp_ntl_spf, rec_skp_vld_prv, rec_in_cml, and rec_rmn_prv_drn only used for MFO record dimension */
   lmt_dim->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
   lmt_dim->rec_skp_vld_prv=0L; /* Number of records skipped since previous good one */
   lmt_dim->rec_in_cml=0L; /* Number of records, read or not, in previously processed files */
+  lmt_dim->rec_rmn_prv_drn=0L; /* Records remaining-to-be-read to complete duration group from previous file */
   
   for(idx=0;idx<lmt_nbr;idx++){
     /* Copy user-specified limits, if any */
@@ -695,45 +700,54 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
       if(rec_usd_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
       
-      /* For record dimensions with user-specified limit, allow for possibility 
+      /* For record dimensions with user-specified limit, allow possibility 
 	 that limit pertains to record dimension in a multi-file operator.
 	 Then user-specified maximum index may exceed number of records in any one file
 	 Thus lmt.srt does not necessarily equal lmt.min_idx and 
 	 lmt.end does not necessarily equal lmt.max_idx */
       /* NB: Stride is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only) */
       if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
-      { /* Block to hide scope of local internal variables */
-	long min_lcl;
-	long max_lcl; 
+
+      { /* Block hides scope of local internal variables */
+	long min_srt_lcl; /* [idx] Minimum start index for current file */
+	long max_end_lcl; /* [idx] Maximum end   index for current file */
 	
-	min_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : 0L); 
-	max_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_skp_ntl_spf+dmn_sz-1L); 
+	min_srt_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : 0L); 
+	max_end_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_in_cml+dmn_sz-1L); 
 	
-	/* Are we passed max_lcl? */
-	if(max_lcl < lmt.rec_skp_ntl_spf){
+	/* Are we past max_end_lcl? */
+	if(max_end_lcl < lmt.rec_in_cml){
+	  /* This and all subsequent files are superfluous because all requested records have already been read 
+	     TODO nco1064 optimize by adding an "input complete" flag to jump out of MFO file loop
+	     Would save time because no other input files would need to be opened */
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
-	} /* endif passed max_lcl */
+	} /* endif past max_end_lcl */
 	
-	/* Is min_idx in current record? */
-	if(min_lcl > lmt.rec_skp_ntl_spf+dmn_sz-1L){
+	/* Have we reached the file containing min_idx yet? */
+	if(min_srt_lcl > lmt.rec_in_cml+dmn_sz-1L){
+	  /* This and all previous files are superfluous because the starting record is in a subsequent file */
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
-	} /* endif min_idx in current record */
+	} /* endif min_idx in current file */
 	
-	/* Start index is min_idx adjusted for any skipped initial superfluous files */  
-	if(rec_usd_cml == 0L) lmt.srt=min_lcl-lmt.rec_skp_ntl_spf; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
+	/* Until records have been used, start index is min_idx adjusted for records contained in all previous files
+	   After that fxm */  
+	/*	if(rec_usd_cml == 0L) lmt.srt=min_srt_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-1L-lmt.rec_in_cml%lmt.srd;*/
+	if(rec_usd_cml == 0L) lmt.srt=min_srt_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-lmt.rec_in_cml%lmt.srd;
 	
 	if(lmt.srt > dmn_sz-1L){
-	    flg_no_data_ok=True;
-	    goto no_data_ok;
-	  } /* endif */
+	  /* Perhaps data were read in previous file(s) yet next record is in future file due to long stride */
+	  flg_no_data_ok=True;
+	  goto no_data_ok;
+	} /* endif */
 	  
-          lmt.end=(max_lcl < lmt.rec_skp_ntl_spf+dmn_sz) ? max_lcl-lmt.rec_skp_ntl_spf : dmn_sz-1L;
-	  /* Integer arithmetic */
-	  cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;
-	  lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
-	} /* end block to hide scope of local internal variables */
+	lmt.end=(max_end_lcl < lmt.rec_in_cml+dmn_sz) ? max_end_lcl-lmt.rec_in_cml : dmn_sz-1L;
+
+	/* Integer arithmetic */
+	cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;
+	lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
+      } /* end block hides scope of local internal variables */
 	
       /* Diagnostic count for this file only */
       cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
@@ -751,8 +765,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* !rec_dmn_and_mfo */      
 
  /* Compute cnt from srt, end, and srd
-     This is fine for multi-file record dimensions since those operators read-in one
-     record at a time and thus never actually use lmt.cnt for record dimension. */
+    This is fine for multi-file record dimensions since those operators read-in one
+    record at a time and thus never actually use lmt.cnt for record dimension. */
   if(lmt.srd == 1L){
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
@@ -788,7 +802,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(first_good_idx_2nd_hyp_slb > lmt.end) lmt.end=last_good_idx_1st_hyp_slb;
   } /* end if */
 
-  /* Cases where domain bracketed no data, in error have counts reset to zero here
+  /* Cases where domain brackets no data, in error, have counts set to zero here
      This kludge allows codepaths for both WRP and out-of-domain to flow without goto statements
      Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
   if(flg_no_data_err) lmt.cnt=0L;
@@ -822,7 +836,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     cnt_rmn_crr=rec_skp_vld_prv_dgn=0L;
   } /* endif */
   
-  /* Accumulate count of records in all processed files, including this one */
+  /* Accumulate count of records in all opened files, including this one
+     Increment here at end so this structure member includes records from current file 
+     only at end of this routine, where it can only be used diagnostically
+     NB: Location of this augmentation is important */
   lmt.rec_in_cml+=dmn_sz;
 
   /* Place contents of working structure in location of returned structure */
