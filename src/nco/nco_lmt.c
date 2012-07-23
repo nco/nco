@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.131 2012-07-23 18:24:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.132 2012-07-23 21:05:16 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -709,13 +709,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
 
       { /* Block hides scope of local internal variables */
-	long min_srt_lcl; /* [idx] Minimum start index for current file */
-	long max_end_lcl; /* [idx] Maximum end   index for current file */
+	long min_srt_lcl; /* [idx] Minimum start index (in global index space, i.e., relative to first file) for current file */
+	long max_end_lcl; /* [idx] Maximum end   index (in global index space, i.e., relative to first file) for current file */
 	
-	min_srt_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : 0L); 
+	min_srt_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : lmt.rec_in_cml+0L); 
 	max_end_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_in_cml+dmn_sz-1L); 
 	
-	/* Are we past the file containing max_end_lcl yet? */
+	/* Are we past file containing max_end_lcl yet? */
 	if(max_end_lcl < lmt.rec_in_cml){
 	  /* This and all subsequent files are superfluous because all requested records have already been read 
 	     TODO nco1064 optimize by adding an "input complete" flag to jump out of MFO file loop
@@ -724,17 +724,17 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  goto no_data_ok;
 	} /* endif past max_end_lcl */
 	
-	/* Have we reached the file containing min_srt_lcl yet? */
+	/* Have we reached file containing min_srt_lcl yet? */
 	if(min_srt_lcl > lmt.rec_in_cml+dmn_sz-1L){
 	  /* This and all previous files are superfluous because the starting record is in a subsequent file */
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
 	} /* endif min_srt_lcl in future file */
 	
-	/* Until records have been used, start index is min_idx adjusted for records contained in all previous files
-	   After that fxm */  
-	/*	if(rec_usd_cml == 0L) lmt.srt=min_srt_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-1L-lmt.rec_in_cml%lmt.srd;*/
-	if(rec_usd_cml == 0L) lmt.srt=min_srt_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-lmt.rec_in_cml%lmt.srd;
+	/* Until records have been used, start index is min_srt_lcl adjusted for records contained in all previous files
+	   After that start index loses memory of/dependence on global start index, and cares only about how many records,
+	   if any, were skipped since last valid record. This number, modulo stride, is new start index. */
+	if(rec_usd_cml == 0L) lmt.srt=min_srt_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
 	
 	if(lmt.srt > dmn_sz-1L){
 	  /* Perhaps data were read in previous file(s) yet next record is in future file due to long stride */
@@ -743,15 +743,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	} /* endif */
 	  
 	lmt.end=(max_end_lcl < lmt.rec_in_cml+dmn_sz) ? max_end_lcl-lmt.rec_in_cml : dmn_sz-1L;
-
-	/* Integer arithmetic */
-	cnt_rmn_crr=(lmt.end-lmt.srt)/lmt.srd;
-	lmt.end=lmt.srt+lmt.srd*cnt_rmn_crr;
+	
+	/* NB: This is---and must be---performed as integer arithmetic */ 
+	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
+	lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;    
       } /* end block hides scope of local internal variables */
 	
-      /* Diagnostic count for this file only */
-      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
-
     } /* endif user-specified limits to record dimension */
     
   } /* end else limit arguments are hyperslab indices */
