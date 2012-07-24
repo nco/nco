@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.11 2012-07-24 03:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.12 2012-07-24 04:33:18 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -97,7 +97,7 @@ extern int max_int(int a, int b);
 inline int min_int(int a, int b){return (a < b) ? a : b;}
 inline int max_int(int a, int b){return (a > b) ? a : b;}
 
-int 
+int
 main(int argc,char **argv)
 {
   nco_bool CNV_ARM;
@@ -112,7 +112,7 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool LAST_DESIRED_RECORD_IN_FILE=False;
+  nco_bool FINAL_DESIRED_RECORD_FROM_ALL_INPUT_FILES=False;
   nco_bool LAST_RECORD_OF_CURRENT_GROUP=False;
   nco_bool FIRST_RECORD_OF_CURRENT_GROUP=False;
   nco_bool FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.11 2012-07-24 03:04:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.11 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.12 2012-07-24 04:33:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.12 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -782,11 +782,13 @@ main(int argc,char **argv)
 	/* Each group comprises DRN records */
 	if(FIRST_RECORD_OF_CURRENT_GROUP) rec_rmn_prv_drn=lmt_rec->drn;
 
-	if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L)) LAST_DESIRED_RECORD_IN_FILE=True;
+	if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L)) FINAL_DESIRED_RECORD_FROM_ALL_INPUT_FILES=True;
 
 	/* Index juggling:
 	   idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
 	   rec_usd_cml: Cumulative number of input records read (and written by ncrcat or used by ncra)
+	   lmt_rec->rec_rmn_prv_drn: Structure member, at start of this while loop, contains records remaining-to-be-read to complete duration group from previous file. Structure member remains constant until next file is read.
+	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records rbbemaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
 	   idx_rec_out: Index of record in output file */
 	
 	/* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
@@ -803,7 +805,7 @@ main(int argc,char **argv)
 	lmt_all_rec->lmt_dmn[0]->srd=1L;   
 	
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,LAST_DESIRED_RECORD_IN_FILE,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,FLG_BFR_NEEDS_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,FINAL_DESIRED_RECORD_FROM_ALL_INPUT_FILES,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,FLG_BFR_NEEDS_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  in_id=in_id_arr[omp_get_thread_num()];
@@ -870,12 +872,12 @@ main(int argc,char **argv)
 	     Otherwise missing_value will be double-promoted when next record read 
 	     Do not convert after last record otherwise normalization fails 
 	     due to wrong missing_value type (needs promoted type, not unpacked type) */
-	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_DESIRED_RECORD_IN_FILE) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !FINAL_DESIRED_RECORD_FROM_ALL_INPUT_FILES) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	} /* end (OpenMP parallel for) loop over variables */
 
-	if(prg == ncra && LAST_RECORD_OF_CURRENT_GROUP){
+	if(prg == ncra && ((FLG_MRO && LAST_RECORD_OF_CURRENT_GROUP) || FINAL_DESIRED_RECORD_FROM_ALL_INPUT_FILES)){
 	  /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
 	     except ncra normalizes after every drn records, while ncea normalizes once, after files loop. */
 	  (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
@@ -895,9 +897,9 @@ main(int argc,char **argv)
 	    } /* end if variable is an array */
 	  } /* end loop over idx */
 	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	} /* end if LAST_RECORD_OF_CURRENT_GROUP */
+	} /* end if normalize and write */
 
-	if(rec_rmn_prv_drn-- > 0L) idx_rec_crr_in+=1L; else idx_rec_crr_in+=lmt_rec->srd;
+	if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd;
 
 	if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	rec_usd_cml++; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
@@ -906,7 +908,7 @@ main(int argc,char **argv)
       } /* end master while loop over records in current file */
 
       if(fl_idx == fl_nbr-1){
-	/* Once final file has been processed, warn if different than number of requested records were read... */
+	/* Once final file has been processed, warn if other than number of requested records were read... */
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
 	  long rec_nbr_rqs; /* Number of records user requested */
 	  /* fxm something wrong */
@@ -967,7 +969,7 @@ main(int argc,char **argv)
   } /* end loop over fl_idx */
   
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
-     except ncra normalizes after every fxm records, while ncea normalizes once, after all files.
+     except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
      Occassionally the last input file ends mid-group, or contains no valid records
      In such cases ncra has accumulated an irregular number of records to normalize
      FLG_BFR_NEEDS_NRM is true in such cases, and is always true for ncea */
