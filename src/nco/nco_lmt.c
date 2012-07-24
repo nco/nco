@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.135 2012-07-24 00:05:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.136 2012-07-24 05:38:08 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -243,6 +243,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   lmt.min_val=0.0;
   lmt.drn=1L;
   lmt.srd=1L;
+  lmt.flg_input_complete=False;
   
   /* Get dimension ID */
   rcd=nco_inq_dimid_flg(nc_id,lmt.nm,&lmt.id);
@@ -716,8 +717,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	/* Are we past file containing max_end_lcl yet? */
 	if(max_end_lcl < lmt.rec_in_cml){
 	  /* This and all subsequent files are superfluous because all requested records have already been read 
-	     TODO nco1064 optimize by adding an "input complete" flag to jump out of MFO file loop
-	     Would save time because no other input files would need to be opened */
+	     Optimize MFOs by adding an "input complete" flag to jump out of file loop
+	     Saves time because no other input files will be opened */
+	  lmt.flg_input_complete=True;
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
 	} /* endif past max_end_lcl */

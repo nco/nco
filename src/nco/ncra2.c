@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.13 2012-07-24 05:02:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.14 2012-07-24 05:38:08 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.13 2012-07-24 05:02:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.13 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.14 2012-07-24 05:38:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.14 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -914,7 +914,7 @@ main(int argc,char **argv)
 	  long rec_nbr_rqs; /* Number of records user requested */
 	  /* fxm something wrong */
 	  rec_nbr_rqs=lmt_rec->drn*(1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd); /* Full groups of DRN */
-	  rec_nbr_rqs-=lmt_rec->drn-(lmt_rec->max_idx-lmt_rec->min_idx)%lmt_rec->srd; /* Truncated elements of last group */
+	  rec_nbr_rqs-=-1L+lmt_rec->drn-(lmt_rec->max_idx-lmt_rec->min_idx)%lmt_rec->srd; /* Truncated elements of last group */
 	  if(rec_nbr_rqs != rec_usd_cml) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found and used\n"),prg_nm_get(),rec_nbr_rqs,rec_usd_cml);
 	} /* end if */
 	/* ... and die if no records were read ... */
@@ -967,6 +967,12 @@ main(int argc,char **argv)
     /* Dispose local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
     
+    /* Do not bother to open more input files */
+    if(lmt_rec->flg_input_complete){
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"%s: All requested data have been read, remaining %d input files will not be opened\n",prg_nm_get(),fl_nbr-fl_idx);
+      continue;
+    } /* endif dbg */
+
   } /* end loop over fl_idx */
   
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 

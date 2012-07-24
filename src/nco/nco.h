@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.182 2012-07-24 00:05:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.183 2012-07-24 05:38:08 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -456,6 +456,7 @@ extern "C" {
     long srd; /* Stride of hyperslab */
     long srt; /* Index to start of hyperslab */
     nco_bool flg_mro; /* True for multi-record output (used by ncra only) */
+    nco_bool flg_input_complete; /* True for multi-file operators when no more files need be opened */
     nco_bool is_rec_dmn; /* True if record dimension, else False */
     nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
     nco_bool is_usr_spc_max; /* True if user-specified, else False */
