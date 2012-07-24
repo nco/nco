@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.61 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.62 2012-07-24 00:05:44 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -421,11 +421,6 @@ nco_lst_prs_sgl_2D /* [fnc] Create list of strings from given string and delimit
   return lst;
 
 } /* end nco_lst_prs_sgl_2D() */
-
-
-
-
-
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */

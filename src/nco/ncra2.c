@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.8 2012-07-23 05:17:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.9 2012-07-24 00:05:44 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -138,8 +138,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.8 2012-07-23 05:17:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.8 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.9 2012-07-24 00:05:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.9 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -760,17 +760,37 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
-    if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end)) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+    if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end) && lmt_rec->rec_rmn_prv_drn) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 	
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
 
       /* 20120722: fxm Replacement loop control structure that works with DRN
-	 if(rec_rmn_prv_drn > 0L) 
-	 idx_rec_crr_in=lmt_rec->srt-rec_rmn_prv_drn;
-	 while(idx_rec_crr_in >= 0 && idx_rec_crr_in <= lmt_rec->end){
+
+	 rec_rmn_sz=lmt_rec->rec_dmn_sz;
+	 // Initialize local copy of rec_rmn_prv_drn. Will possibly decrement it later.
+	 rec_rmn_prv_drn=lmt_rec->rec_rmn_prv_drn;
+	 idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : lmt_rec->srt;
+
+	 // Master loop over records in current file
+	 while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
+
+	 if(rec_rmn_prv_drn == 0L) FIRST_RECORD_OF_CURRENT_GROUP=True;
+	 if(FIRST_RECORD_OF_CURRENT_GROUP) rec_rmn_prv_drn=lmt_rec->drn;
+
+	 if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L)) LAST_DESIRED_RECORD_IN_FILE=True;
+
+	 if(idx_rec_crr_in) LAST_DESIRED_RECORD_IN_CURRENT_GROUP=True;
+
+
+	 // Do math
+	 // Normalize
+
 	 
-	 idx_rec_crr_in+=lmt_rec->srd;
-	 } // end while loop over idx_srd and idx_drn
+	 rec_rmn_prv_drn--;
+	 if(rec_rmn_prv_drn > 0L) idx_rec_crr_in+=1L; else idx_rec_crr_in+=lmt_rec->srd;
+
+	 } // end master while loop over records in current file
+
        */
 
       /* Loop over each strided record in current file */

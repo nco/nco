@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.134 2012-07-23 21:24:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.135 2012-07-24 00:05:44 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -239,9 +239,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   /* Initialize limit structure */
   lmt.flg_mro=False;
-  lmt.drn=1L;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
+  lmt.drn=1L;
   lmt.srd=1L;
   
   /* Get dimension ID */
@@ -265,6 +265,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
+  if(rec_dmn_and_mfo) lmt.rec_dmn_sz=dmn_sz;
   
   /* Bomb if dmn_sz < 1 */
   if(dmn_sz < 1L){
@@ -272,12 +273,17 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     nco_exit(EXIT_FAILURE);
   } /* end if */
   
-  if(lmt.mro_sng){
-    if(strcasecmp(lmt.mro_sng,"m")){
-      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be \"m\" or \"M\"\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
+  if(lmt.srd_sng){
+    if(strchr(lmt.srd_sng,'.') || strchr(lmt.srd_sng,'e') || strchr(lmt.srd_sng,'E') || strchr(lmt.srd_sng,'d') || strchr(lmt.srd_sng,'D')){
+      (void)fprintf(stdout,"%s: ERROR Requested stride for %s, %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.flg_mro=True;
+    lmt.srd=strtol(lmt.srd_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.srd_sng,"strtol",sng_cnv_rcd);
+    if(lmt.srd < 1L){
+      (void)fprintf(stdout,"%s: ERROR Stride for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
   } /* end if */
   
   if(lmt.drn_sng){
@@ -293,17 +299,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end if */
   } /* end if */
   
-  if(lmt.srd_sng){
-    if(strchr(lmt.srd_sng,'.') || strchr(lmt.srd_sng,'e') || strchr(lmt.srd_sng,'E') || strchr(lmt.srd_sng,'d') || strchr(lmt.srd_sng,'D')){
-      (void)fprintf(stdout,"%s: ERROR Requested stride for %s, %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
+  if(lmt.mro_sng){
+    if(strcasecmp(lmt.mro_sng,"m")){
+      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be \"m\" or \"M\"\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.srd=strtol(lmt.srd_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.srd_sng,"strtol",sng_cnv_rcd);
-    if(lmt.srd < 1L){
-      (void)fprintf(stdout,"%s: ERROR Stride for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
+    lmt.flg_mro=True;
   } /* end if */
   
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
@@ -749,10 +750,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     
   } /* end else limit arguments are hyperslab indices */
   
+  /* NB: MFO record dimension never reaches this block if current file is superfluous
+     In that case code has already branched down to flg_data_ok or flg_data_err */
   if(rec_dmn_and_mfo){ 
     /* NB: This is---and must be---performed as integer arithmetic */ 
     cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
-    lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;    
+    lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;   
     /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
     rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
     /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */

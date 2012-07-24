@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.29 2012-07-19 22:03:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.30 2012-07-24 00:05:44 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -86,6 +86,10 @@ nco_set_long /* [fnc] Set all values of long array */
 (const long sz, /* I [nbr] Size (in elements) of operand */
  const long val, /* I [] Number to set array to */
  long * restrict const op1); /* I/O [nbr] Array to be set */
+
+/* Define inline'd functions in header so source is visible to calling files */
+inline int max_int(int a, int b){return a > b ? a : b}
+inline int min_int(int a, int b){return a < b ? a : b}
 
 #ifdef __cplusplus
 } /* end extern "C" */
