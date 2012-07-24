@@ -19115,11 +19115,22 @@ echo "########################################"
 #echo "Beginning generic tests for UDUnits"
 
 #AC_CHECK_LIB([udunits2],[ut_parse],[LIBS="-ludunits2 ${LIBS}"],[AC_MSG_NOTICE([cannot find udunits2 library])])
-#echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
-#echo "DEBUG: NETCDF_INC = ${NETCDF_INC}"
-#echo "DEBUG: Before UDUnits2 tests LIBS = ${LIBS}"
+echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
+echo "DEBUG: NETCDF_INC = ${NETCDF_INC}"
+echo "DEBUG: Before UDUnits2 tests LIBS = ${LIBS}"
 
-#echo "DEBUG: Before UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
+
+
+# - Variable: CPPFLAGS
+# Header file search directory (`-IDIR') and any other miscellaneous
+# options for the C and C++ preprocessors and compilers.  If it is
+# not set in the environment when `configure' runs, the default
+# value is empty.  `configure' uses this variable when compiling or
+# preprocessing programs to test for C and C++ features.
+
+echo "DEBUG: Before UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
+echo "DEBUG: Before UDUnits2 tests LDFLAGS = ${LDFLAGS}"
+
 #Fedora 1.7 has /usr/include/udunits2/udunits2.h
 #add this path to CPPFLAGS if it exists, otherwise do nothing
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2/udunits2.h" >&5
@@ -19141,7 +19152,45 @@ if test "x$ac_cv_file__usr_include_udunits2_udunits2_h" = xyes; then :
   CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"
 fi
 
-#echo "DEBUG: After UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
+
+
+#Mac OSX MacPorts packages
+#sudo port install libdap
+#sudo port install gsl
+#sudo port install antlr
+#sudo port install udunits2
+#sudo port install netcdf
+#installs to /opt/local/include/udunits2/udunits2.h
+#/opt/local/share/udunits/udunits2.xml
+#add this path to CPPFLAGS if it exists, otherwise do nothing
+#AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
+$as_echo_n "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
+if ${ac_cv_file__opt_local_include_udunits2_udunits2_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/opt/local/include/udunits2/udunits2.h"; then
+  ac_cv_file__opt_local_include_udunits2_udunits2_h=yes
+else
+  ac_cv_file__opt_local_include_udunits2_udunits2_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_udunits2_udunits2_h" >&5
+$as_echo "$ac_cv_file__opt_local_include_udunits2_udunits2_h" >&6; }
+if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes; then :
+  non_std_udunits2=yes
+fi
+
+
+
+#/opt/local/lib/libudunits2.a
+#AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
+
+
+echo "DEBUG: After UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
+echo "DEBUG: After UDUnits2 tests LDFLAGS = ${LDFLAGS}"
 
 
 # Check whether --enable-udunits was given.
@@ -19268,8 +19317,8 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-#    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
-#    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
+    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
+    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:" >&5
@@ -19347,6 +19396,56 @@ else
   enable_udunits2=no
 fi
 
+
+#   Mac weirdness
+    elif test "${non_std_udunits2}" != 'no'; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
+$as_echo_n "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
+if ${ac_cv_file__opt_local_include_udunits2_udunits2_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/opt/local/include/udunits2/udunits2.h"; then
+  ac_cv_file__opt_local_include_udunits2_udunits2_h=yes
+else
+  ac_cv_file__opt_local_include_udunits2_udunits2_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_udunits2_udunits2_h" >&5
+$as_echo "$ac_cv_file__opt_local_include_udunits2_udunits2_h" >&6; }
+if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes; then :
+
+$as_echo "#define HAVE_UDUNITS2_H 1" >>confdefs.h
+
+fi
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
+$as_echo_n "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
+if ${ac_cv_file__opt_local_include_udunits2_udunits2_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/opt/local/include/udunits2/udunits2.h"; then
+  ac_cv_file__opt_local_include_udunits2_udunits2_h=yes
+else
+  ac_cv_file__opt_local_include_udunits2_udunits2_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_udunits2_udunits2_h" >&5
+$as_echo "$ac_cv_file__opt_local_include_udunits2_udunits2_h" >&6; }
+if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes; then :
+  CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"
+fi
+
+        LIBS="${LIBS} -ludunits2"
+
+$as_echo "#define ENABLE_UDUNITS 1" >>confdefs.h
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: UDUnits2 support enabled" >&5
+$as_echo "$as_me: UDUnits2 support enabled" >&6;}
+
     else
 	ac_fn_c_check_header_mongrel "$LINENO" "udunits2.h" "ac_cv_header_udunits2_h" "$ac_includes_default"
 if test "x$ac_cv_header_udunits2_h" = xyes; then :
@@ -19375,7 +19474,7 @@ $as_echo "$as_me: UDUnits2 support enabled" >&6;}
 #   AC_ARG_VAR([UDUNITS2_PATH],Location of UDUnits2 database 'udunits2.xml' (run-time))
 
 fi
-#echo "DEBUG: After UDUnits2 tests LIBS = ${LIBS}"
+echo "DEBUG: After UDUnits2 tests LIBS = ${LIBS}"
 # This would activate conditional UDUnits2 tests, if there were any
 # AM_CONDITIONAL(TEST_UDUNITS2,[test "${enable_udunits2}" = 'yes'])
 # End UDUnits2
