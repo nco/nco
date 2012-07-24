@@ -1,3 +1,7 @@
+2012-07-23  Pedro Vicente  <pvicente@uci.edu>
+
+        * Configure support for UDUnits2 for MacOSX using MacPorts package
+
 2012-07-23  Charlie Zender  <zender@uci.edu>
 
 	* Add max_int(), min_int() inline functions
