@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.12 2012-07-24 04:33:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.13 2012-07-24 05:02:05 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.12 2012-07-24 04:33:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.12 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.13 2012-07-24 05:02:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.13 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -899,8 +899,9 @@ main(int argc,char **argv)
 	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	} /* end if normalize and write */
 
-	if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd;
-
+	/* Prepare indices and flags for next iteration */
+	FIRST_RECORD_OF_CURRENT_GROUP=False;
+	if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
 	if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	rec_usd_cml++; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
 	if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
@@ -914,7 +915,7 @@ main(int argc,char **argv)
 	  /* fxm something wrong */
 	  rec_nbr_rqs=lmt_rec->drn*(1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd); /* Full groups of DRN */
 	  rec_nbr_rqs-=lmt_rec->drn-(lmt_rec->max_idx-lmt_rec->min_idx)%lmt_rec->srd; /* Truncated elements of last group */
-	  if(rec_nbr_rqs != rec_usd_cml) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,rec_usd_cml);
+	  if(rec_nbr_rqs != rec_usd_cml) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found and used\n"),prg_nm_get(),rec_nbr_rqs,rec_usd_cml);
 	} /* end if */
 	/* ... and die if no records were read ... */
 	if(rec_usd_cml <= 0){
