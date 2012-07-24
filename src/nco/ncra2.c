@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.15 2012-07-24 17:23:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.16 2012-07-24 20:24:21 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -118,6 +118,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool FINAL_DESIRED_RECORD_FROM_ALL_INPUT_FILES=False;
   nco_bool LAST_RECORD_OF_CURRENT_GROUP=False;
+  nco_bool LAST_STRIDE_IN_FILE=False;
   nco_bool FIRST_RECORD_OF_CURRENT_GROUP=False;
   nco_bool FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
   nco_bool FLG_MRO=False; /* [flg] Multi-Record Output */
@@ -150,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.15 2012-07-24 17:23:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.15 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.16 2012-07-24 20:24:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.16 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -781,6 +782,7 @@ main(int argc,char **argv)
       // Master loop over records in current file
       while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
 
+	if(idx_rec_crr_in >= lmt_rec->end) LAST_STRIDE_IN_FILE=True; else LAST_STRIDE_IN_FILE=False;
 	/* Even strides commence group beginnings */
 	if(rec_rmn_prv_drn == 0L) FIRST_RECORD_OF_CURRENT_GROUP=True;
 	/* Each group comprises DRN records */
@@ -905,10 +907,16 @@ main(int argc,char **argv)
 
 	/* Prepare indices and flags for next iteration */
 	FIRST_RECORD_OF_CURRENT_GROUP=False;
-	if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
 	if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	rec_usd_cml++; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
 	if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
+
+	/* Finally, set index for next record or get outta' Dodge */
+	if(LAST_STRIDE_IN_FILE){
+	  if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else break;
+	}else{ /* !LAST_STRIDE_IN_FILE */
+	  if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
+	} /* !LAST_STRIDE_IN_FILE */
 
       } /* end master while loop over records in current file */
 
