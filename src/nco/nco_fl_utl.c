@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.193 2012-07-20 21:03:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.194 2012-07-24 23:45:34 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1120,7 +1120,7 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   /* Construct and execute copy command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...\n",prg_nm_get(),fl_src,fl_dst);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src,fl_dst);
   rcd_sys=system(cmd_mv);
   if(rcd_sys == -1){

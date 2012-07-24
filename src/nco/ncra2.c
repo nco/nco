@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.16 2012-07-24 20:24:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.17 2012-07-24 23:45:35 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.16 2012-07-24 20:24:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.16 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.17 2012-07-24 23:45:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.17 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -858,10 +858,12 @@ main(int argc,char **argv)
 	    } /* end else */ 
 	  } /* end if ncra */
 	    
+	  /* All processed variables contain the record dimension and both ncrcat and ncra write one record at a time */
+	  var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
+	  var_prc_out[idx]->cnt[0]=1L;
+
 	  /* Append current record to output file */
 	  if(prg == ncrcat){
-	    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=rec_usd_cml;
-	    var_prc_out[idx]->cnt[0]=1L;
 	    /* Replace this time_offset value with time_offset from initial file base_time */
 	    if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
 #ifdef _OPENMP
@@ -898,7 +900,6 @@ main(int argc,char **argv)
 	      (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	    }else{ /* end if variable is scalar */
 	      /* Size of record dimension is 1 in output file */
-	      var_prc_out[idx]->cnt[0]=1L;
 	      (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	    } /* end if variable is an array */
 	  } /* end loop over idx */
@@ -913,7 +914,9 @@ main(int argc,char **argv)
 
 	/* Finally, set index for next record or get outta' Dodge */
 	if(LAST_STRIDE_IN_FILE){
-	  if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else break;
+	  long max_end; /* fxm need information about whether original, user-specified end was truncated... */
+	  if(False) max_end=lmt_rec->end; else max_end=min_lng(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L);
+	  if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < max_end) idx_rec_crr_in++; else break;
 	}else{ /* !LAST_STRIDE_IN_FILE */
 	  if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
 	} /* !LAST_STRIDE_IN_FILE */

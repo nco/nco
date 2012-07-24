@@ -1,5 +1,9 @@
 2012-07-24  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncra2.c bug #5 write MRO to idx_rec_out not always to index 0L
+
+	* Fix ncra2.c bug #4: limit srd increments to when current stride is not last stride
+
 	* Re-write diagnostic rec_nbr_rqs arithmetic to account for DRN groups
 
 2012-07-23  Pedro Vicente  <pvicente@uci.edu>
