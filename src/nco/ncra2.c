@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.17 2012-07-24 23:45:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.18 2012-07-24 23:53:49 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.17 2012-07-24 23:45:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.17 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.18 2012-07-24 23:53:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.18 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -798,7 +798,7 @@ main(int argc,char **argv)
 	   idx_rec_out: Index of record in output file */
 	
 	/* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
-	if(rec_rmn_prv_drn == 1L) LAST_RECORD_OF_CURRENT_GROUP=True;
+	if(rec_rmn_prv_drn == 1L) LAST_RECORD_OF_CURRENT_GROUP=True; else LAST_RECORD_OF_CURRENT_GROUP=False;
 
 	/* Process all variables in current record */
 	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s contributes to output record %ld\n"),idx_rec_crr_in,fl_in,idx_rec_out);
