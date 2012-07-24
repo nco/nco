@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.10 2012-07-24 00:18:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.11 2012-07-24 03:04:25 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -89,7 +89,13 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
+/* Define inline'd functions in header so source is visible to calling files
+   C99 only: Declare prototype in exactly one header
+   http://www.drdobbs.com/the-new-c-inline-functions/184401540 */
+extern int min_int(int a, int b);
+extern int max_int(int a, int b);
 inline int min_int(int a, int b){return (a < b) ? a : b;}
+inline int max_int(int a, int b){return (a > b) ? a : b;}
 
 int 
 main(int argc,char **argv)
@@ -140,8 +146,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.10 2012-07-24 00:18:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.10 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.11 2012-07-24 03:04:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.11 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -204,10 +210,9 @@ main(int argc,char **argv)
   lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
   lmt_all_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
   
-  long drn_nbr; /* [nbr] Number of contiguous records per operation */
-  long idx_drn; /* [idx] Index of current contiguous record (increments by drn) */
-  long idx_rec_crr_in; /* [idx] Index of current record in current input file (=idx_srd+idx_drn) */
-  long idx_srd; /* [idx] Index of current strided record in current input file (increments by srd) */
+  long idx_rec_crr_in; /* [idx] Index of current record in current input file */
+  long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
+  long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
   long rec_usd_cml=0L; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
   
@@ -598,7 +603,6 @@ main(int argc,char **argv)
     } /* endif */
   }else{ /* Record dimension exists */
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
-    drn_nbr=lmt_rec->drn; /* [nbr] Number of contiguous records per operation */
     /* Initialize record coordinate re-basing */
     if(prg == ncra || prg == ncrcat){
       int var_id;
@@ -766,173 +770,140 @@ main(int argc,char **argv)
 	
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
 
-      /* 20120722: fxm Replacement loop control structure that works with DRN
+      rec_dmn_sz=lmt_rec->rec_dmn_sz;
+      rec_rmn_prv_drn=lmt_rec->rec_rmn_prv_drn; /* Local copy may be decremented later */
+      idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : lmt_rec->srt;
 
-	 rec_rmn_sz=lmt_rec->rec_dmn_sz;
-	 // Initialize local copy of rec_rmn_prv_drn. Will possibly decrement it later.
-	 rec_rmn_prv_drn=lmt_rec->rec_rmn_prv_drn;
-	 idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : lmt_rec->srt;
+      // Master loop over records in current file
+      while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
 
-	 // Master loop over records in current file
-	 while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
+	/* Even strides commence group beginnings */
+	if(rec_rmn_prv_drn == 0L) FIRST_RECORD_OF_CURRENT_GROUP=True;
+	/* Each group comprises DRN records */
+	if(FIRST_RECORD_OF_CURRENT_GROUP) rec_rmn_prv_drn=lmt_rec->drn;
 
-	 if(rec_rmn_prv_drn == 0L) FIRST_RECORD_OF_CURRENT_GROUP=True;
-	 if(FIRST_RECORD_OF_CURRENT_GROUP) rec_rmn_prv_drn=lmt_rec->drn;
+	if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L)) LAST_DESIRED_RECORD_IN_FILE=True;
 
-	 if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L)) LAST_DESIRED_RECORD_IN_FILE=True;
+	/* Index juggling:
+	   idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
+	   rec_usd_cml: Cumulative number of input records read (and written by ncrcat or used by ncra)
+	   idx_rec_out: Index of record in output file */
+	
+	/* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
+	if(rec_rmn_prv_drn == 1L) LAST_RECORD_OF_CURRENT_GROUP=True;
 
-	 if(idx_rec_crr_in) LAST_DESIRED_RECORD_IN_CURRENT_GROUP=True;
-
-
-	 // Do math
-	 // Normalize
-
-	 
-	 rec_rmn_prv_drn--;
-	 if(rec_rmn_prv_drn > 0L) idx_rec_crr_in+=1L; else idx_rec_crr_in+=lmt_rec->srd;
-
-	 } // end master while loop over records in current file
-
-       */
-
-      /* Loop over each strided record in current file */
-      for(idx_srd=lmt_rec->srt;idx_srd<=lmt_rec->end;idx_srd+=lmt_rec->srd){
-
-	/* Loop over each contiguous record starting from current strided record */
-	for(idx_drn=0;idx_drn<drn_nbr;idx_drn++){
-	  
-	  /* Index juggling:
-	     idx_srd: Starting index, on disk, of current strided record group (increments by srd)
-	     idx_drn: Offset of current record from start of current strided record group (increments by 1 for drn)
-	     idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
-	     rec_usd_cml: Cumulative number of input records read (and written by ncrcat or used by ncra)
-	     idx_rec_out: Index of record in output file */
-	  idx_rec_crr_in=idx_srd+idx_drn;
-	  if(fl_idx == fl_nbr-1 && idx_srd >= lmt_rec->end-lmt_rec->srd+lmt_rec->drn) LAST_DESIRED_RECORD_IN_FILE=True;
-
-	  /* Determine whether this is first record in current group */
-	  if(False) FIRST_RECORD_OF_CURRENT_GROUP=True;
-
-	  /* Determine whether this is last record in current group (LRCG)
-	     Must know this inside srd/drn loops to use ncra normalization/writing code for both MRO and non-MRO
-	     if FLG_MRO then LRCG occurs dnr_nbr records after FRCG
-	     if !FLG_MRO then LRCG true iff last valid input record */
-	  if((fl_idx == fl_nbr-1) && /* Last file */
-	     (idx_srd+lmt_rec->srd > lmt_rec->end) && /* Last stride */
-	     (idx_drn+1L > drn_nbr)) /* Last record */
-	    LAST_RECORD_OF_CURRENT_GROUP=True;
-
-	  /* Process all variables in current record */
-	  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s contributes to output record %ld\n"),idx_rec_crr_in,fl_in,idx_rec_out);
-        
-	  /* Update hyperslab start indices */
-	  /* Beware lmt_all_rec points to record limit of record struct of lmt_all_lst */
-	  lmt_all_rec->lmt_dmn[0]->srt=idx_rec_crr_in;
-	  lmt_all_rec->lmt_dmn[0]->end=idx_rec_crr_in;
-	  lmt_all_rec->lmt_dmn[0]->cnt=1L;
-	  lmt_all_rec->lmt_dmn[0]->srd=1L;   
-
+	/* Process all variables in current record */
+	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s contributes to output record %ld\n"),idx_rec_crr_in,fl_in,idx_rec_out);
+	
+	/* Update hyperslab start indices */
+	/* Beware lmt_all_rec points to record limit of record struct of lmt_all_lst */
+	lmt_all_rec->lmt_dmn[0]->srt=idx_rec_crr_in;
+	lmt_all_rec->lmt_dmn[0]->end=idx_rec_crr_in;
+	lmt_all_rec->lmt_dmn[0]->cnt=1L;
+	lmt_all_rec->lmt_dmn[0]->srd=1L;   
+	
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_drn,idx_rec_crr_in,idx_rec_out,rec_usd_cml,idx_srd,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,LAST_DESIRED_RECORD_IN_FILE,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,FLG_BFR_NEEDS_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,FIRST_RECORD_OF_CURRENT_GROUP,LAST_DESIRED_RECORD_IN_FILE,lmt_rec,MD5_DIGEST,nbr_var_prc,nco_op_typ,FLG_BFR_NEEDS_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
-	  for(idx=0;idx<nbr_var_prc;idx++){
-	    in_id=in_id_arr[omp_get_thread_num()];
-	    if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	    if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
-
-	    /* Retrieve variable from disk into memory */
-	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-            (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
-	    if(prg == ncra) FLG_BFR_NEEDS_NRM=True; /* [flg] Current output buffers need normalization */
-
-            /* Re-base record coordinate if necessary */
-            if(var_prc[idx]->is_crd_var && lmt_rec->origin != 0.0){
-              var_sct *var_crd;
-              scv_sct scv;
-              /* De-reference */
-              var_crd=var_prc[idx];
-              scv.val.d=lmt_rec->origin;              
-              scv.type=NC_DOUBLE;  
-              /* Convert scalar to variable type */
-	      nco_scv_cnf_typ(var_crd->type,&scv);
-	      (void)var_scv_add(var_crd->type,var_crd->sz,var_crd->has_mss_val,var_crd->mss_val,var_crd->val,&scv);
-            } /* end re-basing */
+	for(idx=0;idx<nbr_var_prc;idx++){
+	  in_id=in_id_arr[omp_get_thread_num()];
+	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	  
+	  /* Retrieve variable from disk into memory */
+	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	  (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+	  if(prg == ncra) FLG_BFR_NEEDS_NRM=True; /* [flg] Current output buffers need normalization */
+	  
+	  /* Re-base record coordinate if necessary */
+	  if(var_prc[idx]->is_crd_var && lmt_rec->origin != 0.0){
+	    var_sct *var_crd;
+	    scv_sct scv;
+	    /* De-reference */
+	    var_crd=var_prc[idx];
+	    scv.val.d=lmt_rec->origin;              
+	    scv.type=NC_DOUBLE;  
+	    /* Convert scalar to variable type */
+	    nco_scv_cnf_typ(var_crd->type,&scv);
+	    (void)var_scv_add(var_crd->type,var_crd->sz,var_crd->has_mss_val,var_crd->mss_val,var_crd->val,&scv);
+	  } /* end re-basing */
+	  
+	  if(prg == ncra){
+	    /* Initialize tally and accumululation arrays when appropriate */
+	    if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)){
+	      (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
+	      (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
+	    } /* end if FIRST_RECORD_OF_CURRENT_GROUP */
 	    
-	    if(prg == ncra){
-	      /* Initialize tally and accumululation arrays when appropriate */
-	      if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)){
-		(void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-		(void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
-	      } /* end if FIRST_RECORD_OF_CURRENT_GROUP */
-
               /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
 		 Stuff first record into output buffer regardless of nco_op_typ; ignore later records (rec_usd_cml > 1)
 		 Temporarily fixes TODO nco941 */
-              if(var_prc[idx]->type == NC_CHAR){
-                if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) nco_opr_drv(rec_usd_cml,nco_op_min,var_prc[idx],var_prc_out[idx]);
+	    if(var_prc[idx]->type == NC_CHAR){
+	      if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) nco_opr_drv(rec_usd_cml,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
-	        /* Convert char, short, long, int types to doubles before arithmetic
-		   Output variable type is "sticky" so only convert on first record */
-	        if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-	        var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+	      /* Convert char, short, long, int types to doubles before arithmetic
+		 Output variable type is "sticky" so only convert on first record */
+	      if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	      var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 		/* Perform arithmetic operations: avg, min, max, ttl, ... */
-	        nco_opr_drv(rec_usd_cml,nco_op_typ,var_prc[idx],var_prc_out[idx]);
-              } /* end else */ 
-	    } /* end if ncra */
+	      nco_opr_drv(rec_usd_cml,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	    } /* end else */ 
+	  } /* end if ncra */
 	    
-	    /* Append current record to output file */
-	    if(prg == ncrcat){
-	      var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=rec_usd_cml;
-	      var_prc_out[idx]->cnt[0]=1L;
-	      /* Replace this time_offset value with time_offset from initial file base_time */
-	      if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
+	  /* Append current record to output file */
+	  if(prg == ncrcat){
+	    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=rec_usd_cml;
+	    var_prc_out[idx]->cnt[0]=1L;
+	    /* Replace this time_offset value with time_offset from initial file base_time */
+	    if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-	      if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
-	      /* Perform MD5 digest of input and output data if requested */
-	      if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
-	    } /* end if ncrcat */
+	    if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
+	    /* Perform MD5 digest of input and output data if requested */
+	    if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
+	  } /* end if ncrcat */
 	    
-	    /* Warn if record coordinate, if any, is not monotonic */
-	    if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out);
-	    /* Convert missing_value, if any, back to unpacked type
-	       Otherwise missing_value will be double-promoted when next record read 
-	       Do not convert after last record otherwise normalization fails 
-	       due to wrong missing_value type (needs promoted type, not unpacked type) */
-	    if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_DESIRED_RECORD_IN_FILE) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
-	    /* Free current input buffer */
-	    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-	  } /* end (OpenMP parallel for) loop over variables */
+	  /* Warn if record coordinate, if any, is not monotonic */
+	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out);
+	  /* Convert missing_value, if any, back to unpacked type
+	     Otherwise missing_value will be double-promoted when next record read 
+	     Do not convert after last record otherwise normalization fails 
+	     due to wrong missing_value type (needs promoted type, not unpacked type) */
+	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_DESIRED_RECORD_IN_FILE) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+	  /* Free current input buffer */
+	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	} /* end (OpenMP parallel for) loop over variables */
 
-	  if(prg == ncra && LAST_RECORD_OF_CURRENT_GROUP){
-	    /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
-	       except ncra normalizes after every fxm records, while ncea normalizes once, after all files. */
-	    (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
-	    if(prg == ncra) FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
+	if(prg == ncra && LAST_RECORD_OF_CURRENT_GROUP){
+	  /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
+	     except ncra normalizes after every drn records, while ncea normalizes once, after files loop. */
+	  (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
+	  if(prg == ncra) FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
+	  
+	  /* Copy averages to output file */
+	  for(idx=0;idx<nbr_var_prc;idx++){
+	    var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
+	    /* Packing/Unpacking */
+	    if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
+	    if(var_prc_out[idx]->nbr_dim == 0){
+	      (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+	    }else{ /* end if variable is scalar */
+	      /* Size of record dimension is 1 in output file */
+	      var_prc_out[idx]->cnt[0]=1L;
+	      (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+	    } /* end if variable is an array */
+	  } /* end loop over idx */
+	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
+	} /* end if LAST_RECORD_OF_CURRENT_GROUP */
 
-	    /* Copy averages to output file */
-	    for(idx=0;idx<nbr_var_prc;idx++){
-	      var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
-	      /* Packing/Unpacking */
-	      if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
-	      if(var_prc_out[idx]->nbr_dim == 0){
-		(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-	      }else{ /* end if variable is scalar */
-		/* Size of record dimension is 1 in output file */
-		var_prc_out[idx]->cnt[0]=1L;
-		(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-	      } /* end if variable is an array */
-	    } /* end loop over idx */
-	    idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	  } /* end if LAST_RECORD_OF_CURRENT_GROUP */
+	if(rec_rmn_prv_drn-- > 0L) idx_rec_crr_in+=1L; else idx_rec_crr_in+=lmt_rec->srd;
 
-	  if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	  rec_usd_cml++; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
-	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
+	if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
+	rec_usd_cml++; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
+	if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 
-	} /* end loop over idx_drn */
-      } /* end loop over idx_srd */
+      } /* end master while loop over records in current file */
 
       if(fl_idx == fl_nbr-1){
 	/* Once final file has been processed, warn if different than number of requested records were read... */
