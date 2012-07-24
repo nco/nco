@@ -1,3 +1,7 @@
+2012-07-24  Charlie Zender  <zender@uci.edu>
+
+	* Re-write diagnostic rec_nbr_rqs arithmetic to account for DRN groups
+
 2012-07-23  Pedro Vicente  <pvicente@uci.edu>
 
         * Configure support for UDUnits2 for MacOSX using MacPorts package

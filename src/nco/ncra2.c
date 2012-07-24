@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.14 2012-07-24 05:38:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.15 2012-07-24 17:23:12 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -96,6 +96,10 @@ extern int min_int(int a, int b);
 extern int max_int(int a, int b);
 inline int min_int(int a, int b){return (a < b) ? a : b;}
 inline int max_int(int a, int b){return (a > b) ? a : b;}
+extern long min_lng(long a, long b);
+extern long max_lng(long a, long b);
+inline long min_lng(long a, long b){return (a < b) ? a : b;}
+inline long max_lng(long a, long b){return (a > b) ? a : b;}
 
 int
 main(int argc,char **argv)
@@ -116,7 +120,7 @@ main(int argc,char **argv)
   nco_bool LAST_RECORD_OF_CURRENT_GROUP=False;
   nco_bool FIRST_RECORD_OF_CURRENT_GROUP=False;
   nco_bool FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
-  nco_bool FLG_MRO=False;
+  nco_bool FLG_MRO=False; /* [flg] Multi-Record Output */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-slabbing algorithm leaves hyperslabs in */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -146,8 +150,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.14 2012-07-24 05:38:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.15 2012-07-24 17:23:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -213,7 +217,7 @@ main(int argc,char **argv)
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
   long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
   long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
-  long rec_usd_cml=0L; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
+  long rec_usd_cml=0L; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
   
   nco_int base_time_srt=nco_int_CEWI;
@@ -786,7 +790,7 @@ main(int argc,char **argv)
 
 	/* Index juggling:
 	   idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
-	   rec_usd_cml: Cumulative number of input records read (and written by ncrcat or used by ncra)
+	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 	   lmt_rec->rec_rmn_prv_drn: Structure member, at start of this while loop, contains records remaining-to-be-read to complete duration group from previous file. Structure member remains constant until next file is read.
 	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records rbbemaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
 	   idx_rec_out: Index of record in output file */
@@ -903,18 +907,34 @@ main(int argc,char **argv)
 	FIRST_RECORD_OF_CURRENT_GROUP=False;
 	if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
 	if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	rec_usd_cml++; /* [nbr] Cumulative number of input records read (and written by ncrcat or used by ncra) */
+	rec_usd_cml++; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
 	if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 
       } /* end master while loop over records in current file */
 
       if(fl_idx == fl_nbr-1){
-	/* Once final file has been processed, warn if other than number of requested records were read... */
+	/* Warn if other than number of requested records were read */
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
+	  long drn_grp_nbr_max; /* [nbr] Duration groups that start within range */
 	  long rec_nbr_rqs; /* Number of records user requested */
-	  /* fxm something wrong */
-	  rec_nbr_rqs=lmt_rec->drn*(1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd); /* Full groups of DRN */
-	  rec_nbr_rqs-=-1L+lmt_rec->drn-(lmt_rec->max_idx-lmt_rec->min_idx)%lmt_rec->srd; /* Truncated elements of last group */
+	  long rec_nbr_rqs_max; /* [nbr] Records that would be used by drn_grp_nbr_max groups */
+	  long rec_nbr_spn_act; /* [nbr] Records available within user-specified range */
+	  long rec_nbr_spn_max; /* [nbr] Minimum record number spanned by drn_grp_nbr_max groups */
+	  long rec_nbr_trn; /* [nbr] Records truncated in last group */
+	  long srd_nbr_flr; /* [nbr] Whole strides that fit within specified range */
+	  /* Number of whole strides that fit within specified range */
+	  srd_nbr_flr=(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
+	  drn_grp_nbr_max=1L+srd_nbr_flr;
+	  /* Number of records that would be used by N groups */
+	  rec_nbr_rqs_max=drn_grp_nbr_max*lmt_rec->drn;
+	  /* Minimum record number spanned by N groups of size D is N-1 strides, plus D-1 trailing members of last group */
+	  rec_nbr_spn_max=lmt_rec->srd*(drn_grp_nbr_max-1L)+lmt_rec->drn;
+	  /* Actual number of records available within range */
+	  rec_nbr_spn_act=1L+lmt_rec->max_idx-lmt_rec->min_idx;
+	  /* Number truncated in last group */
+	  rec_nbr_trn=max_int(rec_nbr_spn_max-rec_nbr_spn_act,0L);
+	  /* Records requested is maximum minus any truncated in last group */
+	  rec_nbr_rqs=rec_nbr_rqs_max-rec_nbr_trn;
 	  if(rec_nbr_rqs != rec_usd_cml) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found and used\n"),prg_nm_get(),rec_nbr_rqs,rec_usd_cml);
 	} /* end if */
 	/* ... and die if no records were read ... */
