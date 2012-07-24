@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.9 2012-07-24 00:05:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.10 2012-07-24 00:18:59 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -89,6 +89,8 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
+inline int min_int(int a, int b){return (a < b) ? a : b;}
+
 int 
 main(int argc,char **argv)
 {
@@ -138,8 +140,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.9 2012-07-24 00:05:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.9 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.10 2012-07-24 00:18:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.10 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;

@@ -1,6 +1,8 @@
 2012-07-23  Charlie Zender  <zender@uci.edu>
 
-	* Implement new master while loop in ncra2.c
+	* Add max_int(), min_int() inline functions
+
+	* Implement new master while loop in ncra2.c fxm
 
 	* Limit parsing, evaluation now rewritten, bug-free, and ready for DRN extensions
 
