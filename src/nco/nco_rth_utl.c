@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.52 2012-07-19 22:03:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.53 2012-07-25 03:33:46 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -101,7 +101,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
 
 void 
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
-(const long idx_rec, /* I [idx] Index of current record (ncra) or file (ncea) */
+(const long idx_rec, /* I [idx] Index of record (ncra) or file (ncea) in current operation group */
  const int nco_op_typ, /* I [enm] Operation type */
  const var_sct * const var_prc, /* I [sct] Variable in input file */
  var_sct * const var_prc_out) /* I/O [sct] Variable in output file */
@@ -109,7 +109,12 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
      nco_opr_drv() is called within the record loop of ncra, and within file loop of ncea
      These operations perform some, but not all, of necessary operations for each procedure
-     Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been processed */
+     Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been processed
+     Some operations require special care at initialization
+     This determination is based on the idx_rec variable
+     When idx_rec == 0, these operations may perform special initializations
+     The exact numeric value of idx_rec does not matter
+     What matters is whether it is zero or non-zero */
   
   /* NCO's paradigm is that coordinate variables represent grid axes
      Reducing such grids to a single-value must be done

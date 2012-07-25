@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.18 2012-07-24 23:53:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.19 2012-07-25 03:33:46 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.18 2012-07-24 23:53:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.18 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.19 2012-07-25 03:33:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.19 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -837,28 +837,28 @@ main(int argc,char **argv)
 	  } /* end re-basing */
 	  
 	  if(prg == ncra){
-	    /* Initialize tally and accumululation arrays when appropriate */
+	    /* Initialize tally and accumulation arrays when appropriate */
 	    if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)){
 	      (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
 	      (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
 	    } /* end if FIRST_RECORD_OF_CURRENT_GROUP */
 	    
-              /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
-		 Stuff first record into output buffer regardless of nco_op_typ; ignore later records (rec_usd_cml > 1)
-		 Temporarily fixes TODO nco941 */
+            /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
+	       Stuff first record into output buffer regardless of nco_op_typ; ignore later records (rec_usd_cml > 1)
+	       Temporarily fixes TODO nco941 */
 	    if(var_prc[idx]->type == NC_CHAR){
-	      if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) nco_opr_drv(rec_usd_cml,nco_op_min,var_prc[idx],var_prc_out[idx]);
+	      if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) nco_opr_drv((long)(!FIRST_RECORD_OF_CURRENT_GROUP),nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
 	      /* Convert char, short, long, int types to doubles before arithmetic
 		 Output variable type is "sticky" so only convert on first record */
 	      if(!rec_usd_cml || (FLG_MRO && FIRST_RECORD_OF_CURRENT_GROUP)) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	      var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-		/* Perform arithmetic operations: avg, min, max, ttl, ... */
-	      nco_opr_drv(rec_usd_cml,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	      /* Perform arithmetic operations: avg, min, max, ttl, ... */
+	      nco_opr_drv((long)(!FIRST_RECORD_OF_CURRENT_GROUP),nco_op_typ,var_prc[idx],var_prc_out[idx]);
 	    } /* end else */ 
 	  } /* end if ncra */
 	    
-	  /* All processed variables contain the record dimension and both ncrcat and ncra write one record at a time */
+	  /* All processed variables contain record dimension and both ncrcat and ncra write records singly */
 	  var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
 	  var_prc_out[idx]->cnt[0]=1L;
 
@@ -889,19 +889,14 @@ main(int argc,char **argv)
 	  /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
 	     except ncra normalizes after every drn records, while ncea normalizes once, after files loop. */
 	  (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
-	  if(prg == ncra) FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
+	  FLG_BFR_NEEDS_NRM=False; /* [flg] Current output buffers need normalization */
 	  
 	  /* Copy averages to output file */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
 	    /* Packing/Unpacking */
 	    if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
-	    if(var_prc_out[idx]->nbr_dim == 0){
-	      (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-	    }else{ /* end if variable is scalar */
-	      /* Size of record dimension is 1 in output file */
-	      (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-	    } /* end if variable is an array */
+	    if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	  } /* end loop over idx */
 	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	} /* end if normalize and write */
