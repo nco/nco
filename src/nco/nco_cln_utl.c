@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.36 2012-05-20 20:07:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.37 2012-07-25 04:07:44 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -615,7 +615,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   tm_cln_sct unt_cln_sct;
   tm_cln_sct bs_cln_sct;
   
-  if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",prg_nm_get(),fl_unt_sng,fl_bs_sng);
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",prg_nm_get(),fl_unt_sng,fl_bs_sng);
   
   /* Does fl_unt_sng look like a regular timestamp? */ 
   if(sscanf(fl_unt_sng,"%d-%d",&year,&month) == 2){

@@ -6,11 +6,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
 	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
-	* Fix ncra2.c bug #7 pass initialization indicator not rec_usd_cml to nco_opr_drv()
+	* Fix ncra2.c bug #8: maintain rec_rmn_prv_drn across files
 
-	* Fix ncra2.c bug #6 reset LAST_RECORD_OF_CURRENT_GROUP appropriately
+	* Fix ncra2.c bug #7: pass initialization indicator not rec_usd_cml to nco_opr_drv()
 
-	* Fix ncra2.c bug #5 write MRO to idx_rec_out not always to index 0L
+	* Fix ncra2.c bug #6: reset LAST_RECORD_OF_CURRENT_GROUP appropriately
+
+	* Fix ncra2.c bug #5: write MRO to idx_rec_out not always to index 0L
 
 	* Fix ncra2.c bug #4: limit srd increments to when current stride is not last stride
 

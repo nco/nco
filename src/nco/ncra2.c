@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.19 2012-07-25 03:33:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.20 2012-07-25 04:07:44 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.19 2012-07-25 03:33:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.19 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.20 2012-07-25 04:07:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.20 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -794,7 +794,7 @@ main(int argc,char **argv)
 	   idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
 	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 	   lmt_rec->rec_rmn_prv_drn: Structure member, at start of this while loop, contains records remaining-to-be-read to complete duration group from previous file. Structure member remains constant until next file is read.
-	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records rbbemaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
+	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
 	   idx_rec_out: Index of record in output file */
 	
 	/* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
@@ -918,6 +918,8 @@ main(int argc,char **argv)
 
       } /* end master while loop over records in current file */
 
+      lmt_rec->rec_rmn_prv_drn=rec_rmn_prv_drn;
+
       if(fl_idx == fl_nbr-1){
 	/* Warn if other than number of requested records were read */
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
@@ -995,8 +997,8 @@ main(int argc,char **argv)
     
     /* Do not bother to open more input files */
     if(lmt_rec->flg_input_complete){
-      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"%s: All requested data have been read, remaining %d input files will not be opened\n",prg_nm_get(),fl_nbr-fl_idx);
-      continue;
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"%s: All requested data have been read, remaining %d input files will not be opened\n",prg_nm_get(),fl_nbr-fl_idx-1);
+      break;
     } /* endif dbg */
 
   } /* end loop over fl_idx */

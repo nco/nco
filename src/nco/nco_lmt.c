@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.136 2012-07-24 05:38:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.137 2012-07-25 04:07:44 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -717,7 +717,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	/* Are we past file containing max_end_lcl yet? */
 	if(max_end_lcl < lmt.rec_in_cml){
 	  /* This and all subsequent files are superfluous because all requested records have already been read 
-	     Optimize MFOs by adding an "input complete" flag to jump out of file loop
+	     Optimize MFOs by checking "input complete" flag to jump out of file loop
 	     Saves time because no other input files will be opened */
 	  lmt.flg_input_complete=True;
 	  flg_no_data_ok=True;
