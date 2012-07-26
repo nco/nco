@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.21 2012-07-26 23:40:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.22 2012-07-26 23:58:48 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.21 2012-07-26 23:40:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.21 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.22 2012-07-26 23:58:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.22 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -772,6 +772,7 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
+    /* This file may be superfluous though valid data will be found in upcoming files */
     if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end) && (lmt_rec->rec_rmn_prv_drn == 0L)) (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 	
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
@@ -915,9 +916,9 @@ main(int argc,char **argv)
 	/* Finally, set index for next record or get outta' Dodge */
 	if(LAST_STRIDE_IN_FILE){
 	  /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
-	  long end_max;
-	  end_max=min_lng(lmt_rec->idx_end_max_abs-rec_in_cml,min_lng(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L));
-	  if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max) idx_rec_crr_in++; else break;
+	  long end_max_crr;
+	  end_max_crr=min_lng(lmt_rec->idx_end_max_abs-rec_in_cml,min_lng(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L));
+	  if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
 	}else{ /* !LAST_STRIDE_IN_FILE */
 	  if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
 	} /* !LAST_STRIDE_IN_FILE */
@@ -1002,11 +1003,11 @@ main(int argc,char **argv)
     /* Dispose local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
     
-    /* Skip superfluous files */
+    /* Our data tanks are already full */
     if(lmt_rec->flg_input_complete){
-      if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested data have been read, remaining %d input file%s will not be opened\n",prg_nm_get(),fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested data have been read, remaining %d input file%s will not be opened\n",prg_nm_get(),fl_nbr-fl_idx-1,(fl_nbr-fl_idx == 1) ? "" : "s");
       break;
-    } /* endif dbg */
+    } /* endif superfluous */
 
   } /* end loop over fl_idx */
   
