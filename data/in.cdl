@@ -15,7 +15,6 @@
 // http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc
 // http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc
 
-
 // netCDF3:
 // ncgen -b -o in.nc in.cdl
 // ncgen -b -o ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.cdl
@@ -58,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.146 2012-07-26 17:56:08 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.147 2012-07-26 18:36:25 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
