@@ -12,6 +12,9 @@
 // URL: 
 // http://dust.ess.uci.edu/nco/in.nc
 // http://dust.ess.uci.edu/nco/in_4.nc
+// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc
+// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc
+
 
 // netCDF3:
 // ncgen -b -o in.nc in.cdl
@@ -42,7 +45,6 @@
 // int: 1 (no decimal point)
 // float: 1.f (decimal point is required, f is required to distinguish from double)
 // double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
-// 
 
 // NCL usage:
 // id_in=addfile("/home/zender/nco/data/in.nc","r")
@@ -56,7 +58,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.145 2012-06-29 05:29:38 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.146 2012-07-26 17:56:08 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -908,6 +910,9 @@ variables:
 	wnd_spd:_FillValue = -999.0f;
 
 data:
+//	netCDF4-specific atomic types:
+//	None in this file
+//	netCDF3 atomic types:
 	att_var=10.;
 	area=10.,10.;
 	area2=20.,5.;

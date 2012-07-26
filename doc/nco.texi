@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.703 2012-07-18 18:43:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.704 2012-07-26 17:56:08 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5019,22 +5019,27 @@ Short options: @*
 Long options: @samp{--bfr_sz_hnt}, @samp{--buffer_size_hint}@*  
 @end cartouche
 
-As of @acronym{NCO} version 4.1.1 (May, 2012), @acronym{NCO} 
+As of @acronym{NCO} version 4.2.0 (May, 2012), @acronym{NCO} 
 allows the user to request specific buffer sizes to allocate for reading 
 and writing files.
 This buffer size determines how many system calls the netCDF layer must
 invoke to read and write files.
 By default, netCDF uses the preferred I/O block size returned as the
 @samp{st_blksize} member of the @samp{stat} structure returned by the
-@command{stat()} system call.
+@command{stat()} system call
+@footnote{
+On modern Linux systems the block size defaults to @w{8192 B}.
+The GLADE filesystem at NCAR has a block size of @w{512 kB}.}.
 Otherwise, netCDF uses twice the system pagesize.
-Because netCDF cannot guarantee the buffer size request will be met, the
+Larger sizes can increase access speed by reducing the number of 
+system calls netCDF makes to read/write data from/to disk.
+Because netCDF cannot guarantee the buffer size request will be met, the 
 actual buffer size granted by the system is printed as an INFO
-statement:
+statement. 
 @example
 # Request 2 MB file buffer instead of default 8 kB buffer
 > ncks -O -D 3 --bfr_sz=2097152 ~/nco/data/in.nc ~/foo.nc
-p...
+...
 ncks: INFO nc__open() will request file buffer size = 2097152 bytes
 ncks: INFO nc__open() opened file with buffer size = 2097152 bytes
 ...
@@ -7640,7 +7645,7 @@ e=2.71828; // Regular (disk) variable, written to output
 @cindex @command{unmap}
 @cindex @command{invert_map}
 In @acronym{ncap2} there are multiple ways to sort data. 
-Beginning with @acronym{NCO} 4.1.0 (February, 2012), @acronym{ncap2} 
+Beginning with @acronym{NCO} 4.1.0 (March, 2012), @acronym{ncap2} 
 support six sorting functions:
 @example
 var_out=sort(var_in,&srt_map); // Ascending sort

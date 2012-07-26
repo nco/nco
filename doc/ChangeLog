@@ -1,3 +1,7 @@
+2012-07-26  Charlie Zender  <zender@uci.edu>
+
+	* Add netCDF4 atomic types to in_4.cdl
+
 2012-07-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.1 release procedure:
