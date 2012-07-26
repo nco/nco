@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.137 2012-07-25 04:07:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.138 2012-07-26 23:40:37 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -266,8 +266,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
-  if(rec_dmn_and_mfo) lmt.rec_dmn_sz=dmn_sz;
-  
+  if(rec_dmn_and_mfo){
+    lmt.rec_dmn_sz=dmn_sz;
+    lmt.idx_end_max_abs=dmn_sz-1L; /* Maximum allowed index in record dimension */
+  } /* !rec_dmn_and_mfo */
+
   /* Bomb if dmn_sz < 1 */
   if(dmn_sz < 1L){
     (void)fprintf(stdout,"%s: ERROR Size of dimension %s is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
@@ -708,33 +711,36 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
 
       { /* Block hides scope of local internal variables */
-	long min_srt_lcl; /* [idx] Minimum start index (in global index space, i.e., relative to first file) for current file */
-	long max_end_lcl; /* [idx] Maximum end   index (in global index space, i.e., relative to first file) for current file */
+	long srt_min_lcl; /* [idx] Minimum start index (in absolute index space, i.e., relative to first file) for current file */
+	long end_max_lcl; /* [idx] Maximum end   index (in absolute index space, i.e., relative to first file) for current file */
 	
-	min_srt_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : lmt.rec_in_cml+0L); 
-	max_end_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_in_cml+dmn_sz-1L); 
+	srt_min_lcl=(lmt.is_usr_spc_min ? lmt.min_idx : lmt.rec_in_cml+0L); 
+	end_max_lcl=(lmt.is_usr_spc_max ? lmt.max_idx : lmt.rec_in_cml+dmn_sz-1L); 
 	
-	/* Are we past file containing max_end_lcl yet? */
-	if(max_end_lcl < lmt.rec_in_cml){
+	/* Maximum allowed index in record dimension */
+	lmt.idx_end_max_abs=end_max_lcl;
+
+	/* Are we past file containing end_max_lcl yet? */
+	if(end_max_lcl < lmt.rec_in_cml){
 	  /* This and all subsequent files are superfluous because all requested records have already been read 
 	     Optimize MFOs by checking "input complete" flag to jump out of file loop
 	     Saves time because no other input files will be opened */
 	  lmt.flg_input_complete=True;
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
-	} /* endif past max_end_lcl */
+	} /* endif past end_max_lcl */
 	
-	/* Have we reached file containing min_srt_lcl yet? */
-	if(min_srt_lcl > lmt.rec_in_cml+dmn_sz-1L){
+	/* Have we reached file containing srt_min_lcl yet? */
+	if(srt_min_lcl > lmt.rec_in_cml+dmn_sz-1L){
 	  /* This and all previous files are superfluous because the starting record is in a subsequent file */
 	  flg_no_data_ok=True;
 	  goto no_data_ok;
-	} /* endif min_srt_lcl in future file */
+	} /* endif srt_min_lcl in future file */
 	
-	/* Until records have been used, start index is min_srt_lcl adjusted for records contained in all previous files
-	   After that start index loses memory of/dependence on global start index, and cares only about how many records,
+	/* Until records have been used, start index is srt_min_lcl adjusted for records contained in all previous files
+	   Thereafter start index loses memory of/dependence on absolute start index, and only cares for how many records,
 	   if any, were skipped since last valid record. This number, modulo stride, is new start index. */
-	if(rec_usd_cml == 0L) lmt.srt=min_srt_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
+	if(rec_usd_cml == 0L) lmt.srt=srt_min_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
 	
 	if(lmt.srt > dmn_sz-1L){
 	  /* Perhaps data were read in previous file(s) yet next record is in future file due to long stride */
@@ -742,7 +748,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	  goto no_data_ok;
 	} /* endif */
 	  
-	lmt.end=(max_end_lcl < lmt.rec_in_cml+dmn_sz) ? max_end_lcl-lmt.rec_in_cml : dmn_sz-1L;
+	lmt.end=(end_max_lcl < lmt.rec_in_cml+dmn_sz) ? end_max_lcl-lmt.rec_in_cml : dmn_sz-1L;
 	
       } /* end block hides scope of local internal variables */
 	
@@ -757,6 +763,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   if(rec_dmn_and_mfo){ 
     /* NB: This is---and must be---performed as integer arithmetic */ 
     cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
+    /* This fixes "sloppy" specification of end index by user, i.e., ensures that end index coincides with a stride */
     lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;   
     /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
     rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
@@ -839,7 +846,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* Accumulate count of records in all opened files, including this one
      Increment here at end so this structure member includes records from current file 
      only at end of this routine, where it can only be used diagnostically
-     NB: Location of this augmentation is important */
+     NB: Location of this augmentation is important! Moving it would have side-effects! */
   lmt.rec_in_cml+=dmn_sz;
 
   /* Place contents of working structure in location of returned structure */
@@ -852,8 +859,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
     (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
     (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data_ok) ? "is superfluous to" : "is required by",(flg_no_data_ok) ? "will not" : "will");
-    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Cumulative number of records in all files including this one = %li\n",lmt.rec_in_cml);
-    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files (20120718: fxm wrong for first file?) = %li\n",lmt.rec_skp_ntl_spf);
+    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Cumulative number of records in all input files opened including this one = %li\n",lmt.rec_in_cml);
+    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files = %li\n",lmt.rec_skp_ntl_spf);
     if(rec_dmn_and_mfo) (void)fprintf(stderr,"Valid records read (and used) from previous files = %li\n",rec_usd_cml);
     if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
     if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);

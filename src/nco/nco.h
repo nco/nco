@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.183 2012-07-24 05:38:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.184 2012-07-26 23:40:37 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -448,11 +448,12 @@ extern "C" {
     long end; /* Index to end of hyperslab */
     long max_idx; /* Index of maximum requested value in dimension */
     long min_idx; /* Index of minimum requested value in dimension */
-    long rec_dmn_sz; /* Number of records in this file (multi-file record dimension only) */
-    long rec_in_cml; /* Number of records, read or not, in all processed files (multi-file record dimension only) */
-    long rec_skp_ntl_spf; /* Records skipped in initial superfluous files (multi-file record dimension only) */
-    long rec_skp_vld_prv; /* Records skipped since previous good one (multi-file record dimension only) */
-    long rec_rmn_prv_drn; /* Records remaining-to-be-read to complete duration group from previous file (multi-file record dimension only) */
+    long rec_dmn_sz; /* [nbr] Number of records in this file (multi-file record dimension only) */
+    long rec_in_cml; /* [nbr] Cumulative number of records in all files opened so far (multi-file record dimension only) */
+    long idx_end_max_abs; /* [idx] Maximum allowed index in record dimension (multi-file record dimension only) */
+    long rec_skp_ntl_spf; /* [nbr] Records skipped in initial superfluous files (multi-file record dimension only) */
+    long rec_skp_vld_prv; /* [nbr] Records skipped since previous good one (multi-file record dimension only) */
+    long rec_rmn_prv_drn; /* [nbr] Records remaining-to-be-read to complete duration group from previous file (multi-file record dimension only) */
     long srd; /* Stride of hyperslab */
     long srt; /* Index to start of hyperslab */
     nco_bool flg_mro; /* True for multi-record output (used by ncra only) */

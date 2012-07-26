@@ -1,5 +1,7 @@
 2012-07-26  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncra2.c bug #9: end index in last file was corrupted by sloppy user arguments
+
 	* Useful error message when --open_ram attempted on netCDF4 input
 
 	* Add netCDF4 atomic types to in_4.cdl

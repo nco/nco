@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.20 2012-07-25 04:07:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.21 2012-07-26 23:40:37 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.20 2012-07-25 04:07:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.20 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.21 2012-07-26 23:40:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.21 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -216,10 +216,11 @@ main(int argc,char **argv)
   lmt_all_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
   
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
-  long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
-  long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
-  long rec_usd_cml=0L; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
+  long rec_in_cml=0L; /* [nbr] Number of records, read or not, in all processed files */
+  long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
+  long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
+  long rec_usd_cml=0L; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
   
   nco_int base_time_srt=nco_int_CEWI;
   nco_int base_time_crr=nco_int_CEWI;
@@ -771,7 +772,7 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
-    if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end) && lmt_rec->rec_rmn_prv_drn) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+    if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end) && (lmt_rec->rec_rmn_prv_drn == 0L)) (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 	
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
 
@@ -779,24 +780,29 @@ main(int argc,char **argv)
       rec_rmn_prv_drn=lmt_rec->rec_rmn_prv_drn; /* Local copy may be decremented later */
       idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : lmt_rec->srt;
 
-      // Master loop over records in current file
+      /* Master loop over records in current file */
       while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
+	/* Following logic is built-in to this loop:
+	   idx_rec_crr_in points to valid record before loop is entered
+	   Loop will never be entered if this file has no valid records
+	   Much conditional logic needed to prescribe group position and next record
 
+	   Index juggling:
+	   idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
+	   idx_rec_out: Index of record in output file
+	   lmt_rec->rec_rmn_prv_drn: Structure member, at start of this while loop, contains records remaining-to-be-read to complete duration group from previous file. Structure member remains constant until next file is read.
+	   rec_in_cml: Cumulative number of records, read or not, in all files opened so far. Similar to lmt_rec->rec_in_cml but augmented at end of record loop, rather than prior to record loop.
+	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
+	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
+	
+	/* Last stride will have distinct index-augmenting behavior */
 	if(idx_rec_crr_in >= lmt_rec->end) LAST_STRIDE_IN_FILE=True; else LAST_STRIDE_IN_FILE=False;
 	/* Even strides commence group beginnings */
-	if(rec_rmn_prv_drn == 0L) FIRST_RECORD_OF_CURRENT_GROUP=True;
+	if(rec_rmn_prv_drn == 0L) FIRST_RECORD_OF_CURRENT_GROUP=True; else FIRST_RECORD_OF_CURRENT_GROUP=False;
 	/* Each group comprises DRN records */
 	if(FIRST_RECORD_OF_CURRENT_GROUP) rec_rmn_prv_drn=lmt_rec->drn;
-
+	/* Final record triggers normalization regardless of its location within group */
 	if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L)) FINAL_DESIRED_RECORD_FROM_ALL_INPUT_FILES=True;
-
-	/* Index juggling:
-	   idx_rec_crr_in: Index of current record in current input file (increments by 1 for drn then srd-drn ...)
-	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
-	   lmt_rec->rec_rmn_prv_drn: Structure member, at start of this while loop, contains records remaining-to-be-read to complete duration group from previous file. Structure member remains constant until next file is read.
-	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
-	   idx_rec_out: Index of record in output file */
-	
 	/* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
 	if(rec_rmn_prv_drn == 1L) LAST_RECORD_OF_CURRENT_GROUP=True; else LAST_RECORD_OF_CURRENT_GROUP=False;
 
@@ -902,22 +908,23 @@ main(int argc,char **argv)
 	} /* end if normalize and write */
 
 	/* Prepare indices and flags for next iteration */
-	FIRST_RECORD_OF_CURRENT_GROUP=False;
 	if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	rec_usd_cml++; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
 	if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 
 	/* Finally, set index for next record or get outta' Dodge */
 	if(LAST_STRIDE_IN_FILE){
-	  long max_end; /* fxm need information about whether original, user-specified end was truncated... */
-	  if(False) max_end=lmt_rec->end; else max_end=min_lng(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L);
-	  if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < max_end) idx_rec_crr_in++; else break;
+	  /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
+	  long end_max;
+	  end_max=min_lng(lmt_rec->idx_end_max_abs-rec_in_cml,min_lng(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L));
+	  if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max) idx_rec_crr_in++; else break;
 	}else{ /* !LAST_STRIDE_IN_FILE */
 	  if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
 	} /* !LAST_STRIDE_IN_FILE */
 
       } /* end master while loop over records in current file */
 
+      rec_in_cml+=rec_dmn_sz; /* [nbr] Cumulative number of records in all files opened so far */
       lmt_rec->rec_rmn_prv_drn=rec_rmn_prv_drn;
 
       if(fl_idx == fl_nbr-1){
@@ -995,9 +1002,9 @@ main(int argc,char **argv)
     /* Dispose local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
     
-    /* Do not bother to open more input files */
+    /* Skip superfluous files */
     if(lmt_rec->flg_input_complete){
-      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"%s: All requested data have been read, remaining %d input files will not be opened\n",prg_nm_get(),fl_nbr-fl_idx-1);
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested data have been read, remaining %d input file%s will not be opened\n",prg_nm_get(),fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
       break;
     } /* endif dbg */
 
