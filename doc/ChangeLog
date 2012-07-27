@@ -1,3 +1,7 @@
+2012-07-27  Charlie Zender  <zender@uci.edu>
+
+	* Improve DRN/MRO warning/error messages
+
 2012-07-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.1 release procedure:

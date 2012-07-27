@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.141 2012-07-27 02:34:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.142 2012-07-27 16:28:51 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -314,9 +314,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end if */
     lmt.flg_mro=True;
     if(prg_id == ncrcat){
-      (void)fprintf(stdout,"%s: INFO Multi-Record Output (MRO) syntax option 'm' or 'M' is redundant for ncrcat, i.e., MRO is always true for ncrcat.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option ('m', 'M', or --mro) is redundant. MRO is always true for ncrcat.\n",prg_nm_get());
     }else if(prg_id != ncra){
-      (void)fprintf(stdout,"%s: INFO Multi-Record Output (MRO) syntax option 'm' or 'M' is only valid for ncra.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Multi-Record Output (MRO) ('m', 'M', or --mro) is only valid for ncra.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end else */
   } /* !lmt.mro_sng */
@@ -948,7 +948,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
       msg_sng=strdup("Need more than just dimension name");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr > 6){ /* Too much information */
-      msg_sng=strdup("Too much information");
+      msg_sng=strdup("Too many (more than 6) arguments");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_lst[0] == NULL){ /* Dimension name not specified */
       msg_sng=strdup("Dimension name not specified");
@@ -960,13 +960,13 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
       msg_sng=strdup("No min or max when stride not specified");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 4 && arg_lst[3] == NULL){ /* Stride should be specified */
-      msg_sng=strdup("Stride should be specified");
+      msg_sng=strdup("Stride should be specified as an integer >= 0");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 5 && arg_lst[4] == NULL){ /* Duration should be specified */
-      msg_sng=strdup("Duration should be specified");
+      msg_sng=strdup("Duration should be specified as an integer >= 0");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 6 && arg_lst[5] == NULL){ /* Group-mode should be specified */
-      msg_sng=strdup("Group-mode should be specified");
+      msg_sng=strdup("Group-mode should be specified as 'm' or 'M'");
       NCO_SYNTAX_ERROR=True;
     } /* end else */
     
