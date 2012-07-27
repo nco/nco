@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
 	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
+	* ZKB in DRN/MRO of ncra2.c and it is fully tested and passes all tests
+
 	* Fix ncra2.c bug #10: correct idx_end_max_abs by rec_in_cml when lmt_typ_crd
 
 	* Tighten-up DRN/MRO option error/warning/info-handling

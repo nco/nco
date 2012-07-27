@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.24 2012-07-27 02:34:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.25 2012-07-27 02:51:18 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.24 2012-07-27 02:34:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.24 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.25 2012-07-27 02:51:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.25 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1013,7 +1013,7 @@ main(int argc,char **argv)
   } /* end loop over fl_idx */
   
   if(prg == ncra || prg == ncrcat) /* fxm: Get rid of this when crd_val DRN/MRO is predictable */
-    if(lmt_rec->drn != 1L && (lmt_rec->lmt_typ == lmt_crd_val || lmt_rec->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Hyperslabs for %s are based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ill-defined, unpredictable, and unsupported for coordinate-based hyperslabs. Only min, max, and stride are supported for coordinate-value based hyperslabbing. Duration may or may not work as you intend. Use at your own risk.\n",prg_nm_get(),lmt_rec->nm);
+    if(lmt_rec->drn != 1L && (lmt_rec->lmt_typ == lmt_crd_val || lmt_rec->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Hyperslabs for %s are based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",prg_nm_get(),lmt_rec->nm);
 
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
      except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
