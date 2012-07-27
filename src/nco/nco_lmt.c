@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.138 2012-07-26 23:40:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.139 2012-07-27 00:34:16 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -651,6 +651,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     
     /* Adjust indices if FORTRAN style input was specified */
     if(FORTRAN_IDX_CNV){
+      /* 20120726: Die when Fortran index is zero */
+      if(lmt.min_idx == 0L || lmt.max_idx == 0L){
+	(void)fprintf(stdout,"%s: ERROR User-specified Fortran (1-based) index for dimension %s = 0.\n",prg_nm_get(),lmt.nm);
+	msg_sng=strdup("Fortran indices must be >= 1");
+	NCO_SYNTAX_ERROR=True;
+      } /* endif illegal Fortran index */
       /* 20120709: Adjust positive indices only */
       if(lmt.min_idx > 0L) lmt.min_idx--;
       if(lmt.max_idx > 0L) lmt.max_idx--;

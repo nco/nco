@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.22 2012-07-26 23:58:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.23 2012-07-27 00:34:16 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.22 2012-07-26 23:58:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.22 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.23 2012-07-27 00:34:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.23 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1005,7 +1005,8 @@ main(int argc,char **argv)
     
     /* Our data tanks are already full */
     if(lmt_rec->flg_input_complete){
-      if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested data have been read, remaining %d input file%s will not be opened\n",prg_nm_get(),fl_nbr-fl_idx-1,(fl_nbr-fl_idx == 1) ? "" : "s");
+      /* NB: TODO nco1066 move input_complete break to precede record loop but remember to close open filehandles */
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s will not be opened\n",prg_nm_get(),fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
       break;
     } /* endif superfluous */
 
