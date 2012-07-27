@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.23 2012-07-27 00:34:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.24 2012-07-27 02:34:08 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.23 2012-07-27 00:34:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.23 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.24 2012-07-27 02:34:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.24 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -765,7 +765,7 @@ main(int argc,char **argv)
        NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
     if(lmt_rec->flg_mro) FLG_MRO=True;
-    
+
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
     if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
     
@@ -1012,6 +1012,9 @@ main(int argc,char **argv)
 
   } /* end loop over fl_idx */
   
+  if(prg == ncra || prg == ncrcat) /* fxm: Get rid of this when crd_val DRN/MRO is predictable */
+    if(lmt_rec->drn != 1L && (lmt_rec->lmt_typ == lmt_crd_val || lmt_rec->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Hyperslabs for %s are based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ill-defined, unpredictable, and unsupported for coordinate-based hyperslabs. Only min, max, and stride are supported for coordinate-value based hyperslabbing. Duration may or may not work as you intend. Use at your own risk.\n",prg_nm_get(),lmt_rec->nm);
+
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
      except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
      Occassionally the last input file ends mid-group, or contains no valid records

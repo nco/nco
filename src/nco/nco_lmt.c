@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.140 2012-07-27 01:06:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.141 2012-07-27 02:34:08 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -268,7 +268,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   dmn_sz=dim.sz;
   if(rec_dmn_and_mfo){
     lmt.rec_dmn_sz=dmn_sz;
-    lmt.idx_end_max_abs=dmn_sz-1L; /* Maximum allowed index in record dimension */
+    lmt.idx_end_max_abs=lmt.rec_in_cml+dmn_sz-1L; /* Maximum allowed index in record dimension */
   } /* !rec_dmn_and_mfo */
 
   /* Bomb if dmn_sz < 1 */
@@ -314,9 +314,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end if */
     lmt.flg_mro=True;
     if(prg_id == ncrcat){
-      (void)fprintf(stdout,"%s: INFO The Multi-Record Output (MRO) syntax option is redundant for ncrcat, i.e., MRO is always true for ncrcat.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: INFO Multi-Record Output (MRO) syntax option 'm' or 'M' is redundant for ncrcat, i.e., MRO is always true for ncrcat.\n",prg_nm_get());
     }else if(prg_id != ncra){
-      (void)fprintf(stdout,"%s: INFO The Multi-Record Output (MRO) syntax option is only valid for ncra.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: INFO Multi-Record Output (MRO) syntax option 'm' or 'M' is only valid for ncra.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end else */
   } /* !lmt.mro_sng */
@@ -391,6 +391,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Warn when coordinate type is weird */
     if(dim.type == NC_BYTE || dim.type == NC_UBYTE || dim.type == NC_CHAR || dim.type == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
     
+    /* if(lmt.drn != 1L) (void)fprintf(stderr,"\n%s: WARNING Hyperslabs for %s are based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ill-defined, unpredictable, and unsupported for coordinate-based hyperslabs. Only min, max, and stride are supported for coordinate-value based hyperslabbing. Duration may or may not work as you intend. Use at your own risk.\n",prg_nm_get(),lmt.nm); */
+
     /* Allocate enough space to hold coordinate */
     dmn_val_dp=(double *)nco_malloc(dmn_sz*nco_typ_lng(NC_DOUBLE));
     
