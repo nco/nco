@@ -1,5 +1,7 @@
 2012-07-26  Charlie Zender  <zender@uci.edu>
 
+	* Tighten-up DRN/MRO option error/warning/info-handling
+
 	* Die if Fortran (1-based) index equals zero
 
 	* Fix ncra2.c bug #9: end index in last file was corrupted by sloppy user arguments

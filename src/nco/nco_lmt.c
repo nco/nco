@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.139 2012-07-27 00:34:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.140 2012-07-27 01:06:10 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -288,8 +288,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       (void)fprintf(stdout,"%s: ERROR Stride for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-  } /* end if */
-  
+  } /* !lmt.srd_sng */
+
   if(lmt.drn_sng){
     if(strchr(lmt.drn_sng,'.') || strchr(lmt.drn_sng,'e') || strchr(lmt.drn_sng,'E') || strchr(lmt.drn_sng,'d') || strchr(lmt.drn_sng,'D')){
       (void)fprintf(stdout,"%s: ERROR Requested duration for %s, %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.drn_sng);
@@ -301,7 +301,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       (void)fprintf(stdout,"%s: ERROR Duration for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.drn);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-  } /* end if */
+    if(prg_id != ncra && prg_id != ncrcat){
+      (void)fprintf(stdout,"%s: ERROR Duration only implemented for ncra and ncrcat\n",prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* end ncra */
+  } /* !lmt.drn_sng */
   
   if(lmt.mro_sng){
     if(strcasecmp(lmt.mro_sng,"m")){
@@ -309,7 +313,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.flg_mro=True;
-  } /* end if */
+    if(prg_id == ncrcat){
+      (void)fprintf(stdout,"%s: INFO The Multi-Record Output (MRO) syntax option is redundant for ncrcat, i.e., MRO is always true for ncrcat.\n",prg_nm_get());
+    }else if(prg_id != ncra){
+      (void)fprintf(stdout,"%s: INFO The Multi-Record Output (MRO) syntax option is only valid for ncra.\n",prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* end else */
+  } /* !lmt.mro_sng */
   
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
