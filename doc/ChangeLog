@@ -1,5 +1,11 @@
 2012-07-26  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.2.1 release procedure:
+ 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d args
+	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
+	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
+
 	* Tighten-up DRN/MRO option error/warning/info-handling
 
 	* Die if Fortran (1-based) index equals zero
@@ -11,12 +17,6 @@
 	* Add netCDF4 atomic types to in_4.cdl
 
 2012-07-24  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.1 release procedure:
- 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d args
-	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
-	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
 	* Fix ncra2.c bug #8: maintain rec_rmn_prv_drn across files
 
