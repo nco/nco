@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.194 2012-07-24 23:45:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.195 2012-07-27 20:53:59 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -569,7 +569,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	nco_exit(EXIT_FAILURE);
 	break;
       default:
-	/* All other operators work with DAP correctly */
+	/* All other operators work correctly with DAP */
 	break;
       } /* end switch */
       
@@ -581,9 +581,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully accessed this file using the DAP protocol\n",prg_nm_get(),fnc_nm);
 
-      /* Set rcd=0 to agree with successful stat() so rest of function treats file as local
+      /* 20120728: Set rcd_stt=0 to mimic successful stat() return so rest of function treats file as local
 	 (DAP treats HTTP protocol files as local files) */
-      rcd=0;
+      rcd_stt=0;
 
     }else{ /* DAP-access failed */
       (void)fprintf(stderr,"%s: INFO DAP-access to %s failed with error code %d. ",prg_nm_get(),fl_nm_lcl,rcd);

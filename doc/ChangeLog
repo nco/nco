@@ -1,5 +1,7 @@
 2012-07-27  Charlie Zender  <zender@uci.edu>
 
+	* Set rcd_stt after DAP success to correctly mimic stat() returns
+
 	* Improve DRN/MRO warning/error messages
 
 2012-07-26  Charlie Zender  <zender@uci.edu>
