@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.37 2012-07-03 19:44:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.38 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -15,7 +15,7 @@
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

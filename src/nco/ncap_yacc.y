@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.61 2012-06-28 04:50:07 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.62 2012-07-28 02:27:43 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -44,7 +44,7 @@
 #include <stdarg.h> /* va_start, va_arg, va_end */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 #include <assert.h>
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

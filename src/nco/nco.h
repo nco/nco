@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.184 2012-07-26 23:40:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.185 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -473,7 +473,7 @@ extern "C" {
     int lmt_dmn_nbr; /* [nbr] Number of lmt arguments */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
-    nco_bool MSA_USR_RDR; /* [flg] Multi-slabbing algorithm leaves hyperslabs in user order */
+    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */  
   } lmt_all_sct;
   

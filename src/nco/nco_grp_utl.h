@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.12 2012-07-19 22:03:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.13 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -19,7 +19,7 @@
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

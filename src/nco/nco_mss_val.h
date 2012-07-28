@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.30 2012-07-20 22:17:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.31 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -18,9 +18,9 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 #if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
-# include <ctype.h> /* tolower. . . */
+# include <ctype.h> /* tolower() */
 #else
 # include <strings.h> /* strcasecmp() */
 #endif /* !NEED_STRCASECMP */

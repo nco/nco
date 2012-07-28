@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.42 2012-07-20 20:45:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.43 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -19,7 +19,7 @@
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 #include <time.h> /* machine time */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */

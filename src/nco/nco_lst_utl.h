@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.44 2012-02-14 01:10:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.45 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -19,7 +19,7 @@
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, qsort */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 
 #ifdef HAVE_REGEX_H 
 /* 20120213: Linux GCC 4.6 man page says regex.h depends on (non-present) sys/types.h */

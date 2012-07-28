@@ -1,5 +1,7 @@
 2012-07-27  Charlie Zender  <zender@uci.edu>
 
+	* Add --mro option to ncra
+
 	* Set rcd_stt after DAP success to correctly mimic stat() returns
 
 	* Improve DRN/MRO warning/error messages

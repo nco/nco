@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.68 2012-07-20 22:17:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.69 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -21,9 +21,9 @@
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 #if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
-# include <ctype.h> /* tolower. . . */
+# include <ctype.h> /* tolower() */
 #else
 # include <strings.h> /* strcasecmp() */
 #endif

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.32 2012-07-19 22:03:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.33 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -14,7 +14,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

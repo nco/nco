@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.47 2012-07-20 22:17:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.48 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -20,9 +20,9 @@
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 #if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
-# include <ctype.h> /* tolower. . . */
+# include <ctype.h> /* tolower() */
 #else
 # include <strings.h> /* strcasecmp() */
 #endif /* !NEED_STRCASECMP */

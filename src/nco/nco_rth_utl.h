@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.32 2012-07-25 03:33:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.33 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -16,7 +16,7 @@
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
 #endif /* !_MSC_VER */

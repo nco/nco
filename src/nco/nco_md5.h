@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.8 2012-02-21 17:20:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.9 2012-07-28 02:27:43 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -19,7 +19,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
-#include <string.h> /* strcmp. . . */
+#include <string.h> /* strcmp() */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -84,7 +84,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.8 2012-02-21 17:20:50 zender Exp $ */
+/* $Id: nco_md5.h,v 1.9 2012-07-28 02:27:43 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
