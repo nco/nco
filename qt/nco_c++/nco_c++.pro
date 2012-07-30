@@ -20,13 +20,6 @@ unix:CONFIG( debug, debug|release ) {
         DESTDIR = ./release
 }
 
-
-# netCDF
-DEFINES += ENABLE_NETCDF4
-DEFINES += HAVE_NETCDF4_H
-
-
-# netCDF library
 unix {
  INCLUDEPATH += /usr/local/include
  INCLUDEPATH += /usr/local
@@ -35,6 +28,10 @@ win32 {
  INCLUDEPATH += $(HEADER_NETCDF) 
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
+ 
+ # netCDF assumed in Windows build
+ DEFINES += ENABLE_NETCDF4
+ DEFINES += HAVE_NETCDF4_H
  DEFINES += NEED_STRCASECMP
  DEFINES += NEED_STRCASESTR
 }

@@ -19,12 +19,6 @@ CONFIG( debug, debug|release ) {
         win32:LIBS += $(LIB_ANTLR_REL)
 }
 
-# netCDF
-DEFINES += ENABLE_NETCDF4
-DEFINES += HAVE_NETCDF4_H
-win32:DEFINES += NEED_STRCASECMP
-win32:DEFINES += NEED_STRCASESTR
-
 # library dependencies
 unix {
  INCLUDEPATH += /usr/local/include 
@@ -47,6 +41,12 @@ win32 {
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
  CONFIG += console
+
+ # netCDF assumed in Windows build
+ DEFINES += ENABLE_NETCDF4
+ DEFINES += HAVE_NETCDF4_H
+ DEFINES += NEED_STRCASECMP
+ DEFINES += NEED_STRCASESTR
 }
 
 # SOURCES

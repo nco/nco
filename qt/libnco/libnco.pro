@@ -17,12 +17,6 @@ unix:CONFIG( debug, debug|release ) {
         DESTDIR = ./release
 }
 
-
-# netCDF
-DEFINES += ENABLE_NETCDF4
-DEFINES += HAVE_NETCDF4_H
-
-
 # netCDF library
 # gcc settings to use C99
 unix {
@@ -40,6 +34,9 @@ win32 {
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
  
+ # netCDF assumed in Windows build
+ DEFINES += ENABLE_NETCDF4
+ DEFINES += HAVE_NETCDF4_H
  DEFINES += NEED_STRCASECMP
  DEFINES += NEED_STRCASESTR
 }

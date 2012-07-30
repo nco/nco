@@ -17,17 +17,9 @@ CONFIG( debug, debug|release ) {
     unix:LIBS  += ../nco_c++/release/liblibnco_c++.a
 }
 
-
-DEFINES += ENABLE_NETCDF4
-DEFINES += HAVE_NETCDF4_H
-win32:DEFINES += NEED_STRCASECMP
-win32:DEFINES += NEED_STRCASESTR
-
 INCLUDEPATH += ../../src/nco_c++
-
 HEADERS   = 
 SOURCES   = ../../src/nco_c++/tst.cc
-
 
 #netCDF library
 unix {
@@ -35,7 +27,6 @@ unix {
  INCLUDEPATH += /usr/local
  LIBS += -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5
  LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/i386-linux-gnu/ -lz -ludunits2 -lexpat 
-
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)
@@ -49,4 +40,10 @@ win32 {
  DEFINES += _CRT_SECURE_NO_WARNINGS
  DEFINES += _CRT_NONSTDC_NO_DEPRECATE
  CONFIG  += console
+ 
+ # netCDF assumed in Windows build
+ DEFINES += ENABLE_NETCDF4
+ DEFINES += HAVE_NETCDF4_H
+ DEFINES += NEED_STRCASECMP
+ DEFINES += NEED_STRCASESTR
 }
