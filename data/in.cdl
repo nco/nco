@@ -1,4 +1,4 @@
-// -*-c++-mode-*-
+o// -*-c++-mode-*-
 
 // Purpose: CDL file to generate netCDF test file for NCO
 
@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.147 2012-07-26 18:36:25 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.148 2012-07-30 21:43:43 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
