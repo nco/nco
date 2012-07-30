@@ -1,3 +1,7 @@
+2012-07-30  Charlie Zender  <zender@uci.edu>
+
+	* Add level_2_group_1 to in_grp.cdl
+
 2012-07-27  Charlie Zender  <zender@uci.edu>
 
 	* Add --mro option to ncra
