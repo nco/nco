@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.27 2012-07-28 02:27:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra2.c,v 1.28 2012-07-30 23:54:20 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -151,8 +151,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra2.c,v 1.27 2012-07-28 02:27:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.27 $";
+  const char * const CVS_Id="$Id: ncra2.c,v 1.28 2012-07-30 23:54:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.28 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1017,14 +1017,14 @@ main(int argc,char **argv)
 
   } /* end loop over fl_idx */
   
-  if(prg == ncra || prg == ncrcat) /* fxm: Get rid of this when crd_val DRN/MRO is predictable */
+  if(prg == ncra || prg == ncrcat) /* fxm: Remove this or make DBG when crd_val DRN/MRO is predictable? */
     if(lmt_rec->drn != 1L && (lmt_rec->lmt_typ == lmt_crd_val || lmt_rec->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Duration argument DRN used in hyperslab specification for %s which be determined based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",prg_nm_get(),lmt_rec->nm);
 
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
      except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
-     Occassionally the last input file ends mid-group, or contains no valid records
-     In such cases ncra has accumulated an irregular number of records to normalize
-     FLG_BFR_NRM is true in such cases, and is always true for ncea */
+     Occassionally last input file(s) are superfluous so REC_LST_DSR never set
+     In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
+     FLG_BFR_NRM is always true here for ncea */
   if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
