@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.142 2012-07-27 16:28:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.143 2012-07-30 06:05:37 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -309,10 +309,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   if(lmt.mro_sng){
     if(strcasecmp(lmt.mro_sng,"m")){
-      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be \"m\" or \"M\"\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
+      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be 'm' or 'M'\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.flg_mro=True;
+  } /* !lmt.mro_sng */
+
+  /* In case flg_mro is set in ncra2.c by --mro */
+  if(lmt.flg_mro){
     if(prg_id == ncrcat){
       (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option ('m', 'M', or --mro) is redundant. MRO is always true for ncrcat.\n",prg_nm_get());
     }else if(prg_id != ncra){

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.704 2012-07-26 17:56:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.705 2012-07-30 06:05:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3758,6 +3758,13 @@ ncks -F -d lon,-3, in.nc out.nc
 As shown, we recommend using a full floating point suffix of @code{.0}
 instead of simply @code{.} in order to make obvious the selection of
 hyperslab elements based on coordinate value rather than index.
+
+@cindex duration
+@cindex MRO
+@cindex Multi-Record Operator
+As of version 4.2.1 (July, 2012), @acronym{NCO} allows two operators,
+@command{ncra} and @command{ncrcat}, to extract and operate on multiple
+groups of records. 
 
 @cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
@@ -12304,8 +12311,8 @@ SYNTAX
 @example
 ncra [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
-[-n @var{loop}] [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
+[--mro] [-n @var{loop}] [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -12416,7 +12423,7 @@ SYNTAX
 @example
 ncrcat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [--md5_digest] [-n @var{loop}] [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
