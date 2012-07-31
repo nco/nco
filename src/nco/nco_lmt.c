@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.143 2012-07-30 06:05:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.144 2012-07-31 23:14:09 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1051,7 +1051,7 @@ nco_lmt_typ /* [fnc] Determine limit type */
 } /* end nco_lmt_typ() */
 
 char * /* O [sng] Units string */
-nco_lmt_get_udu_att /* Successful conversion returns units attribute otherwise null */
+nco_lmt_get_udu_att /* Returns specified attribute otherwise NULL */
 (const int nc_id, /* I [idx] netCDF file ID */
  const int var_id,
  const char *att_nm) /* I [id] Variable ID whose attribute to read */

@@ -1,10 +1,10 @@
 2012-07-31  Pedro Vicente  <pvicente@uci.edu>
 
-        * Re-base record bounds variables (e.g., time_bnds) in ncrcat
+        * Re-base record bounds variables (e.g., time_bnds) in ncrcat/ncra
 
 2012-07-31  Charlie Zender  <zender@uci.edu>
 
-	* Warn in ncrcat/ncra when re-basing possibly necessary but UDUnits not installed
+	* Warn in ncrcat/ncra when re-basing possibly necessary but UDUnits not installeda
 
 2012-07-30  Charlie Zender  <zender@uci.edu>
 
