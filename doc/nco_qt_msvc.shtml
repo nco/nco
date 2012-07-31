@@ -37,7 +37,7 @@ This page is mostly important for developers that want to build NCO from source 
 
 <a target="_top" href="http://qt.nokia.com/products/">Qt</a> is a cross platform build system. As of NCO 4.2.1, it is possible to build NCO with Qt, in a Linux, Mac OSX or 
 Windows enviroment. NCO can be built either from the Qt IDE, QtCreator, or from the command line. To build NCO with QtCreator, just open the file /qt/nco.pro. 
-To build Qt from the command line, do:
+To build NCO from the command line, do:
 <br>
 <p><tt>$ cd qt</tt>
 <br><tt>$ qmake</tt>
