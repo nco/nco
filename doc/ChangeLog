@@ -1,3 +1,7 @@
+2012-07-31  Charlie Zender  <zender@uci.edu>
+
+	* Warn in ncrcat/ncra when re-basing possibly necessary but UDUnits not installed
+
 2012-07-30  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.1 release procedure:

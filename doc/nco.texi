@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.705 2012-07-30 06:05:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.706 2012-07-31 22:05:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4418,6 +4418,7 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 
 @html
 <a name="time_rebase"></a> <!-- http://nco.sf.net/nco.html#time_rebase -->
+<a name="rbs"></a> <!-- http://nco.sf.net/nco.html#rbs -->
 @end html
 @node Rebasing Time Coordinate, Missing Values, UDUnits Support, Common features
 @section Rebasing Time Coordinate
@@ -4428,9 +4429,18 @@ Short options: None@*
 @end cartouche
 
 Time re-basing is performed automatically when UDUnits is installed.
-Time rebasing is invoked when numerous files share a common time-based
-record coordinate, and the record coordinate is in the same time units
-in each file, but the date offset differs among files.
+Time rebasing is invoked when numerous files share a common record
+coordinate, and the record coordinate changes among input files.
+Usually this occurs when the recoordinate is a time-based variable,
+and times are recorded in units of a time-since-basetime, and the
+basetime changes from file to file.
+Since the output file can have only one unit (i.e., one basetime) for
+the record coordinate, @acronym{NCO}, in such cases, chooses the units
+of the first input file to be the units of the output file.
+It is necessary to ``rebase'' all the input record variables to this
+output time unit in order for the output file to have the correct
+values.  
+
 For example suppose the time coordinate is in hours and each day in
 January is stored in its own daily file.
 Each daily file records the temperature variable @code{tpt(time)} 
