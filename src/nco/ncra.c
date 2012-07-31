@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.300 2012-07-31 22:05:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.301 2012-07-31 22:36:39 pvicente Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.300 2012-07-31 22:05:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.300 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.301 2012-07-31 22:36:39 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.301 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -778,8 +778,10 @@ main(int argc,char **argv)
 	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
             (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 
-            /* Re-base record coordinate if necessary */
-            if(var_prc[idx]->is_crd_var && lmt_rec->origin != 0.0){
+        /* Re-base record coordinate if necessary; re-base record bounds variables (e.g., time_bnds) in ncrcat */
+        if(var_prc[idx]->is_rec_var &&
+          (var_prc[idx]->is_crd_var || nco_is_spc_in_bnd_att(in_id,var_prc[idx]->id)) &&
+           lmt_rec->origin != 0.0){
               var_sct *var_crd;
               scv_sct scv;
               /* De-reference */
