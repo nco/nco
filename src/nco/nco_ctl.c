@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.349 2012-08-01 06:23:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.350 2012-08-01 17:22:00 pvicente Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -800,8 +800,11 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
 #ifdef _MSC_VER 
   int len;
   if(strrchr(nm_out_tmp,'\\')) nm_out_tmp=strrchr(nm_out_tmp,'\\')+1;
-  len=strlen(nm_out_tmp); /* cut '.exe' from name */ 
-  nm_out_tmp[len-4]='\0';  
+  char *s=strstr(nm_out_tmp,".exe");
+  if(s!=NULL && !strcmp(s,".exe")){
+    len=strlen(nm_out_tmp); /* cut '.exe' from name if name contains '.exe' */ 
+    nm_out_tmp[len-4]='\0';   
+  }
 #else /* !_MSC_VER */
   if(strrchr(nm_out_tmp,'/')) nm_out_tmp=strrchr(nm_out_tmp,'/')+1;
 #endif /* !_MSC_VER */

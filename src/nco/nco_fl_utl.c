@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.195 2012-07-27 20:53:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.196 2012-08-01 17:22:00 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -492,6 +492,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   /* Purpose: Locate input file, retrieve it from remote storage system if necessary,
      create local storage directory if neccessary, check file for read-access,
      return name of file on local system */
+
+#ifdef _MSC_VER
+  /* TODO nco1068 The stat function retuns -1 for large files; assume success */
+  return fl_nm;
+#endif
 
   FILE *fp_in;
 
