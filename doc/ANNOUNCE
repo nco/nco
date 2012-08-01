@@ -1,17 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.499 2012-07-20 21:03:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.500 2012-08-01 06:21:37 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release is notable for 
+This release is notable for improved hyperslabbing features,
+especially the ncra/ncrcat improvements to handle sub-groups of
+records at regular intervals. Autoconf builds are now regularly tested 
+on more platforms. This should reduce the pain of those forced (or
+eager) to do their own compiling.
 
-Work on NCO 4.2.1 is underway, focused on making a more robust
-build/configuration environment for RHEL, CentOS, and AIX, as well as
-addressing the MM3 issue in other (non-ncks) operators, and on
-simplifying issues described in the KNOWN BUGS NOT YET FIXED section
-below. 
+Work on NCO 4.2.2 is underway. Expect ease-of-build improvements, an
+optimization for diskless/RAM files, and a smaller TODO list. 
 
 Enjoy,
 Charlie
@@ -20,19 +21,23 @@ Other "New stuff" in 4.2.1 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
-A. Sub-cycle over records in multi-file operators (MFOs). Huh?
-   In plain English, ncra and ncrcat now handle a fourth hyperslab
+A. Duration/Sub-cycles in Multi-Record Operators (MROs). Huh?
+   In plainer English, ncra and ncrcat now handle a fourth hyperslab
    parameter that specifies the number of consecutive records over
-   which the operation should act. Now MFOs can, say, stride along the
+   which the operation should act. Now MROs can, say, stride along the
    time dimension by leaps of twelve indices, averaging three
    consecutive records at a time. Yes, like a seasonal average!
-   This is perhaps the most powerful new NCO feature in many moons.
-   http://nco.sf.net/nco.html#drn fxm
+   Not only that, but ncra can be instructed to output its operations
+   (e.g., averages) every sub-cycle, so that, e.g., interannual
+   timeseries of seasonal averages can be created in one fell swoop. 
+   This may be the most powerful new NCO feature in many moons.
+   An extended example is described in the manual at
+   http://nco.sf.net/nco.html#drn
 
 A. Bypass intermediate temporary files
    ncks --no_tmp_fl ~/nco/data/in.nc ~/foo.nc
-   At least four people, including Remik Ziemlinski, have requested
-   this feature since at least 2004. Thanks to all of them.
+   Since 2004 at least four people, including Remik Ziemlinski, who I
+   believe was first, have requested this feature, and now it is here.
    http://nco.sf.net/nco.html#no_tmp_fl
 
 A. One may now extract extract the last N elements of a hyperslab.
@@ -75,15 +80,15 @@ A. ncpdq -U now unpacks coordinate variables. ncpdq does not, by
    http://nco.sf.net/nco.html#ncpdq
 
 A. ncra/ncrcat averaging/concatenation of record coordinate-bounded
-   variable across two non-monotonic files now selects correct records
-   in all cases. fxm.
+   variable across two non-monotonic files now selects correct records 
+   in all cases.
 
 KNOWN BUGS NOT YET FIXED:
 
    This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.2.1 built/tested with netCDF
-   4.2-snapshot2012040523 on top of HDF5 hdf5-1.8.8 with these methods: 
+   4.2.1 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
@@ -97,7 +102,7 @@ A. NOT YET FIXED
    ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
    ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
 
-   20120611: Verified problem still exists
+   20120731: Verified problem still exists
    Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
 
 B. NOT YET FIXED
@@ -110,7 +115,7 @@ B. NOT YET FIXED
    ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
    ncks -m ~/foo.nc
 
-   20120611: Verified problem still exists
+   20120731: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 C. NOT YET FIXED
@@ -121,7 +126,7 @@ C. NOT YET FIXED
    Demonstration:
    ncks -O -C -D 3 -v var_nm.dot -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # Fails to find variable
 
-   20120611: Verified problem still exists. 
+   20120731: Verified problem still exists. 
    Stopped testing because inclusion of var_nm.dot broke all test scripts.
    NB: Problem hard to fix since DAP interprets '.' as structure delimiter in query string of HTTP requests.
 

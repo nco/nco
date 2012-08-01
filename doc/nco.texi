@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.706 2012-07-31 22:05:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.707 2012-08-01 06:21:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2205,6 +2205,7 @@ feature is automatic and cannot be controlled by the user.
 * C and Fortran Index Conventions::  
 * Hyperslabs::                  
 * Stride::                      
+* Duration::                    
 * Multislabs::                  
 * Wrapped Coordinates::         
 * Auxiliary Coordinates::       
@@ -3738,8 +3739,9 @@ ncks -F -d lon,0.0,90.0,2 in.nc out.nc
 
 As of version 4.2.1 (July, 2012), @acronym{NCO} allows one to extract
 the last @var{N} elements of a hyperslab.
-Negative integers as @var{min} or @var{max} elements of a hyperslab specification
-indicate offsets from the end (Python also uses this convention).
+Negative integers as @var{min} or @var{max} elements of a hyperslab
+specification indicate offsets from the end (Python also uses this
+convention). 
 Previously, for example, @samp{-d time,-2,-1} caused a domain error. 
 Now it means select the second-to-last and penultimate timesteps.
 Negative integers work for @var{min} and @var{max} indices but not for
@@ -3758,13 +3760,6 @@ ncks -F -d lon,-3, in.nc out.nc
 As shown, we recommend using a full floating point suffix of @code{.0}
 instead of simply @code{.} in order to make obvious the selection of
 hyperslab elements based on coordinate value rather than index.
-
-@cindex duration
-@cindex MRO
-@cindex Multi-Record Operator
-As of version 4.2.1 (July, 2012), @acronym{NCO} allows two operators,
-@command{ncra} and @command{ncrcat}, to extract and operate on multiple
-groups of records. 
 
 @cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
@@ -3809,7 +3804,7 @@ This option may be specified more than once in a single command
 <a name="srd"></a> <!-- http://nco.sf.net/nco.html#srd -->
 <a name="stride"></a> <!-- http://nco.sf.net/nco.html#stride -->
 @end html
-@node Stride, Multislabs, Hyperslabs, Common features
+@node Stride, Duration, Hyperslabs, Common features
 @section Stride 
 @cindex stride
 @cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
@@ -3896,10 +3891,103 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @end example
 
 @html
+<a name="drn"></a> <!-- http://nco.sf.net/nco.html#drn -->
+<a name="mro"></a> <!-- http://nco.sf.net/nco.html#mro -->
+@end html
+@node Duration, Multislabs, Stride, Common features
+@section Duration
+@cindex duration
+@cindex sub-cycle
+@cindex MRO
+@cindex Multi-Record Operator
+@cindex @code{--mro}
+@cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
+@cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],@var{stride}}
+@cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],@var{stride}}
+@cartouche
+Availability: @command{ncra}, @command{ncrcat}@* 
+Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
+Long options: 
+@samp{--mro}
+@samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]},@* 
+@samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
+@end cartouche
+As of version 4.2.1 (July, 2012), @acronym{NCO} allows two operators,
+@command{ncra} and @command{ncrcat}, to extract and operate on multiple
+groups of records. 
+These groups may be physically connected to @emph{sub-cycles} of a
+periodic nature, e.g., seasons of a year.
+Or they may be thought of as groups of a specifed @emph{duration}.
+The feature is so new that I'm unsure what terminology is best.
+For now, I call this the duration feature, sometimes abbreviated DRN.
+
+The so-called duration feature allows processing of groups of records
+separated by regular intervals of records.
+It is perhaps best illustrated by an extended example which describes
+how to solve the same problem both with and without the DRN feature.
+
+The first task in data processing is often creating seasonal cycles.
+Suppose a 150-year climate simulation produced 100 ouput files, each
+comprising 12 records, each a monthly mean:
+@file{1850.nc}, @file{1851.nc}, ... @file{2009.nc}.
+Our goal is to create a single file containing the summertime (June,
+July, and August, aka JJA) mean.
+Traditionally, we would first compute the climatological monthly
+mean for each month of summer. 
+Each of these is a 150-year mean, i.e., 
+@example
+# Step 1: Create climatological monthly files clm06.nc..clm08.nc
+for mth in @{6..8@}; do
+  mm=`printf "%02d" $mth`
+  ncra -O -F -d time,$@{mm@},,12 -n 150,4,1 1850.nc clm$@{mm@}.nc
+done
+# Step 2: Average climatological monthly files into summertime mean
+ncra -O clm06 clm07.nc clm08.nc clm_JJA.nc
+@end example
+@noindent
+So far, nothing is unusual and this task can be performed by any
+@acronym{NCO} version. 
+We can now eliminate the shell loop used in @w{Step 1} above.
+
+The new DRN option aggregates more than one input record at a time
+before performing arithmetic operations, and, with an additional
+switch, allows us to archive those results in multiple record output
+(MRO) files.  
+This reduces the task of producing a the climatological summertime
+mean to one step:
+@example
+# Step 1: Compute climatological summertime mean
+ncra -O -F -d time,6,,12,3 -n 150,4,1 1850.nc clm_JJA.nc
+@end example
+@noindent
+The DRN option instructs @command{ncra} (or @command{ncrcat} to process
+files in groups of three records. 
+
+A separate option, @samp{--mro}, instructs @command{ncra} to output the 
+results of it operations on each sub-group, and to produce a
+Multi-Record Output (MRO) file rather than a Single-Record Output (SRO) 
+file.
+Unless @samp{--mro} is specified, @command{ncra} will collect all the
+sub-groups together, and operate on their ensemble, producing a single
+record. 
+The above example with @samp{--mro} archives all (150) annual summertime
+means... 
+@example
+# Step 1: Archive all 150 summertime means in one file
+ncra --mro -O -F -d time,6,,12,3 -n 150,4,1 1850.nc 1850_2009_JJA.nc
+# ...or all (150) annual means...
+ncra --mro -O -d time,,,12,12 -n 150,4,1 1850.nc 1850_2009.nc
+@end example
+@noindent
+These operations generated and required no intermediate files.
+This contrasts to the previous @acronym{NCO} methods, which require
+generating, averaging, then catenating 150 files. 
+
+@html
 <a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
 <a name="mlt"></a> <!-- http://nco.sf.net/nco.html#mlt -->
 @end html
-@node Multislabs, Wrapped Coordinates, Stride, Common features
+@node Multislabs, Wrapped Coordinates, Duration, Common features
 @section Multislabs 
 @cindex multislab
 @cindex multi-hyperslab

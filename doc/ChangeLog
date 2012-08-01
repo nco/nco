@@ -1,18 +1,22 @@
+2012-07-31  Charlie Zender  <zender@uci.edu>
+
+ 	* NCO 4.2.1 release procedure:
+ 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d, DRN/MRO
+	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
+	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
+
+	* Document DRN/MRO in nco.texi, man pages, and usage
+
 2012-07-31  Pedro Vicente  <pvicente@uci.edu>
 
         * Re-base record bounds variables (e.g., time_bnds) in ncrcat/ncra
 
 2012-07-31  Charlie Zender  <zender@uci.edu>
 
-	* Warn in ncrcat/ncra when re-basing possibly necessary but UDUnits not installeda
+	* Warn in ncrcat/ncra when re-basing possibly necessary but UDUnits not installed
 
 2012-07-30  Charlie Zender  <zender@uci.edu>
-
- 	* NCO 4.2.1 release procedure:
- 	Changes since nco-4_2_0: no_tmp_fl, NC_DISKLESS, -'ve -d, ncra2.c
-	cd ~/nco;cvs tag -d nco-4_2_1;cvs tag -d nco-4_2_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
-	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
 	* Add level_2_group_1 to in_grp.cdl
 
