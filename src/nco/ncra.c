@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.302 2012-07-31 23:14:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.303 2012-08-01 06:23:09 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.302 2012-07-31 23:14:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.302 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.303 2012-08-01 06:23:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.303 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -605,7 +605,7 @@ main(int argc,char **argv)
 	lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
 	if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
 #ifndef ENABLE_UDUNITS
-	if(lmt_rec->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",prg_nm_get(),lmt_rec->nm,prg_nm_get());
+	if(lmt_rec->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",prg_nm_get(),lmt_rec->nm,prg_nm_get());
 #endif /* !ENABLE_UDUNITS */
       }else{ /* endif record coordinate exists */
 	/* Record dimension, but not record coordinate, exists, which is fine. Reset return code. */

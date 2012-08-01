@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.348 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.349 2012-08-01 06:23:09 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -782,7 +782,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Dream of preventing, with Curtis, Obama's assassination, interrupted by T-boning\n";
+  return "Slimed by jellyfish that look like spent condoms\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -958,6 +958,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-D")) (void)fprintf(stdout,"-D, --dbg_lvl, --debug-level dbg_lvl\tDebugging level\n");
   if(strstr(opt_sng,"[-d")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-d, --dmn, --dimension old_dim,new_dim Dimension's old and new names\n");
+    else if(prg_lcl == ncra || prg_lcl == ncrcat) (void)fprintf(stdout,"-d, --dmn, --dimension dim,[min][,[max][[[,stride[,duration]]]]] Dimension's limits, stride, duration in hyperslab\n");
     else (void)fprintf(stdout,"-d, --dmn, --dimension dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
   } /* end if -d */
   if(strstr(opt_sng,"[-F]")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
