@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.311 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.312 2012-08-02 05:07:50 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -109,6 +109,9 @@ main(int argc,char **argv)
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+#ifdef GRP_DEV
+  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
+#endif
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -132,9 +135,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.311 2012-07-28 02:27:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.311 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.312 2012-08-02 05:07:50 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.312 $";
+#ifdef GRP_DEV
+  const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:z";
+#else
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
+#endif
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -522,6 +529,11 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
+#ifdef GRP_DEV
+      case 'z': /* Print list of variables and exit */
+      GET_LIST=True;
+      break;
+#endif
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
@@ -554,6 +566,13 @@ main(int argc,char **argv)
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+
+#ifdef GRP_DEV
+  if (GET_LIST){
+    rcd+=nco_grp_itr(in_id);
+    goto out; 
+  }
+#endif
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
@@ -782,6 +801,7 @@ main(int argc,char **argv)
     
   } /* !fl_out */
   
+out:
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   

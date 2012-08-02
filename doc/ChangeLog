@@ -1,3 +1,7 @@
+2012-08-01  Pedro Vicente  <pvicente@uci.edu>
+
+        * Add a ncks -z option to iterate input netCDF file tree
+
 2012-07-31  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.1 release procedure:

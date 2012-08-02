@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.23 2012-03-12 06:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.24 2012-08-02 05:07:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -652,3 +652,51 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   *grp_xtr_nbr=grp_nbr_tmp;    
   return grp_lst;
 } /* end nco_grp_lst_mk() */
+
+
+
+#ifdef GRP_DEV
+int /* [rcd] Return code */
+nco_grp_itr
+(const int grp_id) /* I [enm] Group ID */  
+{
+  /* Purpose: Recursively iterate grp_id */
+
+  int rcd=NC_NOERR;        /* I [rcd] Return code */
+  int ngrps;               /* I [nbr] Number of sub-groups in this group */
+  int var_id;              /* I [enm] Variable ID */ 
+  int *grpids;             /* O [ID]  Sub-group IDs */ 
+  char var_nm[NC_MAX_NAME];/* O [sng] Variable name */
+  nc_type var_typ;         /* O [enm] Variable type */
+  int nbr_att;             /* O [nbr] Number of attributes */
+  int nvars;               /* O [nbr] Number of variables */
+  int idx;
+
+  /* Get variables for this group */
+
+  rcd+=nc_inq_nvars(grp_id, &nvars);
+  for(var_id=0;var_id<nvars;var_id++){
+    rcd+=nc_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+    if(dbg_lvl_get() >= nco_dbg_std){
+      (void)fprintf(stdout,"%s\n",var_nm); 
+    }
+  }
+
+  /* Go to sub-groups */
+
+  rcd+=nc_inq_grps(grp_id,&ngrps,NULL);
+  grpids=(int*)nco_malloc((ngrps)*sizeof(int));
+  rcd+=nc_inq_grps(grp_id,&ngrps,grpids);
+
+  for(idx=0;idx<ngrps;idx++){
+    rcd+=nco_grp_itr(grpids[idx]);
+  }
+
+  (void)nco_free(grpids);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_grp_itr() unable to iterate groups");
+  return rcd;
+}
+/* nco_grp_itr() */
+#endif
+
+

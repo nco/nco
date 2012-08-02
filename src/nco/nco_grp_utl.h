@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.13 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.14 2012-08-02 05:07:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_GRP_UTL_H
 #define NCO_GRP_UTL_H
+
+#if 1
+#define GRP_DEV
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -123,6 +127,13 @@ nco_def_grp_rcr
  const int out_id, /* I [enm] netCDF output-file ID */
  const char * const prn_nm, /* I [sng] Parent group name */
  const int rcr_lvl); /* I [nbr] Recursion level */
+
+
+#ifdef GRP_DEV
+int /* [rcd] Return code */
+nco_grp_itr
+(const int grp_id); /* I [enm] Group ID */  
+#endif
 
 #ifdef __cplusplus
 } /* end extern "C" */
