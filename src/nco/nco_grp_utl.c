@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.26 2012-08-02 07:57:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.27 2012-08-02 17:29:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -683,7 +683,7 @@ nco_grp_itr
     rcd+=nc_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
-    path=(char*)malloc(strlen(grp_pth)+strlen(var_nm)+2);
+    path=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
 
     /* Initialize path with the current absolute group path */
     strcpy(path,grp_pth);
@@ -695,7 +695,7 @@ nco_grp_itr
       (void)fprintf(stdout,"var= %s\n",path); 
     }
 
-    if(path!=NULL)free(path);
+    path=(char *)nco_free(path);
   }
 
   /* Go to sub-groups */
@@ -709,7 +709,7 @@ nco_grp_itr
     rcd+=nc_inq_grpname(gid,gp_nm);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
-    path=(char*)malloc(strlen(grp_pth)+strlen(gp_nm)+2);
+    path=(char*)nco_malloc(strlen(grp_pth)+strlen(gp_nm)+2);
 
     /* Initialize path with the current absolute group path */
     strcpy(path,grp_pth);
@@ -720,7 +720,7 @@ nco_grp_itr
     /* Recursively go to sub-groups; NOTE the new absolute group path is passed */
     rcd+=nco_grp_itr(gid,path);
 
-    if(path!=NULL)free(path);
+    path=(char *)nco_free(path);
   }
 
   (void)nco_free(grpids);

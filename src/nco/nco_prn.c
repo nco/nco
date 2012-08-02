@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.74 2012-07-16 04:47:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.75 2012-08-02 17:29:33 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -183,7 +183,7 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
 (int in_id, /* I [id] netCDF input file ID */
- char *var_nm) /* I [sng] Variable to pring */
+ char *var_nm) /* I [sng] Variable to print */
 {
   /* Purpose: Print variable metadata. This routine does not take into 
      account any user-specified limits, it just prints what it finds. */
