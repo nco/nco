@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.25 2012-08-02 06:03:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.26 2012-08-02 07:57:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -657,7 +657,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [enm] Group ID */  
- const char * const grp_nm)    /* I [sng] Group name */
+ const char * const grp_pth)   /* I [sng] Absolute group path */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -672,30 +672,55 @@ nco_grp_itr
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   int idx;
 
-  /* Get variables for this group */
-
   if(dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stdout,"grp=%s\n",grp_nm); 
+    (void)fprintf(stdout,"grp= %s\n",grp_pth); 
   }
 
+  /* Get variables for this group */
   rcd+=nc_inq_nvars(grp_id,&nvars);
   for(var_id=0;var_id<nvars;var_id++){
+    char *path=NULL;
     rcd+=nc_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+
+    /* Allocate path buffer; add space for a trailing NUL */ 
+    path=(char*)malloc(strlen(grp_pth)+strlen(var_nm)+2);
+
+    /* Initialize path with the current absolute group path */
+    strcpy(path,grp_pth);
+    if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
+      strcat(path,"/");
+    strcat(path,var_nm);       /* Concatenate variable to absolute group path */
+
     if(dbg_lvl_get() >= nco_dbg_std){
-      (void)fprintf(stdout,"var=%s\n",var_nm); 
+      (void)fprintf(stdout,"var= %s\n",path); 
     }
+
+    if(path!=NULL)free(path);
   }
 
   /* Go to sub-groups */
-
   rcd+=nc_inq_grps(grp_id,&ngrps,NULL);
   grpids=(int*)nco_malloc((ngrps)*sizeof(int));
   rcd+=nc_inq_grps(grp_id,&ngrps,grpids);
 
   for(idx=0;idx<ngrps;idx++){
+    char *path=NULL;
     int gid=grpids[idx];
     rcd+=nc_inq_grpname(gid,gp_nm);
-    rcd+=nco_grp_itr(gid,gp_nm);
+
+    /* Allocate path buffer; add space for a trailing NUL */ 
+    path=(char*)malloc(strlen(grp_pth)+strlen(gp_nm)+2);
+
+    /* Initialize path with the current absolute group path */
+    strcpy(path,grp_pth);
+    if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
+      strcat(path,"/");
+    strcat(path,gp_nm);        /* Concatenate current group to absolute group path */
+
+    /* Recursively go to sub-groups; NOTE the new absolute group path is passed */
+    rcd+=nco_grp_itr(gid,path);
+
+    if(path!=NULL)free(path);
   }
 
   (void)nco_free(grpids);
