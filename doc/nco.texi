@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.708 2012-08-01 06:23:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.709 2012-08-02 00:57:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.1
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 31 July 2012
-@set update-month July 2012
+@set update-date 1 August 2012
+@set update-month August 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -1421,7 +1421,7 @@ file.
 Often these users are building and executing production data analysis 
 scripts that are repeated frequently on large datasets, and where 
 canceling the extra file write conserves disk space and time.
-For this purpose @acronym{NCO} has, since version 4.2.1 in July, 2012, 
+For this purpose @acronym{NCO} has, since version 4.2.1 in August, 2012, 
 made configurable the controls over temporary file creation.
 The @samp{--wrt_tmp_fl} and equivalent @samp{--write_tmp_fl} switches 
 ensure @acronym{NCO} writes output to an intermediate temporary file.
@@ -3737,7 +3737,7 @@ ncks -F -d lon,1.0,2.0 in.nc out.nc
 ncks -F -d lon,0.0,90.0,2 in.nc out.nc
 @end example
 
-As of version 4.2.1 (July, 2012), @acronym{NCO} allows one to extract
+As of version 4.2.1 (August, 2012), @acronym{NCO} allows one to extract
 the last @var{N} elements of a hyperslab.
 Negative integers as @var{min} or @var{max} elements of a hyperslab
 specification indicate offsets from the end (Python also uses this
@@ -3912,9 +3912,9 @@ Long options:
 @samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]},@* 
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
 @end cartouche
-As of version 4.2.1 (July, 2012), @acronym{NCO} allows two operators,
-@command{ncra} and @command{ncrcat}, to extract and operate on multiple
-groups of records. 
+As of version 4.2.1 (August, 2012), @acronym{NCO} allows both Multi-File,
+Multi-Record operators, @command{ncra} and @command{ncrcat}, to extract
+and operate on multiple groups of records. 
 These groups may be physically connected to @emph{sub-cycles} of a
 periodic nature, e.g., seasons of a year.
 Or they may be thought of as groups of a specifed @emph{duration}.
@@ -4518,7 +4518,7 @@ Short options: None@*
 
 Time re-basing is performed automatically when UDUnits is installed.
 Time rebasing is invoked when numerous files share a common record
-coordinate, and the record coordinate changes among input files.
+coordinate, and the record coordinate units change among input files.
 Usually this occurs when the recoordinate is a time-based variable,
 and times are recorded in units of a time-since-basetime, and the
 basetime changes from file to file.
@@ -4541,7 +4541,7 @@ file02.nc time:units="hours since 1990-1-2"
 file31.nc time:units="hours since 1990-1-31"   
 @end example
 
-@noindent @example
+@example
 // Find mean noontime temperature in January
 ncra -v tpt -d time,"1990-1-1 12:00:00","1990-1-31 23:59:59",24 \
       file??.nc noon.nc    
@@ -4562,6 +4562,10 @@ ncrcat -v tpt -d time,"1990-1-2 12:00:00","1990-1-3 11:59:59" \
 time = 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
     29, 30, 31, 32, 33, 34, 35 ;
 @end example
+As of @acronym{NCO} version 4.2.1 (August, 2012), @acronym{NCO}
+automatically rebases not only the record coordinate (@code{time}, here) 
+but also any bounds associated with the record coordinate (i.e.,
+@code{time_bnds}) (@pxref{CF Convention}).
 
 @html
 <a name="missing_value"></a> <!-- http://nco.sf.net/nco.html#missing_value -->
@@ -5172,7 +5176,7 @@ Long options: @samp{--ram_all}, @samp{--create_ram}, @samp{--open_ram},
 @samp{--diskless_all}@*   
 @end cartouche
 
-As of @acronym{NCO} version 4.2.1 (July, 2012), @acronym{NCO} supports
+As of @acronym{NCO} version 4.2.1 (August, 2012), @acronym{NCO} supports
 the use of diskless files, aka RAM disks, for file access and creation. 
 Two independent switches, @samp{--open_ram} and @samp{--create_ram},
 control this feature. 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1198 2012-07-27 02:51:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1199 2012-08-02 00:57:23 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -683,23 +683,14 @@ nco1054. nco: ncap2 rgr 11 Casting variable with a single dim of sz=1. works for
 	 ncap2 -O -C -v -s 'defdim("a",1);b[$a]=10;c=b(0:0);' ~/nco/data/in.nc ~/foo.nc
 nco1014. nco: option to eliminate ncap2 intermediate tmp file writing
 	 ncap2 -s 'time=time+999999' ~/nco/data/in.nc
-nco1057. nco: negative integer as min or max element of hyperslab specification indicates offset from end
 nco1058. ncap2: allow new variables within where() statement
 	 ncap2 -v -O -s 'valid=0*time;where(time<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # works
 	 ncap2 -v -O -s 'valid=0*time;time2=time;where(time2<7) valid=time;' ~/nco/data/in.nc ~/foo.nc # fails
 nco1059. nco: ncatted keep type same by default when modifying/overwriting attribute
-nco1060. ncra: allow stride argument to determine averaging length, and store multiple time-averages in output, e.g.,
-	 Old:
-	 ncra -O -C -F -d time,1,10,4 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average every fourth slice, store 1
-	 ncrcat -O -C -F -d time,1,10,4 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Concat every fourth slice, store 3
-	 New:
-	 ncra2 -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average every fourth pair of slices, store 1 (norm at end)
-	 ncra2 -O -C -F -d time,1,10,4,2,M -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average every fourth pair of slices, store 3 (norm/write as you go)
-	 ncra2 -O -C -F -d time,1,10,2,2 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Average (in pairs) every slice, store 1 (norm at end)
-	 ncrcat2 -O -C -F -d time,1,10,4,2 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc # Concat every fourth pair of slices, store 1,2,5,6,9,10
 nco1063. use '--with-nc-config=path' in configure when possible (rich signell idea) 
 nco1065. ncra2.c move input_complete break to precede record loop but remember to close open filehandles
-nco1067. 
+nco1067. why does stat() fail on ~30 GB file on windows? 
+nco1068. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
