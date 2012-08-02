@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.14 2012-08-02 05:07:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.15 2012-08-02 06:03:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -128,11 +128,11 @@ nco_def_grp_rcr
  const char * const prn_nm, /* I [sng] Parent group name */
  const int rcr_lvl); /* I [nbr] Recursion level */
 
-
 #ifdef GRP_DEV
 int /* [rcd] Return code */
 nco_grp_itr
-(const int grp_id); /* I [enm] Group ID */  
+(const int grp_id,            /* I [enm] Group ID */
+ const char * const grp_nm);  /* I [sng] Group name */
 #endif
 
 #ifdef __cplusplus
@@ -140,3 +140,5 @@ nco_grp_itr
 #endif /* __cplusplus */
 
 #endif /* NCO_GRP_UTL_H */
+
+

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.312 2012-08-02 05:07:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.313 2012-08-02 06:03:07 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.312 2012-08-02 05:07:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.312 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.313 2012-08-02 06:03:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.313 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:z";
 #else
@@ -569,11 +569,10 @@ main(int argc,char **argv)
 
 #ifdef GRP_DEV
   if (GET_LIST){
-    rcd+=nco_grp_itr(in_id);
+    rcd+=nco_grp_itr(in_id,"/");
     goto out; 
   }
 #endif
-
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
@@ -861,3 +860,5 @@ out:
   return EXIT_SUCCESS;
 
 } /* end main() */
+
+

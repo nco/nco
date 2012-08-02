@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.24 2012-08-02 05:07:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.25 2012-08-02 06:03:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -653,32 +653,36 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   return grp_lst;
 } /* end nco_grp_lst_mk() */
 
-
-
 #ifdef GRP_DEV
-int /* [rcd] Return code */
+int                            /* [rcd] Return code */
 nco_grp_itr
-(const int grp_id) /* I [enm] Group ID */  
+(const int grp_id,             /* I [enm] Group ID */  
+ const char * const grp_nm)    /* I [sng] Group name */
 {
   /* Purpose: Recursively iterate grp_id */
 
-  int rcd=NC_NOERR;        /* I [rcd] Return code */
-  int ngrps;               /* I [nbr] Number of sub-groups in this group */
-  int var_id;              /* I [enm] Variable ID */ 
-  int *grpids;             /* O [ID]  Sub-group IDs */ 
-  char var_nm[NC_MAX_NAME];/* O [sng] Variable name */
-  nc_type var_typ;         /* O [enm] Variable type */
-  int nbr_att;             /* O [nbr] Number of attributes */
-  int nvars;               /* O [nbr] Number of variables */
+  int rcd=NC_NOERR;            /* I [rcd] Return code */
+  int ngrps;                   /* I [nbr] Number of sub-groups in this group */
+  int var_id;                  /* I [enm] Variable ID */ 
+  int *grpids;                 /* O [ID]  Sub-group IDs */ 
+  char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */
+  nc_type var_typ;             /* O [enm] Variable type */
+  int nbr_att;                 /* O [nbr] Number of attributes */
+  int nvars;                   /* O [nbr] Number of variables */
+  char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   int idx;
 
   /* Get variables for this group */
 
-  rcd+=nc_inq_nvars(grp_id, &nvars);
+  if(dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stdout,"grp=%s\n",grp_nm); 
+  }
+
+  rcd+=nc_inq_nvars(grp_id,&nvars);
   for(var_id=0;var_id<nvars;var_id++){
     rcd+=nc_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
     if(dbg_lvl_get() >= nco_dbg_std){
-      (void)fprintf(stdout,"%s\n",var_nm); 
+      (void)fprintf(stdout,"var=%s\n",var_nm); 
     }
   }
 
@@ -689,7 +693,9 @@ nco_grp_itr
   rcd+=nc_inq_grps(grp_id,&ngrps,grpids);
 
   for(idx=0;idx<ngrps;idx++){
-    rcd+=nco_grp_itr(grpids[idx]);
+    int gid=grpids[idx];
+    rcd+=nc_inq_grpname(gid,gp_nm);
+    rcd+=nco_grp_itr(gid,gp_nm);
   }
 
   (void)nco_free(grpids);
@@ -698,5 +704,4 @@ nco_grp_itr
 }
 /* nco_grp_itr() */
 #endif
-
 
