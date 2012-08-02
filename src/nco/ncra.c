@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.304 2012-08-02 19:09:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.305 2012-08-02 19:18:44 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -155,8 +155,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.304 2012-08-02 19:09:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.304 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.305 2012-08-02 19:18:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.305 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -856,26 +856,26 @@ main(int argc,char **argv)
 	  } /* end re-basing */
 	  
 	  if(prg == ncra){
-	    nco_bool flt_rth_ntl;
-	    if(!rec_usd_cml || (FLG_MRO && REC_FRS_GRP)) flt_rth_ntl=True; else flt_rth_ntl=False;
+	    nco_bool flg_rth_ntl;
+	    if(!rec_usd_cml || (FLG_MRO && REC_FRS_GRP)) flg_rth_ntl=True; else flg_rth_ntl=False;
 	    /* Initialize tally and accumulation arrays when appropriate */
-	    if(flt_rth_ntl){
+	    if(flg_rth_ntl){
 	      (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
 	      (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
-	    } /* end if REC_FRS_GRP */
+	    } /* end if flg_rth_ntl */
 	    
             /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
 	       Stuff first record into output buffer regardless of nco_op_typ; ignore later records (rec_usd_cml > 1)
 	       Temporarily fixes TODO nco941 */
 	    if(var_prc[idx]->type == NC_CHAR){
-	      if(flt_rth_ntl) nco_opr_drv((long)(!REC_FRS_GRP),nco_op_min,var_prc[idx],var_prc_out[idx]);
+	      if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
 	      /* Convert char, short, long, int types to doubles before arithmetic
 		 Output variable type is "sticky" so only convert on first record */
-	      if(flt_rth_ntl) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	      if(flg_rth_ntl) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	      var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	      /* Perform arithmetic operations: avg, min, max, ttl, ... */
-	      if(flt_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,var_prc[idx],var_prc_out[idx]); else nco_opr_drv((long)1L,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	      if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,var_prc[idx],var_prc_out[idx]); else nco_opr_drv((long)1L,nco_op_typ,var_prc[idx],var_prc_out[idx]);
 	    } /* end else */ 
 	  } /* end if ncra */
 	    
