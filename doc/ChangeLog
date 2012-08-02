@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
 	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
+	* Swap ncra2.c with ncra.c so default ncra/ncrcat now has DRN/MRO
+
+	* Fix ncra2.c bug #11: use flg_ntl_rth to correctly initialize nco_opr_drv
+
 2012-08-01  Pedro Vicente  <pvicente@uci.edu>
 
         * Add a ncks -z option to iterate input netCDF file tree
