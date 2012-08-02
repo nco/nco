@@ -108,7 +108,7 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Thu Jun 15 2012 Charlie Zender <zender@uci.edu> - 4.2.1-1
+* Thu Aug 02 2012 Charlie Zender <zender@uci.edu> - 4.2.1-1
 - new upstream 4.2.1
 
 * Mon Jun 11 2012 Charlie Zender <zender@uci.edu> - 4.2.0-1
@@ -249,7 +249,7 @@ fi
 - added "Provides:nco-devel" for the headers and libs
 
 * Mon Oct  4 2004 Ed Hill <eh3@mit.edu> - 0:2.9.9-0.fdr.2
-- Add some of Michael Schwendt's suggested INC/LIB path fixes and 
+- Add some of Michael Schwendts suggested INC/LIB path fixes and 
   sync with the netcdf-3.5.1-0.fdr.10 dependency.
 
 * Thu Sep 23 2004 Ed Hill <eh3@mit.edu> - 0:2.9.9-0.fdr.1
