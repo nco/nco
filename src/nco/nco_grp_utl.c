@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.27 2012-08-02 17:29:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.28 2012-08-03 18:22:52 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -677,10 +677,10 @@ nco_grp_itr
   }
 
   /* Get variables for this group */
-  rcd+=nc_inq_nvars(grp_id,&nvars);
+  rcd+=nco_inq_nvars(grp_id,&nvars);
   for(var_id=0;var_id<nvars;var_id++){
     char *path=NULL;
-    rcd+=nc_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+    rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
     path=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
@@ -699,14 +699,14 @@ nco_grp_itr
   }
 
   /* Go to sub-groups */
-  rcd+=nc_inq_grps(grp_id,&ngrps,NULL);
+  rcd+=nco_inq_grps(grp_id,&ngrps,NULL);
   grpids=(int*)nco_malloc((ngrps)*sizeof(int));
-  rcd+=nc_inq_grps(grp_id,&ngrps,grpids);
+  rcd+=nco_inq_grps(grp_id,&ngrps,grpids);
 
   for(idx=0;idx<ngrps;idx++){
     char *path=NULL;
     int gid=grpids[idx];
-    rcd+=nc_inq_grpname(gid,gp_nm);
+    rcd+=nco_inq_grpname(gid,gp_nm);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
     path=(char*)nco_malloc(strlen(grp_pth)+strlen(gp_nm)+2);

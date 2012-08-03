@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1199 2012-08-02 00:57:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1200 2012-08-03 18:22:51 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -689,8 +689,10 @@ nco1058. ncap2: allow new variables within where() statement
 nco1059. nco: ncatted keep type same by default when modifying/overwriting attribute
 nco1063. use '--with-nc-config=path' in configure when possible (rich signell idea) 
 nco1065. ncra2.c move input_complete break to precede record loop but remember to close open filehandles
-nco1067. why does stat() fail on ~30 GB file on windows? 
-nco1068. 
+nco1067. stat() fails on ~30 GB file on windows? fix workaround
+nco1068. nco: optimize so ncra writes straight to output when drn==1, MRO=Yes (i.e., no nrm) maybe not, what about rms? verify
+	 ncra2 -O -C -d time,0,,1,1 --mro -v time -p ~/nco/data in.nc in.nc ~/foo.nc # 
+nco1069. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
