@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.719 2012-08-02 20:46:16 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.720 2012-08-03 00:29:44 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -67,7 +67,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is 4.2.0 last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is 4.2.1 last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 
@@ -552,83 +552,83 @@ World peace?
 Stride works with DAP?;
 Optimize diskless/RAM files?;
 more Robust RHEL/CentOS autoconf support?;
-<tt>ncks</tt> netCDF4 groups;
-<li><b>NCO 4.2.2</b>: (<i>In Progress, features already in beta include the following</i>)
-<li><b>NCO 4.2.1</b>: (<i>Current Stable Release</i>) 
+<tt>ncks</tt> netCDF4 groups;</li>
+<li><b>NCO 4.2.2</b>: (<i>In Progress, features already in beta include the following</i>)</li>
+<li><b>NCO 4.2.1</b>: (<i>Current Stable Release</i>)
 <tt>--ram_all</tt> for <a href="http://nco.sf.net/nco.html#diskless">diskless files</a>;
 <tt>--no_tmp_fl</tt> to <a href="http://nco.sf.net/nco.html#no_tmp_fl">bypass</a> temporary files;
 Negative indices for <a href="http://nco.sf.net/nco.html#hyp">hyperslabs</a>;
 <tt>ncpdq</tt> unpacks coordinate variables;
 <tt>ncra/ncrcat</tt> DRN/MRO <a href="http://nco.sf.net/nco.html#drn">options</a>;
-<tt>ncra/ncrcat</tt> rebase <a href="http://nco.sf.net/nco.html#rbs">bounds</a>;
-<li><b>NCO 4.2.0</b>: (<i>Current Stable Release</i>) 
+<tt>ncra/ncrcat</tt> rebase <a href="http://nco.sf.net/nco.html#rbs">bounds</a>;</li>
+<li><b>NCO 4.2.0</b>: 
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;
 <tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
 <tt>ncra -y ttl</tt> fix;
 <tt>ncrcat</tt> UDUnits fix;
 <tt>ncwa</tt> and <tt>ncap2</tt> limited NaN support;
-Microsoft Visual Studio support;
+Microsoft Visual Studio support;</li>
 <li><b>NCO 4.1.0</b>:
 MD5 digests;
 <tt>ncap2</tt> sorts &amp; maps;
 <tt>ncks</tt> MM3 <a href="#bug_mm3">workaround</a>;
 <tt>ncrename/ncatted</tt> chmods;
-<tt>ncatted</tt> NaN support;
+<tt>ncatted</tt> NaN support</li>
 <li><b>NCO 4.0.9</b>: 
 Fix over-zealous <tt>ncap2</tt> packing;
 Fix <tt>ncea -y ttl</tt>;
 Fix/improve <tt>ncap2 print, array()</tt>;
 Warn when appending variables of suspicious record length;
-Warn when <tt>NC_MAX_ATTRS</tt> exceeded;
+Warn when <tt>NC_MAX_ATTRS</tt> exceeded</li>
 <li><b>NCO 4.0.8</b>: 
 Support <a href="http://nco.sf.net/nco.html#hpss">HPSS</a>;
 Workaround netCDF <tt>NOFILL</tt> <a href="#bug_nofill">bug</a> (<i>upgrade recommended</i>);
 Support CF <tt>bounds</tt>;
 CF <tt>noleap</tt> not <tt>no_leap</tt>;
 Fix <tt>ncatted</tt> overwrite-mode;
-Fix <tt>NC_BYTE</tt> printing;
+Fix <tt>NC_BYTE</tt> printing</li>
 <li><b>NCO 4.0.7</b>:
-Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a> (<i>upgrade recommended</i>);
+Fix degenerate hyperslab <a href="#bug_hyp_dgn">bug</a> (<i>upgrade recommended</i>)</li>
 <li><b>NCO 4.0.6</b>: 
 <tt>clang</tt>-compliance;
 Fix <tt>ncra</tt> YYYYMMDD-<tt>date</tt> <a href="#bug_ncra_cf_YYYYMMDD_date">bug</a>;
 Extract all associated coordinates;
 Tighten <tt>ncbo</tt> warnings;
-<tt>ncpdq</tt> warns when _FillValue outside packing range;
+<tt>ncpdq</tt> warns when _FillValue outside packing range</li>
 <li><b>NCO 4.0.5</b>:
 Fix <tt>ncks</tt> <a href="#bug_ncks_nc4_nc4_hyp_fix">hyperslabbing bug</a>;
-Fix <tt>ncra</tt> <a href="#bug_ncra_cf_crd_rec_crd">CF "coordinate" bug</a>;
+Fix <tt>ncra</tt> <a href="#bug_ncra_cf_crd_rec_crd">CF "coordinate" bug</a></li>
 <li><b>NCO 4.0.4</b>:
 Chunking in all operators; preserve deflation; <tt>ncks</tt> print formatting;
 Fix <tt>ncrename</tt> <a href="#bug_ncrename_dot">bug</a>;
-Do not pack coordinate variables;
+Do not pack coordinate variables</li>
 <li><b>NCO 4.0.3</b>:
 Fix <tt>configure</tt> for ncap2, netCDF4, UDUnits2, netCDF-DAP;
 Fix <tt>ncbo</tt> <a href="#bug_ncbo_rfr">bug</a> under AIX xlC;
-Fix <tt>ncra</tt> <a href="#bug_ncra_date">bug</a> for some CF-compliant dates.
-<li><b>NCO 4.0.2</b>: 
+Fix <tt>ncra</tt> <a href="#bug_ncra_date">bug</a> for some CF-compliant dates.</li>
+<li><b>NCO 4.0.2</b>:
 Consistent deflation, chunking with <tt>netCDF4_classic</tt>;
 Fix <tt>ncap2</tt> RAM vars, 1-D arrays;
-Fix <tt>ncatted</tt> appending <tt>NUL</tt>s.
+Fix <tt>ncatted</tt> appending <tt>NUL</tt>s.</li>
 <li><b>NCO 4.0.1</b>:
-Easily create/remove record dimensions with <tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;
+Easily create/remove record dimensions with <tt>ncks --mk_rec_dmn</tt>, <tt>--fix_rec_dmn</tt>;</li>
 <li><b>NCO 4.0.0</b>: 
 Bilinear interpolation, GSL fitting; 
 Chunking improvements;
-Better support CF <tt>calendar</tt> and <tt>coordinate</tt> attributes;
-<li><b>NCO 3.9.9</b>: 
+Better support CF <tt>calendar</tt> and <tt>coordinate</tt> attributes</li>
+<li><b>NCO 3.9.9</b>:
 netCDF4 chunking and <tt>NC_STRING</tt> support; 
 GSL statistics, interpolation functions;
 UDUnits2 <tt>time-since</tt> support;
-<tt>ncrcat</tt> re-basing;
+<tt>ncrcat</tt> re-basing</li>
 <li><b>NCO 3.9.8</b>: 
 <tt>ncap2</tt> supports <tt>sort()</tt>, <tt>array()</tt>;
 better DAP/libnetcdf and UDUnits2 builds;
-GSL distribution/RNG functions;
+GSL distribution/RNG functions</li>
 <li><b>NCO 3.9.7</b>:
 Improve GSL-build support;
 <tt>ncap2</tt> threading improvements;
-<tt>ncks --no_dmn_var_nm</tt> printing;
+<tt>ncks --no_dmn_var_nm</tt> printing</li>
 <li><b>NCO 3.9.6</b>: 
 Fix OpenMP MSA <a href="#bug_thr_msa">bug</a> (<i>upgrade highly recommended</i>); 
 Memory management to improve threading;
@@ -638,68 +638,68 @@ no math on type <tt>NC_CHAR</tt>;
 <tt>ncap2</tt> <a href="http://nco.sf.net/nco.html#ncap2">documentation</a>,
 better missing value propagation,
 <tt>#include</tt> files,
-<a href="http://nco.sf.net/nco.html#gsl">GSL</a> math functions;
-<li><b>NCO 3.9.5</b>: 
+<a href="http://nco.sf.net/nco.html#gsl">GSL</a> math functions</li>
+<li><b>NCO 3.9.5</b>:
 Multi-slabbing (MSA) and <tt>-X</tt> everywhere;
 <tt>ncecat -M</tt>;
 netCDF4-enabled builds on Cygwin;
-<tt>ncap2</tt> builds on Solaris;
+<tt>ncap2</tt> builds on Solaris</li>
 <li><b>NCO 3.9.4</b>: 
 File consanguinity;
 <tt>ncks</tt>: CF auxiliary coords, LZ stats;
-<tt>ncap2</tt>: masks, index arrays, print attributes, OpenMP, <tt>atan2()</tt>, <tt>pow()</tt>;
+<tt>ncap2</tt>: masks, index arrays, print attributes, OpenMP, <tt>atan2()</tt>, <tt>pow()</tt></li>
 <li><b>NCO 3.9.3</b>: 
 SWAMP release;
 <tt>ncecat -u</tt>;
 <tt>wget</tt> URLs;
 GCC&nbsp;4.2;
-<tt>ncap2</tt> OpenMP;
+<tt>ncap2</tt> OpenMP</li>
 <li><b>NCO 3.9.2</b>: 
 <tt>_FillValue</tt> supplants <tt>missing_value</tt>;
 <tt>UDUnits2 support</tt>;
 <tt>ncap2</tt> type-conversion support and printing;
 netCDF4 <tt>configure</tt> fixes;
-Change licenses to GPL3 and FDL1.2;
+Change licenses to GPL3 and FDL1.2</li>
 <li><b>NCO 3.9.1</b>: 
 <a href="http://nco.sf.net/nco.html#deflate">Support</a> lossless netCDF4/HDF deflation;
 Improve Intel compiler support; 
 <tt>ncap2</tt> for/while loops;
-various and sundry build fixes;
+various and sundry build fixes</li>
 <li><b>NCO 3.9.0</b>: 
 <a href="http://nco.sf.net/nco.html#nco4">Support netCDF4</a> types (<tt>ubyte</tt>, <tt>ushort</tt>, <tt>uint</tt>, <tt>int64</tt>, and <tt>uint64</tt>);
 Control <tt>ncks</tt> metadata <a href="http://nco.sf.net/nco.html#prn">copying</a>; 
 Fix <tt>ncbo</tt> packed valued <a href="#bug_ncbo_pck">bug</a> (<i>upgrade recommended</i>); 
-Improve IRIX&nbsp;6.5 support; 
-<li><b>NCO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes;
-<li><b>NCO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
-<li><b>NCO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt> 
-<li><b>NCO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt>
-<li><b>NCO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
-<li><b>NCO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support
-<li><b>NCO 3.1.4</b>: Fix <tt>ncbo</tt> memory problem; report timer results
-<li><b>NCO 3.1.3</b>: <tt>ncap2</tt> automatically <a href="http://nco.sf.net/nco.html#att_prp">propagates</a> attributes to new/derived variables; NCO handles record variables with zero records; <a href="http://nco.sf.net/nco.html#cnv_CF_crd">support</a> CF <tt>coordinates</tt> convention; <tt>ncwa -b</tt> <a href="http://nco.sf.net/nco.html#ncwa">retains</a> degenerate dimensions; build fixes for Cray T3E, Solaris, Cygwin.
-<li><b>NCO 3.1.2</b>: <tt>ncap2</tt> control structures (conditionals, loops, etc.); keep non-processed data <a href="bug_pack_fix">packed</a> in output file; binary operators <tt>ncbo</tt> and <tt>ncflint</tt> work when only one variable has <tt>missing_value</tt> attribute; change <tt>ncra</tt> and <tt>ncea</tt> to always average coordinate variables
-<li><b>NCO 3.1.1</b>: NCO builds (again) with C++ compilers; ncap2 development code; server-side extensions
-<li><b>NCO 3.1.0</b>: MPI operators are bug-free; fix <t>./configure</t> for MPI and netCDF4; MRV algorithm speeds up <tt>ncwa</tt> 5&mdash;10 times; <tt>ncap</tt> random number generator <tt>rnd_nbr()</tt>
-<li><b>NCO 3.0.3</b>: Eliminate all critical read regions (accelerates all SMP operators); builds with netCDF4 alpha; read <t>NETCDF4_CLASSIC</t> (i.e., HDF) files automatically; write <t>NETCDF4</t> files <a href="http://nco.sf.net/nco.html#netcdf4">on request</a>; <a href="http://nco.sf.net#BM">benchmark results</a> quantify parallelism.
-<li><b>NCO 3.0.2</b>: Fewer critical read regions; all known memory leaks plugged; better Intel compiler support; <tt>SFTP</tt> protocol support; FTP protocol supports <tt>.netrc</tt>-based passwords; better model grid-property-awareness (e.g., <tt>lat_bnds</tt>); <tt>ncatted</tt> <tt>ncks</tt>, <tt>ncrename</tt> support metadata header padding with <tt>--hdr</tt>; <tt>ncbo</tt> supports heterogeneous variable ordering; <tt>ncatted</tt> bugfix
-  <li><b>NCO 3.0.1</b>: benchmarks; <tt>ncks</tt> printing tweaks; memory cleanup; <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>; thread operators by default
-  <li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch; <tt>ncap</tt> optimizations; <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6); NEC&nbsp;SX build improvements; support GCC&nbsp;3.4.X; <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
-<li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files; <tt>ncbo</tt> is threaded
-<li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released; <tt>ncwa --msk_sng</tt> consolidated mask switch; C99 compiler required
-<li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>; write <tt>nco_input_file_list</tt> attributes; add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++; large file support (LFS); write <tt>nco_openmp_thread_number</tt> attribute
-<li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax; 64-bit ABI for x86_64; <a href="http://www.debian.org">Debian</a> builds libnco_c++
-<li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal
-<li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files; change to <tt>cvs.sf.net</tt>; AIX GCC builds
-<li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>ncea</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums
-<li><b>NCO 2.9.2</b>: <tt>ncap</tt> <tt>S/V</tt>, <tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a> (<tt>S</tt> = scalar, <tt>V</tt> = variable)
-<li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>)
-<li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>V%S</tt>) and generic exponentiation (<tt>V^S</tt>), scalar divided by variable (<tt>S/V</tt>); workaround stack memory problem with GCC extensions; fix <tt>make check</tt>
-<li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again (broke in 2.8.6)
-<li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>); Cygwin builds work again
-<li><b>NCO 2.8.6</b>: AIX and IRIX builds work again; custom GCC builds with <tt>-Werror</tt>
-<li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works; <tt>ncap</tt> changes attribute values correctly; <a href="#bld_DODS">Support DODS 3.4+, deprecate 3.3-</a>; add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
-<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <i>upgrade highly recommended</i>); <tt>ncap</tt> peak memory usage reduced still more; support for AMD Opteron x86_64 architecture
+Improve IRIX&nbsp;6.5 support</li>
+<li><b>NCO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes</li>
+<li><b>NCO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size</li>
+<li><b>NCO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt></li>
+<li><b>NCO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt></li>
+<li><b>NCO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs</li>
+<li><b>NCO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support</li>
+<li><b>NCO 3.1.4</b>: Fix <tt>ncbo</tt> memory problem; report timer results</li>
+<li><b>NCO 3.1.3</b>: <tt>ncap2</tt> automatically <a href="http://nco.sf.net/nco.html#att_prp">propagates</a> attributes to new/derived variables; NCO handles record variables with zero records; <a href="http://nco.sf.net/nco.html#cnv_CF_crd">support</a> CF <tt>coordinates</tt> convention; <tt>ncwa -b</tt> <a href="http://nco.sf.net/nco.html#ncwa">retains</a> degenerate dimensions; build fixes for Cray T3E, Solaris, Cygwin.</li>
+<li><b>NCO 3.1.2</b>: <tt>ncap2</tt> control structures (conditionals, loops, etc.); keep non-processed data <a href="bug_pack_fix">packed</a> in output file; binary operators <tt>ncbo</tt> and <tt>ncflint</tt> work when only one variable has <tt>missing_value</tt> attribute; change <tt>ncra</tt> and <tt>ncea</tt> to always average coordinate variables</li>
+<li><b>NCO 3.1.1</b>: NCO builds (again) with C++ compilers; ncap2 development code; server-side extensions</li>
+<li><b>NCO 3.1.0</b>: MPI operators are bug-free; fix <t>./configure</t> for MPI and netCDF4; MRV algorithm speeds up <tt>ncwa</tt> 5&mdash;10 times; <tt>ncap</tt> random number generator <tt>rnd_nbr()</tt></li>
+<li><b>NCO 3.0.3</b>: Eliminate all critical read regions (accelerates all SMP operators); builds with netCDF4 alpha; read <t>NETCDF4_CLASSIC</t> (i.e., HDF) files automatically; write <t>NETCDF4</t> files <a href="http://nco.sf.net/nco.html#netcdf4">on request</a>; <a href="http://nco.sf.net#BM">benchmark results</a> quantify parallelism.</li>
+<li><b>NCO 3.0.2</b>: Fewer critical read regions; all known memory leaks plugged; better Intel compiler support; <tt>SFTP</tt> protocol support; FTP protocol supports <tt>.netrc</tt>-based passwords; better model grid-property-awareness (e.g., <tt>lat_bnds</tt>); <tt>ncatted</tt> <tt>ncks</tt>, <tt>ncrename</tt> support metadata header padding with <tt>--hdr</tt>; <tt>ncbo</tt> supports heterogeneous variable ordering; <tt>ncatted</tt> bugfix</li>
+  <li><b>NCO 3.0.1</b>: benchmarks; <tt>ncks</tt> printing tweaks; memory cleanup; <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>; thread operators by default</li>
+  <li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch; <tt>ncap</tt> optimizations; <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6); NEC&nbsp;SX build improvements; support GCC&nbsp;3.4.X; <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt></li>
+<li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files; <tt>ncbo</tt> is threaded</li>
+<li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released; <tt>ncwa --msk_sng</tt> consolidated mask switch; C99 compiler required</li>
+<li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>; write <tt>nco_input_file_list</tt> attributes; add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++; large file support (LFS); write <tt>nco_openmp_thread_number</tt> attribute</li>
+<li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax; 64-bit ABI for x86_64; <a href="http://www.debian.org">Debian</a> builds libnco_c++</li>
+<li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal</li>
+<li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files; change to <tt>cvs.sf.net</tt>; AIX GCC builds</li>
+<li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>ncea</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums</li>
+<li><b>NCO 2.9.2</b>: <tt>ncap</tt> <tt>S/V</tt>, <tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a> (<tt>S</tt> = scalar, <tt>V</tt> = variable)</li>
+<li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>)</li>
+<li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>V%S</tt>) and generic exponentiation (<tt>V^S</tt>), scalar divided by variable (<tt>S/V</tt>); workaround stack memory problem with GCC extensions; fix <tt>make check</tt></li>
+<li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again (broke in 2.8.6)</li>
+<li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>); Cygwin builds work again</li>
+<li><b>NCO 2.8.6</b>: AIX and IRIX builds work again; custom GCC builds with <tt>-Werror</tt></li>
+<li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works; <tt>ncap</tt> changes attribute values correctly; <a href="#bld_DODS">Support DODS 3.4+, deprecate 3.3-</a>; add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt></li>
+<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <i>upgrade highly recommended</i>); <tt>ncap</tt> peak memory usage reduced still more; support for AMD Opteron x86_64 architecture</li>
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak; fix regressions; remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly; improve error diagnostics</li>
 <li><b>NCO 2.8.1</b>: <a href="./nco.html#rx">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
@@ -778,8 +778,8 @@ the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
-<ul> <!-- http://nco.sf.net/src/nco-4.2.0.aix53.tar.gz -->
-<li><a href="src/nco-4.2.0.aix53.tar.gz">nco-4.2.0.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.0.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.0.aix53.tar.gz"-->)</li>
+<ul> <!-- http://nco.sf.net/src/nco-4.2.1.aix53.tar.gz -->
+<li><a href="src/nco-4.2.1.aix53.tar.gz">nco-4.2.1.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.1.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.1.aix53.tar.gz"-->)</li>
 Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
@@ -797,12 +797,12 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Natty) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.2.0-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.2.0-1_amd64.deb">nco_4.2.0-1_amd64.deb</a> (<!--#fsize file="src/nco_4.2.0-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.2.0-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.2.0-1.dsc">nco_4.2.0-1.dsc</a> (<!--#fsize file="src/nco_4.2.0-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.2.0-1.dsc"-->)</li>
-<li><a href="src/nco_4.2.0-1_amd64.changes">nco_4.2.0-1_amd64.changes</a> (<!--#fsize file="src/nco_4.2.0-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.2.0-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.2.0.orig.tar.gz">nco_4.2.0.orig.tar.gz</a> (<!--#fsize file="src/nco_4.2.0.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.2.0.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.2.0-1.diff.gz">nco_4.2.0-1.diff.gz</a> (<!--#fsize file="src/nco_4.2.0-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.2.0-1_amd64.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.2.1-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_4.2.1-1_amd64.deb">nco_4.2.1-1_amd64.deb</a> (<!--#fsize file="src/nco_4.2.1-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.2.1-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.2.1-1.dsc">nco_4.2.1-1.dsc</a> (<!--#fsize file="src/nco_4.2.1-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.2.1-1.dsc"-->)</li>
+<li><a href="src/nco_4.2.1-1_amd64.changes">nco_4.2.1-1_amd64.changes</a> (<!--#fsize file="src/nco_4.2.1-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.2.1-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.2.1.orig.tar.gz">nco_4.2.1.orig.tar.gz</a> (<!--#fsize file="src/nco_4.2.1.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.2.1.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.2.1-1.diff.gz">nco_4.2.1-1.diff.gz</a> (<!--#fsize file="src/nco_4.2.1-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.2.1-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -1003,10 +1003,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
-<a href="src/nco-4.2.0.tar.gz">nco-4.2.0.tar.gz</a> 
-(<!--#fsize file="src/nco-4.2.0.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.2.0.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.2.0.tar.gz"--> 
+<a href="src/nco-4.2.1.tar.gz">nco-4.2.1.tar.gz</a> 
+(<!--#fsize file="src/nco-4.2.1.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.2.1.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.2.1.tar.gz"--> 
 </li>
 </ul>
 
@@ -1029,19 +1029,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>4.2.0</tt> (which is
-tagged as <tt>nco-4_2_0</tt> due to CVS rules) into local directory
-<tt>nco-4.2.0</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_2_0 -d nco-4.2.0 nco</tt></p>
+This command retrieves and places NCO version <tt>4.2.1</tt> (which is
+tagged as <tt>nco-4_2_1</tt> due to CVS rules) into local directory
+<tt>nco-4.2.1</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_2_1 -d nco-4.2.1 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_2_0</tt>) and the development version is that the
+(e.g., <tt>nco-4_2_1</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.2.0</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.2.1</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1413,7 +1413,7 @@ for more details.
 
 <!--Qt/MSVC -->
 <li><i>Windows build with Qt/MSVC:</i>
-As of NCO 4.2.0, you build NCO from source using MSVC and Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
+As of NCO 4.2.0, you may build NCO from source using MSVC and Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
 </li>
 
 </ul>

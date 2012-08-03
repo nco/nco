@@ -1,3 +1,9 @@
+nco (4.2.2-1) unstable; urgency=low
+
+  * new upstream version (nothing yet)
+
+ -- Charlie Zender <zender@uci.edu>  Thu, 08 Nov 2012 16:00:42 -0700
+
 nco (4.2.1-1) unstable; urgency=low
 
   * new upstream version (no_tmp_fl, NC_DISKLESS, -'ve -d, DRN/MRO)

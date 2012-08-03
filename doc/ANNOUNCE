@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.501 2012-08-02 00:57:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.502 2012-08-03 00:29:44 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.2.1 are ready. 
+The netCDF operators NCO version 4.2.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -8,10 +8,13 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release is laden with hyperslabbing and performance features.
 All hyperslabbing operators can now count backwards.
 ncra and ncrcat handle sub-groups of records at regular intervals. 
-NCO fully supports the "diskless" feature of netCDF 4.2.1.
+Time re-basing now works on "bounds" variables, e.g., time_bnds.
+Together, these features significantly ease working with large
+datasets like CMIP5.
+
+Also NCO supports the new "diskless" feature of netCDF 4.2.1. 
 Autoconf builds are now regularly tested on more platforms. 
-This should reduce the pain of those forced (or eager) to do their own
-compiling. 
+Keep the suggestions coming for features you want.
 
 Work on NCO 4.2.2 is underway. Expect ease-of-build improvements, an
 optimization for diskless/RAM files, and better netCDF4 support.
@@ -19,7 +22,7 @@ optimization for diskless/RAM files, and better netCDF4 support.
 Enjoy,
 Charlie
 
-Other "New stuff" in 4.2.1 summary (full details always in ChangeLog):
+Other "New stuff" in 4.2.2 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -100,7 +103,7 @@ KNOWN BUGS NOT YET FIXED:
 
    This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.2.1 built/tested with netCDF
+   These problems occur with NCO 4.2.2 built/tested with netCDF
    4.2.1 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-

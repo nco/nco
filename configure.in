@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.363 2012-07-24 01:38:03 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.364 2012-08-03 00:29:44 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -49,7 +49,7 @@
 
 # Process configure input with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
-AC_INIT([NCO netCDF Operators],[4.2.1],[help@nco.sf.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.2.2],[help@nco.sf.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
