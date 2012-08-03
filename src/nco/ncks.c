@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.313 2012-08-02 06:03:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.314 2012-08-03 21:17:05 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.313 2012-08-02 06:03:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.313 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.314 2012-08-03 21:17:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.314 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:z";
 #else
@@ -180,7 +180,7 @@ main(int argc,char **argv)
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  int rec_dmn_nbr; /* O [nbr] Number of record dimensions in file */
+  int rec_dmn_nbr=0; /* O [nbr] Number of record dimensions in file */ /* CEWI */
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
     

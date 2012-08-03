@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.42 2012-07-17 10:23:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.43 2012-08-03 21:17:05 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -32,12 +32,19 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
 (const char *sng_1, /* I [sng] First string */
  const char *sng_2) /* I [sng] Second string */
 {
-  /* 20120706 fxm: find/write version that does not discard const */
+  /* 20120706 Initial version discards const, triggers compiler warnings
+     20120803 Kludge with strdup() to keep const intact */
   char *hys_ptr; /* Haystack pointer */
   char *startn=0;
   char *np=0;
+  /* char *sng_1_dpl;
+  char *sng_2_dpl;
+  sng_1_dpl=(char *)strdup(sng_1);
+  sng_2_dpl=(char *)strdup(sng_2);
+  sng_1_dpl=(char *)nco_free(sng_1_dpl);
+  sng_2_dpl=(char *)nco_free(sng_2_dpl); */
   /* Loop exits on NUL */
-  for(hys_ptr=(char*)sng_1;*hys_ptr;hys_ptr++){
+  for(hys_ptr=(char *)sng_1;*hys_ptr;hys_ptr++){
     if(np){
       if(toupper(*hys_ptr) == toupper(*np)){
 	if(!*++np) return startn;
@@ -45,7 +52,7 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
 	np=0;
       } /* endif uppercases match */
     }else if(toupper(*hys_ptr) == toupper(*sng_2)){
-      np=(char*)sng_2+1;
+      np=(char *)sng_2+1;
       startn=hys_ptr;
     } /* else if */
   } /* end loop over haystack */

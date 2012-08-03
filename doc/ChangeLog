@@ -14,8 +14,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.1 release"
 	cvs tag -c nco-4_2_1;cvs tag -c nco-4_2_1-1
 
-	* Patch 4.2.1 tarball to work with netCDF3-only installs by
-	replacing nc_inq*() with nco_inq*()
+	* Patch 4.2.1 tarball to work with netCDF3-only installs by replacing nc_inq*() with nco_inq*()
 
 2012-08-02  Charlie Zender  <zender@uci.edu>
 
