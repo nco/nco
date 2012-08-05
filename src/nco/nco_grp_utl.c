@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.28 2012-08-03 18:22:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.29 2012-08-05 23:33:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -720,7 +720,7 @@ nco_grp_itr
     /* Recursively go to sub-groups; NOTE the new absolute group path is passed */
     rcd+=nco_grp_itr(gid,path);
 
-    path=(char *)nco_free(path);
+    path=(char*)nco_free(path);
   }
 
   (void)nco_free(grpids);
@@ -728,5 +728,9 @@ nco_grp_itr
   return rcd;
 }
 /* nco_grp_itr() */
-#endif
+
+
+
+
+#endif /* GRP_DEV */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.16 2012-08-02 07:57:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.17 2012-08-05 23:33:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -14,6 +14,12 @@
 
 #if 1
 #define GRP_DEV
+/* Symbol that encapsulates NCO 4.2.2 group development code 
+1) Undocumented ncks -z command line option, that prints all groups/variables and exits
+   usage:  ncks -z -D 1 in_grp.nc
+2) Function nco_grp_itr used by 1)
+
+*/
 #endif
 
 #ifdef HAVE_CONFIG_H

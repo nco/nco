@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.314 2012-08-03 21:17:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.315 2012-08-05 23:33:52 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -109,9 +109,9 @@ main(int argc,char **argv)
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-#ifdef GRP_DEV
+#ifdef GRP_DEV 
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
-#endif
+#endif /* GRP_DEV */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -135,13 +135,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.314 2012-08-03 21:17:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.314 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.315 2012-08-05 23:33:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.315 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:z";
 #else
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
-#endif
+#endif /* GRP_DEV */
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -533,7 +533,7 @@ main(int argc,char **argv)
       case 'z': /* Print list of variables and exit */
       GET_LIST=True;
       break;
-#endif
+#endif /* GRP_DEV */
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
@@ -572,7 +572,7 @@ main(int argc,char **argv)
     rcd+=nco_grp_itr(in_id,"/");
     goto out; 
   }
-#endif
+#endif /* GRP_DEV */
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
