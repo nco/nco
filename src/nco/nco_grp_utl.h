@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.18 2012-08-06 05:27:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.19 2012-08-06 18:36:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -17,10 +17,10 @@
 /* Symbol that encapsulates NCO 4.2.2 group development code 
 1) Undocumented ncks -z command line option, that prints all groups/variables and exits
    usage:  ncks -z -D 1 in_grp.nc
-2) Function nco_grp_itr used by 1)
-3) Undocumented ncks -G command line option, that iterates the file and prints extended group information 
+2) Undocumented ncks -G command line option, that iterates the file and prints extended group information 
    usage:  ncks -G -D 1 in_grp.nc
-4) Function nco_grp_info used by 3)
+3) Function nco_grp_itr used by 1) and 2)
+
 
 */
 #endif
@@ -143,9 +143,6 @@ nco_grp_itr
 (const int grp_id,            /* I [enm] Group ID */
  const char * const grp_pth); /* I [sng] Absolute group path */
 
-int                           /* [rcd] Return code */
-nco_grp_info
-(const int grp_id);           /* I [enm] Group ID */
 
 
 #endif /* GRP_DEV */
