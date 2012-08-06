@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.31 2012-08-06 18:36:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.32 2012-08-06 20:58:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -654,10 +654,11 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 } /* end nco_grp_lst_mk() */
 
 #ifdef GRP_DEV
-int                            /* [rcd] Return code */
+int                           /* [rcd] Return code */
 nco_grp_itr
-(const int grp_id,             /* I [enm] Group ID */  
- const char * const grp_pth)   /* I [sng] Absolute group path */
+(const int grp_id,            /* I [enm] Group ID */
+ const char * const grp_pth,  /* I [sng] Absolute group path */
+ const int mode )             /* I [enm] mode (-z or -G ) */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -718,7 +719,7 @@ nco_grp_itr
     strcat(path,gp_nm);        /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups; NOTE the new absolute group path is passed */
-    rcd+=nco_grp_itr(gid,path);
+    rcd+=nco_grp_itr(gid,path,mode);
 
     path=(char*)nco_free(path);
   }

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.317 2012-08-06 18:36:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.318 2012-08-06 20:58:13 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.317 2012-08-06 18:36:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.317 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.318 2012-08-06 20:58:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.318 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -573,11 +573,11 @@ main(int argc,char **argv)
 
 #ifdef GRP_DEV
   if (GET_LIST){
-    rcd+=nco_grp_itr(in_id,"/");
+    rcd+=nco_grp_itr(in_id,"/",0);
     goto out; 
   }
   if (GET_GRP_INFO){
-    rcd+=nco_grp_itr(in_id,"/");
+    rcd+=nco_grp_itr(in_id,"/",1);
     goto out; 
   }
 #endif /* GRP_DEV */
