@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.29 2012-08-05 23:33:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.30 2012-08-06 05:27:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -730,6 +730,20 @@ nco_grp_itr
 /* nco_grp_itr() */
 
 
+int                            /* [rcd] Return code */
+nco_grp_info
+(const int grp_id)             /* I [enm] Group ID */  
+{
+  /* Purpose: Recursively iterate grp_id */
+
+  int rcd=NC_NOERR;            /* I [rcd] Return code */
+ 
+
+
+
+  return rcd;
+}
+/* nco_grp_info() */
 
 
 #endif /* GRP_DEV */

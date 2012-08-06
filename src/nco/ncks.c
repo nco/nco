@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.315 2012-08-05 23:33:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.316 2012-08-06 05:27:24 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -110,7 +110,8 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 #ifdef GRP_DEV 
-  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
+  nco_bool GET_LIST=False;     /* [flg] Iterate file, print variables and exit */
+  nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
 #endif /* GRP_DEV */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -135,10 +136,10 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.315 2012-08-05 23:33:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.315 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.316 2012-08-06 05:27:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.316 $";
 #ifdef GRP_DEV
-  const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:z";
+  const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 #endif /* GRP_DEV */
@@ -530,8 +531,11 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
 #ifdef GRP_DEV
-      case 'z': /* Print list of variables and exit */
+      case 'z': /* Print list of variables in absolute path format and exit */
       GET_LIST=True;
+      break;
+      case 'G': /* Print extended group information for all groups */
+      GET_GRP_INFO=True;
       break;
 #endif /* GRP_DEV */
     case '?': /* Print proper usage */
@@ -570,6 +574,10 @@ main(int argc,char **argv)
 #ifdef GRP_DEV
   if (GET_LIST){
     rcd+=nco_grp_itr(in_id,"/");
+    goto out; 
+  }
+  if (GET_GRP_INFO){
+    rcd+=nco_grp_info(in_id);
     goto out; 
   }
 #endif /* GRP_DEV */
