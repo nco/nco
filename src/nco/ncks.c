@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.318 2012-08-06 20:58:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.319 2012-08-07 17:35:29 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.318 2012-08-06 20:58:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.318 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.319 2012-08-07 17:35:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.319 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -781,11 +781,11 @@ main(int argc,char **argv)
     if(PRN_GLB_METADATA){
       (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, ID = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
       if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-	char dmn_nm[NC_MAX_NAME]; 
-	long rec_dmn_sz;
-	
-	(void)nco_inq_dim(in_id,rec_dmn_id,dmn_nm,&rec_dmn_sz);
-	(void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
+        char dmn_nm[NC_MAX_NAME]; 
+        long rec_dmn_sz;
+
+        (void)nco_inq_dim(in_id,rec_dmn_id,dmn_nm,&rec_dmn_sz);
+        (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
       } /* end if */
       
       /* Print global attributes */
@@ -793,12 +793,29 @@ main(int argc,char **argv)
     } /* endif PRN_GLB_METADATA */
     
     if(PRN_VAR_METADATA){
-      for(idx=0;idx<xtr_nbr;idx++){
-	/* Print variable's definition */
-	(void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
-	/* Print variable's attributes */
-	(void)nco_prn_att(in_id,xtr_lst[idx].id);
-      } /* end loop over idx */
+
+      if (nco_has_subgrps(in_id)){
+
+        /* This is the version for groups  */
+
+        for(idx=0;idx<xtr_nbr;idx++){
+          /* Print variable's definition */
+          (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
+          /* Print variable's attributes */
+          (void)nco_prn_att(in_id,xtr_lst[idx].id);
+        } /* end loop over idx */
+
+      } else {
+
+        /* This is the version with no groups (netCDF3 or netCDF4 with variables at root only ) */
+
+        for(idx=0;idx<xtr_nbr;idx++){
+          /* Print variable's definition */
+          (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
+          /* Print variable's attributes */
+          (void)nco_prn_att(in_id,xtr_lst[idx].id);
+        } /* end loop over idx */
+      }
     } /* end if PRN_VAR_METADATA */
     
     if(PRN_VAR_DATA){

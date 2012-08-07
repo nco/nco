@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.32 2012-08-06 20:58:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.33 2012-08-07 17:35:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -730,7 +730,21 @@ nco_grp_itr
 }
 /* nco_grp_itr() */
 
+int                            /* [rcd] Return code */
+nco_has_subgrps
+(const int nc_id)              /* I [enm] NetCDF file ID */  
+{
+  /* Purpose: Return a bool value telling if the netCDF file has groups other than root */
 
+  int rcd=NC_NOERR;            /* I [rcd] Return code */
+  int ngrps;                   /* I [nbr] Number of sub-groups */
+
+  rcd=nco_inq_grps(nc_id,&ngrps,NULL);
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_has_subgrps() unable get nco_inq_grps");
+  return ngrps;
+}
+/* nco_has_subgrps() */
 
 
 #endif /* GRP_DEV */

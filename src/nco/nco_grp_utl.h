@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.20 2012-08-06 20:58:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.21 2012-08-07 17:35:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -144,7 +144,9 @@ nco_grp_itr
  const char * const grp_pth,  /* I [sng] Absolute group path */
  const int mode );            /* I [enm] mode (-z or -G ) */
 
-
+int                            /* [rcd] Return code */
+nco_has_subgrps
+(const int nc_id);             /* I [enm] NetCDF file ID */  
 
 #endif /* GRP_DEV */
 
