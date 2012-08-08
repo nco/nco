@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.320 2012-08-08 00:21:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.321 2012-08-08 05:33:54 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -138,8 +138,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.320 2012-08-08 00:21:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.320 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.321 2012-08-08 05:33:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.321 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -801,10 +801,10 @@ main(int argc,char **argv)
         /* This is the version for groups  */
 
         for(idx=0;idx<xtr_nbr;idx++){
+
           /* Print variable's definition */
-          (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
-          /* Print variable's attributes */
-          (void)nco_prn_att(in_id,xtr_lst[idx].id);
+          (void)nco_grp_prn_var(xtr_lst[idx]);
+
         } /* end loop over idx */
 
       } else {
@@ -817,12 +817,24 @@ main(int argc,char **argv)
           /* Print variable's attributes */
           (void)nco_prn_att(in_id,xtr_lst[idx].id);
         } /* end loop over idx */
-      }
+      } /* nco_has_subgrps() */
     } /* end if PRN_VAR_METADATA */
     
     if(PRN_VAR_DATA){
-      /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-      for(idx=0;idx<xtr_nbr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+
+      if (nco_has_subgrps(in_id)){
+
+        /* This is the version for groups  */
+
+      }else {
+
+        /* This is the version with no groups (netCDF3 or netCDF4 with variables at root only ) */
+
+        /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
+        for(idx=0;idx<xtr_nbr;idx++) {
+          (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+        } /* idx */
+      } /* nco_has_subgrps() */
     } /* end if PRN_VAR_DATA */
     
   } /* !fl_out */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.21 2012-08-07 17:35:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.22 2012-08-08 05:33:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -19,7 +19,9 @@
    usage:  ncks -z -D 1 in_grp.nc
 2) Undocumented ncks -G command line option, that iterates the file and prints extended group information 
    usage:  ncks -G -D 1 in_grp.nc
-3) Function nco_grp_itr used by 1) and 2)
+3) Function nco_grp_itr() used by 1) and 2)
+4) Function nco_has_subgrps()
+5) Function nco_grp_prn_var()
 
 
 */
@@ -138,15 +140,19 @@ nco_def_grp_rcr
  const int rcr_lvl); /* I [nbr] Recursion level */
 
 #ifdef GRP_DEV
-int                           /* [rcd] Return code */
+int                           /* O [rcd] Return code */
 nco_grp_itr
 (const int grp_id,            /* I [enm] Group ID */
  const char * const grp_pth,  /* I [sng] Absolute group path */
  const int mode );            /* I [enm] mode (-z or -G ) */
 
-int                            /* [rcd] Return code */
+int                           /* O [rcd] Return code */
 nco_has_subgrps
-(const int nc_id);             /* I [enm] NetCDF file ID */  
+(const int nc_id);            /* I [enm] NetCDF file ID */  
+
+int                           /* O [rcd] Return code */
+nco_grp_prn_var
+(nm_id_sct nm_id);            /* I [sct] Name ID structure */
 
 #endif /* GRP_DEV */
 

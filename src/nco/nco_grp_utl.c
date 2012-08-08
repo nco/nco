@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.34 2012-08-08 03:43:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.35 2012-08-08 05:33:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -762,6 +762,24 @@ nco_has_subgrps
   return ngrps;
 }
 /* nco_has_subgrps() */
+
+
+int                           /* O [rcd] Return code */
+nco_grp_prn_var
+(nm_id_sct nm_id)             /* I [sct] Name ID structure */
+{
+  /* Purpose: Print information for nm_id */
+
+  int rcd=NC_NOERR;           /* I [rcd] Return code */
+
+  if(dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stdout,"var= %s\n",nm_id.var_nm_fll); 
+  }
+
+
+  return rcd;
+}
+/* nco_grp_prn_var() */
 
 
 #endif /* GRP_DEV */
