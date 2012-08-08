@@ -1,7 +1,6 @@
 2012-08-07  Pedro Vicente  <pvicente@uci.edu>
 
-        * ncks -G option; usage ncks -G -D 1 ~/nco/data/in_grp.nc; prints number of subgroups , 
-          number of dimensions, number of attributes, number of variables of group
+        * ncks -G prints number of group's subgroups, dimensions, attributes, variables
 
 2012-08-03  Charlie Zender  <zender@uci.edu>
 
