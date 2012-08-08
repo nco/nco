@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.36 2012-08-08 18:08:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.37 2012-08-08 18:47:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -776,9 +776,6 @@ nco_grp_prn_var
 
   int rcd=NC_NOERR;           /* I [rcd] Return code */
 
-  if(dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stdout,"var= %s\n",nm_id.var_nm_fll); 
-  }
 
 
   return rcd;
