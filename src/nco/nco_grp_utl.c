@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.37 2012-08-08 18:47:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.38 2012-08-08 22:40:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -17,7 +17,7 @@
  */
 
 #include "nco_grp_utl.h"  /* Group utilities */
-#include "nco_grp_trav.h" /* Group traversal storage */
+#include "nco_grp_trv.h" /* Group traversal storage */
 #include <assert.h>
 
 int /* [rcd] Return code */
@@ -661,7 +661,7 @@ nco_grp_itr
 (const int grp_id,            /* I [enm] Group ID */
  const char * const grp_pth,  /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
  const int mode,              /* I [enm] Mode: modes are 0 (-z), 1 (-G ), 2 (storage) */
- trav_table_t *table)         /* I/O [sct] Table */
+ grp_tbl_t *tbl)            /* I/O [sct] Table */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -701,7 +701,7 @@ nco_grp_itr
     if((mode == 0) && dbg_lvl_get() >= nco_dbg_std){
       (void)fprintf(stdout,"var= %s\n",path); 
     }else if(mode==2){
-      trav_table_add(path,table);
+      trv_tbl_add(path,tbl);
     }
 
     path=(char*)nco_free(path);
@@ -737,9 +737,9 @@ nco_grp_itr
 
     /* Recursively go to sub-groups; NOTE the new absolute group path is passed in mode 1 */
     if(mode == 0 || mode == 2){
-      rcd+=nco_grp_itr(gid,path,mode,table);
+      rcd+=nco_grp_itr(gid,path,mode,tbl);
     }else if(mode == 1){
-      rcd+=nco_grp_itr(gid,gp_nm,mode,table);
+      rcd+=nco_grp_itr(gid,gp_nm,mode,tbl);
     }
 
     path=(char*)nco_free(path);

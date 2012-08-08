@@ -133,7 +133,7 @@
     <ClCompile Include="..\..\src\nco\nco_dmn_utl.c" />
     <ClCompile Include="..\..\src\nco\nco_fl_utl.c" />
     <ClCompile Include="..\..\src\nco\nco_getopt.c" />
-    <ClCompile Include="..\..\src\nco\nco_grp_trav.c" />
+    <ClCompile Include="..\..\src\nco\nco_grp_trv.c" />
     <ClCompile Include="..\..\src\nco\nco_grp_utl.c" />
     <ClCompile Include="..\..\src\nco\nco_lmt.c" />
     <ClCompile Include="..\..\src\nco\nco_lst_utl.c" />
@@ -175,7 +175,7 @@
     <ClInclude Include="..\..\src\nco\nco_dmn_utl.h" />
     <ClInclude Include="..\..\src\nco\nco_fl_utl.h" />
     <ClInclude Include="..\..\src\nco\nco_getopt.h" />
-    <ClInclude Include="..\..\src\nco\nco_grp_trav.h" />
+    <ClInclude Include="..\..\src\nco\nco_grp_trv.h" />
     <ClInclude Include="..\..\src\nco\nco_grp_utl.h" />
     <ClInclude Include="..\..\src\nco\nco_lmt.h" />
     <ClInclude Include="..\..\src\nco\nco_lst_utl.h" />

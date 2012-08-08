@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.23 2012-08-08 18:08:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.24 2012-08-08 22:40:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -44,7 +44,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
-#include "nco_grp_trav.h" /* Group traversal storage */
+#include "nco_grp_trv.h" /* Group traversal storage */
 
 /* Dynamic array implementation of group stack */
 typedef struct {
@@ -146,7 +146,7 @@ nco_grp_itr
 (const int grp_id,            /* I [enm] Group ID */
  const char * const grp_pth,  /* I [sng] Absolute group path */
  const int mode,              /* I [enm] mode (-z or -G ) */
- trav_table_t *table);        /* I/O [sct] Table */
+ grp_tbl_t *table);        /* I/O [sct] Table */
 
 int                           /* O [rcd] Return code */
 nco_has_subgrps

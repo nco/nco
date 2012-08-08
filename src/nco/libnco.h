@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.50 2012-08-08 18:08:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.51 2012-08-08 22:40:54 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) library */
 
@@ -53,6 +53,6 @@
 #include "nco_var_rth.h" /* Variable arithmetic */
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
 #include "nco_var_utl.h" /* Variable utilities */
-#include "nco_grp_trav.h" /* Group traversal storage */
+#include "nco_grp_trv.h" /* Group traversal storage */
 
 #endif /* LIBNCO_H */
