@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.1 2012-08-08 22:40:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.2 2012-08-08 23:11:17 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -19,9 +19,9 @@ typedef struct{
 
 /* struct that stores all objects */
 typedef struct{
-  unsigned size;
-  unsigned nobjs;
-  grp_trv_t *objs;
+  unsigned sz;         /* [nbr] Allocated size */
+  unsigned nbr;        /* [nbr] Number of current elements */
+  grp_trv_t *grp_lst;  /*       Array of grp_trv_t */
 } grp_tbl_t;
 
 void                         

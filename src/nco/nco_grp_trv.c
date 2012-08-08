@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.1 2012-08-08 22:40:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.2 2012-08-08 23:11:17 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -23,12 +23,12 @@ trv_tbl_init
 {
   unsigned int idx;
   grp_tbl_t* tb=(grp_tbl_t*)nco_malloc(sizeof(grp_tbl_t));
-  tb->size=100;
-  tb->nobjs=0;
-  tb->objs=(grp_trv_t*)nco_malloc(tb->size*sizeof(grp_trv_t));
+  tb->sz=100;
+  tb->nbr=0;
+  tb->grp_lst=(grp_trv_t*)nco_malloc(tb->sz*sizeof(grp_trv_t));
 
-  for(idx=0;idx<tb->size;idx++){
-    tb->objs[idx].nm = NULL;
+  for(idx=0;idx<tb->sz;idx++){
+    tb->grp_lst[idx].nm = NULL;
   }
 
   *tbl = tb;
@@ -41,10 +41,10 @@ trv_tbl_free
 {
   unsigned int idx;
 
-  for(idx=0;idx<tbl->size;idx++){
-    nco_free(tbl->objs[idx].nm);
+  for(idx=0;idx<tbl->sz;idx++){
+    nco_free(tbl->grp_lst[idx].nm);
   }
-  nco_free(tbl->objs);
+  nco_free(tbl->grp_lst);
   nco_free(tbl);
 }
 /* trv_tbl_free() */
@@ -54,20 +54,20 @@ trv_tbl_free
 void 
 trv_tbl_add
 (const char *name,       /* I   [sng] Path name */
- grp_tbl_t *tbl)    /* I/O [sct] Table */
+ grp_tbl_t *tbl)         /* I/O [sct] Table */
 {
   unsigned int idx;
 
-  if(tbl->nobjs == tbl->size){
-    tbl->size*=2;
-    tbl->objs=(grp_trv_t*)nco_realloc(tbl->objs,tbl->size*sizeof(grp_trv_t));
+  if(tbl->nbr == tbl->sz){
+    tbl->sz*=2;
+    tbl->grp_lst=(grp_trv_t*)nco_realloc(tbl->grp_lst,tbl->sz*sizeof(grp_trv_t));
 
-    for(idx=tbl->nobjs;idx<tbl->size;idx++) {
-      tbl->objs[idx].nm = NULL;
+    for(idx=tbl->nbr;idx<tbl->sz;idx++) {
+      tbl->grp_lst[idx].nm = NULL;
     } /* idx */
-  } /* tbl->size */
-  idx=tbl->nobjs++;
-  tbl->objs[idx].nm=(char*)strdup(name);
+  } /* tbl->sz */
+  idx=tbl->nbr++;
+  tbl->grp_lst[idx].nm=(char*)strdup(name);
 }
 /* trv_tbl_add() */
 
