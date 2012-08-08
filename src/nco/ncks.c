@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.321 2012-08-08 05:33:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.322 2012-08-08 18:08:44 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,6 +114,7 @@ main(int argc,char **argv)
 #ifdef GRP_DEV 
   nco_bool GET_LIST=False;     /* [flg] Iterate file, print variables and exit */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
+  trav_table_t  *trv_tbl;      /* [lst] Traversal table */
 #endif /* GRP_DEV */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -138,8 +139,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.321 2012-08-08 05:33:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.321 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.322 2012-08-08 18:08:44 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.322 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -574,13 +575,22 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
 #ifdef GRP_DEV
-  if (GET_LIST){
-    rcd+=nco_grp_itr(in_id,"/",0);
+  if(GET_LIST){ /* -z */ 
+    rcd+=nco_grp_itr(in_id,"/",0,NULL);
     goto out; 
   }
-  if (GET_GRP_INFO){
-    rcd+=nco_grp_itr(in_id,"/",1);
+  if(GET_GRP_INFO){  /* -G */ 
+    rcd+=nco_grp_itr(in_id,"/",1,NULL);
     goto out; 
+  }
+
+  /* Get objects in file */
+  trav_table_init(&trv_tbl);
+  rcd+=nco_grp_itr(in_id,"/",2,trv_tbl);
+  if(dbg_lvl_get() >= nco_dbg_std){
+    for(unsigned uidx=0;uidx<trv_tbl->nobjs;uidx++){
+      (void)fprintf(stdout,"%s\n",trv_tbl->objs[uidx].nm); 
+    }
   }
 #endif /* GRP_DEV */
   /* Parse auxiliary coordinates */
@@ -858,7 +868,7 @@ out:
     /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
     for(idx=0;idx<nbr_dmn_fl;idx++)
       for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-	lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 
     lmt=(lmt_sct**)nco_free(lmt); 
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
@@ -889,6 +899,10 @@ out:
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
   } /* !flg_cln */
+
+#ifdef GRP_DEV
+  trav_table_free(trv_tbl);
+#endif
   
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */

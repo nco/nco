@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trav.h,v 1.1 2012-08-08 07:51:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trav.h,v 1.2 2012-08-08 18:08:44 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -24,8 +24,18 @@ typedef struct{
   trav_obj_t *objs;
 } trav_table_t;
 
-int                           /* O   [rcd] Return code */
+void                         
 trav_table_init
-(trav_table_t **table);       /* I/O [sct] table */
+(trav_table_t **table);  /* I/O [sct] table */
+
+void 
+trav_table_free
+(trav_table_t *table);   /* I [sct] table */
+
+void 
+trav_table_add
+(const char *name,       /* I   [sng] Path name */
+ trav_table_t *table);   /* I/O [sct] Table */
+
 
 #endif
