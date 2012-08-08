@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.319 2012-08-07 17:35:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.320 2012-08-08 00:21:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -43,7 +43,9 @@
    ncks -H -d fl_dim,1 -d char_dim,6,12 -v fl_nm,fl_nm_arr ~/nco/data/in.nc
    ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nco/data/in.nc
    ncks -H -C -v three_dmn_rec_var -d time,,,2 in.nc
-   ncks -H -C -v lon -d lon,3,1 in.nc */
+   ncks -H -C -v lon -d lon,3,1 in.nc 
+   ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
+   ncks -G -D 1 ~/in_grp.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -136,8 +138,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.319 2012-08-07 17:35:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.319 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.320 2012-08-08 00:21:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.320 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
