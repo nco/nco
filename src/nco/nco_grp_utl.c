@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.33 2012-08-07 17:35:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.34 2012-08-08 03:43:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -17,6 +17,7 @@
  */
 
 #include "nco_grp_utl.h" /* Group utilities */
+#include <assert.h>
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -657,8 +658,8 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 int                           /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,            /* I [enm] Group ID */
- const char * const grp_pth,  /* I [sng] Absolute group path */
- const int mode )             /* I [enm] mode (-z or -G ) */
+ const char * const grp_pth,  /* I [sng] mode 0: Absolute group name (path); mode 1: group name */
+ const int mode )             /* I [enm] mode; modes are 0 (-z) or 1 (-G ) */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -671,9 +672,12 @@ nco_grp_itr
   int nbr_att;                 /* O [nbr] Number of attributes */
   int nvars;                   /* O [nbr] Number of variables */
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
+  int nbr_dmn;                 /* O [nbr] number of dimensions */
   int idx;
 
-  if(dbg_lvl_get() >= nco_dbg_std){
+  assert(mode==0 || mode==1);
+
+  if(mode==0 && dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stdout,"grp= %s\n",grp_pth); 
   }
 
@@ -692,7 +696,7 @@ nco_grp_itr
       strcat(path,"/");
     strcat(path,var_nm);       /* Concatenate variable to absolute group path */
 
-    if(dbg_lvl_get() >= nco_dbg_std){
+    if(mode==0 && dbg_lvl_get() >= nco_dbg_std){
       (void)fprintf(stdout,"var= %s\n",path); 
     }
 
@@ -703,6 +707,15 @@ nco_grp_itr
   rcd+=nco_inq_grps(grp_id,&ngrps,NULL);
   grpids=(int*)nco_malloc((ngrps)*sizeof(int));
   rcd+=nco_inq_grps(grp_id,&ngrps,grpids);
+
+  /*information needed for mode 1 */
+  rcd+=nco_inq_grpname(grp_id,gp_nm);
+  rcd+=nco_inq_ndims(grp_id,&nbr_dmn);
+  rcd+=nco_inq_natts(grp_id,&nbr_att);
+
+  if(mode==1){
+    (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",gp_nm,ngrps,nbr_dmn,nbr_att,nvars); 
+  }
 
   for(idx=0;idx<ngrps;idx++){
     char *path=NULL;
@@ -718,8 +731,12 @@ nco_grp_itr
       strcat(path,"/");
     strcat(path,gp_nm);        /* Concatenate current group to absolute group path */
 
-    /* Recursively go to sub-groups; NOTE the new absolute group path is passed */
-    rcd+=nco_grp_itr(gid,path,mode);
+    /* Recursively go to sub-groups; NOTE the new absolute group path is passed in mode 0 */
+    if(mode==0){
+      rcd+=nco_grp_itr(gid,path,mode);
+    }else if(mode==1){
+      rcd+=nco_grp_itr(gid,gp_nm,mode);
+    }
 
     path=(char*)nco_free(path);
   }
