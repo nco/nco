@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.3 2012-08-09 02:01:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.4 2012-08-09 06:06:08 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -13,8 +13,9 @@
 #define NCO_GRP_TRV_H
 
 typedef enum{               /* [enm] netCDF4 object type: group, variable */
- nc_typ_grp,                   /* 0, Group */
- nc_typ_var                    /* 1, variable */
+ nc_typ_err=-1,                /* -1 Invalid type for initialization */
+ nc_typ_grp,                   /*  0, Group */
+ nc_typ_var                    /*  1, variable */
 }nc_typ; 
 /* end nc_typ */
 
@@ -22,7 +23,7 @@ typedef enum{               /* [enm] netCDF4 object type: group, variable */
    this identifies an "object", as having a path and a type, like in HDF5 
 */
 typedef struct{ 
-  char     *nm;           /* [sng] Path name */
+  char     *nm_fll;       /* [sng] Absolute name (path) */
   nc_typ   typ;           /* [enm] netCDF4 object type: group, variable */
 } grp_trv_t;
 /* end nc_typ */

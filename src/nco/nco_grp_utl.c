@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.40 2012-08-09 02:01:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.41 2012-08-09 06:06:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -685,7 +685,7 @@ nco_grp_itr
   }
   else if(mode == 2){
     /* This is a group */
-    obj.nm=(char*)grp_pth;
+    obj.nm_fll=(char*)grp_pth;
     obj.typ=nc_typ_grp;
     trv_tbl_add(obj,tbl);
   }
@@ -709,7 +709,7 @@ nco_grp_itr
       (void)fprintf(stdout,"var= %s\n",var_pth); 
     } else if(mode == 2){
       /* This is a variable */
-      obj.nm=(char*)var_pth;
+      obj.nm_fll=(char*)var_pth;
       obj.typ=nc_typ_var;
       trv_tbl_add(obj,tbl);
     }
@@ -774,8 +774,6 @@ nco_has_subgrps
   return ngrps;
 }
 /* nco_has_subgrps() */
-
-
 
 
 
