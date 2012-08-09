@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.2 2012-08-08 23:11:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.3 2012-08-09 02:01:21 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -53,7 +53,7 @@ trv_tbl_free
 
 void 
 trv_tbl_add
-(const char *name,       /* I   [sng] Path name */
+(grp_trv_t obj,          /* I   [sct] Object to store */
  grp_tbl_t *tbl)         /* I/O [sct] Table */
 {
   unsigned int idx;
@@ -67,7 +67,8 @@ trv_tbl_add
     } /* idx */
   } /* tbl->sz */
   idx=tbl->nbr++;
-  tbl->grp_lst[idx].nm=(char*)strdup(name);
+  tbl->grp_lst[idx].nm=(char*)strdup(obj.nm);
+  tbl->grp_lst[idx].typ=obj.typ;
 }
 /* trv_tbl_add() */
 

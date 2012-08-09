@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.326 2012-08-09 00:28:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.327 2012-08-09 02:01:21 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.326 2012-08-09 00:28:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.326 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.327 2012-08-09 02:01:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.327 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -818,9 +818,7 @@ main(int argc,char **argv)
 
         for(idx=0;idx<xtr_nbr;idx++){
 
-          /* Print variable's definition */
-          (void)nco_grp_prn_var(xtr_lst[idx]);
-
+        
         } /* end loop over idx */
 
       } else {

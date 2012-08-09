@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.39 2012-08-09 00:28:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.40 2012-08-09 02:01:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -656,12 +656,12 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 } /* end nco_grp_lst_mk() */
 
 #ifdef GRP_DEV
-int                           /* [rcd] Return code */
+int                            /* [rcd] Return code */
 nco_grp_itr
-(const int grp_id,            /* I [enm] Group ID */
- const char * const grp_pth,  /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
- const int mode,              /* I [enm] Mode: modes are 0 (-z), 1 (-G ), 2 (storage) */
- grp_tbl_t *tbl)            /* I/O [sct] Table */
+(const int grp_id,             /* I [enm] Group ID */
+ const char * const grp_pth,   /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
+ const int mode,               /* I [enm] Mode: modes are 0 (-z), 1 (-G ), 2 (storage) */
+ grp_tbl_t *tbl)               /* I/O [sct] Table */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -676,35 +676,45 @@ nco_grp_itr
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   int nbr_dmn;                 /* O [nbr] number of dimensions */
   int idx;
+  grp_trv_t obj;               /* netCDF4 object, as having a path and a type */
 
-  assert(mode==0 || mode==1 || mode==2);
+  assert(mode == 0 || mode == 1 || mode == 2);
 
   if((mode == 0) && dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stdout,"grp= %s\n",grp_pth); 
+  }
+  else if(mode == 2){
+    /* This is a group */
+    obj.nm=(char*)grp_pth;
+    obj.typ=nc_typ_grp;
+    trv_tbl_add(obj,tbl);
   }
 
   /* Get variables for this group */
   rcd+=nco_inq_nvars(grp_id,&nvars);
   for(var_id=0;var_id<nvars;var_id++){
-    char *path=NULL;
+    char *var_pth=NULL; /* Full path of variable */
     rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
-    path=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
+    var_pth=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
 
     /* Initialize path with the current absolute group path */
-    strcpy(path,grp_pth);
+    strcpy(var_pth,grp_pth);
     if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
-      strcat(path,"/");
-    strcat(path,var_nm);       /* Concatenate variable to absolute group path */
+      strcat(var_pth,"/");
+    strcat(var_pth,var_nm);       /* Concatenate variable to absolute group path */
 
     if((mode == 0) && dbg_lvl_get() >= nco_dbg_std){
-      (void)fprintf(stdout,"var= %s\n",path); 
-    }else if(mode==2){
-      trv_tbl_add(path,tbl);
+      (void)fprintf(stdout,"var= %s\n",var_pth); 
+    } else if(mode == 2){
+      /* This is a variable */
+      obj.nm=(char*)var_pth;
+      obj.typ=nc_typ_var;
+      trv_tbl_add(obj,tbl);
     }
 
-    path=(char*)nco_free(path);
+    var_pth=(char*)nco_free(var_pth);
   }
 
   /* Go to sub-groups */
@@ -722,7 +732,7 @@ nco_grp_itr
   }
 
   for(idx=0;idx<ngrps;idx++){
-    char *path=NULL;
+    char *path=NULL;  /* Full group path */
     int gid=grpids[idx];
     rcd+=nco_inq_grpname(gid,gp_nm);
 
@@ -766,19 +776,7 @@ nco_has_subgrps
 /* nco_has_subgrps() */
 
 
-int                           /* O [rcd] Return code */
-nco_grp_prn_var
-(nm_id_sct nm_id)             /* I [sct] Name ID structure */
-{
-  /* Purpose: Print information for nm_id */
 
-  int rcd=NC_NOERR;           /* I [rcd] Return code */
-
-
-
-  return rcd;
-}
-/* nco_grp_prn_var() */
 
 
 #endif /* GRP_DEV */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.24 2012-08-08 22:40:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.25 2012-08-09 02:01:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -21,7 +21,7 @@
    usage:  ncks -G -D 1 in_grp.nc
 3) Function nco_grp_itr() used by 1) and 2)
 4) Function nco_has_subgrps()
-5) Function nco_grp_prn_var()
+
 
 
 */
@@ -141,20 +141,21 @@ nco_def_grp_rcr
  const int rcr_lvl); /* I [nbr] Recursion level */
 
 #ifdef GRP_DEV
-int                           /* O [rcd] Return code */
+int                                      /* O [rcd] Return code */
 nco_grp_itr
-(const int grp_id,            /* I [enm] Group ID */
- const char * const grp_pth,  /* I [sng] Absolute group path */
- const int mode,              /* I [enm] mode (-z or -G ) */
- grp_tbl_t *table);        /* I/O [sct] Table */
+(const int grp_id,                       /* I [enm] Group ID */
+ const char * const grp_pth,             /* I [sng] Absolute group path */
+ const int mode,                         /* I [enm] mode (-z or -G ) */
+ grp_tbl_t *tbl);                        /* I/O [sct] Group traversal table  */
+/* end nco_grp_itr() */
 
-int                           /* O [rcd] Return code */
+int                                      /* O [rcd] Return code */
 nco_has_subgrps
-(const int nc_id);            /* I [enm] NetCDF file ID */  
+(const int nc_id);                       /* I [enm] NetCDF file ID */  
+/* end nco_has_subgrps() */
 
-int                           /* O [rcd] Return code */
-nco_grp_prn_var
-(nm_id_sct nm_id);            /* I [sct] Name ID structure */
+
+
 
 #endif /* GRP_DEV */
 
