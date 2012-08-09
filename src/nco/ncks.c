@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.325 2012-08-08 23:11:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.326 2012-08-09 00:28:17 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.325 2012-08-08 23:11:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.325 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.326 2012-08-09 00:28:17 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.326 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -812,7 +812,7 @@ main(int argc,char **argv)
     
     if(PRN_VAR_METADATA){
 
-      if (nco_has_subgrps(in_id)){
+      if (HAS_SUBGRP){
 
         /* This is the version for groups  */
 
@@ -838,7 +838,7 @@ main(int argc,char **argv)
     
     if(PRN_VAR_DATA){
 
-      if (nco_has_subgrps(in_id)){
+      if (HAS_SUBGRP){
 
         /* This is the version for groups  */
 

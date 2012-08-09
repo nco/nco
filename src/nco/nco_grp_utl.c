@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.38 2012-08-08 22:40:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.39 2012-08-09 00:28:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -746,7 +746,6 @@ nco_grp_itr
   }
 
   (void)nco_free(grpids);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_grp_itr() unable to iterate groups");
   return rcd;
 }
 /* nco_grp_itr() */
@@ -762,7 +761,6 @@ nco_has_subgrps
 
   rcd=nco_inq_grps(nc_id,&ngrps,NULL);
 
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_has_subgrps() unable get nco_inq_grps");
   return ngrps;
 }
 /* nco_has_subgrps() */
