@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.328 2012-08-09 06:06:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.329 2012-08-09 21:33:25 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -57,6 +57,7 @@
 #include <string.h> /* strcmp() */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
+#include <assert.h> /* assert */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
 #endif
@@ -115,7 +116,7 @@ main(int argc,char **argv)
   nco_bool GET_LIST=False;     /* [flg] Iterate file, print variables and exit */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool HAS_SUBGRP=False;   /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only ) */
-  grp_tbl_t  *trv_tbl;      /* [lst] Traversal table */
+  grp_tbl_t  *trv_tbl=NULL;    /* [lst] Traversal table */
 #endif /* GRP_DEV */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -140,8 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.328 2012-08-09 06:06:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.328 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.329 2012-08-09 21:33:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.329 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -581,6 +582,15 @@ main(int argc,char **argv)
   else
     HAS_SUBGRP=False;
 
+  /* Get objects in file */
+  trv_tbl_init(&trv_tbl);
+  rcd+=nco_grp_itr(in_id,"/",2,trv_tbl);
+  if(HAS_SUBGRP && dbg_lvl_get() >= nco_dbg_var){
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
+    }
+  }
+
   if(GET_LIST){ /* -z */ 
     rcd+=nco_grp_itr(in_id,"/",0,NULL);
     goto out; 
@@ -590,14 +600,6 @@ main(int argc,char **argv)
     goto out; 
   }
 
-  /* Get objects in file */
-  trv_tbl_init(&trv_tbl);
-  rcd+=nco_grp_itr(in_id,"/",2,trv_tbl);
-  if(HAS_SUBGRP && dbg_lvl_get() >= nco_dbg_std){
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
-    }
-  }
 #endif /* GRP_DEV */
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
@@ -628,7 +630,11 @@ main(int argc,char **argv)
 
   /* Form initial extraction list which may include extended regular expressions */
 #ifdef ENABLE_NETCDF4
+# if 0
+  xtr_lst=nco4_var_lst_mk2(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr,trv_tbl);
+# else
   xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
+# endif
 #else /* !ENABLE_NETCDF4 */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #endif /* ENABLE_NETCDF4 */
@@ -643,10 +649,16 @@ main(int argc,char **argv)
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
 
   /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
+  if(EXTRACT_ASSOCIATED_COORDINATES) {
+    if(HAS_SUBGRP){
+
+    }else{
+      xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
+    }
+  } /* EXTRACT_ASSOCIATED_COORDINATES */
 
   /* Sort extraction list alphabetically or by variable ID */
-  if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
+  if(xtr_nbr > 1 && !HAS_SUBGRP) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
     
   /* We now have final list of variables to extract. Phew. */
 
@@ -658,7 +670,11 @@ main(int argc,char **argv)
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
   
   /* Initialize lmt_all_sct's */ 
-  (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+  if(HAS_SUBGRP){
+
+  }else{
+    (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+  }
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
@@ -758,14 +774,14 @@ main(int argc,char **argv)
     if(!USE_MM3_WORKAROUND){  
       /* Copy all data variable-by-variable */
       for(idx=0;idx<xtr_nbr;idx++){
-	if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
-	if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-	/* Old hyperslab routines */
-	/* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
-	/* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
-	/* Multi-slab routines */
-	/* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
-	if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+        if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
+        if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
+        /* Old hyperslab routines */
+        /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
+        /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
+        /* Multi-slab routines */
+        /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
+        if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
       } /* end loop over idx */
     }else{
       /* MM3 workaround algorithm */
@@ -778,9 +794,9 @@ main(int argc,char **argv)
       (void)nco_var_lst_fix_rec_dvd(in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
       /* Copy fixed-length data variable-by-variable */
       for(idx=0;idx<fix_nbr;idx++){
-	if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
-	if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-	(void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
+        if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
+        if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
+        (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
       } /* end loop over idx */
       /* Copy record data record-by-record */
       (void)nco_cpy_rec_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
@@ -818,6 +834,17 @@ main(int argc,char **argv)
 
         for(idx=0;idx<xtr_nbr;idx++){
 
+          int grp_id; /* Groud ID of xtr_lst[idx].grp_nm_fll; */ 
+          nm_id_sct nm_id; /* Current object */
+          nm_id=xtr_lst[idx];
+
+          /* Obtain group ID from netCDF API using full group name */
+          rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
+
+          assert(grp_id == nm_id.grp_id );
+
+          /* Print variable's definition using the obtained grp_id instead of the netCDF file ID; Voila  */
+          (void)nco_prn_var_dfn(grp_id,nm_id.nm);
         
         } /* end loop over idx */
 
