@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.69 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.70 2012-08-10 19:08:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -22,11 +22,9 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp() */
-#if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
-# include <ctype.h> /* tolower() */
-#else
+#ifdef HAVE_STRINGS_H
 # include <strings.h> /* strcasecmp() */
-#endif
+#endif /* !HAVE_STRINGS_H */
 #include <sys/stat.h> /* stat() */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */

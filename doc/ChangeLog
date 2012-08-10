@@ -1,3 +1,7 @@
+2012-08-10  Charlie Zender  <zender@uci.edu>
+
+	* Prune headers for strings.h and ctype.h
+
 2012-08-07  Pedro Vicente  <pvicente@uci.edu>
 
         * ncks -G prints number of group's subgroups, dimensions, attributes, variables

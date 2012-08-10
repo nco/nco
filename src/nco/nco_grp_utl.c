@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.42 2012-08-09 21:33:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.43 2012-08-10 19:08:18 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -17,8 +17,6 @@
  */
 
 #include "nco_grp_utl.h"  /* Group utilities */
-#include "nco_grp_trv.h" /* Group traversal storage */
-#include <assert.h>
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -673,7 +671,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [enm] Group ID */
- const char * const grp_pth,   /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
+ char * const grp_pth,   /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
  const int mode,               /* I [enm] Mode: modes are 0 (-z), 1 (-G ), 2 (storage) */
  grp_tbl_t *tbl)               /* I/O [sct] Table */
 {
@@ -699,7 +697,7 @@ nco_grp_itr
   }
   else if(mode == 2){
     /* This is a group */
-    obj.nm_fll=(char*)grp_pth;
+    obj.nm_fll=(char *)grp_pth;
     obj.typ=nc_typ_grp;
     trv_tbl_add(obj,tbl);
   }

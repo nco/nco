@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.4 2012-08-09 06:06:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.5 2012-08-10 19:08:18 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -11,6 +11,15 @@
 
 #ifndef NCO_GRP_TRV_H
 #define NCO_GRP_TRV_H
+
+/* Standard header files */
+#include <assert.h> /* assert() */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+
+/* 3rd party vendors */
+
+/* Personal headers */
+#include "nco_mmr.h" /* Memory management */
 
 typedef enum{               /* [enm] netCDF4 object type: group, variable */
  nc_typ_err=-1,                /* -1 Invalid type for initialization */

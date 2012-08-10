@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.26 2012-08-09 21:33:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.27 2012-08-10 19:08:18 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -21,9 +21,6 @@
    usage:  ncks -G -D 1 in_grp.nc
 3) Function nco_grp_itr() used by 1) and 2)
 4) Function nco_has_subgrps()
-
-
-
 */
 #endif
 
@@ -32,6 +29,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <assert.h> /* assert() */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp() */
@@ -43,8 +41,8 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
-#include "nco_mmr.h" /* Memory management */
 #include "nco_grp_trv.h" /* Group traversal storage */
+#include "nco_mmr.h" /* Memory management */
 
 /* Dynamic array implementation of group stack */
 typedef struct {
@@ -144,7 +142,7 @@ nco_def_grp_rcr
 int                                      /* O [rcd] Return code */
 nco_grp_itr
 (const int grp_id,                       /* I [enm] Group ID */
- const char * const grp_pth,             /* I [sng] Absolute group path */
+ char * const grp_pth,             /* I [sng] Absolute group path */
  const int mode,                         /* I [enm] mode (-z or -G ) */
  grp_tbl_t *tbl);                        /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
@@ -153,8 +151,6 @@ int                                      /* O [rcd] Return code */
 nco_has_subgrps
 (const int nc_id);                       /* I [enm] NetCDF file ID */  
 /* end nco_has_subgrps() */
-
-
 
 nm_id_sct *                              /* O [sct] Variable extraction list */
 nco4_var_lst_mk2                         /*   [fnc] Create variable extraction list using regular expressions */

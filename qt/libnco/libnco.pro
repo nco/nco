@@ -63,6 +63,7 @@ HEADERS += ../../src/nco/libnco.h \
 ../../src/nco/nco_dbg.h \
 ../../src/nco/nco_dmn_utl.h \
 ../../src/nco/nco_fl_utl.h \
+../../src/nco/nco_grp_trv.h \
 ../../src/nco/nco_grp_utl.h \
 ../../src/nco/nco_lmt.h \
 ../../src/nco/nco_lst_utl.h \
@@ -86,10 +87,7 @@ HEADERS += ../../src/nco/libnco.h \
 ../../src/nco/nco_var_lst.h \
 ../../src/nco/nco_var_rth.h \
 ../../src/nco/nco_var_scv.h \
-../../src/nco/nco_var_utl.h \
-../../src/nco/nco_grp_trv.h
-
-
+../../src/nco/nco_var_utl.h
 
 # source files
 SOURCES += ../../src/nco/nco_att_utl.c \
@@ -106,6 +104,7 @@ SOURCES += ../../src/nco/nco_att_utl.c \
 ../../src/nco/nco_dbg.c \
 ../../src/nco/nco_dmn_utl.c \
 ../../src/nco/nco_fl_utl.c \
+../../src/nco/nco_grp_trv.c \
 ../../src/nco/nco_grp_utl.c \
 ../../src/nco/nco_lmt.c \
 ../../src/nco/nco_lst_utl.c \
@@ -127,6 +126,5 @@ SOURCES += ../../src/nco/nco_att_utl.c \
 ../../src/nco/nco_var_lst.c \
 ../../src/nco/nco_var_rth.c \
 ../../src/nco/nco_var_scv.c \
-../../src/nco/nco_var_utl.c \
-../../src/nco/nco_grp_trv.c
+../../src/nco/nco_var_utl.c
 

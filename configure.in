@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.365 2012-08-07 18:39:05 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.366 2012-08-10 19:08:17 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -189,7 +189,7 @@ AC_CHECK_FUNCS([canonicalize_file_name floor gethostname getpagesize getrusage m
 
 # Check for header files
 AC_HEADER_STDC
-AC_CHECK_HEADERS([getopt.h libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([getopt.h libintl.h limits.h locale.h netinet/in.h stdlib.h string.h strings.h unistd.h])
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS(cstdlib)
 AC_LANG_POP([C++])

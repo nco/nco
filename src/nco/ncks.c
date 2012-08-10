@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.329 2012-08-09 21:33:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.330 2012-08-10 19:08:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -52,12 +52,12 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
+#include <assert.h> /* assert() */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp() */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#include <assert.h> /* assert */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
 #endif
@@ -73,6 +73,7 @@
 #include <netcdf.h> /* netCDF definitions and C library */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
+
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 int 
@@ -141,8 +142,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.329 2012-08-09 21:33:25 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.329 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.330 2012-08-10 19:08:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.330 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -577,10 +578,7 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
 #ifdef GRP_DEV
-  if (nco_has_subgrps(in_id))
-    HAS_SUBGRP=True;
-  else
-    HAS_SUBGRP=False;
+  if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
