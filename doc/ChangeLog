@@ -3249,7 +3249,7 @@
 
 	* Implement NC_STRING support stubs in nco_typ.h
 
-	* Support NC_INT64 in nco_c++ 
+	* Support NC_INT64 in nco_c++
 
 	* Complete netCDF4 type support (except NC_STRING) in nco_prn.c, nco_msa.c
 	ncks now prints netCDF4 atomic types correctly
@@ -3269,7 +3269,7 @@
 	* ncks does not copy scale_factor and add_offset to output files!
 
 	* ncks reports input file type, e.g., NC_FORMAT_CLASSIC,
-	NC_FORMAT_NETCDF4 
+	NC_FORMAT_NETCDF4
 
 2007-05-11  Charlie Zender  <zender@uci.edu>
 
@@ -3283,7 +3283,7 @@
 	be non-trivial to re-introduce. Mark such variables as CEWI
 	RUVICFFU = Retain Unused Variables In Comments For Future Use
 
-	* Re-format error messages to print error code if available, 
+	* Re-format error messages to print error code if available,
 	and to always print msg, if any
 
 	* Changed prototype and disambiguated ncap_sclr_var_mk()
@@ -3346,7 +3346,7 @@
 2007-03-31  Charlie Zender  <zender@uci.edu>
 
 	* Change -s "" to -s '' in most all examples to prevent	unintended
-	ncap2 behavior 
+	ncap2 behavior
 
 2007-03-30  Charlie Zender  <zender@uci.edu>
 
@@ -3362,10 +3362,10 @@
 	* Fix ncap2 comparison between signed/unsigned integer expression warnings
 
 	* Fold in Daniel's nco.spec change required for 64-bit builds on
-	hybrid 32/64-bit systems, e.g., RHEL, CentOS 
+	hybrid 32/64-bit systems, e.g., RHEL, CentOS
 
 2007-03-29  Henry Butowsky  <henryb@hush.com>
-	 
+
 	* first cut of RAM variables new syntax works
 	with assign operators (=,-=,+=,/=, *=) and post increment &
 	post decrement operators
@@ -3503,18 +3503,18 @@
 2006-12-02  Charlie Zender  <zender@uci.edu>
 
 	* Noticed that configure;make;make test breaks because ncap2 is
-	not available in ../src/nco like all other executables	
+	not available in ../src/nco like all other executables
 
 	* Link nco_c++/in.nc to ../../data/in.nc
 
-	* Fix all rule in data so *.nc are always built 
+	* Fix all rule in data so *.nc are always built
 
 2006-11-29  Charlie Zender  <zender@uci.edu>
 
 	* NB: psd.nco uncovered a bizarre scanner error with ncap2 comment fields
 
 	* Add equal-V/S approximation for Tallandier depth hoar to psd.nco
-	
+
 	* Print _FillValue WARNING only when dbg_lvl > 0
 
 2006-11-27  Charlie Zender  <zender@uci.edu>
@@ -3573,20 +3573,20 @@
 
 	* Removed debian/docs, alphabetize control, less precise debhelper
 	version, refine copyright history, remove debian/doc, de-comment
-	debian/rules, 
+	debian/rules
 
 	* Remove debian/[postinst,prerm, postrm]. These only contained
 	instructions for handling *.info files. Rely on dh_installinit to
-	automagically create these instructions.   
+	automagically create these instructions.
 
 2006-11-20  Charlie Zender  <zender@uci.edu>
 
-	* Alter documentation rules to not-split 
+	* Alter documentation rules to not-split
 
 	* Include ncap2 in debian distribution
 
 	* Remove compiler-preference list arguments to AC_PROG_CC and
-	AC_PROG_CXX in configure.in. Presence was breaking builds on 
+	AC_PROG_CXX in configure.in. Presence was breaking builds on
 	virga where broken icpc compiler was automatically selected.
 	Henceforth non-default compilers must be specified as environment
 	variables as in configure.eg
@@ -3626,7 +3626,7 @@
 	* Removed UDUnits support from Debian build
 
 	* Update debian/convert, copyright, prerm, rules, nco.doc-base,
-	postinst, 
+	postinst
 
 	* Added udunits.dat for eventual Debian compatibility (a mistake?)
 
@@ -3653,7 +3653,7 @@
 2006-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Test for find_nc4_file() not nc_check_for_hdf5() in configure.in
-	as per patch from Simon Wood 	
+	as per patch from Simon Wood
 
 2006-09-18  Charlie Zender  <zender@uci.edu>
 
