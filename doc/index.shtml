@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.720 2012-08-03 00:29:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.721 2012-08-12 17:42:55 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -7,8 +7,8 @@ http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
-scp -p ~/nco/doc/index.shtml ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_srl.png dust.ess.uci.edu:/var/www/html/nco
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:/var/www/html/nco
 scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:/var/www/html/nco/src
 -->
@@ -94,6 +94,8 @@ Try to disable Spammers' machines:
 </td>
 
 <td>
+<img src="/home/zender/logo_nco_stk.png" height=442 width=722 align=top>
+<!--
 <img src="nco.png" height=180 width=180 align=top>
 <img src="logo_pch.png" height=321 width=195 align=top>
 <img src="logo_cog.png" height=349 width=227 align=top>
@@ -109,8 +111,24 @@ Andrea Cimatoribus (spiral).<br>
 Which do you prefer? The Mandelblob, the patch, a cog, the spiral?<br>
 Can you improve these or create a better one? Send it in!
 Keep the size &lt;250&times;250 pixels.<br>
+-->
 </td>
 
+NCO manipulates data in the 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
+data storage format.
+It also exploits the geophysical expressivity of many 
+<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a> 
+(Climate &amp; Forecast) metadata conventions, the network transparency of
+<a href="http://opendap.org">OPeNDAP</a>, storage features of
+<a href="http://hdfgroup.org">HDF</a> (the Hierarchical Data Format),
+and many powerful mathematical and statistical algorithms of 
+<a href="http://www.gnu.org/software/gsl">GSL</a> (the GNU Scientific Library).
+NCO is 
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">fast</a>, 
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">powerful</a>,
+and 
+<a href="http://www.gnu.org/licenses/gpl-3.0.html">free</a>.
 </table>
 <hr>
 
@@ -187,15 +205,12 @@ Keep the size &lt;250&times;250 pixels.<br>
 <!-- http://nco.sf.net#Definition -->
 <dt><a name="Definition"></a><a name="dfn"></a></dt>
 <h2>What is NCO?</h2>
-<p>The <a
-href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-Operators (NCO) comprise a dozen standalone, command-line programs
-that take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
+<p>The netCDF Operators (NCO) comprise a dozen standalone,
+command-line programs that take 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
 files as input, then operate (e.g., derive new data, average, print,
 hyperslab, manipulate metadata) and output the results to screen or 
-files in text, binary, or 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
-formats.
+files in text, binary, or netCDF formats.
 NCO aids manipulation and analysis of gridded scientific data.  
 The shell-command style of NCO allows users to manipulate and analyze
 files interactively, or with simple scripts that avoid some overhead
@@ -552,8 +567,8 @@ World peace?
 Stride works with DAP?;
 Optimize diskless/RAM files?;
 more Robust RHEL/CentOS autoconf support?;
-<tt>ncks</tt> netCDF4 groups;</li>
 <li><b>NCO 4.2.2</b>: (<i>In Progress, features already in beta include the following</i>)</li>
+<tt>ncks</tt> supports netCDF4 groups;</li>
 <li><b>NCO 4.2.1</b>: (<i>Current Stable Release</i>)
 <tt>--ram_all</tt> for <a href="http://nco.sf.net/nco.html#diskless">diskless files</a>;
 <tt>--no_tmp_fl</tt> to <a href="http://nco.sf.net/nco.html#no_tmp_fl">bypass</a> temporary files;

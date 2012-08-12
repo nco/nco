@@ -2558,7 +2558,7 @@
 2008-04-23  Charlie Zender  <zender@uci.edu>
 
 	* Replace H5LT_open_id with H5LT_find_attribute in configure.in
-	Fixes cygwin build problem with netCDF4. Thanks to Mark Hadfield. 
+	Fixes cygwin build problem with netCDF4. Thanks to Mark Hadfield.
 
 2008-04-21  Charlie Zender  <zender@uci.edu>
 
@@ -2576,7 +2576,7 @@
 
 2008-04-02  Charlie Zender  <zender@uci.edu>
 
-	* Prevent copying global metadata with ncecat -M 
+	* Prevent copying global metadata with ncecat -M
 
 	* Print netCDF4-dependent switches only if netCDF4 is enabled
 
@@ -2690,7 +2690,7 @@
 
 	* xlC needs to search /usr/vacpp/include to find atan2()
 
-	* Autoconf builds with AIX fail because unable to find atan2() 
+	* Autoconf builds with AIX fail because unable to find atan2()
 
 	* Use nco_inq_attlen() to avoid pointer warning in nco_aux.c
 
@@ -2712,8 +2712,8 @@
 
 2007-12-22  Henry Butowsky  <henryb@ntlworld.com>
 
-	* Work-arounds for NCO_NETCDF4_AND_FILL_VALUE changes to 
-	  ncap_var_write_omp(). Added NCAP4_FILL property to prs_cls. 
+	* Work-arounds for NCO_NETCDF4_AND_FILL_VALUE changes to
+	  ncap_var_write_omp(). Added NCAP4_FILL property to prs_cls.
 
 2007-12-20  Charlie Zender  <zender@uci.edu>
 
@@ -2782,14 +2782,14 @@
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.3 release"
 	  cvs tag -c nco-3_9_3;cvs tag -c nco-3_9_3-1
 	  Changes since nco-3_9_2: SWAMP, ncecat -u, wget, ncap2 OpenMP, GCC 4.2
-	
+
 	* Update documentation for SWAMP, AGU, and IJHPCA
 
 2007-11-29  Henry Butowsky  <henryb@ntlworld.com>
 
 	* First cut of OpenMP for ncap2
 
-	* ncap2 processes ncap2.in in parallel on LINUX & AIX platforms 
+	* ncap2 processes ncap2.in in parallel on LINUX & AIX platforms
 
 2007-11-27  Henry Butowsky  <henryb@ntlworld.com>
 
