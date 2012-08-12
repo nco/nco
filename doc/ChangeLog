@@ -1,3 +1,13 @@
+2012-08-12  Charlie Zender  <zender@uci.edu>
+
+ 	* NCO 4.2.2 release procedure:
+ 	Changes since nco-4_2_1: None yet
+	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
+	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
+
+	* Replace logo request on homepage with software stack image logo_nco_stk.png
+
 2012-08-10  Charlie Zender  <zender@uci.edu>
 
 	* Prune headers for strings.h and ctype.h
@@ -7,12 +17,6 @@
         * ncks -G prints number of group's subgroups, dimensions, attributes, variables
 
 2012-08-03  Charlie Zender  <zender@uci.edu>
-
- 	* NCO 4.2.2 release procedure:
- 	Changes since nco-4_2_1: None yet
-	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
-	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
 
 	* Ensure netCDF3-only versions see prototypes for NCO netCDF4 functions, e.g., nco_inq_grp*
 
