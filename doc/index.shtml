@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.721 2012-08-12 17:42:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.722 2012-08-12 17:50:40 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -94,7 +94,7 @@ Try to disable Spammers' machines:
 </td>
 
 <td>
-<img src="/home/zender/logo_nco_stk.png" height=442 width=722 align=top>
+<img src="logo_nco_stk.png" height=442 width=722 align=top>
 <!--
 <img src="nco.png" height=180 width=180 align=top>
 <img src="logo_pch.png" height=321 width=195 align=top>
