@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.43 2012-08-10 19:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.44 2012-08-13 22:33:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -671,7 +671,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [enm] Group ID */
- char * const grp_pth,   /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
+ char * const grp_pth,         /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
  const int mode,               /* I [enm] Mode: modes are 0 (-z), 1 (-G ), 2 (storage) */
  grp_tbl_t *tbl)               /* I/O [sct] Table */
 {
