@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.29 2012-08-14 17:22:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.30 2012-08-14 18:26:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -142,7 +142,7 @@ nco_def_grp_rcr
 int                                      /* O [rcd] Return code */
 nco_grp_itr
 (const int grp_id,                       /* I [enm] Group ID */
- char * const grp_pth,                   /* I [sng] Absolute group path */
+ char * grp_pth,                         /* I [sng] Absolute group path */
  const int mode,                         /* I [enm] mode (-z or -G ) */
  grp_tbl_t *tbl);                        /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
