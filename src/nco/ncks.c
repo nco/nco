@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.333 2012-08-14 22:16:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.334 2012-08-14 22:34:15 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.333 2012-08-14 22:16:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.333 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.334 2012-08-14 22:34:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.334 $";
 #ifdef GRP_DEV
   char root_path[2]="/";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -194,7 +194,7 @@ main(int argc,char **argv)
     
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
-  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
+  lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
 
   nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
