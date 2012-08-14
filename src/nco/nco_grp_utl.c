@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.46 2012-08-14 18:26:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.47 2012-08-14 20:35:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -276,15 +276,11 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   int var_idx_crr; /* [idx] Variable index accounting for previous groups */
   int var_nbr; /* [nbr] Number of variables in current group */
   int var_nbr_all; /* [nbr] Number of variables in input file */
-  int var_nbr_fst=0; /* [nbr] Number of variables before current group */
   int var_nbr_tmp;
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
-
-#ifdef GRP_DEV
   var_idx_crr=-1; /* Incremented at cycle start */
-#endif
   
   nco_bool FLG_ROOT_GRP=True; /* [flg] Current group is root group */
   nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
@@ -353,12 +349,8 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       /* Append all variables in current group to variable list */
       for(var_idx=0;var_idx<var_nbr;var_idx++){
 
-
-#ifdef GRP_DEV
+        /* Increment number of variables */
         var_idx_crr++;
-#else
-        var_idx_crr=var_nbr_fst+var_idx; /* [idx] Variable index accounting for previous groups */
-#endif
 
         var_lst_all=(nm_id_sct *)nco_realloc(var_lst_all,var_nbr_all*sizeof(nm_id_sct));
 
@@ -374,9 +366,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
         var_lst_all[var_idx_crr].nm=(char *)strdup(var_nm);
         var_lst_all[var_idx_crr].id=var_ids[var_idx];
         var_lst_all[var_idx_crr].grp_id=grp_id;
-#ifdef GRP_DEV
         var_lst_all[var_idx_crr].grp_nm_fll=grp_nm_fll_sls;
-#endif
 
         if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"var_nm=%s, var_nm_fll=%s\n",var_nm,var_nm_fll);
 
@@ -388,9 +378,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_ids=(int *)nco_free(var_ids);
       grp_nm_fll=(char *)nco_free(grp_nm_fll);
       var_nm_fll=(char *)nco_free(var_nm_fll);
-
-      /* Offset for variables in next group by number of variables in this group */
-      var_nbr_fst=var_nbr; /* [nbr] Number of variables before current group */
 
     } /* endif current group has variables */
 
