@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.44 2012-08-13 22:33:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.45 2012-08-14 17:22:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -772,16 +772,14 @@ nco_grp_itr
 }
 /* nco_grp_itr() */
 
-int                            /* [rcd] Return code */
+int                            /* [rcd] Number of sub-groups */
 nco_has_subgrps
 (const int nc_id)              /* I [enm] NetCDF file ID */  
 {
   /* Purpose: Return a bool value telling if the netCDF file has groups other than root */
-
-  int rcd=NC_NOERR;            /* I [rcd] Return code */
   int ngrps;                   /* I [nbr] Number of sub-groups */
 
-  rcd=nco_inq_grps(nc_id,&ngrps,NULL);
+  nco_inq_grps(nc_id,&ngrps,NULL);
 
   return ngrps;
 }
@@ -793,8 +791,7 @@ nco_has_subgrps
 
 nm_id_sct *                              /* O [sct] Variable extraction list */
 nco4_var_lst_mk2                         /*   [fnc] Create variable extraction list using regular expressions */
-(const int nc_id,                        /* I [enm] netCDF group ID (root ID of input file) */
- int * const nbr_var_fl,                 /* O [nbr] Number of variables in input file */
+(int * const nbr_var_fl,                 /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in,        /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST,      /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
@@ -805,7 +802,7 @@ nco4_var_lst_mk2                         /*   [fnc] Create variable extraction l
 
   char *var_sng; /* User-specified variable name or regular expression */
 
-#if 0
+#ifndef GRP_DEV
   char *grp_nm_fll; /* [sng] Fully qualified group name */
   char *var_nm_fll; /* [sng] Fully qualified variable name */
   char *grp_nm_fll_sls; /* [sng] Fully qualified group name plus terminating '/' */
@@ -823,27 +820,29 @@ nco4_var_lst_mk2                         /*   [fnc] Create variable extraction l
 
   int idx;
   int jdx;
+#ifndef GRP_DEV
   int rcd=NC_NOERR; /* [rcd] Return code */
+  nco_bool FLG_ROOT_GRP=True; /* [flg] Current group is root group */
   int var_idx;
   int var_idx_crr; /* [idx] Variable index accounting for previous groups */
   int var_nbr; /* [nbr] Number of variables in current group */
-  int var_nbr_all; /* [nbr] Number of variables in input file */
   int var_nbr_fst=0; /* [nbr] Number of variables before current group */
+#endif
+  int var_nbr_all; /* [nbr] Number of variables in input file */
   int var_nbr_tmp;
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
-  nco_bool FLG_ROOT_GRP=True; /* [flg] Current group is root group */
+  
   nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
 
   nm_id_sct *var_lst_all=NULL; /* [sct] All variables in input file */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
+#ifndef GRP_DEV
   size_t grp_nm_lng;
   size_t grp_nm_sls_lng;
-
-#if 0
 
   /* Discover and return number of apex and all sub-groups */
   rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);

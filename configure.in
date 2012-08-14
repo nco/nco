@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.367 2012-08-13 22:33:20 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.368 2012-08-14 17:22:41 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -735,7 +735,6 @@ case ${host} in
 		icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
 		pathcc* ) CFLAGS="${CFLAGS} -std=c99" ; ;;
 		pgcc* ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
-                gcc* ) CFLAGS="${CFLAGS} -Wall" ; CXXFLAGS="${CXXFLAGS} -Wall" ; ;;
 	esac
 	case ${CXX} in
 #	    icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.28 2012-08-13 22:33:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.29 2012-08-14 17:22:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -154,8 +154,7 @@ nco_has_subgrps
 
 nm_id_sct *                              /* O [sct] Variable extraction list */
 nco4_var_lst_mk2                         /*   [fnc] Create variable extraction list using regular expressions */
-(const int nc_id,                        /* I [enm] netCDF group ID (root ID of input file) */
- int * const nbr_var_fl,                 /* O [nbr] Number of variables in input file */
+(int * const nbr_var_fl,                 /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in,        /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST,      /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
