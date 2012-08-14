@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.47 2012-08-14 20:35:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.48 2012-08-14 22:16:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -251,7 +251,9 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const var_xtr_nbr) /* I/O [nbr] Number of variables in current extraction list */
+ int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
+ const int nbr_grp_in,  /* I [nbr] Number of groups to extract (specified with -g ) */
+ char * const * const grp_lst_in) /* I [sng] User-specified list of groups names to extract (specified with -g ) */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
   
@@ -259,7 +261,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   char *grp_nm_fll; /* [sng] Fully qualified group name */
   char *var_nm_fll; /* [sng] Fully qualified variable name */
   char *grp_nm_fll_sls; /* [sng] Fully qualified group name plus terminating '/' */
-  char *grp_nm_fll_sls_ptr; /* [sng] Pointer to first character following last slash */
   char *var_nm_fll_sls_ptr; /* Pointer to first character following last slash */
   char grp_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
@@ -342,7 +343,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_nm_fll=(char *)nco_malloc((grp_nm_sls_lng+NC_MAX_NAME+1L)*sizeof(char)); /* [sng] Fully qualified variable name */
       var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
       var_nm_fll_sls_ptr=var_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
-      grp_nm_fll_sls_ptr=grp_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
     
       if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
 
