@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.142 2012-06-30 22:27:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.143 2012-08-15 14:22:34 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -677,9 +677,10 @@ dmn_vtr=(nc_id==prs_arg->in_id ? prs_arg->dmn_in_vtr: prs_arg->dmn_out_vtr);
   // do error checking 
   if(!prs_arg->FORTRAN_IDX_CNV){ 
     std::ostringstream os;
-  
+    if(srt<0) srt+=cnt_dmn-1;       
+    if(end<0) end+=cnt_dmn-1;       
     if(lmt_ptr->is_usr_spc_min && (srt<0 || srt>cnt_dmn-1)) {
-
+           
       os<<"Lower limit " <<srt<<" for dim "<<lmt_ptr->nm<<" is outside range "<<0L<<"-"<<cnt_dmn-1;
       err_prn(fnc_nm,os.str());
     }
