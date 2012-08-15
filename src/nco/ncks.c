@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.335 2012-08-15 02:55:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.336 2012-08-15 19:51:53 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.335 2012-08-15 02:55:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.335 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.336 2012-08-15 19:51:53 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.336 $";
 #ifdef GRP_DEV
   char root_path[2]="/";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -632,7 +632,7 @@ main(int argc,char **argv)
 # if 0
   xtr_lst=nco4_var_lst_mk2(&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr,trv_tbl);
 # else
-  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in);
+  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
 # endif
 #else /* !ENABLE_NETCDF4 */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
