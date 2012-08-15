@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.120 2012-07-23 05:17:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.121 2012-08-15 16:23:32 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -172,9 +172,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 int nbr_dmn;
 int idx;
 int jdx;
-long lcl_ind[3];
-
-var_sct *var_out;
 lmt_sct *lmt_ptr;
 RefAST aRef;
 
@@ -186,36 +183,9 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
 
   for(idx=0 ; idx <nbr_dmn ; idx++){
 
-
-     lcl_ind[0]=-2; lcl_ind[1]=-2; lcl_ind[2]=0; 
-
-    for(jdx=0 ; jdx <3 ; jdx++){
-
-     aRef=ast_lmt_vtr[idx].ind[jdx];
-
-     if(!aRef)
-        continue; //do nothing - use default lcl_ind values     
-     else if( aRef->getType() == COLON){
-       if(jdx <2) lcl_ind[jdx]=-1;
-     }else{
-         // Calculate number using out()
-         var_out=out(aRef);
-
-         // convert result to type int
-          var_out=nco_var_cnf_typ(NC_INT,var_out);    
-         (void)cast_void_nctype((nc_type)NC_INT,&var_out->val);
-
-          // only interested in the first value.
-         lcl_ind[jdx]=var_out->val.ip[0];
-
-         var_out=nco_var_free(var_out);
-        }
-     }// end jdx
-         
      // fill out lmt structure
      // use same logic as nco_lmt_prs 
      lmt_ptr=(lmt_sct*)nco_calloc((size_t)1,sizeof(lmt_sct));
-
      lmt_ptr->nm=NULL;
      //lmt_ptr->lmt_typ=-1;
      lmt_ptr->is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
@@ -224,36 +194,56 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
      lmt_ptr->srd_sng=NULL;
      lmt_ptr->is_usr_spc_min=False;
      lmt_ptr->is_usr_spc_max=False;
-
      /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
      lmt_ptr->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
-    
-    /* Fill-in structure */
-    if( lcl_ind[0] >= 0){ 
-           lmt_ptr->is_usr_spc_min=True;
-           lmt_ptr->srt=lcl_ind[0]; 
-    }    
 
-    /* Fill-in structure */
-    if( lcl_ind[1] >= 0) {
-           lmt_ptr->is_usr_spc_max=True;
-           lmt_ptr->end=lcl_ind[1];
-    }    
 
-    /* Fill-in structure */
-    if( lcl_ind[2] > 0) {
-           lmt_ptr->srd_sng=strdup("~fill_in");
-           lmt_ptr->srd=lcl_ind[2];
-    }    
 
+    for(jdx=0 ; jdx <3 ; jdx++){
+      long ldx=0L;
+      var_sct *var_out;
+
+      aRef=ast_lmt_vtr[idx].ind[jdx];
+
+      if(aRef && aRef->getType() != COLON ){
+        // Calculate number using out()
+        var_out=out(aRef);
+        // convert result to type int
+        var_out=nco_var_cnf_typ(NC_INT,var_out);    
+        (void)cast_void_nctype((nc_type)NC_INT,&var_out->val);
+         // only interested in the first value.
+        ldx=var_out->val.ip[0];
+        var_out=nco_var_free(var_out);
+        
+        // switch jdx 0-srt,1-end,2-srd
+        switch(jdx){
+          case 0: 
+             lmt_ptr->is_usr_spc_min=True;
+             lmt_ptr->srt=ldx;
+             break;
+          case 1: //end
+             lmt_ptr->is_usr_spc_max=True;
+             lmt_ptr->end=ldx;
+             break;
+          case 2: //srd
+             lmt_ptr->srd_sng=strdup("~fill_in");
+             lmt_ptr->srd=ldx;         
+             break;
+        }
+
+      }
+
+
+    }// end jdx
+         
     /* need to deal with situation where only start is defined -- ie picking only a single value */
-    if(lcl_ind[0] >=0 && lcl_ind[1]==-2){
-          lmt_ptr->is_usr_spc_max=True;
-          lmt_ptr->end=lcl_ind[0]; 
+    if( lmt_ptr->is_usr_spc_min==True && lmt_ptr->is_usr_spc_max==False && lmt_ptr->srd_sng==NULL){
+        lmt_ptr->is_usr_spc_max=True;
+        lmt_ptr->end=lmt_ptr->srt; 
     }    
 
     lmt_vtr.push_back(lmt_ptr);
-   } // end idx
+  } // end idx
 
    return nbr_dmn;
 } /* end lmt_mk */
