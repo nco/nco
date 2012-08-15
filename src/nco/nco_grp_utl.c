@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.50 2012-08-15 02:55:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.51 2012-08-15 17:07:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -394,12 +394,86 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
   } /* end if */
+
+  /* Initialize and allocate extraction flag array to all False */
+  var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
+  
+  /* Loop through user-specified variable list */
+  for(idx=0;idx<*var_xtr_nbr;idx++){
+    var_sng=var_lst_in[idx];
+    
+    /* Convert pound signs (back) to commas */
+    while(*var_sng){
+      if(*var_sng == '#') *var_sng=',';
+      var_sng++;
+    } /* end while */
+    var_sng=var_lst_in[idx];
+    
+    /* If var_sng is regular expression ... */
+    if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+      /* ... and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+      rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
+      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+      continue;
 #else
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+      nco_exit(EXIT_FAILURE);
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+    } /* end if regular expression */
+    
+    /* Normal variable so search through variable array */
+    for(jdx=0;jdx<var_nbr_all;jdx++)
+      if(!strcmp(var_sng,var_lst_all[jdx].nm)) break;
+
+    /* Mark any match as requested for inclusion by user */
+    if(jdx != var_nbr_all){
+      var_xtr_rqs[jdx]=True;
+    }else{
+      if(EXCLUDE_INPUT_LIST){ 
+        /* Variable need not be present if list will be excluded later ... */
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+      }else{ /* !EXCLUDE_INPUT_LIST */
+        /* Variable should be included but no matches found so die */
+        (void)fprintf(stdout,"%s: ERROR nco4_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+        nco_exit(EXIT_FAILURE);
+      } /* !EXCLUDE_INPUT_LIST */
+    } /* end else */
+
+  } /* end loop over var_lst_in */
+  
+  /* Create final variable list using boolean flag array */
+  
+  /* malloc() xtr_lst to maximium size(var_nbr_all) */
+  xtr_lst=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
+  var_nbr_tmp=0; /* var_nbr_tmp is incremented */
+  for(idx=0;idx<var_nbr_all;idx++){
+    /* Copy variable to extraction list */
+    if(var_xtr_rqs[idx]){
+      xtr_lst[var_nbr_tmp].grp_nm=(char *)strdup(var_lst_all[idx].grp_nm);
+      xtr_lst[var_nbr_tmp].var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
+      xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
+      xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
+      xtr_lst[var_nbr_tmp].grp_id=var_lst_all[idx].grp_id;
+      var_nbr_tmp++;
+    } /* end if */
+  } /* end loop over var */
+  
+  /* re-alloc() list to actual size */  
+  xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
+
+  var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
+  var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
+
+  /* Store values for return */
+  *var_xtr_nbr=var_nbr_tmp;    
+
+
+#else /* GRP_DEV */
   if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
   } /* end if */
-#endif /* GRP_DEV */
   
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
@@ -473,6 +547,8 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   /* Store values for return */
   *var_xtr_nbr=var_nbr_tmp;    
+
+#endif /* GRP_DEV */
 
   if(dbg_lvl_get() >= nco_dbg_var){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
