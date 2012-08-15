@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.49 2012-08-15 00:19:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.50 2012-08-15 02:55:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -252,7 +252,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
- const int nbr_grp_in,  /* I [nbr] Number of groups to extract (specified with -g ) */
+ int * const grp_xtr_nbr,  /* I/O [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in) /* I [sng] User-specified list of groups names to extract (specified with -g ) */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
@@ -389,10 +389,17 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
   /* Return all variables if none were specified and not -c ... */
+#ifdef GRP_DEV
+    if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
+    *var_xtr_nbr=var_nbr_all;
+    return var_lst_all;
+  } /* end if */
+#else
   if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
   } /* end if */
+#endif /* GRP_DEV */
   
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
@@ -430,12 +437,12 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_xtr_rqs[jdx]=True;
     }else{
       if(EXCLUDE_INPUT_LIST){ 
-	/* Variable need not be present if list will be excluded later ... */
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+        /* Variable need not be present if list will be excluded later ... */
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
       }else{ /* !EXCLUDE_INPUT_LIST */
-	/* Variable should be included but no matches found so die */
-	(void)fprintf(stdout,"%s: ERROR nco4_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
-	nco_exit(EXIT_FAILURE);
+        /* Variable should be included but no matches found so die */
+        (void)fprintf(stdout,"%s: ERROR nco4_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+        nco_exit(EXIT_FAILURE);
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
 
