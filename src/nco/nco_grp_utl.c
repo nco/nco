@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.52 2012-08-15 19:51:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.53 2012-08-16 23:31:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -391,14 +391,14 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   /* Return all variables if none were specified and not -c ... */
 #ifdef GRP_DEV
-    if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
+  if(*var_xtr_nbr == 0 && *grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
   } /* end if */
 
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
-  
+
   /* Loop through user-specified variable list */
   for(idx=0;idx<*var_xtr_nbr;idx++){
     var_sng=var_lst_in[idx];
@@ -442,35 +442,30 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     } /* end else */
 
   } /* end loop over var_lst_in */
+
+
+  /* Loop through user-specified group list */
+  for(grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
+
+    /* Get current group name */
+    strcpy(grp_nm,grp_lst_in[grp_idx]);
+
+    /* Sanity check; var_idx_crr was used to traverse all groups and variables to make var_lst_all */
+    assert(var_nbr_all == var_idx_crr);
+
+    /* Loop through found variable list */
+    for(var_idx_crr=0;var_idx_crr<var_nbr_all;var_idx_crr++){
+      nm_id_sct var=var_lst_all[var_idx_crr];   
+
+      /* Find group specified in -g and mark any match for inclusion to extract */
+      if(strcmp(var.grp_nm,grp_nm)==0){
+        var_xtr_rqs[var_idx_crr]=True;
+      }
+    } /* end loop var_idx_crr */
+  } /* end loop over grp_lst_in */
   
-  /* Create final variable list using boolean flag array */
-  
-  /* malloc() xtr_lst to maximium size(var_nbr_all) */
-  xtr_lst=(nm_id_sct *)nco_malloc(var_nbr_all*sizeof(nm_id_sct));
-  var_nbr_tmp=0; /* var_nbr_tmp is incremented */
-  for(idx=0;idx<var_nbr_all;idx++){
-    /* Copy variable to extraction list */
-    if(var_xtr_rqs[idx]){
-      xtr_lst[var_nbr_tmp].grp_nm=(char *)strdup(var_lst_all[idx].grp_nm);
-      xtr_lst[var_nbr_tmp].var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
-      xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
-      xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
-      xtr_lst[var_nbr_tmp].grp_id=var_lst_all[idx].grp_id;
-      var_nbr_tmp++;
-    } /* end if */
-  } /* end loop over var */
-  
-  /* re-alloc() list to actual size */  
-  xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
+#else /* GRP_DEV */ 
 
-  var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
-  var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
-
-  /* Store values for return */
-  *var_xtr_nbr=var_nbr_tmp;    
-
-
-#else /* GRP_DEV */
   if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
@@ -522,6 +517,8 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     } /* end else */
 
   } /* end loop over var_lst_in */
+
+#endif /* GRP_DEV */
   
   /* Create final variable list using boolean flag array */
   
@@ -536,6 +533,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
       xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
       xtr_lst[var_nbr_tmp].grp_id=var_lst_all[idx].grp_id;
+      xtr_lst[var_nbr_tmp].grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
       var_nbr_tmp++;
     } /* end if */
   } /* end loop over var */
@@ -548,8 +546,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   /* Store values for return */
   *var_xtr_nbr=var_nbr_tmp;    
-
-#endif /* GRP_DEV */
 
   if(dbg_lvl_get() >= nco_dbg_var){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
