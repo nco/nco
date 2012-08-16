@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.153 2012-07-26 18:36:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.154 2012-08-16 17:37:11 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -396,7 +396,10 @@ nco_create(const char * const fl_nm,const int cmode,int * const nc_id)
   const char fnc_nm[]="nco_create()";
   int rcd;
   rcd=nc_create(fl_nm,cmode,nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to create file \"%s\"\n",fnc_nm,fl_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
   return rcd;
 } /* end nco_create */
 
@@ -407,7 +410,10 @@ nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t 
   const char fnc_nm[]="nco__create()";
   int rcd;
   rcd=nc__create(fl_nm,cmode,sz_ntl,bfr_sz_hnt,nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to create file \"%s\"\n",fnc_nm,fl_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
   return rcd;
 } /* end nco__create */
 
@@ -418,7 +424,10 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
   const char fnc_nm[]="nco_open()";
   int rcd;
   rcd=nc_open(fl_nm,mode,nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to open file \"%s\"\n",fnc_nm,fl_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
   return rcd;
 } /* end nco_open */
 
@@ -429,7 +438,10 @@ nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int 
   const char fnc_nm[]="nco__open()";
   int rcd;
   rcd=nc__open(fl_nm,mode,bfr_sz_hnt,nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to open file \"%s\"\n",fnc_nm,fl_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
   return rcd;
 } /* end nco__open */
 
