@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.711 2012-08-03 00:29:44 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.712 2012-08-17 21:34:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1824,7 +1824,7 @@ This simple example selects as input to @command{xargs} all the
 filenames in the current directory that match a given pattern.
 For illustration, consider a user trying to average millions of 
 files which each have a six character filename. 
-If the shell buffer can not hold the results of the corresponding
+If the shell buffer cannot hold the results of the corresponding
 globbing operator, @file{??????.nc}, then the filename globbing
 technique will fail. 
 Instead we express the filename pattern as an extended regular 
@@ -3526,6 +3526,10 @@ use @samp{?}.
 Documentation for the @acronym{UNIX} @command{egrep} command details the
 extended regular expressions which @acronym{NCO} supports.
 
+@html
+<a name="globbing"></a> <!-- http://nco.sf.net/nco.html#globbing -->
+<a name="glb"></a> <!-- http://nco.sf.net/nco.html#glb -->
+@end html
 @cindex globbing
 @cindex shell
 @cindex @command{bash}

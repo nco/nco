@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1200 2012-08-03 18:22:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1201 2012-08-17 21:34:04 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -692,7 +692,10 @@ nco1065. ncra2.c move input_complete break to precede record loop but remember t
 nco1067. stat() fails on ~30 GB file on windows? fix workaround
 nco1068. nco: optimize so ncra writes straight to output when drn==1, MRO=Yes (i.e., no nrm) maybe not, what about rms? verify
 	 ncra2 -O -C -d time,0,,1,1 --mro -v time -p ~/nco/data in.nc in.nc ~/foo.nc # 
-nco1069. 
+nco1069. nco: md5 over DODS works for md5_abc, breaks for md5_a
+	 seems to be (undocumented?) opendap "feature":
+         ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
+nco1070. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

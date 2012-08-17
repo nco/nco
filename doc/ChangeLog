@@ -1,3 +1,7 @@
+2012-08-17  Charlie Zender  <zender@uci.edu>
+
+	* Distinguish between regular expressions for variable wildcarding, and filename expansion by shell globbing
+
 2012-08-16  Charlie Zender  <zender@uci.edu>
 
 	* Print filenames in errors when open() and create() calls fail
