@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.712 2012-08-17 21:34:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.713 2012-08-20 18:12:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13262,7 +13262,10 @@ ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon in.nc out.nc
 @noindent
 It is considerably simpler to specify the complete @var{mask_cond} with
 the single string argument to @samp{-B} than with the three separate
-switches @samp{-m}, @samp{-T}, and @samp{-M}.
+switches @samp{-m}, @samp{-T}, and @samp{-M}
+@footnote{Unfortunately the @samp{-B} and @samp{--mask_condition}
+options are unsupported on Windows (with the @acronym{MVS} compiler),
+which lacks a free, standard parser and lexer.}. 
 If in doubt, enclose the @var{mask_cond} within quotes since some
 of the comparators have special meanings to the shell.
 

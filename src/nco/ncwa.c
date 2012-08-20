@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.308 2012-07-28 02:27:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.309 2012-08-20 18:12:34 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -66,13 +66,17 @@
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
+#ifndef _MSC_VER
+# include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
+#endif /* _MSC_VER */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
+#ifndef _MSC_VER
 /* Global variables (keep consistent with global variables declared in ncap.c) */ 
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char **ncap_fl_spt_glb; /* [fl] Script file */
+#endif /* _MSC_VER */
 
 int 
 main(int argc,char **argv)
@@ -126,8 +130,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.308 2012-07-28 02:27:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.308 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.309 2012-08-20 18:12:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.309 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -517,6 +521,7 @@ main(int argc,char **argv)
   } /* end while loop */
 
   /* Parse mask string */
+#ifndef _MSC_VER
   if(msk_cnd_sng){
     int cst_zero=0;
     /* Set arguments for scan */
@@ -541,6 +546,10 @@ main(int argc,char **argv)
     ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
     if(ncap_ncwa_scn(&prs_arg,msk_cnd_sng,&msk_nm,&msk_val,&op_typ_rlt) == 0) nco_exit(EXIT_FAILURE); 
   } /* endif msk_cnd_sng */
+#else /* _MSC_VER */
+  (void)fprintf(fp_stdout,"%s: ERROR -B and --mask_condition options unsupported on Windows, which lacks a free, standard parser and lexer. HINT: Break condition into component -m -T -M switches, e.g., use -m ORO -T lt -M 1.0 instead of -B \"ORO < 1\"\n",prg_nm);
+  nco_exit(EXIT_FAILURE);
+#endif /* _MSC_VER */
 
   /* Ensure we do not attempt to normalize by non-existent weight */
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;

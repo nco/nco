@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.610 2012-08-10 19:08:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.611 2012-08-20 18:12:33 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1654,7 +1654,11 @@ ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	chmod 755 $@${BNR_SFX}
 ncwa:   ${MY_BIN_DIR}/ncwa
 ${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
+ifeq (${MSVC},TRUE)
+	${CC} -o $@${BNR_SFX} $<  ${LDFLAGS}
+else
 	${CC} -o $@${BNR_SFX} $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+endif
 	chmod 755 $@${BNR_SFX}
 bin: ${MDL_BIN_TRG}
 binclean: bin_cln
