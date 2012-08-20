@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.355 2012-08-20 18:12:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.356 2012-08-20 22:01:11 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -950,7 +950,9 @@ nco_usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"[-B")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-B, --bnr, --binary\tWrite data to unformatted binary file\n");
-    if(prg_lcl == ncwa) (void)fprintf(stdout,"-B, --msk_cnd, --mask_condition mask_cond\tMask condition (e.g., \"ORO < 1\") (not available on Windows)\n");
+#ifndef _MSC_VER
+    if(prg_lcl == ncwa) (void)fprintf(stdout,"-B, --msk_cnd, --mask_condition mask_cond\tMask condition (e.g., \"ORO < 1\")\n");
+#endif /* _MSC_VER */
   } /* end if -B */
   if(strstr(opt_sng,"[-b ")) (void)fprintf(stdout,"-b, --fl_bnr, --binary-file fl_bnr\tUnformatted binary file to write\n");
   if(strstr(opt_sng,"[-b]")) (void)fprintf(stdout,"-b, --rdd, --retain-degenerate-dimensions\tRetain degenerate dimensions\n");
