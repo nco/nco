@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.53 2012-07-10 10:37:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.54 2012-08-21 09:32:15 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2352,19 +2352,57 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
          Q[0][1]=v_din->val.dp[x_min*v_yin->sz+y_max_org];          
          Q[1][1]=v_din->val.dp[x_max*v_yin->sz+y_max_org];        
        }
+        
+       //deal with no missing values in v_din
+       if( !v_din->has_mss_val ) {   
+         if(x_min==x_max && y_min==y_max)
+	   rslt=Q[0][0];       
+         else if( y_min==y_max) 
+           rslt=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);                            
+         else if( x_min==x_max) 
+           rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],Q[0][0],Q[1][1]);               
+         else{
+           d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
+           d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
+           rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],d_int1,d_int2);               
+         }
+       // missing values  
+       }else{ 
+	 cast_void_nctype(NC_DOUBLE,&v_din->mss_val);
+         double mss_dbl=*v_din->mss_val.dp;      
+         cast_nctype_void(NC_DOUBLE,&v_din->mss_val);      
+                 
+	 bool mQ00=Q[0][0]==mss_dbl ? true : false;
+         bool mQ10=Q[1][0]==mss_dbl ? true : false;
+         bool mQ01=Q[0][1]==mss_dbl ? true : false;
+         bool mQ11=Q[1][1]==mss_dbl ? true : false;  
 
-         
-       if(x_min==x_max && y_min==y_max)
-	 rslt=Q[0][0];       
-       else if( y_min==y_max) 
-         rslt=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);                            
-       else if( x_min==x_max) 
-         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],Q[0][0],Q[1][1]);               
-       else{
-         d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
-         d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
-         rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],d_int1,d_int2);               
+           // nb its possible with below for d_int1 to be assigned missing value   
+           if(mQ00)
+             d_int1=Q[1][0];
+           else if(mQ10)
+             d_int1=Q[0][0]; 
+           else
+	     d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
+
+           // nb its possible with below for d_int2 to be assigned missing value  
+           if(mQ01)
+             d_int2=Q[1][1];
+           else if(mQ11)
+             d_int2=Q[0][1]; 
+           else
+             d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
+
+           
+           // nb its possible with below for rslt to be assigned missing value   
+           if(d_int1==mss_dbl)
+	     rslt=d_int2;
+           else if(d_int2==mss_dbl)
+             rslt=d_int1;
+           else  
+             rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],d_int1,d_int2);                  
        }
+
        v_dout->val.dp[kdx*v_yout->sz+jdx]=rslt;
 
 
@@ -2449,18 +2487,58 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
          Q[1][1]=v_din->val.dp[x_max*v_yin->sz+y_max];        
        }
 
-         
-       if(x_min==x_max && y_min==y_max)
-	 rslt=Q[0][0];       
-       else if( y_min==y_max) 
-         rslt=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);                            
-       else if( x_min==x_max) 
-         rslt=clc_lin_ipl(y_min_dbl,y_max_dbl,v_yout->val.dp[jdx],Q[0][0],Q[1][1]);               
-       else{
-         d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
-         d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
-         rslt=clc_lin_ipl(y_min_dbl,y_max_dbl,v_yout->val.dp[jdx],d_int1,d_int2);               
+       // no missing value
+       if(!v_din->has_mss_val)  
+         if(x_min==x_max && y_min==y_max)
+	   rslt=Q[0][0];       
+         else if( y_min==y_max) 
+           rslt=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);                            
+         else if( x_min==x_max) 
+           rslt=clc_lin_ipl(y_min_dbl,y_max_dbl,v_yout->val.dp[jdx],Q[0][0],Q[1][1]);               
+         else{
+           d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
+           d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
+           rslt=clc_lin_ipl(y_min_dbl,y_max_dbl,v_yout->val.dp[jdx],d_int1,d_int2);                
+       }else{ 
+	 // missing value  
+	 cast_void_nctype(NC_DOUBLE,&v_din->mss_val);
+         double mss_dbl=*v_din->mss_val.dp;      
+         cast_nctype_void(NC_DOUBLE,&v_din->mss_val);      
+                 
+	 bool mQ00=Q[0][0]==mss_dbl ? true : false;
+         bool mQ10=Q[1][0]==mss_dbl ? true : false;
+         bool mQ01=Q[0][1]==mss_dbl ? true : false;
+         bool mQ11=Q[1][1]==mss_dbl ? true : false;  
+
+           // nb its possible with below for d_int1 to be assigned missing value   
+           if(mQ00)
+             d_int1=Q[1][0];
+           else if(mQ10)
+             d_int1=Q[0][0]; 
+           else
+	     d_int1=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][0],Q[1][0]);               
+
+           // nb its possible with below for d_int2 to be assigned missing value  
+           if(mQ01)
+             d_int2=Q[1][1];
+           else if(mQ11)
+             d_int2=Q[0][1]; 
+           else
+             d_int2=clc_lin_ipl(v_xin->val.dp[x_min],v_xin->val.dp[x_max],v_xout->val.dp[kdx],Q[0][1],Q[1][1]);         
+
+           
+           // nb its possible with below for rslt to be assigned missing value   
+           if(d_int1==mss_dbl)
+	     rslt=d_int2;
+           else if(d_int2==mss_dbl)
+             rslt=d_int1;
+           else  
+             rslt=clc_lin_ipl(v_yin->val.dp[y_min],v_yin->val.dp[y_max],v_yout->val.dp[jdx],d_int1,d_int2);                  
        }
+
+
+
+
        v_dout->val.dp[kdx*v_yout->sz+jdx]=rslt;
 
 
