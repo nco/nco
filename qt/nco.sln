@@ -3,32 +3,73 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnco", "libnco\libnco.vcxproj", "{2AB9E3D0-C2C8-3FCC-9918-157EF9987515}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncatted", "ncatted\ncatted.vcxproj", "{67F15063-49F7-3A4C-9BE7-073B5DBF933C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncbo", "ncbo\ncbo.vcxproj", "{A94A147D-0B4A-3E92-A24F-955334734131}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncecat", "ncecat\ncecat.vcxproj", "{4AD1FE31-9B88-360D-8788-661B704D155D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncflint", "ncflint\ncflint.vcxproj", "{92BB37ED-B273-3451-ACC9-28081802CA5C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncks", "ncks\ncks.vcxproj", "{403BA61F-5DF3-3C9E-9B01-0493B48513F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncpdq", "ncpdq\ncpdq.vcxproj", "{AB39965A-CFA5-36FC-9A21-FF62883D95CA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncra", "ncra\ncra.vcxproj", "{28FD44AF-C4D7-3F54-B0C6-6C3CB4006731}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncrename", "ncrename\ncrename.vcxproj", "{B55E7574-E53D-3003-B206-9536F766C789}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnco_c++", "nco_c++\libnco_c++.vcxproj", "{B3C40D3E-62C8-3A3C-B081-D1795375ABF1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tst", "tst_nco_c++\tst.vcxproj", "{296289DB-1DF2-3DC7-A8CC-854CCFE40953}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3C40D3E-62C8-3A3C-B081-D1795375ABF1} = {B3C40D3E-62C8-3A3C-B081-D1795375ABF1}
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncap2", "nco++\ncap2.vcxproj", "{14790F63-49B4-3DAD-95BF-FF66B8B2893A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3C40D3E-62C8-3A3C-B081-D1795375ABF1} = {B3C40D3E-62C8-3A3C-B081-D1795375ABF1}
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncwa", "ncwa\ncwa.vcxproj", "{40CEC611-D5E2-30D0-B9B8-7487A1AAAC2A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncrcat", "ncrcat\ncrcat.vcxproj", "{CFE0A48E-C2B6-3EDF-B88D-0BEC62133B78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncea", "ncea\ncea.vcxproj", "{66719B04-EAB5-384A-A2E5-3A567D48A1B7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
