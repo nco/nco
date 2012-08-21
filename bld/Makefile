@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.611 2012-08-20 18:12:33 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.612 2012-08-21 16:46:05 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -255,7 +255,7 @@ endif # DAP_NETCDF_ROOT
 # netCDF 4.0.1+:
  NC_LIBS += -lcurl
 endif # end DAP_NETCDF
-               
+
 ifeq (${DAP_OPENDAP},Y)
 # Build NCO as DAP-enabled clients with OPe NDAP
 # fxm: OPeNDAP bloats executables, should automagically enable stripping?
