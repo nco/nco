@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.55 2012-01-01 20:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.56 2012-08-21 15:48:16 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -4350,6 +4350,8 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
     var_sct *var_x;  
     var_sct *var_y;
     var_sct *var_ram;
+    std::vector<double> vtr_x;
+    std::vector<double> vtr_y;
 
     
     NcapVar *Nvar;       
@@ -4412,10 +4414,57 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
 
       var_x=nco_var_cnf_typ(NC_DOUBLE,var_x);    
       var_y=nco_var_cnf_typ(NC_DOUBLE,var_y);    
-
       // make variables conform 
       (void)ncap_var_att_cnf(var_y,var_x);
 
+      // missing values 
+      if(var_x->has_mss_val || var_y->has_mss_val){
+        long idx;  
+        long sz;
+        // a lazy arsed hack - set defaults to double fill value  
+	double mss_dbl_y=NC_MIN_DOUBLE; 
+	double mss_dbl_x=NC_MIN_DOUBLE;
+        
+        if(var_x->has_mss_val){   
+	 cast_void_nctype(NC_DOUBLE,&var_x->mss_val);
+         mss_dbl_x=var_x->mss_val.dp[0];      
+         cast_nctype_void(NC_DOUBLE,&var_x->mss_val);      
+        }
+        
+        if(var_y->has_mss_val){  
+	 cast_void_nctype(NC_DOUBLE,&var_y->mss_val);
+         mss_dbl_y=var_y->mss_val.dp[0];      
+         cast_nctype_void(NC_DOUBLE,&var_y->mss_val);      
+        } 
+         // nb dont check first or last value for missing 
+         // so at the very least - vectors contain 2 points 
+        vtr_x.push_back(var_x->val.dp[0]);
+        vtr_y.push_back(var_y->val.dp[0]);
+
+         sz=var_y->sz-1; 
+         for(idx=1; idx<sz;idx++)
+	   if(var_x->val.dp[idx]!=mss_dbl_x && var_y->val.dp[idx]!=mss_dbl_y)
+             { vtr_x.push_back(var_x->val.dp[idx]);
+               vtr_y.push_back(var_y->val.dp[idx]);
+             }
+
+        vtr_x.push_back(var_x->val.dp[sz]);
+        vtr_y.push_back(var_y->val.dp[sz]);   
+
+
+      }else{
+
+	vtr_x.insert( vtr_x.begin(), var_x->val.dp,var_x->val.dp+var_x->sz);    
+	vtr_y.insert( vtr_y.begin(), var_y->val.dp,var_y->val.dp+var_y->sz);    
+
+      }
+
+      // done with var_x & var_y
+      (void)cast_nctype_void(NC_DOUBLE,&var_x->val);   
+      (void)cast_nctype_void(NC_DOUBLE,&var_y->val); 
+      nco_var_free(var_x);
+      nco_var_free(var_y);            
+ 
    
       Nvar=prs_arg->var_vtr.find(var_nm);  
       if(!Nvar){
@@ -4429,18 +4478,16 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
       Nvar->flg_spl=true;      
       Nvar->flg_stt=2;
 
-      spline=gsl_spline_alloc(ts,var_x->sz);  
-      gsl_spline_init(spline,var_x->val.dp,var_y->val.dp,var_x->sz);
+      spline=gsl_spline_alloc(ts,vtr_x.size());  
+      //gsl_spline_init(spline,var_x->val.dp,var_y->val.dp,var_x->sz);
+      gsl_spline_init(spline,&vtr_x[0],&vtr_y[0],vtr_x.size() );
 
       (void)cast_void_nctype(NC_CHAR,&Nvar->var->val); 
       Nvar->var->val.cp=(char*)spline;  
       (void)cast_nctype_void(NC_CHAR,&Nvar->var->val); 
 
 
-      (void)cast_nctype_void(NC_DOUBLE,&var_x->val);   
-      (void)cast_nctype_void(NC_DOUBLE,&var_y->val); 
-      nco_var_free(var_x);
-      nco_var_free(var_y);
+
 
 
       // return true
