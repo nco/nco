@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.33 2012-08-15 19:51:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.34 2012-08-21 22:57:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -12,7 +12,7 @@
 #ifndef NCO_GRP_UTL_H
 #define NCO_GRP_UTL_H
 
-#if 1
+#define NCO_SANITY_CHECK
 #define GRP_DEV
 /* Symbol that encapsulates NCO 4.2.2 group development code 
 1) Undocumented ncks -z command line option, that prints all groups/variables and exits
@@ -22,7 +22,7 @@
 3) Function nco_grp_itr() used by 1) and 2)
 4) Function nco_has_subgrps()
 */
-#endif
+
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */

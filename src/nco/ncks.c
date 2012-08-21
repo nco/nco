@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.337 2012-08-21 20:41:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.338 2012-08-21 22:57:06 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.337 2012-08-21 20:41:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.337 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.338 2012-08-21 22:57:06 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.338 $";
 #ifdef GRP_DEV
   char root_path[2]="/";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -336,60 +336,60 @@ main(int argc,char **argv)
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
-	bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+        bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
-	/* Copy limit argument for later processing */
-	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
-	cnk_nbr++;
+        /* Copy limit argument for later processing */
+        cnk_arg[cnk_nbr]=(char *)strdup(optarg);
+        cnk_nbr++;
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
-	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+        cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
-	/* Chunking map */
-	cnk_map_sng=(char *)strdup(optarg);
-	cnk_map=nco_cnk_map_get(cnk_map_sng);
+        /* Chunking map */
+        cnk_map_sng=(char *)strdup(optarg);
+        cnk_map=nco_cnk_map_get(cnk_map_sng);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
-	/* Chunking policy */
-	cnk_plc_sng=(char *)strdup(optarg);
-	cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
+        /* Chunking policy */
+        cnk_plc_sng=(char *)strdup(optarg);
+        cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
       } /* endif cnk */
       if(!strcmp(opt_crr,"mk_rec_dmn")){
-	rec_dmn_nm=strdup(optarg);
+        rec_dmn_nm=strdup(optarg);
       } /* endif mk_rec_dmn */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
-	(void)fprintf(stdout,"%s\n",nco_cmp_get());
-	nco_exit(EXIT_SUCCESS);
+        (void)fprintf(stdout,"%s\n",nco_cmp_get());
+        nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")) FIX_REC_DMN=True; /* [flg] Fix record dimension */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
-	hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+        hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"lbr") || !strcmp(opt_crr,"library")){
-	(void)nco_lbr_vrs_prn();
-	nco_exit(EXIT_SUCCESS);
+        (void)nco_lbr_vrs_prn();
+        nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"mpi_implementation")){
-	(void)fprintf(stdout,"%s\n",nco_mpi_get());
-	nco_exit(EXIT_SUCCESS);
+        (void)fprintf(stdout,"%s\n",nco_mpi_get());
+        nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"md5_digest")){
-	MD5_DIGEST=True;
-	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
+        MD5_DIGEST=True;
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
       if(!strcmp(opt_crr,"tst_udunits")){ 
-	char *cp;
+        char *cp;
         char **args;
         double crr_val;
 #ifndef ENABLE_UDUNITS
@@ -406,12 +406,12 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-	(void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMD5 digests\t\t--md5_digest\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
-	nco_exit(EXIT_SUCCESS);
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMD5 digests\t\t--md5_digest\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
-	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
-	nco_exit(EXIT_SUCCESS);
+        (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+        nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
@@ -538,10 +538,10 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
 #ifdef GRP_DEV
-      case 'z': /* Print list of variables in absolute path format and exit */
+    case 'z': /* Print list of variables in absolute path format and exit */
       GET_LIST=True;
       break;
-      case 'G': /* Print extended group information for all groups */
+    case 'G': /* Print extended group information for all groups */
       GET_GRP_INFO=True;
       break;
 #endif /* GRP_DEV */

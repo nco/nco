@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.54 2012-08-21 20:41:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.55 2012-08-21 22:57:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -447,6 +447,31 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Store results prior to first return */
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
+#ifdef NCO_SANITY_CHECK
+  unsigned uidx;
+  int var_nbr_tbl=0; /* Number of variables in table list (stores all paths, groups and variables ) */
+  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var) var_nbr_tbl++; 
+  }
+  assert(var_nbr_tbl == var_nbr_all);
+  for(idx=0;idx<var_nbr_all;idx++){
+    int var_id;
+    strcpy(grp_nm,var_lst_all[idx].grp_nm);
+    var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
+    strcpy(var_nm,var_lst_all[idx].nm);
+    var_id=var_lst_all[idx].id;
+    grp_id=var_lst_all[idx].grp_id;
+    grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
+
+    if(dbg_lvl_get() >= nco_dbg_vrb){
+      (void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
+        grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
+    }
+    grp_nm_fll=(char *)nco_free(grp_nm_fll);
+    var_nm_fll=(char *)nco_free(var_nm_fll);
+  } /* end loop over var */
+#endif /* NCO_SANITY_CHECK */
+
   /* Return all variables if none were specified and not -c ... */
 #ifdef GRP_DEV
   if(*var_xtr_nbr == 0 && *grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
@@ -714,12 +739,12 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
       grp_xtr_rqs[jdx]=True;
     }else{
       if(EXCLUDE_INPUT_LIST){ 
-	/* Group need not be present if list will be excluded later ... */
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_grp_lst_mk() reports explicitly excluded group \"%s\" is not in input file anyway\n",prg_nm_get(),grp_sng); 
+        /* Group need not be present if list will be excluded later ... */
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_grp_lst_mk() reports explicitly excluded group \"%s\" is not in input file anyway\n",prg_nm_get(),grp_sng); 
       }else{ /* !EXCLUDE_INPUT_LIST */
-	/* Group should be included but no matches found so die */
-	(void)fprintf(stdout,"%s: ERROR nco_grp_lst_mk() reports user-specified top-level group \"%s\" is not in input file\n",prg_nm_get(),grp_sng); 
-	nco_exit(EXIT_FAILURE);
+        /* Group should be included but no matches found so die */
+        (void)fprintf(stdout,"%s: ERROR nco_grp_lst_mk() reports user-specified top-level group \"%s\" is not in input file\n",prg_nm_get(),grp_sng); 
+        nco_exit(EXIT_FAILURE);
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
 
