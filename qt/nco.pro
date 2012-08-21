@@ -12,7 +12,7 @@ SUBDIRS += ncrename
 SUBDIRS += nco_c++
 SUBDIRS += tst_nco_c++
 SUBDIRS += nco++
-unix:SUBDIRS += ncwa
+SUBDIRS += ncwa
 SUBDIRS += ncrcat
 SUBDIRS += ncea
 

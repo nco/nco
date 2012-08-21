@@ -23,9 +23,14 @@ include (../nco.pri)
 # SOURCES
 # HEADERS
 
-unix:HEADERS = ../../src/nco/ncap_yacc.h
-unix:SOURCES   = ../../src/nco/ncwa.c \
+unix {
+HEADERS = ../../src/nco/ncap_yacc.h
+SOURCES   = ../../src/nco/ncwa.c \
 ../../src/nco/ncap_utl.c 
+}
+win32 {
+SOURCES   = ../../src/nco/ncwa.c 
+}
 
 unix {
 FLEXSOURCES = ../../src/nco/ncap_lex.l
