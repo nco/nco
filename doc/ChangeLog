@@ -1,3 +1,7 @@
+2012-08-21  Henry Butowsky  <henryb@hush.com>
+ 	* added semi-intellingent handing of missing values in the bilinear
+	interpolation functions bilinear_itnterp() bilinear_interp_wrap()
+
 2012-08-21  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.2 release procedure:
