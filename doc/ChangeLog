@@ -1,5 +1,6 @@
 2012-08-21  Henry Butowsky  <henryb@hush.com>
- 	* added semi-intellingent handing of missing values in the bilinear
+
+ 	* Add semi-intelligent handling of missing values in bilinear
 	interpolation functions bilinear_itnterp() bilinear_interp_wrap()
 
 2012-08-21  Charlie Zender  <zender@uci.edu>
@@ -16,7 +17,8 @@
 
 2012-08-17  Charlie Zender  <zender@uci.edu>
 
-	* Distinguish between regular expressions for variable wildcarding, and filename expansion by shell globbing
+	* Distinguish between regular expressions for variable
+	wildcarding, and filename expansion by shell globbing
 
 2012-08-16  Charlie Zender  <zender@uci.edu>
 

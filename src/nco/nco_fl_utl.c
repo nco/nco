@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.196 2012-08-01 17:22:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.197 2012-08-23 15:58:24 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -552,14 +552,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
-    /* Filename starts with "http://": Try DAP first (if available), then wget. */
+    /* Filename starts with "http://": Try DAP first (if available), then wget */
 
 #ifdef ENABLE_DAP
     /* Filename has http:// prefix so try DAP access to unadulterated filename */
     int in_id; /* [id] Temporary input file ID */
 
-    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file.
-       Do not worry about NC_DISKLESS here since any file will be immediately closed. */
+    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file
+       Do not worry about NC_DISKLESS here since any file will be immediately closed */
     rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
     
     if(rcd == NC_NOERR){
@@ -594,7 +594,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       (void)fprintf(stderr,"%s: INFO DAP-access to %s failed with error code %d. ",prg_nm_get(),fl_nm_lcl,rcd);
       (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
       /* Error codes explained by Dennis Heimbigner in e-mail on 20110627 */
-      if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does not exist. Is there a typo in the URL? Please verify the file is accessible on the DAP-server at the specified location.\n",prg_nm_get());
+      if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does not exist. Is there a typo in the URL? Please verify that the file is accessible on the DAP-server at the specified location.\n",prg_nm_get());
       if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does exist, and that error may be in DAP server.\n",prg_nm_get());
       /* Error codes NC_EDDS, NC_EDAS, etc. are self-explanatory with nc_strerror() */
     } /* DAP-access failed */
@@ -1025,7 +1025,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* end if */
     }else{
       /* This is appropriate place to insert invocation of shell command
-	 to retrieve file asynchronously and return status to NCO synchronously. */
+	 to retrieve file asynchronously and then to return status to NCO synchronously. */
 
       int fl_sz_crr=-2;
       int fl_sz_ntl=-1;

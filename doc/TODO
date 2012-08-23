@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1202 2012-08-21 16:46:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1203 2012-08-23 15:58:23 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -701,7 +701,10 @@ nco1072. nco: clang breaks (gcc is fine) on ncra rgr #20 record average of cell-
 	 Problem also that ddd does not work with clang. Try qt debugger?
 	 ncra -D 5 -O -X 0.,180.,-30.,30. -v gds_3dvar -p ~/nco/data in.nc ~/foo.nc
 	 ncks -C -H -s '%8.1f' -v gds_3dvar ~/foo.nc
-nco1073. 
+nco1073. nco: ncks recursive wget problem with DAP
+	 ncks -v lon -6 -l `pwd` -p http://nomads.ncep.noaa.gov:9090/dods/rtofs/rtofs_global20120822 rtofs_glo_2ds_forecast_3hrly_prog -o test.nc # works when currently available
+	 ncks -v lon -6 -l `pwd` -p http://nomads.ncep.noaa.gov:9090/dods/rtofs/rtofs_global20120832 rtofs_glo_2ds_forecast_3hrly_prog -o test.nc # recurses
+nco1074. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
