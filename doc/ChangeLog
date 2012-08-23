@@ -1,3 +1,10 @@
+2012-08-23  Charlie Zender  <zender@uci.edu>
+
+	* Remove -r option from wget. Behavior of -r may have changed.
+	Thought it meant clobber existing file. It now means recursive.
+
+	* Restrict wget to --tries=1 to fix "recursive" wgetting when DAP fails to NOAA NOMADS
+
 2012-08-21  Henry Butowsky  <henryb@hush.com>
 
  	* Add semi-intelligent handling of missing values in bilinear

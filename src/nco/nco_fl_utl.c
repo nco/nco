@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.197 2012-08-23 15:58:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.198 2012-08-23 16:24:26 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -609,7 +609,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
-	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP */
+	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
+	 ncks -O -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # DAP
+	 ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc # DAP */
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
       
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
@@ -730,8 +732,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};*/ /* Deprecated 20110419 */
     /* rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};*/ /* Deprecated 20110419 */
     /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/ /* Deprecated ~2000 */
-    /* wget -r: re-download file (clobber existing file of same name, if any) */
-    rmt_fch_cmd_sct http={"wget -r --output-document=%s %s",4,synchronous,lcl_rmt};
+    /* wget -p: fxm (and enables clobber)
+       wget -r: Turn on recursive retrieving (and enables clobber)
+       wget --tries: Set number of retries. Default is 20. */
+    rmt_fch_cmd_sct http={"wget --tries=1 --output-document=%s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
     /* Fill-in ftp structure fmt element dynamically later */
