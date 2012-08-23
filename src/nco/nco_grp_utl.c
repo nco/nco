@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.56 2012-08-21 23:22:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.57 2012-08-23 17:58:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -320,6 +320,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
   
+  char *var_sng; /* User-specified variable name or regular expression */
   char *grp_nm_fll; /* [sng] Fully qualified group name */
   char *var_nm_fll; /* [sng] Fully qualified variable name */
   char *grp_nm_fll_sls; /* [sng] Fully qualified group name plus terminating '/' */
@@ -338,7 +339,13 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   int var_idx_crr; /* [idx] Variable index accounting for previous groups */
   int var_nbr; /* [nbr] Number of variables in current group */
   int var_nbr_all; /* [nbr] Number of variables in input file */
+  unsigned uidx;
+  int var_nbr_tbl;   /* Number of variables in table list (table list stores all paths, groups and variables ) */
+  nco_bool var_prn;  /* Variable to print or not (variable exists only in var_lst_all )*/
   int var_nbr_tmp;
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  int rx_mch_nbr;
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
   var_idx_crr=0; /* Incremented at cycle end */
   
@@ -448,16 +455,15 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
 #ifdef NCO_SANITY_CHECK
-  unsigned uidx;
-  int var_nbr_tbl=0; /* Number of variables in table list (stores all paths, groups and variables ) */
+  var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables ) */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var) var_nbr_tbl++; 
   }
   assert(var_nbr_tbl == var_nbr_all);
-  nco_bool prn=True; /* Variable to print or not */
+  var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
     int var_id;    
-    if(prn == True) {
+    if(var_prn == True) {
       strcpy(grp_nm,var_lst_all[idx].grp_nm);
       var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
       strcpy(var_nm,var_lst_all[idx].nm);
@@ -469,20 +475,19 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
         (void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
           grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
       }
-      prn=False;
+      var_prn=False;
     }
 
     /* Increment var index for var_lst_all only when table object is a variable; this keeps the 2 lists in sync */
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){
       idx++; 
-      prn=True;
+      var_prn=True;
       /* Full variable names between the 2 lists must be the same */
       assert(strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll)==0);
       grp_nm_fll=(char *)nco_free(grp_nm_fll);
       var_nm_fll=(char *)nco_free(var_nm_fll);
     }
   }/* end loop over trv_tbl */
-
 #endif /* NCO_SANITY_CHECK */
 
   /* Return all variables if none were specified and not -c ... */
@@ -492,6 +497,75 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     return var_lst_all;
   } /* end if */
 
+  /* Initialize and allocate extraction flag array to all False */
+  var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
+
+  var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
+  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+    int var_id;    
+    if(var_prn == True) {
+      strcpy(grp_nm,var_lst_all[idx].grp_nm);
+      var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
+      strcpy(var_nm,var_lst_all[idx].nm);
+      var_id=var_lst_all[idx].id;
+      grp_id=var_lst_all[idx].grp_id;
+      grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
+
+      /* Loop through user-specified variable list */
+      for(int jdx=0;jdx<*var_xtr_nbr;jdx++){
+        var_sng=var_lst_in[jdx];
+
+        /* Convert pound signs (back) to commas */
+        while(*var_sng){
+          if(*var_sng == '#') *var_sng=',';
+          var_sng++;
+        } /* end while */
+        var_sng=var_lst_in[jdx];
+
+        /* If var_sng is regular expression ... */
+        if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+          /* ... and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+#if 1
+          rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
+          if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+          continue;
+#endif
+#else
+          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+          nco_exit(EXIT_FAILURE);
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+        } /* end if regular expression */
+
+        /* Compare var_nm from main iteration with var_sng found; if the same add to extraction list at index IDX  */
+        if(!strcmp(var_sng,var_nm)){
+          var_xtr_rqs[idx]=True;
+
+          if(dbg_lvl_get() >= nco_dbg_var){
+            (void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
+              grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
+          } /* end dbg_lvl_get() */
+        }  /* end strcmp */
+      } /* end loop jdx  */ 
+
+      var_prn=False;
+
+    } /* end var_prn == True */
+
+    /* Increment var index for var_lst_all only when table object is a variable; this keeps the 2 lists in sync */
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){
+      idx++; 
+      var_prn=True;
+      /* Full variable names between the 2 lists must be the same */
+      assert(strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll)==0);
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+      var_nm_fll=(char *)nco_free(var_nm_fll);
+    } /* end nc_typ_var */
+  }/* end loop over trv_tbl uidx */
+
+
+
+#if 0
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
@@ -517,6 +591,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       }
     } /* end loop var_idx_crr */
   } /* end loop over grp_lst_in */
+#endif
   
 #else /* GRP_DEV */ 
 
