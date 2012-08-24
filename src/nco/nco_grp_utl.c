@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.58 2012-08-24 05:41:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.59 2012-08-24 07:26:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -336,7 +336,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   int idx;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_idx;
-  int var_idx_crr; /* [idx] Variable index accounting for previous groups */
+  int var_idx_crr; /* [idx] Total variable index */
   int var_nbr; /* [nbr] Number of variables in current group */
   int var_nbr_all; /* [nbr] Number of variables in input file */
   unsigned uidx;
@@ -501,7 +501,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
   /* Create variable extraction list using regular expressions:  
-  2 cases to deal with extraction with suplied -v (variable) and -g (group) names: 
+  2 cases to deal with extraction with supplied -v (variable) and -g (group) names: 
 
   Case 1) -v was specified:  
   Do a loop cycle to iterate all objects found in the file. 
@@ -541,11 +541,9 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
           if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
             /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-#if 1
             rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
             if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
             continue;
-#endif
 #else
             (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
             nco_exit(EXIT_FAILURE);
