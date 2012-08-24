@@ -1,3 +1,7 @@
+2012-08-24  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks stdout handling of full hierarchy netCDF4 traversal; -g and -v control specific groups and variables
+
 2012-08-23  Charlie Zender  <zender@uci.edu>
 
 	* Remove -r option from wget. Behavior of -r may have changed.
