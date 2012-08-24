@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.57 2012-08-23 17:58:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.58 2012-08-24 05:41:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -500,98 +500,132 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
-  var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
-  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
-    int var_id;    
-    if(var_prn == True) {
-      strcpy(grp_nm,var_lst_all[idx].grp_nm);
-      var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
-      strcpy(var_nm,var_lst_all[idx].nm);
-      var_id=var_lst_all[idx].id;
-      grp_id=var_lst_all[idx].grp_id;
-      grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
+  /* Create variable extraction list using regular expressions:  
+  2 cases to deal with extraction with suplied -v (variable) and -g (group) names: 
 
-      /* Loop through user-specified variable list */
-      for(int jdx=0;jdx<*var_xtr_nbr;jdx++){
-        var_sng=var_lst_in[jdx];
+  Case 1) -v was specified:  
+  Do a loop cycle to iterate all objects found in the file. 
+  For each variable found, do a second loop through the user-specified variable list.
+  Add the variable to the extraction list if a name found in the second loop matches.
+  This achieves printing all the variables.
+  NOTE: the -g case is handled here too, if present, add only the variable if present in the group.
 
-        /* Convert pound signs (back) to commas */
-        while(*var_sng){
-          if(*var_sng == '#') *var_sng=',';
-          var_sng++;
-        } /* end while */
-        var_sng=var_lst_in[jdx];
+  Case 2) -v was not specified but -g was: traverse the -g list first and add all variables from that group
+  */
 
-        /* If var_sng is regular expression ... */
-        if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
-          /* ... and regular expression library is present */
+  if (*var_xtr_nbr) {
+
+    var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
+    for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+      int var_id;    
+      if(var_prn == True) {
+        strcpy(grp_nm,var_lst_all[idx].grp_nm);
+        var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
+        strcpy(var_nm,var_lst_all[idx].nm);
+        var_id=var_lst_all[idx].id;
+        grp_id=var_lst_all[idx].grp_id;
+        grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
+
+        /* Loop through user-specified variable list */
+        for(int jdx=0;jdx<*var_xtr_nbr;jdx++){
+          var_sng=var_lst_in[jdx];
+
+          /* Convert pound signs (back) to commas */
+          while(*var_sng){
+            if(*var_sng == '#') *var_sng=',';
+            var_sng++;
+          } /* end while */
+          var_sng=var_lst_in[jdx];
+
+          /* If var_sng is regular expression ... */
+          if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+            /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
 #if 1
-          rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
-          if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
-          continue;
+            rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
+            if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+            continue;
 #endif
 #else
-          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
-          nco_exit(EXIT_FAILURE);
+            (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+            nco_exit(EXIT_FAILURE);
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
-        } /* end if regular expression */
+          } /* end if regular expression */
 
-        /* Compare var_nm from main iteration with var_sng found; if the same add to extraction list at index IDX  */
-        if(!strcmp(var_sng,var_nm)){
-          var_xtr_rqs[idx]=True;
+          /* Compare var_nm from main iteration with var_sng found; if the same add to extraction list at index IDX  */
+          if(!strcmp(var_sng,var_nm)){
 
-          if(dbg_lvl_get() >= nco_dbg_var){
-            (void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
-              grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
-          } /* end dbg_lvl_get() */
-        }  /* end strcmp */
-      } /* end loop jdx  */ 
+            /* No groups case, just add  */
+            if (*grp_xtr_nbr == 0 ){
+              var_xtr_rqs[idx]=True;
+              /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
+            }else{
 
-      var_prn=False;
+              /* Loop through user-specified group list */
+              for(grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
+                char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
 
-    } /* end var_prn == True */
+                /* Get current group name */
+                strcpy(grp_nm_lst,grp_lst_in[grp_idx]);
 
-    /* Increment var index for var_lst_all only when table object is a variable; this keeps the 2 lists in sync */
-    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){
-      idx++; 
-      var_prn=True;
-      /* Full variable names between the 2 lists must be the same */
-      assert(strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll)==0);
-      grp_nm_fll=(char *)nco_free(grp_nm_fll);
-      var_nm_fll=(char *)nco_free(var_nm_fll);
-    } /* end nc_typ_var */
-  }/* end loop over trv_tbl uidx */
+                /* Find group specified in -g and mark any match for inclusion to extract */
+                if(strcmp(grp_nm,grp_nm_lst) == 0){
+                  var_xtr_rqs[idx]=True;
+                } /* end strcmp */
+              } /* end loop over grp_lst_in */
+            } /* end *grp_xtr_nbr == 0 */
 
+            if(dbg_lvl_get() >= nco_dbg_var){
+              (void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
+                grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
+            } /* end dbg_lvl_get() */
+          }  /* end strcmp */
+        } /* end loop jdx  */ 
 
+        var_prn=False;
 
-#if 0
-  /* Initialize and allocate extraction flag array to all False */
-  var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
+      } /* end var_prn == True */
 
-  /* Create variable extraction list using regular expressions */
-  nco4_var_ext(var_lst_in,var_xtr_nbr,var_lst_all,var_nbr_all,var_xtr_rqs,EXCLUDE_INPUT_LIST);
-
-  /* Loop through user-specified group list */
-  for(grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
-
-    /* Get current group name */
-    strcpy(grp_nm,grp_lst_in[grp_idx]);
-
-    /* Sanity check; var_idx_crr was used to traverse all groups and variables to make var_lst_all */
-    assert(var_nbr_all == var_idx_crr);
-
-    /* Loop through found variable list */
-    for(var_idx_crr=0;var_idx_crr<var_nbr_all;var_idx_crr++){
-      nm_id_sct var=var_lst_all[var_idx_crr];   
-
-      /* Find group specified in -g and mark any match for inclusion to extract */
-      if(strcmp(var.grp_nm,grp_nm)==0){
-        var_xtr_rqs[var_idx_crr]=True;
-      }
-    } /* end loop var_idx_crr */
-  } /* end loop over grp_lst_in */
+      /* Increment var index for var_lst_all only when table object is a variable; this keeps the 2 lists in sync */
+      if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){
+        idx++; 
+        var_prn=True;
+        /* Full variable names between the 2 lists must be the same */
+#ifdef NCO_SANITY_CHECK
+        assert(strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll)==0);
 #endif
+        grp_nm_fll=(char *)nco_free(grp_nm_fll);
+        var_nm_fll=(char *)nco_free(var_nm_fll);
+      } /* end nc_typ_var */
+    }/* end loop over trv_tbl uidx */
+
+  } /* end *var_xtr_nbr>0 */
+  else{
+
+    /* Loop through user-specified group list */
+    for(grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
+
+      /* Get current group name */
+      strcpy(grp_nm,grp_lst_in[grp_idx]);
+
+      /* Sanity check; var_idx_crr was used to traverse all groups and variables to make var_lst_all */
+#ifdef NCO_SANITY_CHECK
+      assert(var_nbr_all == var_idx_crr);
+#endif
+
+      /* Loop through found variable list */
+      for(var_idx_crr=0;var_idx_crr<var_nbr_all;var_idx_crr++){
+        nm_id_sct var=var_lst_all[var_idx_crr];   
+
+        /* Find group specified in -g and mark any match for inclusion to extract */
+        if(strcmp(var.grp_nm,grp_nm)==0){
+          var_xtr_rqs[var_idx_crr]=True;
+        }
+      } /* end loop var_idx_crr */
+    } /* end loop over grp_lst_in */
+
+  } /* end *var_xtr_nbr==0 */
+
   
 #else /* GRP_DEV */ 
 
