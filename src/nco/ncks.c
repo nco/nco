@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.340 2012-08-24 07:26:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.341 2012-08-24 17:27:56 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.340 2012-08-24 07:26:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.340 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.341 2012-08-24 17:27:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.341 $";
 #ifdef GRP_DEV
   char root_path[2]="/";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -590,16 +590,16 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
     }
   }
-
-  if(GET_LIST){ /* -z */ 
+  /* Process -z option if requested */ 
+  if(GET_LIST){ 
     rcd+=nco_grp_itr(in_id,root_path,0,NULL);
     goto out; 
   }
-  if(GET_GRP_INFO){  /* -G */ 
+  /* Process -G option if requested */ 
+  if(GET_GRP_INFO){ 
     rcd+=nco_grp_itr(in_id,root_path,1,NULL);
     goto out; 
   }
-
 #endif /* GRP_DEV */
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
@@ -638,7 +638,7 @@ main(int argc,char **argv)
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
     if(HAS_SUBGRP){
-    
+      xtr_lst=nco4_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
     }else{
       xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
     } /* HAS_SUBGRP */
@@ -649,11 +649,11 @@ main(int argc,char **argv)
 
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES){ 
-     if(HAS_SUBGRP){
-    
+    if(HAS_SUBGRP){
+
     }else{
       xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-     } /* HAS_SUBGRP */
+    } /* HAS_SUBGRP */
   } /* EXTRACT_ALL_COORDINATES */
 
   /* Extract coordinates associated with extracted variables */

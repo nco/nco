@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.59 2012-08-24 07:26:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.60 2012-08-24 17:27:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -895,8 +895,6 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   return grp_lst;
 } /* end nco_grp_lst_mk() */
 
-#ifdef GRP_DEV
-
 
 nm_id_sct *                              /* O [sct] Variable extraction list */
 nco4_var_lst_mk2                         /*   [fnc] Create variable extraction list using regular expressions */
@@ -943,7 +941,6 @@ nco4_var_lst_mk2                         /*   [fnc] Create variable extraction l
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
-  
   nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
 
   nm_id_sct *var_lst_all=NULL; /* [sct] All variables in input file */
@@ -1168,9 +1165,6 @@ nco4_var_lst_mk2                         /*   [fnc] Create variable extraction l
 } /* end nco4_var_lst_mk2() */
 
 
-
-
-
 int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [enm] Group ID */
@@ -1289,9 +1283,21 @@ nco_has_subgrps
 /* nco_has_subgrps() */
 
 
+nm_id_sct * /* O [sct] Extraction list */
+nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
+(const int nc_id, /* I netCDF file ID */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
+ int * const xtr_nbr) /* I/O [nbr] Number of variables in exclusion/extraction list */
+{
+  /* Purpose: Convert exclusion list to extraction list
+     User wants to extract all variables except those currently in list
+     It is hard to edit existing list so copy existing extraction list into 
+     exclusion list, then construct new extraction list from scratch. */
 
+ 
+  
+  return xtr_lst;
+} /* end nco4_var_lst_xcl() */
 
-
-
-#endif /* GRP_DEV */
 
