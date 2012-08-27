@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.54 2012-08-21 09:32:15 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.55 2012-08-27 10:20:37 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -524,14 +524,15 @@
     case RAM_DELETE: {
              // deal with var
              if(vtr_args[0]->getType()==VAR_ID){
-               if(Nvar->flg_mem==false)
-                 wrn_prn(fnc_nm,sfnm+" cannot remove disk variable:\""+va_nm+ "\". Delete can only remove RAM variables.");           
-	         rval=0;
-               }else{
+               if(Nvar->flg_mem==false){
+                 wrn_prn(fnc_nm,sfnm+" cannot remove disk variable:\""+va_nm+ "\". Delete can only remove RAM variables.");
+                 rval=0;  
+	        }else{ 
                  prs_arg->var_vtr.erase(va_nm); 
+                 prs_arg->int_vtr.erase(va_nm); 
                  rval=1;
-               
-             }
+               }
+             } 
              if(vtr_args[0]->getType()==ATT_ID){ 
                prs_arg->var_vtr.erase(va_nm);
                rval=1; 
