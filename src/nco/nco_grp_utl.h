@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.35 2012-08-24 17:27:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.36 2012-08-28 19:35:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -169,7 +169,8 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id, /* I netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr); /* I/O [nbr] Number of variables in exclusion/extraction list */
+ int * const xtr_nbr, /* I/O [nbr] Number of variables in exclusion/extraction list */
+ grp_tbl_t *trv_tbl); /* I   [sct] Group traversal table  */
 
 
 

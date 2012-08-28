@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.341 2012-08-24 17:27:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.342 2012-08-28 19:35:14 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.341 2012-08-24 17:27:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.341 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.342 2012-08-28 19:35:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.342 $";
 #ifdef GRP_DEV
   char root_path[2]="/";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -638,7 +638,7 @@ main(int argc,char **argv)
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
     if(HAS_SUBGRP){
-      xtr_lst=nco4_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
+      xtr_lst=nco4_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
     }else{
       xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
     } /* HAS_SUBGRP */

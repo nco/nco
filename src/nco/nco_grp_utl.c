@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.60 2012-08-24 17:27:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.61 2012-08-28 19:35:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1288,14 +1288,47 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id, /* I netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr) /* I/O [nbr] Number of variables in exclusion/extraction list */
+ int * const xtr_nbr, /* I/O [nbr] Number of variables in exclusion/extraction list */
+ grp_tbl_t *trv_tbl)  /* I   [sct] Group traversal table  */
 {
   /* Purpose: Convert exclusion list to extraction list
      User wants to extract all variables except those currently in list
      It is hard to edit existing list so copy existing extraction list into 
      exclusion list, then construct new extraction list from scratch. */
 
- 
+  char var_nm[NC_MAX_NAME];
+
+  int idx;
+  int lst_idx;
+  int nbr_xcl;
+
+  nm_id_sct *xcl_lst;
+  
+  /* Turn extract list into exclude list and reallocate extract list  */
+  nbr_xcl=*xtr_nbr;
+  *xtr_nbr=0;
+  xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
+  (void)memcpy((void *)xcl_lst,(void *)xtr_lst,nbr_xcl*sizeof(nm_id_sct));
+  xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
+  
+  for(idx=0;idx<nbr_var;idx++){
+    /* Get name and ID of variable */
+    (void)nco_inq_varname(nc_id,idx,var_nm);
+    for(lst_idx=0;lst_idx<nbr_xcl;lst_idx++){
+      if(idx == xcl_lst[lst_idx].id) break;
+    } /* end loop over lst_idx */
+    /* If variable is not in exclusion list then add it to new list */
+    if(lst_idx == nbr_xcl){
+      xtr_lst[*xtr_nbr].nm=(char *)strdup(var_nm);
+      xtr_lst[*xtr_nbr].id=idx;
+      ++*xtr_nbr;
+    } /* end if */
+  } /* end loop over idx */
+  
+  /* Free memory for names in exclude list before losing pointers to names */
+  /* NB: cannot free memory if list points to names in argv[] */
+  /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
+  xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
   
   return xtr_lst;
 } /* end nco4_var_lst_xcl() */
