@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.61 2012-08-28 19:35:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.62 2012-08-28 22:37:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -454,7 +454,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Store results prior to first return */
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
-#ifdef NCO_SANITY_CHECK
+#if defined (NCO_SANITY_CHECK) && defined (GRP_DEV)
   var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables ) */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var) var_nbr_tbl++; 
@@ -627,6 +627,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   
 #else /* GRP_DEV */ 
 
+  int jdx;
   if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
@@ -898,7 +899,8 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 
 nm_id_sct *                              /* O [sct] Variable extraction list */
 nco4_var_lst_mk2                         /*   [fnc] Create variable extraction list using regular expressions */
-(int * const nbr_var_fl,                 /* O [nbr] Number of variables in input file */
+(const int nc_id,                        /* I [enm] Apex group ID */
+ int * const nbr_var_fl,                 /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in,        /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST,      /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
@@ -1301,8 +1303,9 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   int idx;
   int lst_idx;
   int nbr_xcl;
-
+  unsigned int uidx;
   nm_id_sct *xcl_lst;
+  int var_in_id;
   
   /* Turn extract list into exclude list and reallocate extract list  */
   nbr_xcl=*xtr_nbr;
@@ -1310,7 +1313,17 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
   (void)memcpy((void *)xcl_lst,(void *)xtr_lst,nbr_xcl*sizeof(nm_id_sct));
   xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
-  
+
+#ifdef GRP_DEV
+  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
+
+
+    }
+  }
+
+#else /* GRP_DEV */
+
   for(idx=0;idx<nbr_var;idx++){
     /* Get name and ID of variable */
     (void)nco_inq_varname(nc_id,idx,var_nm);
@@ -1324,12 +1337,14 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
       ++*xtr_nbr;
     } /* end if */
   } /* end loop over idx */
+
+#endif /* GRP_DEV */
   
   /* Free memory for names in exclude list before losing pointers to names */
   /* NB: cannot free memory if list points to names in argv[] */
   /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
   xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
-  
+
   return xtr_lst;
 } /* end nco4_var_lst_xcl() */
 

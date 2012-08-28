@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.342 2012-08-28 19:35:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.343 2012-08-28 22:37:48 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,12 +114,10 @@ main(int argc,char **argv)
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-#ifdef GRP_DEV 
   nco_bool GET_LIST=False;     /* [flg] Iterate file, print variables and exit */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool HAS_SUBGRP=False;   /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only ) */
   grp_tbl_t  *trv_tbl=NULL;    /* [lst] Traversal table */
-#endif /* GRP_DEV */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -143,10 +141,10 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.342 2012-08-28 19:35:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.342 $";
-#ifdef GRP_DEV
+  const char * const CVS_Id="$Id: ncks.c,v 1.343 2012-08-28 22:37:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.343 $";
   char root_path[2]="/";
+#ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
@@ -579,7 +577,6 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-#ifdef GRP_DEV
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
   /* Get objects in file */
@@ -600,7 +597,7 @@ main(int argc,char **argv)
     rcd+=nco_grp_itr(in_id,root_path,1,NULL);
     goto out; 
   }
-#endif /* GRP_DEV */
+
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
