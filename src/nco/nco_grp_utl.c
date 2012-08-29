@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.63 2012-08-29 20:50:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.64 2012-08-29 21:12:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1315,22 +1315,31 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   } /* endif dbg */
 
   
+#ifdef GRP_DEV
+  /* Compare variable name between full list and input extraction list */
+  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
+
+      grp_trv_t trv=trv_tbl->grp_lst[uidx];
+
+      for(idx=0;idx<*xtr_nbr;idx++){
+        if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
+
+          if(dbg_lvl_get() >= nco_dbg_vrb){
+            (void)fprintf(stdout,"idx = %d, var_nm = %s, var_nm_fll = %s\n",idx,xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+          } /* endif dbg */
+        } /* endif strcmp */
+      } /* end idx */
+    } /* end nc_typ_var */
+  } /* end loop over uidx */
+
+#else /* GRP_DEV */
   /* Turn extract list into exclude list and reallocate extract list  */
   nbr_xcl=*xtr_nbr;
   *xtr_nbr=0;
   xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
   (void)memcpy((void *)xcl_lst,(void *)xtr_lst,nbr_xcl*sizeof(nm_id_sct));
   xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
-
-#ifdef GRP_DEV
-  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
-
-
-    }
-  }
-
-#else /* GRP_DEV */
 
   for(idx=0;idx<nbr_var;idx++){
     /* Get name and ID of variable */
@@ -1346,13 +1355,13 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
     } /* end if */
   } /* end loop over idx */
 
-#endif /* GRP_DEV */
-  
   /* Free memory for names in exclude list before losing pointers to names */
   /* NB: cannot free memory if list points to names in argv[] */
   /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
   xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
 
+#endif /* GRP_DEV */
+  
   return xtr_lst;
 } /* end nco4_var_lst_xcl() */
 
