@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.62 2012-08-28 22:37:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.63 2012-08-29 20:50:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1220,8 +1220,10 @@ nco_grp_itr
       (void)fprintf(stdout,"var= %s\n",var_pth); 
     } else if(mode == 2){
       /* This is a variable */
-      obj.nm_fll=(char*)var_pth;
+      obj.nm_fll=var_pth;
       obj.typ=nc_typ_var;
+      obj.id=grp_id;
+      strcpy(obj.nm,var_nm);
       trv_tbl_add(obj,tbl);
     }
 
@@ -1306,6 +1308,12 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   unsigned int uidx;
   nm_id_sct *xcl_lst;
   int var_in_id;
+
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be excluded:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    for(idx=0;idx<*xtr_nbr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+  } /* endif dbg */
+
   
   /* Turn extract list into exclude list and reallocate extract list  */
   nbr_xcl=*xtr_nbr;
