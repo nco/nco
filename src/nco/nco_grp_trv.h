@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.6 2012-08-29 20:50:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.7 2012-08-29 23:23:30 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -35,7 +35,7 @@ typedef struct{
   char     *nm_fll;         /* [sng] Absolute name (path) */
   nc_typ   typ;             /* [enm] netCDF4 object type: group, variable */
   char     nm[NC_MAX_NAME]; /* [sng] Relative name */
-  int      id;              /* [ID] Id for relative name member NM */
+  int      mark;            /* [flg] mark flag (several actions) */
 } grp_trv_t;
 /* end nc_typ */
 

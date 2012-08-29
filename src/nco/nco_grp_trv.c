@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.6 2012-08-29 20:50:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.7 2012-08-29 23:23:30 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -26,6 +26,8 @@ trv_tbl_init
   for(idx=0;idx<tb->sz;idx++){
     tb->grp_lst[idx].nm_fll = NULL;
     tb->grp_lst[idx].typ    = nc_typ_err;
+    tb->grp_lst[idx].nm[0]  = '\0';
+    tb->grp_lst[idx].mark   = -1;
   }
 
   *tbl = tb;
@@ -68,7 +70,6 @@ trv_tbl_add
   idx=tbl->nbr++;
   tbl->grp_lst[idx].nm_fll=(char*)strdup(obj.nm_fll);
   tbl->grp_lst[idx].typ=obj.typ;
-  tbl->grp_lst[idx].id=obj.id;
   strcpy(tbl->grp_lst[idx].nm,obj.nm);
 }
 /* trv_tbl_add() */

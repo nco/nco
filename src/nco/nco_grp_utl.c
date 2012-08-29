@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.64 2012-08-29 21:12:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.65 2012-08-29 23:23:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1222,7 +1222,6 @@ nco_grp_itr
       /* This is a variable */
       obj.nm_fll=var_pth;
       obj.typ=nc_typ_var;
-      obj.id=grp_id;
       strcpy(obj.nm,var_nm);
       trv_tbl_add(obj,tbl);
     }
@@ -1313,17 +1312,22 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be excluded:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
     for(idx=0;idx<*xtr_nbr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
-
-  
+ 
 #ifdef GRP_DEV
   /* Compare variable name between full list and input extraction list */
+  int nbr_var_xtr=0;
+  int nbr_var_tbl=0;
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
+      nbr_var_tbl++;
 
       grp_trv_t trv=trv_tbl->grp_lst[uidx];
 
       for(idx=0;idx<*xtr_nbr;idx++){
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
+
+          trv_tbl->grp_lst[uidx].mark=1;
+          nbr_var_xtr++;
 
           if(dbg_lvl_get() >= nco_dbg_vrb){
             (void)fprintf(stdout,"idx = %d, var_nm = %s, var_nm_fll = %s\n",idx,xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
@@ -1332,6 +1336,45 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
       } /* end idx */
     } /* end nc_typ_var */
   } /* end loop over uidx */
+
+  assert(trv_tbl->nbr-nbr_var_xtr == nbr_var);
+  assert(nbr_var_tbl == nbr_var);
+  nbr_xcl=nbr_var-nbr_var_xtr;
+
+  xtr_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
+  *xtr_nbr=0;
+
+  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_t trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_var && trv.mark != 1 ){ /* trv_tbl lists non-variables also; filter just variables */
+
+      char *pch;
+      int   pos;
+      char *grp_nm_fll; /* Fully qualified group where variable resides */
+      int  grp_id;
+      int  len=strlen(trv.nm_fll);
+      grp_nm_fll=(char *)nco_malloc((len+1L)*sizeof(char));
+      strcpy(grp_nm_fll,trv.nm_fll);
+
+      /* Find last occurence of '/' to form group full name */
+      pch=strrchr(grp_nm_fll,'/');
+      pos=pch-grp_nm_fll+1;
+      grp_nm_fll[pos]='\0';
+
+      /* Obtain group ID from netCDF API using full group name */
+      nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
+      /* ncks needs only xtr_lst.grp_nm_fll and xtr_lst.nm */
+      xtr_lst[*xtr_nbr].nm=(char *)strdup(trv.nm);
+      xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup(grp_nm_fll);
+      xtr_lst[*xtr_nbr].grp_id=grp_id;
+      ++*xtr_nbr;
+
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+    }
+  } /* end loop over uidx */
+
+  assert(*xtr_nbr == nbr_xcl);
 
 #else /* GRP_DEV */
   /* Turn extract list into exclude list and reallocate extract list  */
@@ -1354,14 +1397,13 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
       ++*xtr_nbr;
     } /* end if */
   } /* end loop over idx */
+#endif /* GRP_DEV */
 
   /* Free memory for names in exclude list before losing pointers to names */
   /* NB: cannot free memory if list points to names in argv[] */
   /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
   xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
 
-#endif /* GRP_DEV */
-  
   return xtr_lst;
 } /* end nco4_var_lst_xcl() */
 
