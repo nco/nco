@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.198 2012-08-15 14:19:31 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.199 2012-08-30 09:03:20 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -573,12 +573,14 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribut
                  break;
             }  
             if(bDoSearch){   
+               string fmc_nm=$getText; 
                std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText));   
                if(we!=prs_arg->fmc_vtr.end() && we->fnm()==$getText){
                  int idx=we-prs_arg->fmc_vtr.begin();
                  char buff[10]; 
                  sprintf(buff,"%d",idx);
-                 $setText(buff);    
+                 // VERY IMPORTANT - append the index in fmc_vtr to the function name 
+                 $setText(fmc_nm+"#"+buff);    
                  $setType(FUNC);
                }             
             } 
@@ -2115,18 +2117,22 @@ out returns [var_sct *var]
 
     // Functions 
     |  #(m:FUNC args:FUNC_ARG) {
-          // The lexer has stored the index of the function in m:FUNC and NOT the function name !!
+          // The lexer has appended the index of the function to the function name m - (name#index)
           //  the index is into fmc_vtr  
-         int idx=atoi(m->getText().c_str());
+         string sm(m->getText()); 
+         string sdx(sm,sm.find("#")+1,sm.length()-1) ;
+         int idx=atoi(sdx.c_str());
          RefAST tr;  
          var=prs_arg->fmc_vtr[idx].vfnc()->fnd(tr ,args, prs_arg->fmc_vtr[idx],*this); 
         }
 
     // Deal with methods 
     | #(DOT mtd:. mfnc:FUNC  margs:FUNC_ARG ){
-          // The lexer has stored the index of the function in m:FUNC and NOT the function name !!
+          // The lexer has appended the index of the function to the function name m - (name#index)
           //  the index is into fmc_vtr  
-         int idx=atoi(mfnc->getText().c_str());
+         string sm(mfnc->getText()); 
+         string sdx(sm,sm.find("#")+1,sm.length()-1) ;
+         int idx=atoi(sdx.c_str());
          var=prs_arg->fmc_vtr[idx].vfnc()->fnd(mtd ,margs, prs_arg->fmc_vtr[idx],*this); 
      }
 
