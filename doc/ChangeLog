@@ -1,3 +1,6 @@
+2012-08-27  Henry Butowsky  <henryb@hush.com>
+	* fixed  insidious bug with ram_delete() now working !!
+	
 2012-08-24  Pedro Vicente  <pvicente@uci.edu>
 
         * ncks stdout handling of full hierarchy netCDF4 traversal; -g and -v control specific groups and variables
