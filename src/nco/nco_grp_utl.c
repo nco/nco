@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.65 2012-08-29 23:23:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.66 2012-08-30 22:41:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1051,7 +1051,9 @@ nco4_var_lst_mk2                         /*   [fnc] Create variable extraction l
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->grp_lst[uidx].typ == nc_typ_var) var_nbr_all++; 
     else if(trv_tbl->grp_lst[uidx].typ == nc_typ_grp) grp_nbr++;
+#ifdef NCO_SANITY_CHECK
     else assert(0);
+#endif
   }
 
   /* Conversion to "grp_tbl_t" array to "nm_id_sct" array. 
@@ -1189,7 +1191,9 @@ nco_grp_itr
   int idx;
   grp_trv_t obj;               /* netCDF4 object, as having a path and a type */
 
+#ifdef NCO_SANITY_CHECK
   assert(mode == 0 || mode == 1 || mode == 2);
+#endif
 
   if((mode == 0) && dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stdout,"grp= %s\n",grp_pth); 
@@ -1337,8 +1341,10 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
     } /* end nc_typ_var */
   } /* end loop over uidx */
 
+#ifdef NCO_SANITY_CHECK
   assert(trv_tbl->nbr-nbr_var_xtr == nbr_var);
   assert(nbr_var_tbl == nbr_var);
+#endif
   nbr_xcl=nbr_var-nbr_var_xtr;
 
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
@@ -1374,7 +1380,9 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
     }
   } /* end loop over uidx */
 
+#ifdef NCO_SANITY_CHECK
   assert(*xtr_nbr == nbr_xcl);
+#endif
 
 #else /* GRP_DEV */
   /* Turn extract list into exclude list and reallocate extract list  */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.343 2012-08-28 22:37:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.344 2012-08-30 22:41:18 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.343 2012-08-28 22:37:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.343 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.344 2012-08-30 22:41:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.344 $";
   char root_path[2]="/";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -846,7 +846,9 @@ main(int argc,char **argv)
           /* Obtain group ID from netCDF API using full group name */
           rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
 
+#ifdef NCO_SANITY_CHECK
           assert(grp_id == nm_id.grp_id );
+#endif
 
           /* Print variable's definition using the obtained grp_id instead of the netCDF file ID; Voila  */
           (void)nco_prn_var_dfn(grp_id,nm_id.nm);
