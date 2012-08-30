@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.199 2012-08-30 09:03:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.200 2012-08-30 09:35:00 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -573,14 +573,14 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribut
                  break;
             }  
             if(bDoSearch){   
-               string fmc_nm=$getText; 
-               std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText));   
-               if(we!=prs_arg->fmc_vtr.end() && we->fnm()==$getText){
+               string fnc_nm=$getText; 
+               std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(fnc_nm));   
+               if(we!=prs_arg->fmc_vtr.end() && we->fnm()==fnc_nm){
                  int idx=we-prs_arg->fmc_vtr.begin();
                  char buff[10]; 
                  sprintf(buff,"%d",idx);
-                 // VERY IMPORTANT - append the index in fmc_vtr to the function name 
-                 $setText(fmc_nm+"#"+buff);    
+                 // VERY IMPORTANT - append the index in fmc_vtr to the function name - (name#idx)
+                 $setText(fnc_nm+"#"+buff);    
                  $setType(FUNC);
                }             
             } 
