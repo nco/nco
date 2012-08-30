@@ -1,3 +1,7 @@
+2012-08-30  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks: implemented -x option (convert exclusion list to extraction list) for group hierarchies
+
 2012-08-27  Henry Butowsky  <henryb@hush.com>
 	* fixed  insidious bug with ram_delete() now working !!
 	
