@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.206 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.207 2012-09-02 05:00:41 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.206 2012-07-28 02:27:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.206 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.207 2012-09-02 05:00:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.207 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -170,6 +170,7 @@ main(int argc,char **argv)
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
+  size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   var_sct **var;
   var_sct **var_fix;
@@ -209,7 +210,8 @@ main(int argc,char **argv)
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
       {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"fl_fmt",required_argument,0,0},
-      {"file_format",required_argument,0,0},
+      {"hdr_pad",required_argument,0,0},
+      {"header_pad",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -304,6 +306,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
+        hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"md5_digest")){
 	MD5_DIGEST=True;
 	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
@@ -640,7 +646,12 @@ main(int argc,char **argv)
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
   /* Take output file out of define mode */
-  (void)nco_enddef(out_id);
+  if(hdr_pad == 0UL){
+    (void)nco_enddef(out_id);
+  }else{
+    (void)nco__enddef(out_id,hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+  } /* hdr_pad */
   
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);

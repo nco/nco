@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.128 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.129 2012-09-02 05:00:41 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.128 2012-07-28 02:27:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.128 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.129 2012-09-02 05:00:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.129 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -200,6 +200,7 @@ main(int argc,char **argv)
   
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
+  size_t hdr_pad=0UL; /* [B] Pad at end of header section */
   
   var_sct **var;
   var_sct **var_fix;
@@ -261,7 +262,8 @@ main(int argc,char **argv)
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
       {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"fl_fmt",required_argument,0,0},
-      {"file_format",required_argument,0,0},
+      {"hdr_pad",required_argument,0,0},
+      {"header_pad",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -387,6 +389,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
+        hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -798,7 +804,12 @@ main(int argc,char **argv)
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
     
     /* Take output file out of define mode */
-    (void)nco_enddef(out_id);
+    if(hdr_pad == 0UL){
+      (void)nco_enddef(out_id);
+    }else{
+      (void)nco__enddef(out_id,hdr_pad);
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    } /* hdr_pad */
     
 #ifdef ENABLE_MPI
   } /* prc_rnk != rnk_mgr */

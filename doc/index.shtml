@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.724 2012-08-22 06:30:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.725 2012-09-02 05:00:37 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -572,6 +572,7 @@ Stride works with DAP?;
 Optimize diskless/RAM files?;
 more Robust RHEL/CentOS autoconf support?;
 <li><b>NCO 4.2.2</b>: (<i>In Progress, features already in beta include the following</i>)</li>
+<tt>--hdr_pad</tt> all operators;</li>
 <tt>ncwa</tt> on Windows;</li>
 <tt>ncks</tt> supports netCDF4 groups;</li>
 <li><b>NCO 4.2.1</b>: (<i>Current Stable Release</i>)

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.504 2012-08-20 22:01:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.505 2012-09-02 05:00:37 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -36,7 +36,13 @@ A. Our distribution of native-Windows binaries now includes ncwa,
    making it a complete NCO distribution built with Windows Visual Studio.
    Due to limitations of the Windows programming environment however,
    these executables lack some powerful features present in UNIX:
-Regular expressions, globbing, and network capabilities
+   Regular expressions, globbing, and network capabilities
+
+A. The --hdr_pad option is now supported by all operators.
+   This option is useful in preventing re-copying of netCDF3 files
+   whose metadata may be changed after the file is first written.
+   Formerly it was present only in ncatted, ncks, and ncrename.
+   http://nco.sf.net/nco.html#hdr
 
 BUG FIXES:
 

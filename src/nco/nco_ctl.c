@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.357 2012-08-21 16:46:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.358 2012-09-02 05:00:41 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -787,7 +787,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Farewell Lizzie.\n";
+  return "Hombre Fuego.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -890,40 +890,40 @@ nco_usg_prn(void)
 
   switch(prg_lcl){
   case ncap:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-F] [-f] [-h] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-t thr_nbr] [-v] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-F] [-f] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-t thr_nbr] [-v] in.nc [out.nc]\n");
     break;
   case ncatted:
     opt_sng=(char *)strdup("[-a ...] [--bfr sz] [-D dbg_lvl] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] in.nc [[out.nc]]\n");
     break;
   case ncbo:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [-L lvl] [-l path] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-y op_typ] in_1.nc in_2.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-y op_typ] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncflint:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [--hdr_pad nbr] [-i var,val] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a] [-B] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [--fix_rec_dmn] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_digest] [--mk_rec_dmn dim] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--ram_all] [-s format] [-u] [-v ...] [-X box] [-x] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [-L lvl] [-l path] [-M pck_map] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-U] [-X box] [-x] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [[--hdr_pad nbr] -L lvl] [-l path] [-M pck_map] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-U] [-X box] [-x] in.nc [out.nc]\n");
     break;
   case ncra:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-L lvl] [-l path] [--mro] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [--mro] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncea:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-L lvl] [-l path] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncrcat:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-L lvl] [-l path] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
     break;
   case ncecat:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-L lvl] [-l path] [-M] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-u ulm_nm] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-u ulm_nm] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
     break;
   case ncrename:
     opt_sng=(char *)strdup("[-a ...] [--bfr sz] [-D dbg_lvl] [-d ...] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");
     break;
   case ncwa:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a ...] [-B mask_cond] [-b] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-L lvl] [-l path] [-m mask] [-M mask_val] [-N] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-T mask_comp] [-t thr_nbr] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a ...] [-B mask_cond] [-b] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [--hdr_pad nbr] [-I] [-L lvl] [-l path] [-m mask] [-M mask_val] [-N] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-T mask_comp] [-t thr_nbr] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc [out.nc]\n");
     break;
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
@@ -981,7 +981,6 @@ nco_usg_prn(void)
     if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --data, --hieronymus\tToggle printing data\n");
     if(nco_is_mfo(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tDo not create \"input_file_list\" global attribute\n");
   } /* end if -H */
-  /* Disambiguate -h from --hdr_pad */
   if(strstr(opt_sng,"[-h]")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
   if(strstr(opt_sng,"--hdr_pad")) (void)fprintf(stdout,"    --hdr_pad, --header_pad\tPad output header with nbr bytes\n");
   if(strstr(opt_sng,"[-i var,val]")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");
