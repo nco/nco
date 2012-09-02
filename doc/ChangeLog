@@ -1,7 +1,7 @@
 2012-09-01  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.2 release procedure:
- 	Changes since nco-4_2_1: None yet
+ 	Changes since nco-4_2_1: ncks groups, hdr_pad
 	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
 	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
@@ -10,7 +10,7 @@
 
 2012-08-30  Pedro Vicente  <pvicente@uci.edu>
 
-        * ncks: implement -x option (convert extraction list to exclusion list) for group hierarchies
+        * ncks: implement -x (convert extraction to exclusion list) for group hierarchies
 
 2012-08-27  Henry Butowsky  <henryb@hush.com>
 
