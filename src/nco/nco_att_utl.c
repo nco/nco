@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.125 2012-09-03 05:13:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.126 2012-09-03 19:10:55 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -255,6 +255,11 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       } /* end if */
       att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nco_typ_lng(aed.type));
       (void)nco_get_att(nc_id,var_id,aed.att_nm,(void *)att_val_new,aed.type);
+      /* 20120903: Handle trailing NULs for strings */
+      if(aed.type == NC_CHAR){
+	/* When existing attribute is already NUL-terminated, overwrite that NUL with first character of appended string */
+	if(att_val_new[att_sz-1L] == '\0') att_sz--;
+      } /* !NC_CHAR */
       /* NB: Following assumes sizeof(char) = 1 byte */
       (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
 		   (void *)aed.val.vp,
@@ -769,14 +774,14 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	   This caused each append to insert a NUL at end of NC_CHAR attributes
 	   Multiple appends would then result in attributes pockmarked with NULs
 	   Solves TODO nco985
-	   Not yet sure there are no ill side-effects though...
-	   20120902 Apparently this fixed append mode but broke other modes
+	   Not yet sure there are no ill effects though...
+	   20120902 Apparently this fixed some of append mode and broke other modes
 	   Dave Allured reports on NCO Discussion forum that create, modify, and overwrite 
 	   modes have not added NUL to NC_CHAR attributes since 4.0.2.
 	   We could allocate space in append mode then increment by 1 in other modes */
-	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg]);
+	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L;
 	/* Add space for trailing NUL character */
-	if(aed_lst[idx].mode == aed_create || aed_lst[idx].mode == aed_modify || aed_lst[idx].mode == aed_overwrite) aed_lst[idx].sz+=1L;
+	//	if(aed_lst[idx].mode == aed_create || aed_lst[idx].mode == aed_modify || aed_lst[idx].mode == aed_overwrite) aed_lst[idx].sz+=1L;
       }else{
 	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
