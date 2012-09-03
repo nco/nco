@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.127 2012-09-03 19:14:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.128 2012-09-03 19:27:46 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -255,10 +255,12 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       } /* end if */
       att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nco_typ_lng(aed.type));
       (void)nco_get_att(nc_id,var_id,aed.att_nm,(void *)att_val_new,aed.type);
-      /* 20120903: Handle trailing NULs for strings */
+      /* 20120903: Handle trailing NULs for strings
+	 This trick ensures that NULs do not accumulate interstitially
+	 and that all strings retain the NUL appended by strdup() in nco_prs_aed_lst() */
       if(aed.type == NC_CHAR){
 	/* When existing attribute is already NUL-terminated, overwrite that NUL with first character of appended string */
-	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;
+	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--; /* Interstitial */
       } /* !NC_CHAR */
       /* NB: Following assumes sizeof(char) = 1 byte */
       (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
@@ -778,10 +780,12 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	   20120902 Apparently this fixed some of append mode and broke other modes
 	   Dave Allured reports on NCO Discussion forum that create, modify, and overwrite 
 	   modes have not added NUL to NC_CHAR attributes since 4.0.2.
-	   We could allocate space in append mode then increment by 1 in other modes */
+	   strdup() below will attach a trailing NUL to the user-specified string 
+	   Retaining this NUL is recommended by the netCDF Best Practices document:
+	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char
+	   To contravene this convention (as apparently ncgen does) subtract one from size in next line,
+	   and comment-out line labeled "Interstitial" above. */
 	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L;
-	/* Add space for trailing NUL character */
-	//	if(aed_lst[idx].mode == aed_create || aed_lst[idx].mode == aed_modify || aed_lst[idx].mode == aed_overwrite) aed_lst[idx].sz+=1L;
       }else{
 	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
@@ -789,6 +793,9 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       
       /* Set value of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
+	/* strdup() attaches a trailing NUL to the user-specified string 
+	   Retaining this NUL is recommended by the netCDF Best Practices document:
+	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
 	aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
       }else{
 	char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
