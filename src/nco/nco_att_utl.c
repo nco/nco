@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.126 2012-09-03 19:10:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.127 2012-09-03 19:14:35 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -258,7 +258,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       /* 20120903: Handle trailing NULs for strings */
       if(aed.type == NC_CHAR){
 	/* When existing attribute is already NUL-terminated, overwrite that NUL with first character of appended string */
-	if(att_val_new[att_sz-1L] == '\0') att_sz--;
+	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;
       } /* !NC_CHAR */
       /* NB: Following assumes sizeof(char) = 1 byte */
       (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
