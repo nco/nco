@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
 	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
 
+	* Add trailing NUL character to ncatted in create/modify/overwrite modes
+
 	* Add --hdr_pad to man pages
 
 2012-09-01  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.505 2012-09-02 05:00:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.506 2012-09-03 05:14:45 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -46,7 +46,8 @@ A. The --hdr_pad option is now supported by all operators.
 
 BUG FIXES:
 
-A. Hi
+A. ncatted stopped adding trailing NULs to string (NC_CHAR attributes 
+   in NCO version 4.0.2. This was inadvertent. Now ... fxm
 
 KNOWN BUGS NOT YET FIXED:
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.124 2012-07-20 21:03:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.125 2012-09-03 05:13:12 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -769,8 +769,14 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	   This caused each append to insert a NUL at end of NC_CHAR attributes
 	   Multiple appends would then result in attributes pockmarked with NULs
 	   Solves TODO nco985
-	   Not yet sure there are no ill side-effects though... */ 
+	   Not yet sure there are no ill side-effects though...
+	   20120902 Apparently this fixed append mode but broke other modes
+	   Dave Allured reports on NCO Discussion forum that create, modify, and overwrite 
+	   modes have not added NUL to NC_CHAR attributes since 4.0.2.
+	   We could allocate space in append mode then increment by 1 in other modes */
 	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg]);
+	/* Add space for trailing NUL character */
+	if(aed_lst[idx].mode == aed_create || aed_lst[idx].mode == aed_modify || aed_lst[idx].mode == aed_overwrite) aed_lst[idx].sz+=1L;
       }else{
 	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
