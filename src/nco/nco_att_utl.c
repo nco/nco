@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.128 2012-09-03 19:27:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.129 2012-09-04 15:52:48 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -397,8 +397,9 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       (void)nco_inq_att(in_id,var_in_id,att_nm,&att_typ_in,&att_sz);
       
       if(att_sz != 1L){
-	(void)fprintf(stderr,"%s: ERROR input \"%s\" attribute has %li elements, but nco_att_cpy() only works for size of 1\n",prg_nm_get(),att_nm,att_sz);
-	nco_exit(EXIT_FAILURE); 
+	(void)fprintf(stderr,"%s: WARNING input %s attribute has %li elements, but CF convention recommends that %s be a scalar. Will attempt to copy using nco_copy_att(). HINT: If this fails, redefine %s as a scalar.\n",prg_nm_get(),att_nm,att_sz,att_nm);
+	(void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
+	return;
       } /* end if */
       
       /* Convert "_FillValue" to unpacked type before copying */

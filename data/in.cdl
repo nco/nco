@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.149 2012-07-30 21:45:27 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.150 2012-09-04 15:52:47 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -688,6 +688,10 @@ variables:
 	float one_dmn_rec_var__FillValue(time);
 	one_dmn_rec_var__FillValue:long_name = "One dimensional record variable with missing data indicated by _FillValue attribute only. No missing_value attribute exists.";
 	one_dmn_rec_var__FillValue:_FillValue = 1.0e36f;
+
+	float one_dmn_rec_var_mss_val_arr(time);
+	one_dmn_rec_var_missing_value:long_name = "One dimensional record variable with missing data indicated by a _FillValue attribute that is an array. This can be tested with ncrcat";
+	one_dmn_rec_var_missing_value:_FillValue = 1,2,3;
 
 	int RDM(time);
         
