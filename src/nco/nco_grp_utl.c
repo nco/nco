@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.69 2012-09-04 18:46:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.70 2012-09-04 19:23:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1371,8 +1371,208 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
   /* Purpose: Add all coordinates to extraction list
      Find all coordinates (dimensions which are also variables) and
      add them to the list if they are not already there. */
+  
+  char crd_nm[NC_MAX_NAME];
+
+  int crd_id;
+  int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+#ifdef GRP_DEV
 
 
+
+#else /* GRP_DEV */
+
+  for(idx=0;idx<nbr_dim;idx++){
+    (void)nco_inq_dimname(nc_id,idx,crd_nm);
+    
+    /* Does variable of same name exist in input file? */
+    rcd=nco_inq_varid_flg(nc_id,crd_nm,&crd_id);
+    if(rcd == NC_NOERR){
+      /* Dimension is coordinate. Is it already on list? */
+      int lst_idx;
+
+      for(lst_idx=0;lst_idx<*xtr_nbr;lst_idx++){
+        if(crd_id == xtr_lst[lst_idx].id) break;
+      } /* end loop over lst_idx */
+      if(lst_idx == *xtr_nbr){
+        /* Coordinate is not already on the list, put it there */
+        if(*xtr_nbr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*xtr_nbr+1)*sizeof(nm_id_sct)); else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+        /* According to man page for realloc(), this should work even when xtr_lst == NULL */
+        /*	xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));*/
+        xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_nm);
+        xtr_lst[*xtr_nbr].id=crd_id;
+        (*xtr_nbr)++;
+      } /* end if */
+    } /* end if */
+  } /* end loop over idx */
+
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */
+  if(CNV_CCM_CCSM_CF){
+    const char dlm_sng[]=" "; /* [sng] Delimiter string */
+    const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
+    char **crd_lst; /* [sng] 1D array of list elements */
+    char *att_val;
+    char att_nm[NC_MAX_NAME];
+    int idx_att;
+    int idx_crd;
+    int idx_var;
+    int idx_var2;
+    int nbr_att;
+    int nbr_crd; /* [nbr] Number of coordinates specified in "coordinates" attribute */
+    int var_id;
+    long att_sz;
+    nc_type att_typ;
+
+    /* NB: Only difference between this algorithm and CF algorithm in 
+    nco_var_lst_crd_ass_add() is that this algorithm loops over 
+    all variables in file, not just over current extraction list. */ 
+    /* ...for each variable in file... */
+    for(idx_var=0;idx_var<nbr_var;idx_var++){
+      /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
+      var_id=idx_var;
+      /* fxm: Functionalize remainder and call from both 
+      nco_var_lst_crd_ass_add() and nco_var_lst_crd_add()? */
+      /* Find number of attributes */
+      (void)nco_inq_varnatts(nc_id,var_id,&nbr_att);
+      for(idx_att=0;idx_att<nbr_att;idx_att++){
+        (void)nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+        /* Is attribute part of CF convention? */
+        if(!strcmp(att_nm,"coordinates")){
+          /* Yes, get list of specified attributes */
+          (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+          if(att_typ != NC_CHAR){
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            return xtr_lst;
+          } /* end if */
+          att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+          if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+          /* NUL-terminate attribute */
+          att_val[att_sz]='\0';
+          /* Split list into separate coordinate names
+          Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+          crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
+          /* ...for each coordinate in "coordinates" attribute... */
+          for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
+            /* Verify "coordinate" exists in input file */
+            rcd=nco_inq_varid_flg(nc_id,crd_lst[idx_crd],&crd_id);
+            /* NB: Do not check that dimension by this name exists
+            CF files often use "coordinates" convention to identify
+            two-dimensional (or greater) variables which serve as coordinates.
+            In other words, we want to allow N-D variables to work as coordinates
+            for the purpose of adding them to the extraction list only. */
+            if(rcd == NC_NOERR){
+              /* idx_var2 labels inner loop over variables */
+              /* Is "coordinate" already on extraction list? */
+              for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
+                if(crd_id == xtr_lst[idx_var2].id) break;
+              } /* end loop over idx_var2 */
+              if(idx_var2 == *xtr_nbr){
+                /* Add coordinate to list */
+                xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+                xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_lst[idx_crd]);
+                xtr_lst[*xtr_nbr].id=crd_id;
+                (*xtr_nbr)++; /* NB: Changes size of current loop! */
+                /* Continue to next coordinate in loop */
+                continue;
+              } /* end if coordinate was not already in list */
+            }else{ /* end if named coordinate exists in input file */
+              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"coordinates\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),crd_lst[idx_crd],xtr_lst[idx_var].nm);
+            } /* end else named coordinate exists in input file */
+          } /* end loop over idx_crd */
+          /* Free allocated memory */
+          att_val=(char *)nco_free(att_val);
+          crd_lst=nco_sng_lst_free(crd_lst,nbr_crd);
+        } /* !coordinates */
+      } /* end loop over attributes */
+    } /* end loop over idx_var */
+  } /* !CNV_CCM_CCSM_CF for "coordinates" */
+
+  /* Detect coordinate boundaries specified by CF "bounds" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
+  Algorithm copied with modification from "coordinates" algorithm above */
+  if(CNV_CCM_CCSM_CF){
+    const char dlm_sng[]=" "; /* [sng] Delimiter string */
+    const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
+    char **bnd_lst; /* [sng] 1D array of list elements */
+    char *att_val;
+    char att_nm[NC_MAX_NAME];
+    int bnd_id;
+    int idx_att;
+    int idx_bnd;
+    int idx_var;
+    int idx_var2;
+    int nbr_att;
+    int nbr_bnd; /* [nbr] Number of coordinates specified in "bounds" attribute */
+    int var_id;
+    long att_sz;
+    nc_type att_typ;
+
+    /* NB: Only difference between this algorithm and CF algorithm in 
+    nco_var_lst_crd_ass_add() is that this algorithm loops over 
+    all variables in file, not just over current extraction list. */ 
+    /* ...for each variable in file... */
+    for(idx_var=0;idx_var<nbr_var;idx_var++){
+      /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
+      var_id=idx_var;
+      /* fxm: Functionalize remainder and call from both 
+      nco_var_lst_crd_ass_add() and nco_var_lst_crd_add()? */
+      /* Find number of attributes */
+      (void)nco_inq_varnatts(nc_id,var_id,&nbr_att);
+      for(idx_att=0;idx_att<nbr_att;idx_att++){
+        (void)nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+        /* Is attribute part of CF convention? */
+        if(!strcmp(att_nm,"bounds")){
+          /* Yes, get list of specified attributes */
+          (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+          if(att_typ != NC_CHAR){
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            return xtr_lst;
+          } /* end if */
+          att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+          if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+          /* NUL-terminate attribute */
+          att_val[att_sz]='\0';
+          /* Split list into separate coordinate names
+          Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+          bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
+          /* ...for each coordinate in "bounds" attribute... */
+          for(idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
+            if(bnd_lst[idx_bnd]==NULL)
+              continue;
+            /* Verify "bounds" exists in input file */
+            rcd=nco_inq_varid_flg(nc_id,bnd_lst[idx_bnd],&bnd_id);
+            /* NB: Coordinates of rank N have bounds of rank N+1 */
+            if(rcd == NC_NOERR){
+              /* idx_var2 labels inner loop over variables */
+              /* Is "bound" already on extraction list? */
+              for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
+                if(bnd_id == xtr_lst[idx_var2].id) break;
+              } /* end loop over idx_var2 */
+              if(idx_var2 == *xtr_nbr){
+                /* Add coordinate to list */
+                xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+                xtr_lst[*xtr_nbr].nm=(char *)strdup(bnd_lst[idx_bnd]);
+                xtr_lst[*xtr_nbr].id=bnd_id;
+                (*xtr_nbr)++; /* NB: Changes size of current loop! */
+                /* Continue to next coordinate in loop */
+                continue;
+              } /* end if coordinate was not already in list */
+            }else{ /* end if named coordinate exists in input file */
+              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],xtr_lst[idx_var].nm);
+            } /* end else named coordinate exists in input file */
+          } /* end loop over idx_bnd */
+          /* Free allocated memory */
+          att_val=(char *)nco_free(att_val);
+          bnd_lst=nco_sng_lst_free(bnd_lst,nbr_bnd);
+        } /* !coordinates */
+      } /* end loop over attributes */
+    } /* end loop over idx_var */
+  } /* !CNV_CCM_CCSM_CF for "bounds" */
+
+#endif /* GRP_DEV */
 
   return xtr_lst;
 } /* end nco_var_lst_crd_add() */
