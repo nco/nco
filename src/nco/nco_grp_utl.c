@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.70 2012-09-04 19:23:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.71 2012-09-04 20:39:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1373,6 +1373,9 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
      add them to the list if they are not already there. */
   
   char crd_nm[NC_MAX_NAME];
+  int *dmn_ids;
+  int ndims;
+  char name_in[NC_MAX_NAME + 1];
 
   int crd_id;
   int idx;
@@ -1380,6 +1383,28 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 
 #ifdef GRP_DEV
 
+  /* Allocate an array for dimension ID's */
+  dmn_ids=(int *)nco_malloc(nbr_dim*sizeof(int));
+
+  /* Get dimension ID's */
+  (void)nco_inq_dimids(nc_id,&ndims,dmn_ids,0);
+
+#ifdef NCO_SANITY_CHECK
+  assert(ndims == nbr_dim);
+#endif
+
+  for(idx=0;idx<nbr_dim;idx++){
+    (void)nco_inq_dimname(nc_id,dmn_ids[idx],crd_nm);
+
+    if(dbg_lvl_get() >= nco_dbg_vrb){
+      (void)fprintf(stdout,"idx = %d, dmn_ids = %d, crd_nm = %s\n",idx,dmn_ids[idx],crd_nm);
+    } /* endif dbg */
+
+
+  }
+
+  /* Free allocated memory */
+  dmn_ids=(int *)nco_free(dmn_ids);
 
 
 #else /* GRP_DEV */
