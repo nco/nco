@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.75 2012-09-04 22:24:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.76 2012-09-04 22:59:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1388,14 +1388,13 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
   char crd_nm[NC_MAX_NAME];
   int *dmn_ids;
   int ndims;
-  char name_in[NC_MAX_NAME + 1];
-
   int crd_id;
   int idx;
+  unsigned int uidx;
+  int nbr_var_tbl=0;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
 #ifdef GRP_DEV
-
   /* Allocate an array for dimension ID's */
   dmn_ids=(int *)nco_malloc(nbr_dim*sizeof(int));
 
@@ -1413,8 +1412,20 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
       (void)fprintf(stdout,"idx = %d, dmn_ids = %d, crd_nm = %s\n",idx,dmn_ids[idx],crd_nm);
     } /* endif dbg */
 
+    for(uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
+        nbr_var_tbl++;
 
-  }
+        grp_trv_t trv=trv_tbl->grp_lst[uidx];
+
+        /* Compare variable name with dimension name */
+        if(strcmp(crd_nm,trv.nm) == 0){
+
+
+        } /* end strcmp */
+      } /* end nc_typ_var */
+    } /* end loop over trv_tbl */
+  } /* end loop nbr_dim */
 
   /* Free allocated memory */
   dmn_ids=(int *)nco_free(dmn_ids);
