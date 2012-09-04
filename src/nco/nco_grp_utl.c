@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.67 2012-08-30 23:14:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.68 2012-09-04 18:04:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -394,7 +394,8 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Store results prior to first return */
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
-#if defined (NCO_SANITY_CHECK) && defined (GRP_DEV)
+#ifdef NCO_SANITY_CHECK
+#ifdef GRP_DEV
   var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables ) */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var) var_nbr_tbl++; 
@@ -428,6 +429,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_nm_fll=(char *)nco_free(var_nm_fll);
     }
   }/* end loop over trv_tbl */
+#endif
 #endif /* NCO_SANITY_CHECK */
 
   /* Return all variables if none were specified and not -c ... */
