@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.38 2012-09-04 18:46:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.39 2012-09-04 21:15:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -181,16 +181,9 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
  int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
+ const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
+ grp_tbl_t *trv_tbl);  /* I   [sct] Group traversal table  */
 
-nm_id_sct * /* O [sct] Extraction list */
-nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
-(const int nc_id, /* I [id] netCDF file ID */
- const int nbr_dim, /* I [nbr] Number of dimensions in input file */
- const int nbr_var, /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
- int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
 
 #ifdef __cplusplus
 } /* end extern "C" */
