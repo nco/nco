@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.72 2012-09-04 21:15:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.73 2012-09-04 21:40:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1263,7 +1263,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   /* Compare variable name between full list and input extraction list */
   int nbr_var_xtr=0;
   int nbr_var_tbl=0;
-  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
       nbr_var_tbl++;
 
@@ -1325,6 +1325,11 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 #ifdef NCO_SANITY_CHECK
   assert(*xtr_nbr == nbr_xcl);
 #endif
+
+  /* Reset mark field */
+  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_tbl->grp_lst[uidx].mark=-1;
+  }
 
 #else /* GRP_DEV */
   /* Turn extract list into exclude list and reallocate extract list  */
