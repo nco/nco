@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.68 2012-09-04 18:04:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.69 2012-09-04 18:46:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1357,4 +1357,23 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   return xtr_lst;
 } /* end nco4_var_lst_xcl() */
 
+
+
+nm_id_sct * /* O [sct] Extraction list */
+nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int nbr_dim, /* I [nbr] Number of dimensions in input file */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
+ int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF) /* I [flg] file obeys CCM/CCSM/CF conventions */
+{
+  /* Purpose: Add all coordinates to extraction list
+     Find all coordinates (dimensions which are also variables) and
+     add them to the list if they are not already there. */
+
+
+
+  return xtr_lst;
+} /* end nco_var_lst_crd_add() */
 
