@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.73 2012-09-04 21:40:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.74 2012-09-04 21:55:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1260,7 +1260,12 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   } /* endif dbg */
  
 #ifdef GRP_DEV
-  /* Compare variable name between full list and input extraction list */
+  /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as 'mark=1';
+     A second traversal extracts all variables that are not marked (this reverses the list);
+     The xtr_lst must be reconstructed for:
+     1) grp_nm_fll (full group name)
+     2) grp_id (group ID) 
+     */
   int nbr_var_xtr=0;
   int nbr_var_tbl=0;
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1270,6 +1275,8 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
       grp_trv_t trv=trv_tbl->grp_lst[uidx];
 
       for(idx=0;idx<*xtr_nbr;idx++){
+
+        /* Compare variable name between full list and input extraction list */
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
 
           trv_tbl->grp_lst[uidx].mark=1;
