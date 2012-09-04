@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.74 2012-09-04 21:55:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.75 2012-09-04 22:24:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1260,7 +1260,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   } /* endif dbg */
  
 #ifdef GRP_DEV
-  /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as 'mark=1';
+  /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as flagged;
      A second traversal extracts all variables that are not marked (this reverses the list);
      The xtr_lst must be reconstructed for:
      1) grp_nm_fll (full group name)
@@ -1279,7 +1279,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
         /* Compare variable name between full list and input extraction list */
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
 
-          trv_tbl->grp_lst[uidx].mark=1;
+          trv_tbl->grp_lst[uidx].flg=1;
           nbr_var_xtr++;
 
           if(dbg_lvl_get() >= nco_dbg_vrb){
@@ -1301,7 +1301,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_t trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nc_typ_var && trv.mark != 1 ){ /* trv_tbl lists non-variables also; filter just variables */
+    if (trv.typ == nc_typ_var && trv.flg != 1 ){ /* trv_tbl lists non-variables also; filter just variables */
 
       char *pch;
       int   pos;
@@ -1335,7 +1335,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 
   /* Reset mark field */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_tbl->grp_lst[uidx].mark=-1;
+    trv_tbl->grp_lst[uidx].flg=-1;
   }
 
 #else /* GRP_DEV */
