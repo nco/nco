@@ -1,7 +1,6 @@
 2012-09-05  Pedro Vicente  <pvicente@uci.edu>
 
-        * ncks: implement -c (extract all coordinate variables in the input appear in the output)
-        for group hierarchies
+        * ncks: implement -c (extract coordinate variables) for group hierarchies
 
 2012-09-04  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.130 2012-09-04 20:02:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.131 2012-09-05 22:22:00 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -397,7 +397,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       (void)nco_inq_att(in_id,var_in_id,att_nm,&att_typ_in,&att_sz);
       
       if(att_sz != 1L){
-	(void)fprintf(stderr,"%s: WARNING input %s attribute has %li elements, but CF convention insists that %s be scalar (i.e., one element, possibly of compound type). Will attempt to copy using nco_copy_att(). HINT: If this fails, redefine %s as scalar.\n",prg_nm_get(),att_nm,att_sz,att_nm);
+	(void)fprintf(stderr,"%s: WARNING input %s attribute has %li elements, but CF convention insists that %s be scalar (i.e., one element, possibly of compound type). Will attempt to copy using nco_copy_att(). HINT: If this fails, redefine %s as scalar.\n",prg_nm_get(),att_nm,att_sz,att_nm,att_nm);
 	(void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
 	return;
       } /* end if */
