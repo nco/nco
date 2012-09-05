@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.8 2012-09-04 22:24:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.9 2012-09-05 02:00:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -36,31 +36,31 @@ typedef struct{
   nc_typ   typ;             /* [enm] netCDF4 object type: group, variable */
   char     nm[NC_MAX_NAME]; /* [sng] Relative name */
   int      flg;             /* [flg] mark flag (several actions) */
-} grp_trv_t;
+} grp_trv_sct;
 /* end nc_typ */
 
 /* struct that stores all objects */
 typedef struct{
   unsigned sz;            /* [nbr] Allocated size */
   unsigned nbr;           /* [nbr] Number of current elements */
-  grp_trv_t *grp_lst;     /*       Array of grp_trv_t */
-} grp_tbl_t;
-/* end grp_tbl_t */
+  grp_trv_sct *grp_lst;   /*       Array of grp_trv_sct */
+} grp_tbl_sct;
+/* end grp_tbl_sct */
 
 void                         
 trv_tbl_init
-(grp_tbl_t **tbl);        /* I/O [sct] Table */
+(grp_tbl_sct **tbl);        /* I/O [sct] Table */
 /* end trv_tbl_init */
 
 void 
 trv_tbl_free
-(grp_tbl_t *tbl);        /* I   [sct] Table */
+(grp_tbl_sct *tbl);        /* I   [sct] Table */
 /* end trv_tbl_free */
 
 void 
 trv_tbl_add
-(grp_trv_t obj,          /* I   [sct] Object to store */
- grp_tbl_t *tbl);        /* I/O [sct] Table */
+(grp_trv_sct obj,          /* I   [sct] Object to store */
+ grp_tbl_sct *tbl);        /* I/O [sct] Table */
 /* end trv_tbl_add */
 
 

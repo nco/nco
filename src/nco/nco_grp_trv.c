@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.8 2012-09-04 22:24:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.9 2012-09-05 02:00:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -15,13 +15,13 @@
 
 void                          
 trv_tbl_init
-(grp_tbl_t **tbl)       /* I/O [sct] Table */
+(grp_tbl_sct **tbl)       /* I/O [sct] Table */
 {
   unsigned int idx;
-  grp_tbl_t* tb=(grp_tbl_t*)nco_malloc(sizeof(grp_tbl_t));
+  grp_tbl_sct* tb=(grp_tbl_sct*)nco_malloc(sizeof(grp_tbl_sct));
   tb->sz=100;
   tb->nbr=0;
-  tb->grp_lst=(grp_trv_t*)nco_malloc(tb->sz*sizeof(grp_trv_t));
+  tb->grp_lst=(grp_trv_sct*)nco_malloc(tb->sz*sizeof(grp_trv_sct));
 
   for(idx=0;idx<tb->sz;idx++){
     tb->grp_lst[idx].nm_fll = NULL;
@@ -36,7 +36,7 @@ trv_tbl_init
 
 void 
 trv_tbl_free
-(grp_tbl_t *tbl)   /* I [sct] Table */
+(grp_tbl_sct *tbl)   /* I [sct] Table */
 {
   unsigned int idx;
 
@@ -54,14 +54,14 @@ trv_tbl_free
 
 void 
 trv_tbl_add
-(grp_trv_t obj,          /* I   [sct] Object to store */
- grp_tbl_t *tbl)         /* I/O [sct] Table */
+(grp_trv_sct obj,          /* I   [sct] Object to store */
+ grp_tbl_sct *tbl)         /* I/O [sct] Table */
 {
   unsigned int idx;
 
   if(tbl->nbr == tbl->sz){
     tbl->sz*=2;
-    tbl->grp_lst=(grp_trv_t*)nco_realloc(tbl->grp_lst,tbl->sz*sizeof(grp_trv_t));
+    tbl->grp_lst=(grp_trv_sct*)nco_realloc(tbl->grp_lst,tbl->sz*sizeof(grp_trv_sct));
 
     for(idx=tbl->nbr;idx<tbl->sz;idx++) {
       tbl->grp_lst[idx].nm_fll = NULL;

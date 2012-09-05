@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.346 2012-09-04 21:15:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.347 2012-09-05 02:00:51 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,7 +117,7 @@ main(int argc,char **argv)
   nco_bool GET_LIST=False;     /* [flg] Iterate file, print variables and exit */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool HAS_SUBGRP=False;   /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only ) */
-  grp_tbl_t  *trv_tbl=NULL;    /* [lst] Traversal table */
+  grp_tbl_sct  *trv_tbl=NULL;    /* [lst] Traversal table */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.346 2012-09-04 21:15:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.346 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.347 2012-09-05 02:00:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.347 $";
   char root_path[2]="/";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";

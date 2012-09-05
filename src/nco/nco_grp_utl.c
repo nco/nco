@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.76 2012-09-04 22:59:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.77 2012-09-05 02:00:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -256,7 +256,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  int * const grp_xtr_nbr,  /* I/O [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in, /* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_tbl_t *trv_tbl)  /* I   [sct] Group traversal table  */
+ grp_tbl_sct *trv_tbl)  /* I   [sct] Group traversal table  */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
   
@@ -847,7 +847,7 @@ nco4_var_lst_mk2                         /*   [fnc] Create variable extraction l
  const nco_bool EXCLUDE_INPUT_LIST,      /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const var_xtr_nbr,                /* I/O [nbr] Number of variables in current extraction list */
- grp_tbl_t *trv_tbl)                     /* I   [sct] Group traversal table  */
+ grp_tbl_sct *trv_tbl)                   /* I   [sct] Group traversal table  */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
 
@@ -998,13 +998,13 @@ nco4_var_lst_mk2                         /*   [fnc] Create variable extraction l
 #endif
   }
 
-  /* Conversion to "grp_tbl_t" array to "nm_id_sct" array. 
+  /* Conversion to "grp_tbl_sct" array to "nm_id_sct" array. 
      NOTE: total size is var_nbr_all+grp_nbr 
      */
   var_lst_all=(nm_id_sct *)nco_realloc(var_lst_all,(var_nbr_all+grp_nbr)*sizeof(nm_id_sct));
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
 
-    grp_trv_t trv;  /* Current netCDF4 object */ 
+    grp_trv_sct trv;  /* Current netCDF4 object */ 
     trv=trv_tbl->grp_lst[uidx];
     if(trv.typ == nc_typ_var){
       var_lst_all[uidx].var_nm_fll=trv.nm_fll;
@@ -1116,7 +1116,7 @@ nco_grp_itr
 (const int grp_id,             /* I [enm] Group ID */
  char * grp_pth,               /* I [sng] Mode 1: Absolute group name (path); mode 0: group name */
  const int mode,               /* I [enm] Mode: modes are 0 (-z), 1 (-G ), 2 (storage) */
- grp_tbl_t *tbl)               /* I/O [sct] Table */
+ grp_tbl_sct *tbl)             /* I/O [sct] Table */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -1131,7 +1131,7 @@ nco_grp_itr
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   int nbr_dmn;                 /* O [nbr] number of dimensions */
   int idx;
-  grp_trv_t obj;               /* netCDF4 object, as having a path and a type */
+  grp_trv_sct obj;             /* netCDF4 object, as having a path and a type */
 
 #ifdef NCO_SANITY_CHECK
   assert(mode == 0 || mode == 1 || mode == 2);
@@ -1160,7 +1160,7 @@ nco_grp_itr
     strcpy(var_pth,grp_pth);
     if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
       strcat(var_pth,"/");
-    strcat(var_pth,var_nm);       /* Concatenate variable to absolute group path */
+    strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
 
     if((mode == 0) && dbg_lvl_get() >= nco_dbg_std){
       (void)fprintf(stdout,"var= %s\n",var_pth); 
@@ -1201,7 +1201,7 @@ nco_grp_itr
     strcpy(path,grp_pth);
     if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
       strcat(path,"/");
-    strcat(path,gp_nm);        /* Concatenate current group to absolute group path */
+    strcat(path,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups; NOTE the new absolute group path is passed in mode 1 */
     if(mode == 0 || mode == 2){
@@ -1224,9 +1224,7 @@ nco_has_subgrps
 {
   /* Purpose: Return a bool value telling if the netCDF file has groups other than root */
   int ngrps;                   /* I [nbr] Number of sub-groups */
-
   nco_inq_grps(nc_id,&ngrps,NULL);
-
   return ngrps;
 }
 /* nco_has_subgrps() */
@@ -1238,7 +1236,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
  int * const xtr_nbr, /* I/O [nbr] Number of variables in exclusion/extraction list */
- grp_tbl_t *trv_tbl)  /* I   [sct] Group traversal table  */
+ grp_tbl_sct *trv_tbl)  /* I   [sct] Group traversal table  */
 {
   /* Purpose: Convert exclusion list to extraction list
      User wants to extract all variables except those currently in list
@@ -1272,7 +1270,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
       nbr_var_tbl++;
 
-      grp_trv_t trv=trv_tbl->grp_lst[uidx];
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
 
       for(idx=0;idx<*xtr_nbr;idx++){
 
@@ -1300,7 +1298,7 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   *xtr_nbr=0;
 
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_t trv=trv_tbl->grp_lst[uidx];
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var && trv.flg != 1 ){ /* trv_tbl lists non-variables also; filter just variables */
 
       char *pch;
@@ -1319,7 +1317,11 @@ nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
       /* Obtain group ID from netCDF API using full group name */
       nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
-      /* ncks needs only xtr_lst.grp_nm_fll and xtr_lst.nm */
+      /* ncks needs only:
+      1) xtr_lst.grp_nm_fll (full group name wehe variable reseides, to get group ID) 
+      2) xtr_lst.nm (relative variable name) 
+      NOTE: grp_id is stored for validation
+      */
       xtr_lst[*xtr_nbr].nm=(char *)strdup(trv.nm);
       xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup(grp_nm_fll);
       xtr_lst[*xtr_nbr].grp_id=grp_id;
@@ -1379,7 +1381,7 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
  int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
- grp_tbl_t *trv_tbl)  /* I   [sct] Group traversal table  */
+ grp_tbl_sct *trv_tbl)  /* I   [sct] Group traversal table  */
 {
   /* Purpose: Add all coordinates to extraction list
      Find all coordinates (dimensions which are also variables) and
@@ -1405,27 +1407,26 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
   assert(ndims == nbr_dim);
 #endif
 
-  for(idx=0;idx<nbr_dim;idx++){
-    (void)nco_inq_dimname(nc_id,dmn_ids[idx],crd_nm);
+  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
+      nbr_var_tbl++;
 
-    if(dbg_lvl_get() >= nco_dbg_vrb){
-      (void)fprintf(stdout,"idx = %d, dmn_ids = %d, crd_nm = %s\n",idx,dmn_ids[idx],crd_nm);
-    } /* endif dbg */
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
 
-    for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-      if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
-        nbr_var_tbl++;
-
-        grp_trv_t trv=trv_tbl->grp_lst[uidx];
+      for(idx=0;idx<nbr_dim;idx++){
+        (void)nco_inq_dimname(nc_id,dmn_ids[idx],crd_nm);
 
         /* Compare variable name with dimension name */
         if(strcmp(crd_nm,trv.nm) == 0){
 
+        
+
 
         } /* end strcmp */
-      } /* end nc_typ_var */
-    } /* end loop over trv_tbl */
-  } /* end loop nbr_dim */
+      } /* end loop nbr_dim */
+    } /* end nc_typ_var */
+  } /* end loop over trv_tbl */
+
 
   /* Free allocated memory */
   dmn_ids=(int *)nco_free(dmn_ids);
@@ -1625,4 +1626,6 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 
   return xtr_lst;
 } /* end nco_var_lst_crd_add() */
+
+
 
