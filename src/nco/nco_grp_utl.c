@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.80 2012-09-05 04:42:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.81 2012-09-05 21:29:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1131,7 +1131,7 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
 (const int nc_id,                /* I [ID] netCDF file ID */
  const int nbr_dim,              /* I [nbr] Number of dimensions in input file */
  const int nbr_var,              /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list (destroyed) */
+ nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,            /* I/O [nbr] Number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl)           /* I [sct] Group traversal table  */
@@ -1151,6 +1151,12 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
   int crd_id;
   int rcd=NC_NOERR; /* [rcd] Return code */
 #endif
+
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add() reports following %d variable%s to be added with dimensions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    for(idx=0;idx<*xtr_nbr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+  } /* endif dbg */
+
 
 #ifdef GRP_DEV
   /* Allocate an array for dimension ID's */
@@ -1177,14 +1183,84 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
         /* Compare variable name with dimension name */
         if(strcmp(crd_nm,trv.nm) == 0){
 
+          trv_tbl->grp_lst[uidx].flg=1;
+          nbr_var_xtr++;
+
         } /* end strcmp */
       } /* end loop nbr_dim */
     } /* end nc_typ_var */
   } /* end loop over trv_tbl */
 
-
   /* Free allocated memory */
   dmn_ids=(int *)nco_free(dmn_ids);
+
+  /* Second traversal: extracts all variables that are marked; the xtr_lst must be reconstructed for:
+  1) grp_nm_fll (full group name)
+  2) grp_id (group ID) 
+  */
+
+  xtr_lst=(nm_id_sct *)nco_malloc(nbr_var_xtr*sizeof(nm_id_sct));
+
+  /* Initialize index of extracted variables */
+  *xtr_nbr=0;
+
+  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_var && trv.flg == 1 ){ /* trv_tbl lists non-variables also; filter just variables */
+
+      /* Extract the full group name from 'trv', 
+      that contains the full variable name, to xtr_lst */
+
+      char *pch;        /* Pointer to the last occurrence of character */
+      int   pos;        /* Position of character */
+      char *grp_nm_fll; /* Fully qualified group where variable resides */
+      int  grp_id;      /* Group ID */
+      int  len;         /* Lenght of fully qualified group where variable resides */
+
+      len=strlen(trv.nm_fll);
+      grp_nm_fll=(char *)nco_malloc((len+1L)*sizeof(char));
+      strcpy(grp_nm_fll,trv.nm_fll);
+
+      /* Find last occurence of '/' to form group full name */
+      pch=strrchr(grp_nm_fll,'/');
+
+#ifdef NCO_SANITY_CHECK
+      /* trv.nm_fll must have a '/'  */
+      assert(pch != NULL);
+#endif
+
+      /* Trim the variable name */
+      pos=pch-grp_nm_fll+1;
+      grp_nm_fll[pos]='\0';
+
+      /* Obtain group ID from netCDF API using full group name */
+      nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
+      /* ncks needs only:
+      1) xtr_lst.grp_nm_fll (full group name wehe variable reseides, to get group ID) 
+      2) xtr_lst.nm (relative variable name) 
+      NOTE: grp_id is stored for validation
+      */
+      xtr_lst[*xtr_nbr].nm=(char *)strdup(trv.nm);
+      xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup(grp_nm_fll);
+      xtr_lst[*xtr_nbr].grp_id=grp_id;
+
+      /* Free allocated memory */
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
+      /* Increment index of extracted variables */
+      ++*xtr_nbr;
+    }
+  } /* end loop over uidx */
+
+#ifdef NCO_SANITY_CHECK
+  assert(*xtr_nbr == nbr_var_xtr);
+#endif
+
+  /* Reset mark field */
+  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_tbl->grp_lst[uidx].flg=-1;
+  }
 
 #else /* GRP_DEV */
 
