@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.79 2012-09-05 04:16:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.80 2012-09-05 04:42:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -974,6 +974,8 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
      It is hard to edit existing list so copy existing extraction list into 
      exclusion list, then construct new extraction list from scratch. */
 
+  int nbr_var_xtr;   /* Number of variables to extract */
+  int nbr_var_tbl;   /* Number of variables in the table */
   int idx;
   int nbr_xcl;
   unsigned int uidx;
@@ -991,13 +993,11 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
  
 #ifdef GRP_DEV
   /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as flagged;
-     A second traversal extracts all variables that are not marked (this reverses the list);
-     The xtr_lst must be reconstructed for:
-     1) grp_nm_fll (full group name)
-     2) grp_id (group ID) 
-     */
-  int nbr_var_xtr=0;
-  int nbr_var_tbl=0;
+  A second traversal extracts all variables that are not marked (this reverses the list);
+  The second traversal is needed because we need to find nbr_xcl, the number of variables to exclude, first
+  */
+  nbr_var_xtr=0;
+  nbr_var_tbl=0;
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
       nbr_var_tbl++;
@@ -1024,6 +1024,11 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   assert(nbr_var_tbl == nbr_var);
 #endif
   nbr_xcl=nbr_var-nbr_var_xtr;
+
+  /* Second traversal: extracts all variables that are not marked (this reverses the list); the xtr_lst must be reconstructed for:
+  1) grp_nm_fll (full group name)
+  2) grp_id (group ID) 
+  */
 
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
 
@@ -1135,12 +1140,13 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
      Find all coordinates (dimensions which are also variables) and
      add them to the list if they are not already there. */
   
+  int nbr_var_xtr;   /* Number of variables to extract */
+  int nbr_var_tbl;   /* Number of variables in the table */
   char crd_nm[NC_MAX_NAME];
   int *dmn_ids;
   int ndims;
   int idx;
   unsigned int uidx;
-  int nbr_var_tbl;
 #ifndef GRP_DEV
   int crd_id;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -1158,6 +1164,7 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
 #endif
 
   nbr_var_tbl=0;
+  nbr_var_xtr=0;
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
       nbr_var_tbl++;
@@ -1169,9 +1176,6 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
 
         /* Compare variable name with dimension name */
         if(strcmp(crd_nm,trv.nm) == 0){
-
-        
-
 
         } /* end strcmp */
       } /* end loop nbr_dim */
