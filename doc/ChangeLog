@@ -1,3 +1,8 @@
+2012-09-05  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks: implement -c (extract all coordinate variables in the input appear in the output)
+        for group hierarchies
+
 2012-09-04  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.2 release procedure:
