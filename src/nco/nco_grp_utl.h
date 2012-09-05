@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.41 2012-09-05 02:44:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.42 2012-09-05 04:16:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -110,7 +110,7 @@ nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attrib
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
-(const int nc_id,  /* I [enm] netCDF group ID (root ID of input file) */
+(const int nc_id,  /* I [ID] netCDF group ID (root ID of input file) */
  int * const nbr_var_fl, /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
@@ -123,27 +123,27 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
 nm_id_sct * /* O [sct] Group extraction list */
 nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions */
-(const int nc_id, /* I [enm] netCDF file ID */
+(const int nc_id, /* I [ID] netCDF file ID */
  char * const * const grp_lst_in, /* I [sng] User-specified list of group names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  int * const grp_nbr); /* I/O [nbr] Number of groups in current extraction list */
 
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
-(const int out_id, /* I [enm] netCDF output-file ID */
+(const int out_id, /* I [ID] netCDF output-file ID */
  nm_id_sct *grp_xtr_lst, /* [grp] Number of groups to be defined */
  const int grp_nbr); /* I [nbr] Number of groups to be defined */
 
 int /* [rcd] Return code */
 nco_def_grp_rcr
-(const int in_id, /* I [enm] netCDF input-file ID */
- const int out_id, /* I [enm] netCDF output-file ID */
+(const int in_id, /* I [ID] netCDF input-file ID */
+ const int out_id, /* I [ID] netCDF output-file ID */
  const char * const prn_nm, /* I [sng] Parent group name */
  const int rcr_lvl); /* I [nbr] Recursion level */
 
 int                                      /* O [rcd] Return code */
 nco_grp_itr
-(const int grp_id,                       /* I [enm] Group ID */
+(const int grp_id,                       /* I [id] Group ID */
  char * grp_pth,                         /* I [sng] Absolute group path */
  const int mode,                         /* I [enm] mode (-z or -G ) */
  grp_tbl_sct *tbl);                      /* I/O [sct] Group traversal table  */
@@ -151,47 +151,29 @@ nco_grp_itr
 
 int                                      /* O [rcd] Return code */
 nco_has_subgrps
-(const int nc_id);                       /* I [enm] NetCDF file ID */  
+(const int nc_id);                       /* I [ID] NetCDF file ID */  
 /* end nco_has_subgrps() */
 
-nm_id_sct *                              /* O [sct] Variable extraction list */
-nco4_var_lst_mk2                         /*   [fnc] Create variable extraction list using regular expressions */
-(const int nc_id,                        /* I [enm] Apex group ID */
- int * const nbr_var_fl,                 /* O [nbr] Number of variables in input file */
- char * const * const var_lst_in,        /* I [sng] User-specified list of variable names and rx's */
- const nco_bool EXCLUDE_INPUT_LIST,      /* I [flg] Exclude rather than extract */
- const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const var_xtr_nbr,                /* I/O [nbr] Number of variables in current extraction list */
- grp_tbl_sct *trv_tbl);                  /* I   [sct] Group traversal table  */
-/* end nco4_var_lst_mk2() */
 
-nm_id_sct * /* O [sct] Extraction list */
-nco4_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
-(const int nc_id, /* I netCDF file ID */
- const int nbr_var, /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr, /* I/O [nbr] Number of variables in exclusion/extraction list */
- grp_tbl_sct *trv_tbl); /* I   [sct] Group traversal table  */
-
-
-nm_id_sct * /* O [sct] Extraction list */
-nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
-(const int nc_id, /* I [id] netCDF file ID */
- const int nbr_dim, /* I [nbr] Number of dimensions in input file */
- const int nbr_var, /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
- int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
- grp_tbl_sct *trv_tbl);  /* I   [sct] Group traversal table  */
-
-
-void
-xtr_grp_nm_fll          /* [fnc] Extract full group name from a grp_trv_sct to a nm_id_sct */
-(const int nc_id,       /* I netCDF file ID */
+nm_id_sct *             /* O [sct] Extraction list */
+nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
+(const int nc_id,       /* I [ID] netCDF file ID */
  const int nbr_var,     /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list (destroyed) */
  int * const xtr_nbr,   /* I/O [nbr] Number of variables in exclusion/extraction list */
- grp_trv_sct trv);      /* I   [sct] Group traversal table entry */
+ grp_tbl_sct *trv_tbl); /* I [sct] Group traversal table  */
+
+
+nm_id_sct *                      /* O [sct] Extraction list */
+nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ const int nbr_dim,              /* I [nbr] Number of dimensions in input file */
+ const int nbr_var,              /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list (destroyed) */
+ int * const xtr_nbr,            /* I/O [nbr] Number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
+ grp_tbl_sct *trv_tbl);          /* I [sct] Group traversal table  */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
