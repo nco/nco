@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.40 2012-09-05 02:00:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.41 2012-09-05 02:44:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -184,6 +184,14 @@ nco4_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl);  /* I   [sct] Group traversal table  */
 
+
+void
+xtr_grp_nm_fll          /* [fnc] Extract full group name from a grp_trv_sct to a nm_id_sct */
+(const int nc_id,       /* I netCDF file ID */
+ const int nbr_var,     /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list (destroyed) */
+ int * const xtr_nbr,   /* I/O [nbr] Number of variables in exclusion/extraction list */
+ grp_trv_sct trv);      /* I   [sct] Group traversal table entry */
 
 #ifdef __cplusplus
 } /* end extern "C" */
