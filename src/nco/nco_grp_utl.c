@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.81 2012-09-05 21:29:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.82 2012-09-06 18:08:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1039,45 +1039,8 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var && trv.flg != 1 ){ /* trv_tbl lists non-variables also; filter just variables */
 
-      /* Extract the full group name from 'trv', 
-         that contains the full variable name, to xtr_lst */
-
-      char *pch;        /* Pointer to the last occurrence of character */
-      int   pos;        /* Position of character */
-      char *grp_nm_fll; /* Fully qualified group where variable resides */
-      int  grp_id;      /* Group ID */
-      int  len;         /* Lenght of fully qualified group where variable resides */
-
-      len=strlen(trv.nm_fll);
-      grp_nm_fll=(char *)nco_malloc((len+1L)*sizeof(char));
-      strcpy(grp_nm_fll,trv.nm_fll);
-
-      /* Find last occurence of '/' to form group full name */
-      pch=strrchr(grp_nm_fll,'/');
-
-#ifdef NCO_SANITY_CHECK
-      /* trv.nm_fll must have a '/'  */
-      assert(pch != NULL);
-#endif
-
-      /* Trim the variable name */
-      pos=pch-grp_nm_fll+1;
-      grp_nm_fll[pos]='\0';
-
-      /* Obtain group ID from netCDF API using full group name */
-      nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
-
-      /* ncks needs only:
-      1) xtr_lst.grp_nm_fll (full group name wehe variable reseides, to get group ID) 
-      2) xtr_lst.nm (relative variable name) 
-      NOTE: grp_id is stored for validation
-      */
-      xtr_lst[*xtr_nbr].nm=(char *)strdup(trv.nm);
-      xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup(grp_nm_fll);
-      xtr_lst[*xtr_nbr].grp_id=grp_id;
-
-      /* Free allocated memory */
-      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+      /* Extract the full group name from 'trv', that contains the full variable name, to xtr_lst */
+      (void)nco4_xtr_grp_nm_fll(nc_id,xtr_lst,xtr_nbr,trv);
 
       /* Increment index of extracted variables */
       ++*xtr_nbr;
@@ -1208,45 +1171,8 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var && trv.flg == 1 ){ /* trv_tbl lists non-variables also; filter just variables */
 
-      /* Extract the full group name from 'trv', 
-      that contains the full variable name, to xtr_lst */
-
-      char *pch;        /* Pointer to the last occurrence of character */
-      int   pos;        /* Position of character */
-      char *grp_nm_fll; /* Fully qualified group where variable resides */
-      int  grp_id;      /* Group ID */
-      int  len;         /* Lenght of fully qualified group where variable resides */
-
-      len=strlen(trv.nm_fll);
-      grp_nm_fll=(char *)nco_malloc((len+1L)*sizeof(char));
-      strcpy(grp_nm_fll,trv.nm_fll);
-
-      /* Find last occurence of '/' to form group full name */
-      pch=strrchr(grp_nm_fll,'/');
-
-#ifdef NCO_SANITY_CHECK
-      /* trv.nm_fll must have a '/'  */
-      assert(pch != NULL);
-#endif
-
-      /* Trim the variable name */
-      pos=pch-grp_nm_fll+1;
-      grp_nm_fll[pos]='\0';
-
-      /* Obtain group ID from netCDF API using full group name */
-      nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
-
-      /* ncks needs only:
-      1) xtr_lst.grp_nm_fll (full group name wehe variable reseides, to get group ID) 
-      2) xtr_lst.nm (relative variable name) 
-      NOTE: grp_id is stored for validation
-      */
-      xtr_lst[*xtr_nbr].nm=(char *)strdup(trv.nm);
-      xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup(grp_nm_fll);
-      xtr_lst[*xtr_nbr].grp_id=grp_id;
-
-      /* Free allocated memory */
-      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+      /* Extract the full group name from 'trv', that contains the full variable name, to xtr_lst */
+      (void)nco4_xtr_grp_nm_fll(nc_id,xtr_lst,xtr_nbr,trv);
 
       /* Increment index of extracted variables */
       ++*xtr_nbr;
@@ -1458,3 +1384,53 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
 } /* end nco_var_lst_crd_add() */
 
 
+void
+nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */
+(const int nc_id,       /* I [ID] netCDF file ID */
+ nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list */
+ int * const xtr_nbr,   /* I [nbr] Current index in exclusion/extraction list */
+ grp_trv_sct trv)       /* I [sct] Group traversal table entry */
+{
+  /* Purpose: 
+     Extract the full group name from a grp_trv_sct entry that contains the full variable name 
+     to a nm_id_sct struct. 
+  */
+  char *pch;        /* Pointer to the last occurrence of character */
+  int   pos;        /* Position of character */
+  char *grp_nm_fll; /* Fully qualified group where variable resides */
+  int  grp_id;      /* Group ID */
+  int  len;         /* Lenght of fully qualified group where variable resides */
+
+  len=strlen(trv.nm_fll);
+  grp_nm_fll=(char *)nco_malloc((len+1L)*sizeof(char));
+  strcpy(grp_nm_fll,trv.nm_fll);
+
+  /* Find last occurence of '/' to form group full name */
+  pch=strrchr(grp_nm_fll,'/');
+
+#ifdef NCO_SANITY_CHECK
+  /* trv.nm_fll must have a '/'  */
+  assert(pch != NULL);
+#endif
+
+  /* Trim the variable name */
+  pos=pch-grp_nm_fll+1;
+  grp_nm_fll[pos]='\0';
+
+  /* Obtain group ID from netCDF API using full group name */
+  nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
+  /* ncks needs only:
+  1) xtr_lst.grp_nm_fll (full group name wehe variable reseides, to get group ID) 
+  2) xtr_lst.nm (relative variable name) 
+  NOTE: grp_id is stored for validation
+  */
+  xtr_lst[*xtr_nbr].nm=(char *)strdup(trv.nm);
+  xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup(grp_nm_fll);
+  xtr_lst[*xtr_nbr].grp_id=grp_id;
+
+  /* Free allocated memory */
+  grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
+  return;
+}
