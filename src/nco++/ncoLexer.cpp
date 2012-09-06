@@ -2125,17 +2125,19 @@ void ncoLexer::mVAR_ATT(bool _createToken) {
 	break;
 	}  
 	if(bDoSearch){   
-	std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(text.substr(_begin,text.length()-_begin)));   
-	if(we!=prs_arg->fmc_vtr.end() && we->fnm()==text.substr(_begin,text.length()-_begin)){
+	string fnc_nm=text.substr(_begin,text.length()-_begin); 
+	std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(fnc_nm));   
+	if(we!=prs_arg->fmc_vtr.end() && we->fnm()==fnc_nm){
 	int idx=we-prs_arg->fmc_vtr.begin();
 	char buff[10]; 
 	sprintf(buff,"%d",idx);
-	{ text.erase(_begin); text += buff; };    
+	// VERY IMPORTANT - append the index in fmc_vtr to the function name - (name#idx)
+	{ text.erase(_begin); text += fnc_nm+"#"+buff; };    
 	_ttype = FUNC;
 	}             
 	} 
 	
-#line 2139 "ncoLexer.cpp"
+#line 2141 "ncoLexer.cpp"
 	{
 	if ((LA(1) == 0x40 /* '@' */ )) {
 		match('@' /* charlit */ );
@@ -2224,9 +2226,9 @@ void ncoLexer::mVAR_ATT(bool _createToken) {
 		}
 		_loop192:;
 		} // ( ... )*
-#line 586 "ncoGrammer.g"
+#line 588 "ncoGrammer.g"
 		_ttype = ATT_ID;
-#line 2230 "ncoLexer.cpp"
+#line 2232 "ncoLexer.cpp"
 	}
 	else {
 	}
@@ -2252,18 +2254,18 @@ void ncoLexer::mVAR_ATT_QT(bool _createToken) {
 	text.erase(_saveIndex);
 	}
 	mVAR_NM_QT(false);
-#line 592 "ncoGrammer.g"
+#line 594 "ncoGrammer.g"
 	_ttype = VAR_ID;
-#line 2258 "ncoLexer.cpp"
+#line 2260 "ncoLexer.cpp"
 	{
 	switch ( LA(1)) {
 	case 0x40 /* '@' */ :
 	{
 		match('@' /* charlit */ );
 		mVAR_NM_QT(false);
-#line 593 "ncoGrammer.g"
+#line 595 "ncoGrammer.g"
 		_ttype = ATT_ID;
-#line 2267 "ncoLexer.cpp"
+#line 2269 "ncoLexer.cpp"
 		break;
 	}
 	case 0x27 /* '\'' */ :
@@ -2304,9 +2306,9 @@ void ncoLexer::mDIM_QT(bool _createToken) {
 	match('$' /* charlit */ );
 	text.erase(_saveIndex);
 	mVAR_NM_QT(false);
-#line 602 "ncoGrammer.g"
+#line 604 "ncoGrammer.g"
 	_ttype = DIM_ID;
-#line 2310 "ncoLexer.cpp"
+#line 2312 "ncoLexer.cpp"
 	}
 	{
 	_saveIndex = text.length();
@@ -2318,9 +2320,9 @@ void ncoLexer::mDIM_QT(bool _createToken) {
 		_saveIndex = text.length();
 		match(".size");
 		text.erase(_saveIndex);
-#line 604 "ncoGrammer.g"
+#line 606 "ncoGrammer.g"
 		_ttype = DIM_ID_SIZE;
-#line 2324 "ncoLexer.cpp"
+#line 2326 "ncoLexer.cpp"
 	}
 	else {
 	}
@@ -2427,17 +2429,17 @@ void ncoLexer::mDIM_VAL(bool _createToken) {
 	}
 	_loop205:;
 	} // ( ... )*
-#line 609 "ncoGrammer.g"
+#line 611 "ncoGrammer.g"
 	_ttype = DIM_ID;
-#line 2433 "ncoLexer.cpp"
+#line 2435 "ncoLexer.cpp"
 	{
 	if ((LA(1) == 0x2e /* '.' */ )) {
 		_saveIndex = text.length();
 		match(".size");
 		text.erase(_saveIndex);
-#line 611 "ncoGrammer.g"
+#line 613 "ncoGrammer.g"
 		_ttype = DIM_ID_SIZE;
-#line 2441 "ncoLexer.cpp"
+#line 2443 "ncoLexer.cpp"
 	}
 	else {
 	}
@@ -2506,17 +2508,17 @@ void ncoLexer::mNSTRING(bool _createToken) {
 	_saveIndex = text.length();
 	match('\"' /* charlit */ );
 	text.erase(_saveIndex);
-#line 627 "ncoGrammer.g"
+#line 629 "ncoGrammer.g"
 	_ttype = NSTRING;
-#line 2512 "ncoLexer.cpp"
+#line 2514 "ncoLexer.cpp"
 	{
 	if ((LA(1) == 0x73 /* 's' */ )) {
 		_saveIndex = text.length();
 		match('s' /* charlit */ );
 		text.erase(_saveIndex);
-#line 628 "ncoGrammer.g"
+#line 630 "ncoGrammer.g"
 		_ttype = N4STRING;
-#line 2520 "ncoLexer.cpp"
+#line 2522 "ncoLexer.cpp"
 	}
 	else {
 	}
@@ -2559,7 +2561,7 @@ void ncoLexer::mINCLUDE(bool _createToken) {
 	}
 	mNSTRING(true);
 	f=_returnToken;
-#line 635 "ncoGrammer.g"
+#line 637 "ncoGrammer.g"
 	
 			// ANTLR_USING_NAMESPACE(std)
 			// create lexer to handle include
@@ -2588,7 +2590,7 @@ void ncoLexer::mINCLUDE(bool _createToken) {
 			// of the new instance of this lexer.
 			selector.retry(); // throws TokenStreamRetryException
 			
-#line 2592 "ncoLexer.cpp"
+#line 2594 "ncoLexer.cpp"
 	if ( _createToken && _token==ANTLR_USE_NAMESPACE(antlr)nullToken && _ttype!=ANTLR_USE_NAMESPACE(antlr)Token::SKIP ) {
 	   _token = makeToken(_ttype);
 	   _token->setText(text.substr(_begin, text.length()-_begin));
