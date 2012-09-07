@@ -1,14 +1,18 @@
-2012-09-05  Pedro Vicente  <pvicente@uci.edu>
-
-        * ncks: implement -c (extract coordinate variables) for group hierarchies
-
-2012-09-04  Charlie Zender  <zender@uci.edu>
+2012-09-07  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.2 release procedure:
  	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs
 	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
 	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
+
+	* Add filters ncmax, ncavg, ncrng
+
+2012-09-05  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks: implement -c (extract coordinate variables) for group hierarchies
+
+2012-09-04  Charlie Zender  <zender@uci.edu>
 
 	* nco_att_cpy() now attempts to copy array-valued missing values
 	Attempt will likely fail, but some old files have these arrays,

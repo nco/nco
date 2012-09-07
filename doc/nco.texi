@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.714 2012-09-02 05:00:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.715 2012-09-07 18:00:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11595,8 +11595,12 @@ Also @samp{--units}.
 <a name="nclist"></a> <!-- http://nco.sf.net/nco.html#nclist -->
 <a name="ncdmnsz"></a> <!-- http://nco.sf.net/nco.html#ncdmnsz -->
 <a name="ncrecsz"></a> <!-- http://nco.sf.net/nco.html#ncrecsz -->
+<a name="ncmax"></a> <!-- http://nco.sf.net/nco.html#ncmax -->
+<a name="ncavg"></a> <!-- http://nco.sf.net/nco.html#ncavg -->
+<a name="ncrng"></a> <!-- http://nco.sf.net/nco.html#ncrng -->
 <a name="alias"></a> <!-- http://nco.sf.net/nco.html#alias -->
 <a name="filters"></a> <!-- http://nco.sf.net/nco.html#filters -->
+<a name="filter"></a> <!-- http://nco.sf.net/nco.html#filter -->
 <a name="flt"></a> <!-- http://nco.sf.net/nco.html#flt -->
 @end html
 @menu
@@ -11607,9 +11611,13 @@ Also @samp{--units}.
 @subsection Filters for @command{ncks}
 @cindex @acronym{UNIX}
 @cindex @command{ncattget}
-@cindex @command{nclist}
+@cindex @command{ncavg}
 @cindex @command{ncdmnsz}
+@cindex @command{nclist}
+@cindex @command{ncmax}
+@cindex @command{ncmin}
 @cindex @command{ncrecsz}
+@cindex @command{ncrng}
 @cindex @file{.bashrc}
 @cindex filters
 @cindex alias
@@ -11686,8 +11694,13 @@ These files are usually named @file{.bashrc}, @file{.cshrc}, and
 # NB: Untested on Csh, Ksh, Sh, Zsh! Send us feedback!
 # Bash shell (/bin/bash) users place these in .bashrc
 function ncattget @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
+function ncavg @{ ncwa -y avg -O -C -v $@{1@} $@{2@} ~/foo.nc ; ncks -H -C -v $@{1@} ~/foo.nc | cut -f 3- -d ' ' ; @}
+function ncavg @{ ncap2 -O -C -v -s "foo=$@{1@}.avg();print(foo)" $@{2@} ~/foo.nc | cut -f 3- -d ' ' ; @}
 function ncdmnsz @{ ncks -m -M $@{2@} | grep -E -i ": $@{1@}, size =" | cut -f 7 -d ' ' | uniq ; @}
 function nclist @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
+function ncmax @{ ncwa -y max -O -C -v $@{1@} $@{2@} ~/foo.nc ; ncks -H -C -v $@{1@} ~/foo.nc | cut -f 3- -d ' ' ; @}
+function ncmax @{ ncap2 -O -C -v -s "foo=$@{1@}.max();print(foo)" $@{2@} ~/foo.nc | cut -f 3- -d ' ' ; @}
+function ncrng @{ ncap2 -O -C -v -s "foo_min=$@{1@}.min();foo_max=$@{1@}.max();print(foo_min,\"%f\");print(\" to \");print(foo_max,\"%f\")" $@{2@} ~/foo.nc ; @}
 function ncrecsz @{ ncks -M $@{1@} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; @}
 # Csh shell (/bin/csh) users place these in .cshrc
 ncattget() @{ ncks -M -m $@{3@} | grep -E -i "^$@{2@} attribute [0-9]+: $@{1@}" | cut -f 11- -d ' ' | sort ; @}
