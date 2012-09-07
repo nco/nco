@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.84 2012-09-07 17:41:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.85 2012-09-07 21:01:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1469,6 +1469,7 @@ get_lst_nm                 /* [fnc] Strip last component of full name */
   return cp+1;               /* Return component without leading '/' */
 }/* end get_lst_nm() */
 
+
 int                              /* O [rcd] Return code, bool */
 nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
 (const int nc_id,                /* I [ID] netCDF file ID */
@@ -1479,7 +1480,7 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
   /* Purpose: 
      Extract the group name from a grp_trv_sct entry that contains the full path 
   */
-  char *pch;                    /* Pointer to the last occurrence of character */
+  char *pch;                    /* Pointer to character in string */
   int   pos;                    /* Position of character */
   char *nm_fll;                 /* Path */
   int  grp_id;                  /* Group ID */
@@ -1517,22 +1518,14 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
     /* Locate group name from -g in traversal name */
     pch=strstr(nm_fll,grp_nm_lst);
 
-    /* Check that the name found is the last component of full name */
-    if(pch!=NULL){
-      char *lst_nm;
-
-      /* Get last component of full name */
-      lst_nm=get_lst_nm(nm_fll);
-
-      /* Compare last component of full name with supplied -g group name */
-      if(strstr(lst_nm,grp_nm_lst) != NULL){
-        fnd=1;
-      } /* end strstr of last component */
+    /* strstr returns the first occurrence of 'grp_nm_lst' in 'nm_fll', the higher level group( closer to root) */
+    if(pch != NULL){    
+      fnd=1;
     } /* end pch was found */
   } /* end loop user-specified group list */
 
   /* Free allocated memory */
   nm_fll=(char *)nco_free(nm_fll);
   return fnd;
-}
+} /* end nco4_xtr_grp_nm() */
 
