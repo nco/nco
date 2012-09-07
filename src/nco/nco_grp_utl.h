@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.44 2012-09-06 18:38:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.45 2012-09-07 17:41:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -155,13 +155,13 @@ nco_has_subgrps
 /* end nco_has_subgrps() */
 
 
-nm_id_sct *             /* O [sct] Extraction list */
-nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
-(const int nc_id,       /* I [ID] netCDF file ID */
- const int nbr_var,     /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr,   /* I/O [nbr] Number of variables in exclusion/extraction list */
- grp_tbl_sct *trv_tbl); /* I [sct] Group traversal table  */
+nm_id_sct *                     /* O [sct] Extraction list */
+nco4_var_lst_xcl                /* [fnc] Convert exclusion list to extraction list */
+(const int nc_id,               /* I [ID] netCDF file ID */
+ const int nbr_var,             /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst,            /* I/O [sct] Current exclusion list (destroyed) */
+ int * const xtr_nbr,           /* I/O [nbr] Number of variables in exclusion/extraction list */
+ grp_tbl_sct *trv_tbl);         /* I [sct] Group traversal table  */
 
 
 nm_id_sct *                      /* O [sct] Extraction list */
@@ -176,13 +176,19 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
  char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
  grp_tbl_sct *trv_tbl);          /* I [sct] Group traversal table  */
 
-
 void
-nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */
-(const int nc_id,       /* I [ID] netCDF file ID */
- nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list */
- int * const xtr_nbr,   /* I [nbr] Current index in exclusion/extraction list */
- grp_trv_sct trv);      /* I [sct] Group traversal table entry */
+nco4_xtr_grp_nm_fll              /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ nm_id_sct *xtr_lst,             /* I/O [sct] Current exclusion list */
+ int * const xtr_nbr,            /* I [nbr] Current index in exclusion/extraction list */
+ grp_trv_sct trv);               /* I [sct] Group traversal table entry */
+
+int                              /* O [rcd] Return code, bool */
+nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ grp_trv_sct trv);               /* I [sct] Group traversal table entry */
 
 
 #ifdef __cplusplus
@@ -190,5 +196,3 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
 #endif /* __cplusplus */
 
 #endif /* NCO_GRP_UTL_H */
-
-

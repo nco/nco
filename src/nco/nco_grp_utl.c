@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.83 2012-09-06 18:38:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.84 2012-09-07 17:41:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1148,10 +1148,19 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
         /* Compare variable name with dimension name */
         if(strcmp(crd_nm,trv.nm) == 0){
 
-          trv_tbl->grp_lst[uidx].flg=1;
-          nbr_var_xtr++;
+          /* No groups case, just add  */
+          if (*grp_xtr_nbr == 0 ){
+            trv_tbl->grp_lst[uidx].flg=1;
+            nbr_var_xtr++;
+            /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
+          }else{
 
-        } /* end strcmp */
+            if (nco4_xtr_grp_nm(nc_id,grp_xtr_nbr,grp_lst_in,trv)){            
+              trv_tbl->grp_lst[uidx].flg=1;
+              nbr_var_xtr++;
+            } /* end nco4_xtr_grp_nm */
+          } /* end *grp_xtr_nbr == 0 */
+        } /* end strcmp coordinate name */
       } /* end loop nbr_dim */
     } /* end nc_typ_var */
   } /* end loop over trv_tbl */
@@ -1423,7 +1432,7 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
   nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* ncks needs only:
-  1) xtr_lst.grp_nm_fll (full group name wehe variable reseides, to get group ID) 
+  1) xtr_lst.grp_nm_fll (full group name wehe variable resides, to get group ID) 
   2) xtr_lst.nm (relative variable name) 
   NOTE: grp_id is stored for validation
   */
@@ -1436,3 +1445,94 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
 
   return;
 }
+
+char*                      /* O [sng] Return substring */
+get_lst_nm                 /* [fnc] Strip last component of full name */
+(const char * const nm_in) /* I [sng] Full name; it contains '/' as last character */
+{
+  int len;  /* Input string lenght */
+  char *cp; 
+
+  len=strlen(nm_in);
+  if(len == 0) return NULL; 
+  cp=(char *)(nm_in+len);    /* Point to the NULL ending the string */
+  cp--;                      /* Back up one character */
+  cp--;                      /* Back up one character; avoid the last '/' */
+  while(cp != nm_in)         
+  { 
+    if('/' == *cp){          /* Found path separator */
+      break;                 /* End traversal */
+    }
+    cp--;                    /* Traverse from end */
+  }
+
+  return cp+1;               /* Return component without leading '/' */
+}/* end get_lst_nm() */
+
+int                              /* O [rcd] Return code, bool */
+nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ grp_trv_sct trv)                /* I [sct] Group traversal table entry */
+{
+  /* Purpose: 
+     Extract the group name from a grp_trv_sct entry that contains the full path 
+  */
+  char *pch;                    /* Pointer to the last occurrence of character */
+  int   pos;                    /* Position of character */
+  char *nm_fll;                 /* Path */
+  int  grp_id;                  /* Group ID */
+  int  len_fll;                 /* Lenght of fully qualified group where variable resides */
+  char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
+  int  fnd=0;                   /* Return value; name was found or not */
+
+  len_fll=strlen(trv.nm_fll);
+  nm_fll=(char *)nco_malloc((len_fll+1L)*sizeof(char));
+  strcpy(nm_fll,trv.nm_fll);
+
+  /* Find last occurence of '/' */
+  pch=strrchr(nm_fll,'/');
+
+#ifdef NCO_SANITY_CHECK
+  /* trv.nm_fll must have a '/'  */
+  assert(pch != NULL);
+#endif
+
+  /* Trim the variable name */
+  pos=pch-nm_fll+1;
+  nm_fll[pos]='\0';
+
+  /* Obtain group ID from netCDF API using full group name */
+#ifdef NCO_SANITY_CHECK
+  (void)nco_inq_grp_full_ncid(nc_id,nm_fll,&grp_id);
+#endif
+
+  /* Loop through user-specified group list */
+  for(int grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
+
+    /* Get group name from -g */
+    strcpy(grp_nm_lst,grp_lst_in[grp_idx]);
+
+    /* Locate group name from -g in traversal name */
+    pch=strstr(nm_fll,grp_nm_lst);
+
+    /* Check that the name found is the last component of full name */
+    if(pch!=NULL){
+      char *lst_nm;
+
+      /* Get last component of full name */
+      lst_nm=get_lst_nm(nm_fll);
+
+      /* Compare last component of full name with supplied -g group name */
+      if(strstr(lst_nm,grp_nm_lst) != NULL){
+        fnd=1;
+      } /* end strstr of last component */
+    } /* end pch was found */
+  } /* end loop user-specified group list */
+
+  /* Free allocated memory */
+  nm_fll=(char *)nco_free(nm_fll);
+  return fnd;
+}
+
