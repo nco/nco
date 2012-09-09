@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.86 2012-09-09 23:07:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.87 2012-09-09 23:28:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1530,11 +1530,17 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
 } /* end nco4_xtr_grp_nm() */
 
 void
-nco4_grp_lst_mk                      /* [fnc] Create groups/variables in output file */
-(const int nc_id,                    /* I [ID] netCDF file ID */
- const int out_id,                   /* I [ID] netCDF output file ID */
- char * const * const grp_lst_in,    /* I [sng] User-specified list of group names and rx's */
- const nco_bool EXCLUDE_INPUT_LIST)  /* I [flg] Exclude rather than extract */
+nco4_grp_lst_mk                          /* [fnc] Create groups/variables in output file */
+(const int nc_id,                        /* I [ID] netCDF file ID */
+ const int out_id,                       /* I [ID] netCDF output file ID */
+ int * const nbr_var_fl,                 /* I [nbr] Number of variables in input file */
+ char * const * const var_lst_in,        /* I [sng] User-specified list of variable names and rx's */
+ const nco_bool EXCLUDE_INPUT_LIST,      /* I [flg] Exclude rather than extract */
+ const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ int * const var_xtr_nbr,                /* I [nbr] Number of variables in current extraction list */
+ int * const grp_xtr_nbr,                /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in,        /* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ grp_tbl_sct *trv_tbl)                   /* I [sct] Group traversal table  */
 {
 
 
