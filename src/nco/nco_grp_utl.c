@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.85 2012-09-07 21:01:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.86 2012-09-09 23:07:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1529,3 +1529,15 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
   return fnd;
 } /* end nco4_xtr_grp_nm() */
 
+void
+nco4_grp_lst_mk                      /* [fnc] Create groups/variables in output file */
+(const int nc_id,                    /* I [ID] netCDF file ID */
+ const int out_id,                   /* I [ID] netCDF output file ID */
+ char * const * const grp_lst_in,    /* I [sng] User-specified list of group names and rx's */
+ const nco_bool EXCLUDE_INPUT_LIST)  /* I [flg] Exclude rather than extract */
+{
+
+
+
+  return;
+}

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.348 2012-09-06 18:38:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.349 2012-09-09 23:07:24 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.348 2012-09-06 18:38:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.348 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.349 2012-09-09 23:07:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.349 $";
   char root_path[2]="/";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -739,75 +739,83 @@ main(int argc,char **argv)
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
-    
-    /* Define requested/necessary input groups in output file */
-    if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
-    if(grp_nbr > 0) rcd+=nco_grp_dfn(out_id,grp_lst,grp_nbr);
 
-    for(idx=0;idx<xtr_nbr;idx++){
-      int var_out_id;
+    if (HAS_SUBGRP){
 
-      /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
-      /* Copy variable's attributes */
-      if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
-    } /* end loop over idx */
-    /* Set chunksize parameters */
-    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
-    
-    /* Turn off default filling behavior to enhance efficiency */
-    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-    
-    /* Take output file out of define mode */
-    if(hdr_pad == 0UL){
-      (void)nco_enddef(out_id);
-    }else{
-      (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
-    } /* hdr_pad */
-    
-    /* [fnc] Open unformatted binary data file for writing */
-    if(NCO_BNR_WRT) fp_bnr=nco_bnr_open(fl_bnr);
-    
-    /* Timestamp end of metadata setup and disk layout */
-    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-    ddra_info.tmr_flg=nco_tmr_rgl;
-    
-    /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
-    USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
-    if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
-    if(!USE_MM3_WORKAROUND){  
-      /* Copy all data variable-by-variable */
+      (void)nco4_grp_lst_mk(in_id,out_id,grp_lst_in,EXCLUDE_INPUT_LIST);
+
+    }else{ /* HAS_SUBGRP */
+
+      /* Define requested/necessary input groups in output file */
+      if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
+      if(grp_nbr > 0) rcd+=nco_grp_dfn(out_id,grp_lst,grp_nbr);
+
       for(idx=0;idx<xtr_nbr;idx++){
-        if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
-        if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-        /* Old hyperslab routines */
-        /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
-        /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
-        /* Multi-slab routines */
-        /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
-        if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+        int var_out_id;
+
+        /* Define variable in output file */
+        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
+        /* Copy variable's attributes */
+        if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
       } /* end loop over idx */
-    }else{
-      /* MM3 workaround algorithm */
-      int fix_nbr; /* [nbr] Number of fixed-length variables */
-      int rec_nbr; /* [nbr] Number of record variables */
-      nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
-      nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
-      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",prg_nm_get());
-      /* Split list into fixed-length and record variables */
-      (void)nco_var_lst_fix_rec_dvd(in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
-      /* Copy fixed-length data variable-by-variable */
-      for(idx=0;idx<fix_nbr;idx++){
-        if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
-        if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-        (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
-      } /* end loop over idx */
-      /* Copy record data record-by-record */
-      (void)nco_cpy_rec_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
-      if(fix_lst) fix_lst=(nm_id_sct**)nco_free(fix_lst);
-      if(rec_lst) rec_lst=(nm_id_sct**)nco_free(rec_lst);
-    } /* endif MM3 workaround */
+      /* Set chunksize parameters */
+      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
+      /* Turn off default filling behavior to enhance efficiency */
+      nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+
+      /* Take output file out of define mode */
+      if(hdr_pad == 0UL){
+        (void)nco_enddef(out_id);
+      }else{
+        (void)nco__enddef(out_id,hdr_pad);
+        if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+      } /* hdr_pad */
+
+      /* [fnc] Open unformatted binary data file for writing */
+      if(NCO_BNR_WRT) fp_bnr=nco_bnr_open(fl_bnr);
+
+      /* Timestamp end of metadata setup and disk layout */
+      rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+      ddra_info.tmr_flg=nco_tmr_rgl;
+
+      /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
+      USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
+      if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+      if(!USE_MM3_WORKAROUND){  
+        /* Copy all data variable-by-variable */
+        for(idx=0;idx<xtr_nbr;idx++){
+          if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
+          if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
+          /* Old hyperslab routines */
+          /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
+          /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
+          /* Multi-slab routines */
+          /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
+          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+        } /* end loop over idx */
+      }else{
+        /* MM3 workaround algorithm */
+        int fix_nbr; /* [nbr] Number of fixed-length variables */
+        int rec_nbr; /* [nbr] Number of record variables */
+        nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
+        nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",prg_nm_get());
+        /* Split list into fixed-length and record variables */
+        (void)nco_var_lst_fix_rec_dvd(in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
+        /* Copy fixed-length data variable-by-variable */
+        for(idx=0;idx<fix_nbr;idx++){
+          if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
+          if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
+          (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
+        } /* end loop over idx */
+        /* Copy record data record-by-record */
+        (void)nco_cpy_rec_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
+        if(fix_lst) fix_lst=(nm_id_sct**)nco_free(fix_lst);
+        if(rec_lst) rec_lst=(nm_id_sct**)nco_free(rec_lst);
+      } /* endif MM3 workaround */
+
+    } /* HAS_SUBGRP */
 
     /* [fnc] Close unformatted binary data file */
     if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
