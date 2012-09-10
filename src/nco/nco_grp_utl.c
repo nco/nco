@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.88 2012-09-10 00:19:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.89 2012-09-10 03:22:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1536,6 +1536,12 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int nbr_lst)              /* I [nbr] number of members in list */
 {
+  int idx;
+
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),nbr_lst,(nbr_lst > 1) ? "s" : "");
+    for(idx=0;idx<nbr_lst;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
+  } /* endif dbg */
 
 
   return;
