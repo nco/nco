@@ -1,3 +1,7 @@
+2012-09-10  Charlie Zender  <zender@uci.edu>
+
+	* Refine DRN/MRO documentation
+
 2012-09-09  Charlie Zender  <zender@uci.edu>
 
 	* Improve diagnostics in nco_dfl_case_nc_type_err() error message

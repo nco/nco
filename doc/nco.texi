@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.716 2012-09-10 00:32:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.717 2012-09-10 20:10:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.2
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 1 September 2012
+@set update-date 10 September 2012
 @set update-month September 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3906,35 +3906,35 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @cindex MRO
 @cindex Multi-Record Operator
 @cindex @code{--mro}
-@cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
-@cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],@var{stride}}
-@cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],@var{stride}}
+@cindex @code{-d @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{duration}]}
+@cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{duration}]}
+@cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],[@var{stride}],@var{duration}]}
 @cartouche
 Availability: @command{ncra}, @command{ncrcat}@* 
-Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
+Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]]}@*
 Long options: 
 @samp{--mro}
-@samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]},@* 
-@samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
+@samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]]}@*
+@samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]]}@*
 @end cartouche
 As of version 4.2.1 (August, 2012), @acronym{NCO} allows both Multi-File,
 Multi-Record operators, @command{ncra} and @command{ncrcat}, to extract
 and operate on multiple groups of records. 
 These groups may be physically connected to @emph{sub-cycles} of a
 periodic nature, e.g., seasons of a year.
-Or they may be thought of as groups of a specifed @emph{duration}.
+Or they may be thought of as groups of a specifed duration.
 The feature is so new that I'm unsure what terminology is best.
-For now, I call this the duration feature, sometimes abbreviated DRN.
+For now, I call this the @dfn{duration feature}, sometimes abbreviated DRN.
 
-The so-called duration feature allows processing of groups of records
+The duration feature allows processing of groups of records
 separated by regular intervals of records.
 It is perhaps best illustrated by an extended example which describes
 how to solve the same problem both with and without the DRN feature.
 
 The first task in data processing is often creating seasonal cycles.
-Suppose a 150-year climate simulation produced 100 ouput files, each
+Suppose a 150-year climate simulation produces 150 output files, each
 comprising 12 records, each a monthly mean:
-@file{1850.nc}, @file{1851.nc}, ... @file{2009.nc}.
+@file{1850.nc}, @file{1851.nc}, ... @file{1999.nc}.
 Our goal is to create a single file containing the summertime (June,
 July, and August, aka JJA) mean.
 Traditionally, we would first compute the climatological monthly
@@ -3965,18 +3965,17 @@ mean to one step:
 ncra -O -F -d time,6,,12,3 -n 150,4,1 1850.nc clm_JJA.nc
 @end example
 @noindent
-The DRN option instructs @command{ncra} (or @command{ncrcat} to process
+The DRN option instructs @command{ncra} (or @command{ncrcat}) to process 
 files in groups of three records. 
 
-A separate option, @samp{--mro}, instructs @command{ncra} to output the 
-results of it operations on each sub-group, and to produce a
-Multi-Record Output (MRO) file rather than a Single-Record Output (SRO) 
-file.
-Unless @samp{--mro} is specified, @command{ncra} will collect all the
-sub-groups together, and operate on their ensemble, producing a single
+A separate option, @samp{--mro}, instructs @command{ncra} to output 
+its results on each sub-group, and to produce a @dfn{Multi-Record Output}
+(MRO) file rather than a @dfn{Single-Record Output} (SRO) file.
+Unless @samp{--mro} is specified, @command{ncra} collects all the
+sub-groups together, and operates on their ensemble, producing a single
 record. 
-The above example with @samp{--mro} archives all (150) annual summertime
-means... 
+With the of @samp{--mro} to the above example, we can archive all (150)
+annual summertime means to one file:
 @example
 # Step 1: Archive all 150 summertime means in one file
 ncra --mro -O -F -d time,6,,12,3 -n 150,4,1 1850.nc 1850_2009_JJA.nc
@@ -3987,6 +3986,9 @@ ncra --mro -O -d time,,,12,12 -n 150,4,1 1850.nc 1850_2009.nc
 These operations generated and required no intermediate files.
 This contrasts to the previous @acronym{NCO} methods, which require
 generating, averaging, then catenating 150 files. 
+The @samp{--mro} option has no effect on, or rather is redundant for, 
+@command{ncrcat} since @command{ncrcat} always outputs all selected
+records.
 
 @html
 <a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
@@ -9911,7 +9913,8 @@ to every variable in a file.
 This saves time when changing attribute conventions throughout a file. 
 @command{ncatted} is for @emph{writing} attributes.
 To @emph{read} attribute values in plain text, use @command{ncks -m -M},
-or define something like @command{ncattget} as a shell command (@pxref{Filters for @command{ncks}}).
+or define something like @command{ncattget} as a shell command
+(@pxref{Filters for @command{ncks}}). 
 
 @cindex @code{history}
 @cindex @code{-h}
