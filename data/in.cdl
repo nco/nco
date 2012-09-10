@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.151 2012-09-05 22:21:59 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.152 2012-09-10 22:07:51 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -677,9 +677,23 @@ variables:
 	one_dmn_rec_var:long_name = "one dimensional record variable";
 	one_dmn_rec_var:units = "second";
         
+	int one_dmn_rec_var_mdn(time);
+	one_dmn_rec_var_mdn:long_name = "one dimensional record variable to test median";
+        
+	int one_dmn_rec_var_mdn__FillValue(time);
+	one_dmn_rec_var_mdn__FillValue:long_name = "one dimensional record variable to test median with _FillValue";
+	one_dmn_rec_var_mdn__FillValue:_FillValue = -999;
+        
+	int one_dmn_rec_var_unsorted(time);
+	one_dmn_rec_var_unsorted:long_name = "one dimensional record variable, unsorted";
+        
 	float one_dmn_rec_var_flt(time);
-	one_dmn_rec_var_flt:long_name = "one dimensional record variable";
+	one_dmn_rec_var_flt:long_name = "one dimensional record variable, single precision";
 	one_dmn_rec_var_flt:units = "second";
+        
+	float one_dmn_rec_var_dbl(time);
+	one_dmn_rec_var_dbl:long_name = "one dimensional record variable, double precision";
+	one_dmn_rec_var_dbl:units = "second";
         
 	float one_dmn_rec_var_missing_value(time);
 	one_dmn_rec_var_missing_value:long_name = "One dimensional record variable with missing data indicated by missing_value attribute only. No _FillValue attribute exists.";
@@ -688,6 +702,10 @@ variables:
 	float one_dmn_rec_var__FillValue(time);
 	one_dmn_rec_var__FillValue:long_name = "One dimensional record variable with missing data indicated by _FillValue attribute only. No missing_value attribute exists.";
 	one_dmn_rec_var__FillValue:_FillValue = 1.0e36f;
+
+	float one_dmn_rec_var_unsorted__FillValue(time);
+	one_dmn_rec_var_unsorted__FillValue:long_name = "Unsorted, one dimensional record variable with missing data indicated by _FillValue attribute only. No missing_value attribute exists.";
+	one_dmn_rec_var_unsorted__FillValue:_FillValue = 1.0e36f;
 
 	float one_dmn_rec_var_mss_val_arr(time);
 	one_dmn_rec_var_missing_value:long_name = "One dimensional record variable with missing data indicated by a _FillValue attribute that is an array. This can be tested with ncrcat. 20120905: ncgen chokes on _FillValue arrays and produces this error: _FillValue: must be a single (possibly compound) value. Deprecate the array for normal use since it prevents ncgen from completing. Uncommment following line when testing for compatibility with software changes.";
@@ -1024,9 +1042,13 @@ data:
 	non_nul_trm_char_two_dmn="abcd","efgh","ijkm";
 	one=1.;
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var_unsorted=10,4,6,2,8,1,9,7,3,5;
 	one_dmn_rec_var_flt=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var_dbl=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_missing_value=1,2,3,4,5,6,7,8,9,1.0e36;
 	one_dmn_rec_var__FillValue=1,2,3,4,5,6,7,8,9,1.0e36;
+	one_dmn_rec_var_unsorted__FillValue=1.0e36,4,6,2,8,1,9,7,3,5;
+	one_dmn_rec_var_mdn__FillValue=1,1,2,2,2,2,10,10,10,-999;
 	RDM=1,9,36,84,126,126,84,36,9,1;
 	one_dmn_rec_var_sng="Hello Wor";
 	one_dmn_var=1.,10.;

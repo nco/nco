@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.717 2012-09-10 20:10:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.718 2012-09-10 22:07:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11600,6 +11600,7 @@ Also @samp{--units}.
 <a name="ncdmnsz"></a> <!-- http://nco.sf.net/nco.html#ncdmnsz -->
 <a name="ncrecsz"></a> <!-- http://nco.sf.net/nco.html#ncrecsz -->
 <a name="ncmax"></a> <!-- http://nco.sf.net/nco.html#ncmax -->
+<a name="ncmdn"></a> <!-- http://nco.sf.net/nco.html#ncmdn -->
 <a name="ncavg"></a> <!-- http://nco.sf.net/nco.html#ncavg -->
 <a name="ncrng"></a> <!-- http://nco.sf.net/nco.html#ncrng -->
 <a name="alias"></a> <!-- http://nco.sf.net/nco.html#alias -->
@@ -11619,6 +11620,7 @@ Also @samp{--units}.
 @cindex @command{ncdmnsz}
 @cindex @command{nclist}
 @cindex @command{ncmax}
+@cindex @command{ncmdn}
 @cindex @command{ncmin}
 @cindex @command{ncrecsz}
 @cindex @command{ncrng}
@@ -11704,6 +11706,7 @@ function ncdmnsz @{ ncks -m -M $@{2@} | grep -E -i ": $@{1@}, size =" | cut -f 7
 function nclist @{ ncks -m $@{1@} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; @}
 function ncmax @{ ncwa -y max -O -C -v $@{1@} $@{2@} ~/foo.nc ; ncks -H -C -v $@{1@} ~/foo.nc | cut -f 3- -d ' ' ; @}
 function ncmax @{ ncap2 -O -C -v -s "foo=$@{1@}.max();print(foo)" $@{2@} ~/foo.nc | cut -f 3- -d ' ' ; @}
+function ncmdn @{ ncap2 -O -C -v -s "foo=gsl_stats_median_from_sorted_data($@{1@}.sort());print(foo)" $@{2@} ~/foo.nc | cut -f 3- -d ' ' ; @}
 function ncrng @{ ncap2 -O -C -v -s "foo_min=$@{1@}.min();foo_max=$@{1@}.max();print(foo_min,\"%f\");print(\" to \");print(foo_max,\"%f\")" $@{2@} ~/foo.nc ; @}
 function ncrecsz @{ ncks -M $@{1@} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; @}
 # Csh shell (/bin/csh) users place these in .cshrc
