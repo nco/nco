@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.90 2012-09-10 21:17:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.91 2012-09-10 22:25:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1528,7 +1528,8 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
 
 int                            /* [rcd] Return code */
 nco4_grp_itr
-(const int grp_id,             /* I [ID] Group ID */
+(const int in_id,              /* I [ID] Group ID from netCDF intput file */
+ const int out_id,             /* I [ID] Group ID from netCDF output file */
  char * grp_pth,               /* I [sng] Group path */
  char * grp_nm)                /* I [sng] Group name */
 {
@@ -1544,13 +1545,23 @@ nco4_grp_itr
   int nvars;                   /* O [nbr] Number of variables */
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   int nbr_dmn;                 /* O [nbr] number of dimensions */
+  int grp_out_id;              /* O [ID]  Group ID */ 
   int idx;
 
+  /* Avoid the root case */
+  grp_out_id = out_id;
+
+  /* No need to create root */
+  if (strcmp("/",grp_nm)) 
+
+  /* Define group of same name in output file */
+  rcd+=nco_def_grp(out_id,grp_nm,&grp_out_id);
+
   /* Get variables for this group */
-  rcd+=nco_inq_nvars(grp_id,&nvars);
+  rcd+=nco_inq_nvars(in_id,&nvars);
   for(var_id=0;var_id<nvars;var_id++){
     char *var_pth=NULL; /* Full path of variable */
-    rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+    rcd+=nco_inq_var(in_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
     var_pth=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
@@ -1569,14 +1580,14 @@ nco4_grp_itr
   }
 
   /* Go to sub-groups */
-  rcd+=nco_inq_grps(grp_id,&ngrps,NULL);
+  rcd+=nco_inq_grps(in_id,&ngrps,NULL);
   grpids=(int*)nco_malloc((ngrps)*sizeof(int));
-  rcd+=nco_inq_grps(grp_id,&ngrps,grpids);
+  rcd+=nco_inq_grps(in_id,&ngrps,grpids);
 
   /* Group information */
-  rcd+=nco_inq_grpname(grp_id,gp_nm);
-  rcd+=nco_inq_ndims(grp_id,&nbr_dmn);
-  rcd+=nco_inq_natts(grp_id,&nbr_att);
+  rcd+=nco_inq_grpname(in_id,gp_nm);
+  rcd+=nco_inq_ndims(in_id,&nbr_dmn);
+  rcd+=nco_inq_natts(in_id,&nbr_att);
 
   for(idx=0;idx<ngrps;idx++){
     char *pth=NULL;  /* Full group path */
@@ -1593,7 +1604,7 @@ nco4_grp_itr
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_itr(gid,pth,gp_nm);
+    rcd+=nco4_grp_itr(gid,grp_out_id,pth,gp_nm);
 
     pth=(char*)nco_free(pth);
   }
@@ -1629,7 +1640,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
     for(idx=0;idx<nbr_lst;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
 
-  rcd+=nco4_grp_itr(nc_id,"/","/");
+  rcd+=nco4_grp_itr(nc_id,out_id,"/","/");
 
 
 
