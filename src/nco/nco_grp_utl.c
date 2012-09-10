@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.89 2012-09-10 03:22:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.90 2012-09-10 21:17:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -900,7 +900,6 @@ nco_grp_itr
       strcpy(obj.nm,var_nm);
       trv_tbl_add(obj,tbl);
     }
-
     var_pth=(char*)nco_free(var_pth);
   }
 
@@ -909,7 +908,7 @@ nco_grp_itr
   grpids=(int*)nco_malloc((ngrps)*sizeof(int));
   rcd+=nco_inq_grps(grp_id,&ngrps,grpids);
 
-  /*information needed for mode 1 */
+  /* Information needed for mode 1 */
   rcd+=nco_inq_grpname(grp_id,gp_nm);
   rcd+=nco_inq_ndims(grp_id,&nbr_dmn);
   rcd+=nco_inq_natts(grp_id,&nbr_att);
@@ -919,33 +918,31 @@ nco_grp_itr
   }
 
   for(idx=0;idx<ngrps;idx++){
-    char *path=NULL;  /* Full group path */
+    char *pth=NULL;  /* Full group path */
     int gid=grpids[idx];
     rcd+=nco_inq_grpname(gid,gp_nm);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
-    path=(char*)nco_malloc(strlen(grp_pth)+strlen(gp_nm)+2);
+    pth=(char*)nco_malloc(strlen(grp_pth)+strlen(gp_nm)+2);
 
     /* Initialize path with the current absolute group path */
-    strcpy(path,grp_pth);
+    strcpy(pth,grp_pth);
     if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
-      strcat(path,"/");
-    strcat(path,gp_nm); /* Concatenate current group to absolute group path */
+      strcat(pth,"/");
+    strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
-    /* Recursively go to sub-groups; NOTE the new absolute group path is passed in mode 1 */
+    /* Recursively go to sub-groups; NOTE the new absolute group path is passed in mode 2 */
     if(mode == 0 || mode == 2){
-      rcd+=nco_grp_itr(gid,path,mode,tbl);
+      rcd+=nco_grp_itr(gid,pth,mode,tbl);
     }else if(mode == 1){
       rcd+=nco_grp_itr(gid,gp_nm,mode,tbl);
     }
-
-    path=(char*)nco_free(path);
+    pth=(char*)nco_free(pth);
   }
 
   (void)nco_free(grpids);
   return rcd;
-}
-/* nco_grp_itr() */
+}/* end nco_grp_itr() */
 
 int                            /* [rcd] Number of sub-groups */
 nco_has_subgrps
@@ -957,8 +954,7 @@ nco_has_subgrps
   int ngrps;           
   (void)nco_inq_grps(nc_id,&ngrps,NULL);
   return ngrps;
-}
-/* nco_has_subgrps() */
+} /* nco_has_subgrps() */
 
 
 nm_id_sct *             /* O [sct] Extraction list */
@@ -1529,6 +1525,83 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
   return fnd;
 } /* end nco4_xtr_grp_nm() */
 
+
+int                            /* [rcd] Return code */
+nco4_grp_itr
+(const int grp_id,             /* I [ID] Group ID */
+ char * grp_pth,               /* I [sng] Group path */
+ char * grp_nm)                /* I [sng] Group name */
+{
+  /* Purpose: Recursively iterate grp_id */
+
+  int rcd=NC_NOERR;            /* I [rcd] Return code */
+  int ngrps;                   /* I [nbr] Number of sub-groups in this group */
+  int var_id;                  /* I [enm] Variable ID */ 
+  int *grpids;                 /* O [ID]  Sub-group IDs */ 
+  char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */
+  nc_type var_typ;             /* O [enm] Variable type */
+  int nbr_att;                 /* O [nbr] Number of attributes */
+  int nvars;                   /* O [nbr] Number of variables */
+  char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
+  int nbr_dmn;                 /* O [nbr] number of dimensions */
+  int idx;
+
+  /* Get variables for this group */
+  rcd+=nco_inq_nvars(grp_id,&nvars);
+  for(var_id=0;var_id<nvars;var_id++){
+    char *var_pth=NULL; /* Full path of variable */
+    rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+
+    /* Allocate path buffer; add space for a trailing NUL */ 
+    var_pth=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
+
+    /* Initialize path with the current absolute group path */
+    strcpy(var_pth,grp_pth);
+    if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
+      strcat(var_pth,"/");
+    strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
+
+    if(dbg_lvl_get() >= nco_dbg_vrb){
+      (void)fprintf(stdout,"%s: INFO nco4_grp_itr() reports input variable: %s\n",prg_nm_get(),var_pth);
+    } /* endif dbg */
+
+    var_pth=(char*)nco_free(var_pth);
+  }
+
+  /* Go to sub-groups */
+  rcd+=nco_inq_grps(grp_id,&ngrps,NULL);
+  grpids=(int*)nco_malloc((ngrps)*sizeof(int));
+  rcd+=nco_inq_grps(grp_id,&ngrps,grpids);
+
+  /* Group information */
+  rcd+=nco_inq_grpname(grp_id,gp_nm);
+  rcd+=nco_inq_ndims(grp_id,&nbr_dmn);
+  rcd+=nco_inq_natts(grp_id,&nbr_att);
+
+  for(idx=0;idx<ngrps;idx++){
+    char *pth=NULL;  /* Full group path */
+    int gid=grpids[idx];
+    rcd+=nco_inq_grpname(gid,gp_nm);
+
+    /* Allocate path buffer; add space for a trailing NUL */ 
+    pth=(char*)nco_malloc(strlen(grp_pth)+strlen(gp_nm)+2);
+
+    /* Initialize path with the current absolute group path */
+    strcpy(pth,grp_pth);
+    if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
+      strcat(pth,"/");
+    strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
+
+    /* Recursively go to sub-groups */
+    rcd+=nco4_grp_itr(gid,pth,gp_nm);
+
+    pth=(char*)nco_free(pth);
+  }
+
+  (void)nco_free(grpids);
+  return rcd;
+}/* end nco4_grp_itr() */
+
 void
 nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file */
 (const int nc_id,                /* I [ID] netCDF file ID */
@@ -1536,12 +1609,28 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int nbr_lst)              /* I [nbr] number of members in list */
 {
+  /* Purpose: 
+     Recursively iterate input file (nc_id) and generate output file (out_id) 
+  */
+  int rcd=NC_NOERR;              /* I [rcd] Return code */
+  int ngrps;                     /* I [nbr] Number of sub-groups in this group */
+  int var_id;                    /* I [enm] Variable ID */ 
+  int *grpids;                   /* O [ID]  Sub-group IDs */ 
+  char var_nm[NC_MAX_NAME];      /* O [sng] Variable name */
+  nc_type var_typ;               /* O [enm] Variable type */
+  int nbr_att;                   /* O [nbr] Number of attributes */
+  int nvars;                     /* O [nbr] Number of variables */
+  char gp_nm[NC_MAX_NAME+1];     /* O [sng] Group name */
+  int nbr_dmn;                   /* O [nbr] number of dimensions */
   int idx;
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),nbr_lst,(nbr_lst > 1) ? "s" : "");
     for(idx=0;idx<nbr_lst;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
+
+  rcd+=nco4_grp_itr(nc_id,"/","/");
+
 
 
   return;
