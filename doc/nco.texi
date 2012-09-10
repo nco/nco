@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.715 2012-09-07 18:00:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.716 2012-09-10 00:32:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4521,10 +4521,11 @@ Availability:
 Short options: None@*
 @end cartouche
 
-Time re-basing is performed automatically when UDUnits is installed.
 Time rebasing is invoked when numerous files share a common record
 coordinate, and the record coordinate units change among input files.
-Usually this occurs when the recoordinate is a time-based variable,
+The rebasing is performed automatically if and only if UDUnits is
+installed. 
+Usually rebasing occurs when the recoordinate is a time-based variable, 
 and times are recorded in units of a time-since-basetime, and the
 basetime changes from file to file.
 Since the output file can have only one unit (i.e., one basetime) for

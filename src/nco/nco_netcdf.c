@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.154 2012-08-16 17:37:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.155 2012-09-10 00:32:50 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -349,7 +349,7 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(
      Placing this in its own routine also has the virtue of saving many lines
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_nc_type_err()";
-  (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",fnc_nm);
+  (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal, because each type should have a well-defined action. This error may be triggered by using an NCO built with only netCDF3 functionality to examine a netCDF4 dataset that contains a new atomic type (e.g., NC_INT64).\nHINT: Configure/build NCO with --enable-netCDF4. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_nc_type_err() */
 
