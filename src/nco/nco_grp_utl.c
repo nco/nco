@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.92 2012-09-11 02:32:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.93 2012-09-11 19:35:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1533,7 +1533,13 @@ nco4_grp_itr
  char * grp_pth,               /* I [sng] Group path */
  char * grp_nm,                /* I [sng] Group name */
  nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
- const int nbr_lst)            /* I [nbr] number of members in list */
+ const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
+ const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
+ const char *rec_dmn_nm,       /* I [sng] Output file record dimension name  */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA)    /* I [flg] Print variable metadata */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -1565,7 +1571,7 @@ nco4_grp_itr
     char *var_pth=NULL; /* Full path of variable */
     rcd+=nco_inq_var(in_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
 
-    /* Allocate path buffer; add space for a trailing NUL */ 
+    /* Allocate path buffer; add space for a trailing NULL */ 
     var_pth=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
 
     /* Initialize path with the current absolute group path */
@@ -1575,8 +1581,9 @@ nco4_grp_itr
     strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
 
     if(dbg_lvl_get() >= nco_dbg_vrb){
-      (void)fprintf(stdout,"%s: INFO nco4_grp_itr() reports input variable: %s\n",prg_nm_get(),var_pth);
+      (void)fprintf(stdout,"%s: INFO nco4_grp_itr() variable: %s\n",prg_nm_get(),var_pth);
     } /* endif dbg */
+
 
     var_pth=(char*)nco_free(var_pth);
   }
@@ -1606,7 +1613,7 @@ nco4_grp_itr
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,nbr_lst);
+    rcd+=nco4_grp_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
 
     pth=(char*)nco_free(pth);
   }
@@ -1620,7 +1627,13 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
 (const int nc_id,                /* I [ID] netCDF file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
- const int nbr_lst)              /* I [nbr] number of members in list */
+ const int xtr_nbr,              /* I [nbr] number of members in list */
+ const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
+ const char *rec_dmn_nm,         /* I [sng] Output file record dimension name  */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA)      /* I [flg] Print variable metadata */
 {
   /* Purpose: 
      Recursively iterate input file (nc_id) and generate output file (out_id) 
@@ -1638,11 +1651,13 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
   int idx;
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),nbr_lst,(nbr_lst > 1) ? "s" : "");
-    for(idx=0;idx<nbr_lst;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
+    (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
+    for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
 
-  rcd+=nco4_grp_itr(nc_id,out_id,"/","/",xtr_lst,nbr_lst);
+  /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
+  rcd+=nco4_grp_itr(nc_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
+
 
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.48 2012-09-10 00:19:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.49 2012-09-11 19:35:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -196,7 +196,13 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
 (const int nc_id,                /* I [ID] netCDF file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
- const int nbr_lst);             /* I [nbr] number of members in list */
+ const int xtr_nbr,              /* I [nbr] number of members in list */
+ const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
+ const char *rec_dmn_nm,         /* I [sng] Output file record dimension name  */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA);     /* I [flg] Print variable metadata */
 
 
 
