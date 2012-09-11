@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.50 2012-09-11 21:14:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.51 2012-09-11 22:23:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -193,7 +193,7 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
 
 void
 nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file */
-(const int nc_id,                /* I [ID] netCDF file ID */
+(const int in_id,                /* I [ID] netCDF input file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int xtr_nbr,              /* I [nbr] Number of members in list */
@@ -204,6 +204,18 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA);     /* I [flg] Print variable metadata */
 
+
+void
+nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
+(const int in_id,                /* I [ID] netCDF input file ID */
+ const int out_id,               /* I [ID] netCDF output file ID */
+ nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
+ const int xtr_nbr,              /* I [nbr] Number of members in list */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
+ FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
+ const nco_bool NCO_BNR_WRT);    /* I [flg] Write binary file */
 
 
 #ifdef __cplusplus

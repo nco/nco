@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.96 2012-09-11 21:17:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.97 2012-09-11 22:23:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1647,7 +1647,7 @@ nco4_grp_itr
 
 void
 nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file */
-(const int nc_id,                /* I [ID] netCDF file ID */
+(const int in_id,                /* I [ID] netCDF input file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int xtr_nbr,              /* I [nbr] Number of members in list */
@@ -1659,7 +1659,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  nco_bool PRN_VAR_METADATA)      /* I [flg] Print variable metadata */
 {
   /* Purpose: 
-     Recursively iterate input file (nc_id) and generate output file (out_id) 
+     Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) 
   */
   int rcd=NC_NOERR;              /* I [rcd] Return code */
 
@@ -1669,7 +1669,23 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
   } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  rcd+=nco4_grp_itr(nc_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
+  rcd+=nco4_grp_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
 
   return;
 } /* end nco4_grp_lst_mk() */
+
+
+void
+nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
+(const int in_id,                /* I [ID] netCDF input file ID */
+ const int out_id,               /* I [ID] netCDF output file ID */
+ nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
+ const int xtr_nbr,              /* I [nbr] Number of members in list */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
+ FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
+ const nco_bool NCO_BNR_WRT)     /* I [flg] Write binary file */
+{
+
+}
