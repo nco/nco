@@ -1,6 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/doc/i18n.txt,v 1.3 2004-01-01 20:41:43 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/i18n.txt,v 1.4 2012-09-11 22:28:22 zender Exp $
 
-# Purpose: NCO Internationalization (i18n):
+# Purpose: NCO Internationalization (i18n)
+
+# Instructions/examples at
+# Linux Journal 200211 p. 57--59
+# http://www.linuxjournal.com/article/6176
+# http://www.debian.org/doc/manuals/intro-i18n/ch-library.en.html
 
 # Generate *.po file for all NCO operators:
 cd ~/nco/src/nco

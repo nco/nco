@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.306 2012-09-02 05:00:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.307 2012-09-11 22:28:22 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -67,7 +67,7 @@
 #endif
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
-#else /* HAVE_GETOPT_LONG */ 
+#else /* HAVE_GETOPT_LONG */
 # ifdef HAVE_GETOPT_H
 #  include <getopt.h>
 # endif /* !HAVE_GETOPT_H */ 
@@ -75,12 +75,13 @@
 
 /* Internationalization i18n, Linux Journal 200211 p. 57--59 */
 #ifdef I18N
-#include <libintl.h> /* Internationalization i18n */
-#include <locale.h> /* Locale setlocale() */
-#define _(sng) gettext (sng)
-#define gettext_noop(sng) (sng)
-#define N_(sng) gettext_noop(sng)
+# include <libintl.h> /* Internationalization i18n */
+# include <locale.h> /* Locale setlocale() */
+# define _(sng) gettext (sng)
+# define gettext_noop(sng) (sng)
+# define N_(sng) gettext_noop(sng)
 #endif /* I18N */
+/* Supply stub gettext() function in case i18n failed */
 #ifndef _LIBINTL_H
 # define gettext(foo) foo
 #endif /* _LIBINTL_H */
@@ -155,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.306 2012-09-02 05:00:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.306 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.307 2012-09-11 22:28:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.307 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;

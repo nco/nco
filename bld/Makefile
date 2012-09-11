@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.612 2012-08-21 16:46:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.613 2012-09-11 22:28:22 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -31,11 +31,12 @@
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
 # cd ~/nco/bld;make DAP_OPENDAP=Y;cd - # DAP support via OPeNDAP
 # cd ~/nco/bld;make GSL=Y;cd -	     # GSL support
+# cd ~/nco/bld;make I18N=Y;cd -      # Internationalization
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
 # cd ~/nco/bld;make MPI=Y;cd -       # MPI support
 # cd ~/nco/bld;make MPI_FAKE=Y;cd -  # Spoof MPI support
 # cd ~/nco/bld;make OMP=Y;cd -       # OpenMP support
-# cd ~/nco/bld;make OPTS=D;cd -      # "Debugging": Enough symbols for debugging
+# cd ~/nco/bld;make OPTS=D;cd -      # "Debugging": Enough symbols for debugging (default)
 # cd ~/nco/bld;make OPTS=O;cd -      # "Optimize": For production (includes symbols)
 # cd ~/nco/bld;make OPTS=R;cd -      # "Regular": No optimization or debugging
 # cd ~/nco/bld;make OPTS=X;cd -      # "eXtreme": All debugging switches available
@@ -187,7 +188,7 @@ ifndef ${OMP} # OpenMP
  OMP := Y
 endif # endif OMP
 ifndef OPTS
- OPTS := O
+ OPTS := D
 endif
 ifndef PGI_RCH_ARG
  PGI_RCH_ARG :=

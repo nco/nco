@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.35 2012-07-20 21:03:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.36 2012-09-11 22:28:22 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -230,7 +230,6 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   int fl_fmt; /* [enm] Input file format */
   int lmt_idx;
   int lmt_idx_rec=int_CEWI;
-  int nbr_dmn_fl; /* [nbr] Number of dimensions in file */
   int rcd_dmn_id;
   int srg_typ; /* [enm] Storage type */
   int var_idx;
@@ -294,7 +293,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   } /* endif dbg */
 
   /* Get record dimension ID */
-  (void)nco_inq(nc_id,&nbr_dmn_fl,&var_nbr,(int *)NULL,&rcd_dmn_id);
+  (void)nco_inq(nc_id,(int *)NULL,&var_nbr,(int *)NULL,&rcd_dmn_id);
   
   /* Find record dimension, if any, in limit structure list first
      This information may be needed below */
