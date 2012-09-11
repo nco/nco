@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.91 2012-09-10 22:25:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.92 2012-09-11 02:32:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1531,7 +1531,9 @@ nco4_grp_itr
 (const int in_id,              /* I [ID] Group ID from netCDF intput file */
  const int out_id,             /* I [ID] Group ID from netCDF output file */
  char * grp_pth,               /* I [sng] Group path */
- char * grp_nm)                /* I [sng] Group name */
+ char * grp_nm,                /* I [sng] Group name */
+ nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
+ const int nbr_lst)            /* I [nbr] number of members in list */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -1604,7 +1606,7 @@ nco4_grp_itr
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_itr(gid,grp_out_id,pth,gp_nm);
+    rcd+=nco4_grp_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,nbr_lst);
 
     pth=(char*)nco_free(pth);
   }
@@ -1640,7 +1642,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
     for(idx=0;idx<nbr_lst;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
 
-  rcd+=nco4_grp_itr(nc_id,out_id,"/","/");
+  rcd+=nco4_grp_itr(nc_id,out_id,"/","/",xtr_lst,nbr_lst);
 
 
 
