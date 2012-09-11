@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.93 2012-09-11 19:35:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.94 2012-09-11 20:15:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1584,6 +1584,28 @@ nco4_grp_itr
       (void)fprintf(stdout,"%s: INFO nco4_grp_itr() variable: %s\n",prg_nm_get(),var_pth);
     } /* endif dbg */
 
+    /* Check if input variable is on extraction list; if yes, write it to output file */
+    for(idx=0;idx<xtr_nbr;idx++){
+      int var_out_id;
+
+      /* If current variable is in extraction list, define it */
+      if(strcmp(var_pth,xtr_lst[idx].var_nm_fll) == 0) { 
+
+        if(dbg_lvl_get() >= nco_dbg_vrb){
+          (void)fprintf(stdout,"%s: INFO nco4_grp_itr()  extract: %s\n",prg_nm_get(),var_pth);
+        } /* endif dbg */
+
+        /* Define variable in output file: NOTE: use grp_out_id obtained */
+        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
+        else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
+
+        /* Copy variable's attributes */
+        if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
+
+        /* Variable was found, exit idx loop, there can be one and only one variable */
+        break;
+      } /* end variable in extraction list */ 
+    } /* end loop over idx */
 
     var_pth=(char*)nco_free(var_pth);
   }
