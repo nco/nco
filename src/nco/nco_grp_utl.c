@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.94 2012-09-11 20:15:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.95 2012-09-11 21:14:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -17,6 +17,7 @@
  */
 
 #include "nco_grp_utl.h"  /* Group utilities */
+#include "nco_cnk.h"      /* Chunking; needed for nco4_grp_lst_mk */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -1649,7 +1650,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
 (const int nc_id,                /* I [ID] netCDF file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
- const int xtr_nbr,              /* I [nbr] number of members in list */
+ const int xtr_nbr,              /* I [nbr] Number of members in list */
  const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
  const char *rec_dmn_nm,         /* I [sng] Output file record dimension name  */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
@@ -1661,27 +1662,16 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
      Recursively iterate input file (nc_id) and generate output file (out_id) 
   */
   int rcd=NC_NOERR;              /* I [rcd] Return code */
-  int ngrps;                     /* I [nbr] Number of sub-groups in this group */
-  int var_id;                    /* I [enm] Variable ID */ 
-  int *grpids;                   /* O [ID]  Sub-group IDs */ 
-  char var_nm[NC_MAX_NAME];      /* O [sng] Variable name */
-  nc_type var_typ;               /* O [enm] Variable type */
-  int nbr_att;                   /* O [nbr] Number of attributes */
-  int nvars;                     /* O [nbr] Number of variables */
-  char gp_nm[NC_MAX_NAME+1];     /* O [sng] Group name */
-  int nbr_dmn;                   /* O [nbr] number of dimensions */
-  int idx;
+  /* O [nbr] Number of dimensions in file */
+
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
-    for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
+    for(int idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
   rcd+=nco4_grp_itr(nc_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
-
-
-
 
   return;
 } /* end nco4_grp_lst_mk() */
