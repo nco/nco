@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.95 2012-09-11 21:14:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.96 2012-09-11 21:17:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1662,8 +1662,6 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
      Recursively iterate input file (nc_id) and generate output file (out_id) 
   */
   int rcd=NC_NOERR;              /* I [rcd] Return code */
-  /* O [nbr] Number of dimensions in file */
-
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
