@@ -2,7 +2,7 @@
 
 	* Remove unused nbr_dmn_fl from nco_cnk_sz_set()
 
-	* Tweak i18n on ncra.c
+	* Tweak i18n machinery
 
 2012-09-10  Charlie Zender  <zender@uci.edu>
 
