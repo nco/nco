@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.51 2012-09-11 22:23:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.52 2012-09-13 20:41:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -211,7 +211,8 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
  const int out_id,               /* I [ID] netCDF output file ID */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int xtr_nbr,              /* I [nbr] Number of members in list */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst, /* I multi-hyperslab limits */
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */

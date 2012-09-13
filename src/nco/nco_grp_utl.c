@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.97 2012-09-11 22:23:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.98 2012-09-13 20:41:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -18,6 +18,7 @@
 
 #include "nco_grp_utl.h"  /* Group utilities */
 #include "nco_cnk.h"      /* Chunking; needed for nco4_grp_lst_mk */
+#include "nco_msa.h"      /* Multi-slabbing algorithm: needed for nco_cpy_var_val_mlt_lmt */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -1542,7 +1543,7 @@ nco4_grp_itr
  const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA)    /* I [flg] Print variable metadata */
 {
-  /* Purpose: Recursively iterate grp_id */
+  /* Purpose: Recursively iterate in_id, creating groups and defining variables in out_id */
 
   int rcd=NC_NOERR;            /* I [rcd] Return code */
   int ngrps;                   /* I [nbr] Number of sub-groups in this group */
@@ -1560,11 +1561,12 @@ nco4_grp_itr
   /* Avoid the root case */
   grp_out_id = out_id;
 
-  /* No need to create root */
-  if (strcmp("/",grp_nm)) 
+  /* No need to create root :) ; if NOT root, define the group in the ouput file */
+  if (strcmp("/",grp_nm)){
 
-  /* Define group of same name in output file */
-  rcd+=nco_def_grp(out_id,grp_nm,&grp_out_id);
+    /* Define group of same name in output file */
+    rcd+=nco_def_grp(out_id,grp_nm,&grp_out_id);
+  }
 
   /* Get variables for this group */
   rcd+=nco_inq_nvars(in_id,&nvars);
@@ -1675,17 +1677,148 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
 } /* end nco4_grp_lst_mk() */
 
 
+int                              /* [rcd] Return code */
+nco4_grp_var_itr
+(const int in_id,                /* I [ID] netCDF input file ID */
+ const int out_id,               /* I [ID] netCDF output file ID */
+ char * grp_nm_fll,              /* I [sng] Group path */
+ char * grp_nm,                  /* I [sng] Group name */
+ nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
+ const int xtr_nbr,              /* I [nbr] Number of members in list */
+ const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst,  /* I multi-hyperslab limits */
+ const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
+ FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
+ const nco_bool NCO_BNR_WRT)     /* I [flg] Write binary file */
+{
+  /* Purpose: Recursively iterate in_id, writing variables in out_id */
+
+  int rcd=NC_NOERR;            /* I [rcd] Return code */
+  int ngrps;                   /* I [nbr] Number of sub-groups in this group */
+  int var_id;                  /* I [enm] Variable ID */ 
+  int *grpids;                 /* O [ID]  Sub-group IDs */ 
+  char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */
+  nc_type var_typ;             /* O [enm] Variable type */
+  int nbr_att;                 /* O [nbr] Number of attributes */
+  int nvars;                   /* O [nbr] Number of variables */
+  char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
+  int nbr_dmn;                 /* O [nbr] number of dimensions */
+  int grp_out_id;              /* O [ID]  Group ID */ 
+  int idx;
+
+  /* Avoid the root case */
+  grp_out_id = out_id;
+
+  /* Avoid the root case */ 
+  if (strcmp("/",grp_nm)) {
+
+    /* Obtain group ID from netCDF API using group name */
+    nco_inq_grp_ncid(out_id,grp_nm,&grp_out_id);
+  }
+
+  /* Get variables for this group */
+  rcd+=nco_inq_nvars(in_id,&nvars);
+  for(var_id=0;var_id<nvars;var_id++){
+    char *var_pth=NULL; /* Full path of variable */
+    rcd+=nco_inq_var(in_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+
+    /* Allocate path buffer; add space for a trailing NULL */ 
+    var_pth=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2);
+
+    /* Initialize path with the current absolute group path */
+    strcpy(var_pth,grp_nm_fll);
+    if(strcmp(grp_nm_fll,"/")!=0) /* If not root group, concatenate separator */
+      strcat(var_pth,"/");
+    strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
+
+    if(dbg_lvl_get() >= nco_dbg_vrb){
+      (void)fprintf(stdout,"%s: INFO nco4_grp_var_itr() variable: %s\n",prg_nm_get(),var_pth);
+    } /* endif dbg */
+
+    /* Check if input variable is on extraction list; if yes, write it to output file */
+    for(idx=0;idx<xtr_nbr;idx++){
+
+      /* If current variable is in extraction list */
+      if(strcmp(var_pth,xtr_lst[idx].var_nm_fll) == 0) { 
+
+        if(dbg_lvl_get() >= nco_dbg_vrb){
+          (void)fprintf(stdout,"%s: INFO nco4_grp_var_itr()  extract: %s\n",prg_nm_get(),var_pth);
+        } /* endif dbg */
+
+        /* Write output variable; NOTE: use grp_out_id obtained  */
+        if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,lmt_all_lst_nbr); 
+        else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+
+        /* Variable was found, exit idx loop, there can be one and only one variable */
+        break;
+      } /* end variable in extraction list */ 
+    } /* end loop over idx */
+
+    var_pth=(char*)nco_free(var_pth);
+  }
+
+  /* Go to sub-groups */
+  rcd+=nco_inq_grps(in_id,&ngrps,NULL);
+  grpids=(int*)nco_malloc((ngrps)*sizeof(int));
+  rcd+=nco_inq_grps(in_id,&ngrps,grpids);
+
+  /* Group information */
+  rcd+=nco_inq_grpname(in_id,gp_nm);
+  rcd+=nco_inq_ndims(in_id,&nbr_dmn);
+  rcd+=nco_inq_natts(in_id,&nbr_att);
+
+  for(idx=0;idx<ngrps;idx++){
+    char *pth=NULL;  /* Full group path */
+    int gid=grpids[idx];
+    rcd+=nco_inq_grpname(gid,gp_nm);
+
+    /* Allocate path buffer; add space for a trailing NUL */ 
+    pth=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(gp_nm)+2);
+
+    /* Initialize path with the current absolute group path */
+    strcpy(pth,grp_nm_fll);
+    if(strcmp(grp_nm_fll,"/")!=0) /* If not root group, concatenate separator */
+      strcat(pth,"/");
+    strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
+
+    /* Recursively go to sub-groups */
+    rcd+=nco4_grp_var_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
+
+    pth=(char*)nco_free(pth);
+  }
+
+  (void)nco_free(grpids);
+  return rcd;
+}/* end nco4_grp_var_itr() */
+
 void
 nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
 (const int in_id,                /* I [ID] netCDF input file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int xtr_nbr,              /* I [nbr] Number of members in list */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst,  /* I multi-hyperslab limits */
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT)     /* I [flg] Write binary file */
 {
 
-}
+  /* Purpose: 
+     Recursively iterate input file (nc_id) and write variables in output file (out_id) 
+  */
+  int rcd=NC_NOERR;              /* I [rcd] Return code */
+
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to write:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
+    for(int idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
+  } /* endif dbg */
+
+  /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
+  rcd+=nco4_grp_var_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
+
+  return;
+} /* end nco4_grp_var_cpy() */
+
