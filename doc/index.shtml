@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.725 2012-09-02 05:00:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.726 2012-09-13 22:40:59 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -877,6 +877,8 @@ Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>:
  <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>
   for NCO 3.9.9. Maintained by Takeshi Enomoto.</li>
+<li><a href="src/nco-4.2.1.macosx.10.6.tar.gz">nco-4.2.1.macosx.10.6.tar.gz</a> (<!--#fsize file="src/nco-4.2.1.macosx.10.6.tar.gz"-->): Executables MacOSX 10.6 -compatible (
+last updated <!--#flastmod file="src/nco-4.2.1.macosx.10.6.tar.gz"-->)</li>  
 </ul>
 
 <a name="visual"></a> <!-- http://nco.sf.net#visual -->
