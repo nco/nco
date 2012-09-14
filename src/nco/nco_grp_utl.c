@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.98 2012-09-13 20:41:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.99 2012-09-14 04:08:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1603,7 +1603,7 @@ nco4_grp_itr
         else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
 
         /* Copy variable's attributes */
-        if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
+        if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,grp_out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
 
         /* Variable was found, exit idx loop, there can be one and only one variable */
         break;
