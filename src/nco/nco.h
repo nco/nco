@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.185 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.186 2012-09-14 20:50:33 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -340,17 +340,17 @@ extern "C" {
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */
     nco_dbg_quiet, /* 0 [enm] Quiet all non-error messages */
-    nco_dbg_std, /* 1 [enm] Standard mode. Minimal, but some, messages */
-    nco_dbg_fl, /* 2 [enm] Filenames */
-    nco_dbg_scl, /* 3 [enm] Scalars, other per-file information  */
-    nco_dbg_var, /* 4 [enm] Variables, highest level per-file loop information */
-    nco_dbg_crr, /* 5 [enm] Current task */
-    nco_dbg_sbr, /* 6 [enm] Subroutine names on entry and exit */
-    nco_dbg_io, /* 7 [enm] Subroutine I/O */
-    nco_dbg_vec, /* 8 [enm] Entire vectors */
-    nco_dbg_vrb, /* 9 [enm] Verbose, print everything possible */
-    nco_dbg_old, /* 10 [enm] Old debugging blocks not used anymore */
-    nco_dbg_nbr /* 11 [enm] Number of debugging types (equals last enumerated value) */
+    nco_dbg_std,   /* 1 [enm] Standard mode. Minimal, but some, messages */
+    nco_dbg_fl,    /* 2 [enm] Filenames */
+    nco_dbg_scl,   /* 3 [enm] Scalars, other per-file information  */
+    nco_dbg_var,   /* 4 [enm] Variables, highest level per-file loop information */
+    nco_dbg_crr,   /* 5 [enm] Current task */
+    nco_dbg_sbr,   /* 6 [enm] Subroutine names on entry and exit */
+    nco_dbg_io,    /* 7 [enm] Subroutine I/O */
+    nco_dbg_vec,   /* 8 [enm] Entire vectors */
+    nco_dbg_vrb,   /* 9 [enm] Verbose, print everything possible */
+    nco_dbg_old,   /* 10 [enm] Old debugging blocks not used anymore */
+    nco_dbg_nbr    /* 11 [enm] Number of debugging types (equals last enumerated value) */
   }; /* end nco_dbg_typ_enm */
 
   typedef enum { /* [enm] Memory allocation type */

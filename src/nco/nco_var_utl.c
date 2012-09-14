@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.188 2012-07-19 00:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.189 2012-09-14 20:50:33 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -265,7 +265,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Get var_id for requested variable from both files */
   (void)nco_inq_varid(in_id,var_nm,&var_in_id);
   (void)nco_inq_varid(out_id,var_nm,&var_out_id);
-  
+
   /* Get type and number of dimensions for variable */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
@@ -274,28 +274,28 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     nco_exit(EXIT_FAILURE);
   } /* endif */
   dmn_nbr=nbr_dmn_out;
-  
+
   /* Allocate space to hold dimension IDs */
   dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
   dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
   dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
   dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
-  
+
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
-  
+
   /* Get dimension sizes from input file */
   for(idx=0;idx<dmn_nbr;idx++){
     /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
-       Until record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
-       Thus we read input file for dimension sizes */
+    Until record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
+    Thus we read input file for dimension sizes */
     (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
 
     /* Initialize indicial offset and stride arrays */
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
-      
+
   /* Allocate enough space to hold variable */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
@@ -324,22 +324,22 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     if(rcd == NC_NOERR){ 
       /* ... used as record dimension of this variable...  */
       if(rec_dmn_id == dmn_id[0]){
-	rcd=nco_inq_unlimdim(out_id,&rec_dmn_id); 
-	/* ... and if output file has record dimension ... */
-	if(rcd == NC_NOERR){ 
-	  (void)nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
-	  /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
-	  if(rec_dmn_sz > 0){
-	    /* ... then check input vs. output record dimension sizes ... */
-	    if(rec_dmn_sz != dmn_cnt[0]){
-	      (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
-	    } /* endif sizes are incommensurate */
-	  } /* endif records exist in output file */
-	} /* endif output file has record dimension */
+        rcd=nco_inq_unlimdim(out_id,&rec_dmn_id); 
+        /* ... and if output file has record dimension ... */
+        if(rcd == NC_NOERR){ 
+          (void)nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
+          /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
+          if(rec_dmn_sz > 0){
+            /* ... then check input vs. output record dimension sizes ... */
+            if(rec_dmn_sz != dmn_cnt[0]){
+              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
+            } /* endif sizes are incommensurate */
+          } /* endif records exist in output file */
+        } /* endif output file has record dimension */
       } /* endif this variable uses input file record dimension */
     } /* endif input file has record dimension */
   } /* endif this variable is not a scalar */
-    
+
   /* Free space that held dimension IDs */
   dmn_cnt=(long *)nco_free(dmn_cnt);
   dmn_id=(int *)nco_free(dmn_id);
