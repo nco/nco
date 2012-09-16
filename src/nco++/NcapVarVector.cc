@@ -40,13 +40,10 @@ long NcapVarVector::findi(std::string s_fnm){
    
 
     // Item already in vector
-    if( we !=end() && (*we)->getFll()==s_fnm ){
-      lret=0;
-      while( we-- != begin())  ++lret;  
-      
-    }else
-     lret=-1;
-      
+    if( we !=end() && (*we)->getFll()==s_fnm )
+      lret=we-begin(); 
+    else
+      lret=-1;
     
     // nb var_in also freed here  
     delete Ntmp;     
@@ -69,16 +66,13 @@ long NcapVarVector::find_lwr(std::string s_fnm){
     Ntmp=new NcapVar( (var_sct*)NULL ,s_fnm);
     
     we=std::lower_bound(begin(),end(),Ntmp,less_mag());
-   
      
     // Return a partial match
     lret=-1; 
     if( we!=end()){
       s_fl=(*we)->getFll();
-      if(s_fl.find(s_fnm,0) !=std::string::npos){ 
-       lret=0;
-       while( we-- != begin())  ++lret;  
-      }
+      if(s_fl.find(s_fnm,0) !=std::string::npos)
+	lret=we-begin();
     }
     
     // nb var_in also freed here  
@@ -118,8 +112,6 @@ void NcapVarVector::push(NcapVar *Nvar){
     }
 
 }
-
-
 
 
 // Delete an item
