@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.356 2012-09-14 20:50:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.357 2012-09-17 05:39:46 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.356 2012-09-14 20:50:33 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.356 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.357 2012-09-17 05:39:46 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.357 $";
   char root_path[2]="/";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -669,14 +669,18 @@ main(int argc,char **argv)
 
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
+  if(HAS_SUBGRP){
+
+  } else {
+    for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
+  }
 
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
   
   /* Initialize lmt_all_sct's */ 
   if(HAS_SUBGRP){
-
+   
   }else{
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
   }
@@ -869,7 +873,7 @@ main(int argc,char **argv)
           (void)nco_prn_att(xtr_lst[idx].grp_id,xtr_lst[idx].id);
         } /* end loop over idx */
 
-        /* netCDF3 or netCDF4-classic */
+      /* netCDF3 or netCDF4-classic */
       } else { 
         for(idx=0;idx<xtr_nbr;idx++){
           /* Print variable's definition */
@@ -883,8 +887,20 @@ main(int argc,char **argv)
     if(PRN_VAR_DATA){
       /* Version for groups  */
       if (HAS_SUBGRP){
+        for(idx=0;idx<xtr_nbr;idx++) {
+#ifdef NCO_SANITY_CHECK
+          int grp_id;   
+          nm_id_sct nm_id;   
+          nm_id=xtr_lst[idx];
+          /* Obtain group ID from netCDF API using full group name */
+          rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
+          assert(grp_id == nm_id.grp_id );
+#endif
+          /* Print variable using the obtained grp_id instead of the netCDF file ID */
+          
+        } /* idx */
 
-        /* netCDF3 or netCDF4-classic */
+      /* netCDF3 or netCDF4-classic */
       }else {
 
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
