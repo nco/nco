@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.726 2012-09-13 22:40:59 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.727 2012-09-17 23:01:24 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -800,7 +800,7 @@ the directory index <a href="src">here</a>.
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
 <ul> <!-- http://nco.sf.net/src/nco-4.2.1.aix53.tar.gz -->
-<li><a href="src/nco-4.2.1.aix53.tar.gz">nco-4.2.1.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.1.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.1.aix53.tar.gz"-->)</li>
+<li><a href="src/nco-4.2.1.aix53.tar.gz">nco-4.2.1.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.1.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.1.aix53.tar.gz"-->). Maintained by NCO Project.</li>
 Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
@@ -834,8 +834,9 @@ NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a>, RedHat Enterprise Linux (<a href="http://www.redhat.com/rhel">RHEL</a>), and Community ENTerprise Operating System (<a href="http://www.centos.org">CentOS</a>) GNU/Linux</h3>
 <ul>
-<dt>The <a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; might install, e.g., 
-<li><a href="http://rpmfind.net/linux/RPM/fedora/devel/x86_64/nco-3.9.8-1.fc11.x86_64.html">nco-3.9.8-1.fc11.x86_64.rpm</a>: Executables for x86_64/Fedora Core&nbsp;11-compatible environments</li></dt>
+<dt>The <a href="https://admin.fedoraproject.org/pkgdb/packages/name/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>yum install nco</tt>&rsquo; will install a recent version. 
+<li><a href="http://rpmfind.net/linux/RPM/fedora/devel/x86_64/nco-3.9.8-1.fc11.x86_64.html">nco-3.9.8-1.fc11.x86_64.rpm</a>: Executa
+bles for x86_64/Fedora Core&nbsp;11-compatible environments</li></dt>
 <dt>If not, try our own most recent self-built NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.5-1.fc7.i386.rpm</tt>&rsquo;):
 <li><a href="src/nco-3.9.5-1.fc7.i386.rpm">nco-3.9.5-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.i386.rpm"-->)</li>
 <li><a href="src/nco-3.9.5-1.fc7.src.rpm">nco-3.9.5-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.5-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.5-1.fc7.src.rpm"-->)</li>
@@ -870,15 +871,12 @@ wget http://ps.uci.edu/~pscsg/nco/nco-4.0.7_x86_10.6.dmg -O /tmp/nco-4.0.7_x86_1
 /usr/bin/scp /tmp/nco-4.0.7_x86_10.6.dmg zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp /tmp/nco-4.0.7_x86_10.6.dmg dust.ess.uci.edu:/var/www/html/nco/src
 -->
-Use the <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files if you do not have MacPorts installed. You may need to add <tt>/opt/local/bin</tt> to your executable path to access the operators.
+The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
+<li><a href="src/nco-4.2.1.macosx.10.6.tar.gz">nco-4.2.1.macosx.10.6.tar.gz</a> (<!--#fsize file="src/nco-4.2.1.macosx.10.6.tar.gz"-->): Executables MacOSX 10.6-compatible (last updated <!--#flastmod file="src/nco-4.2.1.macosx.10.6.tar.gz"-->). Maintained by NCO Project.</li>
 <li><a href="src/nco-4.0.3_x86_10.6.dmg">nco-4.0.3_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.3_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.3_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="src/nco-4.0.7_x86_10.6.dmg">nco-4.0.7_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.7_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.7_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.5. Maintained by Alexander Hansen.</li> 
-<li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>:
- <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>
-  for NCO 3.9.9. Maintained by Takeshi Enomoto.</li>
-<li><a href="src/nco-4.2.1.macosx.10.6.tar.gz">nco-4.2.1.macosx.10.6.tar.gz</a> (<!--#fsize file="src/nco-4.2.1.macosx.10.6.tar.gz"-->): Executables MacOSX 10.6 -compatible (
-last updated <!--#flastmod file="src/nco-4.2.1.macosx.10.6.tar.gz"-->)</li>  
+<li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>: <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a> for NCO 3.9.9. Maintained by Takeshi Enomoto.</li>
 </ul>
 
 <a name="visual"></a> <!-- http://nco.sf.net#visual -->
@@ -896,13 +894,13 @@ wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.2.1.windows.mvs.exe -
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 scp /tmp/nco-4.2.1.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
 -->
-<li><a href="src/nco-4.2.1.windows.mvs.exe">nco-4.2.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.1.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.2.1.windows.mvs.exe"-->).
+<li><a href="src/nco-4.2.1.windows.mvs.exe">nco-4.2.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.1.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.2.1.windows.mvs.exe"-->). Maintained by NCO Project.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> (running <a href="http://www.cygwin.org">Cygwin</a> environment, compiled with GNU-toolchain)</h3>
 <ul>
-<li><a href="src/nco-4.0.6.win32.cygwin.tar.gz">nco-4.0.6.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.6.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.0.6.win32.cygwin.tar.gz"-->).</li>
+<li><a href="src/nco-4.0.6.win32.cygwin.tar.gz">nco-4.0.6.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.0.6.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.0.6.win32.cygwin.tar.gz"-->). Maintained by NCO Project.</li>
 First install <tt>curl</tt> (in the "Web" category of Cygwin setup),
 and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the 
 <tt>udunits2.xml</tt> file, e.g., with
