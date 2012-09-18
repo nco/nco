@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.52 2012-09-13 20:41:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.53 2012-09-18 04:02:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -217,6 +217,16 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
  FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT);    /* I [flg] Write binary file */
+
+
+void      
+nco4_msa_lmt_all_int             /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
+(int in_id,
+ nco_bool MSA_USR_RDR,
+ lmt_all_sct **lmt_all_lst,
+ int nbr_dmn_fl,
+ lmt_sct** lmt,
+ int lmt_nbr);
 
 
 #ifdef __cplusplus

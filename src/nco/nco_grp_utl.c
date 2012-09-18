@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.99 2012-09-14 04:08:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.100 2012-09-18 04:02:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -183,69 +183,6 @@ nco_grp_stk_free /* [fnc] Free group stack */
   /* Purpose: Free dynamic array implementation of stack */
   grp_stk->grp_id=(int *)nco_free(grp_stk->grp_id);
 } /* end nco_grp_stk_free() */
-
-int /* [rcd] Return code */
-nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(const int nc_id, /* I [ID] Apex group */
- int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
- int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all, /* O [nbr] Number of variables in file */
- int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
- int * const rec_dmn_ids) /* O [ID] Record dimension IDs in file */
-{
-  /* [fnc] Find and return global totals of dimensions, variables, attributes
-     nco_inq() only applies to a single group
-     Statistics for recursively nested netCDF4 files require more care */
-  int rcd=NC_NOERR;
-  int *grp_ids; /* [ID] Group IDs of children */
-  int grp_id; /* [ID] Group ID */
-  int grp_idx;
-  int grp_nbr; /* [nbr] Number of groups */
-  int var_nbr; /* [nbr] Number of variables */
-
-  /* Discover and return number of apex and all sub-groups */
-  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
-
-  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
-
-  /* Discover and return IDs of apex and all sub-groups */
-  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
-
-  /* Initialize variables that accumulate */
-  *var_nbr_all=0; /* [nbr] Total number of variables in file */
-
-  /* Create list of all variables in input file */
-  for(grp_idx=0;grp_idx<grp_nbr;grp_idx++){
-    grp_id=grp_ids[grp_idx]; /* [ID] Group ID */
-
-    /* How many variables in current group? */
-    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
-
-    /* Augment total number of variables in file */
-    *var_nbr_all+=var_nbr;
-  } /* end loop over grp */
-
-  /* Compare to results of nco_inq() */
-  {
-    int att_nbr; /* [nbr] Number of attributes */
-    int dmn_nbr; /* [nbr] Number of dimensions */
-    int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [ID] Record dimension ID */
-
-    rcd+=nco_inq(nc_id,&dmn_nbr,&var_nbr,&att_nbr,&rec_dmn_id);
-    if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: INFO nco_inq() reports file contains %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),var_nbr,(var_nbr > 1) ? "s" : "",dmn_nbr,(dmn_nbr > 1) ? "s" : "",att_nbr,(att_nbr > 1) ? "s" : "");
-
-    /* fxm: Backward compatibility */
-    *rec_dmn_nbr=1;
-    if(rec_dmn_ids) *rec_dmn_ids=rec_dmn_id;
-    *att_nbr_glb=att_nbr;
-    *dmn_nbr_all=dmn_nbr;
-  }
-
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
-
-  return rcd;
-} /* end nco4_inq() */
-
 
 
 nm_id_sct * /* O [sct] Variable extraction list */
@@ -1821,4 +1758,202 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
 
   return;
 } /* end nco4_grp_var_cpy() */
+
+
+int /* [rcd] Return code */
+nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(const int nc_id, /* I [ID] Apex group */
+ int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all, /* O [nbr] Number of variables in file */
+ int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
+ int * const rec_dmn_ids) /* O [ID] Record dimension IDs in file */
+{
+  /* [fnc] Find and return global totals of dimensions, variables, attributes
+     nco_inq() only applies to a single group
+     Statistics for recursively nested netCDF4 files require more care */
+  int rcd=NC_NOERR;
+  int *grp_ids; /* [ID] Group IDs of children */
+  int grp_id; /* [ID] Group ID */
+  int grp_idx;
+  int grp_nbr; /* [nbr] Number of groups */
+  int var_nbr; /* [nbr] Number of variables */
+
+  /* Discover and return number of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
+
+  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
+
+  /* Discover and return IDs of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
+
+  /* Initialize variables that accumulate */
+  *var_nbr_all=0; /* [nbr] Total number of variables in file */
+
+  /* Create list of all variables in input file */
+  for(grp_idx=0;grp_idx<grp_nbr;grp_idx++){
+    grp_id=grp_ids[grp_idx]; /* [ID] Group ID */
+
+    /* How many variables in current group? */
+    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
+
+    /* Augment total number of variables in file */
+    *var_nbr_all+=var_nbr;
+  } /* end loop over grp */
+
+  /* Compare to results of nco_inq() */
+  {
+    int att_nbr; /* [nbr] Number of attributes */
+    int dmn_nbr; /* [nbr] Number of dimensions */
+    int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [ID] Record dimension ID */
+
+    rcd+=nco_inq(nc_id,&dmn_nbr,&var_nbr,&att_nbr,&rec_dmn_id);
+    if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: INFO nco_inq() reports file contains %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),var_nbr,(var_nbr > 1) ? "s" : "",dmn_nbr,(dmn_nbr > 1) ? "s" : "",att_nbr,(att_nbr > 1) ? "s" : "");
+
+    /* fxm: Backward compatibility */
+    *rec_dmn_nbr=1;
+    if(rec_dmn_ids) *rec_dmn_ids=rec_dmn_id;
+    *att_nbr_glb=att_nbr;
+    *dmn_nbr_all=dmn_nbr;
+  }
+
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
+
+  return rcd;
+} /* end nco4_inq() */
+
+
+
+void 
+nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
+(int in_id,
+ nco_bool MSA_USR_RDR,
+ lmt_all_sct **lmt_all_lst,
+ int nbr_dmn_fl,
+ lmt_sct** lmt,
+ int lmt_nbr)
+{
+  int idx;
+  int jdx;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  long dmn_sz;
+  char dmn_nm[NC_MAX_NAME];
+
+  lmt_sct *lmt_rgl;
+  lmt_all_sct * lmt_all_crr;
+
+  (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
+
+  for(idx=0;idx<nbr_dmn_fl;idx++){
+    (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
+    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+    lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+    lmt_all_crr->dmn_nm=strdup(dmn_nm);
+    lmt_all_crr->lmt_dmn_nbr=1;
+    lmt_all_crr->dmn_sz_org=dmn_sz;
+    lmt_all_crr->WRP=False;
+    lmt_all_crr->BASIC_DMN=True;
+    lmt_all_crr->MSA_USR_RDR=False;    
+
+    lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
+    /* Dereference */
+    lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
+    lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
+    lmt_rgl->id=idx;
+
+    /* NB: nco_lmt_evl() may alter this */
+    if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
+
+    lmt_rgl->srt=0L;
+    lmt_rgl->end=dmn_sz-1L;
+    lmt_rgl->cnt=dmn_sz;
+    lmt_rgl->srd=1L;
+    lmt_rgl->drn=1L;
+    lmt_rgl->flg_mro=False;
+    lmt_rgl->min_sng=NULL;
+    lmt_rgl->max_sng=NULL;
+    lmt_rgl->srd_sng=NULL;
+    lmt_rgl->drn_sng=NULL;
+    lmt_rgl->mro_sng=NULL;
+    lmt_rgl->rbs_sng=NULL;
+    lmt_rgl->origin=0.0;
+
+    /* A hack so we know structure has been initialized */
+    lmt_rgl->lmt_typ=-1;
+  } /* end loop over dimensions */
+
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
+  /* Add user specified limits lmt_all_lst */
+  for(idx=0;idx<lmt_nbr;idx++){
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
+      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
+        lmt_all_crr=lmt_all_lst[jdx];
+        lmt_all_crr->BASIC_DMN=False;
+        if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
+          /* Free defualt limit set above structure first */
+          lmt_all_crr->lmt_dmn[0]=(lmt_sct*)nco_lmt_free(lmt_all_crr->lmt_dmn[0]);
+          lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
+        }else{ 
+          lmt_all_crr->lmt_dmn=(lmt_sct**)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+          lmt_all_crr->lmt_dmn[(lmt_all_crr->lmt_dmn_nbr)++]=lmt[idx];
+        } /* endif */
+        break;
+      } /* end if */
+    } /* end loop over dimensions */
+    /* Dimension in limit not found */
+    if(jdx == nbr_dmn_fl){
+      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n",lmt[idx]->nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if err */
+  } /* end loop over idx */       
+
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
+  for(idx=0;idx<nbr_dmn_fl;idx++){
+    nco_bool flg_ovl;
+
+    /* NB: ncra/ncrcat have only one limit for record dimension so skip 
+    evaluation otherwise this messes up multi-file operation */
+    if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
+
+    /* Split-up wrapped limits */   
+    (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
+
+    /* NB: Wrapped hyperslabs are dimensions broken into the "wrong" order,
+    e.g., from -d time,8,2 broken into -d time,8,9 -d time,0,2
+    WRP flag set only when list contains dimensions split as above */
+    if(lmt_all_lst[idx]->WRP == True){
+      /* Find and store size of output dim */  
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;
+    } /* endif */
+
+    /* Single slab---no analysis needed */  
+    if(lmt_all_lst[idx]->lmt_dmn_nbr == 1){
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;    
+    } /* endif */
+
+    if(MSA_USR_RDR){
+      lmt_all_lst[idx]->MSA_USR_RDR=True;
+      /* Find and store size of output dimension */  
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;
+    } /* endif */
+
+    /* Sort limits */
+    (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
+    /* Check for overlap */
+    flg_ovl=nco_msa_ovl(lmt_all_lst[idx]);  
+    if(flg_ovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
+
+    /* Find and store size of output dimension */  
+    (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+    if(dbg_lvl_get() > 1){
+      if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
+    } /* endif */
+
+  } /* end idx */    
+
+} /* end nco_msa_lmt_all_int() */
+
 
