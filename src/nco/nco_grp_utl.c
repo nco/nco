@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.103 2012-09-18 21:50:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.104 2012-09-18 22:49:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1667,29 +1667,31 @@ nco_grp_itr
 {
   /* Purpose: Recursively iterate grp_id */
 
-  int rcd=NC_NOERR;            /* I [rcd] Return code */
-  int ngrps;                   /* I [nbr] Number of sub-groups in this group */
-  int var_id;                  /* I [enm] Variable ID */ 
-  int *grpids;                 /* O [ID]  Sub-group IDs */ 
-  char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */
+  int rcd=NC_NOERR;            /* O [rcd] Return code */
   nc_type var_typ;             /* O [enm] Variable type */
   int nbr_att;                 /* O [nbr] Number of attributes */
-  int nvars;                   /* O [nbr] Number of variables */
-  char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
+  int nbr_var;                 /* O [nbr] Number of variables */
   int nbr_dmn;                 /* O [nbr] number of dimensions */
-  int idx;
-  grp_trv_sct obj;             /* netCDF4 object, as having a path and a type */
+  int nbr_grp;                 /* O [nbr] Number of sub-groups in this group */
+  int *grpids;                 /* O [ID]  Sub-group IDs */ 
+  int var_id;                  /* O [ID] Variable ID */ 
+  int rec_dmn_id;              /* O [ID] Record dimension ID */
+  char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
+  char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */ 
+  int idx;                     /* I [idx] Index */             
+  grp_trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
 
 #ifdef NCO_SANITY_CHECK
   assert(mode == 1 || mode == 2);
 #endif
 
   /* Get all information for this group */
-  rcd+=nco_inq_nvars(grp_id,&nvars);
+  rcd+=nco_inq_nvars(grp_id,&nbr_var);
   rcd+=nco_inq_grpname(grp_id,gp_nm);
   rcd+=nco_inq_ndims(grp_id,&nbr_dmn);
   rcd+=nco_inq_natts(grp_id,&nbr_att);
-  rcd+=nco_inq_grps(grp_id,&ngrps,NULL);
+  rcd+=nco_inq_grps(grp_id,&nbr_grp,NULL);
+  rcd+=nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
 
   /* Add to table: this is a group */
   if (tbl){
@@ -1699,12 +1701,11 @@ nco_grp_itr
   }
 
   if(mode == 1){
-    (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",grp_nm_fll,ngrps,nbr_dmn,nbr_att,nvars); 
+    (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",grp_nm_fll,nbr_grp,nbr_dmn,nbr_att,nbr_var); 
   }
 
-
   /* Iterate variables for this group */
-  for(var_id=0;var_id<nvars;var_id++){
+  for(var_id=0;var_id<nbr_var;var_id++){
     char *var_pth=NULL; /* Full path of variable */
     rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
 
@@ -1729,10 +1730,10 @@ nco_grp_itr
   }
 
   /* Go to sub-groups */ 
-  grpids=(int*)nco_malloc((ngrps)*sizeof(int));
-  rcd+=nco_inq_grps(grp_id,&ngrps,grpids);
+  grpids=(int*)nco_malloc((nbr_grp)*sizeof(int));
+  rcd+=nco_inq_grps(grp_id,&nbr_grp,grpids);
 
-  for(idx=0;idx<ngrps;idx++){
+  for(idx=0;idx<nbr_grp;idx++){
     char *pth=NULL;  /* Full group path */
     int gid=grpids[idx];
     rcd+=nco_inq_grpname(gid,gp_nm);
