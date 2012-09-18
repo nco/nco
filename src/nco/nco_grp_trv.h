@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.9 2012-09-05 02:00:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.10 2012-09-18 18:37:06 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -12,11 +12,8 @@
 #ifndef NCO_GRP_TRV_H
 #define NCO_GRP_TRV_H
 
-/* Standard header files */
-#include <assert.h> /* assert() */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
-
 /* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions and C library */
 
 /* Personal headers */
 #include "nco_mmr.h" /* Memory management */
