@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.102 2012-09-18 21:41:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.103 2012-09-18 21:50:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1661,7 +1661,7 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
 int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [ID] Group ID */
- char * grp_pth,               /* I [sng] Mode 2: Absolute group name (path); mode 1: group name */
+ char * grp_nm_fll,            /* I [sng] Absolute group name (path) */
  const int mode,               /* I [enm] Mode: modes 1 (-G ), 2 (storage) */
  grp_tbl_sct *tbl)             /* I/O [sct] Table */
 {
@@ -1693,13 +1693,13 @@ nco_grp_itr
 
   /* Add to table: this is a group */
   if (tbl){
-    obj.nm_fll=grp_pth;
+    obj.nm_fll=grp_nm_fll;
     obj.typ=nc_typ_grp;
     trv_tbl_add(obj,tbl);
   }
 
   if(mode == 1){
-    (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",gp_nm,ngrps,nbr_dmn,nbr_att,nvars); 
+    (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",grp_nm_fll,ngrps,nbr_dmn,nbr_att,nvars); 
   }
 
 
@@ -1709,11 +1709,11 @@ nco_grp_itr
     rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
-    var_pth=(char*)nco_malloc(strlen(grp_pth)+strlen(var_nm)+2);
+    var_pth=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2);
 
     /* Initialize path with the current absolute group path */
-    strcpy(var_pth,grp_pth);
-    if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
+    strcpy(var_pth,grp_nm_fll);
+    if(strcmp(grp_nm_fll,"/")!=0) /* If not root group, concatenate separator */
       strcat(var_pth,"/");
     strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
 
@@ -1738,20 +1738,17 @@ nco_grp_itr
     rcd+=nco_inq_grpname(gid,gp_nm);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
-    pth=(char*)nco_malloc(strlen(grp_pth)+strlen(gp_nm)+2);
+    pth=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(gp_nm)+2);
 
     /* Initialize path with the current absolute group path */
-    strcpy(pth,grp_pth);
-    if(strcmp(grp_pth,"/")!=0) /* If not root group, concatenate separator */
+    strcpy(pth,grp_nm_fll);
+    if(strcmp(grp_nm_fll,"/")!=0) /* If not root group, concatenate separator */
       strcat(pth,"/");
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
-    /* Recursively go to sub-groups; NOTE the new absolute group path is passed in mode 2 */
-    if( mode == 2){
-      rcd+=nco_grp_itr(gid,pth,mode,tbl);
-    }else if(mode == 1){
-      rcd+=nco_grp_itr(gid,gp_nm,mode,tbl);
-    }
+    /* Recursively go to sub-groups; NOTE the new absolute group name is passed  */
+    rcd+=nco_grp_itr(gid,pth,mode,tbl);
+   
     pth=(char*)nco_free(pth);
   }
 
