@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.358 2012-09-18 04:02:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.359 2012-09-18 21:41:26 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.358 2012-09-18 04:02:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.358 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.359 2012-09-18 21:41:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.359 $";
   char root_path[2]="/";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
@@ -582,16 +582,20 @@ main(int argc,char **argv)
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,root_path,2,trv_tbl);
-  if(HAS_SUBGRP && dbg_lvl_get() >= nco_dbg_var){
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
-    }
-  }
+
   /* Process -z option if requested */ 
   if(GET_LIST){ 
-    rcd+=nco_grp_itr(in_id,root_path,0,NULL);
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
+        (void)fprintf(stdout,"grp= ");
+      } else if (trv_tbl->grp_lst[uidx].typ == nc_typ_var ) {
+        (void)fprintf(stdout,"var= ");
+      }
+      (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
+    }
     goto out; 
-  }
+  } /* end GET_LIST */ 
+
   /* Process -G option if requested */ 
   if(GET_GRP_INFO){ 
     rcd+=nco_grp_itr(in_id,root_path,1,NULL);
