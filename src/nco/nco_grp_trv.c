@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.9 2012-09-05 02:00:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.10 2012-09-19 21:52:19 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -24,10 +24,14 @@ trv_tbl_init
   tb->grp_lst=(grp_trv_sct*)nco_malloc(tb->sz*sizeof(grp_trv_sct));
 
   for(idx=0;idx<tb->sz;idx++){
-    tb->grp_lst[idx].nm_fll = NULL;
-    tb->grp_lst[idx].typ    = nc_typ_err;
-    tb->grp_lst[idx].nm[0]  = '\0';
-    tb->grp_lst[idx].flg    = -1;
+    tb->grp_lst[idx].nm_fll  = NULL;
+    tb->grp_lst[idx].typ     = nc_typ_err;
+    tb->grp_lst[idx].nm[0]   = '\0';
+    tb->grp_lst[idx].flg     = -1;
+    tb->grp_lst[idx].nbr_att = -1;
+    tb->grp_lst[idx].nbr_var = -1;
+    tb->grp_lst[idx].nbr_dmn = -1;
+    tb->grp_lst[idx].nbr_grp = -1;
   }
 
   *tbl = tb;
@@ -69,8 +73,12 @@ trv_tbl_add
   } /* tbl->sz */
   idx=tbl->nbr++;
   tbl->grp_lst[idx].nm_fll=(char*)strdup(obj.nm_fll);
-  tbl->grp_lst[idx].typ=obj.typ;
   strcpy(tbl->grp_lst[idx].nm,obj.nm);
+  tbl->grp_lst[idx].typ=obj.typ;
+  tbl->grp_lst[idx].nbr_att=obj.nbr_att;
+  tbl->grp_lst[idx].nbr_var=obj.nbr_var;
+  tbl->grp_lst[idx].nbr_dmn=obj.nbr_dmn;
+  tbl->grp_lst[idx].nbr_grp=obj.nbr_grp;
 }
 /* trv_tbl_add() */
 

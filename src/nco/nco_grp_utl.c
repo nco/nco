@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.105 2012-09-19 19:17:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.106 2012-09-19 21:52:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1701,7 +1701,12 @@ nco_grp_itr
   /* Add to table: this is a group */
   if (tbl){
     obj.nm_fll=grp_nm_fll;
+    strcpy(obj.nm,gp_nm);
     obj.typ=nc_typ_grp;
+    obj.nbr_att=nbr_att;
+    obj.nbr_var=nbr_var;
+    obj.nbr_dmn=nbr_dmn;
+    obj.nbr_grp=nbr_grp;
     trv_tbl_add(obj,tbl);
   }
 
@@ -1735,6 +1740,7 @@ nco_grp_itr
       obj.nm_fll=var_pth;
       obj.typ=nc_typ_var;
       strcpy(obj.nm,var_nm);
+
       trv_tbl_add(obj,tbl);
     }
 
