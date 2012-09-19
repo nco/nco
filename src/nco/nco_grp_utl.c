@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.104 2012-09-18 22:49:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.105 2012-09-19 19:17:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1382,7 +1382,7 @@ nco4_grp_itr
   int rcd=NC_NOERR;            /* I [rcd] Return code */
   int ngrps;                   /* I [nbr] Number of sub-groups in this group */
   int var_id;                  /* I [enm] Variable ID */ 
-  int *grpids;                 /* O [ID]  Sub-group IDs */ 
+  int *grp_ids;                 /* O [ID]  Sub-group IDs */ 
   char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */
   nc_type var_typ;             /* O [enm] Variable type */
   int nbr_att;                 /* O [nbr] Number of attributes */
@@ -1449,8 +1449,8 @@ nco4_grp_itr
 
   /* Go to sub-groups */
   rcd+=nco_inq_grps(in_id,&ngrps,NULL);
-  grpids=(int*)nco_malloc((ngrps)*sizeof(int));
-  rcd+=nco_inq_grps(in_id,&ngrps,grpids);
+  grp_ids=(int*)nco_malloc((ngrps)*sizeof(int));
+  rcd+=nco_inq_grps(in_id,&ngrps,grp_ids);
 
   /* Group information */
   rcd+=nco_inq_grpname(in_id,gp_nm);
@@ -1459,7 +1459,7 @@ nco4_grp_itr
 
   for(idx=0;idx<ngrps;idx++){
     char *pth=NULL;  /* Full group path */
-    int gid=grpids[idx];
+    int gid=grp_ids[idx];
     rcd+=nco_inq_grpname(gid,gp_nm);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
@@ -1477,7 +1477,7 @@ nco4_grp_itr
     pth=(char*)nco_free(pth);
   }
 
-  (void)nco_free(grpids);
+  (void)nco_free(grp_ids);
   return rcd;
 }/* end nco4_grp_itr() */
 
@@ -1531,7 +1531,7 @@ nco4_grp_var_itr
   int rcd=NC_NOERR;            /* I [rcd] Return code */
   int ngrps;                   /* I [nbr] Number of sub-groups in this group */
   int var_id;                  /* I [enm] Variable ID */ 
-  int *grpids;                 /* O [ID]  Sub-group IDs */ 
+  int *grp_ids;                 /* O [ID]  Sub-group IDs */ 
   char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */
   nc_type var_typ;             /* O [enm] Variable type */
   int nbr_att;                 /* O [nbr] Number of attributes */
@@ -1594,8 +1594,8 @@ nco4_grp_var_itr
 
   /* Go to sub-groups */
   rcd+=nco_inq_grps(in_id,&ngrps,NULL);
-  grpids=(int*)nco_malloc((ngrps)*sizeof(int));
-  rcd+=nco_inq_grps(in_id,&ngrps,grpids);
+  grp_ids=(int*)nco_malloc((ngrps)*sizeof(int));
+  rcd+=nco_inq_grps(in_id,&ngrps,grp_ids);
 
   /* Group information */
   rcd+=nco_inq_grpname(in_id,gp_nm);
@@ -1604,7 +1604,7 @@ nco4_grp_var_itr
 
   for(idx=0;idx<ngrps;idx++){
     char *pth=NULL;  /* Full group path */
-    int gid=grpids[idx];
+    int gid=grp_ids[idx];
     rcd+=nco_inq_grpname(gid,gp_nm);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
@@ -1622,7 +1622,7 @@ nco4_grp_var_itr
     pth=(char*)nco_free(pth);
   }
 
-  (void)nco_free(grpids);
+  (void)nco_free(grp_ids);
   return rcd;
 }/* end nco4_grp_var_itr() */
 
@@ -1673,11 +1673,14 @@ nco_grp_itr
   int nbr_var;                 /* O [nbr] Number of variables */
   int nbr_dmn;                 /* O [nbr] number of dimensions */
   int nbr_grp;                 /* O [nbr] Number of sub-groups in this group */
-  int *grpids;                 /* O [ID]  Sub-group IDs */ 
   int var_id;                  /* O [ID] Variable ID */ 
   int rec_dmn_id;              /* O [ID] Record dimension ID */
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME];    /* O [sng] Dimension name */ 
+  long dmn_sz;                 /* O [nbr] Dimension size */ 
+  int *grp_ids;                /* O [ID]  Sub-group IDs */ 
+  int *dmn_ids;                /* O [ID]  Dimension IDs */ 
   int idx;                     /* I [idx] Index */             
   grp_trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
 
@@ -1692,6 +1695,8 @@ nco_grp_itr
   rcd+=nco_inq_natts(grp_id,&nbr_att);
   rcd+=nco_inq_grps(grp_id,&nbr_grp,NULL);
   rcd+=nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+  dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+  rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
   /* Add to table: this is a group */
   if (tbl){
@@ -1702,6 +1707,13 @@ nco_grp_itr
 
   if(mode == 1){
     (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",grp_nm_fll,nbr_grp,nbr_dmn,nbr_att,nbr_var); 
+    for(idx=0;idx<nbr_dmn;idx++){
+      (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
+      if(dbg_lvl_get() >= nco_dbg_var){
+        if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+          (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+      }
+    }
   }
 
   /* Iterate variables for this group */
@@ -1730,12 +1742,12 @@ nco_grp_itr
   }
 
   /* Go to sub-groups */ 
-  grpids=(int*)nco_malloc((nbr_grp)*sizeof(int));
-  rcd+=nco_inq_grps(grp_id,&nbr_grp,grpids);
+  grp_ids=(int*)nco_malloc((nbr_grp)*sizeof(int));
+  rcd+=nco_inq_grps(grp_id,&nbr_grp,grp_ids);
 
   for(idx=0;idx<nbr_grp;idx++){
     char *pth=NULL;  /* Full group path */
-    int gid=grpids[idx];
+    int gid=grp_ids[idx];
     rcd+=nco_inq_grpname(gid,gp_nm);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
@@ -1753,7 +1765,8 @@ nco_grp_itr
     pth=(char*)nco_free(pth);
   }
 
-  (void)nco_free(grpids);
+  (void)nco_free(grp_ids);
+  (void)nco_free(dmn_ids);
   return rcd;
 }/* end nco_grp_itr() */
 
