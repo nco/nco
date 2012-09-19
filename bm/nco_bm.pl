@@ -2,10 +2,11 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.150 2012-05-22 02:25:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.151 2012-09-19 03:15:59 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
+# unset MY_BIN_DIR;cd ~/nco/bm;nco_bm.pl --regress # Test all operators with system executables
 # ~/nco/bm/nco_bm.pl --regress ncra # Test one operator
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
 # ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
@@ -181,7 +182,6 @@ $lcl_vars .=    "\t \$bch_flg = $bch_flg\n";
 $lcl_vars .=    "\t \$srv_sd = [$srv_sd]\n";
 $lcl_vars .=    "\t \$nvr_data = $nvr_data\n";
 $lcl_vars .=    "\t \$nvr_home = $nvr_home\n";
-$lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
 $lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
 $lcl_vars .=    "\t \@ENV = @ENV\n";
 $lcl_vars .=    "\t \@INC:\n";
