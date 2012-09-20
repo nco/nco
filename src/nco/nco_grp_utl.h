@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.55 2012-09-20 18:25:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.56 2012-09-20 18:46:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -145,7 +145,7 @@ int                                      /* O [rcd] Return code */
 nco_grp_itr
 (const int grp_id,                       /* I [id] Group ID */
  char * grp_pth,                         /* I [sng] Absolute group path */
- grp_tbl_sct *tbl);                      /* I/O [sct] Group traversal table  */
+ grp_tbl_sct *trv_tbl);                  /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
 
 int                                      /* O [rcd] Return code */
@@ -225,7 +225,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
  lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
  lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
- grp_tbl_sct *tbl);             /* I [sct] Traversal table */
+ grp_tbl_sct *trv_tbl);         /* I [sct] Traversal table */
 
 
 #ifdef __cplusplus

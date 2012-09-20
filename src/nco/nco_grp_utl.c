@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.108 2012-09-20 18:25:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.109 2012-09-20 18:46:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1662,7 +1662,7 @@ int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [ID] Group ID */
  char * grp_nm_fll,            /* I [sng] Absolute group name (path) */
- grp_tbl_sct *tbl)             /* I/O [sct] Traversal table */
+ grp_tbl_sct *trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -1701,7 +1701,7 @@ nco_grp_itr
   obj.nbr_var=nbr_var;
   obj.nbr_dmn=nbr_dmn;
   obj.nbr_grp=nbr_grp;
-  trv_tbl_add(obj,tbl);
+  trv_tbl_add(obj,trv_tbl);
 
   /* Iterate variables for this group */
   for(var_id=0;var_id<nbr_var;var_id++){
@@ -1722,7 +1722,7 @@ nco_grp_itr
     obj.typ=nc_typ_var;
     strcpy(obj.nm,var_nm);
 
-    trv_tbl_add(obj,tbl);
+    trv_tbl_add(obj,trv_tbl);
 
     var_pth=(char*)nco_free(var_pth);
   }
@@ -1746,7 +1746,7 @@ nco_grp_itr
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups; NOTE the new absolute group name is passed  */
-    rcd+=nco_grp_itr(gid,pth,tbl);
+    rcd+=nco_grp_itr(gid,pth,trv_tbl);
 
     pth=(char*)nco_free(pth);
   }
@@ -1764,7 +1764,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
  lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
  lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
- grp_tbl_sct *tbl)              /* I [sct] Traversal table */
+ grp_tbl_sct *trv_tbl)          /* I [sct] Traversal table */
 {
   int idx;
   int jdx;
@@ -1775,6 +1775,42 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   lmt_all_sct * lmt_all_crr;
 
 #ifdef GRP_DEV
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
+      grp_trv_sct obj=trv_tbl->grp_lst[uidx]; 
+
+      if(dbg_lvl_get() >= nco_dbg_vrb){
+        (void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
+      }
+      char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+      long dmn_sz;                 /* [nbr] Dimension size */ 
+      int *dmn_ids;                /* [ID]  Dimension IDs */ 
+      int grp_id;                  /* [ID] Group ID */
+      int nbr_att;                 /* [nbr] Number of attributes */
+      int nbr_var;                 /* [nbr] Number of variables */
+      int nbr_dmn;                 /* [nbr] number of dimensions */
+      int nbr_grp;                 /* [nbr] Number of sub-groups in this group */
+      int var_id;                  /* [ID] Variable ID */ 
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(in_id,obj.nm_fll,&grp_id);
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == obj.nbr_dmn && nbr_var == obj.nbr_var && nbr_att == obj.nbr_att);
+#endif
+      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+      /* List dimensions using obtained group ID */
+      for(idx=0;idx<obj.nbr_dmn;idx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
+        if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+          (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+      } /* end idx dimensions */
+      (void)nco_free(dmn_ids);
+
+    } /* end nc_typ_grp */
+  } /* end uidx  */
 
 
 #else /* GRP_DEV */ 
