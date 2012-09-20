@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.54 2012-09-20 17:52:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.55 2012-09-20 18:25:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -218,14 +218,14 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
  const nco_bool NCO_BNR_WRT);    /* I [flg] Write binary file */
 
 
-void      
-nco4_msa_lmt_all_int             /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
-(int in_id,
- nco_bool MSA_USR_RDR,
- lmt_all_sct **lmt_all_lst,
- int nbr_dmn_fl,
- lmt_sct** lmt,
- int lmt_nbr);
+void 
+nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
+(int in_id,                     /* [ID]  netCDF file ID */
+ nco_bool MSA_USR_RDR,          /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
+ lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
+ int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
+ grp_tbl_sct *tbl);             /* I [sct] Traversal table */
 
 
 #ifdef __cplusplus

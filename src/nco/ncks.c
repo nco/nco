@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.360 2012-09-20 17:52:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.361 2012-09-20 18:25:24 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.360 2012-09-20 17:52:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.360 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.361 2012-09-20 18:25:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.361 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -716,7 +716,7 @@ main(int argc,char **argv)
   
   /* Initialize lmt_all_sct's */ 
   if(HAS_SUBGRP){
-    (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+    (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,lmt,lmt_nbr,trv_tbl);
   }else{
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
   }
@@ -933,7 +933,9 @@ main(int argc,char **argv)
           assert(grp_id == nm_id.grp_id );
 #endif
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
+#if 0
           (void)nco_msa_prn_var_val(xtr_lst[idx].grp_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+#endif
         } /* idx */
 
       /* netCDF3 or netCDF4-classic */

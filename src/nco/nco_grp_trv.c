@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.10 2012-09-19 21:52:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.11 2012-09-20 18:25:24 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -15,7 +15,7 @@
 
 void                          
 trv_tbl_init
-(grp_tbl_sct **tbl)       /* I/O [sct] Table */
+(grp_tbl_sct **tbl)       /* I/O [sct] Traversal table */
 {
   unsigned int idx;
   grp_tbl_sct* tb=(grp_tbl_sct*)nco_malloc(sizeof(grp_tbl_sct));
@@ -40,7 +40,7 @@ trv_tbl_init
 
 void 
 trv_tbl_free
-(grp_tbl_sct *tbl)   /* I [sct] Table */
+(grp_tbl_sct *tbl)   /* I [sct] Traversal table */
 {
   unsigned int idx;
 
@@ -59,7 +59,7 @@ trv_tbl_free
 void 
 trv_tbl_add
 (grp_trv_sct obj,          /* I   [sct] Object to store */
- grp_tbl_sct *tbl)         /* I/O [sct] Table */
+ grp_tbl_sct *tbl)         /* I/O [sct] Traversal table */
 {
   unsigned int idx;
 
