@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.106 2012-09-19 21:52:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.107 2012-09-20 17:52:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1662,7 +1662,6 @@ int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [ID] Group ID */
  char * grp_nm_fll,            /* I [sng] Absolute group name (path) */
- const int mode,               /* I [enm] Mode: modes 1 (-G ), 2 (storage) */
  grp_tbl_sct *tbl)             /* I/O [sct] Table */
 {
   /* Purpose: Recursively iterate grp_id */
@@ -1684,10 +1683,6 @@ nco_grp_itr
   int idx;                     /* I [idx] Index */             
   grp_trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
 
-#ifdef NCO_SANITY_CHECK
-  assert(mode == 1 || mode == 2);
-#endif
-
   /* Get all information for this group */
   rcd+=nco_inq_nvars(grp_id,&nbr_var);
   rcd+=nco_inq_grpname(grp_id,gp_nm);
@@ -1699,27 +1694,16 @@ nco_grp_itr
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
   /* Add to table: this is a group */
-  if (tbl){
-    obj.nm_fll=grp_nm_fll;
-    strcpy(obj.nm,gp_nm);
-    obj.typ=nc_typ_grp;
-    obj.nbr_att=nbr_att;
-    obj.nbr_var=nbr_var;
-    obj.nbr_dmn=nbr_dmn;
-    obj.nbr_grp=nbr_grp;
-    trv_tbl_add(obj,tbl);
-  }
 
-  if(mode == 1){
-    (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",grp_nm_fll,nbr_grp,nbr_dmn,nbr_att,nbr_var); 
-    for(idx=0;idx<nbr_dmn;idx++){
-      (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
-      if(dbg_lvl_get() >= nco_dbg_var){
-        if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-          (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
-      }
-    }
-  }
+  obj.nm_fll=grp_nm_fll;
+  strcpy(obj.nm,gp_nm);
+  obj.typ=nc_typ_grp;
+  obj.nbr_att=nbr_att;
+  obj.nbr_var=nbr_var;
+  obj.nbr_dmn=nbr_dmn;
+  obj.nbr_grp=nbr_grp;
+  trv_tbl_add(obj,tbl);
+
 
   /* Iterate variables for this group */
   for(var_id=0;var_id<nbr_var;var_id++){
@@ -1736,13 +1720,11 @@ nco_grp_itr
     strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
 
     /* Add to table: this is a variable */
-    if (tbl){
-      obj.nm_fll=var_pth;
-      obj.typ=nc_typ_var;
-      strcpy(obj.nm,var_nm);
+    obj.nm_fll=var_pth;
+    obj.typ=nc_typ_var;
+    strcpy(obj.nm,var_nm);
 
-      trv_tbl_add(obj,tbl);
-    }
+    trv_tbl_add(obj,tbl);
 
     var_pth=(char*)nco_free(var_pth);
   }
@@ -1766,8 +1748,8 @@ nco_grp_itr
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups; NOTE the new absolute group name is passed  */
-    rcd+=nco_grp_itr(gid,pth,mode,tbl);
-   
+    rcd+=nco_grp_itr(gid,pth,tbl);
+
     pth=(char*)nco_free(pth);
   }
 

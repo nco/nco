@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.359 2012-09-18 21:41:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.360 2012-09-20 17:52:51 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -141,9 +141,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.359 2012-09-18 21:41:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.359 $";
-  char root_path[2]="/";
+  const char * const CVS_Id="$Id: ncks.c,v 1.360 2012-09-20 17:52:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.360 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -581,7 +580,7 @@ main(int argc,char **argv)
 
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
-  rcd+=nco_grp_itr(in_id,root_path,2,trv_tbl);
+  rcd+=nco_grp_itr(in_id,"/",trv_tbl);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
@@ -598,9 +597,42 @@ main(int argc,char **argv)
 
   /* Process -G option if requested */ 
   if(GET_GRP_INFO){ 
-    rcd+=nco_grp_itr(in_id,root_path,1,NULL);
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
+        grp_trv_sct obj=trv_tbl->grp_lst[uidx];            
+        (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
+        if(dbg_lvl_get() >= nco_dbg_var){
+          char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+          long dmn_sz;                 /* [nbr] Dimension size */ 
+          int *dmn_ids;                /* [ID]  Dimension IDs */ 
+          int grp_id;                  /* [ID] Group ID */
+          int nbr_att;                 /* [nbr] Number of attributes */
+          int nbr_var;                 /* [nbr] Number of variables */
+          int nbr_dmn;                 /* [nbr] number of dimensions */
+          int nbr_grp;                 /* [nbr] Number of sub-groups in this group */
+          int var_id;                  /* [ID] Variable ID */ 
+
+          /* Obtain group ID from netCDF API using full group name */
+          rcd+=nco_inq_grp_full_ncid(in_id,obj.nm_fll,&grp_id);
+          rcd+=nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+#ifdef NCO_SANITY_CHECK
+          assert(nbr_dmn == obj.nbr_dmn && nbr_var == obj.nbr_var && nbr_att == obj.nbr_att);
+#endif
+          dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+          rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+          /* List dimensions using obtained group ID */
+          for(idx=0;idx<obj.nbr_dmn;idx++){
+            (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
+            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+              (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+          } /* end idx dimensions */
+          (void)nco_free(dmn_ids);
+        } /* end nco_dbg_var */
+      } /* end nc_typ_grp */
+    } /* end uidx  */
     goto out; 
-  }
+  } /* end GET_GRP_INFO */
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
