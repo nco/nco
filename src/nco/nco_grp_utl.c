@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.112 2012-09-21 21:32:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.113 2012-09-21 23:59:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1676,6 +1676,8 @@ nco_grp_itr
   int rec_dmn_id;              /* O [ID] Record dimension ID */
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME];    /* O [sng] Dimension name */ 
+  long dmn_sz;                 /* O [nbr] Dimension size */ 
   int *grp_ids;                /* O [ID]  Sub-group IDs */ 
   int *dmn_ids;                /* O [ID]  Dimension IDs */ 
   int idx;                     /* I [idx] Index */             
@@ -1760,15 +1762,17 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 (int in_id,                     /* [ID]  netCDF file ID */
  nco_bool MSA_USR_RDR,          /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
- int nbr_dmn_fl,                /* [nbr] Number of multi-hyperslab limits */
  lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
  grp_tbl_sct *trv_tbl)          /* I [sct] Traversal table */
 {
+  int idx;
+  int jdx;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  long dmn_sz;
+  char dmn_nm[NC_MAX_NAME];
   lmt_sct *lmt_rgl;
   lmt_all_sct * lmt_all_crr;
-  int idx=0; /* Global index for lmt_all_lst */ 
-  int jdx;
 
 #ifdef GRP_DEV
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1777,8 +1781,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 
       if(dbg_lvl_get() >= nco_dbg_vrb){
         (void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
-      } /* nco_dbg_vrb */
-
+      }
       char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
       long dmn_sz;                 /* [nbr] Dimension size */ 
       int *dmn_ids;                /* [ID]  Dimension IDs */ 
@@ -1786,7 +1789,8 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       int nbr_att;                 /* [nbr] Number of attributes */
       int nbr_var;                 /* [nbr] Number of variables */
       int nbr_dmn;                 /* [nbr] number of dimensions */
-      int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+      int nbr_grp;                 /* [nbr] Number of sub-groups in this group */
+      int var_id;                  /* [ID] Variable ID */ 
 
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(in_id,obj.nm_fll,&grp_id);
@@ -1798,67 +1802,18 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       /* List dimensions using obtained group ID */
-      for(int jdx=0;jdx<obj.nbr_dmn;jdx++){
-        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-
-        if(dbg_lvl_get() >= nco_dbg_vrb){
-          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-            (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
-        } /* nco_dbg_vrb */
-
-        lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
-        lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-        lmt_all_crr->dmn_nm=strdup(dmn_nm);
-        lmt_all_crr->lmt_dmn_nbr=1;
-        lmt_all_crr->dmn_sz_org=dmn_sz;
-        lmt_all_crr->WRP=False;
-        lmt_all_crr->BASIC_DMN=True;
-        lmt_all_crr->MSA_USR_RDR=False;    
-
-        lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
-        /* Dereference */
-        lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
-        lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
-        lmt_rgl->id=idx;
-
-        /* NB: nco_lmt_evl() may alter this */
-        if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
-
-        lmt_rgl->srt=0L;
-        lmt_rgl->end=dmn_sz-1L;
-        lmt_rgl->cnt=dmn_sz;
-        lmt_rgl->srd=1L;
-        lmt_rgl->drn=1L;
-        lmt_rgl->flg_mro=False;
-        lmt_rgl->min_sng=NULL;
-        lmt_rgl->max_sng=NULL;
-        lmt_rgl->srd_sng=NULL;
-        lmt_rgl->drn_sng=NULL;
-        lmt_rgl->mro_sng=NULL;
-        lmt_rgl->rbs_sng=NULL;
-        lmt_rgl->origin=0.0;
-
-        /* A hack so we know structure has been initialized */
-        lmt_rgl->lmt_typ=-1;
-
-        /* Increment global index */ 
-        idx++;
-
-      } /* end jdx dimensions */
+      for(idx=0;idx<obj.nbr_dmn;idx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
+        if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+          (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+      } /* end idx dimensions */
       (void)nco_free(dmn_ids);
+
     } /* end nc_typ_grp */
   } /* end uidx  */
 
 
 #else /* GRP_DEV */ 
-  int idx;
-  int jdx;
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  long dmn_sz;
-  char dmn_nm[NC_MAX_NAME];
-  lmt_sct *lmt_rgl;
-  lmt_all_sct * lmt_all_crr;
-
   (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
@@ -1898,8 +1853,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     /* A hack so we know structure has been initialized */
     lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
-
-#endif /* GRP_DEV */ 
 
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
@@ -1972,6 +1925,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     } /* endif */
 
   } /* end idx */    
+#endif /* GRP_DEV */ 
 } /* end nco4_msa_lmt_all_int() */
 
 
