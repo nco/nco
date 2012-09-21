@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.364 2012-09-21 19:33:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.365 2012-09-21 21:32:39 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.364 2012-09-21 19:33:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.364 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.365 2012-09-21 21:32:39 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.365 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -610,8 +610,6 @@ main(int argc,char **argv)
           int nbr_att;                 /* [nbr] Number of attributes */
           int nbr_var;                 /* [nbr] Number of variables */
           int nbr_dmn;                 /* [nbr] number of dimensions */
-          int nbr_grp;                 /* [nbr] Number of sub-groups in this group */
-          int var_id;                  /* [ID] Variable ID */ 
 
           /* Obtain group ID from netCDF API using full group name */
           (void)nco_inq_grp_full_ncid(in_id,obj.nm_fll,&grp_id);
@@ -650,7 +648,7 @@ main(int argc,char **argv)
   
   /* Get number of variables, dimensions, and global attributes in file */
 #ifdef ENABLE_NETCDF4
-  (void)nco4_inq(in_id,&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&rec_dmn_nbr,&rec_dmn_id,trv_tbl);
+  (void)nco4_inq(in_id,&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&rec_dmn_nbr,&rec_dmn_id);
 #else /* !ENABLE_NETCDF4 */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
 #endif /* ENABLE_NETCDF4 */
@@ -933,8 +931,12 @@ main(int argc,char **argv)
           rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
           assert(grp_id == nm_id.grp_id );
 #endif
+          if(dbg_lvl_get() >= nco_dbg_vrb){
+            nm_id_sct sct=xtr_lst[idx];
+            (void)fprintf(stdout,"xtr_lst[%d]: %s %s (%d) %s %s (%d)\n",idx,sct.grp_nm_fll,sct.grp_nm,sct.grp_id,sct.var_nm_fll,sct.nm,sct.id);
+          } /* nco_dbg_vrb */
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
-#if 1
+#if 0
           (void)nco_msa_prn_var_val(xtr_lst[idx].grp_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
 #endif
         } /* idx */

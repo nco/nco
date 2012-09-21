@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.57 2012-09-21 19:33:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.58 2012-09-21 21:32:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -105,8 +105,7 @@ nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attrib
  int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all, /* O [nbr] Number of variables in file */
  int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
- int * const rec_dmn_ids, /* O [ID] Record dimension IDs in file */
- grp_tbl_sct *trv_tbl);   /* I [sct] Traversal table */
+ int * const rec_dmn_ids); /* O [ID] Record dimension IDs in file */
 /* end nco4_inq() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
