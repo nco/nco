@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.110 2012-09-21 17:49:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.111 2012-09-21 19:33:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1760,16 +1760,17 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 (int in_id,                     /* [ID]  netCDF file ID */
  nco_bool MSA_USR_RDR,          /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
+ int nbr_dmn_fl,                /* [nbr] Number of multi-hyperslab limits */
  lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
  grp_tbl_sct *trv_tbl)          /* I [sct] Traversal table */
 {
   lmt_sct *lmt_rgl;
   lmt_all_sct * lmt_all_crr;
+  int idx=0; /* Global index for lmt_all_lst */ 
+  int jdx;
 
 #ifdef GRP_DEV
-  int idx=0; /* Global index for lmt_all_lst */ 
-
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
       grp_trv_sct obj=trv_tbl->grp_lst[uidx]; 
@@ -1898,6 +1899,8 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
 
+#endif /* GRP_DEV */ 
+
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
@@ -1969,7 +1972,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     } /* endif */
 
   } /* end idx */    
-#endif /* GRP_DEV */ 
 } /* end nco4_msa_lmt_all_int() */
 
 
@@ -1980,7 +1982,8 @@ nco4_inq                  /* [fnc] Find and return global totals of dimensions, 
  int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all, /* O [nbr] Number of variables in file */
  int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
- int * const rec_dmn_ids) /* O [ID] Record dimension IDs in file */
+ int * const rec_dmn_ids, /* O [ID] Record dimension IDs in file */
+ grp_tbl_sct *trv_tbl)    /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global totals of dimensions, variables, attributes
      nco_inq() only applies to a single group
