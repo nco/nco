@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.728 2012-09-18 05:02:43 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.729 2012-09-21 12:36:36 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -114,17 +114,17 @@ Keep the size &lt;250&times;250 pixels.<br>
 -->
 </td>
 
-NCO manipulates data in the 
+NCO manipulates data stored in
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-data storage format.
+format.
 It also exploits the geophysical expressivity of many 
 <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a> 
 (Climate &amp; Forecast) metadata conventions, 
-the flexible description of physical dimensions treated by
+the flexible description of physical dimensions translated by
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>,
 the network transparency of
 <a href="http://opendap.org">OPeNDAP</a>, 
-the storage features of
+the storage features (e.g., compression, chunking, groups) of
 <a href="http://hdfgroup.org">HDF</a> (the Hierarchical Data Format),
 and many powerful mathematical and statistical algorithms of 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (the GNU Scientific Library).
