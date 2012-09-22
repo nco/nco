@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.368 2012-09-22 05:43:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.369 2012-09-22 06:56:49 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.368 2012-09-22 05:43:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.368 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.369 2012-09-22 06:56:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.369 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -940,9 +940,9 @@ main(int argc,char **argv)
           if(dbg_lvl_get() >= nco_dbg_vrb){          
             (void)fprintf(stdout,"xtr_lst[%d]: %s %s (%d) %s %s (%d)\n",idx,nm_id.grp_nm_fll,nm_id.grp_nm,nm_id.grp_id,nm_id.var_nm_fll,nm_id.nm,nm_id.id);     
           } /* nco_dbg_vrb */        
-#if 0
+#if 1
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
-          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,dmn_nbr_all,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
 #endif
         } /* idx */
 

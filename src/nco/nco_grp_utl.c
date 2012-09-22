@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.116 2012-09-22 05:43:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.117 2012-09-22 06:56:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1676,8 +1676,6 @@ nco_grp_itr
   int rec_dmn_id;              /* O [ID] Record dimension ID */
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   char var_nm[NC_MAX_NAME];    /* O [sng] Variable name */ 
-  char dmn_nm[NC_MAX_NAME];    /* O [sng] Dimension name */ 
-  long dmn_sz;                 /* O [nbr] Dimension size */ 
   int *grp_ids;                /* O [ID]  Sub-group IDs */ 
   int *dmn_ids;                /* O [ID]  Dimension IDs */ 
   int idx;                     /* I [idx] Index */             
@@ -1830,6 +1828,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   lmt_all_sct * lmt_all_crr;
   int nbr_dmn_all;              /* [nbr] Total number of dimensions in file */
   int idx;                      /* Global index for lmt_all_lst */
+  int jdx;
   
 #ifdef GRP_DEV
   /* Initialize counters/indices */
@@ -1862,7 +1861,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       /* List dimensions using obtained group ID */
-      for(int jdx=0;jdx<obj.nbr_dmn;jdx++){
+      for(jdx=0;jdx<obj.nbr_dmn;jdx++){
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
 
         if(dbg_lvl_get() >= nco_dbg_vrb){
@@ -1923,7 +1922,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 #else /* GRP_DEV */ 
 
   int idx;
-  int jdx;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   long dmn_sz;
   char dmn_nm[NC_MAX_NAME];
@@ -1968,6 +1966,8 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     /* A hack so we know structure has been initialized */
     lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
+
+#endif /* GRP_DEV */ 
 
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
@@ -2040,7 +2040,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     } /* endif */
 
   } /* end idx */    
-#endif /* GRP_DEV */ 
+
 
 
 #ifdef NCO_SANITY_CHECK
