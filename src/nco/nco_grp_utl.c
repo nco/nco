@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.114 2012-09-22 04:01:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.115 2012-09-22 05:21:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1757,27 +1757,84 @@ nco_grp_itr
 }/* end nco_grp_itr() */
 
 
+
+void                      
+nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
+(int nc_id,                /* I [ID]  netCDF file ID */
+ int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
+ grp_tbl_sct *trv_tbl)     /* I [sct] Traversal table */
+{
+  int nbr_dmn_all=0;       /* [nbr] Total number of dimensions in file */
+  char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
+  long dmn_sz;             /* [nbr] Dimension size */ 
+  int *dmn_ids;            /* [ID]  Dimension IDs */ 
+  int grp_id;              /* [ID] Group ID */
+  int nbr_att;             /* [nbr] Number of attributes */
+  int nbr_var;             /* [nbr] Number of variables */
+  int nbr_dmn;             /* [nbr] number of dimensions */
+  int rec_dmn_id;          /* [ID] Dimension ID */ 
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {    
+      grp_trv_sct obj=trv_tbl->grp_lst[uidx]; 
+
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,obj.nm_fll,&grp_id);
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == obj.nbr_dmn && nbr_var == obj.nbr_var && nbr_att == obj.nbr_att);
+#endif
+
+      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+      /* List dimensions using obtained group ID */
+      for(int jdx=0;jdx<obj.nbr_dmn;jdx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
+        if(dbg_lvl_get() >= nco_dbg_vrb){
+          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+            (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+        } /* end nco_dbg_vrb */
+      } /* end jdx dimensions */
+      (void)nco_free(dmn_ids);
+
+      /* Increment total number of dimensions in file */
+      nbr_dmn_all+=obj.nbr_dmn;
+
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+
+  /* Export */
+  *dmn_nbr_all=nbr_dmn_all;
+
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_dmn() reports file contains %d dimension%s\n",prg_nm_get(),*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
+
+  return;
+} /* end nco4_inq_dmn() */
+
 void 
 nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
 (int in_id,                     /* [ID]  netCDF file ID */
  nco_bool MSA_USR_RDR,          /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
+ int nbr_dmn_fl,                /* I [nbr] Number of dimensions in file */
  lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
  grp_tbl_sct *trv_tbl)          /* I [sct] Traversal table */
 {
-  int idx;
-  int jdx;
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  long dmn_sz;
-  char dmn_nm[NC_MAX_NAME];
   lmt_sct *lmt_rgl;
   lmt_all_sct * lmt_all_crr;
-
+  int nbr_dmn_all;              /* [nbr] Total number of dimensions in file */
+  int idx;                      /* Global index for lmt_all_lst */
+  
 #ifdef GRP_DEV
-  int nbr_dmn_all;  /* [nbr] Total number of dimensions in file */
-
+  /* Initialize counters/indices */
   nbr_dmn_all=0;
+  idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
       grp_trv_sct obj=trv_tbl->grp_lst[uidx]; 
@@ -1805,14 +1862,56 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       /* List dimensions using obtained group ID */
-      for(int idx=0;idx<obj.nbr_dmn;idx++){
-        (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
+      for(int jdx=0;jdx<obj.nbr_dmn;jdx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
 
         if(dbg_lvl_get() >= nco_dbg_vrb){
-          if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
             (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
         } /* end nco_dbg_vrb */
-      } /* end idx dimensions */
+
+        /*NB: increment lmt_all_lst with global idx */
+
+        lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+        lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+        lmt_all_crr->dmn_nm=strdup(dmn_nm);
+        lmt_all_crr->lmt_dmn_nbr=1;
+        lmt_all_crr->dmn_sz_org=dmn_sz;
+        lmt_all_crr->WRP=False;
+        lmt_all_crr->BASIC_DMN=True;
+        lmt_all_crr->MSA_USR_RDR=False;    
+
+        lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
+        /* Dereference */
+        lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
+        lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
+        /* NB: ID is dmn_ids[jdx] */
+        lmt_rgl->id=dmn_ids[jdx];
+
+        /* NB: nco_lmt_evl() may alter this */
+        if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
+
+        lmt_rgl->srt=0L;
+        lmt_rgl->end=dmn_sz-1L;
+        lmt_rgl->cnt=dmn_sz;
+        lmt_rgl->srd=1L;
+        lmt_rgl->drn=1L;
+        lmt_rgl->flg_mro=False;
+        lmt_rgl->min_sng=NULL;
+        lmt_rgl->max_sng=NULL;
+        lmt_rgl->srd_sng=NULL;
+        lmt_rgl->drn_sng=NULL;
+        lmt_rgl->mro_sng=NULL;
+        lmt_rgl->rbs_sng=NULL;
+        lmt_rgl->origin=0.0;
+
+        /* A hack so we know structure has been initialized */
+        lmt_rgl->lmt_typ=-1;
+
+        /*NB: increment lmt_all_lst with global idx */
+        idx++;
+
+      } /* end jdx dimensions */
       (void)nco_free(dmn_ids);
 
       /* Increment total number of dimensions in file */
@@ -1822,6 +1921,14 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   } /* end uidx  */
 
 #else /* GRP_DEV */ 
+
+  int idx;
+  int jdx;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  long dmn_sz;
+  char dmn_nm[NC_MAX_NAME];
+  
+
   (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
 
   for(idx=0;idx<nbr_dmn_fl;idx++){

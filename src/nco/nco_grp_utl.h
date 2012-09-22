@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.59 2012-09-21 23:59:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.60 2012-09-22 05:21:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -223,9 +223,16 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 (int in_id,                     /* [ID]  netCDF file ID */
  nco_bool MSA_USR_RDR,          /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
+ int nbr_dmn_fl,                /* I [nbr] Number of dimensions in file */
  lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
  grp_tbl_sct *trv_tbl);         /* I [sct] Traversal table */
+
+void                      
+nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
+(int nc_id,                /* I [ID]  netCDF file ID */
+ int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
+ grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
 
 
 #ifdef __cplusplus

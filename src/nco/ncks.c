@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.366 2012-09-21 23:59:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.367 2012-09-22 05:21:05 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.366 2012-09-21 23:59:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.366 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.367 2012-09-22 05:21:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.367 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -714,11 +714,17 @@ main(int argc,char **argv)
   }
 
   /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  int dmn_nbr_all;
+  if(HAS_SUBGRP){
+    (void)nco4_inq_dmn(in_id,&dmn_nbr_all,trv_tbl);
+    lmt_all_lst=(lmt_all_sct **)nco_malloc(dmn_nbr_all*sizeof(lmt_all_sct *));
+  }else{
+    lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  }
   
   /* Initialize lmt_all_sct's */ 
   if(HAS_SUBGRP){
-    (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,lmt,lmt_nbr,trv_tbl);
+    (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,dmn_nbr_all,lmt,lmt_nbr,trv_tbl);
   }else{
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
   }
