@@ -43,6 +43,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ncrename", "ncrename\ncrena
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnco_c++", "nco_c++\libnco_c++.vcxproj", "{B3C40D3E-62C8-3A3C-B081-D1795375ABF1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2AB9E3D0-C2C8-3FCC-9918-157EF9987515} = {2AB9E3D0-C2C8-3FCC-9918-157EF9987515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tst", "tst_nco_c++\tst.vcxproj", "{296289DB-1DF2-3DC7-A8CC-854CCFE40953}"
 	ProjectSection(ProjectDependencies) = postProject
