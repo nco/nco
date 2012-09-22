@@ -1,3 +1,7 @@
+2012-09-22  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks: implement printing of variable's data for recursively nested netCDF4 files
+
 2012-09-19  Pedro Vicente  <pvicente@uci.edu>
 
         * ncks: -G option prints extra dimension information with -D 4 
