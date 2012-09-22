@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.367 2012-09-22 05:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.368 2012-09-22 05:43:00 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.367 2012-09-22 05:21:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.367 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.368 2012-09-22 05:43:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.368 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -611,8 +611,6 @@ main(int argc,char **argv)
           int nbr_att;                 /* [nbr] Number of attributes */
           int nbr_var;                 /* [nbr] Number of variables */
           int nbr_dmn;                 /* [nbr] number of dimensions */
-          int nbr_grp;                 /* [nbr] Number of sub-groups in this group */
-          int var_id;                  /* [ID] Variable ID */ 
 
           /* Obtain group ID from netCDF API using full group name */
           (void)nco_inq_grp_full_ncid(in_id,obj.nm_fll,&grp_id);

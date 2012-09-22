@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.115 2012-09-22 05:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.116 2012-09-22 05:43:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2041,6 +2041,11 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 
   } /* end idx */    
 #endif /* GRP_DEV */ 
+
+
+#ifdef NCO_SANITY_CHECK
+  assert(nbr_dmn_fl == nbr_dmn_all);
+#endif
 } /* end nco4_msa_lmt_all_int() */
 
 
