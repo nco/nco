@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.113 2012-09-21 23:59:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.114 2012-09-22 04:01:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1775,13 +1775,15 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   lmt_all_sct * lmt_all_crr;
 
 #ifdef GRP_DEV
+  int nbr_dmn_all;  /* [nbr] Total number of dimensions in file */
+
+  nbr_dmn_all=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
       grp_trv_sct obj=trv_tbl->grp_lst[uidx]; 
 
-      if(dbg_lvl_get() >= nco_dbg_vrb){
-        (void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
-      }
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
+
       char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
       long dmn_sz;                 /* [nbr] Dimension size */ 
       int *dmn_ids;                /* [ID]  Dimension IDs */ 
@@ -1789,29 +1791,35 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       int nbr_att;                 /* [nbr] Number of attributes */
       int nbr_var;                 /* [nbr] Number of variables */
       int nbr_dmn;                 /* [nbr] number of dimensions */
-      int nbr_grp;                 /* [nbr] Number of sub-groups in this group */
-      int var_id;                  /* [ID] Variable ID */ 
+      int rec_dmn_id;              /* [ID] Dimension ID */ 
 
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(in_id,obj.nm_fll,&grp_id);
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == obj.nbr_dmn && nbr_var == obj.nbr_var && nbr_att == obj.nbr_att);
 #endif
+
       dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       /* List dimensions using obtained group ID */
-      for(idx=0;idx<obj.nbr_dmn;idx++){
+      for(int idx=0;idx<obj.nbr_dmn;idx++){
         (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
-        if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-          (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+
+        if(dbg_lvl_get() >= nco_dbg_vrb){
+          if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+            (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+        } /* end nco_dbg_vrb */
       } /* end idx dimensions */
       (void)nco_free(dmn_ids);
 
+      /* Increment total number of dimensions in file */
+      nbr_dmn_all+=obj.nbr_dmn;
+
     } /* end nc_typ_grp */
   } /* end uidx  */
-
 
 #else /* GRP_DEV */ 
   (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
