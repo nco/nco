@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.117 2012-09-22 06:56:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.118 2012-09-24 01:23:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -341,33 +341,27 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   }
   assert(var_nbr_tbl == var_nbr_all);
   var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
-  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
-    int var_id;    
-    if(var_prn == True) {
-      strcpy(grp_nm,var_lst_all[idx].grp_nm);
-      var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
-      strcpy(var_nm,var_lst_all[idx].nm);
-      var_id=var_lst_all[idx].id;
-      grp_id=var_lst_all[idx].grp_id;
-      grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
+  for(uidx=0,idx=0;uidx<trv_tbl->nbr,idx<var_nbr_all;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    nm_id_sct nm_id=var_lst_all[idx]; 
 
+    if(var_prn == True) {  
       if(dbg_lvl_get() >= nco_dbg_vrb){
-        (void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
-          grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
+        (void)fprintf(stdout,"var_lst_all[%d]: grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
+          idx,nm_id.grp_nm_fll,nm_id.var_nm_fll,nm_id.grp_nm,nm_id.grp_id,nm_id.nm,nm_id.id);
       }
       var_prn=False;
-    }
+    } /* end var_prn */
 
-    /* Increment var index for var_lst_all only when table object is a variable; this keeps the 2 lists in sync */
+    /* Increment var_lst_all index only when table object is a variable; this keeps the 2 lists in sync */
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){
+      /* Match 2 lists */
+      assert(strcmp(nm_id.nm,trv.nm)==0);
+      assert(strcmp(nm_id.var_nm_fll,trv.nm_fll)==0);
       idx++; 
       var_prn=True;
-      /* Full variable names between the 2 lists must be the same */
-      assert(strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll)==0);
-      grp_nm_fll=(char *)nco_free(grp_nm_fll);
-      var_nm_fll=(char *)nco_free(var_nm_fll);
-    }
-  }/* end loop over trv_tbl */
+    } /* end nc_typ_var */
+  }/* end uidx */
 #endif
 #endif /* NCO_SANITY_CHECK */
 
