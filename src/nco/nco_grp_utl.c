@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.118 2012-09-24 01:23:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.119 2012-09-25 19:50:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1357,7 +1357,7 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
 
 
 int                            /* [rcd] Return code */
-nco4_grp_itr
+nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 (const int in_id,              /* I [ID] Group ID from netCDF intput file */
  const int out_id,             /* I [ID] Group ID from netCDF output file */
  char * grp_pth,               /* I [sng] Group path */
@@ -1466,7 +1466,7 @@ nco4_grp_itr
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
+    rcd+=nco4_grp_lst_mk_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
 
     pth=(char*)nco_free(pth);
   }
@@ -1499,14 +1499,14 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
   } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  rcd+=nco4_grp_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
+  rcd+=nco4_grp_lst_mk_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
 
   return;
 } /* end nco4_grp_lst_mk() */
 
 
 int                              /* [rcd] Return code */
-nco4_grp_var_itr
+nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy */
 (const int in_id,                /* I [ID] netCDF input file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
  char * grp_nm_fll,              /* I [sng] Group path */
@@ -1611,7 +1611,7 @@ nco4_grp_var_itr
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_var_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
+    rcd+=nco4_grp_var_cpy_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
 
     pth=(char*)nco_free(pth);
   }
@@ -1645,7 +1645,7 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
   } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  rcd+=nco4_grp_var_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
+  rcd+=nco4_grp_var_cpy_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
 
   return;
 } /* end nco4_grp_var_cpy() */
