@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.99 2012-09-21 23:59:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.100 2012-09-27 04:44:08 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -622,9 +622,9 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
 {
   /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
-     Routine truncates dimensions in variable definition in output file according to user-specified limits.
-     Routine copies variable-by-variable, old-style, used only by ncks */
-  
+  Routine truncates dimensions in variable definition in output file according to user-specified limits.
+  Routine copies variable-by-variable, old-style, used only by ncks */
+
   int *dmn_id;
   int idx;
   int jdx;
@@ -633,26 +633,26 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   int nbr_dmn_out;
   int var_in_id;
   int var_out_id;
-  
+
   /* For regular data */
   long *dmn_map_in;
   long *dmn_map_cnt;
   long *dmn_map_srt;
   long var_sz=1L;
-  
+
   nc_type var_typ;
-  
+
   var_sct vara;/* To hold basic data in_id, var_id, nctype for recusive routine */
-  
+
   void *void_ptr;
-  
+
   lmt_all_sct **lmt_msa;
   lmt_sct **lmt;
-  
+
   /* Get var_id for requested variable from both files */
   nco_inq_varid(in_id,var_nm,&var_in_id);
   nco_inq_varid(out_id,var_nm,&var_out_id);
-  
+
   /* Get type and number of dimensions for variable */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
@@ -661,7 +661,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     nco_exit(EXIT_FAILURE);
   } /* endif */
   nbr_dim=nbr_dmn_out;
-  
+
   /* Deal with scalar variables */
   if(nbr_dim == 0){
     var_sz=1L;
@@ -680,24 +680,24 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     (void)nco_free(void_ptr);
     return;
   } /* end if */
-  
+
   dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-  
+
   lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
-  
+
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
-  
+
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<nbr_dim;idx++){
     for(jdx=0;jdx<nbr_dmn_fl;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
-	lmt_msa[idx]=lmt_lst[jdx];
+        lmt_msa[idx]=lmt_lst[jdx];
         break;
       } /* end if */
     } /* end loop over jdx */
@@ -706,18 +706,18 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
     dmn_map_srt[idx]=0L;
   } /* end for */
-  
+
   /* Initalize vara with in_id, var_in_id, nctype, etc., so recursive routine can read data */
   vara.nm=var_nm;
   vara.id=var_in_id;
   vara.nc_id=in_id;
   vara.type=var_typ;
-  
+
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_msa,&vara);
   var_sz=vara.sz;
-  
+
   /* Block is always critical */
   { /* begin OpenMP critical */
     (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
@@ -726,7 +726,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   /* Perform MD5 digest of input and output data if requested */
   if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
-  
+
   (void)nco_free(void_ptr);
   (void)nco_free(dmn_map_in);
   (void)nco_free(dmn_map_cnt);
@@ -734,7 +734,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   (void)nco_free(dmn_id);
   (void)nco_free(lmt_msa);
   (void)nco_free(lmt);
-  
+
   return;
 } /* end nco_cpy_var_val_mlt_lmt() */
 

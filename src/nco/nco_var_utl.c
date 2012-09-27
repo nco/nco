@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.189 2012-09-14 20:50:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.190 2012-09-27 04:44:08 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -17,9 +17,9 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-     Routine does not take into account user-specified limits
-     It just copies what it finds
-     Routine copies_variable by variable, old-style, used only by ncks */
+  Routine does not take into account user-specified limits
+  It just copies what it finds
+  Routine copies_variable by variable, old-style, used only by ncks */
 
   const char fnc_nm[]="nco_cpy_var_dfn()"; /* [sng] Function name */
 
@@ -32,50 +32,50 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   int var_in_id;
   int var_out_id;
   int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
-  
+
   nc_type var_typ;
-  
+
   /* Is requested variable already in output file? */
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
   if(rcd == NC_NOERR) return var_out_id;
   /* Is requested variable in input file? */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
-  
+
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
 
   /* Get unlimited dimension in output */
   (void)nco_inq(out_id,(int*)NULL,(int*)NULL,(int*)NULL,&rec_dmn_out_id);
-  
+
   /* Recall:
-     1. Dimensions must be defined before variables
-     2. Variables must be defined before attributes */
+  1. Dimensions must be defined before variables
+  2. Variables must be defined before attributes */
 
   /* Allocate space to hold dimension IDs */
   dmn_in_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-  
+
   /* Get dimension IDs */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_in_id);
-  
+
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
     int rcd_lcl; /* [rcd] Return code */
-    
+
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
-    
+
     /* Has dimension been defined in output file? */
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
-    
+
     /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
       if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
-	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
+        (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
-	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
+        (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
         rec_dmn_out_id=dmn_out_id[idx];
       } /* end else */ 
 
@@ -88,7 +88,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     } /* end if */
 
   } /* end loop over dim */
-  
+
   /* Define variable in output file */
   (void)nco_def_var(out_id,var_nm,var_typ,nbr_dim,dmn_out_id,&var_out_id);
 
@@ -110,11 +110,11 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     /* NB: Copy/set chunking information in nco_cnk_sz_set(), not here! */
 
   } /* !NC_FORMAT_NETCDF4 */ 
-  
+
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
   dmn_out_id=(int *)nco_free(dmn_out_id);
-  
+
   return var_out_id;
 } /* end nco_cpy_var_dfn() */
 
@@ -129,8 +129,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-     This routine truncates dimensions in variable definition in output file according to user-specified limits.
-     Routine copies_variable by variable, old-style, used only by ncks */
+  This routine truncates dimensions in variable definition in output file according to user-specified limits.
+  Routine copies_variable by variable, old-style, used only by ncks */
 
   int *dmn_in_id;
   int *dmn_out_id;
@@ -141,7 +141,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   int var_in_id;
   int var_out_id;
   int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
-  
+
   nc_type var_typ;
 
   /* Is requested variable already in output file? */
@@ -150,59 +150,73 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Is requested variable already in input file? */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
-  
+
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
 
   /* Get unlimited dimension in output */
   (void)nco_inq(out_id,(int*)NULL,(int*)NULL,(int*)NULL,&rec_dmn_out_id);
-  
+
   /* Recall:
-     1. Dimensions must be defined before variable
-     2. Variable must be defined before attributes */
-     
+  1. Dimensions must be defined before variable
+  2. Variable must be defined before attributes */
+
   /* Allocate space to hold dimension IDs */
   dmn_in_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-  
+
   /* Get dimension IDs */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_in_id);
-  
+
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
     int rcd_lcl; /* [rcd] Return code */
-    
+
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
-    
+
     /* Has dimension been defined in output file? */
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
-    
+
+#ifdef NCO_DEBUG
+    (void)fprintf(stdout,"nco_cpy_var_dfn_lmt dimension[%d] dmn_nm=%s dmn_sz=%d id=%d\n",idx,dmn_nm,dmn_sz,dmn_in_id[idx]);
+#endif
+
     /* If dimension has not been defined, copy it */
     if(rcd_lcl != NC_NOERR){
       if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
-	int lmt_all_idx;
+        int lmt_all_idx;
 
-	/* Does dimension have user-specified limits? */
-	for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-	  if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
-	    dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
-	    break;
-	  } /* end if */
-	} /* end loop over lmt_all_idx */
-	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
+        /* Does dimension have user-specified limits? */
+        for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
+          if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
+            dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
+
+#ifdef NCO_DEBUG
+            (void)fprintf(stdout,"limit[%d] dmn_sz=%d\n",lmt_all_idx,dmn_sz);
+#endif
+
+            break;
+          } /* end if */
+        } /* end loop over lmt_all_idx */
+
+#ifdef NCO_DEBUG
+        (void)fprintf(stdout,"nco_def_dim dimension[%d] dmn_nm=%s dmn_sz=%d\n",idx,dmn_nm,dmn_sz);
+#endif
+
+        (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
-	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
+        (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
         rec_dmn_out_id=dmn_out_id[idx];
       } /* end else */
     } /* end if */
 
   } /* end loop over dim */
-  
+
   /* Define variable in output file */
   (void)nco_def_var(out_id,var_nm,var_typ,nbr_dim,dmn_out_id,&var_out_id);
-  
+
   /* Duplicate netCDF4 settings when possible */
   rcd=nco_inq_format(out_id,&fl_fmt);
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -221,11 +235,11 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     /* NB: Copy/set chunking information in nco_cnk_sz_set(), not here! */
 
   } /* !NC_FORMAT_NETCDF4 */ 
-  
+
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
   dmn_out_id=(int *)nco_free(dmn_out_id);
-  
+
   return var_out_id;
 } /* end nco_cpy_var_dfn_lmt() */
 
