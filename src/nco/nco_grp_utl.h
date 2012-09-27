@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.60 2012-09-22 05:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.61 2012-09-27 21:44:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -201,7 +201,8 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
- nco_bool PRN_VAR_METADATA);     /* I [flg] Print variable metadata */
+ nco_bool PRN_VAR_METADATA,      /* I [flg] Print variable metadata */
+ grp_tbl_sct *trv_tbl);          /* I [sct] Group traversal table  */
 
 
 void

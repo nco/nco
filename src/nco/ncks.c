@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.372 2012-09-27 04:44:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.373 2012-09-27 21:44:28 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.372 2012-09-27 04:44:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.372 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.373 2012-09-27 21:44:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.373 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -620,7 +620,7 @@ main(int argc,char **argv)
         char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
         long dmn_sz;                 /* [nbr] Dimension size */ 
         int *dmn_ids;                /* [ID]  Dimension IDs */ 
-        int grp_id;                  /* [ID] Group ID */
+        int grp_id;                  /* [ID]  Group ID */
         int nbr_att;                 /* [nbr] Number of attributes */
         int nbr_var;                 /* [nbr] Number of variables */
         int nbr_dmn;                 /* [nbr] number of dimensions */
@@ -747,7 +747,7 @@ main(int argc,char **argv)
           if(dbg_lvl >= nco_dbg_vrb){
             if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
               (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
-          }
+          } /* end nco_dbg_vrb */
 
           /* NOTE: using obtained group ID */
           for(int kdx=0;kdx<lmt_nbr;kdx++) {
@@ -759,7 +759,6 @@ main(int argc,char **argv)
 #endif
             } /* end if */
           } /* end kdx */
-
         } /* end idx dimensions */
 
         (void)nco_free(dmn_ids);
@@ -848,7 +847,7 @@ main(int argc,char **argv)
     if (HAS_SUBGRP){
 
       /* Define requested/necessary input groups/variables in output file */
-      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,dmn_nbr_all,dfl_lvl,PRN_VAR_METADATA);
+      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,dmn_nbr_all,dfl_lvl,PRN_VAR_METADATA,trv_tbl);
 
     }else{ /* HAS_SUBGRP */
 

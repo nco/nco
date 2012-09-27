@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.120 2012-09-27 00:23:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.121 2012-09-27 21:44:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1486,7 +1486,8 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
- nco_bool PRN_VAR_METADATA)      /* I [flg] Print variable metadata */
+ nco_bool PRN_VAR_METADATA,      /* I [flg] Print variable metadata */
+ grp_tbl_sct *trv_tbl)           /* I [sct] Group traversal table  */
 {
   /* Purpose: 
      Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) 
@@ -1498,8 +1499,14 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
     for(int idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
   } /* endif dbg */
 
+#if 1
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
   rcd+=nco4_grp_lst_mk_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
+#else
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+  } /* end uidx */
+#endif
 
   return;
 } /* end nco4_grp_lst_mk() */
