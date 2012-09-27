@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.119 2012-09-25 19:50:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.120 2012-09-27 00:23:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -391,7 +391,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   if (*var_xtr_nbr) {
 
     var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
-    for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
+    for(uidx=0,idx=0;uidx<trv_tbl->nbr,idx<var_nbr_all;uidx++){
       int var_id;    
       if(var_prn == True) {
         strcpy(grp_nm,var_lst_all[idx].grp_nm);
@@ -1971,7 +1971,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
         lmt_all_crr=lmt_all_lst[jdx];
         lmt_all_crr->BASIC_DMN=False;
         if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
-          /* Free defualt limit set above structure first */
+          /* Free default limit set above structure first */
           lmt_all_crr->lmt_dmn[0]=(lmt_sct*)nco_lmt_free(lmt_all_crr->lmt_dmn[0]);
           lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
         }else{ 
