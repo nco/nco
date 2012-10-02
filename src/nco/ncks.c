@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.374 2012-09-28 20:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.375 2012-10-02 20:06:05 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.374 2012-09-28 20:31:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.374 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.375 2012-10-02 20:06:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.375 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -585,15 +585,16 @@ main(int argc,char **argv)
   rcd+=nco_grp_itr(in_id,"/",trv_tbl);
 
   if(dbg_lvl >= nco_dbg_vrb){
-    (void)fprintf(stderr,"%s: INFO Traversal table\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: reports INFO Traversal table\n",prg_nm_get());
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       grp_trv_sct trv=trv_tbl->grp_lst[uidx];
       if (trv.typ == nc_typ_grp ) {
         (void)fprintf(stdout,"grp: ");
+        (void)fprintf(stdout,"%s: %s: subgroups=%d , dimensions=%d , attributes=%d, variables=%d\n",trv.nm_fll,trv.nm,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var);
       } else if (trv.typ == nc_typ_var ) {
         (void)fprintf(stdout,"var: ");
-      }
-      (void)fprintf(stdout,"%s: %s: subgroups=%d , dimensions=%d , attributes=%d, variables=%d\n",trv.nm_fll,trv.nm,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var);
+        (void)fprintf(stdout,"%s: %s: dimensions=%d , attributes=%d\n",trv.nm_fll,trv.nm,trv.nbr_dmn,trv.nbr_att);
+      }    
     } /* end uidx */
   } /* end nco_dbg_vrb */
 
@@ -637,8 +638,10 @@ main(int argc,char **argv)
         /* List dimensions using obtained group ID */
         for(idx=0;idx<trv.nbr_dmn;idx++){
           (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
-          if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-            (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+          if(dbg_lvl >= nco_dbg_vrb) {
+            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
+              (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+          }
         } /* end idx dimensions */
         (void)nco_free(dmn_ids);
       } /* end nc_typ_grp */
@@ -765,7 +768,7 @@ main(int argc,char **argv)
       } /* end nc_typ_grp */
     } /* end uidx  */
 
-  } else {
+  } else { /* HAS_SUBGRP */
     for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   } /* HAS_SUBGRP */
 
@@ -776,14 +779,14 @@ main(int argc,char **argv)
     lmt_all_lst=(lmt_all_sct **)nco_malloc(dmn_nbr_all*sizeof(lmt_all_sct *));
   }else{
     lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-  }
+  }/* HAS_SUBGRP */
   
   /* Initialize lmt_all_sct's */ 
   if(HAS_SUBGRP){
     (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,dmn_nbr_all,lmt,lmt_nbr,trv_tbl);
   }else{
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-  }
+  }/* HAS_SUBGRP */
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
@@ -955,26 +958,24 @@ main(int argc,char **argv)
     } /* endif PRN_GLB_METADATA */
     
     if(PRN_VAR_METADATA){
-
-      /* Version for groups  */
       if (HAS_SUBGRP){
-        for(idx=0;idx<xtr_nbr;idx++){       
+        for(idx=0;idx<xtr_nbr;idx++){    
+          nm_id_sct nm_id=xtr_lst[idx];
 #ifdef NCO_SANITY_CHECK
-          int grp_id;   
-          nm_id_sct nm_id;   
-          nm_id=xtr_lst[idx];
           /* Obtain group ID from netCDF API using full group name */
+          int grp_id;   
           rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
           assert(grp_id == nm_id.grp_id );
 #endif
+          /* Print full name of variable */
+          (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
           /* Print variable's definition using the obtained grp_id instead of the netCDF file ID; Voila  */
-          (void)nco_prn_var_dfn(xtr_lst[idx].grp_id,xtr_lst[idx].nm); 
+          (void)nco_prn_var_dfn(nm_id.grp_id,nm_id.nm); 
           /* Print variable's attributes */
-          (void)nco_prn_att(xtr_lst[idx].grp_id,xtr_lst[idx].id);
+          (void)nco_prn_att(nm_id.grp_id,nm_id.id);
         } /* end loop over idx */
 
-      /* netCDF3 or netCDF4-classic */
-      } else { 
+      } else { /* HAS_SUBGRP */
         for(idx=0;idx<xtr_nbr;idx++){
           /* Print variable's definition */
           (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
@@ -985,35 +986,27 @@ main(int argc,char **argv)
     } /* end if PRN_VAR_METADATA */
 
     if(PRN_VAR_DATA){
-      /* Version for groups  */
       if (HAS_SUBGRP){
         for(idx=0;idx<xtr_nbr;idx++) {
           nm_id_sct nm_id=xtr_lst[idx];
 #ifdef NCO_SANITY_CHECK
-          int grp_id;   
           /* Obtain group ID from netCDF API using full group name */
+          int grp_id;   
           rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
           assert(grp_id == nm_id.grp_id );
 #endif
-          if(dbg_lvl_get() >= nco_dbg_vrb){          
-            (void)fprintf(stdout,"xtr_lst[%d]: %s %s (%d) %s %s (%d)\n",idx,nm_id.grp_nm_fll,nm_id.grp_nm,nm_id.grp_id,nm_id.var_nm_fll,nm_id.nm,nm_id.id);     
-          } /* nco_dbg_vrb */        
-
+          /* Print full name of variable */
+          (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
           (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,dmn_nbr_all,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
-
         } /* idx */
-
-        /* netCDF3 or netCDF4-classic */
-      }else {
-
+      }else { /* HAS_SUBGRP */
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
         for(idx=0;idx<xtr_nbr;idx++) {
           (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
         } /* idx */
       } /* HAS_SUBGRP */
-    } /* end if PRN_VAR_DATA */
-    
+    } /* end if PRN_VAR_DATA */  
   } /* !fl_out */
   
 out:
@@ -1074,7 +1067,6 @@ out:
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-  
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;

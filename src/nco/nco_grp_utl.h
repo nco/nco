@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.62 2012-09-28 20:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.63 2012-10-02 20:06:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -13,16 +13,7 @@
 #define NCO_GRP_UTL_H
 
 #define NCO_SANITY_CHECK
-#define GRP_DEV
-/* Symbol that encapsulates NCO 4.2.2 group development code 
-1) Undocumented ncks -z command line option, that prints all groups/variables and exits
-   usage:  ncks -z -D 1 in_grp.nc
-2) Undocumented ncks -G command line option, that iterates the file and prints extended group information 
-   usage:  ncks -G -D 1 in_grp.nc
-3) Function nco_grp_itr() used by 1) and 2)
-4) Function nco_has_subgrps()
-*/
-
+#define GRP_DEV /* Symbol that encapsulates NCO 4.2.2 group development code */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -234,6 +225,44 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
  int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
  grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
 
+char*                       /* O [sng] Return substring */
+get_lst_nm                  /* [fnc] Strip last component of full name */
+(char *nm_in);              /* I [sng] Full name; it contains '/' as last character */
+
+void 
+prt_xtr_lst           /*   [fnc] Print Name ID structure list */
+(nm_id_sct *xtr_lst,  /* I [sct] Name ID structure list */
+ int xtr_nbr);        /* I [nbr] Name ID structure list size */
+
+int                            /* [rcd] Return code */
+nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
+(const int in_id,              /* I [ID] Group ID from netCDF intput file */
+ const int out_id,             /* I [ID] Group ID from netCDF output file */
+ char * const grp_pth,         /* I [sng] Group path */
+ char * const grp_nm,          /* I [sng] Group name */
+ nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
+ const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
+ const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
+ const char *rec_dmn_nm,       /* I [sng] Output file record dimension name  */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA);   /* I [flg] Print variable metadata */
+
+int                              /* [rcd] Return code */
+nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy */
+(const int in_id,                /* I [ID] netCDF input file ID */
+ const int out_id,               /* I [ID] netCDF output file ID */
+ char * const grp_nm_fll,        /* I [sng] Group path */
+ char * const grp_nm,            /* I [sng] Group name */
+ nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
+ const int xtr_nbr,              /* I [nbr] Number of members in list */
+ const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst,  /* I multi-hyperslab limits */
+ const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
+ FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
+ const nco_bool NCO_BNR_WRT);    /* I [flg] Write binary file */
 
 #ifdef __cplusplus
 } /* end extern "C" */

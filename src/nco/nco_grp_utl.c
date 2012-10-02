@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.123 2012-09-28 20:45:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.124 2012-10-02 20:06:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -387,7 +387,8 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   Case 2) -v was not specified but -g was: traverse the -g list first and add all variables from that group
   */
-
+  grp_nm_fll=NULL;
+  var_nm_fll=NULL;
   if (*var_xtr_nbr) {
 
     var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
@@ -475,23 +476,24 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   } /* end *var_xtr_nbr>0 */
   else{
 
+    /* Case 2) -v was not specified but -g was: traverse the -g list first and add all variables from that group */
+#ifdef NCO_SANITY_CHECK
+    /* var_idx_crr was used to traverse all groups and variables to make var_lst_all */
+    assert(var_nbr_all == var_idx_crr);
+#endif
+
     /* Loop through user-specified group list */
     for(grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
 
       /* Get current group name */
       strcpy(grp_nm,grp_lst_in[grp_idx]);
 
-      /* Sanity check; var_idx_crr was used to traverse all groups and variables to make var_lst_all */
-#ifdef NCO_SANITY_CHECK
-      assert(var_nbr_all == var_idx_crr);
-#endif
-
       /* Loop through found variable list */
       for(var_idx_crr=0;var_idx_crr<var_nbr_all;var_idx_crr++){
-        nm_id_sct var=var_lst_all[var_idx_crr];   
+        nm_id_sct nm_id=var_lst_all[var_idx_crr];   
 
         /* Find group specified in -g and mark any match for inclusion to extract */
-        if(strcmp(var.grp_nm,grp_nm)==0){
+        if(strcmp(nm_id.grp_nm,grp_nm)==0){
           var_xtr_rqs[var_idx_crr]=True;
         }
       } /* end loop var_idx_crr */
@@ -786,6 +788,17 @@ nco_has_subgrps
   return ngrps;
 } /* nco_has_subgrps() */
 
+void 
+prt_xtr_lst           /*   [fnc] Print Name ID structure list */
+(nm_id_sct *xtr_lst,  /* I [sct] Name ID structure list */
+ int xtr_nbr)         /* I [nbr] Name ID structure list size */
+{
+  for(int idx=0;idx<xtr_nbr;idx++){
+    nm_id_sct nm_id=xtr_lst[idx];
+    (void)fprintf(stdout,"nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",
+      nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll, nm_id.grp_nm, nm_id.grp_id, nm_id.id);
+  }
+}/* end prt_xtr_lst() */
 
 nm_id_sct *             /* O [sct] Extraction list */
 nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
@@ -814,7 +827,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be excluded:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    for(idx=0;idx<*xtr_nbr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+    prt_xtr_lst(xtr_lst,*xtr_nbr);
   } /* endif dbg */
  
 #ifdef GRP_DEV
@@ -839,7 +852,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
           nbr_var_xtr++;
 
           if(dbg_lvl_get() >= nco_dbg_vrb){
-            (void)fprintf(stdout,"idx = %d, var_nm = %s, var_nm_fll = %s\n",idx,xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+            (void)fprintf(stdout,"idx = %d, nm = %s, var_nm_fll = %s\n",idx,xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
           } /* endif dbg */
         } /* endif strcmp */
       } /* end idx */
@@ -856,6 +869,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   2) grp_id (group ID) 
   */
 
+  xtr_lst=(nm_id_sct *)nco_free(xtr_lst);
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
 
   /* Initialize index of extracted variables */
@@ -873,14 +887,6 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
     }
   } /* end loop over uidx */
 
-#ifdef NCO_SANITY_CHECK
-  assert(*xtr_nbr == nbr_xcl);
-#endif
-
-  /* Reset mark field */
-  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_tbl->grp_lst[uidx].flg=-1;
-  }
 
 #else /* GRP_DEV */
   /* Turn extract list into exclude list and reallocate extract list  */
@@ -909,6 +915,20 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
   xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
 #endif /* GRP_DEV */
+
+#ifdef NCO_SANITY_CHECK
+  assert(*xtr_nbr == nbr_xcl);
+#endif
+
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be extracted:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    prt_xtr_lst(xtr_lst,*xtr_nbr);
+  } /* endif dbg */
+
+  /* Reset mark field */
+  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_tbl->grp_lst[uidx].flg=-1;
+  }
 
   return xtr_lst;
 } /* end nco4_var_lst_xcl() */
@@ -945,7 +965,7 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add() reports following %d variable%s to be added with dimensions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    for(idx=0;idx<*xtr_nbr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
+    prt_xtr_lst(xtr_lst,*xtr_nbr);
   } /* endif dbg */
 
 
@@ -1229,59 +1249,80 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
  grp_trv_sct trv)       /* I [sct] Group traversal table entry */
 {
   /* Purpose: 
-     Extract the full group name from a grp_trv_sct entry that contains the full variable name 
-     to a nm_id_sct struct. 
+  Extract the full group name from a grp_trv_sct entry that contains the full variable name 
+  to a nm_id_sct struct. 
   */
   char *pch;        /* Pointer to the last occurrence of character */
   int   pos;        /* Position of character */
   char *grp_nm_fll; /* Fully qualified group where variable resides */
   int  grp_id;      /* Group ID */
+  int  var_id;      /* Variable ID */
   int  len;         /* Lenght of fully qualified group where variable resides */
 
-  len=strlen(trv.nm_fll);
-  grp_nm_fll=(char *)nco_malloc((len+1L)*sizeof(char));
-  strcpy(grp_nm_fll,trv.nm_fll);
+  if (trv.typ == nc_typ_var){
 
-  /* Find last occurence of '/' to form group full name */
-  pch=strrchr(grp_nm_fll,'/');
+    len=strlen(trv.nm_fll);
+    grp_nm_fll=(char*)nco_malloc((len+1L)*sizeof(char));
+    strcpy(grp_nm_fll,trv.nm_fll);
+
+    /* Find last occurence of '/' to form group full name */
+    pch=strrchr(grp_nm_fll,'/');
 
 #ifdef NCO_SANITY_CHECK
-  /* trv.nm_fll must have a '/'  */
-  assert(pch != NULL);
+    /* trv.nm_fll must have a '/'  */
+    assert(pch != NULL);
 #endif
 
-  /* Trim the variable name */
-  pos=pch-grp_nm_fll+1;
-  grp_nm_fll[pos]='\0';
+    /* Trim the variable name */
+    pos=pch-grp_nm_fll+1;
+    grp_nm_fll[pos]='\0';
 
-  /* Obtain group ID from netCDF API using full group name */
-  nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+    /* Obtain group ID from netCDF API using full group name */
+    (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
-  /* ncks needs only:
-  1) xtr_lst.grp_nm_fll (full group name wehe variable resides, to get group ID) 
-  2) xtr_lst.nm (relative variable name) 
-  NOTE: grp_id is stored for validation
-  */
-  xtr_lst[*xtr_nbr].nm=(char *)strdup(trv.nm);
-  xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup(grp_nm_fll);
-  xtr_lst[*xtr_nbr].grp_id=grp_id;
+    /* Obtain variable ID from netCDF API using group ID */
+    (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
-  /* Free allocated memory */
-  grp_nm_fll=(char *)nco_free(grp_nm_fll);
+    /* ncks needs only:
+    1) xtr_lst.grp_nm_fll (full group name wehe variable resides, to get group ID) 
+    done with nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,..)
+    2) xtr_lst.var_nm_fll
+    3) xtr_lst.id
+    4) xtr_lst.nm (relative variable name) 
+    NOTE: 
+    1) xtr_lst.grp_id is stored for validation
+    2) xtr_lst.grp_nm is not used (stored here as grp_nm_fll)
+    */
+    xtr_lst[*xtr_nbr].nm=(char*)strdup(trv.nm);
+    xtr_lst[*xtr_nbr].grp_nm_fll=(char*)strdup(grp_nm_fll);
+    xtr_lst[*xtr_nbr].var_nm_fll=(char*)strdup(trv.nm_fll);
+    xtr_lst[*xtr_nbr].id=var_id;
+    xtr_lst[*xtr_nbr].grp_nm=(char*)strdup(grp_nm_fll);
+#ifdef NCO_SANITY_CHECK
+    xtr_lst[*xtr_nbr].grp_id=grp_id;
+#endif
+    /* Free allocated memory */
+    grp_nm_fll=(char*)nco_free(grp_nm_fll);
+  }else if (trv.typ == nc_typ_grp){
+#ifdef NCO_SANITY_CHECK
+    /* No business being here  */
+    assert(0);
+#endif
+  } /* nc_typ_var */
 
   return;
-}
+} /* end nco4_xtr_grp_nm_fll() */
 
-char*                      /* O [sng] Return substring */
-get_lst_nm                 /* [fnc] Strip last component of full name */
-(const char * const nm_in) /* I [sng] Full name; it contains '/' as last character */
+char*           /* O [sng] Return substring */
+get_lst_nm      /* [fnc] Strip last component of full name */
+(char *nm_in)   /* I [sng] Full name; it contains '/' as last character */
 {
   int len;  /* Input string lenght */
   char *cp; 
 
   len=strlen(nm_in);
   if(len == 0) return NULL; 
-  cp=(char *)(nm_in+len);    /* Point to the NULL ending the string */
+  cp=(char*)(nm_in+len);      /* Point to the NULL ending the string */
   cp--;                      /* Back up one character */
   cp--;                      /* Back up one character; avoid the last '/' */
   while(cp != nm_in)         
@@ -1360,8 +1401,8 @@ int                            /* [rcd] Return code */
 nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 (const int in_id,              /* I [ID] Group ID from netCDF intput file */
  const int out_id,             /* I [ID] Group ID from netCDF output file */
- char * grp_pth,               /* I [sng] Group path */
- char * grp_nm,                /* I [sng] Group name */
+ char * const grp_pth,         /* I [sng] Group path */
+ char * const grp_nm,          /* I [sng] Group name */
  nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
  const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
  const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
@@ -1498,14 +1539,16 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
      Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) 
   */
   int rcd=NC_NOERR;              /* I [rcd] Return code */
+  char rth[2];
+  strcpy(rth,"/");
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
-    for(int idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
+    prt_xtr_lst(xtr_lst,xtr_nbr);
   } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  rcd+=nco4_grp_lst_mk_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
+  rcd+=nco4_grp_lst_mk_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA);
 
   return;
 } /* end nco4_grp_lst_mk() */
@@ -1515,8 +1558,8 @@ int                              /* [rcd] Return code */
 nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy */
 (const int in_id,                /* I [ID] netCDF input file ID */
  const int out_id,               /* I [ID] netCDF output file ID */
- char * grp_nm_fll,              /* I [sng] Group path */
- char * grp_nm,                  /* I [sng] Group name */
+ char * const grp_nm_fll,        /* I [sng] Group path */
+ char * const grp_nm,            /* I [sng] Group name */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int xtr_nbr,              /* I [nbr] Number of members in list */
  const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
@@ -1650,14 +1693,16 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
      Recursively iterate input file (nc_id) and write variables in output file (out_id) 
   */
   int rcd=NC_NOERR;              /* I [rcd] Return code */
+  char rth[2];
+  strcpy(rth,"/");
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to write:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
-    for(int idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var_nm_fll = %s\n",xtr_lst[idx].var_nm_fll);
+    prt_xtr_lst(xtr_lst,xtr_nbr);
   } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  rcd+=nco4_grp_var_cpy_itr(in_id,out_id,"/","/",xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
+  rcd+=nco4_grp_var_cpy_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
 
   return;
 } /* end nco4_grp_var_cpy() */
@@ -1710,7 +1755,7 @@ nco_grp_itr
   /* Iterate variables for this group */
   for(var_id=0;var_id<nbr_var;var_id++){
     char *var_pth=NULL; /* Full path of variable */
-    rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+    rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,&nbr_dmn,NULL,&nbr_att);
 
     /* Allocate path buffer; add space for a trailing NUL */ 
     var_pth=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2);
@@ -1721,13 +1766,15 @@ nco_grp_itr
       strcat(var_pth,"/");
     strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
 
-    /* Add to table: this is a variable */
+    /* Add to table: this is a variable NOTE: nbr_var, nbr_grp not valid here */
     obj.nm_fll=var_pth;
     obj.typ=nc_typ_var;
     strcpy(obj.nm,var_nm);
-
+    obj.nbr_att=nbr_att;
+    obj.nbr_dmn=nbr_dmn;
+    obj.nbr_var=0;
+    obj.nbr_grp=0;
     trv_tbl_add(obj,trv_tbl);
-
     var_pth=(char*)nco_free(var_pth);
   }
 
@@ -1799,8 +1846,8 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
       for(int jdx=0;jdx<obj.nbr_dmn;jdx++){
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
         if(dbg_lvl_get() >= nco_dbg_vrb){
-          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-            (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
+            (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
         } /* end nco_dbg_vrb */
       } /* end jdx dimensions */
       (void)nco_free(dmn_ids);
@@ -1871,12 +1918,11 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
 
         if(dbg_lvl_get() >= nco_dbg_vrb){
-          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-            (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
+            (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
         } /* end nco_dbg_vrb */
 
         /*NB: increment lmt_all_lst with global idx */
-
         lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
         lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
         lmt_all_crr->dmn_nm=strdup(dmn_nm);

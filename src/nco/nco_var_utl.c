@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.190 2012-09-27 04:44:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.191 2012-10-02 20:06:05 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -179,10 +179,6 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     /* Has dimension been defined in output file? */
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
 
-#ifdef NCO_DEBUG
-    (void)fprintf(stdout,"nco_cpy_var_dfn_lmt dimension[%d] dmn_nm=%s dmn_sz=%d id=%d\n",idx,dmn_nm,dmn_sz,dmn_in_id[idx]);
-#endif
-
     /* If dimension has not been defined, copy it */
     if(rcd_lcl != NC_NOERR){
       if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
@@ -192,18 +188,9 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
         for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
           if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
             dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
-
-#ifdef NCO_DEBUG
-            (void)fprintf(stdout,"limit[%d] dmn_sz=%d\n",lmt_all_idx,dmn_sz);
-#endif
-
             break;
           } /* end if */
         } /* end loop over lmt_all_idx */
-
-#ifdef NCO_DEBUG
-        (void)fprintf(stdout,"nco_def_dim dimension[%d] dmn_nm=%s dmn_sz=%d\n",idx,dmn_nm,dmn_sz);
-#endif
 
         (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
