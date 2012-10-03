@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.155 2012-09-10 00:32:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.156 2012-10-03 20:46:56 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -840,6 +840,16 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim()");
   return rcd;
 }  /* end nco_inq_rename_dim */
+
+int
+nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
+{
+  /* Purpose: Wrapper for nc_inq_unlimdims() */
+  int rcd;
+  rcd=nc_inq_unlimdims(nc_id,nbr_dmn_ult,dmn_ids_ult);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_inq_unlimdims()");
+  return rcd;
+} /* end nco_inq_unlimdims() */
 /* End Dimension routines */
 
 /* Begin Variable routines (_var) */

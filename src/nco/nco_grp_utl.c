@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.124 2012-10-02 20:06:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.125 2012-10-03 20:46:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1406,7 +1406,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
  nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
  const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
  const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
- const char *rec_dmn_nm,       /* I [sng] Output file record dimension name  */
+ char *rec_dmn_nm,             /* I [sng] Output file record dimension name  */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
@@ -1420,13 +1420,16 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   int nbr_var;                 /* O [nbr] Number of variables */
   int nbr_dmn;                 /* O [nbr] number of dimensions */
   int nbr_grp;                 /* O [nbr] Number of sub-groups in this group */
-  int rec_dmn_id;              /* O [ID] Record dimension ID */
+  int rec_dmn_id;              /* O [ID]  Record dimension ID */
   char gp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   char var_nm[NC_MAX_NAME+1];  /* O [sng] Variable name */ 
   int *grp_ids;                /* O [ID]  Sub-group IDs */ 
   int *dmn_ids;                /* O [ID]  Dimension IDs */
   int grp_out_id;              /* O [ID]  Group ID */ 
   int idx;                     /* I [idx] Index */
+  int nbr_dmn_ult;             /* O [nbr] Number of unlimited dimensions */
+  int dmn_ids_ult[NC_MAX_DIMS];/* O [nbr] Number of unlimited dimensions IDs */
+  char dmn_ult_nm[NC_MAX_NAME+1];  /* O [sng] Unlimited dimension name TODO: more than 1 dimension */ 
 
   /* Get all information for this group */
   rcd+=nco_inq_nvars(in_id,&nbr_var);
@@ -1437,6 +1440,11 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   rcd+=nco_inq(in_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
   dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
   rcd+=nco_inq_dimids(in_id,&nbr_dmn,dmn_ids,0);
+  rcd+=nco_inq_unlimdims(in_id,&nbr_dmn_ult,dmn_ids_ult);
+  if(nbr_dmn_ult){
+    nco_inq_dimname(in_id,dmn_ids_ult[0],dmn_ult_nm);
+    strcpy(rec_dmn_nm,dmn_ult_nm);
+  }
 
   /* Avoid the root case */
   grp_out_id = out_id;
@@ -1529,7 +1537,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int xtr_nbr,              /* I [nbr] Number of members in list */
  const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
- const char *rec_dmn_nm,         /* I [sng] Output file record dimension name  */
+ char *rec_dmn_nm,               /* I [sng] Output file record dimension name  */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
