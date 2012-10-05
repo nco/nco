@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.377 2012-10-05 22:52:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.378 2012-10-05 23:08:26 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.377 2012-10-05 22:52:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.377 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.378 2012-10-05 23:08:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.378 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -947,13 +947,16 @@ main(int argc,char **argv)
     /* No output file was specified so PRN_ tokens refer to screen printing */
     if(PRN_GLB_METADATA){
       (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, ID = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
-      if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-        char dmn_nm[NC_MAX_NAME]; 
-        long rec_dmn_sz;
+      if (HAS_SUBGRP){
+      }else{
+        if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+          char dmn_nm[NC_MAX_NAME]; 
+          long rec_dmn_sz;
 
-        (void)nco_inq_dim(in_id,rec_dmn_id,dmn_nm,&rec_dmn_sz);
-        (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
-      } /* end if */
+          (void)nco_inq_dim(in_id,rec_dmn_id,dmn_nm,&rec_dmn_sz);
+          (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
+        } /* end if NCO_REC_DMN_UNDEFINED */
+      } /* HAS_SUBGRP */
       
       /* Print global attributes */
       (void)nco_prn_att(in_id,NC_GLOBAL);
