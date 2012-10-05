@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.375 2012-10-02 20:06:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.376 2012-10-05 05:35:41 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.375 2012-10-02 20:06:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.375 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.376 2012-10-05 05:35:41 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.376 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -639,8 +639,8 @@ main(int argc,char **argv)
         for(idx=0;idx<trv.nbr_dmn;idx++){
           (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
           if(dbg_lvl >= nco_dbg_vrb) {
-            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-              (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
+              (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
           }
         } /* end idx dimensions */
         (void)nco_free(dmn_ids);
@@ -748,15 +748,15 @@ main(int argc,char **argv)
           (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
 
           if(dbg_lvl >= nco_dbg_vrb){
-            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%d)\n",dmn_nm,dmn_sz);else 
-              (void)fprintf(stdout,"dimension: %s (%d)\n",dmn_nm,dmn_sz);
+            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
+              (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
           } /* end nco_dbg_vrb */
 
           /* NOTE: using obtained group ID */
           for(int kdx=0;kdx<lmt_nbr;kdx++) {
             if(strcmp(lmt[kdx]->nm,dmn_nm) == 0 ){
               (void)nco_lmt_evl(grp_id,lmt[kdx],0L,FORTRAN_IDX_CNV);
-              if(dbg_lvl >= nco_dbg_vrb)(void)fprintf(stdout,"dimension limit: %s (%d)\n",lmt[kdx]->nm,lmt[kdx]->cnt);
+              if(dbg_lvl >= nco_dbg_vrb)(void)fprintf(stdout,"dimension limit: %s (%ld)\n",lmt[kdx]->nm,lmt[kdx]->cnt);
 #ifdef NCO_SANITY_CHECK
               assert(lmt[kdx]->id == dmn_ids[idx]);
 #endif
@@ -850,7 +850,7 @@ main(int argc,char **argv)
     if (HAS_SUBGRP){
 
       /* Define requested/necessary input groups/variables in output file */
-      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,rec_dmn_nm,lmt_all_lst,dmn_nbr_all,dfl_lvl,PRN_VAR_METADATA);
+      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,dmn_nbr_all,dfl_lvl,PRN_VAR_METADATA);
 
     }else{ /* HAS_SUBGRP */
 
