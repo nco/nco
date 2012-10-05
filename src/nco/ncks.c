@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.376 2012-10-05 05:35:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.377 2012-10-05 22:52:05 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.376 2012-10-05 05:35:41 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.376 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.377 2012-10-05 22:52:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.377 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -624,11 +624,12 @@ main(int argc,char **argv)
         int grp_id;                  /* [ID]  Group ID */
         int nbr_att;                 /* [nbr] Number of attributes */
         int nbr_var;                 /* [nbr] Number of variables */
-        int nbr_dmn;                 /* [nbr] number of dimensions */
+        int nbr_dmn;                 /* [nbr] Number of dimensions */
+        int rec_dmn_id_grp;          /* [ID]  Record dimension ID */
 
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
-        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id_grp);
 #ifdef NCO_SANITY_CHECK
         assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
@@ -639,7 +640,7 @@ main(int argc,char **argv)
         for(idx=0;idx<trv.nbr_dmn;idx++){
           (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
           if(dbg_lvl >= nco_dbg_vrb) {
-            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
+            if(dmn_ids[idx]==rec_dmn_id_grp)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
               (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
           }
         } /* end idx dimensions */
@@ -729,14 +730,15 @@ main(int argc,char **argv)
         char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
         long dmn_sz;                 /* [nbr] Dimension size */ 
         int *dmn_ids;                /* [ID]  Dimension IDs */ 
-        int grp_id;                  /* [ID] Group ID */
+        int grp_id;                  /* [ID]  Group ID */
         int nbr_att;                 /* [nbr] Number of attributes */
         int nbr_var;                 /* [nbr] Number of variables */
-        int nbr_dmn;                 /* [nbr] number of dimensions */
+        int nbr_dmn;                 /* [nbr] Number of dimensions */
+        int rec_dmn_id_grp;          /* [ID]  Record dimension ID */
 
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
-        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id_grp);
 #ifdef NCO_SANITY_CHECK
         assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
@@ -748,7 +750,7 @@ main(int argc,char **argv)
           (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
 
           if(dbg_lvl >= nco_dbg_vrb){
-            if(dmn_ids[idx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
+            if(dmn_ids[idx]==rec_dmn_id_grp)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
               (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
           } /* end nco_dbg_vrb */
 
