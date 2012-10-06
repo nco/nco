@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.127 2012-10-05 19:51:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.128 2012-10-06 04:06:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -474,7 +474,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     }/* end loop over trv_tbl uidx */
 
   } /* end *var_xtr_nbr>0 */
-  else{
+  else if (*grp_xtr_nbr) {
 
     /* Case 2) -v was not specified but -g was: traverse the -g list first and add all variables from that group */
 #ifdef NCO_SANITY_CHECK
@@ -585,11 +585,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   /* Store values for return */
   *var_xtr_nbr=var_nbr_tmp;    
-
-  if(dbg_lvl_get() >= nco_dbg_var){
-    (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
-    for(idx=0;idx<*var_xtr_nbr;idx++) (void)fprintf(stdout,"var_nm = %s, var_nm_fll = %s\n",xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
-  } /* endif dbg */
 
   return xtr_lst;
 } /* end nco4_var_lst_mk() */
@@ -1831,41 +1826,37 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
   char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
   long dmn_sz;             /* [nbr] Dimension size */ 
   int *dmn_ids;            /* [ID]  Dimension IDs */ 
-  int grp_id;              /* [ID] Group ID */
+  int grp_id;              /* [ID]  Group ID */
   int nbr_att;             /* [nbr] Number of attributes */
   int nbr_var;             /* [nbr] Number of variables */
-  int nbr_dmn;             /* [nbr] number of dimensions */
-  int rec_dmn_id;          /* [ID] Dimension ID */ 
+  int nbr_dmn;             /* [nbr] Number of dimensions */
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {    
-      grp_trv_sct obj=trv_tbl->grp_lst[uidx]; 
-
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
+    if (trv.typ == nc_typ_grp ) {    
+      
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_inq_dmn() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
 
       /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,obj.nm_fll,&grp_id);
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 
 #ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == obj.nbr_dmn && nbr_var == obj.nbr_var && nbr_att == obj.nbr_att);
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
       dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       /* List dimensions using obtained group ID */
-      for(int jdx=0;jdx<obj.nbr_dmn;jdx++){
+      for(int jdx=0;jdx<trv.nbr_dmn;jdx++){
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() >= nco_dbg_vrb){
-          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
-            (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-        } /* end nco_dbg_vrb */
+        if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
       } /* end jdx dimensions */
       (void)nco_free(dmn_ids);
 
       /* Increment total number of dimensions in file */
-      nbr_dmn_all+=obj.nbr_dmn;
+      nbr_dmn_all+=trv.nbr_dmn;
 
     } /* end nc_typ_grp */
   } /* end uidx  */
@@ -1901,9 +1892,9 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
-      grp_trv_sct obj=trv_tbl->grp_lst[uidx]; 
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
 
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",obj.nm_fll,obj.nbr_grp,obj.nbr_dmn,obj.nbr_att,obj.nbr_var); 
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
 
       char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
       long dmn_sz;                 /* [nbr] Dimension size */ 
@@ -1915,18 +1906,18 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       int rec_dmn_id;              /* [ID] Dimension ID */ 
 
       /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(in_id,obj.nm_fll,&grp_id);
+      (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
 
 #ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == obj.nbr_dmn && nbr_var == obj.nbr_var && nbr_att == obj.nbr_att);
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
       dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       /* List dimensions using obtained group ID */
-      for(jdx=0;jdx<obj.nbr_dmn;jdx++){
+      for(jdx=0;jdx<trv.nbr_dmn;jdx++){
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
 
         if(dbg_lvl_get() >= nco_dbg_vrb){
@@ -1978,7 +1969,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       (void)nco_free(dmn_ids);
 
       /* Increment total number of dimensions in file */
-      nbr_dmn_all+=obj.nbr_dmn;
+      nbr_dmn_all+=trv.nbr_dmn;
 
     } /* end nc_typ_grp */
   } /* end uidx  */

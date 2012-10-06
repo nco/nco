@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.12 2012-09-20 18:25:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.13 2012-10-06 04:06:55 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -35,7 +35,7 @@ typedef struct{
   int     flg;             /* [flg] mark flag (several actions) */
   int     nbr_att;         /* [nbr] Number of attributes */
   int     nbr_var;         /* [nbr] Number of variables ( for group ) */
-  int     nbr_dmn;         /* [nbr] number of dimensions */
+  int     nbr_dmn;         /* [nbr] Number of dimensions */
   int     nbr_grp;         /* [nbr] Number of sub-groups ( for group ) */
 } grp_trv_sct;
 /* end nc_typ */
