@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.40 2012-03-22 00:12:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.41 2012-10-06 23:41:56 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -111,12 +111,12 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
  const int size); /* I [nbr] Size of current and min */
 
 void            
-nco_msa_ram_2_dsk   /* [fnc] convert hyperlsab indices into indices relative to disk */ 
+nco_msa_ram_2_dsk   /* [fnc] Convert hyperlsab indices into indices relative to disk */ 
 (long *dmn_sbs_ram,   /* Input indices */
  lmt_all_sct** lmt_msa,   /* input hyperlab limits     */
  int nbr_dmn,         /* number of dimensions */    
  long *dmn_sbs_dsk,  /* Output - indices relative to disk */
- nco_bool FREE);        /* Free static space on last call */
+ nco_bool flg_free);        /* Free static space on last call */
 
 void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
@@ -129,7 +129,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM); /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_DMN_VAR_NM, /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_MSS_VAL_BLANK); /* I [flg] Print missing values as blanks */
 
 void
 nco_msa_var_get  /* [fnc] Get var data from disk taking accound of multihyperslabs */

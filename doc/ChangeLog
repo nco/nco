@@ -1,10 +1,22 @@
+2012-10-06  Charlie Zender  <zender@uci.edu>
+
+	* ncks: print underscore ("_") instead of missing value
+
+2012-10-05  Charlie Zender  <zender@uci.edu>
+
+ 	* NCO 4.2.2 release procedure:
+ 	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs
+	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
+	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
+
 2012-09-28  Pedro Vicente  <pvicente@uci.edu>
 
-        * ncks: do not create empty groups 
+        * ncks: do not create empty groups
 
 2012-09-22  Pedro Vicente  <pvicente@uci.edu>
 
-        * ncks: implement printing of variable's data for recursively nested netCDF4 files
+        * ncks: print variable's data for recursively nested netCDF4 files
 
 2012-09-19  Pedro Vicente  <pvicente@uci.edu>
 
@@ -27,12 +39,6 @@
 	* Improve diagnostics in nco_dfl_case_nc_type_err() error message
 
 2012-09-07  Charlie Zender  <zender@uci.edu>
-
- 	* NCO 4.2.2 release procedure:
- 	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs
-	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
-	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
 
 	* Add filters ncmax, ncavg, ncrng
 
@@ -85,7 +91,7 @@
 2012-08-21  Henry Butowsky  <henryb@hush.com>
 
  	* Add semi-intelligent handling of missing values in bilinear
-	interpolation functions bilinear_itnterp() bilinear_interp_wrap()
+	interpolation functions bilinear_interp() bilinear_interp_wrap()
 
 2012-08-20  Charlie Zender  <zender@uci.edu>
 

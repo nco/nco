@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.718 2012-09-10 22:07:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.719 2012-10-06 23:41:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.2
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 10 September 2012
-@set update-month September 2012
+@set update-date 6 October 2012
+@set update-month October 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -11230,7 +11230,7 @@ ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_dmn] [-H] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
-[--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
+[--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
 [-R] [-r] [--ram_all] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -11544,6 +11544,20 @@ The @command{ncks} default behavior is to print variable metadata to
 screen if no netCDF output file is specified.
 Use @samp{-m} to print variable metadata to screen if a netCDF output is 
 specified. 
+
+@cindex @code{--no_blank}
+@cindex @code{--noblank}
+@cindex @code{--no-blank}
+@cindex blank
+@cindex missing values
+@item --no_blank
+Print numeric representation of missing values.
+As of @acronym{NCO}
+As of @acronym{NCO} version 4.2.2 (October, 2012), @acronym{NCO} prints
+missing values as blanks (i.e., the underscore character @samp{_}) by default.
+To enable the old behavior of printing the numeric representation of
+missing values (e.g., @code{1.0e36}), use the @samp{--no_blank} switch.
+Also activated using @samp{--noblank} or @samp{--no-blank}.
 
 @cindex @code{-P}
 @cindex @code{--print}

@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.152 2012-09-10 22:07:51 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.153 2012-10-06 23:41:52 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -1048,7 +1048,8 @@ data:
 	one_dmn_rec_var_missing_value=1,2,3,4,5,6,7,8,9,1.0e36;
 	one_dmn_rec_var__FillValue=1,2,3,4,5,6,7,8,9,1.0e36;
 	one_dmn_rec_var_unsorted__FillValue=1.0e36,4,6,2,8,1,9,7,3,5;
-	one_dmn_rec_var_mdn__FillValue=1,1,2,2,2,2,10,10,10,-999;
+	one_dmn_rec_var_mdn=1,1,2,2,2,2,10,10,10,10;
+	one_dmn_rec_var_mdn__FillValue=1,-999,2,2,-999,-999,10,10,10,-999;
 	RDM=1,9,36,84,126,126,84,36,9,1;
 	one_dmn_rec_var_sng="Hello Wor";
 	one_dmn_var=1.,10.;

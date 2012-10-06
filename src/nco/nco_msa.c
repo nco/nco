@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.100 2012-09-27 04:44:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.101 2012-10-06 23:41:56 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -283,7 +283,7 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
  lmt_all_sct **lmt_msa, 
  int nbr_dim,
  long *dmn_sbs_dsk,
- nco_bool FREE){
+ nco_bool flg_free){
   /*  It does not really convert RAM indices to disk indices, but given a set 
       of RAM indices, it finds the next set of disk incdices. 
       So it only works if the indices fed to it are continuous */
@@ -345,7 +345,7 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
   for(idx=0;idx<nbr_dim;idx++) dmn_sbs_prv[idx]=dmn_sbs_ram[idx];
   
   /* Free static space on last call */
-  if(FREE){
+  if(flg_free){
     (void)nco_free(dmn_sbs_prv);
     for(idx=0;idx <nbr_dim;idx++)
       (void)nco_free(dmn_indices[idx]);
@@ -761,40 +761,39 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM) /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_DMN_VAR_NM, /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_MSS_VAL_BLANK) /* I [flg] Print missing values as blanks */
 {
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
+
   /* Purpose:
-     Get variable with limits from input file
-     User supplied dlm_sng, print var (includes nbr_dim == 0)
-     Get dimensional units
-     if nbr_dim ==0 and dlm_sng==NULL  print variable
-     if PRN.. = False print var taking account of FORTRAN (need var indices)
-     if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
-     if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices */
+     Print variable with limits from input file */
   
-  nco_bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
-  char nul_chr='\0';
-  char var_sng[NCO_MAX_LEN_FMT_SNG];
   char *unit_sng;
+  char var_sng[NCO_MAX_LEN_FMT_SNG];
+  char mss_val_sng[NCO_MAX_LEN_FMT_SNG]="_"; /* [sng] Print this instead of numerical missing value */
+  char nul_chr='\0';
   
-  /* Get variable with limits from input file */
+  dmn_sct *dim=NULL_CEWI;
+  
+  int *dmn_id=NULL_CEWI;
+  
   int rcd;
   int idx;
   int jdx;
-  int *dmn_id=NULL_CEWI;
-  
-  /* For regular data */
+  int val_sz_byte;
+
   long lmn;
-  
-  dmn_sct *dim=NULL_CEWI;
   
   lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
   
+  nco_bool is_mss_val=False; /* [flg] Current value is missing value */
+  nco_bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
+
   var_sct var;
   
-  /* set defaults */
+  /* Set defaults */
   var_dfl_set(&var); 
    
   /* Initialize units string, overwrite later if necessary */
@@ -897,57 +896,66 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end if */
   } /* end if PRN_DMN_UNITS */
   
+  /* Refresh number of attributes and missing value attribute, if any */
+  var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
+  if(var.has_mss_val) val_sz_byte=nco_typ_lng(var.type);
+
   if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is scalar, byte, or character */
     lmn=0;
+    if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byte) : False; 
     if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
-    if(PRN_DMN_VAR_NM){
-      switch(var.type){
-      case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
-      case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
-      case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
-      case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.ip[lmn],unit_sng); break;
-      case NC_CHAR:
-	if(var.val.cp[lmn] != '\0'){
-	  (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
-	  (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
-	}else{ /* Deal with NUL character here */
-	  (void)fprintf(stdout, "%s = \"\" %s\n",var_nm,unit_sng);
-	} /* end if */
-	break;
-      case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
-      case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng); break;
-      case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng); break;
-      case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
-      case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
-      case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
-      case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
-      default: nco_dfl_case_nc_type_err(); break;
-      } /* end switch */
-    }else{ /* !PRN_DMN_VAR_NM */
-      switch(var.type){
-      case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn]); break;
-      case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn]); break;
-      case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn]); break;
-      case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn]); break;
-      case NC_CHAR:
-	if(var.val.cp[lmn] != '\0'){
-	  (void)sprintf(var_sng,"'%s'\n",nco_typ_fmt_sng(var.type));
-	  (void)fprintf(stdout,var_sng,var.val.cp[lmn]);
-	}else{ /* Deal with NUL character here */
-	  (void)fprintf(stdout, "\"\"\n");
-	} /* end if */
-	break;
-      case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn]); break;
-      case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn]); break;
-      case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn]); break;
-      case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn]); break;
-      case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn]); break;
-      case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn]); break;
-      case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn]); break;
-      default: nco_dfl_case_nc_type_err(); break;
-      } /* end switch */
-    } /* !PRN_DMN_VAR_NM */
+    if(PRN_MSS_VAL_BLANK && is_mss_val){
+      if(PRN_DMN_VAR_NM) (void)fprintf(stdout,"%s = %s %s\n",var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
+    }else{ /* !is_mss_val */
+      if(PRN_DMN_VAR_NM){
+	switch(var.type){
+	case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
+	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
+	case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
+	case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.ip[lmn],unit_sng); break;
+	case NC_CHAR:
+	  if(var.val.cp[lmn] != '\0'){
+	    (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
+	    (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
+	  }else{ /* Deal with NUL character here */
+	    (void)fprintf(stdout, "%s = \"\" %s\n",var_nm,unit_sng);
+	  } /* end if */
+	  break;
+	case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
+	case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng); break;
+	case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng); break;
+	case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
+	case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
+	case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
+	case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
+	default: nco_dfl_case_nc_type_err(); break;
+	} /* end switch */
+      }else{ /* !PRN_DMN_VAR_NM */
+	switch(var.type){
+	case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn]); break;
+	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn]); break;
+	case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn]); break;
+	case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn]); break;
+	case NC_CHAR:
+	  if(var.val.cp[lmn] != '\0'){
+	    (void)sprintf(var_sng,"'%s'\n",nco_typ_fmt_sng(var.type));
+	    (void)fprintf(stdout,var_sng,var.val.cp[lmn]);
+	  }else{ /* Deal with NUL character here */
+	    (void)fprintf(stdout, "\"\"\n");
+	  } /* end if */
+	  break;
+	case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn]); break;
+	case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn]); break;
+	case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn]); break;
+	case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn]); break;
+	case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn]); break;
+	case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn]); break;
+	case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn]); break;
+	default: nco_dfl_case_nc_type_err(); break;
+	} /* end switch */
+      } /* !PRN_DMN_VAR_NM */
+    } /* !is_mss_val */
   } /* end if variable is scalar, byte, or character */
   
   if(var.nbr_dim > 0 && dlm_sng == NULL){
@@ -1007,6 +1015,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     
     for(lmn=0;lmn<var.sz;lmn++){
       
+      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+
       /* Calculate RAM indices from current limit */
       for(idx=0;idx <var.nbr_dim;idx++) 
 	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
@@ -1146,39 +1156,43 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
       
-      if(PRN_DMN_VAR_NM){
-	switch(var.type){
-	case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
-	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
-	case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sp[lmn],unit_sng); break;
-	case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ip[lmn],unit_sng); break;
-	case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.cp[lmn],unit_sng); break;
-	case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,(unsigned char)var.val.bp[lmn],unit_sng); break;
-	case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ubp[lmn],unit_sng); break;
-	case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.usp[lmn],unit_sng); break;
-	case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.uip[lmn],unit_sng); break;
-	case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.i64p[lmn],unit_sng); break;
-	case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ui64p[lmn],unit_sng); break;
-	case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sngp[lmn],unit_sng); break;
-	default: nco_dfl_case_nc_type_err(); break;
-	} /* end switch */
-      }else{ /* !PRN_DMN_VAR_NM */
-	switch(var.type){
-	case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn],unit_sng); break;
-	case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn],unit_sng); break;
-	case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn],unit_sng); break;
-	case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn],unit_sng); break;
-	case NC_CHAR: (void)fprintf(stdout,var_sng,var.val.cp[lmn],unit_sng); break;
-	case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn],unit_sng); break;
-	case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn],unit_sng); break;
-	case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn],unit_sng); break;
-	case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn],unit_sng); break;
-	case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn],unit_sng); break;
-	case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn],unit_sng); break;
-	case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn],unit_sng); break;
-	default: nco_dfl_case_nc_type_err(); break;
-	} /* end switch */
-      } /* !PRN_DMN_VAR_NM */
+      if(PRN_MSS_VAL_BLANK && is_mss_val){
+	if(PRN_DMN_VAR_NM) (void)fprintf(stdout,"%s[%ld]=%s %s\n",var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
+      }else{ /* !is_mss_val */
+	if(PRN_DMN_VAR_NM){
+	  switch(var.type){
+	  case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
+	  case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
+	  case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sp[lmn],unit_sng); break;
+	  case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ip[lmn],unit_sng); break;
+	  case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.cp[lmn],unit_sng); break;
+	  case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,(unsigned char)var.val.bp[lmn],unit_sng); break;
+	  case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ubp[lmn],unit_sng); break;
+	  case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.usp[lmn],unit_sng); break;
+	  case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.uip[lmn],unit_sng); break;
+	  case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.i64p[lmn],unit_sng); break;
+	  case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ui64p[lmn],unit_sng); break;
+	  case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sngp[lmn],unit_sng); break;
+	  default: nco_dfl_case_nc_type_err(); break;
+	  } /* end switch */
+	}else{ /* !PRN_DMN_VAR_NM */
+	  switch(var.type){
+	  case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn],unit_sng); break;
+	  case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn],unit_sng); break;
+	  case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn],unit_sng); break;
+	  case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn],unit_sng); break;
+	  case NC_CHAR: (void)fprintf(stdout,var_sng,var.val.cp[lmn],unit_sng); break;
+	  case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn],unit_sng); break;
+	  case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn],unit_sng); break;
+	  case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn],unit_sng); break;
+	  case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn],unit_sng); break;
+	  case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn],unit_sng); break;
+	  case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn],unit_sng); break;
+	  case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn],unit_sng); break;
+	  default: nco_dfl_case_nc_type_err(); break;
+	  } /* end switch */
+	} /* !PRN_DMN_VAR_NM */
+      } /* !is_mss_val */
     } /* end loop over elements */
     
     (void)nco_free(mod_map_in);
@@ -1193,6 +1207,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   /* Free value buffer */
   var.val.vp=nco_free(var.val.vp);
+  var.mss_val.vp=nco_free(var.mss_val.vp);
   var.nm=(char *)nco_free(var.nm);
   
   if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);

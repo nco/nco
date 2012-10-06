@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.67 2012-03-30 17:48:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.68 2012-10-06 23:41:56 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -175,10 +175,10 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
     fix_tally=fix->tally;
 
-    /* First set tally field to 1 */
+    /* Set tally field to 1 */
     for(idx=0;idx<fix_sz;idx++) fix_tally[idx]=1L;
 
-    /* Next overwrite any missing value locations with zero */
+    /* Overwrite any missing value locations with zero */
     if(fix->has_mss_val){
       int val_sz_byte;
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.380 2012-10-06 09:41:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.381 2012-10-06 23:41:56 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -37,18 +37,17 @@
    ncks -O -4 ~/nco/data/in.nc ~/foo.nc
    ncks -v one ~/nco/data/in.nc ~/foo.nc
    ncks -p /ZENDER/tmp -l /data/zender/tmp h0001.nc ~/foo.nc
-   ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
+   ncks -s "%+16.10f\n" -H -C -v three_dmn_var ~/nco/data/in.nc
    ncks -H -v fl_nm,fl_nm_arr ~/nco/data/in.nc
    ncks -H -C -u -d wvl,'0.4 micron','0.7 micron' -v wvl ~/nco/data/in.nc
    ncks -H -d fl_dim,1 -d char_dim,6,12 -v fl_nm,fl_nm_arr ~/nco/data/in.nc
    ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nco/data/in.nc
-   ncks -H -C -v three_dmn_rec_var -d time,,,2 in.nc
-   ncks -H -C -v lon -d lon,3,1 in.nc 
+   ncks -H -C -v three_dmn_rec_var -d time,,,2 ~/nco/data/in.nc
+   ncks -H -C -v lon -d lon,3,1 ~/nco/data/in.nc 
    ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
    ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc
    ncks -G -D 1 ~/in_grp.nc
-   ncks -O -v time -H ~/in_grp.nc ~/foo.nc */
-
+   ncks -O -v time ~/in_grp.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -104,6 +103,7 @@ main(int argc,char **argv)
   nco_bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
   nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
   nco_bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
+  nco_bool PRN_MSS_VAL_BLANK=True; /* [flg] Print missing values as blanks */
   nco_bool PRN_QUIET=False; /* [flg] Turn off all printing to screen */
   nco_bool PRN_VAR_DATA=False; /* [flg] Print variable data */
   nco_bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.380 2012-10-06 09:41:09 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.380 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.381 2012-10-06 23:41:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.381 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -221,6 +221,9 @@ main(int argc,char **argv)
       {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
       {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+      {"no_blank",no_argument,0,0}, /* [flg] Print numeric missing values */
+      {"no-blank",no_argument,0,0}, /* [flg] Print numeric missing values */
+      {"noblank",no_argument,0,0}, /* [flg] Print numeric missing values */
       {"no_clb",no_argument,0,0},
       {"noclobber",no_argument,0,0},
       {"no-clobber",no_argument,0,0},
@@ -386,6 +389,7 @@ main(int argc,char **argv)
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+      if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
       if(!strcmp(opt_crr,"tst_udunits")){ 
@@ -1015,12 +1019,12 @@ main(int argc,char **argv)
           /* Print full name of variable */
           (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
-          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,dmn_nbr_all,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,dmn_nbr_all,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
       }else { /* HAS_SUBGRP */
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
         for(idx=0;idx<xtr_nbr;idx++) {
-          (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM);
+          (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
       } /* HAS_SUBGRP */
     } /* end if PRN_VAR_DATA */  

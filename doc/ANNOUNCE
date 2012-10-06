@@ -1,23 +1,31 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.507 2012-09-04 06:54:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.508 2012-10-06 23:41:53 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release is laden with hyperslabbing and performance features.
-All hyperslabbing operators can now count backwards.
-ncra and ncrcat handle sub-groups of records at regular intervals. 
-Time re-basing now works on "bounds" variables, e.g., time_bnds.
-Together, these features significantly ease working with large
-datasets like CMIP5.
+This release finishes some older work and marks the beginning of
+new functionality supported by our NASA ACCESS grant. Old stuff first:
+Optional specification of header pads in all operators and of negative
+hyperslab indices (to count backwards from the end) are now supported
+on all operators for which they make sense. And ncwa is now present 
+in the windows tarball.
 
-Also NCO supports the new "diskless" feature of netCDF 4.2.1. 
-Autoconf builds are now regularly tested on more platforms. 
-Keep the suggestions coming for features you want.
+The more exciting work, forthcoming to all of NCO in roughly the
+coming year, is better support for netCDF4/HDF5 features. To begin,
+ncks now supports group hierarchies and multiple record dimensions.
+The most important (in my opinion) netCDF4 feature that ncks does
+not support now is user-defined and compound types. These are
+currently rarely used so we think ncks will work as is on most netCDF4  
+files users are likely to see in the near future. Let us know how you
+like, or dislike, the way we have implemented the equivalent
+functionality that ncks already had for netCDF3. Your feedback will
+help us finalize things like the printed output format for group
+information, and tidy up loose ends. 
 
-Work on NCO 4.2.2 is underway. Expect ease-of-build improvements, an
-optimization for diskless/RAM files, and better netCDF4 support.
+Work on NCO 4.2.3 is underway: better netCDF4 support for ncks, and
+possibly ncdiff. 
 
 Enjoy,
 Charlie
@@ -26,10 +34,18 @@ Other "New stuff" in 4.2.2 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
+A. ncks supports netCDF4 groups and multiple record dimensions.
+   The key new switches are -g and -G, which do what you would expect:
+   extract (or exclude) members of the specified groups. Regular
+   expressions work on group names, on variable names, and interact to 
+   give users precise and powerful control over subsetting and
+   hyperslabbing netCDF4 files. See the new examples at
+   http://nco.sf.net/nco.html#xmp_ncks
+
 A. ncap2 now understands that negative integers as min or max elements
    of hyperslab specifications indicate offsets from the end.
-   The other NCO operators initiated this support as of last version.
-   Now NCO support for this convention is complete.
+   The other NCO operators initiated this support as of NCO 4.2.1.
+   NCO support for this convention is now complete.
    http://nco.sf.net/nco.html#hyp
 
 A. Our distribution of native-Windows binaries now includes ncwa,
@@ -37,6 +53,8 @@ A. Our distribution of native-Windows binaries now includes ncwa,
    Due to limitations of the Windows programming environment however,
    these executables lack some powerful features present in UNIX:
    Regular expressions, globbing, and network capabilities
+   Download your self-extracting executables today
+   http://nco.sf.net#windows
 
 A. The --hdr_pad option is now supported by all operators.
    This option is useful in preventing re-copying of netCDF3 files
@@ -44,7 +62,15 @@ A. The --hdr_pad option is now supported by all operators.
    Formerly it was present only in ncatted, ncks, and ncrename.
    http://nco.sf.net/nco.html#hdr
 
+A. ncap2's bilinear_interp() and bilinear_interp_wrap() now have 
+   semi-intelligent handling of missing values. Thanks to Henry.
+   http://nco.sf.net/nco.html#bln_ntp
+
 BUG FIXES:
+
+A. Attempts to reach non-existing files behind DAP servers can no
+   longer lead to multiple attempts to find the files with wget.
+   At most one wget will be attempted.
 
 A. ncatted stopped adding trailing NULs to string (NC_CHAR) attributes
    in NCO version 4.0.2. This was inadvertent. ncatted once again
