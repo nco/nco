@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.65 2012-10-05 05:35:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.66 2012-10-06 09:41:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -157,14 +157,11 @@ nco4_var_lst_xcl                /* [fnc] Convert exclusion list to extraction li
 nm_id_sct *                      /* O [sct] Extraction list */
 nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list */
 (const int nc_id,                /* I [ID] netCDF file ID */
- const int nbr_dim,              /* I [nbr] Number of dimensions in input file */
- const int nbr_var,              /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list (destroyed) */
- int * const xtr_nbr,            /* I/O [nbr] Number of variables in current extraction list */
+ nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
+ int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_tbl_sct *trv_tbl);          /* I [sct] Group traversal table  */
+ char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
 
 void
 nco4_xtr_grp_nm_fll              /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */
