@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.509 2012-10-07 00:47:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.510 2012-10-07 06:56:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -46,8 +46,6 @@ A. ncks now prints missing values as underscores ("_") by default.
    Previously ncks printed the numeric representation, e.g., "1.0e36".
    The new behavior mimics ncdump and looks cleaner.
    To revert to the old behavior, use the new --no_blank switch.
-   NB: user-supplied string formats (e.g., ncks -s '%f, ' in.nc) may
-   look terrible with this new feature.
    http://nco.sf.net/nco.html#xmp_ncks
 
 A. ncap2 now understands that negative integers as min or max elements
