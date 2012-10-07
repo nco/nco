@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.117 2012-10-07 02:48:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.118 2012-10-07 02:56:41 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -93,8 +93,8 @@ sub tst_rgr {
 # have an ncks which triggers this addition from the sub tst_run() -> gnarly_pything.
 # this stanza also requires a script on the SS.
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap2.in $in_pth_arg in.nc %tmp_fl_00% %stdouterr%";
-    $dsc_sng="running ncap2.in script in nco_bm.pl (failure expected on netcdf4 ncap81)";
-    $tst_cmd[1]="ncks -C -H -v b2 -s '%d' %tmp_fl_00%";
+    $dsc_sng="running ncap2.in script in nco_bm.pl (failure expected on netCDF4 ncap81)";
+    $tst_cmd[1]="ncks -C -H -v b2 --no_blank -s '%d' %tmp_fl_00%";
     $tst_cmd[2]="999";
 #	$tst_cmd[3]="NO_SS";
     $tst_cmd[3]="SS_OK";
