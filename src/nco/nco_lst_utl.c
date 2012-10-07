@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.62 2012-07-24 00:05:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.63 2012-10-07 05:24:24 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -16,8 +16,93 @@
 /* Compile following routines only if regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
 
+char * /* O [nbr] Format string with printf()-formats replaced */
+nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
+(const char * const fmt_sng) /* I [sng] Format string before processing */
+{
+  /* Purpose: Replace printf()-format statements with string format statement */
+
+  const char fnc_nm[]="nco_fmt_sng_printf_subst()"; /* [sng] Function name */
+
+  //  const char rx_sng[]="%(?:\d+\$)?[+-]?(?:[ 0]|'.{1})?-?\d*(?:\.\d+)?[bcdeEufFgGosxX]"; /* [sng] Regular expression pattern */
+  // const char rx_sng[]="%(?:\\d+\\$)?[+-]?(?:[ 0]|'.{1})?-?\\d*(?:\\.\\d+)?[bcdeEufFgGosxX]"; /* [sng] Regular expression pattern */
+  // const char rx_sng[]="%[+- 0#]*[0-9]*([.][0-9]+)?[aefgAEFG]"; /* [sng] Regular expression pattern */
+  // const char rx_sng[]="%[+- 0#]*[0-9]*([.][0-9]+)?[aefgAEFG]"; /* [sng] Regular expression pattern */
+  const char rx_sng[]="%[bcdeEufFgGosxX]"; /* [sng] Regular expression pattern */
+
+  char *fmt_sng_new;
+
+  int err_id;
+  int flg_cmp; /* Comparison flags */
+  int flg_exe; /* Execution flages */
+  int mch_nbr=0;
+
+  regmatch_t *result;
+  regex_t *rx;
+  regoff_t mch_psn_srt=0; /* Byte offset from start of string to start of substring */
+  regoff_t mch_psn_end=0; /* Byte offset from start of string to first character after substring */
+
+  size_t rx_prn_sub_xpr_nbr;
+  
+  rx=(regex_t *)nco_malloc(sizeof(regex_t));
+
+  /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
+  flg_cmp=(REG_EXTENDED | REG_NEWLINE);
+  /* Set execution flags */
+  flg_exe=0;
+
+  /* Compile regular expression */
+  if((err_id=regcomp(rx,rx_sng,flg_cmp)) != 0){ /* Compile regular expression */
+    char const * rx_err_sng;  
+    /* POSIX regcomp return error codes */
+    switch(err_id){
+    case REG_BADPAT: rx_err_sng="Invalid pattern."; break;  
+    case REG_ECOLLATE: rx_err_sng="Not implemented."; break;
+    case REG_ECTYPE: rx_err_sng="Invalid character class name."; break;
+    case REG_EESCAPE: rx_err_sng="Trailing backslash."; break;
+    case REG_ESUBREG: rx_err_sng="Invalid back reference."; break;
+    case REG_EBRACK: rx_err_sng="Unmatched left bracket."; break;
+    case REG_EPAREN: rx_err_sng="Parenthesis imbalance."; break;
+    case REG_EBRACE: rx_err_sng="Unmatched {."; break;
+    case REG_BADBR: rx_err_sng="Invalid contents of { }."; break;
+    case REG_ERANGE: rx_err_sng="Invalid range end."; break;
+    case REG_ESPACE: rx_err_sng="Ran out of memory."; break;
+    case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
+    default: rx_err_sng="Invalid pattern."; break;  
+    } /* end switch */
+    (void)fprintf(stdout,"%s: ERROR %s reports error in regular expression \"%s\" %s \n",prg_nm_get(),fnc_nm,rx_sng,rx_err_sng); 
+    nco_exit(EXIT_FAILURE);
+  } /* end if err */
+
+  rx_prn_sub_xpr_nbr=rx->re_nsub+1; /* Number of parenthesized sub-expressions */
+
+  /* Search string */
+  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
+
+  /* Search format string for matches */
+  if(!regexec(rx,fmt_sng,rx_prn_sub_xpr_nbr,result,flg_exe)) mch_nbr++;
+
+  /* Replace match with desired format */
+  fmt_sng_new=(char *)strdup(fmt_sng);
+  if(mch_nbr){
+    mch_psn_srt=result->rm_so; /* [B] Byte offset from start of string to start of substring */
+    mch_psn_end=result->rm_eo-1L; /* [B] Byte offset from start of string to end   of substring */
+    (void)nco_realloc(fmt_sng_new,(mch_psn_srt+strlen(fmt_sng)-mch_psn_end+2L)*sizeof(char));
+    (void)sprintf(fmt_sng_new+mch_psn_srt,"%%s");
+    (void)sprintf(fmt_sng_new+mch_psn_srt+2,"%s",fmt_sng+mch_psn_end+1);
+  } /* !mch_nbr */
+  
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s reports that the user-supplied formatting string \"%s\" has %d matches to the regular expression \"%s\", which has %zu parenthesized sub-expressions. The first match, if any, begins at offset %d and ends at offset %d and is %d characters long. The revised format string is \"%s\"\n",prg_nm_get(),fnc_nm,fmt_sng,mch_nbr,rx_sng,rx_prn_sub_xpr_nbr,mch_psn_srt,mch_psn_end,mch_psn_end-mch_psn_srt+1,fmt_sng_new);
+
+  regfree(rx); /* Free regular expression data structure */
+  rx=(regex_t *)nco_free(rx);
+  result=(regmatch_t *)nco_free(result);
+
+  return fmt_sng_new;
+} /* end nco_fmt_sng_printf_subst() */
+
 int /* O [nbr] Number of matches found */
-nco_lst_meta_search /* [fnc] Search for pattern matches in var string list */
+nco_lst_rx_search /* [fnc] Search for pattern matches in var string list */
 (int var_nbr_all, /* I [nbr] Size of var_lst_all and var_xtr_rqs */
  nm_id_sct *var_lst_all, /* I [sct] All variables in input file (with IDs) */
  char *rx_sng, /* I [sng] Regular expression pattern */
@@ -30,7 +115,7 @@ nco_lst_meta_search /* [fnc] Search for pattern matches in var string list */
   int flg_cmp; /* Comparison flags */
   int flg_exe; /* Execution flages */
   int mch_nbr=0;
-  size_t nbr_sub_xpr;
+  size_t rx_prn_sub_xpr_nbr;
   
   regmatch_t *result;
   regex_t *rx;
@@ -61,18 +146,18 @@ nco_lst_meta_search /* [fnc] Search for pattern matches in var string list */
     case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
     default: rx_err_sng="Invalid pattern."; break;  
     } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR nco_lst_meta_search() error in regular expression \"%s\" %s \n",prg_nm_get(),rx_sng,rx_err_sng); 
+    (void)fprintf(stdout,"%s: ERROR nco_lst_rx_search() error in regular expression \"%s\" %s \n",prg_nm_get(),rx_sng,rx_err_sng); 
     nco_exit(EXIT_FAILURE);
   } /* end if err */
 
-  nbr_sub_xpr=rx->re_nsub+1; /* How many matches are there in line? */
+  rx_prn_sub_xpr_nbr=rx->re_nsub+1; /* Number of parenthesized sub-expressions */
 
   /* Search string */
-  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*nbr_sub_xpr);
+  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
 
   /* Search each variable string for matches */
   for(idx=0;idx<var_nbr_all;idx++){  
-    if(!regexec(rx,var_lst_all[idx].nm,nbr_sub_xpr,result,flg_exe)){
+    if(!regexec(rx,var_lst_all[idx].nm,rx_prn_sub_xpr_nbr,result,flg_exe)){
       var_xtr_rqs[idx]=True;
       mch_nbr++;
     } /* end if */
@@ -83,7 +168,7 @@ nco_lst_meta_search /* [fnc] Search for pattern matches in var string list */
   result=(regmatch_t *)nco_free(result);
 
   return mch_nbr;
-} /* end nco_lst_meta_search() */
+} /* end nco_lst_rx_search() */
 
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 

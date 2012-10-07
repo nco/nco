@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.102 2012-10-07 00:47:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.103 2012-10-07 05:24:24 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -849,6 +849,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   /* User supplied dlm_sng, print variable (includes nbr_dmn == 0) */  
   if(dlm_sng){
+    char *fmt_sng_mss_val=NULL;
+
     /* Print each element with user-supplied formatting code */
     /* Replace C language '\X' escape codes with ASCII bytes */
     (void)sng_ascii_trn(dlm_sng);
@@ -858,17 +860,19 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
        and that user is only allowed to affect text between fields. 
        This would be accomplished with:
        (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
+
+    /* Find replacement format string at most once, then re-use */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+    /* Replace printf()-format statements with format for missing values */
+    fmt_sng_mss_val=nco_fmt_sng_printf_subst(dlm_sng);
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     
     for(lmn=0;lmn<var.sz;lmn++){
+      /* memcmp() usage below triggers pedantic warning because of pointer arithmetic with type void * */
       if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
       
       if(PRN_MSS_VAL_BLANK && is_mss_val){
-	/* fxm 20121006 replace regular expression for value in dlm_sng with %s
-	   rx for valid printf() floating point formats: %[+- 0#]*[0-9]*([.][0-9]+)?[aefgAEFG]
-	   rx for valid printf() all (?)        formats: %(?:\d+\$)?[+-]?(?:[ 0]|'.{1})?-?\d*(?:\.\d+)?[bcdeEufFgGosxX]
-	 */
-
-	(void)fprintf(stdout,"%s\n",mss_val_sng);
+	if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
       }else{ /* !is_mss_val */
 	switch(var.type){
 	case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var.val.fp[lmn]); break;
@@ -889,6 +893,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end loop over element */
     (void)fprintf(stdout,"\n");
     
+    if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
+
   } /* end if dlm_sng */
   
   if(PRN_DMN_UNITS){
@@ -913,7 +919,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is scalar, byte, or character */
-    lmn=0;
+    lmn=0L;
     if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byte) : False; 
     if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
     if(PRN_MSS_VAL_BLANK && is_mss_val){
@@ -1026,6 +1032,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     
     for(lmn=0;lmn<var.sz;lmn++){
       
+      /* memcmp() usage below triggers pedantic warning because of pointer arithmetic with type void * */
       if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
 
       /* Calculate RAM indices from current limit */

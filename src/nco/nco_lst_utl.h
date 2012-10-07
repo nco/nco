@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.45 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.46 2012-10-07 05:24:24 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -43,8 +43,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
+char * /* O [nbr] Format string with printf()-formats replaced */
+nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
+(const char * const fmt_sng); /* I [sng] Format string before processing */
+
 int /* O [nbr] Number of matches found */
-nco_lst_meta_search /* [fnc] Search for pattern matches in var string list */
+nco_lst_rx_search /* [fnc] Search for pattern matches in var string list */
 (int var_nbr_all, /* I [nbr] Size of var_lst_all and var_xtr_rqs */
  nm_id_sct *var_lst_all, /* I [sct] All variables in input file (with IDs) */
  char *rx_sng, /* I [sng] Regular expression pattern */
