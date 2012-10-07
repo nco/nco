@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.101 2012-10-06 23:41:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.102 2012-10-07 00:47:19 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -843,7 +843,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Warn if variable is packed */
   if(nco_pck_dsk_inq(in_id,&var)) (void)fprintf(stderr,"%s: WARNING about to print packed contents of variable \"%s\". Consider unpacking variable first using ncpdq -U.\n",prg_nm_get(),var_nm);
   
-  /* User supplied dlm_sng, print var (includes nbr_dmn == 0) */  
+  /* Refresh number of attributes and missing value attribute, if any */
+  var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
+  if(var.has_mss_val) val_sz_byte=nco_typ_lng(var.type);
+
+  /* User supplied dlm_sng, print variable (includes nbr_dmn == 0) */  
   if(dlm_sng){
     /* Print each element with user-supplied formatting code */
     /* Replace C language '\X' escape codes with ASCII bytes */
@@ -856,21 +860,32 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
        (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
     
     for(lmn=0;lmn<var.sz;lmn++){
-      switch(var.type){
-      case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var.val.fp[lmn]); break;
-      case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var.val.dp[lmn]); break;
-      case NC_SHORT: (void)fprintf(stdout,dlm_sng,var.val.sp[lmn]); break;
-      case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.ip[lmn]); break;
-      case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
-      case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
-      case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var.val.ubp[lmn]); break;
-      case NC_USHORT: (void)fprintf(stdout,dlm_sng,var.val.usp[lmn]); break;
-      case NC_UINT: (void)fprintf(stdout,dlm_sng,var.val.uip[lmn]); break;
-      case NC_INT64: (void)fprintf(stdout,dlm_sng,var.val.i64p[lmn]); break;
-      case NC_UINT64: (void)fprintf(stdout,dlm_sng,var.val.ui64p[lmn]); break;
-      case NC_STRING: (void)fprintf(stdout,dlm_sng,var.val.sngp[lmn]); break;
-      default: nco_dfl_case_nc_type_err(); break;
-      } /* end switch */
+      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+      
+      if(PRN_MSS_VAL_BLANK && is_mss_val){
+	/* fxm 20121006 replace regular expression for value in dlm_sng with %s
+	   rx for valid printf() floating point formats: %[+- 0#]*[0-9]*([.][0-9]+)?[aefgAEFG]
+	   rx for valid printf() all (?)        formats: %(?:\d+\$)?[+-]?(?:[ 0]|'.{1})?-?\d*(?:\.\d+)?[bcdeEufFgGosxX]
+	 */
+
+	(void)fprintf(stdout,"%s\n",mss_val_sng);
+      }else{ /* !is_mss_val */
+	switch(var.type){
+	case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var.val.fp[lmn]); break;
+	case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var.val.dp[lmn]); break;
+	case NC_SHORT: (void)fprintf(stdout,dlm_sng,var.val.sp[lmn]); break;
+	case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.ip[lmn]); break;
+	case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
+	case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
+	case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var.val.ubp[lmn]); break;
+	case NC_USHORT: (void)fprintf(stdout,dlm_sng,var.val.usp[lmn]); break;
+	case NC_UINT: (void)fprintf(stdout,dlm_sng,var.val.uip[lmn]); break;
+	case NC_INT64: (void)fprintf(stdout,dlm_sng,var.val.i64p[lmn]); break;
+	case NC_UINT64: (void)fprintf(stdout,dlm_sng,var.val.ui64p[lmn]); break;
+	case NC_STRING: (void)fprintf(stdout,dlm_sng,var.val.sngp[lmn]); break;
+	default: nco_dfl_case_nc_type_err(); break;
+	} /* end switch */
+      } /* !is_mss_val */
     } /* end loop over element */
     (void)fprintf(stdout,"\n");
     
@@ -896,10 +911,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end if */
   } /* end if PRN_DMN_UNITS */
   
-  /* Refresh number of attributes and missing value attribute, if any */
-  var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
-  if(var.has_mss_val) val_sz_byte=nco_typ_lng(var.type);
-
   if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is scalar, byte, or character */
     lmn=0;

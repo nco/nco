@@ -1,5 +1,7 @@
 2012-10-06  Charlie Zender  <zender@uci.edu>
 
+	* ncks: add kludgy support for underscores with dlm_sng
+
 	* ncks: print underscore ("_") instead of missing value
 
 2012-10-05  Charlie Zender  <zender@uci.edu>
