@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.63 2012-10-07 05:24:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.64 2012-10-07 06:29:01 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -24,11 +24,18 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
 
   const char fnc_nm[]="nco_fmt_sng_printf_subst()"; /* [sng] Function name */
 
-  //  const char rx_sng[]="%(?:\d+\$)?[+-]?(?:[ 0]|'.{1})?-?\d*(?:\.\d+)?[bcdeEufFgGosxX]"; /* [sng] Regular expression pattern */
-  // const char rx_sng[]="%(?:\\d+\\$)?[+-]?(?:[ 0]|'.{1})?-?\\d*(?:\\.\\d+)?[bcdeEufFgGosxX]"; /* [sng] Regular expression pattern */
-  // const char rx_sng[]="%[+- 0#]*[0-9]*([.][0-9]+)?[aefgAEFG]"; /* [sng] Regular expression pattern */
-  // const char rx_sng[]="%[+- 0#]*[0-9]*([.][0-9]+)?[aefgAEFG]"; /* [sng] Regular expression pattern */
-  const char rx_sng[]="%[bcdeEufFgGosxX]"; /* [sng] Regular expression pattern */
+  /* Regular expressions for printf()-formats
+     const char rx_sng[]="%(?:\\d+\\$)?[+-]?(?:[ 0]|'.{1})?-?\\d*(?:\\.\\d+)?[bcdeEufFgGosxX]"; [sng] Regular expression pattern found on Web 
+     const char rx_sng[]="%([+- 0#])?([0-9]*)?([\.?[0-9]*)?[bcdeEfFgGiosuxX]"; Space in position 6 causes error
+     Flag character " " crashes everywhere
+     Flag characters "'I" are fancy
+     Length modifiers "jzt" are somewhat fancy (unlikely to be on Windows) */
+     
+#ifdef _MSC_VER
+  const char rx_sng[]="%([+-0#])?([0-9]*)?([\.?[0-9]*)?([h+l+L])?[bcdeEfFgGiosuxX]"; /* [sng] Regular expression pattern */
+#else /* _MSC_VER */
+  const char rx_sng[]="%([+-0#'I])?([0-9]*)?([\.?[0-9]*)?([h+l+Ljzt])?[bcdeEfFgGiosuxX]"; /* [sng] Regular expression pattern */
+#endif /* _MSC_VER */
 
   char *fmt_sng_new;
 
