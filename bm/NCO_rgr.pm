@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.116 2012-07-20 20:45:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.117 2012-10-07 02:48:00 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -276,7 +276,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array - ok
 
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";;
-    $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_scl %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
     $dsc_sng="difference scalar missing value";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
@@ -284,7 +284,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array - ok
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
     $dsc_sng="difference with missing value attribute";
     $tst_cmd[2]=1.0e36;
     $tst_cmd[3]="SS_OK";
@@ -302,7 +302,7 @@ sub tst_rgr {
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v mss_val_fst $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val %tmp_fl_00%";
     $tst_cmd[2]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val %tmp_fl_00% ../data/in.nc %tmp_fl_01% 2> %tmp_fl_02%";
-    $tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val %tmp_fl_01%";
+    $tst_cmd[3]="ncks -C -H --no_blank -s '%f,' -v mss_val %tmp_fl_01%";
     $dsc_sng="_FillValues differ between files";
     $tst_cmd[4]="-999.000000,-999.000000,-999.000000,-999.000000";
     $tst_cmd[5]="SS_OK";
@@ -320,7 +320,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
     $dsc_sng="ncdiff symbolically linked to ncbo";
     $tst_cmd[2]=1.0e36;
     $tst_cmd[3]="SS_OK";
@@ -328,7 +328,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
     $dsc_sng="difference with missing value attribute";
     $tst_cmd[2]=1.0e36;
     $tst_cmd[3]="SS_OK";
@@ -397,7 +397,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_scl %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
     $dsc_sng="ensemble sum of missing value across two files";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
@@ -405,7 +405,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_flt -d time,0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v rec_var_flt_mss_val_flt %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v rec_var_flt_mss_val_flt %tmp_fl_00%";
     $dsc_sng="ensemble mean with missing values across two files";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
@@ -432,7 +432,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    $tst_cmd[2]="ncks -C -H -s '%d ' -v rec_var_int_mss_val_int %tmp_fl_00%";
+    $tst_cmd[2]="ncks -C -H --no_blank -s '%d ' -v rec_var_int_mss_val_int %tmp_fl_00%";
     $dsc_sng="ensemble mean of integer with integer missing values across two files";
     $tst_cmd[3]="-999 2 3 4 5 6 7 8 -999 -999";
     $tst_cmd[4]="NO_SS";
@@ -525,7 +525,7 @@ sub tst_rgr {
     $tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[3]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5  %tmp_fl_02% %tmp_fl_01%  %tmp_fl_04%  $foo_y_fl $foo_x_fl $foo_yx_fl";
     $tst_cmd[4]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_03% %tmp_fl_04% %tmp_fl_05%";
-    $tst_cmd[5]="ncks -C -H -s '%g' -v mss_val %tmp_fl_05% ";
+    $tst_cmd[5]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_05% ";
     $dsc_sng="switch order of occurrence to test for commutivity";
     $tst_cmd[6]="1e+36";
     $tst_cmd[7]="NO_SS";
@@ -1315,7 +1315,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v mss_val_all -a lon -w lon $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_all %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_all %tmp_fl_00%";
     $dsc_sng="average all missing values with weights";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
@@ -1373,7 +1373,7 @@ sub tst_rgr {
 # will fail SS - ncks not the last cmd
     @tst_cmd=(); # really reset array. $#tst_cmd=0; sets last index=0 --> list has one element.
     push(@tst_cmd, "ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
-    push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,3 -d lat,0 %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -v three_dmn_var_dbl -d time,3 -d lat,0 %tmp_fl_00%");
     # used to cut for field 7. (1 + 3x2 + 0x1=7)
     $dsc_sng="Dimension reduction with min switch and missing values";
     push(@tst_cmd, "-99");
@@ -1394,7 +1394,7 @@ sub tst_rgr {
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
-    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,2 -d lat,0 %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_int -d time,2 -d lat,0 %tmp_fl_00%");
     # used to cut field 5: ( 1 + 2x2 + 0x1 = 5) 
     $dsc_sng="Dimension reduction on type int with min switch and missing values";
     push(@tst_cmd, "-99");
@@ -1415,7 +1415,7 @@ sub tst_rgr {
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
-    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,9 -d lat,1 %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_sht -d time,9 -d lat,1 %tmp_fl_00%");
     # used to cut field 20: ( 1 + 9x2 + 1x1 = 20) 
     $dsc_sng="Dimension reduction on type short variable with min switch and missing values";
     push(@tst_cmd, "-99");
@@ -1452,7 +1452,7 @@ sub tst_rgr {
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
-    push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
     # used to cut field 4: ( 1 + 3x1=4) 
     $dsc_sng="Dimension reduction on type double variable with max switch and missing values";
     push(@tst_cmd, "-99");
@@ -1473,7 +1473,7 @@ sub tst_rgr {
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
-    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,2 -d lon,0 %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_int -d time,2 -d lon,0 %tmp_fl_00%");
     # used to cut field 9: ( 1 + 2x4 + 0x1=9) 
     $dsc_sng="Dimension reduction on type int variable with min switch and missing values";
     push(@tst_cmd, "-99");
@@ -1494,7 +1494,7 @@ sub tst_rgr {
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tmp_fl_00%");
-    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,9 -d lon,0 %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H --no_blank -s '%d' -v three_dmn_var_sht -d time,9 -d lon,0 %tmp_fl_00%");
     # used to cut field 37 = 1 + 9x4 + 0x1
     $dsc_sng="Dimension reduction on type short variable with max switch and missing values";
     push(@tst_cmd, "-99");

@@ -1,5 +1,7 @@
 2012-10-06  Charlie Zender  <zender@uci.edu>
 
+	* Add --no_blank switch to fix borken regression tests
+
 	* ncks: add kludgy support for underscores with dlm_sng
 
 	* ncks: print underscore ("_") instead of missing value
