@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.129 2012-10-06 09:41:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.130 2012-10-07 05:24:24 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -417,7 +417,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
           if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
             /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-            rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
+            rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
             if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
             continue;
 #else
@@ -528,7 +528,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-      rx_mch_nbr=nco_lst_meta_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
+      rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
       if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
       continue;
 #else
@@ -714,7 +714,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
     if(strpbrk(grp_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-      rx_mch_nbr=nco_lst_meta_search(grp_nbr_top,grp_lst_all,grp_sng,grp_xtr_rqs);
+      rx_mch_nbr=nco_lst_rx_search(grp_nbr_top,grp_lst_all,grp_sng,grp_xtr_rqs);
       if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any groups\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),grp_sng); 
       continue;
 #else

@@ -1,5 +1,8 @@
 2012-10-06  Charlie Zender  <zender@uci.edu>
 
+	* Use nco_fmt_sng_printf_subst() to replace user-specified string
+	when missing values encountered. rx needs work.
+
 	* Add --no_blank switch to fix borken regression tests
 
 	* ncks: add kludgy support for underscores with dlm_sng
