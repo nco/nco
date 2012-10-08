@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.385 2012-10-08 06:02:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.386 2012-10-08 22:22:10 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,14 +143,9 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.385 2012-10-08 06:02:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.385 $";
-#ifdef GRP_DEV
+  const char * const CVS_Id="$Id: ncks.c,v 1.386 2012-10-08 22:22:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.386 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
-#else
-  const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
-#endif /* GRP_DEV */
-
   cnk_sct **cnk=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -542,14 +537,12 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-#ifdef GRP_DEV
     case 'z': /* Print list of variables in absolute path format and exit */
       GET_LIST=True;
       break;
     case 'G': /* Print extended group information for all groups */
       GET_GRP_INFO=True;
       break;
-#endif /* GRP_DEV */
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
@@ -1085,9 +1078,7 @@ out:
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
   } /* !flg_cln */
 
-#ifdef GRP_DEV
   trv_tbl_free(trv_tbl);
-#endif
   
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
