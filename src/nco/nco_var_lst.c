@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.120 2012-10-07 05:24:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.121 2012-10-08 06:02:53 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -347,6 +347,7 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
 
   /* Assume file contains record dimension (and netCDF3 files can have only one record dimension) */
   rcd+=nco_inq_unlimdim(nc_id,&rec_dmn_id);
+  assert(rec_dmn_id != NCO_REC_DMN_UNDEFINED);
   for(idx=0;idx<xtr_nbr;idx++){
     /* Assume current variable is fixed */
     flg_crr_var_rec=False;

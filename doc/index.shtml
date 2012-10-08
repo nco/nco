@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.730 2012-10-07 00:47:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.731 2012-10-08 06:02:53 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -570,12 +570,13 @@ netCDF4 compound types?;
 World peace?
 Stride works with DAP?;
 Optimize diskless/RAM files?;
-more Robust RHEL/CentOS autoconf support?;
-<li><b>NCO 4.2.2</b>: (<i>In Progress, features already in beta include the following</i>)</li>
-<tt>--hdr_pad</tt> all operators;</li>
-<tt>ncks</tt> prints underscores;</li>
+more Robust RHEL/CentOS autoconf support?;</li>
+<li><b>NCO 4.2.2</b>: (<i>In Progress, features already in beta include the following</i>)
+<tt>ncks</tt> supports groups;
+<tt>--hdr_pad</tt> all operators;
+<tt>ncks</tt> prints underscores;
+fixes to <tt>--[mk/fix]_rec_dmn</tt>;
 <tt>ncwa</tt> on Windows;</li>
-<tt>ncks</tt> supports netCDF4 groups;</li>
 <li><b>NCO 4.2.1</b>: (<i>Current Stable Release</i>)
 <tt>--ram_all</tt> for <a href="http://nco.sf.net/nco.html#diskless">diskless files</a>;
 <tt>--no_tmp_fl</tt> to <a href="http://nco.sf.net/nco.html#no_tmp_fl">bypass</a> temporary files;

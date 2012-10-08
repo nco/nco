@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.192 2012-10-03 20:46:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.193 2012-10-08 06:02:53 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -42,6 +42,15 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
 
+  /* Is requested record dimension in input file? */
+  if(rec_dmn_nm){
+    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL);
+    if(rcd != NC_NOERR){
+      (void)fprintf(stdout,"%s: ERROR User requested that dimension \"%s\" be made the record dimension in the output file. However, this dimension is not in the input file at all. Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in the output file, or eliminate the --mk_rec_dmn switch from the command-line.\n",prg_nm_get(),rec_dmn_nm,rec_dmn_nm);  
+    nco_exit(EXIT_FAILURE);
+    } /* endif */
+  } /* endif */
+
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
 
@@ -78,12 +87,11 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
         (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
         rec_dmn_out_id=dmn_out_id[idx];
       } /* end else */ 
-
     } /* end if */
 
     /* Die if record dimension is not first dimension */
     if(idx>0 && dmn_out_id[idx]==rec_dmn_out_id){
-      (void)fprintf(stdout,"%s: ERROR You defined the output record dimension to be \"%s\". Yet in the input variable \"%s\" the record dimension is dimension number %d. NCO (and the netCDF3 API) only supports the record dimension beging the first dimension. Consider using ncpdq to permute the location of the record dimension in the input file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx+1);  
+      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the input variable \"%s\" the record dimension is dimension number %d. NCO (and the netCDF3 API) only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -151,6 +159,15 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
 
+  /* Is requested record dimension in input file? */
+  if(rec_dmn_nm){
+    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL);
+    if(rcd != NC_NOERR){
+      (void)fprintf(stdout,"%s: ERROR User requested that dimension \"%s\" be made the record dimension in the output file. However, this dimension is not in the input file at all. Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in the output file, or eliminate the --mk_rec_dmn switch from the command-line.\n",prg_nm_get(),rec_dmn_nm,rec_dmn_nm);  
+    nco_exit(EXIT_FAILURE);
+    } /* endif */
+  } /* endif */
+
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
 
@@ -197,6 +214,12 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
         (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
         rec_dmn_out_id=dmn_out_id[idx];
       } /* end else */
+    } /* end if */
+
+    /* Die if record dimension is not first dimension */
+    if(idx>0 && dmn_out_id[idx]==rec_dmn_out_id){
+      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the input variable \"%s\" the record dimension is dimension number %d. NCO (and the netCDF3 API) only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx+1);  
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
   } /* end loop over dim */
@@ -315,19 +338,19 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Write unformatted binary data */
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
 
-  /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record) */
+  /* 20111130 Fixes TODO nco1029: Warn on ncks -A when dim(old_record) != dim(new_record) */
   if(dmn_nbr > 0){
     int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
     int rcd=NC_NOERR; /* [rcd] Return code */
     long rec_dmn_sz=0L; /* [nbr] Record dimension size in output file */
-    rcd=nco_inq_unlimdim_flg(in_id,&rec_dmn_id); 
+    rcd+=nco_inq_unlimdim(in_id,&rec_dmn_id); 
     /* If input file has record dimension ... */
-    if(rcd == NC_NOERR){ 
+    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       /* ... used as record dimension of this variable...  */
       if(rec_dmn_id == dmn_id[0]){
-        rcd=nco_inq_unlimdim(out_id,&rec_dmn_id); 
+        rcd+=nco_inq_unlimdim(out_id,&rec_dmn_id); 
         /* ... and if output file has record dimension ... */
-        if(rcd == NC_NOERR){ 
+	if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
           (void)nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
           /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
 
@@ -335,7 +358,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
             char *grp_nm_fll;          /* [sng] Fully qualified group name */
             size_t grp_nm_lng;         /* [nbr] Lenght of name */
             char dmn_nm[NC_MAX_NAME];  /* [sng] Dimension name */ 
-            long dmn_sz;               /* [nbr] Dimension size */ 
+            long dmn_sz_lcl;               /* [nbr] Dimension size */ 
             int *dmn_ids;              /* [ID]  Dimension IDs */ 
             int nbr_att;               /* [nbr] Number of attributes */
             int nbr_var;               /* [nbr] Number of variables */
@@ -351,9 +374,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
               (void)fprintf(stdout,"%s: For group %s\n",prg_nm_get(),grp_nm_fll);
               /* List dimensions using obtained group ID */
               for(int jdx=0;jdx<nbr_dmn;jdx++){
-                (void)nco_inq_dim(out_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-                if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s id=%d sz=%ld\n",dmn_nm,dmn_ids[jdx],dmn_sz);else 
-                  (void)fprintf(stdout,"dimension: %s  id=%d sz=%ld\n",dmn_nm,dmn_ids[jdx],dmn_sz);
+                (void)nco_inq_dim(out_id,dmn_ids[jdx],dmn_nm,&dmn_sz_lcl);
+                if(dmn_ids[jdx]==rec_dmn_id) (void)fprintf(stdout,"dimension record: %s id=%d sz=%ld\n",dmn_nm,dmn_ids[jdx],dmn_sz_lcl); else (void)fprintf(stdout,"dimension: %s id=%d sz=%ld\n",dmn_nm,dmn_ids[jdx],dmn_sz_lcl);
               } /* jdx */
               (void)nco_free(dmn_ids);
             } /* nbr_dmn */
@@ -428,6 +450,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 
   /* Assume file contains record dimension (and netCDF3 files can have only one record dimension) */
   rcd+=nco_inq_unlimdim(in_id,&rec_dmn_id);
+  assert(rec_dmn_id != NCO_REC_DMN_UNDEFINED);
   rcd+=nco_inq_dimlen(in_id,rec_dmn_id,&rec_sz);
 
   for(rec_idx=0;rec_idx<rec_sz;rec_idx++){

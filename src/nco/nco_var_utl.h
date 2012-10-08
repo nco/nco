@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.69 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.70 2012-10-08 06:02:53 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -17,6 +17,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <assert.h> /* assert() */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp() */

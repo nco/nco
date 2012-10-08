@@ -1,3 +1,12 @@
+2012-10-07  Charlie Zender  <zender@uci.edu>
+
+	* Die when user attempts --mk_rec_dmn with non-existent dimension
+
+	* Fix mistaken handling of return values from nc_inq_unlimdim()
+	which caused ncks --fix_rec_dmn to fail. Bug introduced 20111130
+	but caught only now because fix_rec_dmn was never
+	regression-tested.
+
 2012-10-06  Charlie Zender  <zender@uci.edu>
 
 	* Use nco_fmt_sng_printf_subst() to replace user-specified string

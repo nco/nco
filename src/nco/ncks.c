@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.384 2012-10-08 05:47:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.385 2012-10-08 06:02:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.384 2012-10-08 05:47:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.384 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.385 2012-10-08 06:02:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.385 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
@@ -919,6 +919,7 @@ main(int argc,char **argv)
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
       if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+      USE_MM3_WORKAROUND=False;
       if(!USE_MM3_WORKAROUND){  
         /* Copy all data variable-by-variable */
         for(idx=0;idx<xtr_nbr;idx++){
@@ -929,8 +930,7 @@ main(int argc,char **argv)
           /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
           /* Multi-slab routines */
           /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
-          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); 
-          else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
         } /* end loop over idx */
       }else{
         /* MM3 workaround algorithm */
@@ -972,8 +972,10 @@ main(int argc,char **argv)
           long rec_dmn_sz;
 
           (void)nco_inq_dim(in_id,rec_dmn_id,dmn_nm,&rec_dmn_sz);
-          (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
-        } /* end if NCO_REC_DMN_UNDEFINED */
+	  (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
+        }else{ /* NCO_REC_DMN_UNDEFINED */
+	  (void)fprintf(stdout,"Record dimension: None\n\n");
+        } /* NCO_REC_DMN_UNDEFINED */
       } /* HAS_SUBGRP */
       
       /* Print global attributes */

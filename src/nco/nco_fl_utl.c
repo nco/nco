@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.198 2012-08-23 16:24:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.199 2012-10-08 06:02:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1380,8 +1380,8 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
     {
     /* Subsequently, assume output is netCDF3, or, classic-compatible netCDF4 */
     /* If file contains record dimension (and netCDF3 files can have only one record dimension) */
-    rcd=nco_inq_unlimdim_flg(in_id,&rec_dmn_id);
-    if(rcd == NC_NOERR){
+    rcd=nco_inq_unlimdim(in_id,&rec_dmn_id);
+    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       /* Slowdown only occurs in files with more than one record variable */
       rcd+=nco_inq_nvars(in_id,&var_nbr);
       if(var_nbr > 0){

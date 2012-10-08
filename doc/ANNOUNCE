@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.510 2012-10-07 06:56:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.511 2012-10-08 06:02:53 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -73,6 +73,14 @@ A. ncap2's bilinear_interp() and bilinear_interp_wrap() now have
    http://nco.sf.net/nco.html#bln_ntp
 
 BUG FIXES:
+
+A. ncks --fix_rec_dmn could misbehave since 20111130. Under some
+   circumstances it would fail to convert the record dimension to a 
+   fixed dimension, but it would not produce any errors so the user
+   was unaware that the operation had failed. This has been fixed.
+
+A. ncks now dies when user attempts --mk_rec_dmn with non-existent
+   dimension 
 
 A. Attempts to reach non-existing files behind DAP servers can no
    longer lead to multiple attempts to find the files with wget.
