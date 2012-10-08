@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.130 2012-10-07 05:24:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.131 2012-10-08 05:37:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1894,62 +1894,6 @@ nco_grp_itr
   return rcd;
 }/* end nco_grp_itr() */
 
-
-
-void                      
-nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
-(int nc_id,                /* I [ID]  netCDF file ID */
- int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
- grp_tbl_sct *trv_tbl)     /* I [sct] Traversal table */
-{
-  int nbr_dmn_all=0;       /* [nbr] Total number of dimensions in file */
-  char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
-  long dmn_sz;             /* [nbr] Dimension size */ 
-  int *dmn_ids;            /* [ID]  Dimension IDs */ 
-  int grp_id;              /* [ID]  Group ID */
-  int nbr_att;             /* [nbr] Number of attributes */
-  int nbr_var;             /* [nbr] Number of variables */
-  int nbr_dmn;             /* [nbr] Number of dimensions */
-
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
-    if (trv.typ == nc_typ_grp ) {    
-      
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_inq_dmn() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
-
-      /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
-#ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-
-      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
-
-      /* List dimensions using obtained group ID */
-      for(int jdx=0;jdx<trv.nbr_dmn;jdx++){
-        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-      } /* end jdx dimensions */
-      (void)nco_free(dmn_ids);
-
-      /* Increment total number of dimensions in file */
-      nbr_dmn_all+=trv.nbr_dmn;
-
-    } /* end nc_typ_grp */
-  } /* end uidx  */
-
-
-  /* Export */
-  *dmn_nbr_all=nbr_dmn_all;
-
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_dmn() reports file contains %d dimension%s\n",prg_nm_get(),*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
-
-  return;
-} /* end nco4_inq_dmn() */
-
 void 
 nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
 (int in_id,                     /* [ID]  netCDF file ID */
@@ -2184,6 +2128,62 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 } /* end nco4_msa_lmt_all_int() */
 
 
+void                      
+nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
+(int nc_id,                /* I [ID]  netCDF file ID */
+ int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
+ grp_tbl_sct *trv_tbl)     /* I [sct] Traversal table */
+{
+  int nbr_dmn_all=0;       /* [nbr] Total number of dimensions in file */
+  char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
+  long dmn_sz;             /* [nbr] Dimension size */ 
+  int *dmn_ids;            /* [ID]  Dimension IDs */ 
+  int grp_id;              /* [ID]  Group ID */
+  int nbr_att;             /* [nbr] Number of attributes */
+  int nbr_var;             /* [nbr] Number of variables */
+  int nbr_dmn;             /* [nbr] Number of dimensions */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
+    if (trv.typ == nc_typ_grp ) {    
+      
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_inq_dmn() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+      /* List dimensions using obtained group ID */
+      for(int jdx=0;jdx<trv.nbr_dmn;jdx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
+        if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+      } /* end jdx dimensions */
+      (void)nco_free(dmn_ids);
+
+      /* Increment total number of dimensions in file */
+      nbr_dmn_all+=trv.nbr_dmn;
+
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+
+  /* Export */
+  *dmn_nbr_all=nbr_dmn_all;
+
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_dmn() reports file contains %d dimension%s\n",prg_nm_get(),*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
+
+  return;
+} /* end nco4_inq_dmn() */
+
+
+
 int                       /* [rcd] Return code */
 nco4_inq                  /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (const int nc_id,         /* I [ID] Apex group */
@@ -2245,3 +2245,82 @@ nco4_inq                  /* [fnc] Find and return global totals of dimensions, 
 
   return rcd;
 } /* end nco4_inq() */
+
+
+void                       
+nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(const int nc_id,         /* I [ID] Apex group */
+ int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all, /* O [nbr] Number of variables in file  */
+ int * const grp_nbr_all, /* O [nbr] Number of groups in file */
+ grp_tbl_sct *trv_tbl)    /* I [sct] Traversal table */
+{
+  /* [fnc] Find and return global totals of dimensions, variables, attributes */
+
+  /* Initialize */
+  *att_nbr_glb=0;
+  *dmn_nbr_all=0;
+  *var_nbr_all=0;
+  *grp_nbr_all=0;
+
+  (void)nco_inq(nc_id,NULL,NULL,att_nbr_glb,NULL);
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
+    if (trv.typ == nc_typ_grp ) { 
+
+      /* Increment/Export */
+      *dmn_nbr_all+=trv.nbr_dmn;
+      *var_nbr_all+=trv.nbr_var;
+      *grp_nbr_all+=trv.nbr_grp;
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),*grp_nbr_all,(*grp_nbr_all > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
+
+  return;
+} /* end nco4_inq() */
+
+
+int                       /* [rcd] Return code */
+nco4_inq_vars             /* [fnc] Find and return total of variables */
+(const int nc_id,         /* I [ID] Apex group */
+ int * const var_nbr_all) /* O [nbr] Number of variables in file */
+{
+  /* [fnc] Find and return total variables */
+
+  int rcd=NC_NOERR;
+  int *grp_ids; /* [ID] Group IDs of children */
+  int grp_id;   /* [ID] Group ID */
+  int grp_idx;
+  int grp_nbr;  /* [nbr] Number of groups */
+  int var_nbr;  /* [nbr] Number of variables */
+
+  /* Discover and return number of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
+
+  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
+
+  /* Discover and return IDs of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
+
+  /* Initialize variables that accumulate */
+  *var_nbr_all=0; /* [nbr] Total number of variables in file */
+
+  /* Create list of all variables in input file */
+  for(grp_idx=0;grp_idx<grp_nbr;grp_idx++){
+    grp_id=grp_ids[grp_idx]; /* [ID] Group ID */
+
+    /* How many variables in current group? */
+    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
+
+    /* Augment total number of variables in file */
+    *var_nbr_all+=var_nbr;
+  } /* end loop over grp */
+ 
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "");
+
+  return rcd;
+} /* end nco4_inq() */
+

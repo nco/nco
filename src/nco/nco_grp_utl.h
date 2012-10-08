@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.66 2012-10-06 09:41:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.67 2012-10-08 05:37:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -89,15 +89,6 @@ nco_grp_stk_free /* [fnc] Free group stack */
 (grp_stk_sct * const grp_stk); /* O [sct] Group stack pointer */
 /* end nco_grp_stk_free() */
 
-int /* [rcd] Return code */
-nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(const int nc_id, /* I [ID] Apex group */
- int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
- int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all, /* O [nbr] Number of variables in file */
- int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
- int * const rec_dmn_ids); /* O [ID] Record dimension IDs in file */
-/* end nco4_inq() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
@@ -215,12 +206,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
  grp_tbl_sct *trv_tbl);         /* I [sct] Traversal table */
 
-void                      
-nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
-(int nc_id,                /* I [ID]  netCDF file ID */
- int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
- grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
-
 char*                       /* O [sng] Return substring */
 get_lst_nm                  /* [fnc] Strip last component of full name */
 (char *nm_in);              /* I [sng] Full name; it contains '/' as last character */
@@ -258,6 +243,38 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
  FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT);    /* I [flg] Write binary file */
+
+
+int /* [rcd] Return code */
+nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(const int nc_id, /* I [ID] Apex group */
+ int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all, /* O [nbr] Number of variables in file */
+ int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
+ int * const rec_dmn_ids); /* O [ID] Record dimension IDs in file */
+/* end nco4_inq() */
+
+void                      
+nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
+(int nc_id,                /* I [ID]  netCDF file ID */
+ int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
+ grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
+
+void                       
+nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(const int nc_id,         /* I [ID] Apex group */
+ int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all, /* O [nbr] Number of variables in file  */
+ int * const grp_nbr_all, /* O [nbr] Number of groups in file */
+ grp_tbl_sct *trv_tbl);   /* I [sct] Traversal table */
+
+
+int                       /* [rcd] Return code */
+nco4_inq_vars             /* [fnc] Find and return total of variables */
+(const int nc_id,         /* I [ID] Apex group */
+ int * const var_nbr_all); /* O [nbr] Number of variables in file */
 
 #ifdef __cplusplus
 } /* end extern "C" */
