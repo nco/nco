@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.614 2012-10-07 06:56:56 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.615 2012-10-08 20:39:37 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -234,7 +234,8 @@ endif # endif ZNETCDF
 # These tokens should not be altered by hand
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
-CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR -DGRP_DEV
+#CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR -DGRP_DEV
+CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 ifndef LFLAGS # Flags for Flex (Lex)
  LFLAGS := -P${NCO_YY_PFX}
 endif
@@ -1857,7 +1858,7 @@ autotools: dst_cln
 	- cd ..; aclocal;autoheader;automake --foreign;autoconf ; ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man ; ${MAKE} install
 rootclean: root_cln
 root_cln:
-	- cd ..; rm -f config.h.in config.h config.guess config.log config.status config.sub libtool Makefile stamp-h1; rm -r -f autom4te.cache conftest
+	- cd ..; rm -f config.h config.guess config.log config.status config.sub libtool Makefile stamp-h1; rm -r -f autom4te.cache conftest
 # Targets in src
 src: ${MDL_NCAP}
 src_cln:

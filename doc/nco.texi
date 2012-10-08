@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.719 2012-10-06 23:41:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.720 2012-10-08 20:39:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3127,10 +3127,6 @@ ncks -R -l . -p \
 http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/surface \
   pres.sfc.1969.nc
 @end example
-Note that @acronym{NCO} is never the preffered way to transport files
-from remote machines.
-For large jobs, that is best handled by @acronym{FTP}, @acronym{SSH},
-or @command{wget}.
 It may occasionally be useful to use @acronym{NCO} to transfer files
 when your other preferred methods are not available locally.
 
@@ -5707,14 +5703,14 @@ The procedure to compute the variance is identical except for the use of
 @command{ncap2} can also compute statistics like standard deviations.
 Brute-force implementation of formulae is one option, e.g.,
 @example
-ncap2 -s 'prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time))/($time.size-1)'
+ncap2 -s 'prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time)/($time.size-1))'
       in.nc out.nc
 @end example
 The operation may, of course, be broken into multiple steps in order  
 to archive intermediate quantities, such as the time-anomalies
 @example
 ncap2 -s 'prs_sfc_anm=prs_sfc-prs_sfc.avg($time)' \
-      -s 'prs_sfc_sdn=sqrt((prs_sfc_anm^2).total($time))/($time.size-1)' \
+      -s 'prs_sfc_sdn=sqrt((prs_sfc_anm^2).total($time)/($time.size-1))' \
       in.nc out.nc
 @end example
 
