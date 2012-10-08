@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.193 2012-10-08 06:02:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.194 2012-10-08 21:13:03 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -44,7 +44,9 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
-    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL);
+    int foo;
+    /*    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL);*/
+    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,&foo);
     if(rcd != NC_NOERR){
       (void)fprintf(stdout,"%s: ERROR User requested that dimension \"%s\" be made the record dimension in the output file. However, this dimension is not in the input file at all. Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in the output file, or eliminate the --mk_rec_dmn switch from the command-line.\n",prg_nm_get(),rec_dmn_nm,rec_dmn_nm);  
     nco_exit(EXIT_FAILURE);

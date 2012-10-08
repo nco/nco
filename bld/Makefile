@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.615 2012-10-08 20:39:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.616 2012-10-08 21:13:00 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -418,7 +418,7 @@ else
  BNR_SFX := ${null}
 endif 
 
-ifeq (${GSL},Y)
+ifeq (${GSL},)
 # Build GSL-enabled NCO 
 # Place GSL block after DAP blocks for both to work together
 ifdef GSL_INC
