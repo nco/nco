@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.381 2012-10-06 23:41:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.382 2012-10-08 01:57:50 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.381 2012-10-06 23:41:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.381 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.382 2012-10-08 01:57:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.382 $";
 #ifdef GRP_DEV
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
 #else
