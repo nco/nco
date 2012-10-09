@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.133 2012-10-09 06:29:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.134 2012-10-09 08:29:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -584,7 +584,12 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
   /* Store values for return */
-  *var_xtr_nbr=var_nbr_tmp;    
+  *var_xtr_nbr=var_nbr_tmp;  
+
+  if(dbg_lvl_get() >= nco_dbg_var){
+    (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
+    prt_xtr_lst(xtr_lst,*var_xtr_nbr);
+  } /* endif dbg */
 
   return xtr_lst;
 } /* end nco4_var_lst_mk() */

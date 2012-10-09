@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.388 2012-10-09 06:29:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.389 2012-10-09 08:29:11 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.388 2012-10-09 06:29:24 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.388 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.389 2012-10-09 08:29:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.389 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -184,7 +184,6 @@ main(int argc,char **argv)
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  int rec_dmn_nbr=0; /* O [nbr] Number of record dimensions in file */ /* CEWI */
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
     
@@ -682,14 +681,7 @@ main(int argc,char **argv)
 #else /* !ENABLE_NETCDF4 */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #endif /* ENABLE_NETCDF4 */
-
-  
-  if(dbg_lvl_get() >= nco_dbg_var){
-    (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
-    prt_xtr_lst(xtr_lst,xtr_nbr);
-  } /* endif dbg */
-
-
+ 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
     if(HAS_SUBGRP){
@@ -788,7 +780,6 @@ main(int argc,char **argv)
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
 
-  
   /* Initialize lmt_all_sct's */ 
   if(HAS_SUBGRP){
     (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
@@ -960,9 +951,9 @@ main(int argc,char **argv)
           long rec_dmn_sz;
 
           (void)nco_inq_dim(in_id,rec_dmn_id,dmn_nm,&rec_dmn_sz);
-	  (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
+          (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
         }else{ /* NCO_REC_DMN_UNDEFINED */
-	  (void)fprintf(stdout,"Record dimension: None\n\n");
+          (void)fprintf(stdout,"Record dimension: None\n\n");
         } /* NCO_REC_DMN_UNDEFINED */
       } /* HAS_SUBGRP */
       
