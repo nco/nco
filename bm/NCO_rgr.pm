@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.119 2012-10-09 17:30:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.120 2012-10-09 19:46:04 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1586,6 +1586,7 @@ sub tst_rgr {
 ####################
     $opr_nm='net';
 ####################
+if(0){ #################  SKIP THESE #####################
 # test 1
     $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -s '%e' -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l /tmp in.nc | tail -1";
@@ -1659,5 +1660,6 @@ sub tst_rgr {
 	$#tst_cmd=0;  # Reset array
 	
     } else { print "WARN: Skipping net test wget: protocol retrieval---not implemented yet\n";}
+} #################  SKIP THESE #####################
     
 } # end of perform_test()
