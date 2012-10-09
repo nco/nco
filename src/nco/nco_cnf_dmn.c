@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.72 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.73 2012-10-09 17:31:08 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -547,7 +547,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) 
     dmn_idx_in_out[dmn_in_idx]=dmn_in_idx;
 
-  /* Splice in re-ordered dimension location for each shared dimension */
+  /* Splice-in re-ordered dimension location for each shared dimension */
   for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
     dmn_idx_in_out[dmn_idx_shr_in[dmn_shr_idx]]=dmn_idx_shr_out[dmn_shr_idx];
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.389 2012-10-09 08:29:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.390 2012-10-09 17:31:08 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.389 2012-10-09 08:29:11 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.389 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.390 2012-10-09 17:31:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.390 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -669,7 +669,7 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
-  /* Get record dimension name name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
+  /* Get record dimension name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
   if(!FIX_REC_DMN && !rec_dmn_nm && (rec_dmn_id != NCO_REC_DMN_UNDEFINED)){ 
     rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
     (void)nco_inq_dimname(in_id,rec_dmn_id,rec_dmn_nm);
@@ -681,7 +681,7 @@ main(int argc,char **argv)
 #else /* !ENABLE_NETCDF4 */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #endif /* ENABLE_NETCDF4 */
- 
+
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
     if(HAS_SUBGRP){

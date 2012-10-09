@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1204 2012-08-24 17:19:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1205 2012-10-09 17:31:01 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -695,7 +695,16 @@ nco1068. nco: optimize so ncra writes straight to output when drn==1, MRO=Yes (i
 nco1069. nco: md5 over DODS works for md5_abc, breaks for md5_a
 	 seems to be (undocumented?) opendap "feature":
          ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
-nco1070. 
+nco1070. nco: rx add windows equivalent to variable wildcarding regex.h
+nco1071. nco: rx add windows equivalent to filename expansion (globbing) 
+nco1072. nco: clang breaks (gcc is fine) on ncra rgr #20 record average of cell-based geodesic data
+	 Problem also that ddd does not work with clang. Try qt debugger?
+	 ncra -D 5 -O -X 0.,180.,-30.,30. -v gds_3dvar -p ~/nco/data in.nc ~/foo.nc
+	 ncks -C -H -s '%8.1f' -v gds_3dvar ~/foo.nc
+nco1074. nco: wget: add -p option to enable clobber?
+nco1075. ncpdq: broken for some re-arrangements
+	 ncpdq -O -C -v PS,time_lon -a lat,lon,time ~/nco/data/in.nc ~/foo.nc fails
+nco1076. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

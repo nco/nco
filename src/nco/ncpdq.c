@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.192 2012-09-02 05:00:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.193 2012-10-09 17:31:08 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.192 2012-09-02 05:00:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.192 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.193 2012-10-09 17:31:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.193 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -681,8 +681,7 @@ main(int argc,char **argv)
       /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
       rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
       /* If record dimension required by current variable re-order...
-	 ...and variable is multi-dimensional (one dimensional arrays
-	 cannot request record dimension changes)... */
+	 ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
       if(rec_dmn_nm_out_crr && var_prc_out[idx]->nbr_dim > 1){
 	/* ...differs from input and current output record dimension(s)... */
 	if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
