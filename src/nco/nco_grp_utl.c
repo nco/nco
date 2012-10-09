@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.132 2012-10-09 03:39:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.133 2012-10-09 06:29:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1118,8 +1118,6 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   int nbr_dmn_ult;             /* O [nbr] Number of unlimited dimensions */
   int dmn_ids_ult[NC_MAX_DIMS];/* O [nbr] Number of unlimited dimensions IDs */
   char dmn_ult_nm[NC_MAX_NAME+1];  /* O [sng] Unlimited dimension name */ 
-  char rec_dmn_nm[NC_MAX_NAME+1];  /* O [sng] Record dimension name  */ 
-  rec_dmn_nm[0]='\0';
 
   /* Get all information for this group */
   rcd+=nco_inq_nvars(in_id,&nbr_var);
@@ -1169,12 +1167,14 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 
       /* If current variable is in extraction list, define it */
       if(strcmp(var_pth,xtr_lst[idx].var_nm_fll) == 0) { 
+        char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
         if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  extract: %s\n",prg_nm_get(),var_pth);
 
         for(int ndx=0;ndx<nbr_dmn_ult;ndx++){
           rcd+=nco_inq_dimname(in_id,dmn_ids_ult[ndx],dmn_ult_nm);
           if(strcmp(var_nm,dmn_ult_nm) == 0 ){
+            rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
             strcpy(rec_dmn_nm,dmn_ult_nm);
             if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  record dimension: %s\n",prg_nm_get(),rec_dmn_nm);
           }
@@ -1186,6 +1186,8 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 
         /* Copy variable's attributes */
         if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,grp_out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
+
+        if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
 
         /* Variable was found, exit idx loop, there can be one and only one variable */
         break;

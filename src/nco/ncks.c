@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.387 2012-10-09 03:39:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.388 2012-10-09 06:29:24 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.387 2012-10-09 03:39:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.387 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.388 2012-10-09 06:29:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.388 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -786,17 +786,12 @@ main(int argc,char **argv)
   } /* HAS_SUBGRP */
 
   /* Place all dimensions in lmt_all_lst */
-  int dmn_nbr_all;
-  if(HAS_SUBGRP){
-    (void)nco4_inq_dmn(in_id,&dmn_nbr_all,trv_tbl);
-    lmt_all_lst=(lmt_all_sct **)nco_malloc(dmn_nbr_all*sizeof(lmt_all_sct *));
-  }else{
-    lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-  }/* HAS_SUBGRP */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+
   
   /* Initialize lmt_all_sct's */ 
   if(HAS_SUBGRP){
-    (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,dmn_nbr_all,lmt,lmt_nbr,trv_tbl);
+    (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
   }else{
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
   }/* HAS_SUBGRP */
@@ -863,7 +858,7 @@ main(int argc,char **argv)
     if (HAS_SUBGRP){
 
       /* Define requested/necessary input groups/variables in output file */
-      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,dmn_nbr_all,dfl_lvl,PRN_VAR_METADATA);
+      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA);
 
     }else{ /* HAS_SUBGRP */
 
@@ -905,7 +900,7 @@ main(int argc,char **argv)
     if (HAS_SUBGRP){
 
       /* Copy all variables to output file */
-      (void)nco4_grp_var_cpy(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,dmn_nbr_all,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
+      (void)nco4_grp_var_cpy(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
 
     } else {
 
@@ -1016,7 +1011,7 @@ main(int argc,char **argv)
           /* Print full name of variable */
           (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
-          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,dmn_nbr_all,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
+          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
       }else { /* HAS_SUBGRP */
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
