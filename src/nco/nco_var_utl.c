@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.196 2012-10-08 21:46:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.197 2012-10-09 00:13:02 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -44,7 +44,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
-    /* Following lines works on libnetcdf 4.2.1+ but not on 4.1.1
+    /* Following lines works on libnetcdf 4.2.1+ but not on 4.1.1-
     rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL); */
     int rec_dmn_id_dummy;
     rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,&rec_dmn_id_dummy);
@@ -164,7 +164,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
-    /* Following lines works on libnetcdf 4.2.1+ but not on 4.1.1
+    /* Following lines works on libnetcdf 4.2.1+ but not on 4.1.1-
     rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL); */
     int rec_dmn_id_dummy;
     rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,&rec_dmn_id_dummy);
