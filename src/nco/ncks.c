@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.392 2012-10-10 05:57:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.393 2012-10-10 20:32:42 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.392 2012-10-10 05:57:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.392 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.393 2012-10-10 20:32:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.393 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -581,6 +581,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,"/",trv_tbl);
 
+  /* Print table in super developer mode */
   if(dbg_lvl >= nco_dbg_dev){
     (void)fprintf(stderr,"%s: reports INFO Traversal table\n",prg_nm_get());
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -666,6 +667,40 @@ main(int argc,char **argv)
     goto out; 
   } /* end GET_GRP_INFO */
 
+  /* Check for invalid -v <name> */
+  for(idx=0;idx<xtr_nbr;idx++){
+    nco_bool has=False;
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+      if(trv.typ == nc_typ_var ){
+        if(strcmp(var_lst_in[idx],trv.nm) == 0 ){
+          has=True;
+        } /* strcmp */
+      } /* nc_typ_var */
+    } /* uidx */
+    if(has == False){
+      (void)fprintf(stderr,"%s: reports -v %s was not found...exiting\n",prg_nm_get(),var_lst_in[idx]);
+      goto out;
+    } /* False */
+  } /* idx */
+
+  /* Check for invalid -g <name> */
+  for(idx=0;idx<grp_nbr;idx++){
+    nco_bool has=False;
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+      if(trv.typ == nc_typ_grp ){
+        if(strcmp(grp_lst_in[idx],trv.nm) == 0 ){
+          has=True;
+        } /* strcmp */
+      } /* nc_typ_grp */
+    } /* uidx */
+    if(has == False){
+      (void)fprintf(stderr,"%s: reports -g %s was not found...exiting\n",prg_nm_get(),grp_lst_in[idx]);
+      goto out;
+    } /* False */
+  } /* idx */
+
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
      int aux_idx_nbr;
@@ -745,7 +780,7 @@ main(int argc,char **argv)
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   if(HAS_SUBGRP){
 
-    if (lmt_nbr) {
+    if(lmt_nbr){
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
         if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
           grp_trv_sct trv=trv_tbl->grp_lst[uidx];   
@@ -1034,7 +1069,7 @@ main(int argc,char **argv)
   
 out:
   /* Extraction list no longer needed */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
+  if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   
   /* Close input netCDF file */
   nco_close(in_id);
