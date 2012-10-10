@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.720 2012-10-08 20:39:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.721 2012-10-10 07:19:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11821,10 +11821,25 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 0.000000, 1.000000, ..., 23.000000,
 @end example
 @noindent
+Programmers will recognize these as the venerable @w{C language} 
+@code{printf()} formatting strings. 
 The second and third options are useful when pasting data into text
 files like reports or papers.  
 @xref{ncatted netCDF Attribute Editor}, for more details on string
 formatting and special characters. 
+
+As of @acronym{NCO} version 4.2.2 (October, 2012), @acronym{NCO} prints
+missing values as blanks (i.e., the underscore character @samp{_}) by
+default: 
+@example
+% ncks -C -H -v mss_val in.nc
+lon[0]=0 mss_val[0]=73 
+lon[1]=90 mss_val[1]=_ 
+lon[2]=180 mss_val[2]=73 
+lon[3]=270 mss_val[3]=_ 
+% ncks -s '%+5.1f, ' -H -C -v mss_val in.nc
++73.0, _, +73.0, _, 
+@end example
 
 One dimensional arrays of characters stored as netCDF variables are 
 automatically printed as strings, whether or not they are
@@ -12697,7 +12712,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @cindex dimension names
 @cindex attribute names
 @findex ncrename
-
+v
 @noindent
 SYNTAX
 @example

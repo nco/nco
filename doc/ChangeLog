@@ -1,5 +1,7 @@
 2012-10-09  Charlie Zender  <zender@uci.edu>
 
+	* Deprecate ncra2.c
+
 	* Fix TODO nco1075 where ncpdq was broken for re-arrangements like
 	ncpdq -O -C -v PS,time_lon -a lat,lon,time ~/nco/data/in.nc ~/foo.nc
 	Eliminate pre-emptive check in nco_var_dmn_rdr_mtd() for condition
