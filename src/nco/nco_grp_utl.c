@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.135 2012-10-10 04:32:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.136 2012-10-10 05:57:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1936,7 +1936,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       int nbr_dmn;                 /* [nbr] number of dimensions */
       int nbr_dmn_ult;             /* O [nbr] Number of unlimited dimensions */
       int dmn_ids_ult[NC_MAX_DIMS];/* O [nbr] Unlimited dimensions IDs array */
-      char dmn_ult_nm[NC_MAX_NAME+1];  /* O [sng] Unlimited dimension name */ 
 
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
