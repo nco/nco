@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.511 2012-10-08 06:02:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.512 2012-10-10 01:57:03 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -73,6 +73,12 @@ A. ncap2's bilinear_interp() and bilinear_interp_wrap() now have
    http://nco.sf.net/nco.html#bln_ntp
 
 BUG FIXES:
+
+A. Fix ncpdq which sometimes exited instead of re-ordering dimensions
+   in variables that were record in input, fixed in output, and yet
+   themselves lacked an output record dimension, i.e., they became
+   fixed (were neutered?) because record dimension had to be fixed to
+   satisfy re-ordering of other variables.
 
 A. ncks --fix_rec_dmn could misbehave since 20111130. Under some
    circumstances it would fail to convert the record dimension to a 

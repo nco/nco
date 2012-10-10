@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.731 2012-10-08 06:02:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.732 2012-10-10 01:57:04 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -576,6 +576,7 @@ more Robust RHEL/CentOS autoconf support?;</li>
 <tt>--hdr_pad</tt> all operators;
 <tt>ncks</tt> prints underscores;
 fixes to <tt>--[mk/fix]_rec_dmn</tt>;
+<tt>ncpdq</tt> fix;
 <tt>ncwa</tt> on Windows;</li>
 <li><b>NCO 4.2.1</b>: (<i>Current Stable Release</i>)
 <tt>--ram_all</tt> for <a href="http://nco.sf.net/nco.html#diskless">diskless files</a>;

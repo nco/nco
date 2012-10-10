@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.193 2012-10-09 17:31:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.194 2012-10-10 01:57:04 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -54,9 +54,9 @@
 #ifndef HAVE_GETOPT_LONG
 # include "nco_getopt.h"
 #else /* HAVE_GETOPT_LONG */ 
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
-#endif /* !HAVE_GETOPT_H */ 
+# ifdef HAVE_GETOPT_H
+#  include <getopt.h>
+# endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.193 2012-10-09 17:31:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.194 2012-10-10 01:57:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -607,6 +607,7 @@ main(int argc,char **argv)
       } /* end loop over idx_rdr */
     } /* end loop over idx */
 
+    /* 20121009: fxm users should be allowed to sloppily specify more re-order than extracted dimensions */
     if(dmn_rdr_nbr > nbr_dmn_xtr){
       (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",prg_nm);
       nco_exit(EXIT_FAILURE);
@@ -704,12 +705,12 @@ main(int argc,char **argv)
     } /* end loop over var_prc */
   } /* endif dmn_rdr_nbr > 0 */
   
-  /* NB: Much of following logic is required by netCDF constraint that only
+  /* NB: Much of following logic is required by netCDF3 constraint that only
      one record variable is allowed per file. netCDF4 relaxes this constraint.
      Hence making following logic prettier or funcionalizing is not high priority.
      Logic may need to be simplified/re-written once netCDF4 is released. */
   if(REDEFINED_RECORD_DIMENSION){
-    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF allows only one record dimension. Hence %s will make %s record (least rapidly varying) dimension in all variables that contain it.\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,prg_nm,rec_dmn_nm_out);
+    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF3 allows only one record dimension. Hence %s will make %s record (i.e., least rapidly varying) dimension in all variables that contain it.\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,prg_nm,rec_dmn_nm_out);
     /* Changing record dimension may invalidate is_rec_var flag
        Updating is_rec_var flag to correct value, even if value is ignored,
        helps keep user appraised of unexpected dimension re-orders.

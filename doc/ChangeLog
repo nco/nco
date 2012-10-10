@@ -1,3 +1,15 @@
+2012-10-09  Charlie Zender  <zender@uci.edu>
+
+	* Fix TODO nco1075 where ncpdq was broken for re-arrangements like
+	ncpdq -O -C -v PS,time_lon -a lat,lon,time ~/nco/data/in.nc ~/foo.nc
+	Eliminate pre-emptive check in nco_var_dmn_rdr_mtd() for condition
+	which was not illegal yet led to exit() anyway.
+	All that was necessary was to eliminate the exit() call.
+	False-postive errors were produced for variables that were record
+	in input, fixed in output, and themselves lacked the record
+	dimension, i.e., they became fixed (were neutered?) because record
+	dimension had to be fixed to satisfy re-ordering of other variables.
+
 2012-10-07  Charlie Zender  <zender@uci.edu>
 
 	* Die when user attempts --mk_rec_dmn with non-existent dimension

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.73 2012-10-09 17:31:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.74 2012-10-10 01:57:04 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -619,16 +619,21 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
       if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
     if(dmn_out_idx != dmn_out_nbr){
       dmn_idx_rec_out=dmn_out_idx;
+      /* Request that first dimension be record dimension */
+      rec_dmn_nm_out=dmn_out[0]->nm;
+      if(dbg_lvl_get() >= nco_dbg_scl && dmn_idx_rec_out != 0) (void)fprintf(stdout,"%s: INFO %s for variable %s reports old input record dimension %s is now ordinal dimension %d, new record dimension must be %s\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_out[dmn_idx_rec_out]->nm,dmn_idx_rec_out,dmn_out[0]->nm);
     }else{
-      (void)fprintf(stdout,"%s: ERROR %s did not find record dimension in variable %s which claims to be record variable\n",prg_nm_get(),fnc_nm,var_in->nm);
-      nco_exit(EXIT_FAILURE);
+      /* 20121009: 
+	 This block only reached by variables that will change from record in input file to fixed in output file
+	 Leave is_rec_var as True here for those variables
+	 Change is_rec_var to false in "if(REDEFINED_RECORD_DIMENSION)" block of ncpdq.c instead
+	 Yes, this leaves the metadata in an inconsistent state 
+	 However, changing all these flags in one place in ncpdq.c main() is clearer */
+      ;
     } /* end else */
-    /* Request that first dimension be record dimension */
-    rec_dmn_nm_out=dmn_out[0]->nm;
-    if(dmn_idx_rec_out != 0) (void)fprintf(stdout,"%s: INFO %s for variable %s reports old input record dimension %s is now ordinal dimension %d, new record dimension must be %s\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_out[dmn_idx_rec_out]->nm,dmn_idx_rec_out,dmn_out[0]->nm);
   } /* endif record variable */
 
-  if(dbg_lvl_get() > 3){
+  if(dbg_lvl_get() > nco_dbg_var){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
       (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
   } /* endif dbg */
