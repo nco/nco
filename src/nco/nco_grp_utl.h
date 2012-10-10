@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.68 2012-10-09 03:39:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.69 2012-10-10 20:56:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -11,9 +11,6 @@
 
 #ifndef NCO_GRP_UTL_H
 #define NCO_GRP_UTL_H
-
-#define NCO_SANITY_CHECK
-#define GRP_DEV /* Symbol that encapsulates NCO 4.2.2 group development code */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */

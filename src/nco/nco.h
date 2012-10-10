@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.189 2012-10-10 05:57:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.190 2012-10-10 20:56:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -11,6 +11,8 @@
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
+
+#define NCO_SANITY_CHECK /* Calls several assert calls in the form assert( expected variable value == actual variable value ) */
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */

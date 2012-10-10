@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.136 2012-10-10 05:57:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.137 2012-10-10 20:56:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -19,6 +19,8 @@
 #include "nco_grp_utl.h"  /* Group utilities */
 #include "nco_cnk.h"      /* Chunking; needed for nco4_grp_lst_mk */
 #include "nco_msa.h"      /* Multi-slabbing algorithm: needed for nco_cpy_var_val_mlt_lmt */
+
+#define GRP_DEV           /* Symbol that encapsulates group development code; just keeps old non-group code commented in #else */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -334,7 +336,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
 #ifdef NCO_SANITY_CHECK
-#ifdef GRP_DEV
   var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables ) */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nc_typ_var) var_nbr_tbl++; 
@@ -362,7 +363,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_prn=True;
     } /* end nc_typ_var */
   }/* end uidx */
-#endif
 #endif /* NCO_SANITY_CHECK */
 
   /* Return all variables if none were specified and not -c ... */
@@ -1974,11 +1974,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
         lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
         /* NB: ID is dmn_ids[jdx] */
         lmt_rgl->id=dmn_ids[jdx];
-
-#if 0
-        /* NB: nco_lmt_evl() may alter this */
-        if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
-#endif
 
         /* NOTE: for a group case, to find out if a dimension is a record dimension, compare the 
            dimension ID with the unlimited dimension ID */
