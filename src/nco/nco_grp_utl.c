@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.134 2012-10-09 08:29:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.135 2012-10-10 04:32:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1121,7 +1121,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   int grp_out_id;              /* O [ID]  Group ID */ 
   int idx;                     /* I [idx] Index */
   int nbr_dmn_ult;             /* O [nbr] Number of unlimited dimensions */
-  int dmn_ids_ult[NC_MAX_DIMS];/* O [nbr] Number of unlimited dimensions IDs */
+  int dmn_ids_ult[NC_MAX_DIMS];/* O [nbr] Unlimited dimensions IDs array */
   char dmn_ult_nm[NC_MAX_NAME+1];  /* O [sng] Unlimited dimension name */ 
 
   /* Get all information for this group */
@@ -1934,12 +1934,18 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       int nbr_att;                 /* [nbr] Number of attributes */
       int nbr_var;                 /* [nbr] Number of variables */
       int nbr_dmn;                 /* [nbr] number of dimensions */
-      int rec_dmn_id;              /* [ID] Dimension ID */ 
+      int nbr_dmn_ult;             /* O [nbr] Number of unlimited dimensions */
+      int dmn_ids_ult[NC_MAX_DIMS];/* O [nbr] Unlimited dimensions IDs array */
+      char dmn_ult_nm[NC_MAX_NAME+1];  /* O [sng] Unlimited dimension name */ 
 
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
 
+      /* Obtain unlimited dimensions for group */
+      (void)nco_inq_unlimdims(in_id,&nbr_dmn_ult,dmn_ids_ult);
+
+      /* Obtain dimensions for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
@@ -1951,10 +1957,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       for(jdx=0;jdx<trv.nbr_dmn;jdx++){
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
 
-        if(dbg_lvl_get() >= nco_dbg_vrb){
-          if(dmn_ids[jdx]==rec_dmn_id)(void)fprintf(stdout,"dimension record: %s (%ld)\n",dmn_nm,dmn_sz);else 
-            (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-        } /* end nco_dbg_vrb */
+        if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
 
         /*NB: increment lmt_all_lst with global idx */
         lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
@@ -1973,8 +1976,20 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
         /* NB: ID is dmn_ids[jdx] */
         lmt_rgl->id=dmn_ids[jdx];
 
+#if 0
         /* NB: nco_lmt_evl() may alter this */
         if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
+#endif
+
+        /* NOTE: for a group case, to find out if a dimension is a record dimension, compare the 
+           dimension ID with the unlimited dimension ID */
+        lmt_rgl->is_rec_dmn=False;
+        for(int kdx=0;kdx<nbr_dmn_ult;kdx++){
+          if (dmn_ids[jdx] == dmn_ids_ult[kdx]){
+            lmt_rgl->is_rec_dmn=True;
+            if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"record dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+          }
+        } /* end kdx */
 
         lmt_rgl->srt=0L;
         lmt_rgl->end=dmn_sz-1L;
@@ -2126,8 +2141,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     } /* endif */
 
   } /* end idx */    
-
-
 
 #ifdef NCO_SANITY_CHECK
   assert(nbr_dmn_fl == nbr_dmn_all);

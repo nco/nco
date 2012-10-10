@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.197 2012-10-09 00:13:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.198 2012-10-10 04:32:17 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -356,38 +356,9 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
       if(rec_dmn_id == dmn_id[0]){
         rcd+=nco_inq_unlimdim(out_id,&rec_dmn_id); 
         /* ... and if output file has record dimension ... */
-	if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+        if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
           (void)nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
           /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
-
-          if(dbg_lvl_get() >= nco_dbg_vrb){
-            char *grp_nm_fll;          /* [sng] Fully qualified group name */
-            size_t grp_nm_lng;         /* [nbr] Lenght of name */
-            char dmn_nm[NC_MAX_NAME];  /* [sng] Dimension name */ 
-            long dmn_sz_lcl;               /* [nbr] Dimension size */ 
-            int *dmn_ids;              /* [ID]  Dimension IDs */ 
-            int nbr_att;               /* [nbr] Number of attributes */
-            int nbr_var;               /* [nbr] Number of variables */
-            int nbr_dmn;               /* [nbr] number of dimensions */
-
-            (void)nco_inq_grpname_len(out_id,&grp_nm_lng);
-            grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
-            (void)nco_inq_grpname_full(out_id,&grp_nm_lng,grp_nm_fll);
-            (void)nco_inq(out_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
-            if(nbr_dmn){
-              dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-              (void)nco_inq_dimids(out_id,&nbr_dmn,dmn_ids,0);
-              (void)fprintf(stdout,"%s: For group %s\n",prg_nm_get(),grp_nm_fll);
-              /* List dimensions using obtained group ID */
-              for(int jdx=0;jdx<nbr_dmn;jdx++){
-                (void)nco_inq_dim(out_id,dmn_ids[jdx],dmn_nm,&dmn_sz_lcl);
-                if(dmn_ids[jdx]==rec_dmn_id) (void)fprintf(stdout,"dimension record: %s id=%d sz=%ld\n",dmn_nm,dmn_ids[jdx],dmn_sz_lcl); else (void)fprintf(stdout,"dimension: %s id=%d sz=%ld\n",dmn_nm,dmn_ids[jdx],dmn_sz_lcl);
-              } /* jdx */
-              (void)nco_free(dmn_ids);
-            } /* nbr_dmn */
-            grp_nm_fll=(char *)nco_free(grp_nm_fll);
-          } /* dbg_lvl_get */
-
           if(rec_dmn_sz > 0){
             /* ... then check input vs. output record dimension sizes ... */
             if(rec_dmn_sz != dmn_cnt[0]){
