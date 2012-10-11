@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.71 2012-10-11 20:03:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.72 2012-10-11 22:40:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -92,7 +92,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 (const int nc_id,  /* I [ID] netCDF group ID (root ID of input file) */
  int * const nbr_var_fl, /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  int * const grp_xtr_nbr,  /* I/O [nbr] Number of groups in current extraction list (specified with -g ) */
@@ -203,14 +202,36 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
  grp_tbl_sct *trv_tbl);         /* I [sct] Traversal table */
 
-char*                       /* O [sng] Return substring */
-get_lst_nm                  /* [fnc] Strip last component of full name */
-(char *nm_in);              /* I [sng] Full name; it contains '/' as last character */
+char*                           /* O [sng] Return substring */
+get_lst_nm                      /* [fnc] Strip last component of full name */
+(char *nm_in);                  /* I [sng] Full name; it contains '/' as last character */
 
 void 
-prt_xtr_lst           /*   [fnc] Print Name ID structure list */
-(nm_id_sct *xtr_lst,  /* I [sct] Name ID structure list */
- int xtr_nbr);        /* I [nbr] Name ID structure list size */
+prt_xtr_lst                     /*   [fnc] Print Name ID structure list */
+(nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
+ int xtr_nbr);                  /* I [nbr] Name ID structure list size */
+
+void
+nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst */
+(char * const var_nm,      /* I [sng] Variable name */
+ char * const var_nm_fll,  /* I [sng] Full variable name */
+ char * const grp_nm_fll,  /* I [sng] Full group name */
+ char * const grp_nm,      /* I [sng] Group name */
+ int const var_id,         /* I [ID] Variable ID */
+ int const grp_id,         /* I [ID] Group ID */ 
+ nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
+ int * xtr_nbr);           /* I/O [nbr] Current index in exclusion/extraction list */
+
+void                  
+nco4_var_lst_crd_add_itr         /* [fnc] Iterator function for nco4_var_lst_crd_add */
+(const int in_id,                /* I [ID] Group ID */
+ char * const grp_nm_fll,        /* I [sng] Group path */
+ char * const grp_nm,            /* I [sng] Group name */
+ nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
+ int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
 
 int                            /* [rcd] Return code */
 nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
@@ -261,13 +282,6 @@ nco4_inq_vars             /* [fnc] Find and return total of variables */
 (const int nc_id,         /* I [ID] Apex group */
  int * const var_nbr_all);/* O [nbr] Number of variables in file */
 
-nco_bool                          /* O [flg] Is name in file */
-nco_chk_trv                       /* [fnc] Check if input names of -v or -g are in file */
-(char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
- int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
- nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
- grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
-
 void                          
 nco_prt_trv                       /* [fnc] Print table with -z */
 (grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
@@ -276,6 +290,14 @@ void
 nco_prt_grp_trv                   /* [fnc] Print table with -G */
 (const int nc_id,                 /* I [ID] File ID */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
+
+void                          
+nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */
+(const int nc_id,                   /* I [ID] Apex group ID */
+ int * const nbr_var_fl,            /* I [nbr] Number of variables in input file */
+ char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
+ const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
+ int * const var_xtr_nbr);          /* I [nbr] Number of variables in current extraction list */
 
 #ifdef __cplusplus
 } /* end extern "C" */

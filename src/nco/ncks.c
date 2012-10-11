@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.395 2012-10-11 20:03:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.396 2012-10-11 22:40:09 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.395 2012-10-11 20:03:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.395 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.396 2012-10-11 22:40:09 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.396 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -197,6 +197,8 @@ main(int argc,char **argv)
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
+  char rth[2];
+  strcpy(rth,"/");
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -575,11 +577,14 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
+  /* Check for valid -v <names> */
+  (void)nco_chk_trv(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,&xtr_nbr); 
+  
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
-  rcd+=nco_grp_itr(in_id,"/",trv_tbl);
+  rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
   /* Print table in super developer mode */
   if(dbg_lvl >= nco_dbg_dev){
@@ -625,7 +630,7 @@ main(int argc,char **argv)
 
   /* Form initial extraction list which may include extended regular expressions */
 #ifdef ENABLE_NETCDF4
-  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
+  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
 #else /* !ENABLE_NETCDF4 */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #endif /* ENABLE_NETCDF4 */
