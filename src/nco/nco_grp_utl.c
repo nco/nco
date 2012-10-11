@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.138 2012-10-11 05:54:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.139 2012-10-11 20:03:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -291,7 +291,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
       var_nm_fll_sls_ptr=var_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
     
-      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
+      if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
 
       /* Append all variables in current group to variable list */
       for(var_idx=0;var_idx<var_nbr;var_idx++){
@@ -315,7 +315,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
         /* Increment number of variables */
         var_idx_crr++;
 
-        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"var_nm=%s, var_nm_fll=%s\n",var_nm,var_nm_fll);
+        if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"var_nm=%s, var_nm_fll=%s\n",var_nm,var_nm_fll);
 
         /* Full variable name has been duplicated, re-terminate with NUL for next variable */
         *var_nm_fll_sls_ptr='\0'; /* [ptr] Pointer to first character following last slash */
@@ -449,7 +449,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
               } /* end loop over grp_lst_in */
             } /* end *grp_xtr_nbr == 0 */
 
-            if(dbg_lvl_get() >= nco_dbg_var){
+            if(dbg_lvl_get() >= nco_dbg_vrb){
               (void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",
                 grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
             } /* end dbg_lvl_get() */
@@ -2309,5 +2309,80 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
   return True;
 } /* end nco_chk_trv() */
 
+void                          
+nco_prt_trv             /* [fnc] Print table with -z */
+(grp_tbl_sct *trv_tbl)  /* I [sct] Traversal table */
+{
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_grp ) {
+      (void)fprintf(stdout,"grp: ");
+    } else if (trv.typ == nc_typ_var ) {
+      (void)fprintf(stdout,"var: ");
+    }
+    (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
+  } /* end uidx */
+} /* end nco_prt_trv() */
 
+
+
+void                          
+nco_prt_grp_trv         /* [fnc] Print table with -G */
+(const int nc_id,       /* I [ID] File ID */
+ grp_tbl_sct *trv_tbl)  /* I [sct] Traversal table */
+{
+  (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx];            
+      (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
+      int grp_id;                    /* [ID]  Group ID */
+      int nbr_att;                   /* [nbr] Number of attributes */
+      int nbr_var;                   /* [nbr] Number of variables */
+      int nbr_dmn;                   /* [nbr] Number of dimensions */
+      int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
+      int dmn_ids[NC_MAX_DIMS];      /* [nbr] Dimensions IDs array */
+      int dmn_ids_ult[NC_MAX_DIMS];  /* [nbr] Unlimited dimensions IDs array */
+      char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name */ 
+      long dmn_sz;                   /* [nbr] Dimension size */ 
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+
+      /* Obtain unlimited dimensions for group */
+      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
+
+      /* Obtain number of dimensions for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+
+      /* Obtain dimensions IDs for group */
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+      /* List dimensions using obtained group ID */
+      for(int idx=0;idx<nbr_dmn;idx++){
+        nco_bool is_rec_dim=False;
+        (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
+
+        /* Check if dimension is unlimited (record dimension) */
+        for(int kdx=0;kdx<nbr_dmn_ult;kdx++){ 
+          if (dmn_ids[idx] == dmn_ids_ult[kdx]){ 
+            is_rec_dim=True;
+            (void)fprintf(stdout," record dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+          } /* end if */
+        } /* end kdx dimensions */
+
+        /* An unlimited ID was not matched, so dimension is a plain vanilla dimension */
+        if(is_rec_dim == False){
+          (void)fprintf(stdout," dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+        } /* is_rec_dim */
+
+      } /* end idx dimensions */
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+}
 

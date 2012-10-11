@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.394 2012-10-11 05:54:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.395 2012-10-11 20:03:01 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.394 2012-10-11 05:54:12 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.394 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.395 2012-10-11 20:03:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.395 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -186,7 +186,6 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
-  nco_bool has_nm; /* Is a -v or -g name in file; exit is not */
     
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
@@ -599,82 +598,15 @@ main(int argc,char **argv)
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-      if (trv.typ == nc_typ_grp ) {
-        (void)fprintf(stdout,"grp: ");
-      } else if (trv.typ == nc_typ_var ) {
-        (void)fprintf(stdout,"var: ");
-      }
-      (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
-    } /* end uidx */
+    nco_prt_trv(trv_tbl);
     goto out; 
   } /* end GET_LIST */ 
 
   /* Process -G option if requested */ 
   if(GET_GRP_INFO){ 
-    (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
-        grp_trv_sct trv=trv_tbl->grp_lst[uidx];            
-        (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
-        int grp_id;                    /* [ID]  Group ID */
-        int nbr_att;                   /* [nbr] Number of attributes */
-        int nbr_var;                   /* [nbr] Number of variables */
-        int nbr_dmn;                   /* [nbr] Number of dimensions */
-        int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
-        int dmn_ids[NC_MAX_DIMS];      /* [nbr] Dimensions IDs array */
-        int dmn_ids_ult[NC_MAX_DIMS];  /* [nbr] Unlimited dimensions IDs array */
-        char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name */ 
-        long dmn_sz;                   /* [nbr] Dimension size */ 
-
-        /* Obtain group ID from netCDF API using full group name */
-        (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
-
-        /* Obtain unlimited dimensions for group */
-        (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
-
-        /* Obtain number of dimensions for group */
-        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
-        /* Obtain dimensions IDs for group */
-        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
-
-#ifdef NCO_SANITY_CHECK
-        assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-
-        /* List dimensions using obtained group ID */
-        for(idx=0;idx<nbr_dmn;idx++){
-          nco_bool is_rec_dim=False;
-          (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
-
-          /* Check if dimension is unlimited (record dimension) */
-          for(int kdx=0;kdx<nbr_dmn_ult;kdx++){ 
-            if (dmn_ids[idx] == dmn_ids_ult[kdx]){ 
-              is_rec_dim=True;
-              if(dbg_lvl >= nco_dbg_vrb)(void)fprintf(stdout," record dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-            } /* end if */
-          } /* end kdx dimensions */
-
-          /* An unlimited ID was not matched, so dimension is a plain vanilla dimension */
-          if(is_rec_dim == False){
-            if(dbg_lvl >= nco_dbg_vrb)(void)fprintf(stdout," dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-          } /* is_rec_dim */
-
-        } /* end idx dimensions */
-      } /* end nc_typ_grp */
-    } /* end uidx  */
+    nco_prt_grp_trv(in_id,trv_tbl);
     goto out; 
   } /* end GET_GRP_INFO */
-
-  /* Check for invalid -v <name> */
-#if 0
-  if(nco_chk_trv(var_lst_in,xtr_nbr,nc_typ_var,trv_tbl) == False) goto out;
-#endif
-
-  /* Check for invalid -g <name> */
-  if(nco_chk_trv(grp_lst_in,grp_nbr,nc_typ_grp,trv_tbl) == False) goto out;
 
   /* Get number of variables, dimensions, and global attributes in file */
 #ifdef ENABLE_NETCDF4

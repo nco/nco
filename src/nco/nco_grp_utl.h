@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.70 2012-10-11 05:54:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.71 2012-10-11 20:03:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -266,6 +266,15 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
 (char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
  int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
  nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
+ grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
+
+void                          
+nco_prt_trv                       /* [fnc] Print table with -z */
+(grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
+
+void                          
+nco_prt_grp_trv                   /* [fnc] Print table with -G */
+(const int nc_id,                 /* I [ID] File ID */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
 #ifdef __cplusplus
