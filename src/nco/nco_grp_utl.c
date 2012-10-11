@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.142 2012-10-11 22:40:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.143 2012-10-11 23:21:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2333,6 +2333,64 @@ nco_prt_grp_trv         /* [fnc] Print table with -G */
     } /* end nc_typ_grp */
   } /* end uidx  */
 } /* end nco_prt_grp_trv() */
+
+
+void
+nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab specifications */
+(int nc_id,                /* I [idx] netCDF file ID */
+ int lmt_nbr,              /* [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,            /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
+ nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
+ grp_tbl_sct *trv_tbl)     /* I [sct] Traversal table */
+{
+  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+  long dmn_sz;                 /* [nbr] Dimension size */ 
+  int *dmn_ids;                /* [ID]  Dimension IDs */ 
+  int grp_id;                  /* [ID]  Group ID */
+  int nbr_att;                 /* [nbr] Number of attributes */
+  int nbr_var;                 /* [nbr] Number of variables */
+  int nbr_dmn;                 /* [nbr] Number of dimensions */
+
+  if(lmt_nbr){
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
+        grp_trv_sct trv=trv_tbl->grp_lst[uidx];           
+
+        /* Obtain group ID from netCDF API using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);         
+
+        /* Obtain number of dimensions in group */
+        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+#ifdef NCO_SANITY_CHECK
+        assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+        dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+        /* List dimensions using obtained group ID */
+        for(int idx=0;idx<trv.nbr_dmn;idx++){
+          (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
+
+          if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+
+          /* NOTE: using obtained group ID */
+          for(int kdx=0;kdx<lmt_nbr;kdx++) {
+            if(strcmp(lmt[kdx]->nm,dmn_nm) == 0 ){
+              (void)nco_lmt_evl(grp_id,lmt[kdx],0L,FORTRAN_IDX_CNV);
+              if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"dimension limit: %s (%ld)\n",lmt[kdx]->nm,lmt[kdx]->cnt);
+#ifdef NCO_SANITY_CHECK
+              assert(lmt[kdx]->id == dmn_ids[idx]);
+#endif
+            } /* end if */
+          } /* end kdx */
+        } /* end idx dimensions */
+
+        (void)nco_free(dmn_ids);
+      } /* end nc_typ_grp */
+    } /* end uidx  */
+  } /* end lmt_nbr */
+} /* end nco_lmt_evl_trv() */
+
 
 
 void                          

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.72 2012-10-11 22:40:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.73 2012-10-11 23:21:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -290,6 +290,14 @@ void
 nco_prt_grp_trv                   /* [fnc] Print table with -G */
 (const int nc_id,                 /* I [ID] File ID */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
+
+void
+nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab specifications */
+(int nc_id,                /* I [idx] netCDF file ID */
+ int lmt_nbr,              /* [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,            /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
+ nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
+ grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
 
 void                          
 nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */

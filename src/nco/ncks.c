@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.396 2012-10-11 22:40:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.397 2012-10-11 23:21:00 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.396 2012-10-11 22:40:09 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.396 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.397 2012-10-11 23:21:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.397 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -580,6 +580,7 @@ main(int argc,char **argv)
   /* Check for valid -v <names> */
   (void)nco_chk_trv(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,&xtr_nbr); 
   
+  /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
   /* Get objects in file */
@@ -678,55 +679,8 @@ main(int argc,char **argv)
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   if(HAS_SUBGRP){
-
-    if(lmt_nbr){
-      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-        if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
-          grp_trv_sct trv=trv_tbl->grp_lst[uidx];   
-          if(dbg_lvl >= nco_dbg_vrb)(void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
-          char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
-          long dmn_sz;                 /* [nbr] Dimension size */ 
-          int *dmn_ids;                /* [ID]  Dimension IDs */ 
-          int grp_id;                  /* [ID]  Group ID */
-          int nbr_att;                 /* [nbr] Number of attributes */
-          int nbr_var;                 /* [nbr] Number of variables */
-          int nbr_dmn;                 /* [nbr] Number of dimensions */
-
-          /* Obtain group ID from netCDF API using full group name */
-          (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);         
-
-          /* Obtain number of dimensions in group */
-          (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-#ifdef NCO_SANITY_CHECK
-          assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-          dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-          (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
-
-          /* List dimensions using obtained group ID */
-          for(idx=0;idx<trv.nbr_dmn;idx++){
-            (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
-
-            if(dbg_lvl >= nco_dbg_vrb)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-
-            /* NOTE: using obtained group ID */
-            for(int kdx=0;kdx<lmt_nbr;kdx++) {
-              if(strcmp(lmt[kdx]->nm,dmn_nm) == 0 ){
-                (void)nco_lmt_evl(grp_id,lmt[kdx],0L,FORTRAN_IDX_CNV);
-                if(dbg_lvl >= nco_dbg_vrb)(void)fprintf(stdout,"dimension limit: %s (%ld)\n",lmt[kdx]->nm,lmt[kdx]->cnt);
-#ifdef NCO_SANITY_CHECK
-                assert(lmt[kdx]->id == dmn_ids[idx]);
-#endif
-              } /* end if */
-            } /* end kdx */
-          } /* end idx dimensions */
-
-          (void)nco_free(dmn_ids);
-        } /* end nc_typ_grp */
-      } /* end uidx  */
-    } /* end lmt_nbr */
-
-  } else { /* HAS_SUBGRP */
+    if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
+  } else { 
     for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   } /* HAS_SUBGRP */
 
