@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.69 2012-10-10 20:56:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.70 2012-10-11 05:54:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -261,18 +261,12 @@ nco4_inq_vars             /* [fnc] Find and return total of variables */
 (const int nc_id,         /* I [ID] Apex group */
  int * const var_nbr_all);/* O [nbr] Number of variables in file */
 
-
-#ifdef NCO_DEPRECATED
-int /* [rcd] Return code */
-nco4_inq /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(const int nc_id, /* I [ID] Apex group */
- int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
- int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all, /* O [nbr] Number of variables in file */
- int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
- int * const rec_dmn_ids); /* O [ID] Record dimension IDs in file */
-/* end nco4_inq() */
-#endif /* NCO_DEPRECATED */
+nco_bool                          /* O [flg] Is name in file */
+nco_chk_trv                       /* [fnc] Check if input names of -v or -g are in file */
+(char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
+ int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
+ nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
+ grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

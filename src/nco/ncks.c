@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.393 2012-10-10 20:32:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.394 2012-10-11 05:54:12 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.393 2012-10-10 20:32:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.393 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.394 2012-10-11 05:54:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.394 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -186,6 +186,7 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
+  nco_bool has_nm; /* Is a -v or -g name in file; exit is not */
     
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
@@ -594,7 +595,7 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"%s: %s: dimensions=%d , attributes=%d\n",trv.nm_fll,trv.nm,trv.nbr_dmn,trv.nbr_att);
       }    
     } /* end uidx */
-  } /* end nco_dbg_vrb */
+  } /* end nco_dbg_dev */
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
@@ -668,51 +669,12 @@ main(int argc,char **argv)
   } /* end GET_GRP_INFO */
 
   /* Check for invalid -v <name> */
-  for(idx=0;idx<xtr_nbr;idx++){
-    nco_bool has=False;
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-      if(trv.typ == nc_typ_var ){
-        if(strcmp(var_lst_in[idx],trv.nm) == 0 ){
-          has=True;
-        } /* strcmp */
-      } /* nc_typ_var */
-    } /* uidx */
-    if(has == False){
-      (void)fprintf(stderr,"%s: reports -v %s was not found...exiting\n",prg_nm_get(),var_lst_in[idx]);
-      goto out;
-    } /* False */
-  } /* idx */
+#if 0
+  if(nco_chk_trv(var_lst_in,xtr_nbr,nc_typ_var,trv_tbl) == False) goto out;
+#endif
 
   /* Check for invalid -g <name> */
-  for(idx=0;idx<grp_nbr;idx++){
-    nco_bool has=False;
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-      if(trv.typ == nc_typ_grp ){
-        if(strcmp(grp_lst_in[idx],trv.nm) == 0 ){
-          has=True;
-        } /* strcmp */
-      } /* nc_typ_grp */
-    } /* uidx */
-    if(has == False){
-      (void)fprintf(stderr,"%s: reports -g %s was not found...exiting\n",prg_nm_get(),grp_lst_in[idx]);
-      goto out;
-    } /* False */
-  } /* idx */
-
-  /* Parse auxiliary coordinates */
-  if(aux_nbr > 0){
-     int aux_idx_nbr;
-     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
-     if(aux_idx_nbr > 0){
-        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
-        int aux_idx=0;
-        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
-        lmt_nbr=lmt_nbr_new;
-     } /* endif aux */
-  } /* endif aux_nbr */
+  if(nco_chk_trv(grp_lst_in,grp_nbr,nc_typ_grp,trv_tbl) == False) goto out;
 
   /* Get number of variables, dimensions, and global attributes in file */
 #ifdef ENABLE_NETCDF4

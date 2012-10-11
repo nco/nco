@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.137 2012-10-10 20:56:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.138 2012-10-11 05:54:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2278,68 +2278,36 @@ nco4_inq_vars             /* [fnc] Find and return total of variables */
 } /* end nco4_inq() */
 
 
-#ifdef NCO_DEPRECATED
-int                       /* [rcd] Return code */
-nco4_inq                  /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(const int nc_id,         /* I [ID] Apex group */
- int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
- int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all, /* O [nbr] Number of variables in file */
- int * const rec_dmn_nbr, /* O [nbr] Number of record dimensions in file */
- int * const rec_dmn_ids) /* O [ID] Record dimension IDs in file */
+
+nco_bool                          /* O [flg] Is name in file */
+nco_chk_trv                       /* [fnc] Check if input names of -v or -g are in file */
+(char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
+ int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
+ nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
+ grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
 {
-  /* [fnc] Find and return global totals of dimensions, variables, attributes
-     nco_inq() only applies to a single group
-     Statistics for recursively nested netCDF4 files require more care */
-  int rcd=NC_NOERR;
-  int *grp_ids; /* [ID] Group IDs of children */
-  int grp_id; /* [ID] Group ID */
-  int grp_idx;
-  int grp_nbr; /* [nbr] Number of groups */
-  int var_nbr; /* [nbr] Number of variables */
+  nco_bool has_var; /* [flg] Is name in file */
+  char *var_sng;    /* [sng] User-specified variable name or regular expression */
 
-  /* Discover and return number of apex and all sub-groups */
-  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
+  for(int idx=0;idx<var_xtr_nbr;idx++){
+    has_var=False;
+    var_sng=var_lst_in[idx];
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+      if(trv.typ == typ ){
+        if(strcmp(var_sng,trv.nm) == 0 ){
+          has_var=True;
+        } /* strcmp */
+      } /* nc_typ */
+    } /* uidx */
+    if(has_var == False){
+      (void)fprintf(stderr,"%s: ERROR nco_chk_trv() reports user-specified name <%s> is not in input file \n",prg_nm_get(),var_sng);
+      return False;
+    } /* False */
+  } /* idx */
 
-  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
+  return True;
+} /* end nco_chk_trv() */
 
-  /* Discover and return IDs of apex and all sub-groups */
-  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
-
-  /* Initialize variables that accumulate */
-  *var_nbr_all=0; /* [nbr] Total number of variables in file */
-
-  /* Create list of all variables in input file */
-  for(grp_idx=0;grp_idx<grp_nbr;grp_idx++){
-    grp_id=grp_ids[grp_idx]; /* [ID] Group ID */
-
-    /* How many variables in current group? */
-    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
-
-    /* Augment total number of variables in file */
-    *var_nbr_all+=var_nbr;
-  } /* end loop over grp */
-
-  /* Compare to results of nco_inq() */
-  {
-    int att_nbr; /* [nbr] Number of attributes */
-    int dmn_nbr; /* [nbr] Number of dimensions */
-    int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [ID] Record dimension ID */
-
-    rcd+=nco_inq(nc_id,&dmn_nbr,&var_nbr,&att_nbr,&rec_dmn_id);
-    if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: INFO nco_inq() reports file contains %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),var_nbr,(var_nbr > 1) ? "s" : "",dmn_nbr,(dmn_nbr > 1) ? "s" : "",att_nbr,(att_nbr > 1) ? "s" : "");
-
-    /* fxm: Backward compatibility */
-    *rec_dmn_nbr=1;
-    if(rec_dmn_ids) *rec_dmn_ids=rec_dmn_id;
-    *att_nbr_glb=att_nbr;
-    *dmn_nbr_all=dmn_nbr;
-  }
-
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
-
-  return rcd;
-} /* end nco4_inq() */
-#endif /* NCO_DEPRECATED */
 
 
