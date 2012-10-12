@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.73 2012-10-11 23:21:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.74 2012-10-12 21:53:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -306,6 +306,22 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  int * const var_xtr_nbr);          /* I [nbr] Number of variables in current extraction list */
+
+
+void 
+nco_att_cpy_trv               /* [fnc] Copy attributes from input netCDF file to output netCDF file */
+(const int in_id,             /* I [id] netCDF input-file ID */
+ const int out_id,            /* I [id] netCDF output-file ID */
+ const int var_in_id,         /* I [id] netCDF input-variable ID */
+ const int var_out_id,        /* I [id] netCDF output-variable ID */
+ const nco_bool PCK_ATT_CPY,  /* I [flg] Copy attributes "scale_factor", "add_offset" */
+ grp_tbl_sct *trv_tbl);       /* I [sct] Traversal table */
+
+void 
+nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
+(const int in_id,             /* I [id] netCDF input file ID */
+ const int var_id,            /* I [id] netCDF input variable ID */
+ grp_tbl_sct *trv_tbl);       /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

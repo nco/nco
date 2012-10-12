@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.143 2012-10-11 23:21:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.144 2012-10-12 21:53:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1781,6 +1781,11 @@ nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list
 
 #endif /* GRP_DEV */
 
+  if(dbg_lvl_get() >= nco_dbg_var){
+    (void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add() reports following %d variable%s to be added with dimensions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    prt_xtr_lst(xtr_lst,*xtr_nbr);
+  } /* endif dbg */
+
   return xtr_lst;
 } /* end nco4_var_lst_crd_add() */
 
@@ -2583,5 +2588,25 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
 } /* end nco4_var_lst_mk() */
 
 
+void 
+nco_att_cpy_trv               /* [fnc] Copy attributes from input netCDF file to output netCDF file */
+(const int in_id,             /* I [id] netCDF input-file ID */
+ const int out_id,            /* I [id] netCDF output-file ID */
+ const int var_in_id,         /* I [id] netCDF input-variable ID */
+ const int var_out_id,        /* I [id] netCDF output-variable ID */
+ const nco_bool PCK_ATT_CPY,  /* I [flg] Copy attributes "scale_factor", "add_offset" */
+ grp_tbl_sct *trv_tbl)       /* I [sct] Traversal table */
+{
 
+} /* end nco_att_cpy_trv() */
+
+
+void 
+nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
+(const int in_id,             /* I [id] netCDF input file ID */
+ const int var_id,            /* I [id] netCDF input variable ID */
+ grp_tbl_sct *trv_tbl)       /* I [sct] Traversal table */
+{
+
+} /* end nco_prn_att_trv() */
 
