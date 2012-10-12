@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.144 2012-10-12 21:53:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.145 2012-10-12 23:15:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2595,7 +2595,7 @@ nco_att_cpy_trv               /* [fnc] Copy attributes from input netCDF file to
  const int var_in_id,         /* I [id] netCDF input-variable ID */
  const int var_out_id,        /* I [id] netCDF output-variable ID */
  const nco_bool PCK_ATT_CPY,  /* I [flg] Copy attributes "scale_factor", "add_offset" */
- grp_tbl_sct *trv_tbl)       /* I [sct] Traversal table */
+ grp_tbl_sct *trv_tbl)        /* I [sct] Traversal table */
 {
 
 } /* end nco_att_cpy_trv() */
@@ -2605,7 +2605,7 @@ void
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
 (const int in_id,             /* I [id] netCDF input file ID */
  const int var_id,            /* I [id] netCDF input variable ID */
- grp_tbl_sct *trv_tbl)       /* I [sct] Traversal table */
+ grp_tbl_sct *trv_tbl)        /* I [sct] Traversal table */
 {
 
 } /* end nco_prn_att_trv() */
