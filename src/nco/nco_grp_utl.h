@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.74 2012-10-12 21:53:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.75 2012-10-13 01:05:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -271,7 +271,6 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
 void                       
 nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (const int nc_id,         /* I [ID] Apex group */
- int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
  int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all, /* O [nbr] Number of variables in file  */
  int * const grp_nbr_all, /* O [nbr] Number of groups in file */

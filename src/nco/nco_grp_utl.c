@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.145 2012-10-12 23:15:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.146 2012-10-13 01:05:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -287,8 +287,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
       var_nm_fll_sls_ptr=var_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
 
-      if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
-
       /* Append all variables in current group to variable list */
       for(var_idx=0;var_idx<var_nbr;var_idx++){
 
@@ -325,8 +323,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     } /* endif current group has variables */
 
   } /* end loop over grp */
-
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports file contains %d group%s comprising %d total variable%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",var_nbr_all,(var_nbr_all > 1) ? "s" : "");
 
   /* Store results prior to first return */
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
@@ -2191,7 +2187,6 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
 void                       
 nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (const int nc_id,         /* I [ID] Apex group */
- int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
  int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all, /* O [nbr] Number of variables in file  */
  int * const grp_nbr_all, /* O [nbr] Number of groups in file */
@@ -2200,12 +2195,9 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
 
   /* Initialize */
-  *att_nbr_glb=0;
   *dmn_nbr_all=0;
   *var_nbr_all=0;
   *grp_nbr_all=0;
-
-  (void)nco_inq(nc_id,NULL,NULL,att_nbr_glb,NULL);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
@@ -2218,10 +2210,10 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
     } /* end nc_typ_grp */
   } /* end uidx  */
 
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",prg_nm_get(),*grp_nbr_all,(*grp_nbr_all > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_trv() reports file contains %d group%s comprising %d variable%s, %d dimension%s\n",prg_nm_get(),*grp_nbr_all,(*grp_nbr_all > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
 
   return;
-} /* end nco4_inq() */
+} /* end nco4_inq_trv() */
 
 
 int                       /* [rcd] Return code */
@@ -2260,8 +2252,6 @@ nco4_inq_vars             /* [fnc] Find and return total of variables */
     *var_nbr_all+=var_nbr;
   } /* end loop over grp */
  
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq() reports file contains %d group%s comprising %d variable%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "");
-
   return rcd;
 } /* end nco4_inq() */
 
@@ -2489,8 +2479,6 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
       var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
       var_nm_fll_sls_ptr=var_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
 
-      if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO nco_chk_trv() reports group %s, %s has %d variable%s:\n",prg_nm_get(),grp_nm,grp_nm_fll,var_nbr,(var_nbr > 1) ? "s" : "");
-
       /* Append all variables in current group to variable list */
       for(var_idx=0;var_idx<var_nbr;var_idx++){
 
@@ -2525,8 +2513,6 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
     } /* endif current group has variables */
 
   } /* end loop over grp */
-
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_chk_trv() reports file contains %d group%s comprising %d total variable%s\n",prg_nm_get(),grp_nbr,(grp_nbr > 1) ? "s" : "",var_nbr_all,(var_nbr_all > 1) ? "s" : "");
 
   /* Store results prior to first return */
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
