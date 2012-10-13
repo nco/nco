@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.76 2012-10-13 07:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.77 2012-10-13 07:50:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -320,7 +320,6 @@ nco_att_cpy_trv               /* [fnc] Copy attributes from input netCDF file to
 void 
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
 (const int in_id,             /* I [id] netCDF input file ID */
- const int var_id,            /* I [id] netCDF input variable ID */
  grp_tbl_sct *trv_tbl);       /* I [sct] Traversal table */
 
 #ifdef __cplusplus

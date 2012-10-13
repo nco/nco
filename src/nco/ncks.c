@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.401 2012-10-13 07:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.402 2012-10-13 07:50:04 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.401 2012-10-13 07:19:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.401 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.402 2012-10-13 07:50:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.402 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -849,7 +849,7 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, ID = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
       if(HAS_SUBGRP){
         /* Print global attributes recursive */
-        (void)nco_prn_att_trv(in_id,NC_GLOBAL,trv_tbl);
+        (void)nco_prn_att_trv(in_id,trv_tbl);
       }else{
         if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
           char dmn_nm[NC_MAX_NAME]; 

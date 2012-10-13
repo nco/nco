@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.147 2012-10-13 07:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.148 2012-10-13 07:50:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2581,6 +2581,39 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
 
 
 void 
+nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
+(const int nc_id,             /* I [id] netCDF file ID */
+ grp_tbl_sct *trv_tbl)        /* I [sct] Traversal table */
+{
+  int grp_id;                 /* [ID]  Group ID */
+  int nbr_att;                /* [nbr] Number of attributes */
+  int nbr_var;                /* [nbr] Number of variables */
+  int nbr_dmn;                /* [nbr] Number of dimensions */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_grp ){
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);         
+
+      /* Obtain info for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+      /* List attributes using obtained group ID */
+      if(nbr_att){
+        (void)fprintf(stdout,"Global attributes for: %s\n",trv.nm_fll); 
+        (void)nco_prn_att(grp_id,NC_GLOBAL); 
+      } /*nbr_att */
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+} /* end nco_prn_att_trv() */
+
+
+void 
 nco_att_cpy_trv               /* [fnc] Copy attributes from input netCDF file to output netCDF file */
 (const int in_id,             /* I [id] netCDF input-file ID */
  const int out_id,            /* I [id] netCDF output-file ID */
@@ -2593,12 +2626,4 @@ nco_att_cpy_trv               /* [fnc] Copy attributes from input netCDF file to
 } /* end nco_att_cpy_trv() */
 
 
-void 
-nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
-(const int in_id,             /* I [id] netCDF input file ID */
- const int var_id,            /* I [id] netCDF input variable ID */
- grp_tbl_sct *trv_tbl)        /* I [sct] Traversal table */
-{
-
-} /* end nco_prn_att_trv() */
 
