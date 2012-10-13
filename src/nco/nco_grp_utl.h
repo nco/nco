@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.78 2012-10-13 09:34:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.79 2012-10-13 19:49:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -142,8 +142,19 @@ nco4_var_lst_xcl                /* [fnc] Convert exclusion list to extraction li
 
 
 nm_id_sct *                      /* O [sct] Extraction list */
-nco4_var_lst_crd_add             /* [fnc] Add all coordinates to extraction list */
+nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */
 (const int nc_id,                /* I [ID] netCDF file ID */
+ nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
+ int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
+
+void                  
+nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco4_var_lst_crd_add */
+(const int in_id,                /* I [ID] Group ID */
+ char * const grp_nm_fll,        /* I [sng] Group path */
+ char * const grp_nm,            /* I [sng] Group name */
  nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
  int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
@@ -237,17 +248,6 @@ nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst 
  int const grp_id,         /* I [ID] Group ID */ 
  nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
  int * xtr_nbr);           /* I/O [nbr] Current index in exclusion/extraction list */
-
-void                  
-nco4_var_lst_crd_add_itr         /* [fnc] Iterator function for nco4_var_lst_crd_add */
-(const int in_id,                /* I [ID] Group ID */
- char * const grp_nm_fll,        /* I [sng] Group path */
- char * const grp_nm,            /* I [sng] Group name */
- nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
- int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
 
 int                              /* [rcd] Return code */
 nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy */
