@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.151 2012-10-13 20:49:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.152 2012-10-13 23:02:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1552,8 +1552,17 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 {
   lmt_sct *lmt_rgl;
   lmt_all_sct * lmt_all_crr;
-  int nbr_dmn_all;              /* [nbr] Total number of dimensions in file */
-  int idx;                      /* Global index for lmt_all_lst */
+  int nbr_dmn_all;             /* [nbr] Total number of dimensions in file */
+  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+  long dmn_sz;                 /* [nbr] Dimension size */ 
+  int *dmn_ids;                /* [ID]  Dimension IDs */ 
+  int grp_id;                  /* [ID] Group ID */
+  int nbr_att;                 /* [nbr] Number of attributes */
+  int nbr_var;                 /* [nbr] Number of variables */
+  int nbr_dmn;                 /* [nbr] number of dimensions */
+  int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
+  int dmn_ids_ult[NC_MAX_DIMS];/* [nbr] Unlimited dimensions IDs array */
+  int idx;                     /* [idx] Global index for lmt_all_lst */
   int jdx;
   
 #ifdef GRP_DEV
@@ -1561,28 +1570,16 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   nbr_dmn_all=0;
   idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].typ == nc_typ_grp ) {
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
-
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_msa_lmt_all_int() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
-
-      char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
-      long dmn_sz;                 /* [nbr] Dimension size */ 
-      int *dmn_ids;                /* [ID]  Dimension IDs */ 
-      int grp_id;                  /* [ID] Group ID */
-      int nbr_att;                 /* [nbr] Number of attributes */
-      int nbr_var;                 /* [nbr] Number of variables */
-      int nbr_dmn;                 /* [nbr] number of dimensions */
-      int nbr_dmn_ult;             /* O [nbr] Number of unlimited dimensions */
-      int dmn_ids_ult[NC_MAX_DIMS];/* O [nbr] Unlimited dimensions IDs array */
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_grp ) {
 
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
 
-      /* Obtain unlimited dimensions for group */
-      (void)nco_inq_unlimdims(in_id,&nbr_dmn_ult,dmn_ids_ult);
+      /* Obtain unlimited dimensions for group: NOTE using group ID */
+      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
 
-      /* Obtain dimensions for group */
+      /* Obtain dimensions for group: NOTE using group ID */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
@@ -1592,10 +1589,8 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       /* List dimensions using obtained group ID */
-      for(jdx=0;jdx<trv.nbr_dmn;jdx++){
+      for(jdx=0;jdx<nbr_dmn;jdx++){
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-
-        if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
 
         /*NB: increment lmt_all_lst with global idx */
         lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
@@ -1615,12 +1610,11 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
         lmt_rgl->id=dmn_ids[jdx];
 
         /* NOTE: for a group case, to find out if a dimension is a record dimension, compare the 
-           dimension ID with the unlimited dimension ID */
+        dimension ID with the unlimited dimension ID */
         lmt_rgl->is_rec_dmn=False;
         for(int kdx=0;kdx<nbr_dmn_ult;kdx++){
           if (dmn_ids[jdx] == dmn_ids_ult[kdx]){
             lmt_rgl->is_rec_dmn=True;
-            if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"record dimension: %s (%ld)\n",dmn_nm,dmn_sz);
           }
         } /* end kdx */
 
@@ -2618,8 +2612,262 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 (const int nc_id,                 /* I netCDF file ID */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF)  /* I [flg] file obeys CCM/CCSM/CF conventions */
+ const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
+ grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
 {
+  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+  long dmn_sz;                 /* [nbr] Dimension size */ 
+  int *dmn_ids;                /* [ID]  Dimension IDs */ 
+  int grp_id;                  /* [ID] Group ID */
+  int nbr_att;                 /* [nbr] Number of attributes */
+  int nbr_var;                 /* [nbr] Number of variables */
+  int nbr_dmn;                 /* [nbr] number of dimensions */
+  int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
+  int dmn_ids_ult[NC_MAX_DIMS];/* [nbr] Unlimited dimensions IDs array */
+
+#ifdef GRP_DEV
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_grp ) {
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+
+      /* Obtain unlimited dimensions for group: NOTE using group ID */
+      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
+
+      /* Obtain dimensions for group: NOTE using group ID */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+      if(nbr_dmn && dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"%s: DEBUG nco_var_lst_crd_ass_add_trv() grp=%s\n",prg_nm_get(),trv.nm_fll);
+
+      /* List dimensions using obtained group ID */
+      for(int jdx=0;jdx<nbr_dmn;jdx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
+
+        if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+
+      } /* end jdx dimensions */
+      (void)nco_free(dmn_ids);
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+
+#else
+  char dmn_nm[NC_MAX_NAME];
+
+  int crd_id;
+  int dmn_id[NC_MAX_DIMS];
+  int idx_dmn;
+  int idx_var_dim;
+  int idx_var;
+  int nbr_dim;
+  int nbr_var_dim;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  /* Get number of dimensions */
+  rcd+=nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
+
+  /* 20101011: Dimension IDs in netCDF3 files will be 0..N-1 
+  However, in netCDF4 files, dimension IDs may not enumerate consecutively
+  Keep one code path and assume file may be netCDF4 in structure */
+  /* Create space for dimension IDs */
+  /*  int dmn_id_all[NC_MAX_DIMS];
+  dmn_id_all=(int *)nco_malloc(nbr_dim*sizeof(int));
+  (void)nco_inq_dimid(nc_id,dmn_id_all); */
+
+  /* ...for each dimension in input file... */
+  for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
+    /* ...check name to see if it is a coordinate dimension... */
+    (void)nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
+    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
+    if(rcd == NC_NOERR){ /* Valid coordinate (same name of dimension and variable) */
+      /* Is coordinate already on extraction list? */
+      for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
+        if(crd_id == xtr_lst[idx_var].id) break;
+      } /* end loop over idx_var */
+      if(idx_var == *xtr_nbr){
+        /* ...coordinate is not on list, is it associated with any extracted variables?... */
+        for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
+          /* Get number of dimensions and dimension IDs for variable */
+          (void)nco_inq_var(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
+          for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
+            if(idx_dmn == dmn_id[idx_var_dim]) break;
+          } /* end loop over idx_var_dim */
+          if(idx_var_dim != nbr_var_dim){
+            /* Add coordinate to list */
+            xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+            xtr_lst[*xtr_nbr].nm=(char *)strdup(dmn_nm);
+            xtr_lst[*xtr_nbr].id=crd_id;
+            (*xtr_nbr)++; /* NB: Changes size of current loop! */
+            break;
+          } /* end if */
+        } /* end loop over idx_var */
+      } /* end if coordinate was not already in list */
+    } /* end if dimension is coordinate */
+  } /* end loop over idx_dmn */
+
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
+  if(CNV_CCM_CCSM_CF){
+    const char dlm_sng[]=" "; /* [sng] Delimiter string */
+    const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */
+    char **crd_lst; /* [sng] 1D array of list elements */
+    char *att_val;
+    char att_nm[NC_MAX_NAME];
+    int idx_att;
+    int idx_crd;
+    int idx_var2;
+    int nbr_att;
+    int nbr_crd; /* [nbr] Number of coordinates specified in "coordinates" attribute */
+    int var_id;
+    long att_sz;
+    nc_type att_typ;
+
+    /* ...for each variable in extraction list... */
+    for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
+      /* Eschew indirection */
+      var_id=xtr_lst[idx_var].id;
+      /* Find number of attributes */
+      (void)nco_inq_varnatts(nc_id,var_id,&nbr_att);
+      for(idx_att=0;idx_att<nbr_att;idx_att++){
+        (void)nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+        /* Is attribute part of CF convention? */
+        if(!strcmp(att_nm,"coordinates")){
+          /* Yes, get list of specified attributes */
+          (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+          if(att_typ != NC_CHAR){
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            return xtr_lst;
+          } /* end if */
+          att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+          if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+          /* NUL-terminate attribute */
+          att_val[att_sz]='\0';
+          /* Split list into separate coordinate names
+          Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+          crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
+          /* ...for each coordinate in "coordinates" attribute... */
+          for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
+            if(crd_lst[idx_crd]==NULL)
+              continue;
+            /* Verify "coordinate" exists in input file */
+            rcd=nco_inq_varid_flg(nc_id,crd_lst[idx_crd],&crd_id);
+            /* NB: Do not check that dimension by this name exists
+            CF files often use "coordinates" convention to identify
+            two-dimensional (or greater) variables which serve as coordinates.
+            In other words, we want to allow N-D variables to work as coordinates
+            for the purpose of adding them to the extraction list only. */
+            if(rcd == NC_NOERR){
+              /* idx_var2 labels inner loop over variables */
+              /* Is "coordinate" already on extraction list? */
+              for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
+                if(crd_id == xtr_lst[idx_var2].id) break;
+              } /* end loop over idx_var2 */
+              if(idx_var2 == *xtr_nbr){
+                /* Add coordinate to list */
+                xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+                xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_lst[idx_crd]);
+                xtr_lst[*xtr_nbr].id=crd_id;
+                (*xtr_nbr)++; /* NB: Changes size of current loop! */
+                /* Continue to next coordinate in loop */
+                continue;
+              } /* end if coordinate was not already in list */
+            }else{ /* end if named coordinate exists in input file */
+              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"coordinates\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),crd_lst[idx_crd],xtr_lst[idx_var].nm);
+            } /* end else named coordinate exists in input file */
+          } /* end loop over idx_crd */
+          /* Free allocated memory */
+          att_val=(char *)nco_free(att_val);
+          crd_lst=nco_sng_lst_free(crd_lst,nbr_crd);
+        } /* !coordinates */
+      } /* end loop over attributes */
+    } /* end loop over idx_var */
+  } /* !CNV_CCM_CCSM_CF for "coordinates" */
+
+  /* Detect coordinate boundaries specified by CF "bounds" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
+  Algorithm copied with modification from "coordinates" algorithm above */
+  if(CNV_CCM_CCSM_CF){
+    const char dlm_sng[]=" "; /* [sng] Delimiter string */
+    const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */
+    char **bnd_lst; /* [sng] 1D array of list elements */
+    char *att_val;
+    char att_nm[NC_MAX_NAME];
+    int bnd_id;
+    int idx_att;
+    int idx_bnd;
+    int idx_var2;
+    int nbr_att;
+    int nbr_bnd; /* [nbr] Number of coordinates specified in "bounds" attribute */
+    int var_id;
+    long att_sz;
+    nc_type att_typ;
+
+    /* ...for each variable in extraction list... */
+    for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
+      /* Eschew indirection */
+      var_id=xtr_lst[idx_var].id;
+      /* Find number of attributes */
+      (void)nco_inq_varnatts(nc_id,var_id,&nbr_att);
+      for(idx_att=0;idx_att<nbr_att;idx_att++){
+        (void)nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+        /* Is attribute part of CF convention? */
+        if(!strcmp(att_nm,"bounds")){
+          /* Yes, get list of specified attributes */
+          (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+          if(att_typ != NC_CHAR){
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            return xtr_lst;
+          } /* end if */
+          att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+          if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+          /* NUL-terminate attribute */
+          att_val[att_sz]='\0';
+          /* Split list into separate coordinate names
+          Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+          bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
+          /* ...for each coordinate in "bounds" attribute... */
+          for(idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
+            if(bnd_lst[idx_bnd]==NULL)
+              continue;
+            /* Verify "bounds" exists in input file */
+            rcd=nco_inq_varid_flg(nc_id,bnd_lst[idx_bnd],&bnd_id);
+            /* NB: Coordinates of rank N have bounds of rank N+1 */
+            if(rcd == NC_NOERR){
+              /* idx_var2 labels inner loop over variables */
+              /* Is "bound" already on extraction list? */
+              for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
+                if(bnd_id == xtr_lst[idx_var2].id) break;
+              } /* end loop over idx_var2 */
+              if(idx_var2 == *xtr_nbr){
+                /* Add coordinate to list */
+                xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+                xtr_lst[*xtr_nbr].nm=(char *)strdup(bnd_lst[idx_bnd]);
+                xtr_lst[*xtr_nbr].id=bnd_id;
+                (*xtr_nbr)++; /* NB: Changes size of current loop! */
+                /* Continue to next coordinate in loop */
+                continue;
+              } /* end if coordinate was not already in list */
+            }else{ /* end if named coordinate exists in input file */
+              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],xtr_lst[idx_var].nm);
+            } /* end else named coordinate exists in input file */
+          } /* end loop over idx_bnd */
+          /* Free allocated memory */
+          att_val=(char *)nco_free(att_val);
+          bnd_lst=nco_sng_lst_free(bnd_lst,nbr_bnd);
+        } /* !coordinates */
+      } /* end loop over attributes */
+    } /* end loop over idx_var */
+  } /* !CNV_CCM_CCSM_CF for "bounds" */
+
+#endif
 
   return xtr_lst;
 }
