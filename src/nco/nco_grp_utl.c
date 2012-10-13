@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.146 2012-10-13 01:05:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.147 2012-10-13 07:19:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1850,8 +1850,8 @@ nco_grp_itr
     strcpy(obj.nm,var_nm);
     obj.nbr_att=nbr_att;
     obj.nbr_dmn=nbr_dmn;
-    obj.nbr_var=0;
-    obj.nbr_grp=0;
+    obj.nbr_var=-1;
+    obj.nbr_grp=-1;
     trv_tbl_add(obj,trv_tbl);
     var_pth=(char*)nco_free(var_pth);
   }
@@ -2187,6 +2187,7 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
 void                       
 nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (const int nc_id,         /* I [ID] Apex group */
+ int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
  int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all, /* O [nbr] Number of variables in file  */
  int * const grp_nbr_all, /* O [nbr] Number of groups in file */
@@ -2195,6 +2196,7 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
 
   /* Initialize */
+  *att_nbr_glb=0;
   *dmn_nbr_all=0;
   *var_nbr_all=0;
   *grp_nbr_all=0;
@@ -2204,13 +2206,17 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
     if (trv.typ == nc_typ_grp ) { 
 
       /* Increment/Export */
+      *att_nbr_glb+=trv.nbr_att; /* attributes in groups are global */
       *dmn_nbr_all+=trv.nbr_dmn;
       *var_nbr_all+=trv.nbr_var;
       *grp_nbr_all+=trv.nbr_grp;
     } /* end nc_typ_grp */
   } /* end uidx  */
 
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_trv() reports file contains %d group%s comprising %d variable%s, %d dimension%s\n",prg_nm_get(),*grp_nbr_all,(*grp_nbr_all > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
+  if(dbg_lvl_get() >= nco_dbg_fl){
+    (void)fprintf(stdout,"%s: INFO nco4_inq_trv() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",
+      prg_nm_get(),*grp_nbr_all,(*grp_nbr_all > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
+  }
 
   return;
 } /* end nco4_inq_trv() */

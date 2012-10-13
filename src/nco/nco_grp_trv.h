@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.13 2012-10-06 04:06:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.14 2012-10-13 07:19:29 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -30,7 +30,7 @@ typedef enum{               /* [enm] netCDF4 object type: group, variable */
 */
 typedef struct{ 
   char    *nm_fll;         /* [sng] Absolute name (path) */
-  nc_typ  typ;             /* [enm] netCDF4 object type: group, variable */
+  nc_typ  typ;             /* [enm] netCDF4 object type: group or variable */
   char    nm[NC_MAX_NAME]; /* [sng] Relative name */
   int     flg;             /* [flg] mark flag (several actions) */
   int     nbr_att;         /* [nbr] Number of attributes */
