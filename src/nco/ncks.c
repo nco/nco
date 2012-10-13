@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.402 2012-10-13 07:50:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.403 2012-10-13 09:34:32 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.402 2012-10-13 07:50:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.402 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.403 2012-10-13 09:34:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.403 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -616,7 +616,7 @@ main(int argc,char **argv)
 
   /* Get number of variables, dimensions, and global attributes in file */
 #ifdef ENABLE_NETCDF4
-  (void)nco4_inq_trv(in_id,&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
+  (void)nco4_inq_trv(&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
   (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
 # ifdef NCO_SANITY_CHECK
   int var_nbr_all;
@@ -748,9 +748,7 @@ main(int argc,char **argv)
     
     /* Copy global attributes */
     if(PRN_GLB_METADATA){
-      if(HAS_SUBGRP){
-        (void)nco_att_cpy_trv(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True,trv_tbl);
-      }else{
+      if(!HAS_SUBGRP){
         (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
       } /* HAS_SUBGRP */
     }/* PRN_GLB_METADATA */
@@ -760,8 +758,8 @@ main(int argc,char **argv)
     if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 
     if(HAS_SUBGRP){
-      /* Define requested/necessary input groups/variables in output file */
-      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA);
+      /* Define requested/necessary input groups/variables/attributes/global attributes in output file */
+      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA);
     }else{ /* HAS_SUBGRP */
       /* Define requested/necessary input groups in output file */
       if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);

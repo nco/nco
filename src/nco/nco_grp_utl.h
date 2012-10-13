@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.77 2012-10-13 07:50:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.78 2012-10-13 09:34:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -164,6 +164,20 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
  char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
  grp_trv_sct trv);               /* I [sct] Group traversal table entry */
 
+int                            /* [rcd] Return code */
+nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
+(const int in_id,              /* I [ID] Group ID from netCDF intput file */
+ const int out_id,             /* I [ID] Group ID from netCDF output file */
+ char * const grp_pth,         /* I [sng] Group path */
+ char * const grp_nm,          /* I [sng] Group name */
+ nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
+ const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
+ const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA);   /* I [flg] Copy global variable metadata (attributes) */
 
 void
 nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file */
@@ -175,7 +189,9 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
- nco_bool PRN_VAR_METADATA);     /* I [flg] Print variable metadata */
+ nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA);     /* I [flg] Copy global variable metadata (attributes) */
+
 
 
 void
@@ -233,20 +249,6 @@ nco4_var_lst_crd_add_itr         /* [fnc] Iterator function for nco4_var_lst_crd
  int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
 
-int                            /* [rcd] Return code */
-nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
-(const int in_id,              /* I [ID] Group ID from netCDF intput file */
- const int out_id,             /* I [ID] Group ID from netCDF output file */
- char * const grp_pth,         /* I [sng] Group path */
- char * const grp_nm,          /* I [sng] Group name */
- nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
- const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
- const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
- const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
- nco_bool PRN_VAR_METADATA);   /* I [flg] Print variable metadata */
-
 int                              /* [rcd] Return code */
 nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy */
 (const int in_id,                /* I [ID] netCDF input file ID */
@@ -270,8 +272,7 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
 
 void                       
 nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(const int nc_id,         /* I [ID] Apex group */
- int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
+(int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
  int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all, /* O [nbr] Number of variables in file  */
  int * const grp_nbr_all, /* O [nbr] Number of groups in file */
@@ -306,16 +307,6 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  int * const var_xtr_nbr);          /* I [nbr] Number of variables in current extraction list */
-
-
-void 
-nco_att_cpy_trv               /* [fnc] Copy attributes from input netCDF file to output netCDF file */
-(const int in_id,             /* I [id] netCDF input-file ID */
- const int out_id,            /* I [id] netCDF output-file ID */
- const int var_in_id,         /* I [id] netCDF input-variable ID */
- const int var_out_id,        /* I [id] netCDF output-variable ID */
- const nco_bool PCK_ATT_CPY,  /* I [flg] Copy attributes "scale_factor", "add_offset" */
- grp_tbl_sct *trv_tbl);       /* I [sct] Traversal table */
 
 void 
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
