@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.154 2012-10-15 21:46:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.155 2012-10-15 23:08:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2656,18 +2656,20 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       /* ...for each dimension in input group... */
       for(idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
         (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+        if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]);
 
 
 #if 0
-        /* NOTE: using GRP_ID */
         /* ...check name to see if it is a coordinate dimension... */
-        (void)nco_inq_dimname(grp_id,idx_dmn,dmn_nm);
+        /* NOTE: using GRP_ID and dmn_id[idx_dmn] */
+        (void)nco_inq_dimname(grp_id,dmn_id[idx_dmn],dmn_nm);
         rcd=nco_inq_varid_flg(grp_id,dmn_nm,&crd_id);
         if(rcd == NC_NOERR){ /* Valid coordinate (same name of dimension and variable) */
           /* Is coordinate already on extraction list? */
           for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
-            if(crd_id == xtr_lst[idx_var].id) break;
+            if(crd_id == xtr_lst[idx_var].id){
+              break;
+            }
           } /* end loop over idx_var */
           if(idx_var == *xtr_nbr){
             /* ...coordinate is not on list, is it associated with any extracted variables?... */
