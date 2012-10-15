@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.152 2012-10-13 23:02:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.153 2012-10-15 21:17:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2616,14 +2616,14 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
 {
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
-  long dmn_sz;                 /* [nbr] Dimension size */ 
-  int *dmn_ids;                /* [ID]  Dimension IDs */ 
+  long dmn_sz;                 /* [nbr] Dimension size */  
   int grp_id;                  /* [ID] Group ID */
   int nbr_att;                 /* [nbr] Number of attributes */
   int nbr_var;                 /* [nbr] Number of variables */
   int nbr_dmn;                 /* [nbr] number of dimensions */
   int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
-  int dmn_ids_ult[NC_MAX_DIMS];/* [nbr] Unlimited dimensions IDs array */
+  int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited dimensions IDs array */
+  int dmn_ids[NC_MAX_DIMS];    /* [ID] Dimensions IDs array */
 
 #ifdef GRP_DEV
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2642,7 +2642,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
-      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
 
       if(nbr_dmn && dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"%s: DEBUG nco_var_lst_crd_ass_add_trv() grp=%s\n",prg_nm_get(),trv.nm_fll);
@@ -2654,7 +2653,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
         if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
 
       } /* end jdx dimensions */
-      (void)nco_free(dmn_ids);
     } /* end nc_typ_grp */
   } /* end uidx  */
 

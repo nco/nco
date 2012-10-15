@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.64 2012-10-07 06:29:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.65 2012-10-15 21:17:19 pvicente Exp $ */
 
 /* Purpose: List utilities */
 
@@ -431,14 +431,6 @@ nco_lst_prs_2D /* [fnc] Create list of strings from given string and delimiter *
   /* This loop sets default list members to NULL */
   for(idx=0;idx<*nbr_lst;idx++)
     if(strlen(sng_lst_out[idx]) == 0) sng_lst_out[idx]=NULL;
-
-  if(dbg_lvl_get() == 5){
-    (void)fprintf(stderr,"nco_lst_prs_2D() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
-    for(idx=0;idx<*nbr_lst;idx++) 
-      (void)fprintf(stderr,"sng_lst_out[%d] = %s\n",idx,(sng_lst_out[idx] == NULL) ? "NULL" : sng_lst_out[idx]);
-    (void)fprintf(stderr,"\n");
-    (void)fflush(stderr);
-  } /* end debug */
 
   /* Free duplicate of sng_in */
   sng_in_cpy=(char *)nco_free(sng_in_cpy); 
