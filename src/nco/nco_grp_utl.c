@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.153 2012-10-15 21:17:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.154 2012-10-15 21:46:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -416,7 +416,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
           } /* end if regular expression */
 
 
-          /* Compare var_nm from main iteration with var_sng found; if the same add to extraction list at index IDX  */
+          /* Compare var_nm from main iteration with var_sng found; if the same add to extraction list at index VAR_IDX_CRR  */
           if(strcmp(var_sng,var_nm) == 0 ){
             /* No groups case, just add  */
             if (*grp_xtr_nbr == 0 ){
@@ -2615,6 +2615,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
 {
+  int rcd=NC_NOERR;            /* [rcd] Return code */
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
   long dmn_sz;                 /* [nbr] Dimension size */  
   int grp_id;                  /* [ID] Group ID */
@@ -2623,7 +2624,13 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   int nbr_dmn;                 /* [nbr] number of dimensions */
   int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
   int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited dimensions IDs array */
-  int dmn_ids[NC_MAX_DIMS];    /* [ID] Dimensions IDs array */
+  int dmn_id[NC_MAX_DIMS];     /* [ID] Dimensions IDs array */
+  int idx_dmn;
+  int idx_var_dim;
+  int idx_var;
+  int crd_id;
+  int nbr_var_dim;
+
 
 #ifdef GRP_DEV
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2642,17 +2649,48 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,0);
 
       if(nbr_dmn && dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"%s: DEBUG nco_var_lst_crd_ass_add_trv() grp=%s\n",prg_nm_get(),trv.nm_fll);
 
-      /* List dimensions using obtained group ID */
-      for(int jdx=0;jdx<nbr_dmn;jdx++){
-        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-
+      /* ...for each dimension in input group... */
+      for(idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+        (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
         if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
 
-      } /* end jdx dimensions */
+
+#if 0
+        /* NOTE: using GRP_ID */
+        /* ...check name to see if it is a coordinate dimension... */
+        (void)nco_inq_dimname(grp_id,idx_dmn,dmn_nm);
+        rcd=nco_inq_varid_flg(grp_id,dmn_nm,&crd_id);
+        if(rcd == NC_NOERR){ /* Valid coordinate (same name of dimension and variable) */
+          /* Is coordinate already on extraction list? */
+          for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
+            if(crd_id == xtr_lst[idx_var].id) break;
+          } /* end loop over idx_var */
+          if(idx_var == *xtr_nbr){
+            /* ...coordinate is not on list, is it associated with any extracted variables?... */
+            for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
+              /* Get number of dimensions and dimension IDs for variable */
+              (void)nco_inq_var(grp_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
+              for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
+                if(idx_dmn == dmn_id[idx_var_dim]) break;
+              } /* end loop over idx_var_dim */
+              if(idx_var_dim != nbr_var_dim){
+                /* Add coordinate to list */
+                xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+                xtr_lst[*xtr_nbr].nm=(char *)strdup(dmn_nm);
+                xtr_lst[*xtr_nbr].id=crd_id;
+                (*xtr_nbr)++; /* NB: Changes size of current loop! */
+                break;
+              } /* end if */
+            } /* end loop over idx_var */
+          } /* end if coordinate was not already in list */
+        } /* end if dimension is coordinate */
+#endif
+
+      } /* end idx_dmn dimensions */
     } /* end nc_typ_grp */
   } /* end uidx  */
 
