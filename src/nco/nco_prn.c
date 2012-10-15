@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.75 2012-08-02 17:29:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.76 2012-10-15 14:02:24 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -237,7 +237,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* end loop over dim */
 
   /* Print header for variable */
-  (void)fprintf(stdout,"%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s, ID = %i\n",var_nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no",var_id);
+  (void)fprintf(stdout,"%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",var_nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
 
   /* Print type, shape, and total size of variable */
   if(nbr_dim>0){
@@ -271,11 +271,11 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(rcd == NC_NOERR){
       /* Dimension is a coordinate. Which storage type is the coordinate? */
       (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu, dim. ID = %d (",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),cnk_sz[idx]); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s (",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type));
       (void)fprintf(stdout,"%soordinate dimension)",(dim[idx].id == rec_dmn_id) ? "Record c" : "C");
     }else{
       /* Dimension is not a coordinate */
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu, dim. ID = %d (",var_nm,idx,dim[idx].nm,dim[idx].sz,cnk_sz[idx],dim[idx].id); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li, dim. ID = %d (",var_nm,idx,dim[idx].nm,dim[idx].sz,dim[idx].id);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu (",var_nm,idx,dim[idx].nm,dim[idx].sz,cnk_sz[idx]); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li (",var_nm,idx,dim[idx].nm,dim[idx].sz);
       (void)fprintf(stdout,"%son-coordinate dimension)",(dim[idx].id == rec_dmn_id) ? "Record n" : "N");
     } /* end else */
     (void)fprintf(stdout,"\n"); 

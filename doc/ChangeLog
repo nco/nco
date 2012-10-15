@@ -1,3 +1,9 @@
+2012-10-15  Charlie Zender  <zender@uci.edu>
+
+	* Stop printing variable and dimension IDs, since these cluttered
+	the printed output and were only used for development purposes
+	long ago.
+
 2012-10-09  Charlie Zender  <zender@uci.edu>
 
 	* Deprecate ncra2.c
