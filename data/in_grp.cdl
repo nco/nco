@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.13 2012-10-15 21:17:18 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.14 2012-10-15 23:35:00 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -54,25 +54,34 @@ variables:
 	double time(time);
 
 	float scl;
-	
+
+	int one_dmn_rec_var(time);
+	one_dmn_rec_var:long_name = "one dimensional record variable";
+	one_dmn_rec_var:units = "second";
+        
 	float area(lat);
 	area:long_name = "area";
 	area:units = "meter2";
+
 data:
 	scl=1.0;
 	lat=-90,90;
 	lev=100,500,1000;
 	lon=0,90,180,270;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
 	area=10.,10.;
 
 group: level_1_group_1 { 
-	variables:
-		float lon(lon);
-		lon:long_name = "level_1_group_1 Longitude (typically midpoints)";
-		lon:units = "level_1_group_1 degrees_east";
-	data:
-		lon=0,90,180,270;
+
+      variables:
+	float lon(lon);
+	lon:long_name = "level_1_group_1 Longitude (typically midpoints)";
+	lon:units = "level_1_group_1 degrees_east";
+	float scl;
+      data:
+	lon=0,90,180,270;
+	scl=1.1;
 
 	group: level_2_group_1 { 
 		variables:
