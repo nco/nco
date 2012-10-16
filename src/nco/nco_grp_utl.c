@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.156 2012-10-16 20:18:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.157 2012-10-16 20:45:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2679,6 +2679,20 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
         if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
 
+
+        /* Check if variable is on extraction list */
+        for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
+          nm_id_sct xtr=xtr_lst[idx_var];
+
+          /* Compare item on list with current item */
+          if(strcmp(xtr.var_nm_fll,var_nm_fll) == 0){
+            if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"MATCH variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
+            break;
+          } /* end break */
+
+        }
+        /* End idx_var: check if variable is on extraction list */
+
         /* Memory management after current variable */
         var_nm_fll=(char*)nco_free(var_nm_fll);
       } /* end idx_var_grp */ 
@@ -2911,4 +2925,5 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
   return xtr_lst;
 }
+
 
