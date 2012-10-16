@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.157 2012-10-16 20:45:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.158 2012-10-16 21:19:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2625,13 +2625,14 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   int nbr_dmn;                 /* [nbr] number of dimensions */
   int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
   int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited dimensions IDs array */
-  int dmn_id[NC_MAX_DIMS];     /* [ID] Dimensions IDs array */
+  int dmn_id[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for group */
+  int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int *var_ids;                /* [ID] Variable IDs array */
   int idx_dmn;
   int idx_var_dim;
   int idx_var;
   int crd_id;
-  int nbr_var_dim;
+  int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
 
 #ifdef GRP_DEV
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2648,7 +2649,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
       /* Obtain number of dimensions for group: NOTE using group ID */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-      
+
       /* Obtain dimension IDs */
       (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,0);
 
@@ -2656,10 +2657,16 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
       rcd+=nco_inq_varids(grp_id,&nbr_var,var_ids);
 
-     
+
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
+
+      /* ...for each dimension in input group... */
+      for(idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+        (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
+        if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]);
+      } /* end idx_dmn dimensions */
 
       /* Construct the full variable name for all variables in group */
       for(int idx_var_grp=0;idx_var_grp<nbr_var;idx_var_grp++){
@@ -2679,7 +2686,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
         if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
 
-
         /* Check if variable is on extraction list */
         for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
           nm_id_sct xtr=xtr_lst[idx_var];
@@ -2687,8 +2693,23 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
           /* Compare item on list with current item */
           if(strcmp(xtr.var_nm_fll,var_nm_fll) == 0){
             if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"MATCH variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
+
+            /* Get number of dimensions for variable */
+            (void)nco_inq_varndims(grp_id,var_ids[idx_var_grp],&nbr_var_dim);
+
+            /* Get dimension IDs for variable */
+            (void)nco_inq_vardimid(grp_id,var_ids[idx_var_grp],dmn_id_var);
+
+            /* List dimensions for variable */
+            for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
+
+              (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
+              if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimensions for MATCH variable: %s id=%d\n",dmn_nm,dmn_id_var[idx_var_dim]);
+
+            } /* end loop over idx_var_dim: list dimensions for variable */
+
             break;
-          } /* end break */
+          } /* end strcmp: match in compare item on list with current item */
 
         }
         /* End idx_var: check if variable is on extraction list */
@@ -2699,15 +2720,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
       /* Memory management after current group for variables */
       var_ids=(int *)nco_free(var_ids);
-
-
-      /* ...for each dimension in input group... */
-      for(idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
-        (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]);
-
-
-      } /* end idx_dmn dimensions */
 
     } /* end nc_typ_grp */
   } /* end uidx  */
