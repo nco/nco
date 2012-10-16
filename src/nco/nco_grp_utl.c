@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.159 2012-10-16 21:42:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.160 2012-10-16 22:35:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2633,6 +2633,8 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   int idx_lst_var;
   int idx_lst_dim;
   int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
+  nm_id_sct *xtr_lst_add;      /* Extra items to add to extraction list */
+  int idx_xtr_add=0;           /* [idx] Index of extra items to add to extraction list */
 
 #ifdef GRP_DEV
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2706,33 +2708,48 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
               (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
               if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimensions for MATCH variable: %s id=%d\n",dmn_nm,dmn_id_var[idx_var_dim]);
 
+              /* Number of matched dimensions */
+              int nbr_dim_lst=0; 
+
               /* Check if dimension is on extraction list  */
               for(idx_lst_dim=0;idx_lst_dim<*xtr_nbr;idx_lst_dim++){
                 nm_id_sct xtr2=xtr_lst[idx_lst_dim];
-
                 /* Compare item on list with current variable name (NOTE: using relative name to compare ) */
                 if(strcmp(xtr2.nm,dmn_nm) == 0){
                   if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"MATCH dimension in LIST: %s \n",dmn_nm);
-                }
+                  nbr_dim_lst++;
+                } /* End strcmp dmn_nm */
               } /* End idx_lst_dim: check if dimension is on extraction list */
 
+              /* Number of NON matched dimensions: number of dimensions for VAR - number of matched dimensions */
+              int nbr_lst_add=nbr_var_dim-nbr_dim_lst;
 
-              if(idx_lst_dim == *xtr_nbr){
-                if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"MATCH dimension(s) NOT in LIST\n");
-                /* ...coordinate is not on list... */
-              }
+              if(nbr_lst_add && dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"MATCH dimension(s) NOT in LIST\n");
+
+              if(nbr_lst_add == 1){
+                if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"ADD MATCH dimension: %s\n",dmn_nm);
+                /* Add coordinate to new list */
+                xtr_lst_add=(nm_id_sct *)nco_realloc((void *)xtr_lst_add,(nbr_lst_add)*sizeof(nm_id_sct));
+                xtr_lst_add[idx_xtr_add].nm=(char *)strdup(dmn_nm);
+                xtr_lst_add[idx_xtr_add].id=dmn_id_var[idx_var_dim];
+                xtr_lst_add[idx_xtr_add].grp_id=-1;
+                xtr_lst_add[idx_xtr_add].grp_nm=NULL;
+                xtr_lst_add[idx_xtr_add].grp_nm_fll=NULL;
+                xtr_lst_add[idx_xtr_add].var_nm_fll=NULL;
+                idx_xtr_add++;
+              } /* end  nbr_lst_add */
 
             } /* end loop over idx_var_dim: list dimensions for variable */
 
             break;
           } /* end strcmp: match in compare item on list with current item */
 
-        }
-        /* End idx_lst_var: check if variable is on extraction list */
-
+        } /* End idx_lst_var: check if variable is on extraction list */
+        
         /* Memory management after current variable */
         var_nm_fll=(char*)nco_free(var_nm_fll);
-      } /* end idx_var_grp */ 
+
+      } /* end idx_var_grp: full variable name for all variables in group */ 
 
       /* Memory management after current group for variables */
       var_ids=(int *)nco_free(var_ids);
