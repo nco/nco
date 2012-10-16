@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.406 2012-10-13 23:02:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.407 2012-10-16 00:39:31 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.406 2012-10-13 23:02:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.406 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.407 2012-10-16 00:39:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.407 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -783,7 +783,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
 
     /* [fnc] Open unformatted binary data file for writing */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.188 2012-09-02 05:00:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.189 2012-10-16 00:39:31 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.188 2012-09-02 05:00:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.188 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.189 2012-10-16 00:39:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.189 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -574,7 +574,7 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dmn_xtr_1;idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim_1[idx]);
     (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]);
-  }
+  } /* end loop over dimensions */
 
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl_1 > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr_1,lmt_all_lst,nbr_dmn_fl_1); 
@@ -678,7 +678,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
   
   /* Assign zero to start and unity to stride vectors in output variables */

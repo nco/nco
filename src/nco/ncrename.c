@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.144 2012-07-28 02:27:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.145 2012-10-16 00:39:31 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -94,8 +94,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.144 2012-07-28 02:27:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.145 2012-10-16 00:39:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -466,7 +466,7 @@ main(int argc,char **argv)
     (void)nco_enddef(nc_id);
   }else{
     (void)nco__enddef(nc_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
   /* Close the open netCDF file */

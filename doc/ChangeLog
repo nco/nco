@@ -1,5 +1,7 @@
 2012-10-15  Charlie Zender  <zender@uci.edu>
 
+	* Initiate ncecat -G option for group aggregation
+
 	* Stop printing variable and dimension IDs, since these cluttered
 	the printed output and were only used for development purposes
 	long ago.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.263 2012-09-02 05:00:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.264 2012-10-16 00:39:31 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.263 2012-09-02 05:00:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.263 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.264 2012-10-16 00:39:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.264 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;
@@ -636,7 +636,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
   /* Set arguments for  script execution */

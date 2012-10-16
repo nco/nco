@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.207 2012-09-02 05:00:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.208 2012-10-16 00:39:31 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.207 2012-09-02 05:00:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.207 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.208 2012-10-16 00:39:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.208 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -634,7 +634,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
   
   /* Assign zero to start and unity to stride vectors in output variables */

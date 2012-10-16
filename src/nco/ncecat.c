@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.207 2012-09-02 05:00:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.208 2012-10-16 00:39:31 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
-/* Purpose: Join variables across files into a new record variable */
+/* Purpose: Join variables across files into a new record variable or aggregate files as groups */
 
 /* Copyright (C) 1995--2012 Charlie Zender
 
@@ -28,6 +28,13 @@
    Department of Earth System Science
    University of California, Irvine
    Irvine, CA 92697-3100 */
+
+/* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncra.c
+
+   Usage:
+   ncecat -O -G -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
+   ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -73,6 +80,7 @@ main(int argc,char **argv)
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GROUP_AGGREGATE=False; /* Option G */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -81,6 +89,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+  nco_bool RECORD_AGGREGATE=True; /* Option G */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -96,6 +105,7 @@ main(int argc,char **argv)
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *grp_nm=NULL; /* [sng] Group name */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
@@ -103,9 +113,9 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.207 2012-09-02 05:00:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.207 $";
-  const char * const opt_sht_lst="346ACcD:d:FHhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.208 2012-10-16 00:39:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.208 $";
+  const char * const opt_sht_lst="346ACcD:d:FG::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -230,6 +240,8 @@ main(int argc,char **argv)
       {"ftn",no_argument,0,'F'},
       {"fl_lst_in",no_argument,0,'H'},
       {"file_list",no_argument,0,'H'},
+      {"group",optional_argument,0,'G'}, /* [sng] Group name */
+      {"grp",optional_argument,0,'G'}, /* [sng] Group name */
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
@@ -356,6 +368,11 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      break;
+    case 'G': /* Aggregate files into groups not records */
+      if(optarg) grp_nm=(char *)strdup(optarg);
+      GROUP_AGGREGATE=!GROUP_AGGREGATE;
+      RECORD_AGGREGATE=!GROUP_AGGREGATE;
       break;
     case 'H': /* Toggle writing input file list attribute */
       FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
@@ -516,13 +533,12 @@ main(int argc,char **argv)
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
 
-
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0  ; idx<nbr_dmn_xtr ; idx++){ 
+  for(idx=0;idx<nbr_dmn_xtr;idx++){ 
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-  }
+  } /* end loop over dimensions */
 
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
@@ -564,7 +580,7 @@ main(int argc,char **argv)
   if(FL_LST_IN_APPEND  && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
   /* ncecat-specific operations */
-  if(True){
+  if(RECORD_AGGREGATE){
 
     /* Always construct new "record" dimension from scratch */
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
@@ -595,14 +611,14 @@ main(int argc,char **argv)
     dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
     dmn_out[nbr_dmn_xtr-1]=rec_dmn;
 
-  } /* end if ncecat */
+  } /* !RECORD_AGGREGATE */
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
-  if(True){
+  if(RECORD_AGGREGATE){
     /* Prepend record dimension to beginning of all vectors for processed variables */
     for(idx=0;idx<nbr_var_prc;idx++){
       var_prc_out[idx]->nbr_dim++;
@@ -620,10 +636,10 @@ main(int argc,char **argv)
       /* Moves current array by one to make room for new record dimension info */
       (void)memmove((void *)(var_prc_out[idx]->dim+1),(void *)(var_prc_out[idx]->dim),(var_prc_out[idx]->nbr_dim-1)*sizeof(dmn_sct *));
       (void)memmove((void *)(var_prc_out[idx]->dmn_id+1),(void *)(var_prc_out[idx]->dmn_id),(var_prc_out[idx]->nbr_dim-1)*sizeof(int));
-      (void)memmove((void *)(var_prc_out[idx]->cnt+1),(void *)(var_prc_out[idx]->cnt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
-      (void)memmove((void *)(var_prc_out[idx]->end+1),(void *)(var_prc_out[idx]->end),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
-      (void)memmove((void *)(var_prc_out[idx]->srd+1),(void *)(var_prc_out[idx]->srd),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
-      (void)memmove((void *)(var_prc_out[idx]->srt+1),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
+      (void)memmove((void *)(var_prc_out[idx]->cnt+1L),(void *)(var_prc_out[idx]->cnt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
+      (void)memmove((void *)(var_prc_out[idx]->end+1L),(void *)(var_prc_out[idx]->end),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
+      (void)memmove((void *)(var_prc_out[idx]->srd+1L),(void *)(var_prc_out[idx]->srd),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
+      (void)memmove((void *)(var_prc_out[idx]->srt+1L),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
       
       /* Insert value for new record dimension */
       var_prc_out[idx]->dim[0]=rec_dmn;
@@ -634,7 +650,12 @@ main(int argc,char **argv)
       var_prc_out[idx]->srt[0]=-1L;
 		    
     } /* end loop over idx */
-  } /* end if ncecat */
+  } /* !RECORD_AGGREGATE */
+
+  if(GROUP_AGGREGATE){
+    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Experimental Group Aggregation feature using grp_nm = %s\n",prg_nm_get(),grp_nm);
+    fl_out_fmt=NC_FORMAT_NETCDF4; 
+  } /* !GROUP_AGGREGATE */
 
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
@@ -650,7 +671,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
   
   /* Assign zero to start and unity to stride vectors in output variables */
