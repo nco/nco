@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.76 2012-10-15 14:02:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.77 2012-10-16 06:20:55 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -444,7 +444,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   { /* begin potential OpenMP critical */
     /* Get variable */
     if(var.nbr_dim==0){
-      nco_get_var1(in_id,var.id,0L,var.val.vp,var.type); 
+      nco_get_var1(in_id ,var.id,0L,var.val.vp,var.type); 
     }else if(!SRD){
       nco_get_vara(in_id,var.id,dmn_srt,dmn_cnt,var.val.vp,var.type);
     }else if(SRD){

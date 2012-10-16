@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.407 2012-10-16 00:39:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.408 2012-10-16 06:20:55 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -30,7 +30,9 @@
    University of California, Irvine
    Irvine, CA 92697-3100 */
 
-/* Usage:
+/* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncks.c
+
+   Usage:
    ncks ~/nco/data/in.nc 
    ncks -v one ~/nco/data/in.nc 
    ncks ~/nco/data/in.nc ~/foo.nc
@@ -143,8 +145,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.407 2012-10-16 00:39:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.407 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.408 2012-10-16 06:20:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.408 $";
   const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
   cnk_sct **cnk=NULL_CEWI;
 

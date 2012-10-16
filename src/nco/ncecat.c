@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.208 2012-10-16 00:39:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.209 2012-10-16 06:20:55 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
-/* Purpose: Join variables across files into a new record variable or aggregate files as groups */
+/* Purpose: Join variables across files with new record variable or aggregate files as groups */
 
 /* Copyright (C) 1995--2012 Charlie Zender
 
@@ -29,7 +29,7 @@
    University of California, Irvine
    Irvine, CA 92697-3100 */
 
-/* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncra.c
+/* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
 
    Usage:
    ncecat -O -G -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
@@ -94,6 +94,7 @@ main(int argc,char **argv)
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
+  char **grp_nm_lst; /* [sng] Group name */
   char **var_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
@@ -110,11 +111,13 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
-
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.208 2012-10-16 00:39:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.208 $";
+#define	NCO_GRP_NM_SFX_LNG 4
+  char grp_nm_sfx[NCO_GRP_NM_SFX_LNG];
+
+  const char * const CVS_Id="$Id: ncecat.c,v 1.209 2012-10-16 06:20:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.209 $";
   const char * const opt_sht_lst="346ACcD:d:FG::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -150,6 +153,7 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
+  int grp_id;   
   int idx;
   int jdx;
   int in_id;  
@@ -180,6 +184,7 @@ main(int argc,char **argv)
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
+  size_t grp_nm_lng; /* [nbr] Length of group name */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   var_sct **var;
@@ -373,6 +378,7 @@ main(int argc,char **argv)
       if(optarg) grp_nm=(char *)strdup(optarg);
       GROUP_AGGREGATE=!GROUP_AGGREGATE;
       RECORD_AGGREGATE=!GROUP_AGGREGATE;
+      fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'H': /* Toggle writing input file list attribute */
       FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
@@ -611,14 +617,11 @@ main(int argc,char **argv)
     dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
     dmn_out[nbr_dmn_xtr-1]=rec_dmn;
 
-  } /* !RECORD_AGGREGATE */
-
-  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+    if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
-  /* Define dimensions in output file */
-  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+    /* Define dimensions in output file */
+    (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
-  if(RECORD_AGGREGATE){
     /* Prepend record dimension to beginning of all vectors for processed variables */
     for(idx=0;idx<nbr_var_prc;idx++){
       var_prc_out[idx]->nbr_dim++;
@@ -648,55 +651,88 @@ main(int argc,char **argv)
       var_prc_out[idx]->end[0]=-1L;
       var_prc_out[idx]->srd[0]=-1L;
       var_prc_out[idx]->srt[0]=-1L;
-		    
     } /* end loop over idx */
+    
+    /* Define variables in output file, copy their attributes */
+    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+    
+    /* Set chunksize parameters */
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
+    /* Turn off default filling behavior to enhance efficiency */
+    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+  
+    /* Take output file out of define mode */
+    if(hdr_pad == 0UL){
+      (void)nco_enddef(out_id);
+    }else{
+      (void)nco__enddef(out_id,hdr_pad);
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+    } /* hdr_pad */
+  
+    /* Assign zero to start and unity to stride vectors in output variables */
+    (void)nco_var_srd_srt_set(var_out,xtr_nbr);
+
+    /* Copy variable data for non-processed variables */
+    (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
+
+    /* Close first input netCDF file */
+    (void)nco_close(in_id);
+  
+    /* Timestamp end of metadata setup and disk layout */
+    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+    ddra_info.tmr_flg=nco_tmr_rgl;
+
   } /* !RECORD_AGGREGATE */
 
   if(GROUP_AGGREGATE){
-    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Experimental Group Aggregation feature using grp_nm = %s\n",prg_nm_get(),grp_nm);
-    fl_out_fmt=NC_FORMAT_NETCDF4; 
+    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Group Aggregation (GAG) feature using grp_nm = %s\n",prg_nm_get(),grp_nm);
+    if(fl_out_fmt != NC_FORMAT_NETCDF4){
+      (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+      nco_exit(EXIT_FAILURE);
+    } /* endif err */
+    if(fl_in_fmt == NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Aggregation only guaranteed to work on netCDF3-classic input format but current input file format is = %s\n",prg_nm_get(),nco_fmt_sng(fl_in_fmt));
+    grp_nm_lst=(char **)nco_malloc(fl_nbr*sizeof(char *));
+    grp_nm_lng=strlen(grp_nm);
   } /* !GROUP_AGGREGATE */
-
-  /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
-
-  /* Set chunksize parameters */
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
-
-  /* Turn off default filling behavior to enhance efficiency */
-  nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
-  /* Take output file out of define mode */
-  if(hdr_pad == 0UL){
-    (void)nco_enddef(out_id);
-  }else{
-    (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
-  } /* hdr_pad */
-  
-  /* Assign zero to start and unity to stride vectors in output variables */
-  (void)nco_var_srd_srt_set(var_out,xtr_nbr);
-
-  /* Copy variable data for non-processed variables */
-  (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
-
-  /* Close first input netCDF file */
-  (void)nco_close(in_id);
-  
-  /* Timestamp end of metadata setup and disk layout */
-  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-  ddra_info.tmr_flg=nco_tmr_rgl;
 
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
-    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr, fl_lst_abb,fl_pth);
+    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
     if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
+    if(GROUP_AGGREGATE){
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG GAG ingesting fl = %s\n",prg_nm_get(),fl_in);
+      if(grp_nm){;
+	sprintf(grp_nm_sfx,"_%02d",fl_idx);
+	grp_nm_lst[fl_idx]=(char *)nco_malloc(grp_nm_lng+NCO_GRP_NM_SFX_LNG);
+	grp_nm_lst[fl_idx]=strncat(grp_nm,grp_nm_sfx,(size_t)NCO_GRP_NM_SFX_LNG);
+      }else{
+	int fl_nm_sfx_lng=0;
+
+	/* Is there a .nc, .cdf, .nc3, or .nc4 suffix? */
+	if(strncmp(fl_in+strlen(fl_in)-3,".nc",3) == 0)
+	  fl_nm_sfx_lng=3;
+	else if(strncmp(fl_in+strlen(fl_in)-4,".cdf",4) == 0)
+	  fl_nm_sfx_lng=4;
+	else if(strncmp(fl_in+strlen(fl_in)-4,".nc3",4) == 0)
+	  fl_nm_sfx_lng=4;
+	else if(strncmp(fl_in+strlen(fl_in)-4,".nc4",4) == 0)
+	  fl_nm_sfx_lng=4;
+
+	grp_nm_lst[fl_idx]=(char *)nco_malloc(strlen(fl_in)-fl_nm_sfx_lng+1L);
+	grp_nm_lst[fl_idx]=strncpy(grp_nm_lst[fl_idx],fl_in,strlen(fl_in)-fl_nm_sfx_lng);
+	grp_nm_lst[fl_idx][strlen(fl_in)-fl_nm_sfx_lng]='\0';
+
+      } /* !grp_nm */
+      rcd+=nco_def_grp(out_id,grp_nm,&grp_id);
+    } /* !GROUP_AGGREGATE */
+
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
     
@@ -796,6 +832,7 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(grp_nm_lst) grp_nm_lst=nco_sng_lst_free(grp_nm_lst,fl_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
