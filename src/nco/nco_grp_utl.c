@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.161 2012-10-17 17:47:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.162 2012-10-17 17:55:11 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2035,8 +2035,6 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
   } /* end lmt_nbr */
 } /* end nco_lmt_evl_trv() */
 
-
-
 void                          
 nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
@@ -2193,11 +2191,10 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
 
-
     /* Normal variable so search through variable array */
     int jdx;
     for(jdx=0;jdx<var_nbr_all;jdx++)
-      if(!strcmp(var_sng,var_lst_all[jdx].nm)) {
+      if(!strcmp(var_sng,var_lst_all[jdx].nm)){
         break;
       }
 

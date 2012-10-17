@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.211 2012-10-17 05:10:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.212 2012-10-17 17:55:11 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -32,7 +32,7 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
 
    Usage:
-   ncecat -O -D 1 -Gfoo -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
+   ncecat -O -D 1 -G -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.211 2012-10-17 05:10:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.211 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.212 2012-10-17 17:55:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.212 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -493,101 +493,105 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
     
-  /* Initialize thread information */
-  thr_nbr=nco_openmp_ini(thr_nbr);
-  in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
-
-  /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-  /* Open file using appropriate buffer size hints and verbosity */
-  if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
-  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
-  
-  /* Parse auxiliary coordinates */
-  if(aux_nbr > 0){
-     int aux_idx_nbr;
-     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
-     if(aux_idx_nbr > 0){
+  if(RECORD_AGGREGATE){
+    
+    /* Initialize thread information */
+    thr_nbr=nco_openmp_ini(thr_nbr);
+    in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+    
+    /* Parse filename */
+    fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+    /* Make sure file is on local system and is readable or die trying */
+    fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+    /* Open file using appropriate buffer size hints and verbosity */
+    if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+    rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+    
+    /* Parse auxiliary coordinates */
+    if(aux_nbr > 0){
+      int aux_idx_nbr;
+      aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
+      if(aux_idx_nbr > 0){
         lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
         int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
         int aux_idx=0;
         for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
         lmt_nbr=lmt_nbr_new;
-     } /* endif aux */
-  } /* endif aux_nbr */
-  
-  /* Get number of variables, dimensions, and record dimension ID of input file */
-  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-  (void)nco_inq_format(in_id,&fl_in_fmt);
-  
-  /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
-
-  /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
-
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
-  /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-
-  /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-
-  /* Sort extraction list by variable ID for fastest I/O */
-  if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,False);
+      } /* endif aux */
+    } /* endif aux_nbr */
     
-  /* We now have final list of variables to extract. Phew. */
-  
-  /* Find coordinate/dimension values associated with user-specified limits
-     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
+    /* Get number of variables, dimensions, and record dimension ID of input file */
+    (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
+    (void)nco_inq_format(in_id,&fl_in_fmt);
+    
+    /* Form initial extraction list which may include extended regular expressions */
+    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
+    
+    /* Change included variables to excluded variables */
+    if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
+    
+    /* Is this a CCM/CCSM/CF-format history tape? */
+    CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+    
+    /* Add all coordinate variables to extraction list */
+    if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
+    
+    /* Extract coordinates associated with extracted variables */
+    if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
+    
+    /* Sort extraction list by variable ID for fastest I/O */
+    if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,False);
+    
+    /* We now have final list of variables to extract. Phew. */
+    
+    /* Find coordinate/dimension values associated with user-specified limits
+       NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+    for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
+    
+    /* Place all dimensions in lmt_all_lst */
+    lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+    /* Initialize lmt_all_sct's */ 
+    (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+    
+    /* Find dimensions associated with variables to be extracted */
+    dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
+    
+    /* Fill-in dimension structure for all extracted dimensions */
+    dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+    for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+    
+    /* Dimension list no longer needed */
+    dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
+    
+    /* Duplicate input dimension structures for output dimension structures */
+    dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+    for(idx=0;idx<nbr_dmn_xtr;idx++){ 
+      dmn_out[idx]=nco_dmn_dpl(dim[idx]);
+      (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
+    } /* end loop over dimensions */
+    
+    /* Merge hyperslab limit information into dimension structures */
+    if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
+    
+    /* Fill-in variable structure list for all extracted variables */
+    var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+    var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+    for(idx=0;idx<xtr_nbr;idx++){
+      var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+      var_out[idx]=nco_var_dpl(var[idx]);
+      (void)nco_xrf_var(var[idx],var_out[idx]);
+      (void)nco_xrf_dmn(var_out[idx]);
+    } /* end loop over idx */
+    /* Extraction list no longer needed */
+    xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
+    
+    /* Refresh var_out with dim_out data */
+    (void)nco_var_dmn_refresh(var_out,xtr_nbr);
+    
+    /* Divide variable lists into lists of fixed variables and variables to be processed */
+    (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
-  /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-  /* Initialize lmt_all_sct's */ 
-  (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-  
-  /* Find dimensions associated with variables to be extracted */
-  dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
-
-  /* Fill-in dimension structure for all extracted dimensions */
-  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
-
-  /* Dimension list no longer needed */
-  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
-
-  /* Duplicate input dimension structures for output dimension structures */
-  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++){ 
-    dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-  } /* end loop over dimensions */
-
-  /* Merge hyperslab limit information into dimension structures */
-  if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
-
-  /* Fill-in variable structure list for all extracted variables */
-  var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-  for(idx=0;idx<xtr_nbr;idx++){
-    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=nco_var_dpl(var[idx]);
-    (void)nco_xrf_var(var[idx],var_out[idx]);
-    (void)nco_xrf_dmn(var_out[idx]);
-  } /* end loop over idx */
-  /* Extraction list no longer needed */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
-
-  /* Refresh var_out with dim_out data */
-  (void)nco_var_dmn_refresh(var_out,xtr_nbr);
-
-  /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  } /* !RECORD_AGGREGATE */
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
@@ -598,18 +602,18 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* Copy global attributes */
-  if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-  
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   /* Add input file list global attribute */
-  if(FL_LST_IN_APPEND  && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+  if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
   /* ncecat-specific operations */
   if(RECORD_AGGREGATE){
 
+    /* Copy global attributes */
+    if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+  
     /* Always construct new "record" dimension from scratch */
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     if(rec_dmn_nm == NULL) rec_dmn->nm=rec_dmn_nm=(char *)strdup("record"); else rec_dmn->nm=rec_dmn_nm;
@@ -725,7 +729,7 @@ main(int argc,char **argv)
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
-    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+    fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
