@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.212 2012-10-17 17:55:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.213 2012-10-17 20:55:39 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.212 2012-10-17 17:55:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.212 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.213 2012-10-17 20:55:39 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.213 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -793,7 +793,7 @@ main(int argc,char **argv)
       if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add_trv(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,&grp_nbr,grp_lst_in);
  
       /* Extract coordinates associated with extracted variables */
-      if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add_trv(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,trv_tbl);
+      if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add_trv(fl_in_fmt,in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,trv_tbl);
       /* We now have final list of variables to extract. Phew. */
 
       /* Find coordinate/dimension values associated with user-specified limits
@@ -820,6 +820,9 @@ main(int argc,char **argv)
  
       /* Close input netCDF file */
       (void)nco_close(in_id);
+
+      /* Free traversal table */
+      trv_tbl_free(trv_tbl);
 
     } /* !GROUP_AGGREGATE */
 

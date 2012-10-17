@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.162 2012-10-17 17:55:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.163 2012-10-17 20:55:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2606,7 +2606,8 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */
-(const int nc_id,                 /* I netCDF file ID */
+(const int fl_fmt,                /* I [enm] netCDF file format */
+ const int nc_id,                 /* I netCDF file ID */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
@@ -2620,8 +2621,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   int nbr_att;                 /* [nbr] Number of attributes */
   int nbr_var;                 /* [nbr] Number of variables */
   int nbr_dmn;                 /* [nbr] number of dimensions */
-  int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
-  int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited dimensions IDs array */
   int dmn_id[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for group */
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int *var_ids;                /* [ID] Variable IDs array */
@@ -2639,10 +2638,11 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"%s: DEBUG nco_var_lst_crd_ass_add_trv() grp=%s\n",prg_nm_get(),trv.nm_fll);
 
       /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-
-      /* Obtain unlimited dimensions for group: NOTE using group ID */
-      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=nc_id;
+      }
 
       /* Obtain number of dimensions for group: NOTE using group ID */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
@@ -2653,7 +2653,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       /* Allocate space for and obtain variable IDs in current group */
       var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
       rcd+=nco_inq_varids(grp_id,&nbr_var,var_ids);
-
 
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
