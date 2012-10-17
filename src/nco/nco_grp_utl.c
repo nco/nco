@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.163 2012-10-17 20:55:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.164 2012-10-17 21:06:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2704,7 +2704,8 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
               if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimensions for MATCH variable: %s id=%d\n",dmn_nm,dmn_id_var[idx_var_dim]);
 
               /* Valid coordinate (same name of dimension and variable) */
-              rcd=nco_inq_varid_flg(grp_id,dmn_nm,NULL);
+              int dim_id;
+              rcd=nco_inq_varid_flg(grp_id,dmn_nm,&dim_id);
               if(rcd != NC_NOERR)
                 continue; /* continue idx_var_dim */
 
