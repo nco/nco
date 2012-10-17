@@ -1,3 +1,7 @@
+2012-10-16  Charlie Zender  <zender@uci.edu>
+
+	* Porting ncks group code to ncecat
+
 2012-10-15  Charlie Zender  <zender@uci.edu>
 
 	* Bifurcate ncecat logic into GROUP_AGGREGATE and RECORD_AGGREGATE

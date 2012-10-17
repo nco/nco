@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.209 2012-10-16 06:20:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.210 2012-10-17 03:58:14 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -32,7 +32,7 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
 
    Usage:
-   ncecat -O -G -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
+   ncecat -O -D 1 -Gfoo -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
@@ -94,7 +94,8 @@ main(int argc,char **argv)
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
-  char **grp_nm_lst; /* [sng] Group name */
+  char **grp_lst_out; /* [sng] Group name */
+  char **grp_lst_in=NULL;
   char **var_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
@@ -106,19 +107,20 @@ main(int argc,char **argv)
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
-  char *grp_nm=NULL; /* [sng] Group name */
+  char *grp_out=NULL; /* [sng] Group name */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-#define	NCO_GRP_NM_SFX_LNG 4
-  char grp_nm_sfx[NCO_GRP_NM_SFX_LNG];
+#define	NCO_GRP_OUT_SFX_LNG 3
+  char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
+  char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.209 2012-10-16 06:20:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.209 $";
-  const char * const opt_sht_lst="346ACcD:d:FG::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.210 2012-10-17 03:58:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.210 $";
+  const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -129,9 +131,9 @@ main(int argc,char **argv)
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
 
-  dmn_sct *rec_dmn;
   dmn_sct **dim;
   dmn_sct **dmn_out;
+  dmn_sct *rec_dmn;
   
   extern char *optarg;
   extern int optind;
@@ -140,7 +142,10 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
+  grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
   int *in_id_arr;
+  int *grp_id_arr;   
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
@@ -153,7 +158,8 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
-  int grp_id;   
+  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
+  int grp_nbr=0; /* [nbr] Number of groups to extract */
   int idx;
   int jdx;
   int in_id;  
@@ -180,11 +186,12 @@ main(int argc,char **argv)
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
   
   nm_id_sct *dmn_lst;
+  nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */  
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
-  size_t grp_nm_lng; /* [nbr] Length of group name */
+  size_t grp_out_lng; /* [nbr] Length of group name */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   var_sct **var;
@@ -243,10 +250,12 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
+      {"group",required_argument,0,'g'},
+      {"grp",required_argument,0,'g'},
+      {"name",optional_argument,0,'G'}, /* [sng] Output group name */
+      {"nm",optional_argument,0,'G'}, /* [sng] Output group name */
       {"fl_lst_in",no_argument,0,'H'},
       {"file_list",no_argument,0,'H'},
-      {"group",optional_argument,0,'G'}, /* [sng] Group name */
-      {"grp",optional_argument,0,'G'}, /* [sng] Group name */
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
@@ -374,8 +383,18 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
+    case 'g': /* Copy group argument for later processing */
+      /* Replace commas with hashes when within braces (convert back later) */
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_lst_comma2hash(optarg_lcl);
+      grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      grp_nbr=grp_lst_in_nbr;
+      break;
     case 'G': /* Aggregate files into groups not records */
-      if(optarg) grp_nm=(char *)strdup(optarg);
+      /* NB: GNU getopt() optional argument syntax is ugly:
+	 http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+      if(optarg) grp_out=(char *)strdup(optarg);
       GROUP_AGGREGATE=!GROUP_AGGREGATE;
       RECORD_AGGREGATE=!GROUP_AGGREGATE;
       fl_out_fmt=NC_FORMAT_NETCDF4; 
@@ -686,14 +705,15 @@ main(int argc,char **argv)
   } /* !RECORD_AGGREGATE */
 
   if(GROUP_AGGREGATE){
-    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Group Aggregation (GAG) feature using grp_nm = %s\n",prg_nm_get(),grp_nm);
+    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Experimental Group Aggregation (GAG) feature enabled\n",prg_nm_get());
     if(fl_out_fmt != NC_FORMAT_NETCDF4){
       (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
       nco_exit(EXIT_FAILURE);
     } /* endif err */
     if(fl_in_fmt == NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Aggregation only guaranteed to work on netCDF3-classic input format but current input file format is = %s\n",prg_nm_get(),nco_fmt_sng(fl_in_fmt));
-    grp_nm_lst=(char **)nco_malloc(fl_nbr*sizeof(char *));
-    grp_nm_lng=strlen(grp_nm);
+    grp_lst_out=(char **)nco_malloc(fl_nbr*sizeof(char *));
+    if(grp_out) grp_out_lng=strlen(grp_out);
+    grp_id_arr=(int *)nco_malloc(fl_nbr*sizeof(int));
   } /* !GROUP_AGGREGATE */
 
   /* Loop over input files */
@@ -708,12 +728,13 @@ main(int argc,char **argv)
     
     if(GROUP_AGGREGATE){
       if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG GAG ingesting fl = %s\n",prg_nm_get(),fl_in);
-      if(grp_nm){;
-	sprintf(grp_nm_sfx,"_%02d",fl_idx);
-	grp_nm_lst[fl_idx]=(char *)nco_malloc(grp_nm_lng+NCO_GRP_NM_SFX_LNG);
-	grp_nm_lst[fl_idx]=strncat(grp_nm,grp_nm_sfx,(size_t)NCO_GRP_NM_SFX_LNG);
+      if(grp_out){;
+	sprintf(grp_out_sfx,"_%02d",fl_idx);
+	grp_lst_out[fl_idx]=(char *)nco_malloc(grp_out_lng+NCO_GRP_OUT_SFX_LNG+1L);
+	grp_lst_out[fl_idx]=strncat(grp_out,grp_out_sfx,(size_t)NCO_GRP_OUT_SFX_LNG);
       }else{
 	int fl_nm_sfx_lng=0;
+	char *stb_srt_psn;
 
 	/* Is there a .nc, .cdf, .nc3, or .nc4 suffix? */
 	if(strncmp(fl_in+strlen(fl_in)-3,".nc",3) == 0)
@@ -725,35 +746,56 @@ main(int argc,char **argv)
 	else if(strncmp(fl_in+strlen(fl_in)-4,".nc4",4) == 0)
 	  fl_nm_sfx_lng=4;
 
-	grp_nm_lst[fl_idx]=(char *)nco_malloc(strlen(fl_in)-fl_nm_sfx_lng+1L);
-	grp_nm_lst[fl_idx]=strncpy(grp_nm_lst[fl_idx],fl_in,strlen(fl_in)-fl_nm_sfx_lng);
-	grp_nm_lst[fl_idx][strlen(fl_in)-fl_nm_sfx_lng]='\0';
+	stb_srt_psn=strrchr(fl_in,'/');
+	if(!stb_srt_psn) stb_srt_psn=fl_in; else stb_srt_psn++;
+	grp_lst_out[fl_idx]=(char *)nco_malloc(strlen(stb_srt_psn)-fl_nm_sfx_lng+1L);
+	grp_lst_out[fl_idx]=strncpy(grp_lst_out[fl_idx],stb_srt_psn,strlen(stb_srt_psn)-fl_nm_sfx_lng);
+	grp_lst_out[fl_idx][strlen(stb_srt_psn)-fl_nm_sfx_lng]='\0';
+      } /* !grp_out */
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG GAG grp_lst_out[%d] = %s\n",prg_nm_get(),fl_idx,grp_lst_out[fl_idx]);
 
-      } /* !grp_nm */
-      rcd+=nco_def_grp(out_id,grp_nm,&grp_id);
-    } /* !GROUP_AGGREGATE */
+      /* Get objects in file */
+      trv_tbl_init(&trv_tbl);
+      rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
-    /* Open file once per thread to improve caching */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
-    
-    /* Perform various error-checks on input file */
-    if(False) (void)nco_fl_cmp_err_chk();
+      rcd+=nco_def_grp(out_id,grp_out,grp_id_arr+fl_idx);
+      (void)nco_att_cpy(in_id,grp_id_arr[fl_idx],NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
 
-    /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
-    USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id_arr[0],fl_out_fmt);
-    if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
-    if(!USE_MM3_WORKAROUND){  
-      /* Copy all data variable-by-variable */
-      ;
-    }else{
-      /* MM3 workaround algorithm */
-      /* ncecat-specific MM3 characteristics:
-	 Only coordinates are "fixed" (non-processed) variables
-	 All other variables are "processed" 
-	 These variables may be fixed or record on input yet are all record on output 
-	 Makes sense to always use MM3? */
-      ;
-    } /* endif MM3 workaround */
+      /* Form initial extraction list which may include extended regular expressions */
+#ifdef ENABLE_NETCDF4
+      xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
+#else /* !ENABLE_NETCDF4 */
+      xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
+#endif /* ENABLE_NETCDF4 */
+
+   } /* !GROUP_AGGREGATE */
+
+    if(RECORD_AGGREGATE){
+      
+      /* Open file once per thread to improve caching */
+      for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
+      
+      /* Perform various error-checks on input file */
+      if(False) (void)nco_fl_cmp_err_chk();
+      
+      /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
+      USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id_arr[0],fl_out_fmt);
+      if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+      if(!USE_MM3_WORKAROUND){  
+	/* Copy all data variable-by-variable */
+	;
+      }else{
+	/* MM3 workaround algorithm */
+	/* ncecat-specific MM3 characteristics:
+	   Only coordinates are "fixed" (non-processed) variables
+	   All other variables are "processed" 
+	   These variables may be fixed or
+ record on input yet are all record on output 
+	   Makes sense to always use MM3? */
+	;
+      } /* endif MM3 workaround */
+      
+    } /* !RECORD_AGGREGATE */
     
     /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
@@ -832,7 +874,7 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-    if(grp_nm_lst) grp_nm_lst=nco_sng_lst_free(grp_nm_lst,fl_nbr);
+    if(grp_lst_out) grp_lst_out=nco_sng_lst_free(grp_lst_out,fl_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);

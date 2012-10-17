@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.408 2012-10-16 06:20:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.409 2012-10-17 03:58:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,7 +121,6 @@ main(int argc,char **argv)
   nco_bool GET_LIST=False;     /* [flg] Iterate file, print variables and exit */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool HAS_SUBGRP=False;   /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only ) */
-  grp_tbl_sct  *trv_tbl=NULL;    /* [lst] Traversal table */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -145,9 +144,11 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.408 2012-10-16 06:20:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.408 $";
-  const char * const opt_sht_lst="346aABb:CcD:d:Fg:HhL:l:MmOo:Pp:qQrRs:uv:X:x-:zG";
+  char rth[]="/"; /* Group path */
+
+  const char * const CVS_Id="$Id: ncks.c,v 1.409 2012-10-17 03:58:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.409 $";
+  const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -162,6 +163,8 @@ main(int argc,char **argv)
   
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
+  grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
@@ -173,8 +176,8 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
-  int grp_nbr=0; /* [nbr] Number of groups to extract */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
+  int grp_nbr=0; /* [nbr] Number of groups to extract */
   int idx;
   int in_id;  
   int jdx;
@@ -199,8 +202,6 @@ main(int argc,char **argv)
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
-  char rth[2];
-  strcpy(rth,"/");
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -462,6 +463,9 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
+    case 'G': /* Print extended group information for all groups */
+      GET_GRP_INFO=True;
+      break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
@@ -542,9 +546,6 @@ main(int argc,char **argv)
       break;
     case 'z': /* Print list of variables in absolute path format and exit */
       GET_LIST=True;
-      break;
-    case 'G': /* Print extended group information for all groups */
-      GET_GRP_INFO=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
