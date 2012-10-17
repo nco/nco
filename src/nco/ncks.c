@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.409 2012-10-17 03:58:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.410 2012-10-17 05:10:22 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -95,6 +95,9 @@ main(int argc,char **argv)
   nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
+  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
+  nco_bool HAS_SUBGRP=False; /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -118,9 +121,6 @@ main(int argc,char **argv)
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-  nco_bool GET_LIST=False;     /* [flg] Iterate file, print variables and exit */
-  nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
-  nco_bool HAS_SUBGRP=False;   /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only ) */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.409 2012-10-17 03:58:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.409 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.410 2012-10-17 05:10:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.410 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -695,7 +695,7 @@ main(int argc,char **argv)
     (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
   }else{
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-  }/* HAS_SUBGRP */
+  } /* HAS_SUBGRP */
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
@@ -799,7 +799,7 @@ main(int argc,char **argv)
     /* Copy all variables to output file */
     if(HAS_SUBGRP){     
       (void)nco4_grp_var_cpy(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
-    } else {
+    }else{
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
       if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.210 2012-10-17 03:58:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.211 2012-10-17 05:10:22 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -81,9 +81,11 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GROUP_AGGREGATE=False; /* Option G */
+  nco_bool HAS_SUBGRP=False; /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+  nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -118,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.210 2012-10-17 03:58:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.210 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.211 2012-10-17 05:10:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.211 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -141,6 +143,7 @@ main(int argc,char **argv)
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
+  FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
   grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
@@ -705,12 +708,15 @@ main(int argc,char **argv)
   } /* !RECORD_AGGREGATE */
 
   if(GROUP_AGGREGATE){
+#ifndef ENABLE_NETCDF4
+    (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
+    nco_exit(EXIT_FAILURE);
+#endif /* ENABLE_NETCDF4 */
     if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Experimental Group Aggregation (GAG) feature enabled\n",prg_nm_get());
     if(fl_out_fmt != NC_FORMAT_NETCDF4){
       (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
       nco_exit(EXIT_FAILURE);
     } /* endif err */
-    if(fl_in_fmt == NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Aggregation only guaranteed to work on netCDF3-classic input format but current input file format is = %s\n",prg_nm_get(),nco_fmt_sng(fl_in_fmt));
     grp_lst_out=(char **)nco_malloc(fl_nbr*sizeof(char *));
     if(grp_out) grp_out_lng=strlen(grp_out);
     grp_id_arr=(int *)nco_malloc(fl_nbr*sizeof(int));
@@ -754,21 +760,64 @@ main(int argc,char **argv)
       } /* !grp_out */
       if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG GAG grp_lst_out[%d] = %s\n",prg_nm_get(),fl_idx,grp_lst_out[fl_idx]);
 
+      /* Open file once per thread to improve caching */
+      rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+      
+      /* Check for valid -v <names> */
+      (void)nco_chk_trv(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,&xtr_nbr); 
+
+     /* Check if any sub-groups */
+      if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
+
       /* Get objects in file */
       trv_tbl_init(&trv_tbl);
       rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
-      rcd+=nco_def_grp(out_id,grp_out,grp_id_arr+fl_idx);
-      (void)nco_att_cpy(in_id,grp_id_arr[fl_idx],NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+      (void)nco_inq_format(in_id,&fl_in_fmt);
+      if(fl_in_fmt == NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Aggregation only guaranteed to work on netCDF3-classic input format but current input file format is = %s\n",prg_nm_get(),nco_fmt_sng(fl_in_fmt));
 
       /* Form initial extraction list which may include extended regular expressions */
-#ifdef ENABLE_NETCDF4
       xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
-#else /* !ENABLE_NETCDF4 */
-      xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
-#endif /* ENABLE_NETCDF4 */
 
-   } /* !GROUP_AGGREGATE */
+      /* Change included variables to excluded variables */
+      if(EXCLUDE_INPUT_LIST) xtr_lst=nco4_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
+
+      /* Is this a CCM/CCSM/CF-format history tape? */
+      CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+
+      /* Add all coordinate variables to extraction list */
+      if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add_trv(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,&grp_nbr,grp_lst_in);
+ 
+      /* Extract coordinates associated with extracted variables */
+      if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add_trv(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,trv_tbl);
+      /* We now have final list of variables to extract. Phew. */
+
+      /* Find coordinate/dimension values associated with user-specified limits
+	 NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+      if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
+      
+      /* Place all dimensions in lmt_all_lst */
+      lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+
+      /* Initialize lmt_all_sct's */ 
+      (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
+
+      /* Define top-level group for current input file */
+      rcd+=nco_def_grp(out_id,grp_out,grp_id_arr+fl_idx);
+
+      /* Define requested/necessary input groups/variables/attributes/global attributes in output file */
+      (void)nco4_grp_lst_mk(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,(nco_bool)True,CPY_GLB_METADATA);
+
+      /* Turn off default filling behavior to enhance efficiency */
+      nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+
+      /* Copy all variables to output file */
+      (void)nco4_grp_var_cpy(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
+ 
+      /* Close input netCDF file */
+      (void)nco_close(in_id);
+
+    } /* !GROUP_AGGREGATE */
 
     if(RECORD_AGGREGATE){
       
@@ -790,54 +839,54 @@ main(int argc,char **argv)
 	   Only coordinates are "fixed" (non-processed) variables
 	   All other variables are "processed" 
 	   These variables may be fixed or
- record on input yet are all record on output 
+	   record on input yet are all record on output 
 	   Makes sense to always use MM3? */
 	;
       } /* endif MM3 workaround */
       
-    } /* !RECORD_AGGREGATE */
-    
-    /* OpenMP with threading over variables, not files */
+      /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,jdx,MD5_DIGEST)
 #endif /* !_OPENMP */
-    /* Process all variables in current file */
-    for(idx=0;idx<nbr_var_prc;idx++){
-      in_id=in_id_arr[omp_get_thread_num()];
-      if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
-      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
-      /* Variables may have different ID, missing_value, type, in each file */
-      (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
-      /* Retrieve variable from disk into memory */
-      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-      (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
-      /* Size of record dimension is 1 in output file */
-      var_prc_out[idx]->cnt[0]=1L;
-      var_prc_out[idx]->srt[0]=idx_rec_out;
-      /* Write variable into current record in output file */
+      /* Process all variables in current file */
+      for(idx=0;idx<nbr_var_prc;idx++){
+	in_id=in_id_arr[omp_get_thread_num()];
+	if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
+	if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	/* Variables may have different ID, missing_value, type, in each file */
+	(void)nco_var_mtd_refresh(in_id,var_prc[idx]);
+	/* Retrieve variable from disk into memory */
+	/* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	(void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+	/* Size of record dimension is 1 in output file */
+	var_prc_out[idx]->cnt[0]=1L;
+	var_prc_out[idx]->srt[0]=idx_rec_out;
+	/* Write variable into current record in output file */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-      { /* begin OpenMP critical */
-	if(var_prc[idx]->nbr_dim == 0){
-	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
-	}else{ /* end if variable is scalar */
-	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
-	} /* end if variable is array */
-	/* Perform MD5 digest of input and output data if requested */
-	if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
-	/* Free current input buffer */
-	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-      } /* end OpenMP critical */
+	{ /* begin OpenMP critical */
+	  if(var_prc[idx]->nbr_dim == 0){
+	    (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
+	  }else{ /* end if variable is scalar */
+	    (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
+	  } /* end if variable is array */
+	  /* Perform MD5 digest of input and output data if requested */
+	  if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
+	  /* Free current input buffer */
+	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	} /* end OpenMP critical */
       
-    } /* end (OpenMP parallel for) loop over idx */
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+      } /* end (OpenMP parallel for) loop over idx */
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
-    idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
+      idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     
-    /* Close input netCDF file */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
+      /* Close input netCDF file */
+      for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
 
+    } /* !RECORD_AGGREGATE */
+    
     /* Remove local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
     

@@ -1,6 +1,6 @@
 2012-10-16  Charlie Zender  <zender@uci.edu>
 
-	* Porting ncks group code to ncecat
+	* Merged ncks group code into ncecat GROUP_AGGREGATE code
 
 2012-10-15  Charlie Zender  <zender@uci.edu>
 
