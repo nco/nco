@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.410 2012-10-17 05:10:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.411 2012-10-17 17:02:49 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.410 2012-10-17 05:10:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.410 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.411 2012-10-17 17:02:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.411 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -616,6 +616,19 @@ main(int argc,char **argv)
     nco_prt_grp_trv(in_id,trv_tbl);
     goto out; 
   } /* end GET_GRP_INFO */
+
+  /* Parse auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
 
   /* Get number of variables, dimensions, and global attributes in file */
 #ifdef ENABLE_NETCDF4
