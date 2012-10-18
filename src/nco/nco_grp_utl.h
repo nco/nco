@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.82 2012-10-17 20:55:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.83 2012-10-18 19:55:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -147,12 +147,6 @@ nco4_xtr_grp_nm_fll              /* [fnc] Auxiliary function; extract full group
  int * const xtr_nbr,            /* I [nbr] Current index in exclusion/extraction list */
  grp_trv_sct trv);               /* I [sct] Group traversal table entry */
 
-int                              /* O [rcd] Return code, bool */
-nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
-(const int nc_id,                /* I [ID] netCDF file ID */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_trv_sct trv);               /* I [sct] Group traversal table entry */
 
 int                            /* [rcd] Return code */
 nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
@@ -321,6 +315,17 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl);          /* I [sct] Traversal table */
+
+#ifdef NOT_USED
+
+int                              /* O [rcd] Return code, bool */
+nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ grp_trv_sct trv);               /* I [sct] Group traversal table entry */
+
+#endif /* NOT_USED */
 
 #ifdef __cplusplus
 } /* end extern "C" */
