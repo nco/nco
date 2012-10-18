@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.415 2012-10-18 18:24:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.416 2012-10-18 21:09:09 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.415 2012-10-18 18:24:36 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.415 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.416 2012-10-18 21:09:09 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.416 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -586,7 +586,7 @@ main(int argc,char **argv)
   /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
-#if 0
+#if 1
   HAS_SUBGRP=True;
 #endif
 
