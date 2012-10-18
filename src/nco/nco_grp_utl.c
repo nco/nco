@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.168 2012-10-18 20:13:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.169 2012-10-18 21:11:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1107,14 +1107,29 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 
         if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  extract: %s\n",prg_nm_get(),var_pth);
 
-        for(int ndx=0;ndx<nbr_dmn_ult;ndx++){
-          rcd+=nco_inq_dimname(in_id,dmn_ids_ult[ndx],dmn_ult_nm);
-          if(strcmp(var_nm,dmn_ult_nm) == 0 ){
+        /* Obtain netCDF file format */
+        int fl_fmt;
+        (void)nco_inq_format(in_id,&fl_fmt);
+
+        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+
+          /* NOTE: multi-record dimension case not handled */
+          for(int ndx=0;ndx<nbr_dmn_ult;ndx++){
+            rcd+=nco_inq_dimname(in_id,dmn_ids_ult[ndx],dmn_ult_nm);
+            if(strcmp(var_nm,dmn_ult_nm) == 0 ){
+              rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
+              strcpy(rec_dmn_nm,dmn_ult_nm);
+              if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  record dimension: %s\n",prg_nm_get(),rec_dmn_nm);
+            }
+          }      
+        } else { /* netCDF3 */
+
+          (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
+          if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){ 
             rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
-            strcpy(rec_dmn_nm,dmn_ult_nm);
-            if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  record dimension: %s\n",prg_nm_get(),rec_dmn_nm);
-          }
-        }       
+            (void)nco_inq_dimname(in_id,rec_dmn_id,rec_dmn_nm);
+          } /* endif rec_dmn_nm */
+        } /* NC_FORMAT_NETCDF4 */
 
         /* Define variable in output file: NOTE: use grp_out_id obtained */
         if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.416 2012-10-18 21:09:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.417 2012-10-18 21:11:51 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.416 2012-10-18 21:09:09 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.416 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.417 2012-10-18 21:11:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.417 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -586,7 +586,7 @@ main(int argc,char **argv)
   /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
-#if 1
+#if 0
   HAS_SUBGRP=True;
 #endif
 
@@ -787,7 +787,8 @@ main(int argc,char **argv)
       for(idx=0;idx<xtr_nbr;idx++){
         int var_out_id;
         /* Define variable in output file */
-        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
+        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); 
+        else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
         /* Copy variable's attributes */
         if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
       } /* end loop over idx */
