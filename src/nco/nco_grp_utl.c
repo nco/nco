@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.164 2012-10-17 21:06:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.165 2012-10-18 17:31:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1556,7 +1556,7 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
   long dmn_sz;                 /* [nbr] Dimension size */ 
   int *dmn_ids;                /* [ID]  Dimension IDs */ 
-  int grp_id;                  /* [ID] Group ID */
+  int grp_id;                  /* [ID]  Group ID */
   int nbr_att;                 /* [nbr] Number of attributes */
   int nbr_var;                 /* [nbr] Number of variables */
   int nbr_dmn;                 /* [nbr] number of dimensions */
