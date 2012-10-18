@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.165 2012-10-18 17:31:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.166 2012-10-18 18:24:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1564,6 +1564,9 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   int dmn_ids_ult[NC_MAX_DIMS];/* [nbr] Unlimited dimensions IDs array */
   int idx;                     /* [idx] Global index for lmt_all_lst */
   int jdx;
+  int fl_fmt;                  /* [enm] netCDF file format */
+
+  (void)nco_inq_format(in_id,&fl_fmt);
   
 #ifdef GRP_DEV
   /* Initialize counters/indices */
@@ -1574,7 +1577,11 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
     if (trv.typ == nc_typ_grp ) {
 
       /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=in_id;
+      }
 
       /* Obtain unlimited dimensions for group: NOTE using group ID */
       (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
@@ -2229,13 +2236,20 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
   int nbr_att;                /* [nbr] Number of attributes */
   int nbr_var;                /* [nbr] Number of variables */
   int nbr_dmn;                /* [nbr] Number of dimensions */
+  int fl_fmt;                 /* [enm] netCDF file format */
+
+  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_grp ){
 
       /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);         
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=nc_id;
+      }
 
       /* Obtain info for group */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
@@ -2635,7 +2649,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_grp ) {
 
-      if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"%s: DEBUG nco_var_lst_crd_ass_add_trv() grp=%s\n",prg_nm_get(),trv.nm_fll);
+      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: DEBUG nco_var_lst_crd_ass_add_trv() grp=%s\n",prg_nm_get(),trv.nm_fll);
 
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -2661,7 +2675,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       /* ...for each dimension in input group... */
       for(idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
         (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]);
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]);
       } /* end idx_dmn dimensions */
 
       /* Construct the full variable name for all variables in group */
@@ -2680,7 +2694,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
-        if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
 
         /* Check if variable is on extraction list */
         for(idx_lst_var=0;idx_lst_var<*xtr_nbr;idx_lst_var++){
@@ -2688,7 +2702,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
           /* Compare item on list with current variable name (NOTE: using full name to compare ) */
           if(strcmp(xtr1.var_nm_fll,var_nm_fll) == 0){
-            if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"MATCH variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
+            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"MATCH variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
 
             /* Get number of dimensions for variable */
             (void)nco_inq_varndims(grp_id,var_ids[idx_var_grp],&nbr_var_dim);
@@ -2701,7 +2715,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
               /* Get dimension name */
               (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
-              if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"dimensions for MATCH variable: %s id=%d\n",dmn_nm,dmn_id_var[idx_var_dim]);
+              if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimensions for MATCH variable: %s id=%d\n",dmn_nm,dmn_id_var[idx_var_dim]);
 
               /* Valid coordinate (same name of dimension and variable) */
               int dim_id;
@@ -2714,10 +2728,10 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
                 nm_id_sct xtr2=xtr_lst[idx_lst_dim];
                 /* Compare item on list with current variable(dimension) name (NOTE: using relative name to compare ) */
                 if(strcmp(xtr2.nm,dmn_nm) == 0){
-                  if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"MATCH dimension in LIST: %s \n",dmn_nm);
+                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"MATCH dimension in LIST: %s \n",dmn_nm);
                 }
                 else {
-                  if(dbg_lvl_get() >= nco_dbg_crr)(void)fprintf(stdout,"ADD MATCH dimension: %s\n",dmn_nm);
+                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"ADD MATCH dimension: %s\n",dmn_nm);
 
                   /* Add coordinate to list */
 

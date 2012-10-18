@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.414 2012-10-18 17:31:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.415 2012-10-18 18:24:36 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.414 2012-10-18 17:31:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.414 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.415 2012-10-18 18:24:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.415 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -586,6 +586,10 @@ main(int argc,char **argv)
   /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
+#if 0
+  HAS_SUBGRP=True;
+#endif
+
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,rth,trv_tbl);
@@ -912,10 +916,14 @@ main(int argc,char **argv)
       if(HAS_SUBGRP){
         for(idx=0;idx<xtr_nbr;idx++) {
           nm_id_sct nm_id=xtr_lst[idx];
-#ifdef NCO_SANITY_CHECK
+#ifdef NCO_SANITY_CHECK        
           /* Obtain group ID from netCDF API using full group name */
-          int grp_id;   
-          rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
+          int grp_id; 
+          if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+            (void)nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
+          }else{ /* netCDF3 case */
+            grp_id=in_id;
+          }
           assert(grp_id == nm_id.grp_id );
 #endif
           /* Print full name of variable */
