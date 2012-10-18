@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.83 2012-10-18 19:55:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.84 2012-10-18 20:13:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -237,12 +237,6 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
  const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT);    /* I [flg] Write binary file */
 
-void                      
-nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
-(int nc_id,                /* I [ID]  netCDF file ID */
- int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
- grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
-
 void                       
 nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
@@ -325,6 +319,11 @@ nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name
  char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
  grp_trv_sct trv);               /* I [sct] Group traversal table entry */
 
+void                      
+nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
+(int nc_id,                /* I [ID]  netCDF file ID */
+ int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
+ grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
 #endif /* NOT_USED */
 
 #ifdef __cplusplus
