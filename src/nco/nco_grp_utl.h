@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.86 2012-10-19 18:33:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.87 2012-10-19 23:14:21 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -90,10 +90,10 @@ nm_id_sct * /* O [sct] Variable extraction list */
 nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id,  /* I [ID] netCDF group ID (root ID of input file) */
  char * const * const grp_lst_in, /* I [sng] User-specified list of groups names to extract (specified with -g) */
+ const int grp_xtr_nbr,  /* I [nbr] Number of groups in current extraction list (specified with -g) */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const grp_tbl_sct * const trv_tbl, /* I [sct] Group traversal table */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const grp_xtr_nbr,  /* I/O [nbr] Number of groups in current extraction list (specified with -g) */
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  int * const nbr_var_fl); /* O [nbr] Number of variables in input file */
   /* nco4_var_lst_mk() */
@@ -267,7 +267,7 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
 void                          
 nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
- CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names and rx's */
+ char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,                 /* I [nbr] Number of variables in current extraction list */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  int * const nbr_var_fl);           /* O [nbr] Number of variables in input file */

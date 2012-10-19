@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.420 2012-10-19 18:33:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.421 2012-10-19 23:14:21 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.420 2012-10-19 18:33:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.420 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.421 2012-10-19 23:14:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.421 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -656,7 +656,7 @@ main(int argc,char **argv)
 
   /* Form initial extraction list which may include extended regular expressions */
 #ifdef ENABLE_NETCDF4
-  xtr_lst=nco4_var_lst_mk(in_id,grp_lst_in,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&grp_nbr,&xtr_nbr,&nbr_var_fl);
+  xtr_lst=nco4_var_lst_mk(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr,&nbr_var_fl);
 #else /* !ENABLE_NETCDF4 */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #endif /* ENABLE_NETCDF4 */

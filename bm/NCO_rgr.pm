@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.120 2012-10-09 19:46:04 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.121 2012-10-19 23:14:20 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -174,7 +174,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",3);defdim(\"b\",4); a[\$a,\$b]=10;c=a(1,1);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v c -s '%i' %tmp_fl_00%";
-    $dsc_sng="Casting variable with same name as dimension (failure expected on netcdf4 ncap81)";
+    $dsc_sng="Casting variable with same name as dimension (failure expected on netCDF4 ncap81)";
     ##TODO ncap81
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
@@ -260,7 +260,7 @@ sub tst_rgr {
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_03%";;
     $tst_cmd[2]="ncks -C -H -s '%g' -v rec_var_dbl_mss_val_dbl_pck %tmp_fl_03%";
-    $dsc_sng="Difference a packed variable and be sure everything is zero or _FillValue by average whole remainder and comparing to zero.) FAILS with netcdf4";
+    $dsc_sng="Difference a packed variable and be sure everything is zero or _FillValue by average whole remainder and comparing to zero.) FAILS with netCDF4";
     $tst_cmd[3]="0.0";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -301,7 +301,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v mss_val_fst $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val %tmp_fl_00%";
-    $tst_cmd[2]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val %tmp_fl_00% ../data/in.nc %tmp_fl_01% 2> %tmp_fl_02%";
+    $tst_cmd[2]="ncbo -C $omp_flg -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val %tmp_fl_00% ../data/in.nc %tmp_fl_01% 2> %tmp_fl_02%";
     $tst_cmd[3]="ncks -C -H --no_blank -s '%f,' -v mss_val %tmp_fl_01%";
     $dsc_sng="_FillValues differ between files";
     $tst_cmd[4]="-999.000000,-999.000000,-999.000000,-999.000000";
@@ -486,7 +486,15 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
-    
+    $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -Gensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -O -h -m -v area %tmp_fl_01% | grep \"ensemble_../area\" | wc | cut -c 7";
+    $dsc_sng="group aggregate var with hyperslabbing (requires netCDF4)";
+    $tst_cmd[3]="2"; 
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
 #####################
@@ -1210,7 +1218,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tmp_fl_03%";
     $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 %tmp_fl_04%";
-    $dsc_sng="Creating %tmp_fl_03% again (FAILURE netcdf4 ncrename nco821) ";
+    $dsc_sng="Creating %tmp_fl_03% again (FAILURE netCDF4 ncrename nco821) ";
     $tst_cmd[4]="1";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -1221,7 +1229,7 @@ sub tst_rgr {
     push(@tst_cmd, "ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tmp_fl_03% %tmp_fl_04%");
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 %tmp_fl_04% %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H -s '%g' -v one %tmp_fl_00%");
-    $dsc_sng="normalize by denominator upper hemisphere (FAILURE netcdf4 ncrename nco821)";
+    $dsc_sng="normalize by denominator upper hemisphere (FAILURE netCDF4 ncrename nco821)";
     $prsrv_fl=1; # save previously generated files.
 #	$nsr_xpc= 1;
 # tst_run();
@@ -1248,7 +1256,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mask %tmp_fl_00%";
-    $dsc_sng="do not normalize by denominator (FAILURE netcdf4 nco946)";
+    $dsc_sng="do not normalize by denominator (FAILURE netCDF4 nco946)";
     $tst_cmd[2]="50";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.172 2012-10-19 18:33:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.173 2012-10-19 23:14:21 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -190,10 +190,10 @@ nm_id_sct * /* O [sct] Variable extraction list */
 nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [ID] Apex group ID */
  char * const * const grp_lst_in, /* I [sng] User-specified list of groups names to extract (specified with -g) */
+ const int grp_xtr_nbr, /* I [nbr] Number of groups in current extraction list (specified with -g) */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const grp_tbl_sct * const trv_tbl, /* I [sct] Group traversal table */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const grp_xtr_nbr, /* I/O [nbr] Number of groups in current extraction list (specified with -g) */
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  int * const nbr_var_fl) /* O [nbr] Number of variables in input file */
 {
@@ -354,7 +354,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   /* Return all variables if none were specified and not -c ... */
 #ifdef GRP_DEV
-  if(*var_xtr_nbr == 0 && *grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
+  if(*var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
     return var_lst_all;
   } /* end if */
@@ -413,16 +413,15 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
           } /* end if regular expression */
 
-
           /* Compare var_nm from main iteration with var_sng found; if the same add to extraction list at index VAR_IDX_CRR  */
           if(strcmp(var_sng,var_nm) == 0 ){
             /* No groups case, just add  */
-            if (*grp_xtr_nbr == 0 ){
+            if (grp_xtr_nbr == 0 ){
               var_xtr_rqs[var_idx_crr]=True;
               /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
             }else{
               /* Loop through user-specified group list */
-              for(grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
+              for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++){
                 char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
                 /* Get current group name */
                 strcpy(grp_nm_lst,grp_lst_in[grp_idx]);
@@ -458,13 +457,13 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Case 2) 
   -v was not specified but -g was: traverse the -g list first and add all variables from that group 
   */
-  else if (*grp_xtr_nbr) {  
+  else if (grp_xtr_nbr) {  
 #ifdef NCO_SANITY_CHECK
     /* var_idx_crr was used to traverse all groups and variables to make var_lst_all */
     assert(var_nbr_all == var_idx_crr);
 #endif
     /* Loop through user-specified group list */
-    for(grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
+    for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++){
       /* Get current group name */
       strcpy(grp_nm,grp_lst_in[grp_idx]);
       /* Loop through found variable list */
@@ -476,7 +475,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
         } /* end strcmp */
       } /* end var_idx_crr */
     } /* end grp_idx */
-  } /* end *grp_xtr_nbr */
+  } /* end grp_xtr_nbr */
 
 
 #else /* GRP_DEV */ 
@@ -1964,7 +1963,7 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
 void                          
 nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
- CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names and rx's */
+ char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  int * const nbr_var_fl)            /* O [nbr] Number of variables in input file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.217 2012-10-19 18:53:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.218 2012-10-19 23:14:21 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.217 2012-10-19 18:53:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.217 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.218 2012-10-19 23:14:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.218 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -797,7 +797,7 @@ main(int argc,char **argv)
       /* Form initial extraction list which may include extended regular expressions */
       grp_nbr=grp_lst_in_nbr;
       xtr_nbr=var_lst_in_nbr;
-      xtr_lst=nco4_var_lst_mk(in_id,grp_lst_in,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&grp_nbr,&xtr_nbr,&nbr_var_fl);
+      xtr_lst=nco4_var_lst_mk(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr,&nbr_var_fl);
 
       /* Change included variables to excluded variables */
       if(EXCLUDE_INPUT_LIST) xtr_lst=nco4_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
