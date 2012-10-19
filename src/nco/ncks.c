@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.417 2012-10-18 21:11:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.418 2012-10-19 01:07:21 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.417 2012-10-18 21:11:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.417 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.418 2012-10-19 01:07:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.418 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 

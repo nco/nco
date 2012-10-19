@@ -1,3 +1,9 @@
+2012-10-18  Charlie Zender  <zender@uci.edu>
+
+	* ncecat -G makes it through first file
+
+	* Make nco4_inq_trv() return values only if pointers non-NULL
+
 2012-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Merged ncks group code into ncecat GROUP_AGGREGATE code

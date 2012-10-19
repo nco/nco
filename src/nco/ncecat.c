@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.213 2012-10-17 20:55:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.214 2012-10-19 01:07:21 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -81,7 +81,6 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GROUP_AGGREGATE=False; /* Option G */
-  nco_bool HAS_SUBGRP=False; /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -120,8 +119,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.213 2012-10-17 20:55:39 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.213 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.214 2012-10-19 01:07:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.214 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -732,7 +731,7 @@ main(int argc,char **argv)
     fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
-    if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+    fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
     if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
@@ -764,19 +763,33 @@ main(int argc,char **argv)
       } /* !grp_out */
       if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG GAG grp_lst_out[%d] = %s\n",prg_nm_get(),fl_idx,grp_lst_out[fl_idx]);
 
-      /* Open file once per thread to improve caching */
+      /* Open file using appropriate buffer size hints and verbosity */
+      if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
       rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
       
       /* Check for valid -v <names> */
       (void)nco_chk_trv(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,&xtr_nbr); 
 
-     /* Check if any sub-groups */
-      if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
-
       /* Get objects in file */
       trv_tbl_init(&trv_tbl);
       rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
+      /* Get number of variables, dimensions, and global attributes in file */
+      (void)nco4_inq_trv((int *)NULL,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,trv_tbl);
+
+      /* Parse auxiliary coordinates */
+      if(aux_nbr > 0){
+	int aux_idx_nbr;
+	aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
+	if(aux_idx_nbr > 0){
+	  lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+	  int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+	  int aux_idx=0;
+	  for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+	  lmt_nbr=lmt_nbr_new;
+	} /* endif aux */
+      } /* endif aux_nbr */
+    
       (void)nco_inq_format(in_id,&fl_in_fmt);
       if(fl_in_fmt == NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Aggregation only guaranteed to work on netCDF3-classic input format but current input file format is = %s\n",prg_nm_get(),nco_fmt_sng(fl_in_fmt));
 
@@ -807,7 +820,7 @@ main(int argc,char **argv)
       (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
 
       /* Define top-level group for current input file */
-      rcd+=nco_def_grp(out_id,grp_out,grp_id_arr+fl_idx);
+      rcd+=nco_def_grp(out_id,grp_lst_out[fl_idx],grp_id_arr+fl_idx);
 
       /* Define requested/necessary input groups/variables/attributes/global attributes in output file */
       (void)nco4_grp_lst_mk(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,(nco_bool)True,CPY_GLB_METADATA);
@@ -816,14 +829,13 @@ main(int argc,char **argv)
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Copy all variables to output file */
-      (void)nco4_grp_var_cpy(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
+      (void)nco4_grp_var_cpy(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
  
       /* Close input netCDF file */
       (void)nco_close(in_id);
 
       /* Free traversal table */
       trv_tbl_free(trv_tbl);
-
     } /* !GROUP_AGGREGATE */
 
     if(RECORD_AGGREGATE){

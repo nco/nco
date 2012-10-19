@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.169 2012-10-18 21:11:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.170 2012-10-19 01:07:21 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1741,9 +1741,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 #endif
 } /* end nco4_msa_lmt_all_int() */
 
-
-
-
 void                       
 nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
@@ -1753,33 +1750,41 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
  grp_tbl_sct *trv_tbl)    /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
+  int att_nbr_lcl; /* [nbr] Number of global attributes in file */
+  int dmn_nbr_lcl; /* [nbr] Number of dimensions in file */
+  int var_nbr_lcl; /* [nbr] Number of variables in file */
+  int grp_nbr_lcl; /* [nbr] Number of groups in file */
 
   /* Initialize */
-  *att_nbr_glb=0;
-  *dmn_nbr_all=0;
-  *var_nbr_all=0;
-  *grp_nbr_all=0;
+  att_nbr_lcl=0;
+  dmn_nbr_lcl=0;
+  var_nbr_lcl=0;
+  grp_nbr_lcl=0;
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
     if (trv.typ == nc_typ_grp ) { 
 
       /* Increment/Export */
-      *att_nbr_glb+=trv.nbr_att; /* attributes in groups are global */
-      *dmn_nbr_all+=trv.nbr_dmn;
-      *var_nbr_all+=trv.nbr_var;
-      *grp_nbr_all+=trv.nbr_grp;
+      att_nbr_lcl+=trv.nbr_att; /* attributes in groups are global */
+      dmn_nbr_lcl+=trv.nbr_dmn;
+      var_nbr_lcl+=trv.nbr_var;
+      grp_nbr_lcl+=trv.nbr_grp;
     } /* end nc_typ_grp */
   } /* end uidx  */
 
   if(dbg_lvl_get() >= nco_dbg_fl){
     (void)fprintf(stdout,"%s: INFO nco4_inq_trv() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",
-      prg_nm_get(),*grp_nbr_all,(*grp_nbr_all > 1) ? "s" : "",*var_nbr_all,(*var_nbr_all > 1) ? "s" : "",*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "",*att_nbr_glb,(*att_nbr_glb > 1) ? "s" : "");
+      prg_nm_get(),grp_nbr_lcl,(grp_nbr_lcl != 1) ? "s" : "",var_nbr_lcl,(var_nbr_lcl != 1) ? "s" : "",dmn_nbr_lcl,(dmn_nbr_lcl != 1) ? "s" : "",att_nbr_lcl,(att_nbr_lcl != 1) ? "s" : "");
   }
+
+  if(att_nbr_glb) *att_nbr_glb=att_nbr_lcl;
+  if(dmn_nbr_all) *dmn_nbr_all=dmn_nbr_lcl;
+  if(var_nbr_all) *var_nbr_all=var_nbr_lcl;
+  if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
 
   return;
 } /* end nco4_inq_trv() */
-
 
 int                       /* [rcd] Return code */
 nco4_inq_vars             /* [fnc] Find and return total of variables */
