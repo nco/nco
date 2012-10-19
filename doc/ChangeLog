@@ -1,6 +1,6 @@
 2012-10-18  Charlie Zender  <zender@uci.edu>
 
-	* ncecat -G makes it through first file
+	* ncecat -G makes it through first file but nco4_var_lst_mk() needs re-initialization
 
 	* Make nco4_inq_trv() return values only if pointers non-NULL
 

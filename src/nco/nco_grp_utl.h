@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.84 2012-10-18 20:13:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.85 2012-10-19 03:03:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -90,13 +90,13 @@ nco_grp_stk_free /* [fnc] Free group stack */
 nm_id_sct * /* O [sct] Variable extraction list */
 nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id,  /* I [ID] netCDF group ID (root ID of input file) */
- int * const nbr_var_fl, /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  int * const grp_xtr_nbr,  /* I/O [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in, /* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_tbl_sct *trv_tbl); /* I   [sct] Group traversal table  */
+ grp_tbl_sct *trv_tbl, /* I   [sct] Group traversal table  */
+ int * const nbr_var_fl); /* O [nbr] Number of variables in input file */
   /* nco4_var_lst_mk() */
 
 nm_id_sct * /* O [sct] Group extraction list */
@@ -175,8 +175,6 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
  nco_bool PRN_GLB_METADATA);     /* I [flg] Copy global variable metadata (attributes) */
-
-
 
 void
 nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
@@ -270,10 +268,10 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
 void                          
 nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
- int * const nbr_var_fl,            /* I [nbr] Number of variables in input file */
- char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
+ CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names and rx's */
+ const int var_xtr_nbr,                 /* I [nbr] Number of variables in current extraction list */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const var_xtr_nbr);          /* I [nbr] Number of variables in current extraction list */
+ int * const nbr_var_fl);           /* O [nbr] Number of variables in input file */
 
 void 
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */

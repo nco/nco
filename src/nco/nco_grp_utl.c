@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.170 2012-10-19 01:07:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.171 2012-10-19 03:03:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -186,17 +186,16 @@ nco_grp_stk_free /* [fnc] Free group stack */
   grp_stk->grp_id=(int *)nco_free(grp_stk->grp_id);
 } /* end nco_grp_stk_free() */
 
-
 nm_id_sct * /* O [sct] Variable extraction list */
 nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [ID] Apex group ID */
- int * const nbr_var_fl, /* O [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  int * const grp_xtr_nbr,  /* I/O [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in, /* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_tbl_sct *trv_tbl)  /* I   [sct] Group traversal table  */
+ grp_tbl_sct *trv_tbl, /* I [sct] Group traversal table  */
+int * const nbr_var_fl) /* O [nbr] Number of variables in input file */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
 
@@ -373,8 +372,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   This achieves printing all the variables.
   NOTE: the -g case is handled here too, if present, add only the variable if present in the group.
 
-  Case 2) -v was not specified but -g was: traverse the -g list first and add all variables from that group
-  */
+  Case 2) -v was not specified but -g was: traverse the -g list first and add all variables from that group */
   grp_nm_fll=NULL;
   var_nm_fll=NULL;
   if (*var_xtr_nbr) {
@@ -1966,10 +1964,10 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
 void                          
 nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
- int * const nbr_var_fl,            /* I [nbr] Number of variables in input file */
- char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
+ CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names and rx's */
+ const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const var_xtr_nbr)           /* I [nbr] Number of variables in current extraction list */
+ int * const nbr_var_fl)            /* O [nbr] Number of variables in input file */
 {
   char *var_sng; /* User-specified variable name or regular expression */
   char *grp_nm_fll; /* [sng] Fully qualified group name */
@@ -2096,7 +2094,7 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
   /* Loop through user-specified variable list */
-  for(int idx=0;idx<*var_xtr_nbr;idx++){
+  for(int idx=0;idx<var_xtr_nbr;idx++){
     var_sng=var_lst_in[idx];
 
     /* Convert pound signs (back) to commas */
@@ -2146,7 +2144,6 @@ nco_chk_trv                         /* [fnc] Check if input names of -v or -g ar
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
 } /* end nco4_var_lst_mk() */
-
 
 void 
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */

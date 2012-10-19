@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.418 2012-10-19 01:07:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.419 2012-10-19 03:03:45 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.418 2012-10-19 01:07:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.418 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.419 2012-10-19 03:03:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.419 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -581,7 +581,7 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
   /* Check for valid -v <names> */
-  (void)nco_chk_trv(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,&xtr_nbr); 
+  (void)nco_chk_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
   
   /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
@@ -656,7 +656,7 @@ main(int argc,char **argv)
 
   /* Form initial extraction list which may include extended regular expressions */
 #ifdef ENABLE_NETCDF4
-  xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
+  xtr_lst=nco4_var_lst_mk(in_id,var_lst_in,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl,&nbr_var_fl);
 #else /* !ENABLE_NETCDF4 */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #endif /* ENABLE_NETCDF4 */

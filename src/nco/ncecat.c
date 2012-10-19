@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.214 2012-10-19 01:07:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.215 2012-10-19 03:03:45 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.214 2012-10-19 01:07:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.214 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.215 2012-10-19 03:03:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.215 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -768,7 +768,7 @@ main(int argc,char **argv)
       rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
       
       /* Check for valid -v <names> */
-      (void)nco_chk_trv(in_id,&nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,&xtr_nbr); 
+      (void)nco_chk_trv(in_id,var_lst_in,var_lst_in_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
 
       /* Get objects in file */
       trv_tbl_init(&trv_tbl);
@@ -794,7 +794,7 @@ main(int argc,char **argv)
       if(fl_in_fmt == NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Aggregation only guaranteed to work on netCDF3-classic input format but current input file format is = %s\n",prg_nm_get(),nco_fmt_sng(fl_in_fmt));
 
       /* Form initial extraction list which may include extended regular expressions */
-      xtr_lst=nco4_var_lst_mk(in_id,&nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
+      xtr_lst=nco4_var_lst_mk(in_id,var_lst_in,EXTRACT_ALL_COORDINATES,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl,&nbr_var_fl);
 
       /* Change included variables to excluded variables */
       if(EXCLUDE_INPUT_LIST) xtr_lst=nco4_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
