@@ -1,8 +1,8 @@
 2012-10-19  Charlie Zender  <zender@uci.edu>
 
-	* Add in_grp.cdl -> in_grp.nc rules to configure and bld/Makefile
+	* ncecat -G appears to work on netCDF3 and netCDF4 files
 
-	* ncecat -G works on simple inputs
+	* Add in_grp.cdl -> in_grp.nc rules to configure and bld/Makefile
 
 2012-10-18  Charlie Zender  <zender@uci.edu>
 
