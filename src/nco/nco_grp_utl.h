@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.87 2012-10-19 23:14:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.88 2012-10-20 23:39:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -117,6 +117,19 @@ nco_def_grp_rcr
  const int out_id, /* I [ID] netCDF output-file ID */
  const char * const prn_nm, /* I [sng] Parent group name */
  const int rcr_lvl); /* I [nbr] Recursion level */
+
+int                              /* O [rcd] Return code, bool */
+nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ grp_trv_sct trv);               /* I [sct] Group traversal table entry */
+
+void                      
+nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
+(int nc_id,                /* I [ID]  netCDF file ID */
+ int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
+ grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
 
 int                                      /* O [rcd] Return code */
 nco_grp_itr
@@ -307,21 +320,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl);          /* I [sct] Traversal table */
 
-#ifdef NOT_USED
 
-int                              /* O [rcd] Return code, bool */
-nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
-(const int nc_id,                /* I [ID] netCDF file ID */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_trv_sct trv);               /* I [sct] Group traversal table entry */
-
-void                      
-nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
-(int nc_id,                /* I [ID]  netCDF file ID */
- int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
- grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
-#endif /* NOT_USED */
 
 #ifdef __cplusplus
 } /* end extern "C" */

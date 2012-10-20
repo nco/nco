@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.173 2012-10-19 23:14:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.174 2012-10-20 23:39:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1738,6 +1738,120 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 #endif
 } /* end nco4_msa_lmt_all_int() */
 
+
+int                              /* O [rcd] Return code, bool */
+nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ grp_trv_sct trv)                /* I [sct] Group traversal table entry */
+{
+  /* Purpose: 
+     Extract the group name from a grp_trv_sct entry that contains the full path 
+  */
+  char *pch;                    /* Pointer to character in string */
+  int   pos;                    /* Position of character */
+  char *nm_fll;                 /* Path */
+  int  grp_id;                  /* Group ID */
+  int  len_fll;                 /* Lenght of fully qualified group where variable resides */
+  char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
+  int  fnd=0;                   /* Return value; name was found or not */
+
+  len_fll=strlen(trv.nm_fll);
+  nm_fll=(char *)nco_malloc((len_fll+1L)*sizeof(char));
+  strcpy(nm_fll,trv.nm_fll);
+
+  /* Find last occurence of '/' */
+  pch=strrchr(nm_fll,'/');
+
+#ifdef NCO_SANITY_CHECK
+  /* trv.nm_fll must have a '/'  */
+  assert(pch != NULL);
+#endif
+
+  /* Trim the variable name */
+  pos=pch-nm_fll+1;
+  nm_fll[pos]='\0';
+
+  /* Obtain group ID from netCDF API using full group name */
+#ifdef NCO_SANITY_CHECK
+  (void)nco_inq_grp_full_ncid(nc_id,nm_fll,&grp_id);
+#endif
+
+  /* Loop through user-specified group list */
+  for(int grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
+
+    /* Get group name from -g */
+    strcpy(grp_nm_lst,grp_lst_in[grp_idx]);
+
+    /* Locate group name from -g in traversal name */
+    pch=strstr(nm_fll,grp_nm_lst);
+
+    /* strstr returns the first occurrence of 'grp_nm_lst' in 'nm_fll', the higher level group( closer to root) */
+    if(pch != NULL){    
+      fnd=1;
+    } /* end pch was found */
+  } /* end loop user-specified group list */
+
+  /* Free allocated memory */
+  nm_fll=(char *)nco_free(nm_fll);
+  return fnd;
+} /* end nco4_xtr_grp_nm() */
+
+void                      
+nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
+(int nc_id,                /* I [ID]  netCDF file ID */
+ int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
+ grp_tbl_sct *trv_tbl)     /* I [sct] Traversal table */
+{
+  int nbr_dmn_all=0;       /* [nbr] Total number of dimensions in file */
+  char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
+  long dmn_sz;             /* [nbr] Dimension size */ 
+  int *dmn_ids;            /* [ID]  Dimension IDs */ 
+  int grp_id;              /* [ID]  Group ID */
+  int nbr_att;             /* [nbr] Number of attributes */
+  int nbr_var;             /* [nbr] Number of variables */
+  int nbr_dmn;             /* [nbr] Number of dimensions */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
+    if (trv.typ == nc_typ_grp ) {    
+      
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_inq_dmn() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+      /* List dimensions using obtained group ID */
+      for(int jdx=0;jdx<trv.nbr_dmn;jdx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
+        if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
+      } /* end jdx dimensions */
+      (void)nco_free(dmn_ids);
+
+      /* Increment total number of dimensions in file */
+      nbr_dmn_all+=trv.nbr_dmn;
+
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+  /* Export */
+  *dmn_nbr_all=nbr_dmn_all;
+
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_dmn() reports file contains %d dimension%s\n",prg_nm_get(),*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
+
+  return;
+} /* end nco4_inq_dmn() */
+
+
 void                       
 nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
@@ -2566,8 +2680,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_grp ) {
 
-      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: DEBUG nco_var_lst_crd_ass_add_trv() grp=%s\n",prg_nm_get(),trv.nm_fll);
-
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
         (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
@@ -2589,12 +2701,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
-      /* ...for each dimension in input group... */
-      for(idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
-        (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]);
-      } /* end idx_dmn dimensions */
-
       /* Construct the full variable name for all variables in group */
       for(int idx_var_grp=0;idx_var_grp<nbr_var;idx_var_grp++){
         char *var_nm_fll=NULL; /* Full path of variable */
@@ -2611,16 +2717,13 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
-        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
-
         /* Check if variable is on extraction list */
         for(idx_lst_var=0;idx_lst_var<*xtr_nbr;idx_lst_var++){
           nm_id_sct xtr1=xtr_lst[idx_lst_var];
 
           /* Compare item on list with current variable name (NOTE: using full name to compare ) */
           if(strcmp(xtr1.var_nm_fll,var_nm_fll) == 0){
-            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"MATCH variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]);
-
+ 
             /* Get number of dimensions for variable */
             (void)nco_inq_varndims(grp_id,var_ids[idx_var_grp],&nbr_var_dim);
 
@@ -2632,7 +2735,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
               /* Get dimension name */
               (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
-              if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimensions for MATCH variable: %s id=%d\n",dmn_nm,dmn_id_var[idx_var_dim]);
 
               /* Valid coordinate (same name of dimension and variable) */
               int dim_id;
@@ -2645,14 +2747,38 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
                 nm_id_sct xtr2=xtr_lst[idx_lst_dim];
                 /* Compare item on list with current variable(dimension) name (NOTE: using relative name to compare ) */
                 if(strcmp(xtr2.nm,dmn_nm) == 0){
-                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"MATCH dimension in LIST: %s \n",dmn_nm);
-                }
-                else {
-                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"ADD MATCH dimension: %s\n",dmn_nm);
+                  ; /* Nothing to do, already in list */
+                }else{
+                  /* Add coordinate to list
+                  NOTE: Needed members for traversal code:
+                  1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
+                  1) "nm": needed to "nco_prn_var_dfn" to print variable's definition 
+                  3) "grp_id": needed to "nco_prn_var_dfn" to print variable's definition 
+                  4) "id": needed for "nco_prn_att"  to print variable's attributes
+                  2) "var_nm_fll": using full name to compare criteria 
+                      The full path for the added variable (dimension) must be built */
 
-                  /* Add coordinate to list */
+                  char *var_dm_nm_fll=NULL; /* Full path of variable (dimension) */
+                  /* Allocate path buffer; add space for a trailing NUL */ 
+                  var_dm_nm_fll=(char*)nco_malloc(strlen(trv.nm_fll)+strlen(dmn_nm)+2);
+                  /* Initialize path with the current absolute group path */
+                  strcpy(var_dm_nm_fll,trv.nm_fll);
+                  if(strcmp(trv.nm_fll,"/")!=0) /* If not root group, concatenate separator */
+                    strcat(var_dm_nm_fll,"/");
+                  strcat(var_dm_nm_fll,dmn_nm); /* Concatenate variable to absolute group path */
 
+                  xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+                  xtr_lst[*xtr_nbr].grp_nm_fll=strdup(trv.nm_fll); /* current nc_typ_grp is group */            
+                  xtr_lst[*xtr_nbr].var_nm_fll=strdup(var_dm_nm_fll);
+                  xtr_lst[*xtr_nbr].nm=strdup(dmn_nm);
+                  xtr_lst[*xtr_nbr].grp_id=grp_id;
+                  xtr_lst[*xtr_nbr].id=dim_id; /* Using dimension ID for variable ID */
+                  xtr_lst[*xtr_nbr].grp_nm="not_used";                  
+                  (*xtr_nbr)++; /* NB: Changes size of current loop! */
 
+                  /* Memory management after current variable */
+                  var_dm_nm_fll=(char*)nco_free(var_dm_nm_fll);
+                  break;
 
                 } /* End strcmp dmn_nm */
               } /* End idx_lst_dim: check if dimension is on extraction list */
@@ -2888,116 +3014,4 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   return xtr_lst;
 }
 
-#ifdef NOT_USED
-int                              /* O [rcd] Return code, bool */
-nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
-(const int nc_id,                /* I [ID] netCDF file ID */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_trv_sct trv)                /* I [sct] Group traversal table entry */
-{
-  /* Purpose: 
-     Extract the group name from a grp_trv_sct entry that contains the full path 
-  */
-  char *pch;                    /* Pointer to character in string */
-  int   pos;                    /* Position of character */
-  char *nm_fll;                 /* Path */
-  int  grp_id;                  /* Group ID */
-  int  len_fll;                 /* Lenght of fully qualified group where variable resides */
-  char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
-  int  fnd=0;                   /* Return value; name was found or not */
 
-  len_fll=strlen(trv.nm_fll);
-  nm_fll=(char *)nco_malloc((len_fll+1L)*sizeof(char));
-  strcpy(nm_fll,trv.nm_fll);
-
-  /* Find last occurence of '/' */
-  pch=strrchr(nm_fll,'/');
-
-#ifdef NCO_SANITY_CHECK
-  /* trv.nm_fll must have a '/'  */
-  assert(pch != NULL);
-#endif
-
-  /* Trim the variable name */
-  pos=pch-nm_fll+1;
-  nm_fll[pos]='\0';
-
-  /* Obtain group ID from netCDF API using full group name */
-#ifdef NCO_SANITY_CHECK
-  (void)nco_inq_grp_full_ncid(nc_id,nm_fll,&grp_id);
-#endif
-
-  /* Loop through user-specified group list */
-  for(int grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
-
-    /* Get group name from -g */
-    strcpy(grp_nm_lst,grp_lst_in[grp_idx]);
-
-    /* Locate group name from -g in traversal name */
-    pch=strstr(nm_fll,grp_nm_lst);
-
-    /* strstr returns the first occurrence of 'grp_nm_lst' in 'nm_fll', the higher level group( closer to root) */
-    if(pch != NULL){    
-      fnd=1;
-    } /* end pch was found */
-  } /* end loop user-specified group list */
-
-  /* Free allocated memory */
-  nm_fll=(char *)nco_free(nm_fll);
-  return fnd;
-} /* end nco4_xtr_grp_nm() */
-
-void                      
-nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
-(int nc_id,                /* I [ID]  netCDF file ID */
- int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
- grp_tbl_sct *trv_tbl)     /* I [sct] Traversal table */
-{
-  int nbr_dmn_all=0;       /* [nbr] Total number of dimensions in file */
-  char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
-  long dmn_sz;             /* [nbr] Dimension size */ 
-  int *dmn_ids;            /* [ID]  Dimension IDs */ 
-  int grp_id;              /* [ID]  Group ID */
-  int nbr_att;             /* [nbr] Number of attributes */
-  int nbr_var;             /* [nbr] Number of variables */
-  int nbr_dmn;             /* [nbr] Number of dimensions */
-
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
-    if (trv.typ == nc_typ_grp ) {    
-      
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_inq_dmn() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
-
-      /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
-#ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-
-      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
-
-      /* List dimensions using obtained group ID */
-      for(int jdx=0;jdx<trv.nbr_dmn;jdx++){
-        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-      } /* end jdx dimensions */
-      (void)nco_free(dmn_ids);
-
-      /* Increment total number of dimensions in file */
-      nbr_dmn_all+=trv.nbr_dmn;
-
-    } /* end nc_typ_grp */
-  } /* end uidx  */
-
-  /* Export */
-  *dmn_nbr_all=nbr_dmn_all;
-
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_dmn() reports file contains %d dimension%s\n",prg_nm_get(),*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
-
-  return;
-} /* end nco4_inq_dmn() */
-#endif /* NOT_USED */
