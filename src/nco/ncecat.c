@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.218 2012-10-19 23:14:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.219 2012-10-20 04:50:43 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -32,6 +32,7 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
 
    Usage:
+   ncecat -O -D 1 -Gensemble -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
    ncecat -O -D 1 -G -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
@@ -119,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.218 2012-10-19 23:14:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.218 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.219 2012-10-20 04:50:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.219 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -715,7 +716,7 @@ main(int argc,char **argv)
     (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
     nco_exit(EXIT_FAILURE);
 #endif /* ENABLE_NETCDF4 */
-    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Experimental Group Aggregation (GAG) feature enabled\n",prg_nm_get());
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",prg_nm_get());
     if(fl_out_fmt != NC_FORMAT_NETCDF4){
       (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
       nco_exit(EXIT_FAILURE);
@@ -736,25 +737,26 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     if(GROUP_AGGREGATE){
-      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG GAG ingesting fl = %s\n",prg_nm_get(),fl_in);
       if(grp_out){;
 	sprintf(grp_out_sfx,"_%02d",fl_idx);
 	grp_lst_out[fl_idx]=(char *)nco_malloc(grp_out_lng+NCO_GRP_OUT_SFX_LNG+1L);
 	(void)strcpy(grp_lst_out[fl_idx],grp_out);
 	(void)strncat(grp_lst_out[fl_idx],grp_out_sfx,(size_t)NCO_GRP_OUT_SFX_LNG);
       }else{
-	int fl_nm_sfx_lng=0;
+	int fl_nm_sfx_lng;
 	char *stb_srt_psn;
 
 	/* Is there a .nc, .cdf, .nc3, or .nc4 suffix? */
-	if(strncmp(fl_in+strlen(fl_in)-3,".nc",3) == 0)
-	  fl_nm_sfx_lng=3;
-	else if(strncmp(fl_in+strlen(fl_in)-4,".cdf",4) == 0)
+	fl_nm_sfx_lng=3;
+	if(strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".nc",fl_nm_sfx_lng)){
 	  fl_nm_sfx_lng=4;
-	else if(strncmp(fl_in+strlen(fl_in)-4,".nc3",4) == 0)
-	  fl_nm_sfx_lng=4;
-	else if(strncmp(fl_in+strlen(fl_in)-4,".nc4",4) == 0)
-	  fl_nm_sfx_lng=4;
+	  if(strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".cdf",fl_nm_sfx_lng) &&
+	     strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".nc3",fl_nm_sfx_lng) &&
+	     strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".nc4",fl_nm_sfx_lng)){
+	    (void)fprintf(stderr,"%s: WARNING GAG filename suffix is unusual---using whole filename as group name\n",prg_nm_get());
+	    fl_nm_sfx_lng=0;
+	  } /* endif */
+	} /* endif */
 
 	stb_srt_psn=strrchr(fl_in,'/');
 	if(!stb_srt_psn) stb_srt_psn=fl_in; else stb_srt_psn++;
@@ -762,7 +764,7 @@ main(int argc,char **argv)
 	grp_lst_out[fl_idx]=strncpy(grp_lst_out[fl_idx],stb_srt_psn,strlen(stb_srt_psn)-fl_nm_sfx_lng);
 	grp_lst_out[fl_idx][strlen(stb_srt_psn)-fl_nm_sfx_lng]='\0';
       } /* !grp_out */
-      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG GAG grp_lst_out[%d] = %s\n",prg_nm_get(),fl_idx,grp_lst_out[fl_idx]);
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file will be placed in top-level group named %s\n",prg_nm_get(),grp_lst_out[fl_idx]);
 
       /* Open file using appropriate buffer size hints and verbosity */
       if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
@@ -792,7 +794,6 @@ main(int argc,char **argv)
       } /* endif aux_nbr */
     
       (void)nco_inq_format(in_id,&fl_in_fmt);
-      if(fl_in_fmt == NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Aggregation only guaranteed to work on netCDF3-classic input format but current input file format is = %s\n",prg_nm_get(),nco_fmt_sng(fl_in_fmt));
 
       /* Form initial extraction list which may include extended regular expressions */
       grp_nbr=grp_lst_in_nbr;

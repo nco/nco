@@ -1,5 +1,11 @@
 2012-10-19  Charlie Zender  <zender@uci.edu>
 
+ 	* NCO 4.2.2 release procedure:
+ 	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs, ncecat GAG
+	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
+	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
+
 	* ncecat -G appears to work on netCDF3 and netCDF4 files
 
 	* Add in_grp.cdl -> in_grp.nc rules to configure and bld/Makefile
@@ -55,14 +61,6 @@
 	* Add --no_blank switch to fix borken regression tests
 
 	* ncks: print underscore ("_") instead of missing value
-
-2012-10-05  Charlie Zender  <zender@uci.edu>
-
- 	* NCO 4.2.2 release procedure:
- 	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs
-	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
-	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
 
 2012-09-28  Pedro Vicente  <pvicente@uci.edu>
 
