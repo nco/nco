@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.176 2012-10-21 14:42:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.177 2012-10-21 14:47:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3026,7 +3026,7 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
 {
  
 
-  return NULL;
+  return xtr_lst;;
 }
 
 
