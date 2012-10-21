@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.175 2012-10-21 01:58:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.176 2012-10-21 14:42:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1411,7 +1411,8 @@ nco_grp_itr
   nc_type var_typ;             /* O [enm] Variable type */
   int nbr_att;                 /* O [nbr] Number of attributes */
   int nbr_var;                 /* O [nbr] Number of variables */
-  int nbr_dmn;                 /* O [nbr] number of dimensions */
+  int nbr_dmn;                 /* O [nbr] Number of dimensions */
+  int nbr_dmn_prn;             /* O [nbr] Number of dimensions including parent groups */
   int nbr_grp;                 /* O [nbr] Number of sub-groups in this group */
   int var_id;                  /* O [ID] Variable ID */ 
   int rec_dmn_id;              /* O [ID] Record dimension ID */
@@ -1431,6 +1432,7 @@ nco_grp_itr
   rcd+=nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
   dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+  rcd+=nco_inq_dimids(grp_id,&nbr_dmn_prn,NULL,1);
 
   /* Add to table: this is a group */
   obj.nm_fll=grp_nm_fll;
@@ -2651,11 +2653,9 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */
-(const int fl_fmt,                /* I [enm] netCDF file format */
- const int nc_id,                 /* I netCDF file ID */
+(const int nc_id,                 /* I netCDF file ID */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF,  /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
 {
   int rcd=NC_NOERR;            /* [rcd] Return code */
@@ -2679,12 +2679,15 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_grp ) {
 
+      /* Obtain netCDF file format */
+      int fl_fmt;
+      (void)nco_inq_format(nc_id,&fl_fmt);
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
         (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
       }else{ /* netCDF3 case */
         grp_id=nc_id;
-      } /* fl_fmt */
+      }
 
       /* Obtain number of dimensions for group: NOTE using group ID */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
@@ -2854,13 +2857,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
     } /* end if dimension is coordinate */
   } /* end loop over idx_dmn */
 
-#endif
-
-  /* Detect associated coordinates specified by CF "coordinates" convention */
-#ifdef GRP_DEV
-
-
-#else /* GRP_DEV */
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
   if(CNV_CCM_CCSM_CF){
@@ -3023,17 +3019,13 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int fl_fmt,                /* I [enm] netCDF file format */
- const int nc_id,                 /* I netCDF file ID */
+(const int nc_id,                 /* I netCDF file ID */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF,  /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
 {
-  /* Detect associated coordinates specified by CF "coordinates" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
-
  
+
   return NULL;
 }
 

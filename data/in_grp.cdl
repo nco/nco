@@ -26,12 +26,12 @@
 
 netcdf in_grp {
 dimensions:
-	lat=2,lev=3,lon=4,time=unlimited;
+	lat=2,lev=3,lon=4,gds_crd=8,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.14 2012-10-15 23:35:00 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.15 2012-10-21 14:42:32 pvicente Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -62,6 +62,31 @@ variables:
 	float area(lat);
 	area:long_name = "area";
 	area:units = "meter2";
+	
+	float gds_crd(gds_crd);
+	gds_crd:long_name = "Geodesic coordinate";
+	gds_crd:units = "degree";
+	gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
+	gds_crd:coordinates = "lat_gds lon_gds";
+
+	float gds_var(gds_crd);
+	gds_var:long_name = "Geodesic variable";
+	gds_var:units = "meter";
+	gds_var:purpose = "Test auxiliary coordinates like those that define geodesic grids";
+	gds_var:coordinates = "lat_gds lon_gds";
+	
+	double lat_gds(gds_crd);
+	lat_gds:long_name = "Latitude";  
+	lat_gds:standard_name = "latitude";
+	lat_gds:units="degree";
+	lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+
+	double lon_gds(gds_crd);
+	lon_gds:long_name = "Longitude";
+	lon_gds:standard_name = "longitude";
+	lon_gds:units="degree";
+	lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
+
 
 data:
 	scl=1.0;
@@ -71,6 +96,9 @@ data:
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
 	area=10.,10.;
+	gds_crd=0,1,2,3,4,5,6,7;
+	lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
+	lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
 
 group: level_1_group_1 { 
 
