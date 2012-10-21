@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.88 2012-10-20 23:39:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.89 2012-10-21 01:58:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -320,7 +320,14 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  grp_tbl_sct *trv_tbl);          /* I [sct] Traversal table */
 
-
+nm_id_sct *                       /* O [sct] Extraction list */
+nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int fl_fmt,                /* I [enm] netCDF file format */
+ const int nc_id,                 /* I netCDF file ID */
+ nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
+ int * const xtr_nbr,             /* I/O number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF,  /* I [flg] file obeys CCM/CCSM/CF conventions */
+ grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

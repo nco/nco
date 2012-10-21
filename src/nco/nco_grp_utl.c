@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.174 2012-10-20 23:39:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.175 2012-10-21 01:58:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2655,8 +2655,8 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  const int nc_id,                 /* I netCDF file ID */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
- grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
+ const nco_bool CNV_CCM_CCSM_CF,  /* I [flg] file obeys CCM/CCSM/CF conventions */
+ grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
 {
   int rcd=NC_NOERR;            /* [rcd] Return code */
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
@@ -2669,7 +2669,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   int dmn_id[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for group */
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int *var_ids;                /* [ID] Variable IDs array */
-  int idx_dmn;
   int idx_var_dim;
   int idx_lst_var;
   int idx_lst_dim;
@@ -2685,7 +2684,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
         (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
       }else{ /* netCDF3 case */
         grp_id=nc_id;
-      }
+      } /* fl_fmt */
 
       /* Obtain number of dimensions for group: NOTE using group ID */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
@@ -2752,10 +2751,10 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
                   /* Add coordinate to list
                   NOTE: Needed members for traversal code:
                   1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
-                  1) "nm": needed to "nco_prn_var_dfn" to print variable's definition 
+                  2) "nm": needed to "nco_prn_var_dfn" to print variable's definition 
                   3) "grp_id": needed to "nco_prn_var_dfn" to print variable's definition 
                   4) "id": needed for "nco_prn_att"  to print variable's attributes
-                  2) "var_nm_fll": using full name to compare criteria 
+                  5) "var_nm_fll": using full name to compare criteria 
                       The full path for the added variable (dimension) must be built */
 
                   char *var_dm_nm_fll=NULL; /* Full path of variable (dimension) */
@@ -2855,6 +2854,13 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
     } /* end if dimension is coordinate */
   } /* end loop over idx_dmn */
 
+#endif
+
+  /* Detect associated coordinates specified by CF "coordinates" convention */
+#ifdef GRP_DEV
+
+
+#else /* GRP_DEV */
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
   if(CNV_CCM_CCSM_CF){
@@ -3012,6 +3018,23 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 #endif
 
   return xtr_lst;
+}
+
+
+nm_id_sct *                       /* O [sct] Extraction list */
+nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int fl_fmt,                /* I [enm] netCDF file format */
+ const int nc_id,                 /* I netCDF file ID */
+ nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
+ int * const xtr_nbr,             /* I/O number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF,  /* I [flg] file obeys CCM/CCSM/CF conventions */
+ grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
+{
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
+
+ 
+  return NULL;
 }
 
 
