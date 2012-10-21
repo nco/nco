@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.156 2012-10-03 20:46:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.157 2012-10-21 16:59:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -605,6 +605,17 @@ nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ncid()");
   return rcd;
 } /* end nco_inq_ncid() */
+
+int
+nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
+{
+  /* Purpose: Error-tolerant Wrapper for nc_inq_ncid(). Tolerates NC_ENOGRP */
+  int rcd;
+  rcd=nc_inq_ncid(nc_id,grp_nm,grp_id);
+  if(rcd == NC_ENOGRP) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ncid()");
+  return rcd;
+} /* end nco_inq_ncid_flg() */
 #endif /* !ENABLE_NETCDF4 */
 
 int
@@ -724,6 +735,16 @@ int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id)
   return rcd;
 } /* end nco_inq_grp_ncid() */
 
+int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id)
+{
+  /* Purpose: Error-tolerant wrapper for nc_inq_grp_ncid(). Tolerates NC_ENOGRP */
+  int rcd;
+  rcd=nc_inq_grp_ncid(nc_id,grp_nm,grp_id);
+  if(rcd == NC_ENOGRP) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_ncid()");
+  return rcd;
+} /* end nco_inq_grp_ncid() */
+
 int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id)
 {
   /* Purpose: Wrapper for nc_inq_grp_full_ncid() */
@@ -732,6 +753,16 @@ int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const gr
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_full_ncid()");
   return rcd;
 } /* end nco_inq_grp_full_ncid() */
+
+int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id)
+{
+  /* Purpose: Error-tolerant Wrapper for nc_inq_grp_full_ncid(). Tolerates NC_ENOGRP */
+  int rcd;
+  rcd=nc_inq_grp_full_ncid(nc_id,grp_nm_fll,grp_id);
+  if(rcd == NC_ENOGRP) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_full_ncid()");
+  return rcd;
+} /* end nco_inq_grp_full_ncid_flg() */
 
 int nco_inq_grp_parent(const int nc_id,int * const prn_id)
 {

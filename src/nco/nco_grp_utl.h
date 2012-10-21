@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.90 2012-10-21 14:42:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.91 2012-10-21 16:59:51 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -41,6 +41,12 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+int /* O [rcd] Return code */
+nco_def_grp_full /* [fnc] Ensure all components of group path are defined */
+(const int nc_id, /* I [ID] netCDF output-file ID */
+ const char * const grp_nm_fll, /* I [sng] Full group name */
+ int * grp_out_id); /* O [ID] Full group ID */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -309,7 +315,6 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco4_var_lst_crd
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
-
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */

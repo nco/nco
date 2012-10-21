@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.722 2012-10-20 04:50:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.723 2012-10-21 16:59:50 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1828,7 +1828,7 @@ If the shell buffer cannot hold the results of the corresponding
 globbing operator, @file{??????.nc}, then the filename globbing
 technique will fail. 
 Instead we express the filename pattern as an extended regular 
-expression, @file{......\.nc} (@pxref{Subsetting Variables}).
+expression, @file{......\.nc} (@pxref{Subsetting Files}).
 We use @command{grep} to filter the directory listing for this pattern
 and to pipe the results to @command{xargs} which, in turn, passes the
 matching filenames to an @acronym{NCO} multi-file operator, e.g.,
@@ -2042,7 +2042,7 @@ The operators have the following memory requirements:
 Note that only variables that are processed, e.g., averaged,
 concatenated, or differenced, contribute to @math{MS}. 
 Variables which do not appear in the output file 
-(@pxref{Subsetting Variables}) are never read and contribute nothing
+(@pxref{Subsetting Files}) are never read and contribute nothing
 to the memory requirements. 
 
 @html
@@ -2200,7 +2200,7 @@ feature is automatic and cannot be controlled by the user.
 * Retaining Retrieved Files::   
 * Selecting Output File Format::  
 * Large File Support::          
-* Subsetting Variables::        
+* Subsetting Files::        
 * Subsetting Coordinate Variables::  
 * C and Fortran Index Conventions::  
 * Hyperslabs::                  
@@ -3326,7 +3326,7 @@ Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
 @html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
 @end html
-@node Large File Support, Subsetting Variables, Selecting Output File Format, Common features
+@node Large File Support, Subsetting Files, Selecting Output File Format, Common features
 @section Large File Support
 @cindex LFS
 @cindex Large File Support
@@ -3370,8 +3370,8 @@ build time.
 <a name="xcl"></a> <!-- http://nco.sf.net/nco.html#xcl -->
 <a name="sbs"></a> <!-- http://nco.sf.net/nco.html#sbs -->
 @end html
-@node Subsetting Variables, Subsetting Coordinate Variables, Large File Support, Common features
-@section Subsetting Variables
+@node Subsetting Files, Subsetting Coordinate Variables, Large File Support, Common features
+@section Subsetting Files
 @cindex subsetting
 @cindex exclusion
 @cindex extraction
@@ -3555,7 +3555,7 @@ filename expansion (globbing).
 <a name="-C"></a> <!-- http://nco.sf.net/nco.html#-C -->
 <a name="-c"></a> <!-- http://nco.sf.net/nco.html#-c -->
 @end html
-@node Subsetting Coordinate Variables, C and Fortran Index Conventions, Subsetting Variables, Common features
+@node Subsetting Coordinate Variables, C and Fortran Index Conventions, Subsetting Files, Common features
 @section Subsetting Coordinate Variables
 @cindex subsetting
 @cindex @code{-C}
@@ -6425,7 +6425,7 @@ The results of the algebraic manipulations are called
 
 Unlike the other operators, @command{ncap2} does not accept a list of
 variables to be operated on as an argument to @samp{-v} 
-(@pxref{Subsetting Variables}).
+(@pxref{Subsetting Files}).
 Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap2} should output @emph{only} user-defined variables.
 @command{ncap2} neither accepts nor understands the @var{-x} switch.
@@ -9205,7 +9205,7 @@ arithmetic than @command{ncap2}.
 (e.g., @samp{$}, @samp{?}, @samp{;}, @samp{()}, @samp{[]})
 that can confuse the command-line shell if not quoted properly.
 The issues are the same as those which arise in utilizing extended
-regular expressions to subset variables (@pxref{Subsetting Variables}).
+regular expressions to subset variables (@pxref{Subsetting Files}).
 The example above will fail with no quotes and with double quotes.
 This is because shell globbing tries to @dfn{interpolate} the value of
 @code{$time} from the shell environment unless it is quoted:
@@ -9954,7 +9954,7 @@ Variable name.
 @cindex regular expressions
 @cindex pattern matching
 @cindex wildcards
-Regular expressions (@pxref{Subsetting Variables}) are accepted and will 
+Regular expressions (@pxref{Subsetting Files}) are accepted and will 
 select any matching variable names.
 Example: @code{pressure}, @code{'^H2O'}.
 @item mode
@@ -10280,7 +10280,7 @@ in their names.
 @example
 ncatted -O -a isotope,'^H2O*',c,s,"18" in.nc
 @end example
-See @ref{Subsetting Variables} for more details.
+See @ref{Subsetting Files} for more details.
 
 Demonstrate input of C-language escape sequences (e.g., @code{\n}) and
 other special characters (e.g., @code{\"}) 
@@ -11781,7 +11781,7 @@ Copy all global attributes (and no variables) from @file{in.nc} to
 ncks -A -x ~/nco/data/in.nc ~/out.nc
 @end example
 The @samp{-x} switch tells @acronym{NCO} to use the complement of the extraction
-list (@pxref{Subsetting Variables}). 
+list (@pxref{Subsetting Files}). 
 Since no extraction list is explicitly specified (with @samp{-v}),
 the default is to extract all variables.
 The complement of all variables is no variables.

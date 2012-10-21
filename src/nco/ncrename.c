@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.145 2012-10-16 00:39:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.146 2012-10-21 16:59:51 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -90,13 +90,14 @@ main(int argc,char **argv)
   char *fl_out=NULL; /* Option o */
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *grp_rnm_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.145 2012-10-16 00:39:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.145 $";
-  const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.146 2012-10-21 16:59:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.146 $";
+  const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -114,6 +115,7 @@ main(int argc,char **argv)
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_att_rnm=0; /* Option a. NB: nbr_att_rnm gets incremented */
   int nbr_dmn_rnm=0; /* Option d. NB: nbr_dmn_rnm gets incremented */
+  int nbr_grp_rnm=0; /* Option g. NB: nbr_grp_rnm gets incremented */
   int nbr_var_rnm=0; /* Option v. NB: nbr_var_rnm gets incremented */
   int nc_id;  
   int opt;
@@ -121,6 +123,7 @@ main(int argc,char **argv)
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
+  rnm_sct *grp_rnm_lst=NULL_CEWI;
   rnm_sct *att_rnm_lst=NULL_CEWI;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
@@ -152,6 +155,8 @@ main(int argc,char **argv)
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
+      {"group",required_argument,0,'g'},
+      {"grp",required_argument,0,'g'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"local",required_argument,0,'l'},
@@ -218,9 +223,13 @@ main(int argc,char **argv)
       dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
-    case 'd': /* Copy limit argument for later processing */
+    case 'd': /* Copy argument for later processing */
       dmn_rnm_arg[nbr_dmn_rnm]=(char *)strdup(optarg);
       nbr_dmn_rnm++;
+      break;
+    case 'g': /* Copy argument for later processing */
+      grp_rnm_arg[nbr_grp_rnm]=(char *)strdup(optarg);
+      nbr_grp_rnm++;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -270,16 +279,17 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
 
-  if(nbr_var_rnm == 0 && nbr_att_rnm == 0 && nbr_dmn_rnm == 0){
+  if(!nbr_var_rnm && !nbr_att_rnm && !nbr_grp_rnm && !nbr_dmn_rnm){
     (void)fprintf(stdout,"%s: ERROR must specify something to rename\n",prg_nm);
     nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */ 
 
   /* Make uniform list of user-specified rename structures */
-  if(nbr_var_rnm > 0) var_rnm_lst=nco_prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
-  if(nbr_dmn_rnm > 0) dmn_rnm_lst=nco_prs_rnm_lst(nbr_dmn_rnm,dmn_rnm_arg);
   if(nbr_att_rnm > 0) att_rnm_lst=nco_prs_rnm_lst(nbr_att_rnm,att_rnm_arg);
+  if(nbr_dmn_rnm > 0) dmn_rnm_lst=nco_prs_rnm_lst(nbr_dmn_rnm,dmn_rnm_arg);
+  if(nbr_grp_rnm > 0) grp_rnm_lst=nco_prs_rnm_lst(nbr_grp_rnm,grp_rnm_arg);
+  if(nbr_var_rnm > 0) var_rnm_lst=nco_prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
 
   /* We have final list of variables, dimensions, and attributes to rename */
   
@@ -480,9 +490,11 @@ main(int argc,char **argv)
     /* ncrename-specific memory */
     for(idx=0;idx<nbr_att_rnm;idx++) att_rnm_arg[idx]=(char *)nco_free(att_rnm_arg[idx]);
     for(idx=0;idx<nbr_dmn_rnm;idx++) dmn_rnm_arg[idx]=(char *)nco_free(dmn_rnm_arg[idx]);
+    for(idx=0;idx<nbr_grp_rnm;idx++) grp_rnm_arg[idx]=(char *)nco_free(grp_rnm_arg[idx]);
     for(idx=0;idx<nbr_var_rnm;idx++) var_rnm_arg[idx]=(char *)nco_free(var_rnm_arg[idx]);
     if(nbr_att_rnm > 0) att_rnm_lst=(rnm_sct *)nco_free(att_rnm_lst);
     if(nbr_dmn_rnm > 0) dmn_rnm_lst=(rnm_sct *)nco_free(dmn_rnm_lst);
+    if(nbr_grp_rnm > 0) grp_rnm_lst=(rnm_sct *)nco_free(grp_rnm_lst);
     if(nbr_var_rnm > 0) var_rnm_lst=(rnm_sct *)nco_free(var_rnm_lst);
     
     /* NCO-generic clean-up */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.220 2012-10-21 14:42:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.221 2012-10-21 16:59:51 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -116,12 +116,12 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-#define	NCO_GRP_OUT_SFX_LNG 3
+#define	NCO_GRP_OUT_SFX_LNG 2
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.220 2012-10-21 14:42:33 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.220 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.221 2012-10-21 16:59:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.221 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
-  int *in_id_arr;
   int *grp_id_arr;   
+  int *in_id_arr;
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
@@ -189,7 +189,6 @@ main(int argc,char **argv)
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */  
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
@@ -253,10 +252,9 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
+      {"gag",optional_argument,0,'G'}, /* [sng] Output group name */
       {"group",required_argument,0,'g'},
       {"grp",required_argument,0,'g'},
-      {"name",optional_argument,0,'G'}, /* [sng] Output group name */
-      {"nm",optional_argument,0,'G'}, /* [sng] Output group name */
       {"fl_lst_in",no_argument,0,'H'},
       {"file_list",no_argument,0,'H'},
       {"history",no_argument,0,'h'},
@@ -738,11 +736,13 @@ main(int argc,char **argv)
     
     if(GROUP_AGGREGATE){
       if(grp_out){;
-	sprintf(grp_out_sfx,"_%02d",fl_idx);
+	/* Append enumerated counter to end of user-specified root group path */
+	sprintf(grp_out_sfx,"%02d",fl_idx);
 	grp_lst_out[fl_idx]=(char *)nco_malloc(grp_out_lng+NCO_GRP_OUT_SFX_LNG+1L);
 	(void)strcpy(grp_lst_out[fl_idx],grp_out);
 	(void)strncat(grp_lst_out[fl_idx],grp_out_sfx,(size_t)NCO_GRP_OUT_SFX_LNG);
       }else{
+	/* Use filename stub as group name */
 	int fl_nm_sfx_lng;
 	char *stb_srt_psn;
 
@@ -823,8 +823,8 @@ main(int argc,char **argv)
       /* Initialize lmt_all_sct's */ 
       (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
 
-      /* Define top-level group for current input file */
-      rcd+=nco_def_grp(out_id,grp_lst_out[fl_idx],grp_id_arr+fl_idx);
+      /* Define root group for extracted variables */
+      rcd+=nco_def_grp_full(out_id,grp_lst_out[fl_idx],grp_id_arr+fl_idx);
 
       /* Define requested/necessary input groups/variables/attributes/global attributes in output file */
       (void)nco4_grp_lst_mk(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,(nco_bool)True,CPY_GLB_METADATA);

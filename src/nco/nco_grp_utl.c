@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.177 2012-10-21 14:47:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.178 2012-10-21 16:59:51 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -63,6 +63,51 @@ nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
 
   return rcd; /* [rcd] Return code */
 } /* end nco_inq_grps_full() */
+
+int /* O [rcd] Return code */
+nco_def_grp_full /* [fnc] Ensure all components of group path are defined */
+(const int nc_id, /* I [ID] netCDF output-file ID */
+ const char * const grp_nm_fll, /* I [sng] Full group name */
+ int * grp_out_id) /* O [ID] Full group ID */
+{
+  /* Purpose: Ensure all components of full path name exist and return ID of deepest group */
+  char *grp_pth=NULL; /* [sng] Full group path */
+  char *grp_pth_dpl=NULL; /* [sng] Full group path memory duplicate */
+  char *sls_ptr; /* [sng] Pointer to slash */
+
+  int grp_id_crr; /* [ID] Current group ID */
+  int rcd=NC_NOERR;
+
+  /* Initialize defaults */
+  *grp_out_id=nc_id;
+
+  grp_pth_dpl=(char *)strdup(grp_nm_fll);
+  grp_pth=grp_pth_dpl;
+
+  /* No need to try to define root group */
+  if(grp_pth[0] == '/') grp_pth++;
+
+  /* Define everything necessary beneath root group */
+  while(strlen(grp_pth)){
+    /* Terminate path at next slash, if any */
+    sls_ptr=strstr(grp_pth,"/");
+
+    /* Replace slash by NUL */
+    if(sls_ptr) *sls_ptr='\0';
+    
+    /* Identify parent group */
+    grp_id_crr=*grp_out_id;
+    
+    /* If current group is not defined, define it */
+    if(nco_inq_ncid_flg(grp_id_crr,grp_pth,grp_out_id)) nco_def_grp(grp_id_crr,grp_pth,grp_out_id);
+
+    /* Point to next group, if any */
+    if(sls_ptr) grp_pth=sls_ptr+1; else break;
+  } /* end while */
+
+  grp_pth_dpl=(char *)nco_free(grp_pth_dpl);
+  return rcd;
+}  /* end nco_def_grp_full() */
 
 void
 nco_grp_itr_free /* [fnc] Free group iterator */
@@ -2650,7 +2695,6 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_
   return;
 } /* end nco4_var_lst_crd_add() */
 
-
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id,                 /* I netCDF file ID */
@@ -3028,5 +3072,3 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
 
   return xtr_lst;;
 }
-
-

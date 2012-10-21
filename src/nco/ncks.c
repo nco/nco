@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.422 2012-10-21 14:42:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.423 2012-10-21 16:59:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -48,7 +48,7 @@
    ncks -H -C -v lon -d lon,3,1 ~/nco/data/in.nc 
    ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
    ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc
-   ncks -G -D 1 ~/in_grp.nc
+   ncks -O -G foo ~/nco/data/in.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
@@ -97,6 +97,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
+  nco_bool GROUP_AGGREGATE=False; /* Option G */
   nco_bool HAS_SUBGRP=False; /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
@@ -138,6 +139,7 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *grp_out=NULL; /* [sng] Group name */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
@@ -146,9 +148,9 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.422 2012-10-21 14:42:33 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.422 $";
-  const char * const opt_sht_lst="346aABb:CcD:d:FGg:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.423 2012-10-21 16:59:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.423 $";
+  const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -282,6 +284,7 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
+      {"gag",required_argument,0,'G'}, /* [sng] Output group name */
       {"grp",required_argument,0,'g'},
       {"group",required_argument,0,'g'},
       {"history",no_argument,0,'h'},
@@ -372,6 +375,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")) FIX_REC_DMN=True; /* [flg] Fix record dimension */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")){
+	GET_GRP_INFO=True;
+      } /* endif "get_grp_info" */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -463,8 +469,10 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
-    case 'G': /* Print extended group information for all groups */
-      GET_GRP_INFO=True;
+    case 'G': /* Extract variables into specified output group */
+      grp_out=(char *)strdup(optarg);
+      GROUP_AGGREGATE=!GROUP_AGGREGATE;
+      fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -615,7 +623,6 @@ main(int argc,char **argv)
     goto out; 
   } /* end GET_LIST */ 
 
-  /* Process -G option if requested */ 
   if(GET_GRP_INFO){ 
     nco_prt_grp_trv(in_id,trv_tbl);
     goto out; 
@@ -756,6 +763,7 @@ main(int argc,char **argv)
     
   if(fl_out){
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
+    int grp_out_id; /* [ID] Output group ID */
     int out_id;
     
     /* Make output and input files consanguinous */
@@ -766,6 +774,7 @@ main(int argc,char **argv)
 
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+    grp_out_id=out_id;
     
     /* Copy global attributes */
     if(PRN_GLB_METADATA){
@@ -778,23 +787,38 @@ main(int argc,char **argv)
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 
+    if(GROUP_AGGREGATE){
+#ifndef ENABLE_NETCDF4
+      (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
+      nco_exit(EXIT_FAILURE);
+#endif /* ENABLE_NETCDF4 */
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",prg_nm_get());
+      if(fl_out_fmt != NC_FORMAT_NETCDF4){
+	(void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+	nco_exit(EXIT_FAILURE);
+      } /* endif err */
+      
+      /* If user-specified root group for extracted variables does not exist, create it */
+      if(nco_inq_grp_full_ncid_flg(out_id,grp_out,&grp_out_id)) nco_def_grp_full(out_id,grp_out,&grp_out_id);
+    } /* !GROUP_AGGREGATE */
+
     if(HAS_SUBGRP){
       /* Define requested/necessary input groups/variables/attributes/global attributes in output file */
-      (void)nco4_grp_lst_mk(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA);
+      (void)nco4_grp_lst_mk(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA);
     }else{ /* HAS_SUBGRP */
       /* Define requested/necessary input groups in output file */
       if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);
-      if(grp_nbr > 0) rcd+=nco_grp_dfn(out_id,grp_lst,grp_nbr);
+      if(grp_nbr > 0) rcd+=nco_grp_dfn(grp_out_id,grp_lst,grp_nbr);
       for(idx=0;idx<xtr_nbr;idx++){
         int var_out_id;
         /* Define variable in output file */
-        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); 
-        else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
+        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); 
+        else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
         /* Copy variable's attributes */
-        if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
+        if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,grp_out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
       } /* end loop over idx */
       /* Set chunksize parameters */
-      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     } /* HAS_SUBGRP */
 
     /* Turn off default filling behavior to enhance efficiency */
@@ -817,7 +841,7 @@ main(int argc,char **argv)
 
     /* Copy all variables to output file */
     if(HAS_SUBGRP){     
-      (void)nco4_grp_var_cpy(in_id,out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
+      (void)nco4_grp_var_cpy(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
     }else{
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
@@ -830,10 +854,10 @@ main(int argc,char **argv)
           if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
           /* Old hyperslab routines */
           /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
-          /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
+          /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,grp_out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
           /* Multi-slab routines */
           /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
-          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
         } /* end loop over idx */
       }else{
         /* MM3 workaround algorithm */
@@ -848,10 +872,10 @@ main(int argc,char **argv)
         for(idx=0;idx<fix_nbr;idx++){
           if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
           if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-          (void)nco_cpy_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
+          (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
         } /* end loop over idx */
         /* Copy record data record-by-record */
-        (void)nco_cpy_rec_var_val(in_id,out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
+        (void)nco_cpy_rec_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
         if(fix_lst) fix_lst=(nm_id_sct**)nco_free(fix_lst);
         if(rec_lst) rec_lst=(nm_id_sct**)nco_free(rec_lst);
       } /* endif MM3 workaround */

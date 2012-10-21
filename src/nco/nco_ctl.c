@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.362 2012-10-07 00:47:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.363 2012-10-21 16:59:51 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -902,7 +902,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [--hdr_pad nbr] [-i var,val] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a] [-B] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [--fix_rec_dmn] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_digest] [--mk_rec_dmn dim] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--ram_all] [-s format] [-u] [-v ...] [-X box] [-x] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a] [-B] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-g ...] [--fix_rec_dmn] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_digest] [--mk_rec_dmn dim] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--ram_all] [-s format] [-u] [-v ...] [-X box] [-x] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [[--hdr_pad nbr] -L lvl] [-l path] [-M pck_map] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-U] [-X box] [-x] in.nc [out.nc]\n");
@@ -917,7 +917,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
     break;
   case ncecat:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-u ulm_nm] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-g ...] [-G name] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-u ulm_nm] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
     break;
   case ncrename:
     opt_sng=(char *)strdup("[-a ...] [--bfr sz] [-D dbg_lvl] [-d ...] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");
@@ -976,6 +976,13 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--fl_fmt")) (void)fprintf(stdout,"--fl_fmt, --file_format format\tFile format [classic,64bit,netcdf4,netcdf4_classic]\n");
 #else /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"--fl_fmt")) (void)fprintf(stdout,"--fl_fmt, --file_format format\tFile format [classic,64bit]\n");
+#endif /* !ENABLE_NETCDF4 */
+#ifdef ENABLE_NETCDF4
+  if(strstr(opt_sng,"[-G")) (void)fprintf(stdout,"-G, --gag [grp_nm]\tGroup Aggregation (not Record Aggregation)\n");
+  if(strstr(opt_sng,"[-g")){
+    if(prg_lcl == ncrename) (void)fprintf(stdout,"-g, --grp --group\told_grp,new_grp Group's old and new names\n");
+    if(prg_lcl != ncrename) (void)fprintf(stdout,"-g, --grp grp1[,grp2[...]] Group(s) to process (regular expressions supported)\n");
+  } /* end if */
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-H]")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --data, --hieronymus\tToggle printing data\n");

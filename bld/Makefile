@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.618 2012-10-19 18:33:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.619 2012-10-21 16:59:48 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -30,6 +30,7 @@
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
 # cd ~/nco/bld;make DAP_OPENDAP=Y;cd - # DAP support via OPeNDAP
+# cd ~/nco/bld;make DPKG=Y;cd -      # Debian hardening
 # cd ~/nco/bld;make GSL=Y;cd -	     # GSL support
 # cd ~/nco/bld;make I18N=Y;cd -      # Internationalization
 # cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
@@ -133,6 +134,10 @@ ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
 endif # endif DBG
+ifndef ${DPKG}
+# Debian hardening tokens
+ DPKG := N
+endif # endif DPKG
 ifdef FL_FMT
 # Pass this netCDF4 argument to nco_bm.pl
  FL_FMT_SNG := "--fl_fmt=${FL_FMT}"
@@ -1172,6 +1177,12 @@ ifeq (${OPTS},X)
  FFLAGS := -g -O -fdebug-kludge -fbounds-check
 endif
 endif # endif G77 Fortran compiler
+ifeq (${DPKG},Y)
+ CPPFLAGS+=$(shell dpkg-buildflags --get CPPFLAGS)
+ CFLAGS+=$(shell dpkg-buildflags --get CFLAGS)
+ CXXFLAGS+=$(shell dpkg-buildflags --get CXXFLAGS)
+ LDFLAGS+=$(shell dpkg-buildflags --get LDFLAGS)
+endif # endif OMP
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG_C}
  CXXFLAGS += ${OMP_FLG_C}

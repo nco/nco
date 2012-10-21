@@ -1,3 +1,17 @@
+2012-10-21  Charlie Zender  <zender@uci.edu>
+
+	* Prepare ncrename for -g group renaming arguments
+
+	* ncks/ncecat -G accepts extended (depth > 1, multi-component) group names
+
+2012-10-20  Charlie Zender  <zender@uci.edu>
+
+	* Implement nco_def_grp_full() to define root group for extracted variables
+
+	* Remake ncks -G --gag grp_out as root group for ouput à la ncecat
+
+	* Deprecate ncks -G into ncks --get_grp_info
+
 2012-10-19  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.2 release procedure:
@@ -5,6 +19,10 @@
 	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
 	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
+
+	* Add Debian hardening tokens to bld/Makefile
+
+	* Add ncecat -G regression test
 
 	* ncecat -G appears to work on netCDF3 and netCDF4 files
 
