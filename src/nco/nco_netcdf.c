@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.158 2012-10-22 22:09:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.159 2012-10-22 23:52:00 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -702,7 +702,7 @@ nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
   char grp_nm_old[NC_MAX_NAME+1L];
   int rcd;
   rcd=NC_NOERR;
-  rcd+=nco_inq_grpname(nc_id,grp_nm_old);
+  rcd+=nco_inq_grpname(grp_id,grp_nm_old);
   (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\"\n",fnc_nm,grp_nm_old,grp_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_rename_grp()");
   return rcd;
