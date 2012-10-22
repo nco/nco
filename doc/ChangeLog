@@ -1,5 +1,9 @@
 2012-10-22  Charlie Zender  <zender@uci.edu>
 
+	* Call nco_rename_grp() from ncrename
+
+	* Implement library stubs for nc_rename_grp()/nco_rename_grp()
+
 	* Modify in_grp.cdl to allow for new tests
 
 2012-10-21  Charlie Zender  <zender@uci.edu>

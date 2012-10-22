@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.157 2012-10-21 16:59:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.158 2012-10-22 22:09:30 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -680,6 +680,33 @@ int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_grp()");
   return rcd;
 } /* end nco_def_grp() */
+
+int
+nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
+{
+  /* Purpose: Wrapper for nc_rename_grp() */
+  int rcd;
+  rcd=nc_rename_grp(nc_id,grp_id,grp_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_grp()");
+  return rcd;
+} /* end nco_rename_grp() */
+
+int
+nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
+{
+  /* Purpose: Pseudo-library function to rename groups.
+     Based on netcdf-4.2.1/libsrc4/nc4var.c:NC4_rename_var()
+     Routine is only called by netCDF4-enabled code
+     fxm 20121022 */
+  const char fnc_nm[]="nc_rename_grp()";
+  char grp_nm_old[NC_MAX_NAME+1L];
+  int rcd;
+  rcd=NC_NOERR;
+  rcd+=nco_inq_grpname(nc_id,grp_nm_old);
+  (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\"\n",fnc_nm,grp_nm_old,grp_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_rename_grp()");
+  return rcd;
+} /* end nc_rename_grp() */
 
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
 {
@@ -1593,6 +1620,7 @@ int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){
 #if !defined(HAVE_NETCDF4_H) || !defined(ENABLE_NETCDF4)
 /* Stubs for netCDF4 group routines */
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){return 1;}
+int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm){return 1;}
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){return 1;}
 int nco_inq_grpname(const int nc_id,char * const grp_nm){return 1;}
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){return 1;}
