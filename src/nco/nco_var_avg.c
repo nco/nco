@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.68 2012-10-06 23:41:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.69 2012-10-22 06:07:26 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -180,17 +180,17 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
     /* Overwrite any missing value locations with zero */
     if(fix->has_mss_val){
-      int val_sz_byte;
+      int val_sz_byt;
 
       char *val;
       char *mss_val;
 
-      /* NB: Use char * rather than void * because some compilers (acc) will not do pointer arithmetic on void * */
+      /* NB: Use char * rather than void * because some compilers (acc, MSVC) will not do pointer arithmetic on void * */
       mss_val=(char *)fix->mss_val.vp;
-      val_sz_byte=nco_typ_lng(fix->type);
+      val_sz_byt=nco_typ_lng(fix->type);
       val=(char *)fix->val.vp;
-      for(idx=0;idx<fix_sz;idx++,val+=val_sz_byte)
-	if(!memcmp(val,mss_val,(size_t)val_sz_byte)) fix_tally[idx]=0L;
+      for(idx=0;idx<fix_sz;idx++,val+=val_sz_byt)
+	if(!memcmp(val,mss_val,(size_t)val_sz_byt)) fix_tally[idx]=0L;
     } /* fix->has_mss_val */
   } /* end if avg_sz == 1L */
 

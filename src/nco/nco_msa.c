@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.104 2012-10-22 00:21:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.105 2012-10-22 06:07:26 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -781,7 +781,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   int rcd;
   int idx;
   int jdx;
-  int val_sz_byte;
+  int val_sz_byt;
 
   long lmn;
   
@@ -845,7 +845,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   /* Refresh number of attributes and missing value attribute, if any */
   var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
-  if(var.has_mss_val) val_sz_byte=nco_typ_lng(var.type);
+  if(var.has_mss_val) val_sz_byt=nco_typ_lng(var.type);
 
   /* User supplied dlm_sng, print variable (includes nbr_dmn == 0) */  
   if(dlm_sng){
@@ -868,12 +868,9 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     
     for(lmn=0;lmn<var.sz;lmn++){
-      /* memcmp() usage below triggers pedantic warning because of pointer arithmetic with type void * */
-#ifndef _MSC_VER
-        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
-#else
-        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char*)var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
-#endif
+
+      /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
       
       if(PRN_MSS_VAL_BLANK && is_mss_val){
 	if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
@@ -924,7 +921,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is scalar, byte, or character */
     lmn=0L;
-    if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+    if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
     if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
     if(PRN_MSS_VAL_BLANK && is_mss_val){
       if(PRN_DMN_VAR_NM) (void)fprintf(stdout,"%s = %s %s\n",var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
@@ -1036,12 +1033,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     
     for(lmn=0;lmn<var.sz;lmn++){
       
-      /* memcmp() usage below triggers pedantic warning because of pointer arithmetic with type void * */
-#ifndef _MSC_VER
-        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
-#else
-        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char*)var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
-#endif
+      /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
 
       /* Calculate RAM indices from current limit */
       for(idx=0;idx <var.nbr_dim;idx++) 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.179 2012-10-22 00:21:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.180 2012-10-22 06:07:26 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -75,7 +75,7 @@ nco_def_grp_full /* [fnc] Ensure all components of group path are defined */
   char *grp_pth_dpl=NULL; /* [sng] Full group path memory duplicate */
   char *sls_ptr; /* [sng] Pointer to slash */
 
-  int grp_id_crr; /* [ID] Current group ID */
+  int grp_id_prn; /* [ID] Parent group ID */
   int rcd=NC_NOERR;
 
   /* Initialize defaults */
@@ -96,10 +96,10 @@ nco_def_grp_full /* [fnc] Ensure all components of group path are defined */
     if(sls_ptr) *sls_ptr='\0';
     
     /* Identify parent group */
-    grp_id_crr=*grp_out_id;
+    grp_id_prn=*grp_out_id;
     
     /* If current group is not defined, define it */
-    if(nco_inq_ncid_flg(grp_id_crr,grp_pth,grp_out_id)) nco_def_grp(grp_id_crr,grp_pth,grp_out_id);
+    if(nco_inq_ncid_flg(grp_id_prn,grp_pth,grp_out_id)) nco_def_grp(grp_id_prn,grp_pth,grp_out_id);
 
     /* Point to next group, if any */
     if(sls_ptr) grp_pth=sls_ptr+1; else break;
