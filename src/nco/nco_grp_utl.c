@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.183 2012-10-22 22:27:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.184 2012-10-22 22:49:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2592,6 +2592,20 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
         if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]); 
+
+        /* Check if the variable is itself a coordinate variable... in this case do NOT add and continue VAR loop  */ 
+        int is_var_crd=0;
+        for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){ 
+          (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
+          if(strcmp(var_nm,dmn_nm) == 0){
+            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"variable IS coordinate...continue: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]); 
+            is_var_crd=1;
+          } /* strcmp */     
+        } /* end idx_dmn dimensions */ 
+
+        if(is_var_crd){
+          continue; /* idx_var_grp */
+        }
 
         /* Check if variable is on extraction list */
         for(idx_lst_var=0;idx_lst_var<*xtr_nbr;idx_lst_var++){
