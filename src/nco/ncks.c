@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.424 2012-10-22 19:53:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.425 2012-10-22 22:06:12 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.424 2012-10-22 19:53:44 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.424 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.425 2012-10-22 22:06:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.425 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -600,21 +600,6 @@ main(int argc,char **argv)
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,rth,trv_tbl);
-
-  /* Print table in super developer mode */
-  if(dbg_lvl >= nco_dbg_dev){
-    (void)fprintf(stderr,"%s: reports INFO Traversal table\n",prg_nm_get());
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-      if (trv.typ == nc_typ_grp ) {
-        (void)fprintf(stdout,"grp: ");
-        (void)fprintf(stdout,"%s: %s: subgroups=%d , dimensions=%d , attributes=%d, variables=%d\n",trv.nm_fll,trv.nm,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var);
-      } else if (trv.typ == nc_typ_var ) {
-        (void)fprintf(stdout,"var: ");
-        (void)fprintf(stdout,"%s: %s: dimensions=%d , attributes=%d\n",trv.nm_fll,trv.nm,trv.nbr_dmn,trv.nbr_att);
-      }    
-    } /* end uidx */
-  } /* end nco_dbg_dev */
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

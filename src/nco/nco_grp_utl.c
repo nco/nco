@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.181 2012-10-22 19:53:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.182 2012-10-22 22:06:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -401,6 +401,12 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 #ifdef GRP_DEV
   if(*var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
+
+    if(dbg_lvl_get() >= nco_dbg_var){
+      (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
+      prt_xtr_lst(var_lst_all,var_nbr_all);
+    } /* endif dbg */
+
     return var_lst_all;
   } /* end if */
 
@@ -2661,6 +2667,12 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
     } /* end nc_typ_grp */
   } /* end uidx  */
+
+
+  if(dbg_lvl_get() >= nco_dbg_var){
+    (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    prt_xtr_lst(xtr_lst,*xtr_nbr);
+  } /* endif dbg */
 
 
 #else
