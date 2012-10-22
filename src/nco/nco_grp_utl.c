@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.182 2012-10-22 22:06:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.183 2012-10-22 22:27:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2569,6 +2569,12 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
+      /* ...for each dimension in input group... */ 
+      for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){ 
+        (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]); 
+      } /* end idx_dmn dimensions */ 
+
       /* Construct the full variable name for all variables in group */
       for(int idx_var_grp=0;idx_var_grp<nbr_var;idx_var_grp++){
         char *var_nm_fll=NULL; /* Full path of variable */
@@ -2585,12 +2591,16 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]); 
+
         /* Check if variable is on extraction list */
         for(idx_lst_var=0;idx_lst_var<*xtr_nbr;idx_lst_var++){
           nm_id_sct xtr1=xtr_lst[idx_lst_var];
 
           /* Compare item on list with current variable name (NOTE: using full name to compare ) */
           if(strcmp(xtr1.var_nm_fll,var_nm_fll) == 0){
+
+            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"MATCH variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]); 
  
             /* Get number of dimensions for variable */
             (void)nco_inq_varndims(grp_id,var_ids[idx_var_grp],&nbr_var_dim);
@@ -2604,6 +2614,8 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
               /* Get dimension name */
               (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
+              if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimensions for MATCH variable: %s id=%d\n",dmn_nm,dmn_id_var[idx_var_dim]); 
+
               /* Valid coordinate (same name of dimension and variable) */
               int dim_id;
               rcd=nco_inq_varid_flg(grp_id,dmn_nm,&dim_id);
@@ -2615,8 +2627,10 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
                 nm_id_sct xtr2=xtr_lst[idx_lst_dim];
                 /* Compare item on list with current variable(dimension) name (NOTE: using relative name to compare ) */
                 if(strcmp(xtr2.nm,dmn_nm) == 0){
+                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"MATCH dimension in LIST: %s \n",dmn_nm); 
                   ; /* Nothing to do, already in list */
                 }else{
+                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"ADD MATCH dimension: %s\n",dmn_nm); 
                   /* Add coordinate to list
                   NOTE: Needed members for traversal code:
                   1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
