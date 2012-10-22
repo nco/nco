@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.122 2012-10-21 16:59:48 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.123 2012-10-22 00:21:28 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -636,20 +636,16 @@ sub tst_rgr {
     
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lon_cal -d lon_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncap2 -O -v -C -s 'lon_cln_ttl=lon_cal.total();print(lon_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="lon_cln_ttl = 10";
-
     $dsc_sng="dim slice using UDUnits library and cal 365_days (fails without UDUnits library support)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat_cal -d lat_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
-
     $tst_cmd[1]="ncap2 -O -v -C -s 'lat_cln_ttl=lat_cal.total();print(lat_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="lat_cln_ttl = 18";
-
     $dsc_sng="dim slice using UDUnits library and cal 360_days (fails without UDUnits library support)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -712,7 +708,15 @@ sub tst_rgr {
     $dsc_sng="Check creation/copying of global _FillValue";
     $tst_cmd[4]="222";
     $tst_cmd[5]="SS_OK";
-
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+	
+	#NCO 4.2.2: groups: add associated variable "lat" of "area" to extraction list
+	$tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -O -C -H -s '%g' -v lat %tmp_fl_00%";
+    $dsc_sng="Check extraction of associated coordinate variable";
+    $tst_cmd[2]="-9090";
+    $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 

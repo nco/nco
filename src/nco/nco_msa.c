@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.103 2012-10-07 05:24:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.104 2012-10-22 00:21:28 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -869,7 +869,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     
     for(lmn=0;lmn<var.sz;lmn++){
       /* memcmp() usage below triggers pedantic warning because of pointer arithmetic with type void * */
-      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+#ifndef _MSC_VER
+        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+#else
+        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char*)var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+#endif
       
       if(PRN_MSS_VAL_BLANK && is_mss_val){
 	if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
@@ -1033,7 +1037,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     for(lmn=0;lmn<var.sz;lmn++){
       
       /* memcmp() usage below triggers pedantic warning because of pointer arithmetic with type void * */
-      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+#ifndef _MSC_VER
+        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+#else
+        if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char*)var.val.vp+lmn*val_sz_byte,var.mss_val.vp,(size_t)val_sz_byte) : False; 
+#endif
 
       /* Calculate RAM indices from current limit */
       for(idx=0;idx <var.nbr_dim;idx++) 
