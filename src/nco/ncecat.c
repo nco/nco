@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.221 2012-10-21 16:59:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.222 2012-10-22 19:53:44 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.221 2012-10-21 16:59:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.221 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.222 2012-10-22 19:53:44 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.222 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -771,7 +771,7 @@ main(int argc,char **argv)
       rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
       
       /* Check for valid -v <names> */
-      (void)nco_chk_trv(in_id,var_lst_in,var_lst_in_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
+      (void)nco_chk_var_trv(in_id,var_lst_in,var_lst_in_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
 
       /* Get objects in file */
       trv_tbl_init(&trv_tbl);

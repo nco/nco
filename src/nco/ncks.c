@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.423 2012-10-21 16:59:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.424 2012-10-22 19:53:44 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.423 2012-10-21 16:59:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.423 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.424 2012-10-22 19:53:44 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.424 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -588,15 +588,14 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Check for valid -v <names> */
-  (void)nco_chk_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
+  /* Check for valid -v <names> (handles wilcards) */
+  (void)nco_chk_var_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
+
+  /* Check for valid -g <names> */
+  (void)nco_chk_grp_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
   
   /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
-
-#if 0
-  HAS_SUBGRP=True;
-#endif
 
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
@@ -700,7 +699,13 @@ main(int argc,char **argv)
   } /* EXTRACT_ASSOCIATED_COORDINATES */
 
   /* Sort extraction list alphabetically or by variable ID */
-  if(xtr_nbr > 1 && !HAS_SUBGRP) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
+  if(xtr_nbr > 1){
+    if(HAS_SUBGRP){
+      xtr_lst=nco_lst_srt_nm_id_trv(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
+    }else{
+      xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
+    }/* HAS_SUBGRP */
+  }/* xtr_nbr */
     
   /* We now have final list of variables to extract. Phew. */
 
@@ -794,8 +799,8 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
       if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",prg_nm_get());
       if(fl_out_fmt != NC_FORMAT_NETCDF4){
-	(void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
-	nco_exit(EXIT_FAILURE);
+        (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+        nco_exit(EXIT_FAILURE);
       } /* endif err */
       
       /* If user-specified root group for extracted variables does not exist, create it */
@@ -805,6 +810,8 @@ main(int argc,char **argv)
     if(HAS_SUBGRP){
       /* Define requested/necessary input groups/variables/attributes/global attributes in output file */
       (void)nco4_grp_lst_mk(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA);
+      /* Set chunksize parameters */
+      (void)nco_cnk_sz_set_trv(grp_out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     }else{ /* HAS_SUBGRP */
       /* Define requested/necessary input groups in output file */
       if(grp_nbr > 0 || fl_in_fmt == NC_FORMAT_NETCDF4) grp_lst=nco_grp_lst_mk(in_id,grp_lst_in,EXCLUDE_INPUT_LIST,&grp_nbr);

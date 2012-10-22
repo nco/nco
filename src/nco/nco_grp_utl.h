@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.91 2012-10-21 16:59:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.92 2012-10-22 19:53:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -283,14 +283,6 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
  nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
 
-void                          
-nco_chk_trv                         /* [fnc] Check if input names of -v or -g are in file */
-(const int nc_id,                   /* I [ID] Apex group ID */
- char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
- const int var_xtr_nbr,                 /* I [nbr] Number of variables in current extraction list */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const nbr_var_fl);           /* O [nbr] Number of variables in input file */
-
 void 
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
 (const int in_id,             /* I [id] netCDF input file ID */
@@ -329,6 +321,39 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
+
+void
+nco_cnk_sz_set_trv                /* [fnc] Set chunksize parameters (trv version) */
+(const int nc_id,                 /* I [id] netCDF file ID */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,       /* I [nbr] Number of hyperslab limits */
+ int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr);              /* I [nbr] Number of dimensions with user-specified chunking */
+
+nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
+nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically or alphabetically */
+(nm_id_sct * const lst,           /* I/O [sct] Current list (destroyed) */
+ const int nbr_lst,               /* I [nbr] number of members in list */
+ const nco_bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
+
+void                          
+nco_chk_var_trv                     /* [fnc] Check if input names of -v are in file */
+(const int nc_id,                   /* I [ID] Apex group ID */
+ char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
+ const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
+ const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
+ int * const nbr_var_fl);           /* CHK O [nbr] Number of variables in input file */
+
+void                          
+nco_chk_grp_trv                     /* [fnc] Check if input names of -g are in file */
+(const int nc_id,                   /* I [ID] Apex group ID */
+ char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
+ const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
+ const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
+ int * const nbr_var_fl);           /* CHK O [nbr] Number of variables in input file */
 
 #ifdef __cplusplus
 } /* end extern "C" */
