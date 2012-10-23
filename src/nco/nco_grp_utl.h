@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.92 2012-10-22 19:53:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.93 2012-10-23 06:51:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -125,7 +125,7 @@ nco_def_grp_rcr
  const int rcr_lvl); /* I [nbr] Recursion level */
 
 int                              /* O [rcd] Return code, bool */
-nco4_xtr_grp_nm                  /* [fnc] Auxiliary function; extract group name from a grp_trv_sct */
+nco4_has_grp                     /* [fnc] Auxiliary function; find if a group in grp_lst_in is in grp_trv_sct */
 (const int nc_id,                /* I [ID] netCDF file ID */
  int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
@@ -225,7 +225,7 @@ get_lst_nm                      /* [fnc] Strip last component of full name */
 void 
 prt_xtr_lst                     /*   [fnc] Print Name ID structure list */
 (nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
- int xtr_nbr);                  /* I [nbr] Name ID structure list size */
+ const int xtr_nbr);            /* I [nbr] Name ID structure list size */
 
 void
 nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst */
@@ -355,8 +355,16 @@ nco_chk_grp_trv                     /* [fnc] Check if input names of -g are in f
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  int * const nbr_var_fl);           /* CHK O [nbr] Number of variables in input file */
 
+int                            /* O [nbr] Item found or not */
+nco_dmm_trv                    /* [fnc] Find a coordinate variable that matches parameter "var_nm" */
+(const int nc_id,              /* I [id] netCDF file ID */
+ const char* var_nm,           /* I [sng] Variable name to find */
+ grp_tbl_sct *trv_tbl,         /* I [sct] Traversal table */
+ nm_id_sct *nm_id);            /* O [sct] Entry to add to list */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_GRP_UTL_H */
+
