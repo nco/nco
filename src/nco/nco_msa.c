@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.105 2012-10-22 06:07:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.106 2012-10-23 21:04:49 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -14,14 +14,14 @@
 #define NCO_MAX_LEN_FMT_SNG 100
 
 void *
-nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
+nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
 (int dpt_crr, /* [nbr] Current depth, we start at 0 */
  int dpt_crr_max, /* [nbr] Maximium depth (i.e., number of dimensions in variable (does not change) */
  lmt_sct **lmt, /* [sct] Limits of current hyperslabs (these change as we recurse) */
  lmt_all_sct **lmt_lst, /* [sct] List of limits in each dimension (this remains STATIC as we recurse) */
  var_sct *vara) /* [sct] Information for routine to read variable information and pass information between calls */
 {
-  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
+  /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
   /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer) */
   int idx;
   int nbr_slb;
@@ -33,12 +33,13 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
   
   if(nbr_slb == 1){
     lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[0];
-    /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-    vp=nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
+    /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
+    /* ncks -O -g g4g1g1 -v time3 ~/nco/data/in_grp.nc dies in next statement ... */
+    vp=nco_msa_rcr_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
     return vp;
   } /* end if */
   
-  /* Here we deal with multiple hyperslabs */
+  /* Multiple hyperslabs */
   if(nbr_slb > 1){
     int slb_idx;
     long var_sz=1L;
@@ -63,8 +64,8 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     
     for(idx=0;idx<nbr_slb;idx++){
       lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[idx];
-      /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-      cp_wrp[idx]=(char *)nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
+      /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
+      cp_wrp[idx]=(char *)nco_msa_rcr_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
       cp_sz[idx]=vara->sz;
     } /* end loop over idx */
     
@@ -126,7 +127,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
  read_lbl:
   { 
     long var_sz=1L;
-    long mult_srd=1L;
+    long srd_prd=1L; /* Product of strides */
     long *dmn_srt;
     long *dmn_cnt;
     long *dmn_srd;
@@ -140,7 +141,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
       dmn_cnt[idx]=lmt[idx]->cnt;
       dmn_srd[idx]=lmt[idx]->srd;
       var_sz*=dmn_cnt[idx];
-      mult_srd*=lmt[idx]->srd;
+      srd_prd*=lmt[idx]->srd;
     } /* end loop over idx */
     
     vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
@@ -149,7 +150,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     { /* begin potential OpenMP critical */
       /* Check for stride */
       if(var_sz > 0){ /* Allow for zero-size record variables TODO nco711 */
-	if(mult_srd == 1L)
+	if(srd_prd == 1L)
 	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
 	else
 	  (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
@@ -165,7 +166,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     return vp;
   }/* end read_lbl */
   
-} /* end nco_msa_rec_clc() */
+} /* end nco_msa_rcr_clc() */
 
 void 
 nco_msa_prn_idx(lmt_all_sct *lmt_i)
@@ -573,10 +574,10 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   } /* end idx */
   
   /* Call super-dooper recursive routine */
-  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
+  /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
   typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk; 
-  void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_msa,var_in);
+  void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var_in);
   
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
@@ -714,8 +715,8 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   vara.type=var_typ;
 
   /* Call super-dooper recursive routine */
-  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-  void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_msa,&vara);
+  /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
+  void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,&vara);
   var_sz=vara.sz;
 
   /* Block is always critical */
@@ -835,8 +836,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end loop over jdx */
   
   /* Call super-dooper recursive routine */
-  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-  var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_msa,&var);
+  /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
+  var.val.vp=nco_msa_rcr_clc(0,var.nbr_dim,lmt,lmt_msa,&var);
   /* Call also initializes var.sz with final size */
   if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),in_id,(long *)NULL,(long *)NULL,var.val.vp);
 
@@ -1023,8 +1024,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         var_crd.type=dim[idx].type;
         var_crd.id=dim[idx].cid;
         /* Read coordinate variable with limits applied */
-	/* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_msa+idx,&var_crd);
+	/* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
+	dim[idx].val.vp=nco_msa_rcr_clc(0,1,lmt,lmt_msa+idx,&var_crd);
 	
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
@@ -1422,8 +1423,8 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
       } /* end idx */
       
       /* Call super-dooper recursive routine */
-      /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
-      var[idx]->val.vp=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_msa,var[idx]);
+      /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
+      var[idx]->val.vp=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var[idx]);
   
       (void)nco_free(lmt_msa);
       (void)nco_free(lmt);

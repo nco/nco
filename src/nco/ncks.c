@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.426 2012-10-23 20:47:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.427 2012-10-23 21:04:49 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.426 2012-10-23 20:47:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.426 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.427 2012-10-23 21:04:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.427 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -883,7 +883,7 @@ main(int argc,char **argv)
   }else{ /* !fl_out */
     /* No output file was specified so PRN_ tokens refer to screen printing */
     if(PRN_GLB_METADATA){
-      (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, ID = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
+      (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,nco_fmt_sng(fl_in_fmt));
       if(HAS_SUBGRP){
         /* Print global attributes recursive */
         (void)nco_prn_att_trv(in_id,trv_tbl);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.513 2012-10-10 07:19:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.514 2012-10-23 21:04:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -10,22 +10,22 @@ new functionality supported by our NASA ACCESS grant. Old stuff first:
 Optional specification of header pads in all operators and of negative
 hyperslab indices (to count backwards from the end) are now supported
 on all operators for which they make sense. And ncwa is now present 
-in the windows tarball.
+in the Windows tarball.
 
-The more exciting work, forthcoming to all of NCO in roughly the
-coming year, is better support for netCDF4/HDF5 features. To begin,
-ncks now supports group hierarchies and multiple record dimensions.
-The most important (in my opinion) netCDF4 feature that ncks does
-not support now is user-defined and compound types. These are
-currently rarely used so we think ncks will work as is on most netCDF4  
-files users are likely to see in the near future. Let us know how you
-like, or dislike, the way we have implemented the equivalent
-functionality that ncks already had for netCDF3. Your feedback will
-help us finalize things like the printed output format for group
-information, and tidy up loose ends. 
+This release offers much better support for netCDF4/HDF5 features in 
+ncks and ncecat. Such support will come to all of NCO in about a year.
+ncks now supports group hierarchies and multiple record dimensions. 
+ncecat now aggregates files into group hierarchies. ncks and ncecat
+will work as is on most netCDF4 files. They do not yet support
+user-defined and compound types, which are still rarely seen.
 
-Work on NCO 4.2.3 is underway: better netCDF4 support for ncks, and
-possibly ncdiff. 
+Let us know how you like, or dislike, the way we have implemented the
+equivalent functionality for netCDF4 that NCO already had for netCDF3.  
+Your feedback will help us finalize things like the printed output
+format for group information, and tidy up loose ends. 
+
+Work on NCO 4.2.3 is underway: better netCDF4 support for arithmetic
+operators.
 
 Enjoy,
 Charlie
@@ -34,13 +34,15 @@ Other "New stuff" in 4.2.2 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
-A. ncks supports netCDF4 groups and multiple record dimensions.
+A. ncks and ncecat support netCDF4 groups.
    The key new switches are -g and -G, which do what you would expect:
-   extract (or exclude) members of the specified groups. Regular
-   expressions work on group names, on variable names, and interact to 
-   give users precise and powerful control over subsetting and
-   hyperslabbing netCDF4 files. See the new examples at
-   http://nco.sf.net/nco.html#xmp_ncks
+   extract (or exclude) members of the specified (with -g) groups and
+   place them in the specified (with -G) output group. Regular
+   expressions work on group names as on variable names, giving users
+   precise and powerful control over subsetting and hyperslabbing
+   netCDF4 files 
+   % ncks -g grp1,grp2 in.nc out.nc
+   More examples at http://nco.sf.net/nco.html#xmp_ncks
 
 A. ncks now prints missing values as underscores ("_") by default.
    Previously ncks printed the numeric representation, e.g., "1.0e36".

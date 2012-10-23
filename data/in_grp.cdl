@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.17 2012-10-23 06:21:36 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.18 2012-10-23 21:04:48 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -100,40 +100,40 @@ data:
 	lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
 	lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
 
-group: level_1_group_1 { 
+group: g1 { 
 
       variables:
 	float lon(lon);
-	lon:long_name = "level_1_group_1 Longitude (typically midpoints)";
-	lon:units = "level_1_group_1 degrees_east";
+	lon:long_name = "g1 Longitude (typically midpoints)";
+	lon:units = "g1 degrees_east";
 	float scl;
       data:
 	lon=0,90,180,270;
 	scl=1.1;
 
-	group: level_2_group_1 { 
+	group: g1g2 { 
 		variables:
 			float scl;
 		data:
 			scl=1.1;
-	} // end level_2_group_1
+	} // end g1g2
 
-} // end level_1_group_1
+} // end g1
 
-group: level_1_group_2 { 
+group: g2 { 
 	variables:
 		double time(time);
 	float scl;
       data:
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	scl=1.2;
-} // end level_1_group_2
+} // end g2
 
-group: level_1_group_3 {
+group: g3 {
 	dimensions:
 	  rlev=3,time2=unlimited;
 	variables:
-	  :level_1_group_3_global_attribute = "level_1_group_3_global_attribute";
+	  :g3_global_attribute = "g3_global_attribute";
 	  float rz(rlev);
 	  double time2(time2);
 	  float scl;
@@ -141,38 +141,40 @@ group: level_1_group_3 {
 	  time2=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.;
 	  rz=0,5000,17000;
 	  scl=1.3;
-} // end level_1_group_3
+} // end g3
 
-group: level_1_group_4 { 
+group: g4 { 
 
-	group: level_2_group_4 { 
+	group: g4g1 { 
 	
-		group: level_3_group_4 {  // Group with 2 unlimited dimensions and coordinate variables
+		group: g4g1g1 {  // Group with 2 unlimited dimensions and coordinate variables
+	      // fxm: 20121023 ncks unable to print variables with differing record dimensions
 			dimensions:
-			  time3=unlimited,time4=unlimited;
+	      time3=unlimited;
+	      // time4=unlimited;
 			variables:
 			  double time3(time3);
-			  double time4(time4);
+			  // double time4(time4);
 			data:
 			  time3=1.,2.,3.;
-			  time4=1.,2.,3.,4.;
-			} // end level_3_group_4
-		} // end level_2_group_4
-} // end level_1_group_4
+			  // time4=1.,2.,3.,4.;
+			} // end g4g1g1
+		} // end g4g1
+} // end g4
 
-group: level_1_group_5 { 
+group: g5 { 
 
-	group: level_2_group_5 { // Group with 2 unlimited dimensions
+	group: g5g1 { // Group with 2 unlimited dimensions
 			dimensions:
 			  time5=unlimited,time6=unlimited;
 	
-		group: level_3_group_5 { 
+		group: g5g1g1 { 
 			
-			} // end level_3_group_5
-		} // end level_2_group_5
-} // end level_1_group_5
+			} // end g5g1g1
+		} // end g5g1
+} // end g5
 
-group: level_1_group_6 { 
+group: g6 { 
 
 	variables:
 	  float area(lat);
@@ -182,6 +184,6 @@ group: level_1_group_6 {
 	data:
 	  area=10.,10.;
 
-} // end level_1_group_6
+} // end g6
 	
 } // end root group

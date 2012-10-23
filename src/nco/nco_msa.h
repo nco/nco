@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.41 2012-10-06 23:41:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.42 2012-10-23 21:04:49 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -97,7 +97,7 @@ nco_msa_lmt_all_int     /* [fnc] Initilaize lmt_all_sct's */
 
 
 void *          /* O pointer to malloced slab */
-nco_msa_rec_clc /* Multi slab algorithm (recursive routine) */
+nco_msa_rcr_clc /* Multi slab algorithm (recursive routine) */
 (int i,             /* current depth, we start at 0 */
  int imax,          /* maximium depth (i.e the number of dims in variable (does not change)*/		 
  lmt_sct **lmt,    /* limits of the current hyperslab these change as we recurse */

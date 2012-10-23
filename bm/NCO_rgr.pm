@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.123 2012-10-22 00:21:28 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.124 2012-10-23 21:04:48 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -487,7 +487,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
 
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -Gensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -O -h -m -v area %tmp_fl_01% | grep \"ensemble../area\" | wc | cut -c 7";
     $dsc_sng="group aggregate var with hyperslabbing (requires netCDF4)";
     $tst_cmd[3]="2"; 

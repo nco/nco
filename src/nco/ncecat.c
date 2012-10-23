@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.222 2012-10-22 19:53:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.223 2012-10-23 21:04:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,9 +120,9 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.222 2012-10-22 19:53:44 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.222 $";
-  const char * const opt_sht_lst="346ACcD:d:Fg:G::HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.223 2012-10-23 21:04:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.223 $";
+  const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -212,6 +212,8 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"gag",no_argument,0,0}, /* [flg] Group aggregation */
+      {"aggregate_group",no_argument,0,0}, /* [flg] Group aggregation */
       {"md5_digest",no_argument,0,0}, /* [flg] Print MD5 digest */
       {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
@@ -252,7 +254,7 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
-      {"gag",optional_argument,0,'G'}, /* [sng] Output group name */
+      {"root_out",required_argument,0,'G'},
       {"group",required_argument,0,'g'},
       {"grp",required_argument,0,'g'},
       {"fl_lst_in",no_argument,0,'H'},
@@ -333,6 +335,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"gag") || !strcmp(opt_crr,"aggregate_group")) GROUP_AGGREGATE=True;
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -393,12 +396,10 @@ main(int argc,char **argv)
       grp_nbr=grp_lst_in_nbr;
       break;
     case 'G': /* Aggregate files into groups not records */
-      /* NB: GNU getopt() optional argument syntax is ugly:
+      /* NB: GNU getopt() optional argument syntax is ugly, requires "=" sign
 	 http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       if(optarg) grp_out=(char *)strdup(optarg);
-      GROUP_AGGREGATE=!GROUP_AGGREGATE;
-      RECORD_AGGREGATE=!GROUP_AGGREGATE;
-      fl_out_fmt=NC_FORMAT_NETCDF4; 
+      GROUP_AGGREGATE=True;
       break;
     case 'H': /* Toggle writing input file list attribute */
       FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
@@ -482,6 +483,11 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
+  if(GROUP_AGGREGATE){
+    RECORD_AGGREGATE=!GROUP_AGGREGATE;
+    fl_out_fmt=NC_FORMAT_NETCDF4; 
+  } /* !GROUP_AGGREGATE */
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 

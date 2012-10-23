@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.723 2012-10-21 16:59:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.724 2012-10-23 21:04:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3230,9 +3230,9 @@ ncks --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
 ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
 ncks -3 in.nc foo_3c.nc # netCDF3 classic
 ncks --3 in.nc foo_3c.nc # netCDF3 classic
+ncks --64 in.nc foo_364.nc # netCDF3 64bit
 ncks -4 in.nc foo_4.nc # netCDF4 
 ncks --4 in.nc foo_4.nc # netCDF4 
-ncks --64 in.nc foo364.nc # netCDF3 64bit
 @end example
 Of course since most operators support these switches, the
 ``conversions'' can be done at the output stage of arithmetic
@@ -3274,17 +3274,17 @@ First, examine the end of the first line of global metadata output by
 @cindex @code{-M}
 @example
 % ncks -M foo_3c.nc
-Opened file foo_3c.nc: dimensions = 19, variables = 261, global atts. = 4, 
-  id = 65536, type = NC_FORMAT_CLASSIC 
+Opened file foo_3c.nc: dimensions = 23, variables = 296, global atts. = 5, 
+type = NC_FORMAT_CLASSIC 
 % ncks -M foo_364.nc
-Opened file foo_364.nc: dimensions = 19, variables = 261, global atts. = 4, 
-  id = 65536, type = NC_FORMAT_64BIT
+Opened file foo_364.nc: dimensions = 23, variables = 296, global atts. = 5, 
+type = NC_FORMAT_64BIT
 % ncks -M foo_4c.nc
-Opened file foo_4c.nc: dimensions = 19, variables = 261, global atts. = 4,
-  id = 65536, type = NC_FORMAT_NETCDF4_CLASSIC
+Opened file foo_4c.nc: dimensions = 23, variables = 296, global atts. = 5, 
+type = NC_FORMAT_NETCDF4_CLASSIC
 % ncks -M foo_4.nc
-Opened file foo_4.nc: dimensions = 19, variables = 261, global atts. = 4,
-  id = 65536, type = NC_FORMAT_NETCDF4
+Opened file foo_4.nc: dimensions = 23, variables = 296, global atts. = 5, 
+type = NC_FORMAT_NETCDF4
 @end example
 This method requires a netCDF4-enabled @acronym{NCO} version 3.9.0+
 (i.e., from 2007 or later).
@@ -3366,6 +3366,7 @@ versions of the netCDF standard.
 build time. 
 
 @html
+<a name="grp"></a> <!-- http://nco.sf.net/nco.html#grp -->
 <a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
 <a name="xcl"></a> <!-- http://nco.sf.net/nco.html#xcl -->
 <a name="sbs"></a> <!-- http://nco.sf.net/nco.html#sbs -->
@@ -3377,22 +3378,38 @@ build time.
 @cindex extraction
 @cindex @code{-v @var{var}}
 @cindex @code{--variable @var{var}}
+@cindex @code{-g @var{grp}}
+@cindex @code{--grp @var{grp}}
+@cindex @code{--group @var{grp}}
+@cindex @code{-G @var{out_grp}}
+@cindex @code{--root_out @var{out_grp}}
 @cindex @code{-x}
 @cindex @code{--exclude}
 @cindex @code{--xcl}
 @cartouche
+Options @code{-g @var{grp}} and @code{-G @var{out_grp}}@*
+Availability: @command{ncecat}, @command{ncks}@*
+Short options: @samp{-G}, @samp{-g}@*
+Long options: @samp{--grp} and @samp{--group} or @samp{--out_grp}@*
+Options @code{-v @var{var}} and @code{-x}@*
 Availability: (@command{ncap2}), @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-v}, @samp{-x}@*
 Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
 @end cartouche
-Subsetting variables refers to explicitly specifying variables to be
-included or excluded from operator actions.
-Subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
-@samp{-x} options.  
-@w{A list} of variables to extract is specified following the @samp{-v} 
-option, e.g., @samp{-v time,lat,lon}.
+Subsetting variables refers to explicitly specifying variables and
+groups to be included or excluded from operator actions.
+Subsetting is controlled by the @samp{-v @var{var}[,@dots{}]} and
+@samp{-x} options for directly specifying variables.  
+Specifying groups, whether in addition to or instead of variables,
+is quite similar and is controlled by the @samp{-g @var{grp}[,@dots{}]}
+and @samp{-x} options.
+@w{A list} of variables or groups to extract is specified following the
+@samp{-v} and @samp{-g} options, e.g., @samp{-v time,lat,lon} or
+@samp{-g grp1,grp2}.
+Both options may be specified simultaneously and @acronym{NCO} will
+extract the union of the lists.
 Not using the @samp{-v} option is equivalent to specifying all
 variables.  
 The @samp{-x} option causes the list of variables specified with
@@ -3400,9 +3417,9 @@ The @samp{-x} option causes the list of variables specified with
 Thus @samp{-x} saves typing when you only want to extract fewer than
 half of the variables in a file.
 
-Variables explicitly specified for extraction with
-@samp{-v @var{var}[,@dots{}]} @emph{must} be present in the input file 
-or an error will result.
+Variables or groups explicitly specified for extraction with
+@samp{-v @var{var}[,@dots{}]} or @samp{-g @var{grp}[,@dots{}]}
+@emph{must} be present in the input file or an error will result.
 Variables explicitly specified for @emph{exclusion} with
 @samp{-x -v @var{var}[,@dots{}]} need not be present in the input
 file.
@@ -3417,7 +3434,21 @@ Due to its special capabilities, @command{ncap2} interprets the
 (@pxref{ncap2 netCDF Arithmetic Processor}). 
 For @command{ncap2}, the @samp{-v} switch takes no arguments and
 indicates that @emph{only} user-defined variables should be output. 
-@command{ncap2} neither accepts nor understands the @var{-x} switch.
+@command{ncap2} neither accepts nor understands the @var{-x} and
+@var{-g} switches.
+
+As of @acronym{NCO} 4.2.2 (October, 2012), all operators that accept
+netCDF4 files with groups accept the @samp{-G} switch, or its
+long-option equivalent @samp{--root_out} to specify the root group in 
+in the output file where results will be placed.
+Combining the subsetting controls yields powerful control over the 
+extracted (or excluded) variables and groups and their placement in the 
+output file:
+@example
+ncks -v scl in_grp.nc out.nc           # Extract scl from all groups
+ncks -g level_1_group_1 -v scl in_grp.nc out.nc # 
+
+@end example
 
 @html
 <a name="rx"></a> <!-- http://nco.sf.net/nco.html#rx -->
@@ -3431,20 +3462,26 @@ indicates that @emph{only} user-defined variables should be output.
 @cindex @command{egrep}
 @cindex @command{ncatted}
 @cindex @acronym{GNU}
-As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
-of the @samp{-v} switch may contain @dfn{extended regular expressions}.
-As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
-to @command{ncatted} may contain @dfn{extended regular expressions}. 
-For example, @samp{-v '^DST'} selects all variables beginning with the 
-string @samp{DST}.
-Extended regular expressions are defined by the @acronym{POSIX}
-@command{grep -E} (aka @command{egrep}) command.  
+Regular expressions the syntax that @acronym{NCO} use pattern-match
+object names in netCDF file against user requests.
+The user can select all variables beginning with the string @samp{DST}
+from an input file by supplying the regular expression @samp{^DST} to
+the @samp{-v} switch, i.e., @samp{-v '^DST'}. 
 The meta-characters used to express pattern matching operations are
 @samp{^$+?.*[]@{@}|}. 
 If the regular expression pattern matches @emph{any} part of a variable 
 name then that variable is selected.
-This capability is called @dfn{wildcarding}, and is very useful for
+This capability is also called @dfn{wildcarding}, and is very useful for 
 sub-setting large data files.
+
+Extended regular expressions are defined by the @acronym{POSIX}
+@command{grep -E} (aka @command{egrep}) command.  
+As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
+of the @samp{-v} switch may contain @dfn{extended regular expressions}.
+As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
+to @command{ncatted} may contain @dfn{extended regular expressions}. 
+As of @acronym{NCO} 4.2.2 (November, 2012), group names arguments 
+of the @samp{-g} switch may contain @dfn{extended regular expressions}.
 
 @cindex @acronym{POSIX}
 @cindex @code{regex}

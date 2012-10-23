@@ -1,3 +1,10 @@
+2012-10-23  Charlie Zender  <zender@uci.edu>
+
+	* Adopt new naming convention in hand-written netCDF4 CDL files:
+	g4g1g1 is the first subgroup of	g4g1 which is the first subgroup
+	of g4 which is the fourth subgroup of /. The level of the group
+	can be determined by counting the g's.
+
 2012-10-22  Charlie Zender  <zender@uci.edu>
 
 	* Built netCDF library patch for real nc_rename_grp() function:
