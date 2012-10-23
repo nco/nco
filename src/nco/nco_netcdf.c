@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.159 2012-10-22 23:52:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.160 2012-10-23 05:51:43 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -691,22 +691,43 @@ nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
   return rcd;
 } /* end nco_rename_grp() */
 
+#ifndef HAS_CSZ_NC_RENAME_GRP_IN_LIBNETCDF
 int
 nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
 {
   /* Purpose: Pseudo-library function to rename groups.
-     Based on netcdf-4.2.1/libsrc4/nc4var.c:NC4_rename_var()
-     Routine is only called by netCDF4-enabled code
-     fxm 20121022 */
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library that _has not yet been modified_
+     to include CSZ's proposed definition of nc_rename_grp().
+     To create that patch, CSZ does this:
+     cd ${DATA}/tmp/netcdf-4.2.1
+     tar cvzf ~/nc_rename_grp.tar.gz libsrc4/nc4dispatch.c libsrc4/nc4dispatch.h libsrc4/nc4grp.c include/netcdf.h libsrc4/*.orig include/*.orig
+     scp ~/nc_rename_grp.tar.gz dust.ess.uci.edu:/var/www/html/tmp/nc_rename_grp.tar.gz
+     To install the patch you do something like this:
+     cd ${DATA}/tmp/netcdf-4.2.1 # i.e., cd to top-level of your netCDF distribution
+     /bin/rm nc_rename_grp.tar.gz
+     wget http://dust.ess.uci.edu/tmp/nc_rename_grp.tar.gz
+     tar xvzf nc_rename_grp.tar.gz
+     make
+     sudo make install
+     cd ${DATA}/tmp/nco-4.2.1 # i.e., cd to top-level of your NCO distribution
+     make
+     sudo make install
+     Obviously, the patch is currently based against netCDF 4.2.1.
+     It might work on other recent versions
+     Test the patch by running something like this:
+     ncrename -O -g level_1_group_6,obama ~/nco/data/in_grp.nc ~/foo.nc
+     Enjoy */
   const char fnc_nm[]="nc_rename_grp()";
   char grp_nm_old[NC_MAX_NAME+1L];
   int rcd;
   rcd=NC_NOERR;
   rcd+=nco_inq_grpname(grp_id,grp_nm_old);
-  (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\"\n",fnc_nm,grp_nm_old,grp_nm);
+  (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\" was foiled because libnetcdf.a does not contain CSZ's proposed definition of nc_rename_grp(). The current patch is at\nhttp://dust.ess.uci.edu/tmp/nc_rename_grp.tar.gz\nContinuing as though nothing untoward happened...\n",fnc_nm,grp_nm_old,grp_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_rename_grp()");
   return rcd;
 } /* end nc_rename_grp() */
+#endif /* HAS_CSZ_NC_RENAME_GRP_IN_LIBNETCDF */
 
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
 {

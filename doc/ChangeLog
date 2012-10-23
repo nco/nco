@@ -1,5 +1,12 @@
 2012-10-22  Charlie Zender  <zender@uci.edu>
 
+	* Built netCDF library patch for real nc_rename_grp() function:
+	  http://dust.ess.uci.edu/tmp/nc_rename_grp.tar.gz
+	  Function currently dies in H5Gmove() for unknown reasons
+	  Details nc_rename_grp() in nco_netcdf.c
+
+	* Wrote nc_rename_grp() stubs for distribution now with NCO
+
 	* Call nco_rename_grp() from ncrename
 
 	* Implement library stubs for nc_rename_grp()/nco_rename_grp()
