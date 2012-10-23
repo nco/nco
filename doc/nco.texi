@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.724 2012-10-23 21:04:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.725 2012-10-23 21:59:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3445,9 +3445,20 @@ Combining the subsetting controls yields powerful control over the
 extracted (or excluded) variables and groups and their placement in the 
 output file:
 @example
-ncks -v scl in_grp.nc out.nc           # Extract scl from all groups
-ncks -g level_1_group_1 -v scl in_grp.nc out.nc # 
-
+ncks in_grp.nc           # Extract all groups and variables
+ncks -v scl in_grp.nc    # Extract variable scl from all groups
+ncks -g g1  in_grp.nc    # Extract all of group g1
+ncks -g g2,g3 -v scl in_grp.nc # Extract scl from groups g2 and g3
+ncks -G g1 in_grp.nc out.nc        # Put everything into group g1
+ncks -G g1 -v scl in_grp.nc out.nc # Put variable scl into group g1
+ncks -G g1 -g g1  in_grp.nc out.nc # Put group g1 into group g1
+# Put scl from groups g1 and g1g2 into group g6/g6g1
+ncks -G g6/g6g1 -g g1,g1g2 -v scl in_grp.nc out.nc
+@end example
+Overwriting and appending work as expected:
+@example
+# Replace scl in group g1, if it exists, with scl from group g2
+ncks -A -G g1 -g g2 -v scl in_grp.nc in_grp.nc
 @end example
 
 @html

@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.18 2012-10-23 21:04:48 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.19 2012-10-23 21:59:12 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -111,12 +111,12 @@ group: g1 {
 	lon=0,90,180,270;
 	scl=1.1;
 
-	group: g1g2 { 
+	group: g1g1 { 
 		variables:
 			float scl;
 		data:
-			scl=1.1;
-	} // end g1g2
+			scl=1.11;
+	} // end g1g1
 
 } // end g1
 
