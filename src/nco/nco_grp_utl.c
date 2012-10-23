@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.188 2012-10-23 21:40:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.189 2012-10-23 22:23:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1053,15 +1053,15 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
  const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
  const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
+ const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits (number of dimensions in file )*/
  const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
  nco_bool PRN_GLB_METADATA,    /* I [flg] Copy global variable metadata (attributes) */
- int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
- int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
- const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
+ int * const cnk_map_ptr,      /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr,      /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl,      /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr)              /* I [nbr] Number of dimensions with user-specified chunking */
+ const int cnk_nbr)            /* I [nbr] Number of dimensions with user-specified chunking */
 {
   /* Purpose: Recursively iterate in_id, creating groups and defining variables in out_id */
 
@@ -1099,6 +1099,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   /* No need to create root :) ; if NOT root, define the group in the ouput file */
   if (strcmp("/",grp_nm) != 0){
 
+    /* Do not create empty groups */ 
     if(nbr_var == 0 && nbr_dmn == 0 && nbr_att == 0 && nbr_grp == 0 ){
       if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr() empty group: %s\n",prg_nm_get(),grp_nm);
     }
@@ -1166,6 +1167,11 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
         /* Define variable in output file: NOTE: use grp_out_id obtained */
         if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
         else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
+
+        /* Set chunksize parameters */
+        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+          (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+        }
 
         /* Copy variable's attributes */
         if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,grp_out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);

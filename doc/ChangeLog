@@ -1,3 +1,7 @@
+2012-10-23  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks: implement chunking as part of nco4_grp_lst_mk (define output file recursively)
+
 2012-10-23  Charlie Zender  <zender@uci.edu>
 
 	* Adopt new naming convention in hand-written netCDF4 CDL files:
