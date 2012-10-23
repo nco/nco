@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.185 2012-10-23 06:51:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.186 2012-10-23 20:47:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -800,9 +800,6 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   return grp_lst;
 } /* end nco_grp_lst_mk() */
 
-
-
-
 int                            /* [rcd] Number of sub-groups */
 nco_has_subgrps
 (const int nc_id)              /* I [ID] NetCDF file ID */  
@@ -845,12 +842,6 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   int idx;
   int nbr_xcl;
   unsigned int uidx;
-#ifndef GRP_DEV
-  int var_in_id;
-  int lst_idx;
-  char var_nm[NC_MAX_NAME];
-  nm_id_sct *xcl_lst;
-#endif
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be excluded:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
@@ -865,19 +856,14 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   nbr_var_xtr=0;
   nbr_var_tbl=0;
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
       nbr_var_tbl++;
-
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-
       for(idx=0;idx<*xtr_nbr;idx++){
-
         /* Compare variable name between full list and input extraction list */
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
-
           trv_tbl->grp_lst[uidx].flg=1;
           nbr_var_xtr++;
-
           if(dbg_lvl_get() >= nco_dbg_vrb){
             (void)fprintf(stdout,"idx = %d, nm = %s, var_nm_fll = %s\n",idx,xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
           } /* endif dbg */
@@ -905,15 +891,12 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var && trv.flg != 1 ){ /* trv_tbl lists non-variables also; filter just variables */
-
       /* Extract the full group name from 'trv', that contains the full variable name, to xtr_lst */
       (void)nco4_xtr_grp_nm_fll(nc_id,xtr_lst,xtr_nbr,trv);
-
       /* Increment index of extracted variables */
       ++*xtr_nbr;
     }
   } /* end loop over uidx */
-
 
 #else /* GRP_DEV */
   /* Turn extract list into exclude list and reallocate extract list  */
@@ -969,10 +952,7 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
  int * const xtr_nbr,   /* I [nbr] Current index in exclusion/extraction list */
  grp_trv_sct trv)       /* I [sct] Group traversal table entry */
 {
-  /* Purpose: 
-     Extract the full group name from a grp_trv_sct entry that contains the full variable name 
-     to a nm_id_sct struct. 
-  */
+  /* Purpose: Extract the full group name from a grp_trv_sct entry that contains the full variable name to a nm_id_sct struct. */
   char *pch;        /* Pointer to the last occurrence of character */
   int   pos;        /* Position of character */
   char *grp_nm_fll; /* Fully qualified group where variable resides */
@@ -981,7 +961,6 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
   int  len;         /* Lenght of fully qualified group where variable resides */
 
   if (trv.typ == nc_typ_var){
-
     len=strlen(trv.nm_fll);
     grp_nm_fll=(char*)nco_malloc((len+1L)*sizeof(char));
     strcpy(grp_nm_fll,trv.nm_fll);
@@ -1049,7 +1028,7 @@ get_lst_nm      /* [fnc] Strip last component of full name */
 
   len=strlen(nm_in);
   if(len == 0) return NULL; 
-  cp=(char*)(nm_in+len);      /* Point to the NULL ending the string */
+  cp=(char*)(nm_in+len);     /* Point to the NULL ending the string */
   cp--;                      /* Back up one character */
   cp--;                      /* Back up one character; avoid the last '/' */
   while(cp != nm_in)         
@@ -1303,15 +1282,13 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
 
   /* Avoid the root case */ 
   if (strcmp("/",grp_nm)) {
-
     if(nbr_var == 0 && nbr_dmn == 0 && nbr_att == 0 && nbr_grp == 0 ){
       if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_var_cpy_itr() empty group: %s\n",prg_nm_get(),grp_nm);
     }
     else
-
       /* Obtain group ID from netCDF API using group name */
       nco_inq_grp_ncid(out_id,grp_nm,&grp_out_id);
-  }
+  } /* strcmp */
 
   /* Get variables for this group */
   for(int var_id=0;var_id<nbr_var;var_id++){
@@ -3313,17 +3290,22 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v are in f
 
 void
 nco_cnk_sz_set_trv                /* [fnc] Set chunksize parameters (trv version) */
-(const int nc_id,                 /* I [id] netCDF file ID */
+(const int int_out_id,            /* I [id] netCDF file ID of output file */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr,       /* I [nbr] Number of hyperslab limits */
+ const int lmt_all_lst_nbr,       /* I [nbr] Number of hyperslab limits (number of dimensions in file ) */
  int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
  const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr)              /* I [nbr] Number of dimensions with user-specified chunking */
+ const int cnk_nbr,               /* I [nbr] Number of dimensions with user-specified chunking */
+ grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
 {
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if(trv.typ == nc_typ_grp){
 
-
+    } /* end nc_typ_var */
+  } /* end uidx  */
 }
 
 nm_id_sct *                       /* O [sct] Sorted output list (trv version) */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.93 2012-10-23 06:51:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.94 2012-10-23 20:47:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -324,14 +324,15 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
 
 void
 nco_cnk_sz_set_trv                /* [fnc] Set chunksize parameters (trv version) */
-(const int nc_id,                 /* I [id] netCDF file ID */
+(const int int_out_id,            /* I [id] netCDF file ID of output file */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr,       /* I [nbr] Number of hyperslab limits */
  int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
  const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr);              /* I [nbr] Number of dimensions with user-specified chunking */
+ const int cnk_nbr,               /* I [nbr] Number of dimensions with user-specified chunking */
+ grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
 nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
 nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically or alphabetically */
