@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.187 2012-10-23 21:16:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.188 2012-10-23 21:40:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1056,7 +1056,12 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
  const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
- nco_bool PRN_GLB_METADATA)    /* I [flg] Copy global variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA,    /* I [flg] Copy global variable metadata (attributes) */
+ int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr)              /* I [nbr] Number of dimensions with user-specified chunking */
 {
   /* Purpose: Recursively iterate in_id, creating groups and defining variables in out_id */
 
@@ -1194,7 +1199,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_lst_mk_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA);
+    rcd+=nco4_grp_lst_mk_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
 
     pth=(char*)nco_free(pth);
   }
@@ -1222,12 +1227,8 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr)               /* I [nbr] Number of dimensions with user-specified chunking */
 {
-  /* Purpose: 
-     Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) 
-  */
-  int rcd=NC_NOERR;              /* I [rcd] Return code */
-  char rth[2];
-  strcpy(rth,"/");
+  /* Purpose: Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) */            
+  char rth[]="/"; /* Group path */
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
@@ -1235,7 +1236,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
   } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  rcd+=nco4_grp_lst_mk_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA);
+  (void)nco4_grp_lst_mk_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
 
   return;
 } /* end nco4_grp_lst_mk() */
@@ -1373,11 +1374,8 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
  const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT)     /* I [flg] Write binary file */
 {
-  /* Purpose: 
-     Recursively iterate input file (nc_id) and write variables in output file (out_id) 
-  */
-  char rth[2];
-  strcpy(rth,"/");
+  /* Purpose: Recursively iterate input file (nc_id) and write variables in output file (out_id)  */
+  char rth[]="/"; /* Group path */
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to write:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
@@ -2145,8 +2143,6 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
   } /* end uidx  */
 } /* end nco_prn_att_trv() */
 
-
-
 nm_id_sct *                      /* O [sct] Extraction list */
 nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */
 (const int nc_id,                /* I [ID] netCDF file ID */
@@ -2162,8 +2158,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
 
 #ifdef GRP_DEV
   int nbr_var_xtr;   /* Number of variables to extract */
-  char rth[2];
-  strcpy(rth,"/");
+  char rth[]="/";    /* Group path */
 
   /* Initialize index of extracted variables */
   nbr_var_xtr=0;
