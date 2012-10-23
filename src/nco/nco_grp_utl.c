@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.186 2012-10-23 20:47:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.187 2012-10-23 21:16:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1215,7 +1215,12 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
- nco_bool PRN_GLB_METADATA)      /* I [flg] Copy global variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA,      /* I [flg] Copy global variable metadata (attributes) */
+ int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr)               /* I [nbr] Number of dimensions with user-specified chunking */
 {
   /* Purpose: 
      Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) 
@@ -3287,26 +3292,6 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v are in f
 
 } /* end nco_chk_var_trv() */
 
-
-void
-nco_cnk_sz_set_trv                /* [fnc] Set chunksize parameters (trv version) */
-(const int int_out_id,            /* I [id] netCDF file ID of output file */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr,       /* I [nbr] Number of hyperslab limits (number of dimensions in file ) */
- int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
- int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
- const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,               /* I [nbr] Number of dimensions with user-specified chunking */
- grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
-{
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if(trv.typ == nc_typ_grp){
-
-    } /* end nc_typ_var */
-  } /* end uidx  */
-}
 
 nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
 nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically or alphabetically */

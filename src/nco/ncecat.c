@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.223 2012-10-23 21:04:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.224 2012-10-23 21:16:42 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.223 2012-10-23 21:04:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.223 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.224 2012-10-23 21:16:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.224 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -832,8 +832,8 @@ main(int argc,char **argv)
       /* Define root group for extracted variables */
       rcd+=nco_def_grp_full(out_id,grp_lst_out[fl_idx],grp_id_arr+fl_idx);
 
-      /* Define requested/necessary input groups/variables/attributes/global attributes in output file */
-      (void)nco4_grp_lst_mk(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,(nco_bool)True,CPY_GLB_METADATA);
+      /* Define requested/necessary input groups/variables/attributes/global attributes/chunksize parameters in output file */
+      (void)nco4_grp_lst_mk(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,(nco_bool)True,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

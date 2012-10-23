@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.94 2012-10-23 20:47:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.95 2012-10-23 21:16:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -192,7 +192,12 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
- nco_bool PRN_GLB_METADATA);     /* I [flg] Copy global variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA,      /* I [flg] Copy global variable metadata (attributes) */
+ int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr);              /* I [nbr] Number of dimensions with user-specified chunking */
 
 void
 nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
@@ -320,18 +325,6 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
 (const int nc_id,                 /* I netCDF file ID */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
-
-void
-nco_cnk_sz_set_trv                /* [fnc] Set chunksize parameters (trv version) */
-(const int int_out_id,            /* I [id] netCDF file ID of output file */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr,       /* I [nbr] Number of hyperslab limits */
- int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
- int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
- const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,               /* I [nbr] Number of dimensions with user-specified chunking */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
 nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
