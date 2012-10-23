@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.224 2012-10-23 21:16:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.225 2012-10-23 22:49:18 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.224 2012-10-23 21:16:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.224 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.225 2012-10-23 22:49:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.225 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -839,7 +839,7 @@ main(int argc,char **argv)
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Copy all variables to output file */
-      (void)nco4_grp_var_cpy(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
+      (void)nco4_grp_var_cpy(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
  
       /* Close input netCDF file */
       (void)nco_close(in_id);
