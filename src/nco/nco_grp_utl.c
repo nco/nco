@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.198 2012-10-24 18:01:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.199 2012-10-24 21:01:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -482,7 +482,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
                 } /* end strcmp */
               } /* end grp_idx */
             } /* end else */
-            if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout," grp_nm_fll=%s\n var_nm_fll=%s\n grp_nm=%s grp_id=%d var_nm=%s var_id=%d\n",grp_nm_fll,var_nm_fll,grp_nm,grp_id,var_nm,var_id);
           }  /* end strcmp */
 
         } /* end loop over var_lst_in idx */ 
@@ -854,9 +853,6 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
           trv_tbl->grp_lst[uidx].flg=1;
           nbr_var_xtr++;
-          if(dbg_lvl_get() >= nco_dbg_vrb){
-            (void)fprintf(stdout,"idx = %d, nm = %s, var_nm_fll = %s\n",idx,xtr_lst[idx].nm,xtr_lst[idx].var_nm_fll);
-          } /* endif dbg */
         } /* endif strcmp */
       } /* end idx */
     } /* end nc_typ_var */
@@ -1095,9 +1091,9 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
     }
     else
 
-    /* Define group of same name in output file */
+    /* Define group of same name in output file*/
     rcd+=nco_def_grp(out_id,grp_nm,&grp_out_id);
-  }
+  } /* end strcmp */
 
   /* Copy global attributes (in group) NOTE: use grp_out_id obtained */
   if(PRN_GLB_METADATA && nbr_att){
@@ -1128,7 +1124,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
       if(strcmp(var_pth,xtr_lst[idx].var_nm_fll) == 0) { 
         char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
-        if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  extract: %s\n",prg_nm_get(),var_pth);
+        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  extract: %s\n",prg_nm_get(),var_pth);
 
         /* Obtain netCDF file format */
         int fl_fmt;
@@ -1142,7 +1138,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
             if(strcmp(var_nm,dmn_ult_nm) == 0 ){
               rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
               strcpy(rec_dmn_nm,dmn_ult_nm);
-              if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  record dimension: %s\n",prg_nm_get(),rec_dmn_nm);
+              if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  record dimension: %s\n",prg_nm_get(),rec_dmn_nm);
             }
           }      
         } else { /* netCDF3 */
@@ -1226,7 +1222,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
   /* Purpose: Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) */            
   char rth[]="/"; /* Group path */
 
-  if(dbg_lvl_get() >= nco_dbg_vrb){
+  if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
     xtr_lst_ptr(xtr_lst,xtr_nbr);
   } /* endif dbg */
@@ -1285,7 +1281,7 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
   /* Avoid the root case */ 
   if (strcmp("/",grp_nm)) {
     if(nbr_var == 0 && nbr_dmn == 0 && nbr_att == 0 && nbr_grp == 0 ){
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_var_cpy_itr() empty group: %s\n",prg_nm_get(),grp_nm);
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO Empty group not created: %s\n",prg_nm_get(),grp_nm);
     }
     else
       /* Obtain group ID from netCDF API using group name */
@@ -1306,7 +1302,7 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
       strcat(var_pth,"/");
     strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
 
-    if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_var_cpy_itr() variable: %s\n",prg_nm_get(),var_pth);
+    if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_grp_var_cpy_itr() variable: %s\n",prg_nm_get(),var_pth);
 
     /* Check if input variable is on extraction list; if yes, write it to output file */
     for(idx=0;idx<xtr_nbr;idx++){
@@ -1314,7 +1310,7 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
       /* If current variable is in extraction list */
       if(strcmp(var_pth,xtr_lst[idx].var_nm_fll) == 0) { 
 
-        if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_var_cpy_itr()  extract: %s\n",prg_nm_get(),var_pth);
+        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_grp_var_cpy_itr()  extract: %s\n",prg_nm_get(),var_pth);
 
         /* Write output variable; NOTE: use grp_out_id obtained  */
         if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,lmt_all_lst_nbr); 
@@ -1842,8 +1838,6 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
     if (trv.typ == nc_typ_grp ) {    
-      
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"INFO nco4_inq_dmn() reports: %s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
 
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
@@ -1859,7 +1853,6 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
       /* List dimensions using obtained group ID */
       for(int jdx=0;jdx<trv.nbr_dmn;jdx++){
         (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-        if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
       } /* end jdx dimensions */
       (void)nco_free(dmn_ids);
 
@@ -1978,7 +1971,7 @@ nco_prt_trv             /* [fnc] Print table with -z */
 } /* end nco_prt_trv() */
 
 void                          
-nco_prt_grp_trv         /* [fnc] Print table with -G */
+nco_prt_grp_trv         /* [fnc] Print table  */
 (const int nc_id,       /* I [ID] File ID */
  grp_tbl_sct *trv_tbl)  /* I [sct] Traversal table */
 {
@@ -2436,7 +2429,7 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_
         /* No groups case, just add  */
         if (*grp_xtr_nbr == 0 ){
           (void)nco4_xtr_lst_add(var_nm,var_nm_fll,grp_nm_fll,grp_nm,var_id,in_id,xtr_lst,xtr_nbr);
-          if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add_itr() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
+          if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add_itr() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
         }
         /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
         else{  
@@ -2447,7 +2440,7 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_
             /* strstr returns the first occurrence of 'grp_nm_lst' in 'nm_fll', the higher level group( closer to root) */
             if(pch != NULL){
               (void)nco4_xtr_lst_add(var_nm,var_nm_fll,grp_nm_fll,grp_nm,var_id,in_id,xtr_lst,xtr_nbr);
-              if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add_itr() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
+              if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add_itr() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
             }
           } /* end grp_idx */       
         } /* end groups case */
@@ -3303,10 +3296,10 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var){
-      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"TRV %s\n",trv.nm_fll);
+      if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"TRV %s\n",trv.nm_fll);
       if(xtr_lst_fnd(trv.nm_fll,xtr_lst,*xtr_nbr) == 1 ){
 
-        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"IN list %s\n",trv.nm_fll);
+        if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"IN list %s\n",trv.nm_fll);
 
         /* Obtain group ID using nco_aux_grp_id (get ID from full variable name ) */
         grp_id=nco_aux_grp_id(nc_id,trv.nm_fll);
@@ -3319,7 +3312,7 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
         for(int idx_att=0;idx_att<nbr_att;idx_att++){
           (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
-          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"  IN ATTR list %s\n",att_nm);
+          if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"  IN ATTR list %s\n",att_nm);
 
           /* Is attribute part of CF convention? */
           if(strcmp(att_nm,cf_nm) == 0){
@@ -3328,7 +3321,7 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
             nc_type att_typ;
             int bnd_id;
             
-            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
+            if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
 
             /* Yes, get list of specified attributes */
             (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
@@ -3341,7 +3334,7 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
             /* NUL-terminate attribute */
             att_val[att_sz]='\0';
 
-            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"    ATTR=%s\n",att_val);
+            if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"    ATTR=%s\n",att_val);
 
             /* Split list into separate coordinate names
             Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
@@ -3362,13 +3355,13 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
                 } /* end loop over idx_var2 */
                 if(idx_var2 == *xtr_nbr){
 
-                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"     ADD bnd_lst[%d]=%s\n",idx_bnd,bnd_lst[idx_bnd]);
+                  if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"     ADD bnd_lst[%d]=%s\n",idx_bnd,bnd_lst[idx_bnd]);
 
                   /* Try to find the varriable */
                   nm_id_sct nm_id;
                   if (nco_fnd_var_trv(nc_id,bnd_lst[idx_bnd],trv_tbl,&nm_id) == 1 )
                   {
-                    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"      MATCH variable FOUND: %s \n",nm_id.var_nm_fll); 
+                    if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"      MATCH variable FOUND: %s \n",nm_id.var_nm_fll); 
                  
                     /* Add variable to list
                     NOTE: Needed members for traversal code:
@@ -3407,7 +3400,6 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
       } /* end in_xtr_lst */
     } /* end nc_typ_var */
   } /* end uidx  */
-
 
   if(dbg_lvl_get() >= nco_dbg_var){
     (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_cf() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.160 2012-10-23 05:51:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.161 2012-10-24 21:01:27 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -680,6 +680,16 @@ int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_grp()");
   return rcd;
 } /* end nco_def_grp() */
+
+int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
+{
+  /* Purpose: Error-tolerant wrapper for nc_def_grp(). Tolerates NC_ENAMEINUSE (-42) "String match to name in use" */
+  int rcd;
+  rcd=nc_def_grp(nc_id,grp_nm,grp_id);
+  if(rcd == NC_ENAMEINUSE) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_grp_flg()");
+  return rcd;
+} /* end nco_def_grp_flg() */
 
 int
 nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
