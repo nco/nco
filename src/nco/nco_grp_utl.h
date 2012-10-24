@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.96 2012-10-23 21:40:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.97 2012-10-24 04:25:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -232,11 +232,6 @@ char*                           /* O [sng] Return substring */
 get_lst_nm                      /* [fnc] Strip last component of full name */
 (char *nm_in);                  /* I [sng] Full name; it contains '/' as last character */
 
-void 
-prt_xtr_lst                     /*   [fnc] Print Name ID structure list */
-(nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
- const int xtr_nbr);            /* I [nbr] Name ID structure list size */
-
 void
 nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst */
 (char * const var_nm,      /* I [sng] Variable name */
@@ -360,6 +355,18 @@ nco_dmm_trv                    /* [fnc] Find a coordinate variable that matches 
  const char* var_nm,           /* I [sng] Variable name to find */
  grp_tbl_sct *trv_tbl,         /* I [sct] Traversal table */
  nm_id_sct *nm_id);            /* O [sct] Entry to add to list */
+
+void 
+xtr_lst_ptr                     /*   [fnc] Print Name ID structure list */
+(nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
+ const int xtr_nbr);            /* I [nbr] Name ID structure list size */
+
+int                             /* O [nbr] True/False */
+xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
+(const char * const var_nm_fll, /* I [sng] Full variable name to find */
+ nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
+ const int xtr_nbr);            /* I [nbr] Name ID structure list size */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
