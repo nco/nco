@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.199 2012-10-24 21:01:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.200 2012-10-24 21:21:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -402,7 +402,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   if(*var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
 
-    if(dbg_lvl_get() >= nco_dbg_var){
+    if(dbg_lvl_get() >= nco_dbg_vrb){
       (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
       xtr_lst_ptr(var_lst_all,var_nbr_all);
     } /* endif dbg */
@@ -612,7 +612,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Store values for return */
   *var_xtr_nbr=var_nbr_tmp;  
 
-  if(dbg_lvl_get() >= nco_dbg_var){
+  if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
     xtr_lst_ptr(xtr_lst,*var_xtr_nbr);
   } /* endif dbg */
@@ -1114,8 +1114,6 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
       strcat(var_pth,"/");
     strcat(var_pth,var_nm); /* Concatenate variable to absolute group path */
 
-    if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr() variable: %s\n",prg_nm_get(),var_pth);
-
     /* Check if input variable is on extraction list; if yes, write it to output file */
     for(idx=0;idx<xtr_nbr;idx++){
       int var_out_id;
@@ -1123,8 +1121,6 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
       /* If current variable is in extraction list, define it */
       if(strcmp(var_pth,xtr_lst[idx].var_nm_fll) == 0) { 
         char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
-
-        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  extract: %s\n",prg_nm_get(),var_pth);
 
         /* Obtain netCDF file format */
         int fl_fmt;
@@ -1137,12 +1133,10 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
             rcd+=nco_inq_dimname(in_id,dmn_ids_ult[ndx],dmn_ult_nm);
             if(strcmp(var_nm,dmn_ult_nm) == 0 ){
               rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
-              strcpy(rec_dmn_nm,dmn_ult_nm);
-              if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr()  record dimension: %s\n",prg_nm_get(),rec_dmn_nm);
-            }
-          }      
+              strcpy(rec_dmn_nm,dmn_ult_nm);             
+            } /* strcmp */
+          } /* idx */     
         } else { /* netCDF3 */
-
           (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
           if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){ 
             rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
@@ -1221,11 +1215,6 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
 {
   /* Purpose: Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) */            
   char rth[]="/"; /* Group path */
-
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to define:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,xtr_nbr);
-  } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
   (void)nco4_grp_lst_mk_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
@@ -1368,11 +1357,6 @@ nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy f
 {
   /* Purpose: Recursively iterate input file (nc_id) and write variables in output file (out_id)  */
   char rth[]="/"; /* Group path */
-
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk() reports following %d variable%s to write:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,xtr_nbr);
-  } /* endif dbg */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
   (void)nco4_grp_var_cpy_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
@@ -2358,7 +2342,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
 
 #endif /* GRP_DEV */
 
-  if(dbg_lvl_get() >= nco_dbg_var){
+  if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_crd_add() reports following %d variable%s to be added with dimensions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
     xtr_lst_ptr(xtr_lst,*xtr_nbr);
   } /* endif dbg */
@@ -2920,7 +2904,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
     } /* end nc_typ_grp */
   } /* end uidx  */
 
-  if(dbg_lvl_get() >= nco_dbg_var){
+  if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
     xtr_lst_ptr(xtr_lst,*xtr_nbr);
   } /* endif dbg */
@@ -3146,9 +3130,11 @@ xtr_lst_ptr           /*   [fnc] Print Name ID structure list */
 {
   for(int idx=0;idx<xtr_nbr;idx++){
     nm_id_sct nm_id=xtr_lst[idx];
-    (void)fprintf(stdout,"nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",
-      nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll, nm_id.grp_nm, nm_id.grp_id, nm_id.id);
-  }
+    if(dbg_lvl_get() >= nco_dbg_dev)
+      (void)fprintf(stdout,"nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll, nm_id.grp_nm, nm_id.grp_id, nm_id.id);
+    else
+      (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
+  } /* idx */
 }/* end xtr_lst_ptr() */
 
 
@@ -3401,7 +3387,7 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
     } /* end nc_typ_var */
   } /* end uidx  */
 
-  if(dbg_lvl_get() >= nco_dbg_var){
+  if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_cf() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
     xtr_lst_ptr(xtr_lst,*xtr_nbr);
   } /* endif dbg */
