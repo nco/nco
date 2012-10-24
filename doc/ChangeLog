@@ -1,6 +1,10 @@
 2012-10-23  Pedro Vicente  <pvicente@uci.edu>
 
-        * ncks: implement chunking as part of nco4_grp_lst_mk (define output file recursively)
+	* ncks: implement chunking as part of nco4_grp_lst_mk (define output file recursively);
+	regression test #20
+	* ncks: nco_dmm_trv and nco_var_lst_crd_ass_add_trv implement extraction of associated 
+	coordinate variables; regression test ncks #19
+	* ncks:  nco_prn_att_trv implements recursive output of global (group) attributes
 
 2012-10-23  Charlie Zender  <zender@uci.edu>
 
