@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.192 2012-10-24 05:09:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.193 2012-10-24 05:20:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3217,7 +3217,8 @@ nco_aux_grp_id                  /* [fnc] Return the group ID from the variable f
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
 (const int nc_id,                 /* I netCDF file ID */
- nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
+ const char * const cf_nm,        /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ nm_id_sct *xtr_lst,              /* I/O current extraction list (modified) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
  grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
 {
@@ -3249,6 +3250,12 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
 
           if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"IN ATTR list %s\n", att_nm);
 
+          /* Is attribute part of CF convention? */
+          if(strcmp(att_nm,cf_nm) == 0){
+
+
+
+          } /* end strcmp Is attribute part of CF convention? */
         } /* end idx_att */
       } /* end in_xtr_lst */
     } /* end nc_typ_var */
