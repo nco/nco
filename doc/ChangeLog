@@ -1,3 +1,9 @@
+2012-10-24  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks: xtr_lst_fnd: Find a full variable name in the extraction list
+	* ncks: nco_aux_grp_id: Return the group ID given the variable full name 
+	* ncks: Modify in_grp.cdl to allow for CF tests: add gds_var, gds_crd, lat_gds, lon_gds
+
 2012-10-23  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks: implement chunking as part of nco4_grp_lst_mk (define output file recursively);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.193 2012-10-24 05:20:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.194 2012-10-24 05:36:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3248,10 +3248,12 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
         for(int idx_att=0;idx_att<nbr_att;idx_att++){
           (void)nco_inq_attname(nc_id,var_id,idx_att,att_nm);
 
-          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"IN ATTR list %s\n", att_nm);
+          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"  IN ATTR list %s\n", att_nm);
 
           /* Is attribute part of CF convention? */
           if(strcmp(att_nm,cf_nm) == 0){
+
+            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
 
 
 

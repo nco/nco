@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.19 2012-10-23 21:59:12 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.20 2012-10-24 05:36:18 pvicente Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -99,6 +99,7 @@ data:
 	gds_crd=0,1,2,3,4,5,6,7;
 	lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
 	lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
+	gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 
 group: g1 { 
 
@@ -148,16 +149,15 @@ group: g4 {
 	group: g4g1 { 
 	
 		group: g4g1g1 {  // Group with 2 unlimited dimensions and coordinate variables
-	      // fxm: 20121023 ncks unable to print variables with differing record dimensions
 			dimensions:
 	      time3=unlimited;
-	      // time4=unlimited;
+	      time4=unlimited;
 			variables:
 			  double time3(time3);
-			  // double time4(time4);
+			  double time4(time4);
 			data:
 			  time3=1.,2.,3.;
-			  // time4=1.,2.,3.,4.;
+			  time4=1.,2.,3.,4.;
 			} // end g4g1g1
 		} // end g4g1
 } // end g4
