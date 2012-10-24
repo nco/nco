@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.725 2012-10-23 21:59:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.726 2012-10-24 06:44:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3457,8 +3457,8 @@ ncks -G g6/g6g1 -g g1,g1g2 -v scl in_grp.nc out.nc
 @end example
 Overwriting and appending work as expected:
 @example
-# Replace scl in group g1, if it exists, with scl from group g2
-ncks -A -G g1 -g g2 -v scl in_grp.nc in_grp.nc
+# Replace scl in group g2 in out.nc with scl from group g2 from in_grp.nc
+ncks -A -g g2 -v scl in_grp.nc out.nc
 @end example
 
 @html

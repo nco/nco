@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.515 2012-10-24 06:44:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.516 2012-10-24 06:45:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -24,8 +24,8 @@ Your feedback will help us finalize details like the printed output
 format for group information and the syntax of switches.
 This improved netCDF4 support will eventually come to all of NCO.
 
-Work on NCO 4.2.3 is underway: better netCDF4 support for arithmetic
-operators.
+Work on NCO 4.2.3 is underway: better netCDF4 support for ncrename
+and ncbo operators.
 
 Enjoy,
 Charlie

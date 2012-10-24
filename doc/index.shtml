@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.733 2012-10-24 06:44:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.734 2012-10-24 06:46:45 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -567,7 +567,8 @@ You can also retrieve the source of tagged versions directly
 <ul>
 <li><b>NCO 4.2.3</b>: (<i>Future</i>) 
 Group Path Editing?;
-<tt>ncbo</tt> group support?;
+<tt>ncrename -g</tt>?;
+<tt>ncbo -g</tt>?;
 netCDF4 compound types?;
 Optimize diskless files?;
 more Robust RHEL/CentOS autoconf support?;</li>

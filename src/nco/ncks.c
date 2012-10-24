@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.430 2012-10-24 06:34:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.431 2012-10-24 06:44:49 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -97,7 +97,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
-  nco_bool GROUP_AGGREGATE=False; /* Option G */
+  nco_bool GROUP_PATH_EDIT=False; /* Option G */
   nco_bool HAS_SUBGRP=False; /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.430 2012-10-24 06:34:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.430 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.431 2012-10-24 06:44:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.431 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -284,7 +284,7 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
-      {"gag",required_argument,0,'G'}, /* [sng] Output group name */
+      {"root_out",required_argument,0,'G'}, /* [sng] Output group name */
       {"grp",required_argument,0,'g'},
       {"group",required_argument,0,'g'},
       {"history",no_argument,0,'h'},
@@ -471,7 +471,7 @@ main(int argc,char **argv)
       break;
     case 'G': /* Extract variables into specified output group */
       grp_out=(char *)strdup(optarg);
-      GROUP_AGGREGATE=!GROUP_AGGREGATE;
+      GROUP_PATH_EDIT=!GROUP_PATH_EDIT;
       fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'g': /* Copy group argument for later processing */
@@ -781,20 +781,20 @@ main(int argc,char **argv)
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 
-    if(GROUP_AGGREGATE){
+    if(GROUP_PATH_EDIT){
 #ifndef ENABLE_NETCDF4
-      (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
+      (void)fprintf(stderr,"%s: ERROR Group Path Edit requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
       nco_exit(EXIT_FAILURE);
 #endif /* ENABLE_NETCDF4 */
-      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",prg_nm_get());
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",prg_nm_get());
       if(fl_out_fmt != NC_FORMAT_NETCDF4){
-        (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+        (void)fprintf(stderr,"%s: ERROR Group Path Edit requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
         nco_exit(EXIT_FAILURE);
       } /* endif err */
       
       /* If user-specified root group for extracted variables does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(out_id,grp_out,&grp_out_id)) nco_def_grp_full(out_id,grp_out,&grp_out_id);
-    } /* !GROUP_AGGREGATE */
+    } /* !GROUP_PATH_EDIT */
 
     if(HAS_SUBGRP){
       /* Define requested/necessary input groups/variables/attributes/global attributes/chunksize parameters in output file */

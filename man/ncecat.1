@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.24 2012-10-21 16:59:50 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.25 2012-10-24 06:44:49 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncecat
 .\" Usage:
 .\" nroff -man ~/nco/man/ncecat.1 | less
@@ -13,11 +13,11 @@ ncecat [\-3] [\-4] [\-6] [\-A] [\-\-bfr
 .IR dim ,[
 .IR min ][,[
 .IR max ]]]
-[\-F]
+[\-F] [\-G
+.IR grp_out ]
 [\-g  
 .IR grp [,...]]
-[\-G
-.IR grp_out ]
+[\--gag]
 [\-h] [\-\-hdr_pad
 .IR sz ]
 [\-L 
@@ -111,7 +111,7 @@ It contains 60 months of data (which might or might not be stored in the
 record dimension, depending on the input files).
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.24 2012-10-21 16:59:50 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncecat.1,v 1.25 2012-10-24 06:44:49 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
@@ -124,7 +124,7 @@ manual pages written by Charlie Zender and originally formatted by Brian Mays.
 Report bugs to <http://sf.net/bugs/?group_id=3331>.
 
 .SH COPYRIGHT
-Copyright \(co 1995-2010 Charlie Zender
+Copyright \(co 1995-2012 Charlie Zender
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
