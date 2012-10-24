@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.189 2012-10-23 22:23:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.190 2012-10-24 03:50:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2974,141 +2974,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   return xtr_lst;
 }
 
-
-nm_id_sct *                       /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int nc_id,                 /* I netCDF file ID */
- nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
- int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
-{
-#if 0
-  /* Detect associated coordinates specified by CF "coordinates" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
-
-  int rcd=NC_NOERR;            /* [rcd] Return code */   
-  int grp_id;                  /* [ID] Group ID */
-  int nbr_att;                 /* [nbr] Number of attributes */
-  int nbr_var;                 /* [nbr] Number of variables */
-  int nbr_dmn;                 /* [nbr] number of dimensions */
-  int dmn_id[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for group */
-  int *var_ids;                /* [ID] Variable IDs array */
-  const char dlm_sng[]=" ";    /* [sng] Delimiter string */
-  const char fnc_nm[]="nco_var_lst_crd_ass_add_cf()"; /* [sng] Function name */
-  char **crd_lst;              /* [sng] 1D array of list elements */
-  int nbr_crd;                 /* [nbr] Number of coordinates specified in "coordinates" attribute */
-  char *att_val;
-  char att_nm[NC_MAX_NAME];
-  int idx_att;
-  int idx_crd;
-  int idx_var2;
-  int var_id;
-  long att_sz;
-  nc_type att_typ;
-  int crd_id;
-  int idx_var;
-
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nc_typ_grp ) {
-
-      /* Obtain netCDF file format */
-      int fl_fmt;
-      (void)nco_inq_format(nc_id,&fl_fmt);
-      /* Obtain group ID from netCDF API using full group name */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-      }else{ /* netCDF3 case */
-        grp_id=nc_id;
-      }
-
-      /* Obtain number of dimensions for group: NOTE using group ID */
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
-      /* Obtain dimension IDs */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,0);
-
-      /* Allocate space for and obtain variable IDs in current group */
-      var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
-      rcd+=nco_inq_varids(grp_id,&nbr_var,var_ids);
-
-#ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-
-
-      /* ...for each variable in extraction list... */
-      for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
-        /* Eschew indirection */
-        var_id=xtr_lst[idx_var].id;
-        /* Find number of attributes; NOTE: using obtained grp_id here */
-        (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
-        for(idx_att=0;idx_att<nbr_att;idx_att++){
-          (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
-          /* Is attribute part of CF convention? */
-          if(!strcmp(att_nm,"coordinates")){
-            /* Yes, get list of specified attributes */
-            (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
-            if(att_typ != NC_CHAR){
-              (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
-              return xtr_lst;
-            } /* end if */
-            att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-            if(att_sz > 0) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
-            /* NUL-terminate attribute */
-            att_val[att_sz]='\0';
-            /* Split list into separate coordinate names
-            Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
-            crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
-            /* ...for each coordinate in "coordinates" attribute... */
-            for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
-              if(crd_lst[idx_crd]==NULL)
-                continue;
-              /* Verify "coordinate" exists in input file */
-              rcd=nco_inq_varid_flg(grp_id,crd_lst[idx_crd],&crd_id);
-              /* NB: Do not check that dimension by this name exists
-              CF files often use "coordinates" convention to identify
-              two-dimensional (or greater) variables which serve as coordinates.
-              In other words, we want to allow N-D variables to work as coordinates
-              for the purpose of adding them to the extraction list only. */
-              if(rcd == NC_NOERR){
-                /* idx_var2 labels inner loop over variables */
-                /* Is "coordinate" already on extraction list? */
-                for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
-                  if(crd_id == xtr_lst[idx_var2].id) break;
-                } /* end loop over idx_var2 */
-                if(idx_var2 == *xtr_nbr){
-                  /* Add coordinate to list */
-                 
-
-
-
-                  /* Continue to next coordinate in loop */
-                  continue;
-                } /* end if coordinate was not already in list */
-              }else{ /* end if named coordinate exists in input file */
-                if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"coordinates\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),crd_lst[idx_crd],xtr_lst[idx_var].nm);
-              } /* end else named coordinate exists in input file */
-            } /* end loop over idx_crd */
-            /* Free allocated memory */
-            att_val=(char *)nco_free(att_val);
-            crd_lst=nco_sng_lst_free(crd_lst,nbr_crd);
-          } /* !coordinates */
-        } /* end loop over attributes */
-      } /* end loop over idx_var */
-
-
-
-      /* Memory management after current group for variables */
-      var_ids=(int *)nco_free(var_ids);
-
-    } /* end nc_typ_grp */
-  } /* end uidx  */
-#endif
-
-  return xtr_lst;
-}
-
 void                          
 nco_chk_var_trv                     /* [fnc] Check if input names of -v are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
@@ -3292,6 +3157,35 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v are in f
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
 } /* end nco_chk_var_trv() */
+
+
+nm_id_sct *                       /* O [sct] Extraction list */
+nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int nc_id,                 /* I netCDF file ID */
+ nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
+ int * const xtr_nbr,             /* I/O number of variables in current extraction list */
+ grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
+{
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
+
+  int nbr_att;                 /* [nbr] Number of attributes */
+  int nbr_var;                 /* [nbr] Number of variables */
+  int nbr_dmn;                 /* [nbr] number of dimensions */
+  int dmn_id[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for group */
+  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+  long dmn_sz;                 /* [nbr] Dimension size */  
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_var){
+     
+
+    } /* end nc_typ_var */
+  } /* end uidx  */
+
+  return xtr_lst;
+}
 
 
 nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
