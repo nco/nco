@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.97 2012-10-24 04:25:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.98 2012-10-24 05:09:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -366,6 +366,11 @@ xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction 
 (const char * const var_nm_fll, /* I [sng] Full variable name to find */
  nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
  const int xtr_nbr);            /* I [nbr] Name ID structure list size */
+
+int                             /* O [id] Group ID */
+nco_aux_grp_id                  /* [fnc] Return the group ID from the variable full name */
+(const int nc_id,               /* I [id] netCDF file ID */
+ const char * const var_nm_fll);/* I [sng] Full variable name to find */
 
 
 #ifdef __cplusplus
