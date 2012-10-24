@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.195 2012-10-24 05:59:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.196 2012-10-24 06:34:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3233,9 +3233,10 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var){
+      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"TRV %s\n",trv.nm_fll);
       if(xtr_lst_fnd(trv.nm_fll,xtr_lst,*xtr_nbr) == 1 ){
 
-        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"IN list %s\n", trv.nm_fll);
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"IN list %s\n",trv.nm_fll);
 
         /* Obtain group ID using nco_aux_grp_id (get ID from full variable name ) */
         grp_id=nco_aux_grp_id(nc_id,trv.nm_fll);
@@ -3248,14 +3249,32 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
         for(int idx_att=0;idx_att<nbr_att;idx_att++){
           (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
-          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"  IN ATTR list %s\n", att_nm);
+          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"  IN ATTR list %s\n",att_nm);
 
           /* Is attribute part of CF convention? */
           if(strcmp(att_nm,cf_nm) == 0){
+            char *att_val;
+            long att_sz;
+            nc_type att_typ;
 
             if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
 
+            /* Yes, get list of specified attributes */
+            (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
+            if(att_typ != NC_CHAR){
+              (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore will skip this attribute.\n",prg_nm_get(),att_nm,trv.nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+              return xtr_lst;
+            } /* end if */
+            att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+            if(att_sz > 0) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+            /* NUL-terminate attribute */
+            att_val[att_sz]='\0';
 
+            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"    ATTR=%s\n",att_val);
+
+
+            /* Free allocated memory */
+            att_val=(char *)nco_free(att_val);
 
           } /* end strcmp Is attribute part of CF convention? */
         } /* end idx_att */
