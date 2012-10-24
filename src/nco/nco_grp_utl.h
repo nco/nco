@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.100 2012-10-24 18:01:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.101 2012-10-24 22:01:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -168,7 +168,8 @@ nco4_xtr_grp_nm_fll              /* [fnc] Auxiliary function; extract full group
 
 int                            /* [rcd] Return code */
 nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
-(const int in_id,              /* I [ID] Group ID from netCDF intput file */
+(const int nc_id,              /* I [ID] netCDF file ID  */
+ const int in_id,              /* I [ID] Group ID from netCDF intput file */
  const int out_id,             /* I [ID] Group ID from netCDF output file */
  char * const grp_pth,         /* I [sng] Group path */
  char * const grp_nm,          /* I [sng] Group name */

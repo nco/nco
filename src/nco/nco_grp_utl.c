@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.200 2012-10-24 21:21:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.201 2012-10-24 22:01:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1031,7 +1031,8 @@ get_lst_nm      /* [fnc] Strip last component of full name */
 
 int                            /* [rcd] Return code */
 nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
-(const int in_id,              /* I [ID] Group ID from netCDF intput file */
+(const int nc_id,              /* I [ID] netCDF file ID  */
+ const int in_id,              /* I [ID] Group ID from netCDF intput file */
  const int out_id,             /* I [ID] Group ID from netCDF output file */
  char * const grp_pth,         /* I [sng] Group path */
  char * const grp_nm,          /* I [sng] Group name */
@@ -1087,12 +1088,18 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 
     /* Do not create empty groups */ 
     if(nbr_var == 0 && nbr_dmn == 0 && nbr_att == 0 && nbr_grp == 0 ){
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO nco4_grp_lst_mk_itr() empty group: %s\n",prg_nm_get(),grp_nm);
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO empty group: %s\n",prg_nm_get(),grp_nm);
     }
+    /* Create or open non-root group */
     else
-
-    /* Define group of same name in output file*/
-    rcd+=nco_def_grp(out_id,grp_nm,&grp_out_id);
+    {
+      /* Define group of same name in output file: NOTE: in -A append mode, open the group instead */
+      rcd+=nco_def_grp_flg(out_id,grp_nm,&grp_out_id);
+      if(rcd == NC_ENAMEINUSE){
+        if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO Group exists, opening instead...: %s\n",prg_nm_get(),grp_pth);
+        (void)nco_inq_grp_full_ncid(nc_id,grp_pth,&grp_out_id);
+      }
+    }/* NC_ENAMEINUSE */
   } /* end strcmp */
 
   /* Copy global attributes (in group) NOTE: use grp_out_id obtained */
@@ -1185,7 +1192,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_lst_mk_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+    rcd+=nco4_grp_lst_mk_itr(nc_id,gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
 
     pth=(char*)nco_free(pth);
   }
@@ -1217,7 +1224,7 @@ nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file
   char rth[]="/"; /* Group path */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  (void)nco4_grp_lst_mk_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+  (void)nco4_grp_lst_mk_itr(in_id,in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
 
   return;
 } /* end nco4_grp_lst_mk() */
@@ -3199,13 +3206,6 @@ nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "
  grp_tbl_sct *trv_tbl,         /* I [sct] Traversal table */
  nm_id_sct *nm_id)             /* O [sct] Entry to add to list */
 {
-  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
-  long dmn_sz;                 /* [nbr] Dimension size */  
-  int nbr_att;                 /* [nbr] Number of attributes */
-  int nbr_var;                 /* [nbr] Number of variables */
-  int nbr_dmn;                 /* [nbr] number of dimensions */
-  int dmn_id[NC_MAX_DIMS];     /* [id] Dimensions IDs array for group */
-
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if(trv.typ == nc_typ_var){   
