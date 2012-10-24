@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.364 2012-10-24 06:44:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.365 2012-10-24 20:45:23 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -787,7 +787,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Chopper purrs on the phone\n";
+  return "Tessa vs. Diane\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -902,7 +902,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [--hdr_pad nbr] [-i var,val] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a] [-B] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-G name] [-g ...] [--fix_rec_dmn] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_digest] [--mk_rec_dmn dim] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--ram_all] [-s format] [-u] [-v ...] [-X box] [-x] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a] [-B] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-G root_grp] [-g ...] [--fix_rec_dmn] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_digest] [--mk_rec_dmn dim] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--ram_all] [-s format] [-u] [-v ...] [-X box] [-x] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-h] [[--hdr_pad nbr] -L lvl] [-l path] [-M pck_map] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-U] [-X box] [-x] in.nc [out.nc]\n");
@@ -917,7 +917,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
     break;
   case ncecat:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-G name] [-g ...] [--gag] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-u ulm_nm] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-G root_grp] [-g ...] [--gag] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [--md5_digest] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-u ulm_nm] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
     break;
   case ncrename:
     opt_sng=(char *)strdup("[-a ...] [--bfr sz] [-D dbg_lvl] [-d ...] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");

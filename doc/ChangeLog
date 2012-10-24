@@ -1,3 +1,7 @@
+2012-10-24  Charlie Zender  <zender@uci.edu>
+
+	* Document ncecat RAG and GAG
+
 2012-10-24  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks: xtr_lst_fnd: Find a full variable name in the extraction list

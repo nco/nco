@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.516 2012-10-24 06:45:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.517 2012-10-24 20:45:20 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -41,7 +41,20 @@ A. ncks and ncecat support netCDF4 groups.
    expressions work on group names as on variable names, giving users
    precise control over subsetting and hyperslabbing netCDF4 files 
    % ncks -g grp1,grp2 in.nc out.nc
-   More examples at http://nco.sf.net/nco.html#sbs
+   http://nco.sf.net/nco.html#sbs
+
+A. ncecat supports Group AGgregation (GAG).
+   GAG means placing each input file into its own output file group.
+   By default ncecat still glues input files together with a record 
+   dimension (whose size is the number of input files). This is called
+   Record AGgregation (RAG). RAG can only be used on classic input
+   files that have the same shape. GAG must be used for files of
+   different shapes or files that contain groups.   
+   Users may choose GAG instead of RAG with the --gag switch.
+   The -G switch for choosing output group names also implies GAG:
+   ncecat -O -G ensemble in1.nc in2.nc in3.nc out.nc
+   ncecat -O --gag       in1.nc in2.nc in3.nc out.nc
+   http://nco.sf.net/nco.html#ncecat
 
 A. ncks now prints missing values as underscores ("_") by default.
    Previously ncks printed the numeric representation, e.g., "1.0e36".

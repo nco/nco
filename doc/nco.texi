@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.726 2012-10-24 06:44:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.727 2012-10-24 20:45:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3440,7 +3440,7 @@ indicates that @emph{only} user-defined variables should be output.
 As of @acronym{NCO} 4.2.2 (October, 2012), all operators that accept
 netCDF4 files with groups accept the @samp{-G} switch, or its
 long-option equivalent @samp{--root_out} to specify the root group in 
-in the output file where results will be placed.
+the output file where results will be placed.
 Combining the subsetting controls yields powerful control over the 
 extracted (or excluded) variables and groups and their placement in the 
 output file:
@@ -10849,7 +10849,8 @@ SYNTAX
 @example
 ncecat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [--hdr_pad @var{nbr}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
+[-G @var{root_grp}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -10859,12 +10860,26 @@ ncecat [-3] [-4] [-6] [-A] [-C] [-c]
 @noindent
 DESCRIPTION
 
-@command{ncecat} concatenates an arbitrary number of input files into a 
-single output file.
-The @var{input-files} are stored consecutively as records in 
-@var{output-file}.
-Each variable (except coordinate variables) in each input file becomes
-one record in the same variable in the output file. 
+@command{ncecat} aggregates an arbitrary number of input files into a 
+single output file using using one of two methods.
+@dfn{Record AGgregation} (RAG), the traditional method employed on
+netCDF3 files and still the default method, stores @var{input-files} as
+consecutive records in the @var{output-file}.
+@dfn{Group AGgregation} (GAG) stores @var{input-files} as top-level
+groups in the netCDF4 @var{output-file}.
+Record Aggregation (RAG) makes numerous assumptions about the structure
+of input files and Group Aggregation (GAG) makes none.
+Both methods are described in detail below.
+Since @command{ncecat} aggregates all the contents of the input files,
+it can easily produce large output files so it is often helpful to invoke
+subsetting simultaneously (@pxref{Subsetting Files}).
+
+@html
+<a name="rag"></a> <!-- http://nco.sf.net/nco.html#rag -->
+@end html
+@cindex record aggregation
+RAG makes each variable (except coordinate variables) in each input file 
+into a single record of the same variable in the output file. 
 Coordinate variables are not concatenated, they are instead simply
 copied from the first input file to the @var{output-file}.
 All @var{input-files} must contain all extracted variables (or else
@@ -10892,8 +10907,42 @@ the record dimension size if the requested record hyperslab
 This allows easier gluing/averaging of unequal length timeseries from 
 simulation ensembles (e.g., the IPCC AR4 archive). 
 
-Thus, the @var{output-file} size is the sum of the sizes of the
-extracted variables in the input files. 
+@html
+<a name="gag"></a> <!-- http://nco.sf.net/nco.html#gag -->
+@end html
+@cindex group aggregation
+@dfn{Group AGgregation} (GAG) stores @var{input-files} as top-level
+groups in the @var{output-file}.
+No assumption is made about the size or shape or type of a given 
+object (variable or dimension or group) in the input file.
+The entire contents of the extracted portion of each input file
+is placed in its own top-level group in @var{output-file}, which
+is automatically made as a netCDF4-format file.
+
+GAG has two methods to specify group names for the @var{output-file}.   
+The @samp{-G} option, or its long-option equivalent @samp{--root_out},
+takes as argument the root group path @var{root_grp} which is the group 
+in @var{output-file} file where the results will be placed. 
+Each input file needs a distinct output group name to avoid namespace
+conflicts in the @var{output-file}. 
+Hence @command{ncecat} automatically creates unique output group names
+based on either the input filenames or the @var{root_grp} option.
+When the user provides @var{root_grp} (i.e., with @samp{-G}), then the
+output groups are formed by enumerating sequential two-digit numeric
+suffixes starting with zero. 
+When @var{root_grp} is not provided (i.e., user requests GAG with
+@samp{--gag} instead of @samp{-G}), then @command{ncecat} forms the
+output groups by stripping the input file name of any type-suffix
+(e.g., @code{.nc}), and all but the final component of the full
+filename. 
+@example
+ncecat --gag 85.nc 86.nc 87.nc 8589.nc # Output groups 85, 86, 87
+ncecat -G 85_ 85.nc 85.nc 85.nc 8589.nc # Output groups 85_00, 85_01, 85_02
+ncecat -G 85/ 85.nc 85.nc 85.nc 8589.nc # Output groups 85/00, 85/01, 85/02
+@end example
+
+With both RAG and GAG the @var{output-file} size is the sum of the sizes
+of the extracted variables in the input files. 
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 @cindex multi-file operators
@@ -11271,8 +11320,8 @@ SYNTAX
 @example
 ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-[-F] [--fix_rec_dmn] [-H] [-h] [--hdr_pad @var{nbr}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
+[--fix_rec_dmn] [-G @var{root}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
 [-R] [-r] [--ram_all] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 

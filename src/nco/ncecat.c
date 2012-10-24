@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.225 2012-10-23 22:49:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.226 2012-10-24 20:45:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -32,7 +32,7 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
 
    Usage:
-   ncecat -O -D 1 -Gensemble -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
+   ncecat -O -D 1 -G ensemble -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
    ncecat -O -D 1 -G -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.225 2012-10-23 22:49:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.225 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.226 2012-10-24 20:45:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.226 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
