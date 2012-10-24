@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.732 2012-10-10 01:57:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.733 2012-10-24 06:44:49 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -566,13 +566,13 @@ You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.2.3</b>: (<i>Future</i>) 
+Group Path Editing?;
+<tt>ncbo</tt> group support?;
 netCDF4 compound types?;
-World peace?
-Stride works with DAP?;
-Optimize diskless/RAM files?;
+Optimize diskless files?;
 more Robust RHEL/CentOS autoconf support?;</li>
 <li><b>NCO 4.2.2</b>: (<i>In Progress, features already in beta include the following</i>)
-<tt>ncks</tt> supports groups;
+<tt>ncks</tt>, <tt>ncecat</tt> support groups;
 <tt>--hdr_pad</tt> all operators;
 <tt>ncks</tt> prints underscores;
 fixes to <tt>--[mk/fix]_rec_dmn</tt>;

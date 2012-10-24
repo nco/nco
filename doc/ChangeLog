@@ -1,18 +1,24 @@
 2012-10-24  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks: xtr_lst_fnd: Find a full variable name in the extraction list
-	* ncks: nco_aux_grp_id: Return the group ID given the variable full name 
+	* ncks: nco_aux_grp_id: Return the group ID given the variable full name
 	* ncks: Modify in_grp.cdl to allow for CF tests: add gds_var, gds_crd, lat_gds, lon_gds
 
 2012-10-23  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks: implement chunking as part of nco4_grp_lst_mk (define output file recursively);
 	regression test #20
-	* ncks: nco_dmm_trv and nco_var_lst_crd_ass_add_trv implement extraction of associated 
+	* ncks: nco_dmm_trv and nco_var_lst_crd_ass_add_trv implement extraction of associated
 	coordinate variables; regression test ncks #19
 	* ncks:  nco_prn_att_trv implements recursive output of global (group) attributes
 
 2012-10-23  Charlie Zender  <zender@uci.edu>
+
+ 	* NCO 4.2.2 release procedure:
+ 	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs, ncecat GAG
+	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
+	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
 
 	* Adopt new naming convention in hand-written netCDF4 CDL files:
 	g4g1g1 is the first subgroup of	g4g1 which is the first subgroup
@@ -49,12 +55,6 @@
 	* Deprecate ncks -G into ncks --get_grp_info
 
 2012-10-19  Charlie Zender  <zender@uci.edu>
-
- 	* NCO 4.2.2 release procedure:
- 	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs, ncecat GAG
-	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
-	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
 
 	* Add Debian hardening tokens to bld/Makefile
 
