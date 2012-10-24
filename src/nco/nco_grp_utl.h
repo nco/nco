@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.99 2012-10-24 05:20:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.100 2012-10-24 18:01:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -343,9 +343,9 @@ nco_chk_grp_trv                     /* [fnc] Check if input names of -g are in f
  int * const nbr_var_fl);           /* CHK O [nbr] Number of variables in input file */
 
 int                            /* O [nbr] Item found or not */
-nco_dmm_trv                    /* [fnc] Find a coordinate variable that matches parameter "var_nm" */
+nco_fnd_dmm_trv                /* [fnc] Find a coordinate variable that matches parameter "var_nm" */
 (const int nc_id,              /* I [id] netCDF file ID */
- const char* var_nm,           /* I [sng] Variable name to find */
+ const char * const var_nm,    /* I [sng] Variable name to find */
  grp_tbl_sct *trv_tbl,         /* I [sct] Traversal table */
  nm_id_sct *nm_id);            /* O [sct] Entry to add to list */
 
@@ -365,15 +365,20 @@ nco_aux_grp_id                  /* [fnc] Return the group ID from the variable f
 (const int nc_id,               /* I [id] netCDF file ID */
  const char * const var_nm_fll);/* I [sng] Full variable name to find */
 
-nm_id_sct *                       /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int nc_id,                 /* I netCDF file ID */
- const char * const cf_nm,        /* I [sng] CF name to find ( "coordinates" or "bounds" */
- nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
- int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
+nm_id_sct *                      /* O [sct] Extraction list */
+nco_var_lst_crd_ass_add_cf       /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int nc_id,                /* I netCDF file ID */
+ const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
+ int * const xtr_nbr,            /* I/O number of variables in current extraction list */
+ grp_tbl_sct *trv_tbl);          /* I [sct] Traversal table */
 
-
+int                              /* O [nbr] Item found or not */
+nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter "var_nm" and export to "nm_id" */
+(const int nc_id,                /* I [id] netCDF file ID */
+ const char * const var_nm,      /* I [sng] Variable name to find */
+ grp_tbl_sct *trv_tbl,           /* I [sct] Traversal table */
+ nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
 
 #ifdef __cplusplus
 } /* end extern "C" */

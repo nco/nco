@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.126 2012-10-23 22:49:17 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.127 2012-10-24 18:01:54 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -728,6 +728,17 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+	
+#NCO 4.2.2: groups: Add to extraction list all coordinates associated with CF convention
+    $tst_cmd[0]="ncks -O -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' -v lat_gds %tmp_fl_00%";
+    $dsc_sng="(Groups required) Add CF convention variables";
+    $tst_cmd[2]="-90-30-3000303090";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+	
+	
 
 #####################
 #### ncpdq tests #### -OK !
