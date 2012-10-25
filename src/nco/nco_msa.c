@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.107 2012-10-25 18:28:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.108 2012-10-25 20:14:20 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -766,33 +766,25 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const nco_bool PRN_MSS_VAL_BLANK) /* I [flg] Print missing values as blanks */
 {
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-
-  /* Purpose:
-  Print variable with limits from input file */
+  /* Purpose: Print variable with limits from input file */
 
   char *unit_sng;
   char var_sng[NCO_MAX_LEN_FMT_SNG];
   char mss_val_sng[NCO_MAX_LEN_FMT_SNG]="_"; /* [sng] Print this instead of numerical missing value */
   char nul_chr='\0';
-
   dmn_sct *dim=NULL_CEWI;
-
   int *dmn_id=NULL_CEWI;
-
   int rcd;
+  int val_sz_byt;
+  long lmn;
+  var_sct var;
   int idx;
   int jdx;
-  int val_sz_byt;
-
-  long lmn;
 
   lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
-
   nco_bool is_mss_val=False; /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
-
-  var_sct var;
 
   /* Set defaults */
   var_dfl_set(&var); 
@@ -818,6 +810,25 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end potential OpenMP critical */
   } /* end if */
 
+
+#ifdef GRP_DEV
+  int nbr_dmn;                /* O [nbr] Number of dimensions */
+  int *dmn_ids;               /* O [id]  Dimension IDs */ 
+  char dmn_nm[NC_MAX_NAME+1]; /* O [sng]  Dimension name */
+  int idx_dnm;
+  (void)nco_inq_dimids(in_id,&nbr_dmn,NULL,0);
+  dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids,0);
+
+  for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
+    (void)nco_inq_dimname(in_id,dmn_ids[idx_dnm],dmn_nm);
+    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id(%d)\n",dmn_nm,dmn_ids[idx_dnm]);    
+  }
+
+  (void)nco_free(dmn_ids);
+#endif
+
+
   dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));
   lmt_msa=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
@@ -825,23 +836,17 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
 
+
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<var.nbr_dim;idx++)
     for(jdx=0;jdx<lmt_nbr;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
         lmt_msa[idx]=lmt_lst[jdx];
-
-        if(dbg_lvl_get() == nco_dbg_crr){
-          char dmn_nm[NC_MAX_NAME+1];  
-          lmt_all_sct sct=*lmt_msa[idx];
-          (void)nco_inq_dimname(in_id,dmn_id[idx],dmn_nm);
-          (void)fprintf(stdout,"MATCH dimension: %s %s(%d)\n",dmn_nm,sct.dmn_nm,sct.dmn_cnt);         
-        }
-
         break;
       } /* end if */
     } /* end loop over jdx */
+
 
     /* Call super-dooper recursive routine */
     /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */

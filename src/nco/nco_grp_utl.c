@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.201 2012-10-24 22:01:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.202 2012-10-25 20:14:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -19,8 +19,6 @@
 #include "nco_grp_utl.h"  /* Group utilities */
 #include "nco_cnk.h"      /* Chunking; needed for nco4_grp_lst_mk */
 #include "nco_msa.h"      /* Multi-slabbing algorithm: needed for nco_cpy_var_val_mlt_lmt */
-
-#define GRP_DEV           /* Symbol that encapsulates group development code; just keeps old non-group code commented in #else */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */

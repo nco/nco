@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.190 2012-10-10 20:56:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.191 2012-10-25 20:14:20 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -13,6 +13,7 @@
 #define NCO_H
 
 #define NCO_SANITY_CHECK /* Calls several assert calls in the form assert( expected variable value == actual variable value ) */
+#define GRP_DEV          /* Symbol that encapsulates group development code; just keeps old non-group code commented in #else */
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
