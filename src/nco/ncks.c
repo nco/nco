@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.432 2012-10-24 18:01:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.433 2012-10-25 23:04:05 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.432 2012-10-24 18:01:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.432 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.433 2012-10-25 23:04:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.433 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -742,11 +742,11 @@ main(int argc,char **argv)
       if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=True; else PRN_VAR_DATA=False;
       if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;
       if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=True; else PRN_GLB_METADATA=False;
-      
-      /* PRN_QUIET turns off all printing to screen */
-      if(PRN_QUIET) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
-      
+
     } /* !PRN_VRB */  
+
+    /* PRN_QUIET turns off all printing to screen */
+    if(PRN_QUIET) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
   } /* !fl_out */  
 
   if(NCO_BNR_WRT && !fl_out){
