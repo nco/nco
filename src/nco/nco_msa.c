@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.109 2012-10-25 20:51:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.110 2012-10-25 22:41:39 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -756,7 +756,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
  lmt_all_sct * const *lmt_lst, /* I [sct] Dimension limits */
- const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
+ const int lmt_nbr, /* I [nbr] Number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
@@ -780,6 +780,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   var_sct var;
   int idx;
   int jdx;
+  int nbr_dmn;                      /* O [nbr] Number of dimensions in group */
+  int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* O [id]  Dimension IDs for group */ 
+  char dmn_nm[NC_MAX_NAME+1];       /* O [sng]  Dimension name */
+  int idx_dnm;
 
   lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
@@ -814,29 +818,27 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   lmt_msa=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
 
-  /* Get dimension IDs from input file */
+  /* Initialize */
+  for(idx=0;idx<var.nbr_dim;idx++){
+    lmt_msa[idx]=NULL;
+  }
+
+  /* Get dimension IDs for variable */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
 
+  /* Get dimension IDs for group */
+  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,0);
 
-#ifdef GRP_DEV
-  int nbr_dmn;                  /* O [nbr] Number of dimensions */
-  int dmn_ids[NC_MAX_VAR_DIMS]; /* O [id]  Dimension IDs */ 
-  char dmn_nm[NC_MAX_NAME+1];   /* O [sng]  Dimension name */
-  int idx_dnm;
-  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids,0);
-
-  for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
-    (void)nco_inq_dimname(in_id,dmn_ids[idx_dnm],dmn_nm);
-    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout," grp dim: %s id(%d)\n",dmn_nm,dmn_ids[idx_dnm]);    
+  if(dbg_lvl_get() == nco_dbg_crr){
+    for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
+      (void)nco_inq_dimname(in_id,dmn_ids_grp[idx_dnm],dmn_nm);
+      (void)fprintf(stdout," grp dim: %s id(%d)\n",dmn_nm,dmn_ids_grp[idx_dnm]);    
+    }
+    for(idx_dnm=0;idx_dnm<var.nbr_dim;idx_dnm++){
+      (void)nco_inq_dimname(in_id,dmn_id[idx_dnm],dmn_nm);
+      (void)fprintf(stdout," var dim: %s id(%d)\n",dmn_nm,dmn_id[idx_dnm]);    
+    }
   }
-
-  for(idx_dnm=0;idx_dnm<var.nbr_dim;idx_dnm++){
-    (void)nco_inq_dimname(in_id,dmn_id[idx_dnm],dmn_nm);
-    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout," var dim: %s id(%d)\n",dmn_nm,dmn_id[idx_dnm]);    
-  }
-
-#endif
-
 
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
@@ -847,6 +849,12 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         break;
       } /* end if */
     } /* end loop over jdx */
+
+#ifdef NCO_SANITY_CHECK
+    for(idx=0;idx<var.nbr_dim;idx++){
+      assert(lmt_msa[idx]);
+    }
+#endif
 
 
     /* Call super-dooper recursive routine */
