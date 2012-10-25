@@ -1,6 +1,7 @@
-2012-10-24  Charlie Zender  <zender@uci.edu>
+2012-10-25  Pedro Vicente  <pvicente@uci.edu>
 
-	* Document ncecat RAG and GAG
+	* ncks: nco_def_grp_flg: Error tolerant version used with -A in nco4_grp_lst_mk_itr to test 
+	existing groups.
 
 2012-10-24  Pedro Vicente  <pvicente@uci.edu>
 
