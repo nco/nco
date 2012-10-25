@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.108 2012-10-25 20:14:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.109 2012-10-25 20:51:01 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -810,31 +810,32 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end potential OpenMP critical */
   } /* end if */
 
-
-#ifdef GRP_DEV
-  int nbr_dmn;                /* O [nbr] Number of dimensions */
-  int *dmn_ids;               /* O [id]  Dimension IDs */ 
-  char dmn_nm[NC_MAX_NAME+1]; /* O [sng]  Dimension name */
-  int idx_dnm;
-  (void)nco_inq_dimids(in_id,&nbr_dmn,NULL,0);
-  dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids,0);
-
-  for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
-    (void)nco_inq_dimname(in_id,dmn_ids[idx_dnm],dmn_nm);
-    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"dimension: %s id(%d)\n",dmn_nm,dmn_ids[idx_dnm]);    
-  }
-
-  (void)nco_free(dmn_ids);
-#endif
-
-
   dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));
   lmt_msa=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
 
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
+
+
+#ifdef GRP_DEV
+  int nbr_dmn;                  /* O [nbr] Number of dimensions */
+  int dmn_ids[NC_MAX_VAR_DIMS]; /* O [id]  Dimension IDs */ 
+  char dmn_nm[NC_MAX_NAME+1];   /* O [sng]  Dimension name */
+  int idx_dnm;
+  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids,0);
+
+  for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
+    (void)nco_inq_dimname(in_id,dmn_ids[idx_dnm],dmn_nm);
+    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout," grp dim: %s id(%d)\n",dmn_nm,dmn_ids[idx_dnm]);    
+  }
+
+  for(idx_dnm=0;idx_dnm<var.nbr_dim;idx_dnm++){
+    (void)nco_inq_dimname(in_id,dmn_id[idx_dnm],dmn_nm);
+    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout," var dim: %s id(%d)\n",dmn_nm,dmn_id[idx_dnm]);    
+  }
+
+#endif
 
 
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
