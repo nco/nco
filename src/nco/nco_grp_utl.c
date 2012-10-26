@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.202 2012-10-25 20:14:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.203 2012-10-26 20:27:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1088,9 +1088,16 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
     if(nbr_var == 0 && nbr_dmn == 0 && nbr_att == 0 && nbr_grp == 0 ){
       if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO empty group: %s\n",prg_nm_get(),grp_nm);
     }
-    /* Create or open non-root group */
+    /* Create or open group */
     else
     {
+
+      for(idx=0;idx<xtr_nbr;idx++){
+        if(dbg_lvl_get() == nco_dbg_crr){
+          (void)fprintf(stdout,"Extraction list: %s\n",xtr_lst[idx].grp_nm_fll);
+        }
+      }
+
       /* Define group of same name in output file: NOTE: in -A append mode, open the group instead */
       rcd+=nco_def_grp_flg(out_id,grp_nm,&grp_out_id);
       if(rcd == NC_ENAMEINUSE){
