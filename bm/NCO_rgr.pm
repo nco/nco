@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.128 2012-10-26 18:28:10 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.129 2012-10-26 18:35:23 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -738,7 +738,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 	
-#NCO 4.2.2: groups: Extract variables in groups
+#NCO 4.2.2: groups: Extract variables in groups (test -g with -v )
     $tst_cmd[0]="ncks -O -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
     $dsc_sng="(Groups required) Extract variables in groups";
@@ -746,6 +746,15 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array	
+	
+#NCO 4.2.2: groups: Create variables in groups (test -G with -v and -g )
+    $tst_cmd[0]="ncks -O -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
+    $dsc_sng="(Groups required) Create variables in groups";
+    $tst_cmd[2]="1.3";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array		
 	
 
 	
