@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.433 2012-10-25 23:04:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.434 2012-10-26 19:36:28 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.433 2012-10-25 23:04:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.433 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.434 2012-10-26 19:36:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.434 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -777,10 +777,6 @@ main(int argc,char **argv)
       } /* HAS_SUBGRP */
     }/* PRN_GLB_METADATA */
     
-    /* Catenate timestamped command line to "history" global attribute */
-    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-    if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
-
     if(GROUP_PATH_EDIT){
 #ifndef ENABLE_NETCDF4
       (void)fprintf(stderr,"%s: ERROR Group Path Edit requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
@@ -814,6 +810,10 @@ main(int argc,char **argv)
       /* Set chunksize parameters */
       if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
     } /* HAS_SUBGRP */
+
+    /* Catenate timestamped command line to "history" global attribute */
+    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
 
     /* Turn off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

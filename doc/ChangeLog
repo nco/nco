@@ -1,3 +1,7 @@
+2012-10-26  Charlie Zender  <zender@uci.edu>
+
+	* Move nco_hst_att_cat() to after nco4_grp_lst_mk() so appending history command works
+
 2012-10-25  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks: nco_def_grp_flg: Error tolerant version used with -A in
