@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.131 2012-09-05 22:22:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.132 2012-10-26 19:29:18 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -529,7 +529,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   int idx;
   int glb_att_nbr;
 
-  long att_sz=0;
+  long att_sz=0L;
 
   nc_type att_typ;
   
@@ -578,7 +578,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)history_crr,NC_CHAR);
 
     /* Add 4 for formatting characters */
-    history_new=(char *)nco_malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4)*sizeof(char));
+    history_new=(char *)nco_malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
   } /* endif history global attribute currently exists */
 

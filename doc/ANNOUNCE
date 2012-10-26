@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.517 2012-10-24 20:45:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.518 2012-10-26 19:29:16 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.2 are ready. 
 
@@ -43,7 +43,7 @@ A. ncks and ncecat support netCDF4 groups.
    % ncks -g grp1,grp2 in.nc out.nc
    http://nco.sf.net/nco.html#sbs
 
-A. ncecat supports Group AGgregation (GAG).
+B. ncecat supports Group AGgregation (GAG).
    GAG means placing each input file into its own output file group.
    By default ncecat still glues input files together with a record 
    dimension (whose size is the number of input files). This is called
@@ -56,7 +56,7 @@ A. ncecat supports Group AGgregation (GAG).
    ncecat -O --gag       in1.nc in2.nc in3.nc out.nc
    http://nco.sf.net/nco.html#ncecat
 
-A. ncks now prints missing values as underscores ("_") by default.
+C. ncks now prints missing values as underscores ("_") by default.
    Previously ncks printed the numeric representation, e.g., "1.0e36".
    The new behavior mimics ncdump and looks cleaner:
    % ncks -s '%+5.1f, ' -H -C -v mss_val in.nc 
@@ -64,13 +64,13 @@ A. ncks now prints missing values as underscores ("_") by default.
    To revert to the old behavior, use the new --no_blank switch.
    http://nco.sf.net/nco.html#xmp_ncks
 
-A. ncap2 now understands that negative integers as min or max elements
+D. ncap2 now understands that negative integers as min or max elements
    of hyperslab specifications indicate offsets from the end.
    The other NCO operators initiated this support as of NCO 4.2.1.
    NCO support for this convention is now complete.
    http://nco.sf.net/nco.html#hyp
 
-A. Our distribution of native-Windows binaries now includes ncwa,
+E. Our distribution of native-Windows binaries now includes ncwa,
    making it a complete NCO distribution built with Windows Visual Studio.
    Due to limitations of the Windows programming environment however,
    these executables lack some powerful features present in UNIX:
@@ -78,40 +78,40 @@ A. Our distribution of native-Windows binaries now includes ncwa,
    Download your self-extracting executables today
    http://nco.sf.net#windows
 
-A. The --hdr_pad option is now supported by all operators.
+F. The --hdr_pad option is now supported by all operators.
    This option is useful in preventing re-copying of netCDF3 files
    whose metadata may be changed after the file is first written.
    Formerly it was present only in ncatted, ncks, and ncrename.
    http://nco.sf.net/nco.html#hdr
 
-A. ncap2's bilinear_interp() and bilinear_interp_wrap() now have 
+G. ncap2's bilinear_interp() and bilinear_interp_wrap() now have 
    semi-intelligent handling of missing values. Thanks to Henry.
    http://nco.sf.net/nco.html#bln_ntp
 
 BUG FIXES:
-
-A. Fix ncpdq which sometimes exited instead of re-ordering dimensions
-   in variables that were record in input, fixed in output, and yet
-   themselves lacked an output record dimension, i.e., they became
-   fixed (were neutered?) because record dimension had to be fixed to
-   satisfy re-ordering of other variables.
 
 A. ncks --fix_rec_dmn could misbehave since 20111130. Under some
    circumstances it would fail to convert the record dimension to a 
    fixed dimension, but it would not produce any errors so the user
    was unaware that the operation had failed. This has been fixed.
 
-A. ncks now dies when user attempts --mk_rec_dmn with non-existent
+B. ncks now dies when user attempts --mk_rec_dmn with non-existent
    dimension 
 
-A. Attempts to reach non-existing files behind DAP servers can no
-   longer lead to multiple attempts to find the files with wget.
-   At most one wget will be attempted.
+C. Fix ncpdq which sometimes exited instead of re-ordering dimensions
+   in variables that were record in input, fixed in output, and yet
+   themselves lacked an output record dimension, i.e., they became
+   fixed (were neutered?) because record dimension had to be fixed to
+   satisfy re-ordering of other variables.
 
-A. ncatted stopped adding trailing NULs to string (NC_CHAR) attributes
+D. ncatted stopped adding trailing NULs to string (NC_CHAR) attributes
    in NCO version 4.0.2. This was inadvertent. ncatted once again
    ensures string (NC_CHAR) attributes are NUL-terminated, as per the
    netCDF Best Practices recommendation.
+
+E. Attempts to reach non-existing files behind DAP servers can no
+   longer lead to multiple attempts to find the files with wget.
+   At most one wget will be attempted.
 
 KNOWN BUGS NOT YET FIXED:
 
@@ -127,12 +127,13 @@ A. NOT YET FIXED
    Correctly read netCDF4 input over DAP, write netCDF4 output, then read resulting file.
    Replacing netCDF4 with netCDF3 in either location of preceding sentence leads to success.
    DAP non-transparency: Works locally, fails through DAP server.
+   Unclear whether resulting file is "legal" because of dimension ID ordering assumptions
 
    Demonstration:
    ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
    ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
 
-   20120731: Verified problem still exists
+   20120731: Unable to verify since in_4.nc no longer accessible
    Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
 
 B. NOT YET FIXED
@@ -145,7 +146,7 @@ B. NOT YET FIXED
    ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
    ncks -m ~/foo.nc
 
-   20120731: Verified problem still exists
+   20121025: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 C. NOT YET FIXED
@@ -165,12 +166,14 @@ C. NOT YET FIXED
 D. NOT YET FIXED
    Correctly read scalar characters over.
    DAP non-transparency: Works locally, fails through DAP server.
+   Problem, IMHO, is with DAP definition/protocol
 
    Demonstration:
    ncks -O -D 1 -H -C -m --md5 -v md5_a -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
 
    20120801: Verified problem still exists
-   Bug report not yet filed
+   Bug report not filed
+   Cause: DAP translates scalar characters into 64-element, NUL-terminated strings so MD5 agreement fails
 
 "Sticky" reminders:
 

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.727 2012-10-24 20:45:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.728 2012-10-26 19:29:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.2
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 19 October 2012
+@set update-date 26 October 2012
 @set update-month October 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3491,7 +3491,7 @@ As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
 of the @samp{-v} switch may contain @dfn{extended regular expressions}.
 As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
 to @command{ncatted} may contain @dfn{extended regular expressions}. 
-As of @acronym{NCO} 4.2.2 (November, 2012), group names arguments 
+As of @acronym{NCO} 4.2.2 (October, 2012), group names arguments 
 of the @samp{-g} switch may contain @dfn{extended regular expressions}.
 
 @cindex @acronym{POSIX}
@@ -3538,11 +3538,15 @@ subexpression.
 @noindent
 
 To illustrate the use of these operators in extracting variables,
-consider a file with variables @code{Q}, @code{Q01}--@code{Q99},
+consider file @file{in_grp.nc} with groups @code{g0}--@code{g9},
+and subgroups @code{s0}--@code{s9}, in each of those groups.
+and file @file{in.nc} with variables @code{Q}, @code{Q01}--@code{Q99},
 @code{Q100}, @code{QAA}--@code{QZZ}, @code{Q_H2O}, @code{X_H2O},
 @code{Q_CO2}, @code{X_CO2}.  
 @example
-ncks -v '.+' in.nc               # All variables
+ncks -g 'g.' in_grp.nc           # 10 Groups g0-g9
+ncks -g 's.' in_grp.nc           # 100 sub-groups g0/s0, g0/s1, ... g9/s9
+ncks -v '.+' in.nc               # All variables (default)
 ncks -v 'Q.?' in.nc              # Variables that contain Q
 ncks -v '^Q.?' in.nc             # Variables that start with Q
 ncks -v '^Q+.?.' in.nc           # Q, Q0--Q9, Q01--Q99, QAA--QZZ, etc.
