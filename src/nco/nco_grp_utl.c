@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.204 2012-10-26 20:35:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.205 2012-10-26 21:20:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1086,21 +1086,35 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 
     /* Do not create empty groups */ 
     if(nbr_var == 0 && nbr_dmn == 0 && nbr_att == 0 && nbr_grp == 0 ){
-      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO empty group: %s\n",prg_nm_get(),grp_nm);
+      if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO Empty group: %s\n",prg_nm_get(),grp_pth);
     }
     /* Create or open group */
     else
     {
 
-
+      int crt_grp=1; /* Create group or not */
       for(idx=0;idx<xtr_nbr;idx++){
-        if(dbg_lvl_get() == nco_dbg_crr){
-          (void)fprintf(stdout,"Extraction list: %s\n",xtr_lst[idx].grp_nm_fll);
-        }
-      }
+        char * pch; /* Pointer to the first occurrence of str2 in str1 in strstr */
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"Extraction list: %s grp=%s\n",xtr_lst[idx].var_nm_fll,grp_pth);
 
-      /* Define group of same name in output file: NOTE: in -A append mode, open the group instead */
-      rcd+=nco_def_grp_flg(out_id,grp_nm,&grp_out_id);
+        /* Search the extraction list for this group */
+        pch=strstr(xtr_lst[idx].var_nm_fll,grp_pth);
+        if(pch == NULL){
+          crt_grp=0;
+          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO Group NOT in extraction list: %s\n",prg_nm_get(),grp_pth);
+        }else{
+          crt_grp=1;
+          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO Group %s IN extraction list: %s\n",prg_nm_get(),pch,grp_pth);
+        } /* end pch */
+      } /* end idx */
+
+      /* Only attempt to create if in extraction list */
+      if(crt_grp == 1){
+        /* Define group of same name in output file: NOTE: in -A append mode, open the group instead */
+        rcd+=nco_def_grp_flg(out_id,grp_nm,&grp_out_id);
+      } /* crt_grp */
+
+      /* Still always try to open if creation fails with NC_ENAMEINUSE */
       if(rcd == NC_ENAMEINUSE){
         if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO Group exists, opening instead...: %s\n",prg_nm_get(),grp_pth);
         (void)nco_inq_grp_full_ncid(nc_id,grp_pth,&grp_out_id);
@@ -1287,7 +1301,7 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
     }
     else
       /* Obtain group ID from netCDF API using group name */
-      nco_inq_grp_ncid(out_id,grp_nm,&grp_out_id);
+      rcd=nco_inq_grp_ncid_flg(out_id,grp_nm,&grp_out_id);
   } /* strcmp */
 
   /* Get variables for this group */
