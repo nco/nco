@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.435 2012-10-26 20:27:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.436 2012-10-26 20:35:54 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.435 2012-10-26 20:27:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.435 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.436 2012-10-26 20:35:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.436 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -944,6 +944,7 @@ main(int argc,char **argv)
           }else{ /* netCDF3 case */
             grp_id=in_id;
           }
+
           assert(grp_id == nm_id.grp_id );
 #endif
           /* Print full name of variable */

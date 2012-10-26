@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.203 2012-10-26 20:27:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.204 2012-10-26 20:35:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1091,6 +1091,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
     /* Create or open group */
     else
     {
+
 
       for(idx=0;idx<xtr_nbr;idx++){
         if(dbg_lvl_get() == nco_dbg_crr){
