@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.226 2012-10-24 20:45:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.227 2012-10-26 20:01:22 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.226 2012-10-24 20:45:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.226 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.227 2012-10-26 20:01:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.227 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -606,18 +606,18 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
-  /* Add input file list global attribute */
-  if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
-
   /* ncecat-specific operations */
   if(RECORD_AGGREGATE){
 
     /* Copy global attributes */
     if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-  
+    
+    /* Catenate time-stamped command line to "history" global attribute */
+    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    
+    /* Add input file list global attribute */
+    if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+
     /* Always construct new "record" dimension from scratch */
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     if(rec_dmn_nm == NULL) rec_dmn->nm=rec_dmn_nm=(char *)strdup("record"); else rec_dmn->nm=rec_dmn_nm;
@@ -776,6 +776,18 @@ main(int argc,char **argv)
       if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
       rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
       
+      if(fl_idx == 0){
+	/* fxm: Copy global attributes of first file to root of output file to preserve history attribute */
+	/* Copy global attributes */
+	if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+    
+	/* Catenate time-stamped command line to "history" global attribute */
+	if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    
+	/* Add input file list global attribute */
+	if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+      } /* endif first file */
+
       /* Check for valid -v <names> */
       (void)nco_chk_var_trv(in_id,var_lst_in,var_lst_in_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
 

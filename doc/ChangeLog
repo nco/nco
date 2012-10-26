@@ -1,5 +1,7 @@
 2012-10-26  Charlie Zender  <zender@uci.edu>
 
+	* ncecat: Copy global attributes of first file to root of output file
+
 	* Move nco_hst_att_cat() to after nco4_grp_lst_mk() so appending history command works
 
 2012-10-25  Pedro Vicente  <pvicente@uci.edu>
