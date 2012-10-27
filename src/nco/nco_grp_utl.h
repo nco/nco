@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.102 2012-10-27 18:24:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.103 2012-10-27 18:38:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -320,12 +320,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
-
-nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
-nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically or alphabetically */
-(nm_id_sct * const lst,           /* I/O [sct] Current list (destroyed) */
- const int nbr_lst,               /* I [nbr] number of members in list */
- const nco_bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 
 void                          
 nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g are in file */

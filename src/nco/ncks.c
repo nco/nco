@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.437 2012-10-27 18:24:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.438 2012-10-27 18:38:29 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.437 2012-10-27 18:24:44 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.437 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.438 2012-10-27 18:38:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.438 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -690,7 +690,7 @@ main(int argc,char **argv)
   /* Sort extraction list alphabetically or by variable ID */
   if(xtr_nbr > 1){
     if(HAS_SUBGRP){
-      xtr_lst=nco_lst_srt_nm_id_trv(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
+      
     }else{
       xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
     }/* HAS_SUBGRP */

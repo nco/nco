@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.206 2012-10-27 18:24:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.207 2012-10-27 18:38:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -430,11 +430,9 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       if(var_idx_crr == var_nbr_all) break;    
       if(var_prn == True) {
-        int var_id;
         strcpy(grp_nm,var_lst_all[var_idx_crr].grp_nm);
         var_nm_fll=(char *)strdup(var_lst_all[var_idx_crr].var_nm_fll);
         strcpy(var_nm,var_lst_all[var_idx_crr].nm);
-        var_id=var_lst_all[var_idx_crr].id;
         grp_id=var_lst_all[var_idx_crr].grp_id;
         grp_nm_fll=(char *)strdup(var_lst_all[var_idx_crr].grp_nm_fll);
 
@@ -2743,13 +2741,15 @@ nco_fnd_dmm_trv                /* [fnc] Find a coordinate variable that matches 
           int var_id;
           (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
+          char tmp[]="not_used";
+
           /* Define new nm_id_sct */
           nm_id->grp_nm_fll=strdup(grp_nm_fll);    
           nm_id->var_nm_fll=strdup(trv.nm_fll);
           nm_id->nm=strdup(var_nm);
           nm_id->grp_id=grp_id;
           nm_id->id=var_id; 
-          nm_id->grp_nm="not_used";  
+          nm_id->grp_nm=strdup(tmp); ;  
 
           /* Free allocated memory */
           grp_nm_fll=(char *)nco_free(grp_nm_fll);
@@ -2887,10 +2887,10 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
                 /* Check if requested coordinate variable is already on extraction list */
                 int var_in_lst=0;
                 for(int idx=0;idx<*xtr_nbr;idx++){
-                  nm_id_sct xtr=xtr_lst[idx];
+                  nm_id_sct xtr2=xtr_lst[idx];
                   /* Compare item on list with current variable name (NOTE: using full name to compare ) */
-                  if(strcmp(xtr.var_nm_fll,nm_id.var_nm_fll) == 0){
-                    if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"ALREADY in list %s\n",xtr.var_nm_fll);
+                  if(strcmp(xtr2.var_nm_fll,nm_id.var_nm_fll) == 0){
+                    if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"ALREADY in list %s\n",xtr2.var_nm_fll);
                     var_in_lst=1;                 
                   }
                 } /* idx */
@@ -3266,13 +3266,15 @@ nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "
         int var_id;
         (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
+        char tmp[]="not_used";
+
         /* Define new nm_id_sct */
         nm_id->grp_nm_fll=strdup(grp_nm_fll);    
         nm_id->var_nm_fll=strdup(trv.nm_fll);
         nm_id->nm=strdup(var_nm);
         nm_id->grp_id=grp_id;
         nm_id->id=var_id; 
-        nm_id->grp_nm="not_used";  
+        nm_id->grp_nm=strdup(tmp);  
 
         /* Free allocated memory */
         grp_nm_fll=(char *)nco_free(grp_nm_fll);
@@ -3453,15 +3455,6 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
 } /* end nco_chk_trv() */
 
 
-nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
-nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically or alphabetically */
-(nm_id_sct * const lst,           /* I/O [sct] Current list (destroyed) */
- const int nbr_lst,               /* I [nbr] number of members in list */
- const nco_bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
-{
-
-  return lst;
-} /* nco_lst_srt_nm_id_trv() */
 
 
 
