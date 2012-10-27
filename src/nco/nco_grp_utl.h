@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.101 2012-10-24 22:01:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.102 2012-10-27 18:24:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -328,20 +328,12 @@ nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically o
  const nco_bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 
 void                          
-nco_chk_var_trv                     /* [fnc] Check if input names of -v are in file */
+nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const nbr_var_fl);           /* CHK O [nbr] Number of variables in input file */
-
-void                          
-nco_chk_grp_trv                     /* [fnc] Check if input names of -g are in file */
-(const int nc_id,                   /* I [ID] Apex group ID */
- char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
- const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const nbr_var_fl);           /* CHK O [nbr] Number of variables in input file */
+ const nco_bool is_grp);            /* I [flg] List of names are groups */
 
 int                            /* O [nbr] Item found or not */
 nco_fnd_dmm_trv                /* [fnc] Find a coordinate variable that matches parameter "var_nm" */
@@ -380,6 +372,13 @@ nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter
  const char * const var_nm,      /* I [sng] Variable name to find */
  grp_tbl_sct *trv_tbl,           /* I [sct] Traversal table */
  nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
+
+nco_bool                          /* O [flg] Is name in file */
+nco_chk_trv                       /* [fnc] Check if input names of -v or -g are in file */
+(char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
+ int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
+ nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
+ grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

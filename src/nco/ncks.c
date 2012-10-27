@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.436 2012-10-26 20:35:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.437 2012-10-27 18:24:44 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.436 2012-10-26 20:35:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.436 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.437 2012-10-27 18:24:44 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.437 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -589,10 +589,10 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
   /* Check for valid -v <names> (handles wilcards) */
-  (void)nco_chk_var_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
+  (void)nco_chk_var_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,0); 
 
   /* Check for valid -g <names> */
-  (void)nco_chk_grp_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,&nbr_var_fl); 
+  (void)nco_chk_var_trv(in_id,grp_lst_in,grp_nbr,EXCLUDE_INPUT_LIST,1); 
   
   /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;

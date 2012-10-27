@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.205 2012-10-26 21:20:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.206 2012-10-27 18:24:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2492,12 +2492,12 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_
 } /* end nco4_var_lst_crd_add() */
 
 void                          
-nco_chk_var_trv                     /* [fnc] Check if input names of -v are in file */
+nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
  const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const nbr_var_fl)            /* CHK O [nbr] Number of variables in input file */
+ const nco_bool is_grp)             /* I [flg] List of names are groups */
 {
   char *var_sng; /* User-specified variable name or regular expression */
   char *grp_nm_fll; /* [sng] Fully qualified group name */
@@ -2617,9 +2617,6 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v are in f
 
   } /* end loop over grp */
 
-  /* Store results prior to first return */
-  *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
-
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
@@ -2649,24 +2646,33 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v are in f
 
     /* Normal variable so search through variable array */
     int jdx;
-    for(jdx=0;jdx<var_nbr_all;jdx++)
-      if(!strcmp(var_sng,var_lst_all[jdx].nm)){
-        break;
-      }
+    if(is_grp){
+      for(jdx=0;jdx<var_nbr_all;jdx++){
+        if(!strcmp(var_sng,var_lst_all[jdx].grp_nm)){
+          break;
+        }
+      } /* jdx */
+    } else {
+      for(jdx=0;jdx<var_nbr_all;jdx++){
+        if(!strcmp(var_sng,var_lst_all[jdx].nm)){
+          break;
+        }
+      } /* jdx */
+    } /* is_grp */
 
-      /* Mark any match as requested for inclusion by user */
-      if(jdx != var_nbr_all){
-        var_xtr_rqs[jdx]=True;
-      }else{
-        if(EXCLUDE_INPUT_LIST){ 
-          /* Variable need not be present if list will be excluded later ... */
-          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_chk_trv() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
-        }else{ /* !EXCLUDE_INPUT_LIST */
-          /* Variable should be included but no matches found so die */
-          (void)fprintf(stdout,"%s: ERROR nco_chk_trv() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
-          nco_exit(EXIT_FAILURE);
-        } /* !EXCLUDE_INPUT_LIST */
-      } /* end else */
+    /* Mark any match as requested for inclusion by user */
+    if(jdx != var_nbr_all){
+      var_xtr_rqs[jdx]=True;
+    }else{
+      if(EXCLUDE_INPUT_LIST){ 
+        /* Variable need not be present if list will be excluded later ... */
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_chk_trv() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+      }else{ /* !EXCLUDE_INPUT_LIST */
+        /* Variable should be included but no matches found so die */
+        (void)fprintf(stdout,"%s: ERROR nco_chk_trv() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+        nco_exit(EXIT_FAILURE);
+      } /* !EXCLUDE_INPUT_LIST */
+    } /* end else */
 
   } /* end loop over var_lst_in idx */ 
 
@@ -3416,6 +3422,37 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
 } /* nco_var_lst_crd_ass_add_cf() */
 
 
+nco_bool                          /* O [flg] Is name in file */
+nco_chk_trv                       /* [fnc] Check if input names of -v or -g are in file */
+(char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
+ int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
+ nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
+ grp_tbl_sct *trv_tbl)            /* I [sct] Traversal table */
+{
+  nco_bool has_var; /* [flg] Is name in file */
+  char *var_sng;    /* [sng] User-specified variable name or regular expression */
+
+  for(int idx=0;idx<var_xtr_nbr;idx++){
+    has_var=False;
+    var_sng=var_lst_in[idx];
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+      if(trv.typ == typ ){
+        if(strcmp(var_sng,trv.nm) == 0 ){
+          has_var=True;
+        } /* strcmp */
+      } /* nc_typ */
+    } /* uidx */
+    if(has_var == False){
+      (void)fprintf(stderr,"%s: ERROR nco_chk_trv() reports user-specified name <%s> is not in input file \n",prg_nm_get(),var_sng);
+      return False;
+    } /* False */
+  } /* idx */
+
+  return True;
+} /* end nco_chk_trv() */
+
+
 nm_id_sct *                       /* O [sct] Sorted output list (trv version) */
 nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically or alphabetically */
 (nm_id_sct * const lst,           /* I/O [sct] Current list (destroyed) */
@@ -3426,14 +3463,5 @@ nco_lst_srt_nm_id_trv             /* [fnc] Sort name/ID input list numerically o
   return lst;
 } /* nco_lst_srt_nm_id_trv() */
 
-void                          
-nco_chk_grp_trv                     /* [fnc] Check if input names of -g are in file */
-(const int nc_id,                   /* I [ID] Apex group ID */
- char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
- const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const nbr_var_fl)            /* CHK O [nbr] Number of variables in input file */
-{
 
-} /* nco_chk_grp_trv() */
 

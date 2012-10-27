@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.110 2012-10-25 22:41:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.111 2012-10-27 18:24:44 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -780,9 +780,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   var_sct var;
   int idx;
   int jdx;
-  int nbr_dmn;                      /* O [nbr] Number of dimensions in group */
-  int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* O [id]  Dimension IDs for group */ 
-  char dmn_nm[NC_MAX_NAME+1];       /* O [sng]  Dimension name */
+  int nbr_dmn;                      /* [nbr] Number of dimensions in group */
+  int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
+  char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
+  long dmn_sz;                      /* [nbr] Dimension size */ 
   int idx_dnm;
 
   lmt_all_sct **lmt_msa=NULL_CEWI;
@@ -840,6 +841,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     }
   }
 
+
+  /* List dimensions using obtained group ID */
+  for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
+    (void)nco_inq_dim(in_id,dmn_ids_grp[idx_dnm],dmn_nm,&dmn_sz);
+  }
+
+
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<var.nbr_dim;idx++)
@@ -849,6 +857,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         break;
       } /* end if */
     } /* end loop over jdx */
+
 
 #ifdef NCO_SANITY_CHECK
     for(idx=0;idx<var.nbr_dim;idx++){
