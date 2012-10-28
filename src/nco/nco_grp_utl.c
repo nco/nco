@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.210 2012-10-28 04:45:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.211 2012-10-28 05:44:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1025,9 +1025,37 @@ get_lst_nm      /* [fnc] Strip last component of full name */
 }/* end get_lst_nm() */
 
 
+void
+nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file */
+(const int nc_id,                /* I [ID] netCDF input file ID  */
+ const int nc_out_id,            /* I [ID] netCDF output file ID  */
+ nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
+ const int xtr_nbr,              /* I [nbr] Number of members in list */
+ const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA,      /* I [flg] Copy global variable metadata (attributes) */
+ int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr)               /* I [nbr] Number of dimensions with user-specified chunking */
+{
+  /* Purpose: Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) */            
+  char rth[]="/"; /* Group path */
+
+  /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
+  (void)nco4_grp_lst_mk_itr(nc_id,nc_out_id,nc_id,nc_out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+
+  return;
+} /* end nco4_grp_lst_mk() */
+
 int                            /* [rcd] Return code */
 nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
-(const int nc_id,              /* I [ID] netCDF file ID  */
+(const int nc_id,              /* I [ID] netCDF input file ID  */
+ const int nc_out_id,          /* I [ID] netCDF output file ID  */
  const int in_id,              /* I [ID] Group ID from netCDF intput file */
  const int out_id,             /* I [ID] Group ID from netCDF output file */
  char * const grp_nm_fll,      /* I [sng] Group path */
@@ -1186,7 +1214,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_lst_mk_itr(nc_id,gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+    rcd+=nco4_grp_lst_mk_itr(nc_id,nc_out_id,gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
 
     pth=(char*)nco_free(pth);
   }
@@ -1195,38 +1223,36 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   return rcd;
 }/* end nco4_grp_lst_mk_itr() */
 
+
 void
-nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file */
-(const int in_id,                /* I [ID] netCDF input file ID */
- const int out_id,               /* I [ID] netCDF output file ID */
+nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
+(const int nc_id,                /* I [ID] netCDF input file ID  */
+ const int nc_out_id,            /* I [ID] netCDF output file ID  */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
  const int xtr_nbr,              /* I [nbr] Number of members in list */
  const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ lmt_all_sct * const * lmt_all_lst,  /* I multi-hyperslab limits */
  const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
- const int dfl_lvl,              /* I [enm] Deflate level [0..9] */
- nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
- nco_bool PRN_GLB_METADATA,      /* I [flg] Copy global variable metadata (attributes) */
- int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
- int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
- const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr)               /* I [nbr] Number of dimensions with user-specified chunking */
+ FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
+ const nco_bool NCO_BNR_WRT)     /* I [flg] Write binary file */
 {
-  /* Purpose: Recursively iterate input file (nc_id) and generate groups/define variables in output file (out_id) */            
+  /* Purpose: Recursively iterate input file (nc_id) and write variables in output file (out_id)  */
   char rth[]="/"; /* Group path */
 
   /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  (void)nco4_grp_lst_mk_itr(in_id,in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl,PRN_VAR_METADATA,PRN_GLB_METADATA,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+  (void)nco4_grp_var_cpy_itr(nc_id,nc_out_id,nc_id,nc_out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
 
   return;
-} /* end nco4_grp_lst_mk() */
+} /* end nco4_grp_var_cpy() */
 
 
 int                              /* [rcd] Return code */
 nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy */
-(const int in_id,                /* I [ID] netCDF input file ID */
- const int out_id,               /* I [ID] netCDF output file ID */
+(const int nc_id,                /* I [ID] netCDF input file ID  */
+ const int nc_out_id,            /* I [ID] netCDF output file ID  */
+ const int in_id,                /* I [ID] Group ID from netCDF intput file */
+ const int out_id,               /* I [ID] Group ID from netCDF output file */
  char * const grp_nm_fll,        /* I [sng] Group path */
  char * const grp_nm,            /* I [sng] Group name */
  nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
@@ -1333,7 +1359,7 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
     strcat(pth,gp_nm); /* Concatenate current group to absolute group path */
 
     /* Recursively go to sub-groups */
-    rcd+=nco4_grp_var_cpy_itr(gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
+    rcd+=nco4_grp_var_cpy_itr(nc_id,nc_out_id,gid,grp_out_id,pth,gp_nm,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
 
     pth=(char*)nco_free(pth);
   }
@@ -1341,29 +1367,6 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
   (void)nco_free(grp_ids);
   return rcd;
 }/* end nco4_grp_var_itr() */
-
-void
-nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
-(const int in_id,                /* I [ID] netCDF input file ID */
- const int out_id,               /* I [ID] netCDF output file ID */
- nm_id_sct * const xtr_lst,      /* I [sct] Extraction list  */
- const int xtr_nbr,              /* I [nbr] Number of members in list */
- const int lmt_nbr,              /* I [nbr] Number of dimensions with limits */
- lmt_all_sct * const * lmt_all_lst,  /* I multi-hyperslab limits */
- const int lmt_all_lst_nbr,      /* I [nbr] Number of hyperslab limits */
- FILE * const fp_bnr,            /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,      /* I [flg] Perform MD5 digests */
- const nco_bool NCO_BNR_WRT)     /* I [flg] Write binary file */
-{
-  /* Purpose: Recursively iterate input file (nc_id) and write variables in output file (out_id)  */
-  char rth[]="/"; /* Group path */
-
-  /* Recursively go to sub-groups, starting with netCDF file ID and root group name */
-  (void)nco4_grp_var_cpy_itr(in_id,out_id,rth,rth,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,lmt_all_lst_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
-
-  return;
-} /* end nco4_grp_var_cpy() */
-
 
 
 void
