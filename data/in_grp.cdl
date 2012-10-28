@@ -26,12 +26,12 @@
 
 netcdf in_grp {
 dimensions:
-	lat=2,lev=3,lon=4,time=unlimited;
+	lat=2,lev=3,lon=4,gds_crd=8,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.23 2012-10-28 03:26:36 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.24 2012-10-28 22:17:05 pvicente Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -59,6 +59,12 @@ variables:
 	area:long_name = "area";
 	area:units = "meter2";
 	
+	float gds_crd(gds_crd);
+	gds_crd:long_name = "Geodesic coordinate";
+	gds_crd:units = "degree";
+	gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
+	gds_crd:coordinates = "lat_gds lon_gds";
+	
 data:
 	scl=1.0;
 	lat=-90,90;
@@ -66,6 +72,7 @@ data:
 	lon=0,90,180,270;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	area=10.,10.;
+	gds_crd=0,1,2,3,4,5,6,7;
 
 group: g1 { 
 
