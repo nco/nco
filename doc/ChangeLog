@@ -6,11 +6,14 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
 	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
 
-2012-10-26  Pedro Vicente  <pvicente@uci.edu>
+2012-10-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks regression test #22: Extract variables in groups (test -g with -v)
 
 	* ncks regression test #23: Create variables in groups (test -G with -v and -g)
+	
+	* ncks regression test #24: Hyperslabs (test -d with -v and -g)
+	
 
 2012-10-26  Charlie Zender  <zender@uci.edu>
 

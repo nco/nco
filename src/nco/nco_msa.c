@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.111 2012-10-27 18:24:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.112 2012-10-28 23:33:33 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -783,7 +783,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   int nbr_dmn;                      /* [nbr] Number of dimensions in group */
   int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
   char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
-  long dmn_sz;                      /* [nbr] Dimension size */ 
   int idx_dnm;
 
   lmt_all_sct **lmt_msa=NULL_CEWI;
@@ -831,20 +830,16 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,0);
 
   if(dbg_lvl_get() == nco_dbg_crr){
+    long dmn_sz;                     
     for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
       (void)nco_inq_dimname(in_id,dmn_ids_grp[idx_dnm],dmn_nm);
-      (void)fprintf(stdout," grp dim: %s id(%d)\n",dmn_nm,dmn_ids_grp[idx_dnm]);    
+      (void)nco_inq_dim(in_id,dmn_ids_grp[idx_dnm],dmn_nm,&dmn_sz);
+      (void)fprintf(stdout,"  nco_msa_prn_var_val: GRP dim: %s id(%d)\n",dmn_nm,dmn_ids_grp[idx_dnm]);    
     }
     for(idx_dnm=0;idx_dnm<var.nbr_dim;idx_dnm++){
       (void)nco_inq_dimname(in_id,dmn_id[idx_dnm],dmn_nm);
-      (void)fprintf(stdout," var dim: %s id(%d)\n",dmn_nm,dmn_id[idx_dnm]);    
+      (void)fprintf(stdout,"  nco_msa_prn_var_val: VAR dim: %s id(%d)\n",dmn_nm,dmn_id[idx_dnm]);    
     }
-  }
-
-
-  /* List dimensions using obtained group ID */
-  for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
-    (void)nco_inq_dim(in_id,dmn_ids_grp[idx_dnm],dmn_nm,&dmn_sz);
   }
 
 
