@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.129 2012-10-26 18:35:23 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.130 2012-10-28 03:43:26 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -755,6 +755,15 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array		
+	
+#NCO 4.2.2: groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
+    $tst_cmd[0]="ncks -O -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%";
+    $dsc_sng="(Groups required) Hyperslabs in groups";
+    $tst_cmd[2]="2";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array			
 	
 
 	
