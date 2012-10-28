@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.211 2012-10-28 05:44:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.212 2012-10-28 06:09:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1119,7 +1119,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
       rcd+=nco_def_grp_flg(out_id,grp_nm,&grp_out_id);
       if(rcd == NC_ENAMEINUSE){
         if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO Group exists, opening instead...: %s\n",prg_nm_get(),grp_nm_fll);
-        (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_out_id);
+        (void)nco_inq_grp_full_ncid(nc_out_id,grp_nm_fll,&grp_out_id);
       } /* NC_ENAMEINUSE */
     } /* Non - empty group */
   } /* end strcmp */
