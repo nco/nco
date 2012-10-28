@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.104 2012-10-28 02:49:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.105 2012-10-28 04:45:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -171,21 +171,21 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 (const int nc_id,              /* I [ID] netCDF file ID  */
  const int in_id,              /* I [ID] Group ID from netCDF intput file */
  const int out_id,             /* I [ID] Group ID from netCDF output file */
- char * const grp_pth,         /* I [sng] Group path */
+ char * const grp_nm_fll,      /* I [sng] Group path */
  char * const grp_nm,          /* I [sng] Group name */
  nm_id_sct * const xtr_lst,    /* I [sct] Extraction list  */
  const int xtr_nbr,            /* I [nbr] Number of members in extraction list */
  const int lmt_nbr,            /* I [nbr] Number of dimensions with limits */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits */
+ const int lmt_all_lst_nbr,    /* I [nbr] Number of hyperslab limits (number of dimensions in file )*/
  const int dfl_lvl,            /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
  nco_bool PRN_GLB_METADATA,    /* I [flg] Copy global variable metadata (attributes) */
- int * const cnk_map_ptr,         /* I/O [enm] Chunking map */
- int * const cnk_plc_ptr,         /* I/O [enm] Chunking policy */
- const size_t cnk_sz_scl,         /* I [nbr] Chunk size scalar */
+ int * const cnk_map_ptr,      /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr,      /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl,      /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr);              /* I [nbr] Number of dimensions with user-specified chunking */
+ const int cnk_nbr);           /* I [nbr] Number of dimensions with user-specified chunking */
 
 void
 nco4_grp_lst_mk                  /* [fnc] Create groups/variables in output file */
