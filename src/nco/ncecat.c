@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.228 2012-10-27 18:24:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.229 2012-10-28 02:49:28 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.228 2012-10-27 18:24:44 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.228 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.229 2012-10-28 02:49:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.229 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -789,7 +789,7 @@ main(int argc,char **argv)
       } /* endif first file */
 
       /* Check for valid -v <names> */
-      (void)nco_chk_var_trv(in_id,var_lst_in,var_lst_in_nbr,EXCLUDE_INPUT_LIST,0); 
+      (void)nco_chk_var_trv(in_id,var_lst_in,var_lst_in_nbr,EXCLUDE_INPUT_LIST); 
 
       /* Get objects in file */
       trv_tbl_init(&trv_tbl);

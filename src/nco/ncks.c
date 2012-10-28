@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.438 2012-10-27 18:38:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.439 2012-10-28 02:49:28 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -85,7 +85,7 @@ main(int argc,char **argv)
 {
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
   nco_bool CNV_CCM_CCSM_CF;
-  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   nco_bool FL_RTR_RMT_LCN;
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.438 2012-10-27 18:38:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.438 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.439 2012-10-28 02:49:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.439 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -588,18 +588,20 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Check for valid -v <names> (handles wilcards) */
-  (void)nco_chk_var_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST,0); 
-
-  /* Check for valid -g <names> */
-  (void)nco_chk_var_trv(in_id,grp_lst_in,grp_nbr,EXCLUDE_INPUT_LIST,1); 
-  
   /* Check if any sub-groups */
   if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,rth,trv_tbl);
+
+  /* Check for valid -v <names> (handles wilcards) */
+  (void)nco_chk_var_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST); 
+
+   /* Check for invalid -g <names>  */
+  if(nco_chk_trv(grp_lst_in,grp_nbr,nc_typ_grp,trv_tbl) == 0){
+    goto out;
+  }
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

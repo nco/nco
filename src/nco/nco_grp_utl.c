@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.208 2012-10-28 00:31:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.209 2012-10-28 02:49:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2472,8 +2472,7 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g ar
 (const int nc_id,                   /* I [ID] Apex group ID */
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- const nco_bool is_grp)             /* I [flg] List of names are groups */
+ const nco_bool EXCLUDE_INPUT_LIST) /* I [flg] Exclude rather than extract */
 {
   char *var_sng; /* User-specified variable name or regular expression */
   char *grp_nm_fll; /* [sng] Fully qualified group name */
@@ -2622,19 +2621,11 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g ar
 
     /* Normal variable so search through variable array */
     int jdx;
-    if(is_grp){
-      for(jdx=0;jdx<var_nbr_all;jdx++){
-        if(!strcmp(var_sng,var_lst_all[jdx].grp_nm)){
-          break;
-        }
-      } /* jdx */
-    } else {
-      for(jdx=0;jdx<var_nbr_all;jdx++){
-        if(!strcmp(var_sng,var_lst_all[jdx].nm)){
-          break;
-        }
-      } /* jdx */
-    } /* is_grp */
+    for(jdx=0;jdx<var_nbr_all;jdx++){
+      if(!strcmp(var_sng,var_lst_all[jdx].nm)){
+        break;
+      }
+    } /* jdx */
 
     /* Mark any match as requested for inclusion by user */
     if(jdx != var_nbr_all){
@@ -3142,9 +3133,9 @@ xtr_lst_ptr           /*   [fnc] Print Name ID structure list */
   for(int idx=0;idx<xtr_nbr;idx++){
     nm_id_sct nm_id=xtr_lst[idx];
     if(dbg_lvl_get() >= nco_dbg_dev)
-      (void)fprintf(stdout,"nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll, nm_id.grp_nm, nm_id.grp_id, nm_id.id);
+      (void)fprintf(stdout," nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll, nm_id.grp_nm, nm_id.grp_id, nm_id.id);
     else
-      (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
+      (void)fprintf(stdout," %s\n",nm_id.var_nm_fll);
   } /* idx */
 }/* end xtr_lst_ptr() */
 
@@ -3424,7 +3415,7 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
       } /* nc_typ */
     } /* uidx */
     if(has_var == False){
-      (void)fprintf(stderr,"%s: ERROR nco_chk_trv() reports user-specified name <%s> is not in input file \n",prg_nm_get(),var_sng);
+      (void)fprintf(stderr,"%s: ERROR nco_chk_trv() reports user-specified name %s is not in input file \n",prg_nm_get(),var_sng);
       return False;
     } /* False */
   } /* idx */

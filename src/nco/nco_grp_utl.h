@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.103 2012-10-27 18:38:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.104 2012-10-28 02:49:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -326,8 +326,7 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g ar
 (const int nc_id,                   /* I [ID] Apex group ID */
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- const nco_bool is_grp);            /* I [flg] List of names are groups */
+ const nco_bool EXCLUDE_INPUT_LIST); /* I [flg] Exclude rather than extract */
 
 int                            /* O [nbr] Item found or not */
 nco_fnd_dmm_trv                /* [fnc] Find a coordinate variable that matches parameter "var_nm" */
