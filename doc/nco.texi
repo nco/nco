@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.728 2012-10-26 19:29:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.729 2012-10-29 22:04:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3491,8 +3491,9 @@ As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
 of the @samp{-v} switch may contain @dfn{extended regular expressions}.
 As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
 to @command{ncatted} may contain @dfn{extended regular expressions}. 
-As of @acronym{NCO} 4.2.2 (October, 2012), group names arguments 
-of the @samp{-g} switch may contain @dfn{extended regular expressions}.
+@c fxm
+@c As of @acronym{NCO} 4.2.3 (November, 2012), group names arguments 
+@c of the @samp{-g} switch may contain @dfn{extended regular expressions}.
 
 @cindex @acronym{POSIX}
 @cindex @code{regex}
@@ -3543,9 +3544,10 @@ and subgroups @code{s0}--@code{s9}, in each of those groups.
 and file @file{in.nc} with variables @code{Q}, @code{Q01}--@code{Q99},
 @code{Q100}, @code{QAA}--@code{QZZ}, @code{Q_H2O}, @code{X_H2O},
 @code{Q_CO2}, @code{X_CO2}.  
+@c fxm
+@c ncks -g 'g.' in_grp.nc           # 10 Groups g0-g9
+@c ncks -g 's.' in_grp.nc           # 100 sub-groups g0/s0, g0/s1, ... g9/s9
 @example
-ncks -g 'g.' in_grp.nc           # 10 Groups g0-g9
-ncks -g 's.' in_grp.nc           # 100 sub-groups g0/s0, g0/s1, ... g9/s9
 ncks -v '.+' in.nc               # All variables (default)
 ncks -v 'Q.?' in.nc              # Variables that contain Q
 ncks -v '^Q.?' in.nc             # Variables that start with Q
