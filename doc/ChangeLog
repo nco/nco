@@ -1,16 +1,16 @@
-2012-10-28  Pedro Vicente  <pvicente@uci.edu>
-
-	* ncks regression test #24: Hyperslabs (test -d with -v and -g)
-
-	* ncks regression test #25: Dimensions (test -v dimension)
-
-2012-10-28  Charlie Zender  <zender@uci.edu>
+2012-10-29  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.2 release procedure:
  	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs, _'s, ncecat GAG
 	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.2 release"
 	cvs tag -c nco-4_2_2;cvs tag -c nco-4_2_2-1
+
+2012-10-28  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks regression test #24: Hyperslabs (test -d with -v and -g)
+
+	* ncks regression test #25: Dimensions (test -v dimension)
 
 2012-10-27  Pedro Vicente  <pvicente@uci.edu>
 
