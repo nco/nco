@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.213 2012-10-28 23:33:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.214 2012-10-29 21:51:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1076,9 +1076,10 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
 {
   /* Purpose: Recursively iterate in_id, creating groups and defining variables in out_id */
 
+  nco_bool GRP_ATT_DEFINED=False;
   int rcd=NC_NOERR;              /* [rcd] Return code */
   nc_type var_typ;               /* [enm] Variable type */
-  int nbr_att;                   /* [nbr] Number of attributes */
+  int nbr_att_grp;                   /* [nbr] Number of attributes */
   int nbr_var;                   /* [nbr] Number of variables */
   int nbr_dmn;                   /* [nbr] number of dimensions */
   int nbr_grp;                   /* [nbr] Number of sub-groups in this group */
@@ -1096,12 +1097,13 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   rcd+=nco_inq_nvars(in_id,&nbr_var);
   rcd+=nco_inq_grpname(in_id,gp_nm);
   rcd+=nco_inq_ndims(in_id,&nbr_dmn);
-  rcd+=nco_inq_natts(in_id,&nbr_att);
+  rcd+=nco_inq_natts(in_id,&nbr_att_grp);
   rcd+=nco_inq_grps(in_id,&nbr_grp,NULL);
-  rcd+=nco_inq(in_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
+  rcd+=nco_inq(in_id,&nbr_dmn,&nbr_var,&nbr_att_grp,&rec_dmn_id);
   rcd+=nco_inq_dimids(in_id,&nbr_dmn,dmn_ids,0);
   rcd+=nco_inq_unlimdims(in_id,&nbr_dmn_ult,dmn_ids_ult);
 
+#if 0
   /* Avoid the root case */
   grp_out_id = out_id;
 
@@ -1109,7 +1111,7 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   if (strcmp("/",grp_nm) != 0){
 
     /* Do not create empty groups */ 
-    if(nbr_var == 0 && nbr_dmn == 0 && nbr_att == 0 && nbr_grp == 0 ){
+    if(nbr_var == 0 && nbr_dmn == 0 && nbr_att_grp == 0 && nbr_grp == 0 ){
       if(dbg_lvl_get() >= nco_dbg_vrb)(void)fprintf(stdout,"%s: INFO empty group: %s\n",prg_nm_get(),grp_nm);
     }
     /* Create or open group */
@@ -1125,14 +1127,16 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   } /* end strcmp */
 
   /* Copy global attributes (in group) NOTE: use grp_out_id obtained */
-  if(PRN_GLB_METADATA && nbr_att){
+  if(PRN_GLB_METADATA && nbr_att_grp){
     (void)nco_att_cpy(in_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
   }
+#endif /* !0 */
 
   /* Get variables for this group */
   for(int var_id=0;var_id<nbr_var;var_id++){
+    int nbr_att_var;
     char *var_nm_fll=NULL; /* Full path of variable */
-    rcd+=nco_inq_var(in_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att);
+    rcd+=nco_inq_var(in_id,var_id,var_nm,&var_typ,NULL,NULL,&nbr_att_var);
 
     /* Allocate path buffer; add space for a trailing NULL */ 
     var_nm_fll=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2);
@@ -1174,6 +1178,14 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
         } /* NC_FORMAT_NETCDF4 */
 
         /* Define variable in output file: NOTE: use grp_out_id obtained */
+#if 1
+	(void)nco_def_grp_full(nc_out_id,grp_nm_fll,&grp_out_id);
+	/* Copy global attributes (in group) NOTE: use grp_out_id obtained */
+	if(PRN_GLB_METADATA && nbr_att_grp && !GRP_ATT_DEFINED){
+	  (void)nco_att_cpy(in_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+	  GRP_ATT_DEFINED=True;
+	}
+#endif
         if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
         else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
 
@@ -1291,6 +1303,7 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
   rcd+=nco_inq_dimids(in_id,&nbr_dmn,dmn_ids,0);
   rcd+=nco_inq_unlimdims(in_id,&nbr_dmn_ult,dmn_ids_ult);
 
+#if 0
   /* Avoid the root case */
   grp_out_id = out_id;
 
@@ -1303,6 +1316,7 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
       /* Obtain group ID from netCDF API using group name */
       rcd=nco_inq_grp_ncid(out_id,grp_nm,&grp_out_id);
   } /* strcmp */
+#endif /* !0 */
 
   /* Get variables for this group */
   for(int var_id=0;var_id<nbr_var;var_id++){
@@ -1328,6 +1342,9 @@ nco4_grp_var_cpy_itr             /* [fnc] Iterator function for nco4_grp_var_cpy
 
         if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco4_grp_var_cpy_itr()  extract: %s\n",prg_nm_get(),var_nm_fll);
 
+#if 1
+	(void)nco_def_grp_full(nc_out_id,grp_nm_fll,&grp_out_id);
+#endif
         /* Write output variable; NOTE: use grp_out_id obtained  */
         if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,lmt_all_lst_nbr); 
         else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
