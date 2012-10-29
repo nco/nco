@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.734 2012-10-24 06:46:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.735 2012-10-29 22:37:46 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -894,12 +894,12 @@ require users to have any additional software.
 This is a new feature as of 20120615, please send us feedback. To build from source using MSVC or Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
-wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.2.1.windows.mvs.exe -O /tmp/nco-4.2.1.windows.mvs.exe
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.2.1.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.2.2.windows.mvs.exe -O /tmp/nco-4.2.2.windows.mvs.exe
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.2.2.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-scp /tmp/nco-4.2.1.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
+scp /tmp/nco-4.2.2.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
 -->
-<li><a href="src/nco-4.2.1.windows.mvs.exe">nco-4.2.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.1.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.2.1.windows.mvs.exe"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-4.2.2.windows.mvs.exe">nco-4.2.2.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.2.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.2.2.windows.mvs.exe"-->). Maintained by NCO Project.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
