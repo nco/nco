@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.112 2012-10-28 23:33:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.113 2012-10-29 00:46:52 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -832,17 +832,52 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   if(dbg_lvl_get() == nco_dbg_crr){
     long dmn_sz;                     
     for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
-      (void)nco_inq_dimname(in_id,dmn_ids_grp[idx_dnm],dmn_nm);
       (void)nco_inq_dim(in_id,dmn_ids_grp[idx_dnm],dmn_nm,&dmn_sz);
       (void)fprintf(stdout,"  nco_msa_prn_var_val: GRP dim: %s id(%d)\n",dmn_nm,dmn_ids_grp[idx_dnm]);    
-    }
-    for(idx_dnm=0;idx_dnm<var.nbr_dim;idx_dnm++){
-      (void)nco_inq_dimname(in_id,dmn_id[idx_dnm],dmn_nm);
-      (void)fprintf(stdout,"  nco_msa_prn_var_val: VAR dim: %s id(%d)\n",dmn_nm,dmn_id[idx_dnm]);    
-    }
-  }
+    } 
+  } 
 
+#ifdef GRP_DEV
+  /* Obtain netCDF file format */
+  int fl_fmt;
+  (void)nco_inq_format(in_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 
+    /* Initialize lmt_msa with multi-limits from lmt_lst limits */
+    /* Get dimension sizes from input file */
+
+    for(idx=0;idx<var.nbr_dim;idx++){
+      long dmn_sz;  
+      (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
+
+      if(dbg_lvl_get() == nco_dbg_crr) 
+        (void)fprintf(stdout,"  nco_msa_prn_var_val: VAR dim: %s id(%d)\n",dmn_nm,dmn_id[idx]);   
+
+      for(jdx=0;jdx<lmt_nbr;jdx++){
+        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0){
+          lmt_msa[idx]=lmt_lst[jdx];
+
+          if(dbg_lvl_get() == nco_dbg_crr)
+            (void)fprintf(stdout,"  nco_msa_prn_var_val: MATCH %s id(%d) sz=%ld -->lmt_lst %s cnt=%ld\n",
+            dmn_nm,dmn_id[idx],dmn_sz,lmt_lst[jdx]->lmt_dmn[0]->nm,lmt_lst[jdx]->lmt_dmn[0]->cnt); 
+
+          break;
+        } /* end if */
+      } /* end loop over jdx */
+    } /* end loop over idx */
+  }else{ /* NC_FORMAT_CLASSIC */
+
+    for(idx=0;idx<var.nbr_dim;idx++)
+      for(jdx=0;jdx<lmt_nbr;jdx++){
+        if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
+          lmt_msa[idx]=lmt_lst[jdx];
+          break;
+        } /* end if */
+      } /* end loop over jdx */
+
+  } /* NC_FORMAT_CLASSIC */
+
+#else
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<var.nbr_dim;idx++)
@@ -852,14 +887,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         break;
       } /* end if */
     } /* end loop over jdx */
-
+#endif
 
 #ifdef NCO_SANITY_CHECK
     for(idx=0;idx<var.nbr_dim;idx++){
       assert(lmt_msa[idx]);
     }
 #endif
-
 
     /* Call super-dooper recursive routine */
     /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */

@@ -1,3 +1,9 @@
+2012-10-28  Pedro Vicente  <pvicente@uci.edu>
+	
+	* ncks regression test #24: Hyperslabs (test -d with -v and -g)
+	
+	* ncks regression test #25: Dimensions (test -v dimension)
+	
 2012-10-28  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.2 release procedure:
@@ -11,9 +17,6 @@
 	* ncks regression test #22: Extract variables in groups (test -g with -v)
 
 	* ncks regression test #23: Create variables in groups (test -G with -v and -g)
-	
-	* ncks regression test #24: Hyperslabs (test -d with -v and -g)
-	
 
 2012-10-26  Charlie Zender  <zender@uci.edu>
 

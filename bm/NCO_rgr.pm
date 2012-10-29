@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.130 2012-10-28 03:43:26 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.131 2012-10-29 00:46:47 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -763,7 +763,16 @@ sub tst_rgr {
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array			
+    $#tst_cmd=0;  # Reset array	
+	
+#NCO 4.2.2: groups: Extract dimensions (test -v dimension)
+    $tst_cmd[0]="ncks -O -v time3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -s '%g' %tmp_fl_00%";
+    $dsc_sng="(Groups required) Extract dimensions";
+    $tst_cmd[2]="123";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array				
 	
 
 	
