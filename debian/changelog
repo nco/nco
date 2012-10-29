@@ -2,7 +2,7 @@ nco (4.2.2-1) unstable; urgency=low
 
   * new upstream version (ncks groups, hdr_pad, NULs, _'s, ncecat GAG)
 
- -- Charlie Zender <zender@uci.edu>  Thu, 08 Nov 2012 16:00:42 -0700
+ -- Charlie Zender <zender@uci.edu>  Mon, 29 Oct 2012 16:00:42 -0700
 
 nco (4.2.1-1) unstable; urgency=low
 

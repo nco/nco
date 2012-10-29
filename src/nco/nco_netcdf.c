@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.161 2012-10-24 21:01:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.162 2012-10-29 23:03:34 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -720,7 +720,7 @@ nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
      tar xvzf nc_rename_grp.tar.gz
      make
      sudo make install
-     cd ${DATA}/tmp/nco-4.2.1 # i.e., cd to top-level of your NCO distribution
+     cd ${DATA}/tmp/nco-4.2.2 # i.e., cd to top-level of your NCO distribution
      make
      sudo make install
      Obviously, the patch is currently based against netCDF 4.2.1.
