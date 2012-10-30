@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.214 2012-10-29 21:51:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.215 2012-10-30 18:08:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2137,7 +2137,7 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
 } /* end nco_prn_att_trv() */
 
 nm_id_sct *                      /* O [sct] Extraction list */
-nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */
+nco_var_lst_crd_add_rec          /* [fnc] Add all coordinates to extraction list */
 (const int nc_id,                /* I [ID] netCDF file ID */
  nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
  int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
@@ -2178,7 +2178,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
 } /* end nco4_var_lst_crd_add() */
 
 void                  
-nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_add_trv */
+nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_add_rec */
 (const int in_id,                /* I [ID] Group ID */
  char * const grp_nm_fll,        /* I [sng] Group path */
  char * const grp_nm,            /* I [sng] Group name */
@@ -2292,7 +2292,7 @@ nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco_var_lst_crd_
 } /* end nco4_var_lst_crd_add() */
 
 void                          
-nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g are in file */
+nco_chk_var                         /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
@@ -2457,10 +2457,10 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g ar
     }else{
       if(EXCLUDE_INPUT_LIST){ 
         /* Variable need not be present if list will be excluded later ... */
-        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_chk_trv() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_chk_var() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
       }else{ /* !EXCLUDE_INPUT_LIST */
         /* Variable should be included but no matches found so die */
-        (void)fprintf(stdout,"%s: ERROR nco_chk_trv() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+        (void)fprintf(stdout,"%s: ERROR nco_chk_var() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
         nco_exit(EXIT_FAILURE);
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
@@ -2470,7 +2470,7 @@ nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g ar
   var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
-} /* end nco_chk_var_trv() */
+} /* end nco_chk_var_var() */
 
 
 int                            /* O [nbr] Item found or not */
@@ -2869,7 +2869,7 @@ nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "
 } /* end nco_fnd_var_trv */ 
 
 nm_id_sct *                       /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinates associated with CF convention */
+nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinates associated with CF convention */
 (const int nc_id,                 /* I netCDF file ID */
  const char * const cf_nm,        /* I [sng] CF name to find ( "coordinates" or "bounds" ) */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (modified) */
@@ -3002,7 +3002,7 @@ nco_var_lst_crd_ass_add_cf        /* [fnc] Add to extraction list all coordinate
   } /* endif dbg */
 
   return xtr_lst;
-} /* nco_var_lst_crd_ass_add_cf() */
+} /* nco_var_lst_crd_ass_add_cf_trv() */
 
 
 nco_bool                          /* O [flg] Is name in file */

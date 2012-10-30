@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.106 2012-10-28 05:44:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.107 2012-10-30 18:08:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -298,7 +298,7 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
  grp_tbl_sct *trv_tbl);       /* I [sct] Traversal table */
 
 nm_id_sct *                      /* O [sct] Extraction list */
-nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */
+nco_var_lst_crd_add_rec          /* [fnc] Add all coordinates to extraction list */
 (const int nc_id,                /* I [ID] netCDF file ID */
  nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
  int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
@@ -325,7 +325,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
 void                          
-nco_chk_var_trv                     /* [fnc] Check if input names of -v or -g are in file */
+nco_chk_var                         /* [fnc] Check if input names of -v or -g are in file */
 (const int nc_id,                   /* I [ID] Apex group ID */
  char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
@@ -355,7 +355,7 @@ nco_aux_grp_id                  /* [fnc] Return the group ID from the variable f
  const char * const var_nm_fll);/* I [sng] Full variable name to find */
 
 nm_id_sct *                      /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add_cf       /* [fnc] Add to extraction list all coordinates associated with CF convention */
+nco_var_lst_crd_ass_add_cf_trv   /* [fnc] Add to extraction list all coordinates associated with CF convention */
 (const int nc_id,                /* I netCDF file ID */
  const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
  nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */

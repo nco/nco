@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.439 2012-10-28 02:49:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.440 2012-10-30 18:08:53 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.439 2012-10-28 02:49:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.439 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.440 2012-10-30 18:08:53 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.440 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -596,7 +596,7 @@ main(int argc,char **argv)
   rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
   /* Check for valid -v <names> (handles wilcards) */
-  (void)nco_chk_var_trv(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST); 
+  (void)nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST); 
 
    /* Check for invalid -g <names>  */
   if(nco_chk_trv(grp_lst_in,grp_nbr,nc_typ_grp,trv_tbl) == 0){
@@ -669,7 +669,7 @@ main(int argc,char **argv)
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES){ 
     if(HAS_SUBGRP){
-      xtr_lst=nco_var_lst_crd_add_trv(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,&grp_nbr,grp_lst_in);
+      xtr_lst=nco_var_lst_crd_add_rec(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,&grp_nbr,grp_lst_in);
     }else{
       xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
     } /* HAS_SUBGRP */
@@ -681,8 +681,8 @@ main(int argc,char **argv)
       xtr_lst=nco_var_lst_crd_ass_add_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
       if(CNV_CCM_CCSM_CF){
         /* Add "coordinates" and "bounds" CF */
-        xtr_lst=nco_var_lst_crd_ass_add_cf(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
-        xtr_lst=nco_var_lst_crd_ass_add_cf(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
+        xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
+        xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
       } /* CNV_CCM_CCSM_CF */
     }else{
       xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
