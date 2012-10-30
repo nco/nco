@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.155 2012-10-30 04:42:00 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.156 2012-10-30 04:43:11 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -710,7 +710,7 @@ variables:
 	float one_dmn_rec_var_mss_val_arr(time);
 	one_dmn_rec_var_mss_val_arr:long_name = "One dimensional record variable with missing data indicated by a _FillValue attribute that is an array. This can be tested with ncrcat. 20120905: ncgen chokes on _FillValue arrays and produces this error: _FillValue: must be a single (possibly compound) value. Deprecate the array for normal use since it prevents ncgen from completing. Uncommment following line when testing for compatibility with software changes.";
 //	one_dmn_rec_var_mss_val_arr:_FillValue = 1,2,3;
-	one_dmn_rec_var_mss_val_arr:_FillValue = 1.0;
+	one_dmn_rec_var_mss_val_arr:_FillValue = 1.0f;
 
 	int RDM(time);
         
