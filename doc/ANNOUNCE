@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.518 2012-10-26 19:29:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.519 2012-10-30 00:08:45 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.2.2 are ready. 
+The netCDF operators NCO version 4.2.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -30,7 +30,7 @@ and ncbo operators.
 Enjoy,
 Charlie
 
-"New stuff" in 4.2.2 summary (full details always in ChangeLog):
+"New stuff" in 4.2.3 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -117,7 +117,7 @@ KNOWN BUGS NOT YET FIXED:
 
    This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.2.2 built/tested with netCDF
+   These problems occur with NCO 4.2.3 built/tested with netCDF
    4.2.1 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-

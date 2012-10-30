@@ -1,5 +1,11 @@
 2012-10-29  Charlie Zender  <zender@uci.edu>
 
+ 	* NCO 4.2.3 release procedure:
+ 	Changes since nco-4_2_2: nothing yet
+	cd ~/nco;cvs tag -d nco-4_2_3;cvs tag -d nco-4_2_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.3 release"
+	cvs tag -c nco-4_2_3;cvs tag -c nco-4_2_3-1
+
  	* NCO 4.2.2 release procedure:
  	Changes since nco-4_2_1: ncks groups, hdr_pad, NULs, _'s, ncecat GAG
 	cd ~/nco;cvs tag -d nco-4_2_2;cvs tag -d nco-4_2_2-1
