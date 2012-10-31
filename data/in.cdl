@@ -20,7 +20,7 @@
 // ncgen -b -o ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.cdl
 // scp ~/nco/data/in.cdl ~/nco/data/in_4.nc dust.ess.uci.edu:nco/data
 // scp ~/nco/data/in.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/nco
-// scp ~/nco/data/in.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/data/home/www/html/dodsdata
+// scp ~/nco/data/in.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/dodsdata
 // mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/in.nc
 // mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0001.nc
 // mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0002.nc
@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.158 2012-10-31 23:33:35 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.159 2012-10-31 23:44:57 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
