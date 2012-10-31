@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.217 2012-10-31 20:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.218 2012-10-31 22:46:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1262,7 +1262,8 @@ nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in outpu
   int nbr_att_var;            /* [nbr] Number of attributes for variable */
   int fl_fmt;                 /* [enm] netCDF file format */
   char *var_nm_fll;           /* [sng] Full path of variable */
-  int var_id;                 /* [id]  Variable ID */
+  int *var_ids;               /* [id]  Variable IDs array */
+  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
 
   (void)nco_inq_format(nc_id,&fl_fmt);
 
@@ -1284,12 +1285,39 @@ nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in outpu
       assert(nbr_dmn_grp == trv.nbr_dmn && nbr_var_grp == trv.nbr_var && nbr_att_grp == trv.nbr_att && nbr_grp_grp == trv.nbr_grp);
 #endif
 
+      /* Allocate space for and obtain variable IDs in current group */
+      var_ids=(int *)nco_malloc(nbr_var_grp*sizeof(int));
+      (void)nco_inq_varids(grp_id,&nbr_var_grp,var_ids);
+
       /* Get variables for this group */
       for(int idx_var=0;idx_var<nbr_var_grp;idx_var++){
         var_nm_fll=NULL;
 
+        /* Get name of current variable in current group NOTE: using obtained IDs array */
+        (void)nco_inq_varname(grp_id,var_ids[idx_var],var_nm);
+
+        /* Allocate path buffer; add space for a trailing NUL */ 
+        var_nm_fll=(char*)nco_malloc(strlen(trv.nm_fll)+strlen(var_nm)+2);
+
+        /* Initialize path with the current absolute group path */
+        strcpy(var_nm_fll,trv.nm_fll);
+        if(strcmp(trv.nm_fll,"/")!=0) /* If not root group, concatenate separator */
+          strcat(var_nm_fll,"/");
+        strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
+
+        if(dbg_lvl_get() == nco_dbg_crr){
+           (void)fprintf(stdout,"  nco_grp_lst_mk_trv: PATH: %s\n",var_nm_fll);  
+        }
+
+
+        /* Memory management after current variable */
+        var_nm_fll=(char *)nco_free(var_nm_fll);
 
       } /* end get variables for this group */  
+
+      /* Memory management after current group */
+      var_ids=(int *)nco_free(var_ids);
+
     } /* end nc_typ_grp */
   } /* end uidx  */
 } /* end nco_prn_att_trv() */
