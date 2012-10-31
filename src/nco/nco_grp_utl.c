@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.216 2012-10-31 19:51:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.217 2012-10-31 20:21:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1255,10 +1255,14 @@ nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in outpu
  grp_tbl_sct *trv_tbl)                 /* I [sct] Traversal table */
 {
   int grp_id;                 /* [ID]  Group ID */
-  int nbr_att;                /* [nbr] Number of attributes */
-  int nbr_var;                /* [nbr] Number of variables */
-  int nbr_dmn;                /* [nbr] Number of dimensions */
+  int nbr_att_grp;            /* [nbr] Number of attributes for group */
+  int nbr_var_grp;            /* [nbr] Number of variables for group */
+  int nbr_dmn_grp;            /* [nbr] Number of dimensions for group */
+  int nbr_grp_grp;            /* [nbr] Number of groups for group */
+  int nbr_att_var;            /* [nbr] Number of attributes for variable */
   int fl_fmt;                 /* [enm] netCDF file format */
+  char *var_nm_fll;           /* [sng] Full path of variable */
+  int var_id;                 /* [id]  Variable ID */
 
   (void)nco_inq_format(nc_id,&fl_fmt);
 
@@ -1273,13 +1277,19 @@ nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in outpu
         grp_id=nc_id;
       }
 
-      /* Obtain info for group */
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 #ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+      /* Obtain info for group */
+      (void)nco_inq(grp_id,&nbr_dmn_grp,&nbr_var_grp,&nbr_att_grp,NULL);
+      (void)nco_inq_grps(grp_id,&nbr_grp_grp,(int *)NULL);
+      assert(nbr_dmn_grp == trv.nbr_dmn && nbr_var_grp == trv.nbr_var && nbr_att_grp == trv.nbr_att && nbr_grp_grp == trv.nbr_grp);
 #endif
 
-     
+      /* Get variables for this group */
+      for(int idx_var=0;idx_var<nbr_var_grp;idx_var++){
+        var_nm_fll=NULL;
+
+
+      } /* end get variables for this group */  
     } /* end nc_typ_grp */
   } /* end uidx  */
 } /* end nco_prn_att_trv() */
