@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.157 2012-10-31 19:52:26 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.158 2012-10-31 23:33:35 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -341,16 +341,16 @@ variables:
 	pck:add_offset = 1.0d;
 
 	short pck_3;
-	pck:long_name = "Scalar variable, double, packed as short";
-	pck:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 3.0 = 2.0d*1s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
-	pck:scale_factor = 2.0d;
-	pck:add_offset = 1.0d;
+	pck_3:long_name = "Scalar variable, double, packed as short";
+	pck_3:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 3.0 = 2.0d*1s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
+	pck_3:scale_factor = 2.0d;
+	pck_3:add_offset = 1.0d;
 
 	short pck_5;
-	pck:long_name = "Scalar variable, double, packed as short";
-	pck:note = "Original packed value was 2s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 5.0 = 2.0d*2s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 5.0d.";
-	pck:scale_factor = 2.0d;
-	pck:add_offset = 1.0d;
+	pck_5:long_name = "Scalar variable, double, packed as short";
+	pck_5:note = "Original packed value was 2s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 5.0 = 2.0d*2s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 5.0d.";
+	pck_5:scale_factor = 2.0d;
+	pck_5:add_offset = 1.0d;
 
 	short pck_arr(lon);
 	pck_arr:long_name = "Array variable, double, packed as short";
@@ -1068,8 +1068,8 @@ data:
 	one_dmn_int_val_one=1,1;
 	one_dmn_int_val_two=2,2;
 	pck=1;
-	pck_3=3;
-	pck_5=5;
+	pck_3=1;
+	pck_5=2;
 	rec_var_pck_scale_factor_only=1,2,3,4,5,6,7,8,9,10;
 	pck_arr=-32767,0,1,32767;
 	pi=3.1415926535897932384626433832795029;
