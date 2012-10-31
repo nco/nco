@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.132 2012-10-30 00:08:43 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.133 2012-10-31 19:52:22 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -535,7 +535,17 @@ sub tst_rgr {
     $tst_cmd[7]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
-    
+
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_3 $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_5 $in_pth_arg in.nc %tmp_fl_02%";
+    $tst_cmd[2]="ncrename -h -O $fl_fmt $nco_D_flg -C -v pck_5,pck_3 $in_pth_arg %tmp_fl_02%";
+    $tst_cmd[3]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[4]="ncks -C -H -s '%g' -v pck_3 %tmp_fl_03% ";
+    $dsc_sng="output type float when interpolating between two packed floats";
+    $tst_cmd[5]="4";
+    $tst_cmd[7]="NO_SS";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
     
 ####################
 #### ncks tests #### OK !

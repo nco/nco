@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.731 2012-10-30 00:08:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.732 2012-10-31 19:52:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13582,6 +13582,7 @@ OPeNDAP configuration.
 @cindex Pedro Vicente
 @item Pedro Vicente
 Windows Visual Studio support.
+netCDF4 groups.
 @cindex Russ Rew
 @item Russ Rew
 Advice on NCO structural algorithms
