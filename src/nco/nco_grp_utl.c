@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.215 2012-10-30 18:08:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.216 2012-10-31 19:51:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -17,8 +17,8 @@
  */
 
 #include "nco_grp_utl.h"  /* Group utilities */
-#include "nco_cnk.h"      /* Chunking; needed for nco4_grp_lst_mk */
-#include "nco_msa.h"      /* Multi-slabbing algorithm: needed for nco_cpy_var_val_mlt_lmt */
+#include "nco_cnk.h"      /* Chunking */
+#include "nco_msa.h"      /* Multi-slabbing algorithm */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -1235,6 +1235,56 @@ nco4_grp_lst_mk_itr            /* [fnc] Iterator function for nco4_grp_lst_mk */
   return rcd;
 }/* end nco4_grp_lst_mk_itr() */
 
+void
+nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in output file */
+(const int nc_id,                      /* I [ID] netCDF input file ID  */
+ const int nc_out_id,                  /* I [ID] netCDF output file ID  */
+ nm_id_sct * const xtr_lst,            /* I [sct] Extraction list  */
+ const int xtr_nbr,                    /* I [nbr] Number of members in list */
+ const int lmt_nbr,                    /* I [nbr] Number of dimensions with limits */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,            /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA,            /* I [flg] Copy variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA,            /* I [flg] Copy global variable metadata (attributes) */
+ int const cnk_map_ptr,                /* I [enm] Chunking map */
+ int const cnk_plc_ptr,                /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ grp_tbl_sct *trv_tbl)                 /* I [sct] Traversal table */
+{
+  int grp_id;                 /* [ID]  Group ID */
+  int nbr_att;                /* [nbr] Number of attributes */
+  int nbr_var;                /* [nbr] Number of variables */
+  int nbr_dmn;                /* [nbr] Number of dimensions */
+  int fl_fmt;                 /* [enm] netCDF file format */
+
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_grp ){
+
+      /* Obtain group ID from netCDF API using full group name */
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=nc_id;
+      }
+
+      /* Obtain info for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+     
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+} /* end nco_prn_att_trv() */
+
+
 
 void
 nco4_grp_var_cpy                 /* [fnc] Write variables in output file (copy from input file)  */
@@ -1900,7 +1950,7 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
     if (trv.typ == nc_typ_grp ) { 
 
       /* Increment/Export */
-      att_nbr_lcl+=trv.nbr_att; /* Attributes in groups are global */
+      att_nbr_lcl+=trv.nbr_att; 
       dmn_nbr_lcl+=trv.nbr_dmn;
       var_nbr_lcl+=trv.nbr_var;
       grp_nbr_lcl+=trv.nbr_grp;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.107 2012-10-30 18:08:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.108 2012-10-31 19:51:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -375,6 +375,26 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
  int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
  nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
+
+
+void
+nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in output file */
+(const int nc_id,                      /* I [ID] netCDF input file ID  */
+ const int nc_out_id,                  /* I [ID] netCDF output file ID  */
+ nm_id_sct * const xtr_lst,            /* I [sct] Extraction list  */
+ const int xtr_nbr,                    /* I [nbr] Number of members in list */
+ const int lmt_nbr,                    /* I [nbr] Number of dimensions with limits */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr,            /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA,            /* I [flg] Copy variable metadata (attributes) */
+ nco_bool PRN_GLB_METADATA,            /* I [flg] Copy global variable metadata (attributes) */
+ int const cnk_map_ptr,                /* I [enm] Chunking map */
+ int const cnk_plc_ptr,                /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ grp_tbl_sct *trv_tbl);                /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
