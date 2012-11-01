@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.442 2012-11-01 22:10:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.443 2012-11-01 22:41:30 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.442 2012-11-01 22:10:55 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.442 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.443 2012-11-01 22:41:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.443 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -773,12 +773,8 @@ main(int argc,char **argv)
     grp_out_id=out_id;
     
     /* Copy global attributes */
-    if(PRN_GLB_METADATA){
-      if(!HAS_SUBGRP){
-        (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-      } /* HAS_SUBGRP */
-    }/* PRN_GLB_METADATA */
-    
+    if(PRN_GLB_METADATA)(void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+
     if(GROUP_PATH_EDIT){
 #ifndef ENABLE_NETCDF4
       (void)fprintf(stderr,"%s: ERROR Group Path Edit requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
