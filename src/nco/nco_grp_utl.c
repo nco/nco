@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.218 2012-10-31 22:46:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.219 2012-11-01 22:10:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1246,24 +1246,29 @@ nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in outpu
  const int lmt_all_lst_nbr,            /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  nco_bool PRN_VAR_METADATA,            /* I [flg] Copy variable metadata (attributes) */
- nco_bool PRN_GLB_METADATA,            /* I [flg] Copy global variable metadata (attributes) */
- int const cnk_map_ptr,                /* I [enm] Chunking map */
- int const cnk_plc_ptr,                /* I [enm] Chunking policy */
+ int * const cnk_map_ptr,              /* I [enm] Chunking map */
+ int * const cnk_plc_ptr,              /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  grp_tbl_sct *trv_tbl)                 /* I [sct] Traversal table */
 {
-  int grp_id;                 /* [ID]  Group ID */
-  int nbr_att_grp;            /* [nbr] Number of attributes for group */
-  int nbr_var_grp;            /* [nbr] Number of variables for group */
-  int nbr_dmn_grp;            /* [nbr] Number of dimensions for group */
-  int nbr_grp_grp;            /* [nbr] Number of groups for group */
-  int nbr_att_var;            /* [nbr] Number of attributes for variable */
-  int fl_fmt;                 /* [enm] netCDF file format */
-  char *var_nm_fll;           /* [sng] Full path of variable */
-  int *var_ids;               /* [id]  Variable IDs array */
-  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
+  int grp_id;                    /* [ID]  Group ID in input file */
+  int grp_out_id;                /* [ID]  Group ID in output file */ 
+  int var_out_id;                /* [ID]  Variable ID in output file */ 
+  int rec_dmn_id;                /* [ID]  Record dimension ID */
+  int nbr_att;                   /* [nbr] Number of attributes for group */
+  int nbr_var;                   /* [nbr] Number of variables for group */
+  int nbr_dmn;                   /* [nbr] Number of dimensions for group */
+  int nbr_grp;                   /* [nbr] Number of groups for group */
+  int fl_fmt;                    /* [enm] netCDF file format */
+  char *var_nm_fll;              /* [sng] Full path of variable */
+  int *var_ids;                  /* [ID]  Variable IDs array */
+  char var_nm[NC_MAX_NAME+1];    /* [sng] Variable name */ 
+  char *rec_dmn_nm;              /* [sng] Record dimension name */
+  int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
+  char dmn_ult_nm[NC_MAX_NAME+1];/* [sng] Unlimited dimension name */ 
+  int dmn_ids_ult[NC_MAX_DIMS];  /* [ID]  Unlimited dimensions IDs array */
 
   (void)nco_inq_format(nc_id,&fl_fmt);
 
@@ -1280,17 +1285,20 @@ nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in outpu
 
 #ifdef NCO_SANITY_CHECK
       /* Obtain info for group */
-      (void)nco_inq(grp_id,&nbr_dmn_grp,&nbr_var_grp,&nbr_att_grp,NULL);
-      (void)nco_inq_grps(grp_id,&nbr_grp_grp,(int *)NULL);
-      assert(nbr_dmn_grp == trv.nbr_dmn && nbr_var_grp == trv.nbr_var && nbr_att_grp == trv.nbr_att && nbr_grp_grp == trv.nbr_grp);
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+      (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att && nbr_grp == trv.nbr_grp);
 #endif
 
       /* Allocate space for and obtain variable IDs in current group */
-      var_ids=(int *)nco_malloc(nbr_var_grp*sizeof(int));
-      (void)nco_inq_varids(grp_id,&nbr_var_grp,var_ids);
+      var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
+      (void)nco_inq_varids(grp_id,&nbr_var,var_ids);
+
+      /* Get number of unlimited dimensions */
+      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
 
       /* Get variables for this group */
-      for(int idx_var=0;idx_var<nbr_var_grp;idx_var++){
+      for(int idx_var=0;idx_var<nbr_var;idx_var++){
         var_nm_fll=NULL;
 
         /* Get name of current variable in current group NOTE: using obtained IDs array */
@@ -1305,10 +1313,50 @@ nco_grp_lst_mk_trv                     /* [fnc] Create groups/variables in outpu
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
-        if(dbg_lvl_get() == nco_dbg_crr){
-           (void)fprintf(stdout,"  nco_grp_lst_mk_trv: PATH: %s\n",var_nm_fll);  
-        }
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"nco_grp_lst_mk_trv: PATH: %s\n",var_nm_fll);  
 
+        /* Check if input variable is on extraction list; if yes, define it in the output file */
+        for(int idx_xtr=0;idx_xtr<xtr_nbr;idx_xtr++){
+          nm_id_sct xtr=xtr_lst[idx_xtr];
+
+          /* If current variable is in extraction list, define it */
+          if(strcmp(var_nm_fll,xtr.var_nm_fll) == 0){ 
+            rec_dmn_nm=NULL;
+
+            /* Search for record dimension name */
+            for(int idx_dmn=0;idx_dmn<nbr_dmn_ult;idx_dmn++){
+              (void)nco_inq_dimname(grp_id,dmn_ids_ult[idx_dmn],dmn_ult_nm);
+              if(strcmp(var_nm,dmn_ult_nm) == 0){
+                rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
+                strcpy(rec_dmn_nm,dmn_ult_nm);  
+
+                if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"nco_grp_lst_mk_trv: rec_dmn_nm: %s\n",rec_dmn_nm); 
+
+              } /* strcmp */
+            } /* idx_dmn */     
+
+            /* Define group in output file */
+            (void)nco_def_grp_full(nc_out_id,trv.nm_fll,&grp_out_id);
+           
+            /* Define variable */
+            if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,xtr.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
+            else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,xtr.nm,dfl_lvl);
+
+            /* Set chunksize parameters */
+            if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+              (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+            }
+
+            /* Copy variable's attributes */
+            if(PRN_VAR_METADATA) (void)nco_att_cpy(grp_id,grp_out_id,xtr.id,var_out_id,(nco_bool)True);
+
+            /* Memory management */
+            if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+
+            /* Variable was found, exit */
+            break;
+          } /* end if on extraction list */
+        } /* end extraction list loop */
 
         /* Memory management after current variable */
         var_nm_fll=(char *)nco_free(var_nm_fll);

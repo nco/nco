@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.134 2012-10-31 23:33:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.135 2012-11-01 22:10:55 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -783,6 +783,15 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array				
+	
+#NCO 4.2.3: groups: Extract group attributes
+    $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
+    $dsc_sng="(Groups required) Extract group attributes";
+    $tst_cmd[2]="Global attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array					
 
 #####################
 #### ncpdq tests #### -OK !
