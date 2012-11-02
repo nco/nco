@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.220 2012-11-02 00:07:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.221 2012-11-02 19:46:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1076,10 +1076,10 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
         grp_id=nc_id;
       }
 
-#ifdef NCO_SANITY_CHECK
       /* Obtain info for group */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
       (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+#ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att && nbr_grp == trv.nbr_grp);
 #endif
 
@@ -1106,7 +1106,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
-        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"nco_grp_var_mk_trv: PATH: %s\n",var_nm_fll);  
+        if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"nco_grp_var_mk_trv: PATH: %s\n",var_nm_fll);  
 
         /* Check if input variable is on extraction list; if yes, define it in the output file */
         for(int idx_xtr=0;idx_xtr<xtr_nbr;idx_xtr++){
@@ -1123,7 +1123,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
                 rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
                 strcpy(rec_dmn_nm,dmn_ult_nm);  
 
-                if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"nco_grp_var_mk_trv: rec_dmn_nm: %s\n",rec_dmn_nm); 
+                if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"nco_grp_var_mk_trv: rec_dmn_nm: %s\n",rec_dmn_nm); 
 
               } /* strcmp */
             } /* idx_dmn */     
@@ -1170,7 +1170,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
 
     } /* end nc_typ_grp */
   } /* end uidx  */
-} /* end nco_prn_att_trv() */
+} /* end nco_grp_var_mk_trv() */
 
 void
 nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst */
@@ -1921,6 +1921,94 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
     } /* end nc_typ_grp */
   } /* end uidx  */
 } /* end nco_prn_att_trv() */
+
+
+nm_id_sct *                      /* O [sct] Extraction list */
+nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */
+(const int nc_id,                /* I [ID] netCDF file ID */
+ nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
+ int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
+ int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
+ char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
+{
+  int grp_id;                    /* [ID]  Group ID in input file */
+  int grp_out_id;                /* [ID]  Group ID in output file */ 
+  int var_out_id;                /* [ID]  Variable ID in output file */ 
+  int nbr_att;                   /* [nbr] Number of attributes for group */
+  int nbr_var;                   /* [nbr] Number of variables for group */
+  int nbr_dmn;                   /* [nbr] Number of dimensions for group */
+  int nbr_grp;                   /* [nbr] Number of groups for group */
+  int fl_fmt;                    /* [enm] netCDF file format */
+  char *var_nm_fll;              /* [sng] Full path of variable */
+  int *var_ids;                  /* [ID]  Variable IDs array */
+  char var_nm[NC_MAX_NAME+1];    /* [sng] Variable name */ 
+  char *rec_dmn_nm;              /* [sng] Record dimension name */
+  int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
+  char dmn_ult_nm[NC_MAX_NAME+1];/* [sng] Unlimited dimension name */ 
+  int dmn_ids_ult[NC_MAX_DIMS];  /* [ID]  Unlimited dimensions IDs array */
+
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_grp ){
+
+      /* Obtain group ID from netCDF API using full group name */
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=nc_id;
+      }
+
+      /* Obtain info for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+      (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att && nbr_grp == trv.nbr_grp);
+#endif
+
+      /* Allocate space for and obtain variable IDs in current group */
+      var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
+      (void)nco_inq_varids(grp_id,&nbr_var,var_ids);
+
+      /* Get number of unlimited dimensions */
+      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
+
+      /* Get variables for this group */
+      for(int idx_var=0;idx_var<nbr_var;idx_var++){
+        var_nm_fll=NULL;
+
+        /* Get name of current variable in current group NOTE: using obtained IDs array */
+        (void)nco_inq_varname(grp_id,var_ids[idx_var],var_nm);
+
+        /* Allocate path buffer; add space for a trailing NUL */ 
+        var_nm_fll=(char*)nco_malloc(strlen(trv.nm_fll)+strlen(var_nm)+2);
+
+        /* Initialize path with the current absolute group path */
+        strcpy(var_nm_fll,trv.nm_fll);
+        if(strcmp(trv.nm_fll,"/")!=0) /* If not root group, concatenate separator */
+          strcat(var_nm_fll,"/");
+        strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
+
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"nco_var_lst_crd_add_trv: PATH: %s\n",var_nm_fll);  
+
+
+
+        /* Memory management after current variable */
+        var_nm_fll=(char *)nco_free(var_nm_fll);
+
+      } /* end get variables for this group */  
+
+      /* Memory management after current group */
+      var_ids=(int *)nco_free(var_ids);
+
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+  return xtr_lst;
+} /* end nco_var_lst_crd_add_trv() */
 
 nm_id_sct *                      /* O [sct] Extraction list */
 nco_var_lst_crd_add_rec          /* [fnc] Add all coordinates to extraction list */
