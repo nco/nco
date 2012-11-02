@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.224 2012-11-02 21:39:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.225 2012-11-02 21:44:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1949,8 +1949,6 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
   add them to the list if they are not already there. */
 
   int grp_id;                    /* [ID]  Group ID in input file */
-  int grp_out_id;                /* [ID]  Group ID in output file */ 
-  int var_out_id;                /* [ID]  Variable ID in output file */ 
   int nbr_att;                   /* [nbr] Number of attributes for group */
   int nbr_var;                   /* [nbr] Number of variables for group */
   int nbr_dmn;                   /* [nbr] Number of dimensions for group */
@@ -1959,9 +1957,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
   char *var_nm_fll;              /* [sng] Full path of variable */
   int *var_ids;                  /* [ID]  Variable IDs array */
   char var_nm[NC_MAX_NAME+1];    /* [sng] Variable name */ 
-  char *rec_dmn_nm;              /* [sng] Record dimension name */
   int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
-  char dmn_ult_nm[NC_MAX_NAME+1];/* [sng] Unlimited dimension name */ 
   int dmn_ids_ult[NC_MAX_DIMS];  /* [ID]  Unlimited dimensions IDs array */
   int dmn_ids[NC_MAX_DIMS];      /* [nbr] Dimensions IDs array */
   char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name */ 
