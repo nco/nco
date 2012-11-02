@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.113 2012-11-02 20:57:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.114 2012-11-02 21:39:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -179,17 +179,6 @@ char*                           /* O [sng] Return substring */
 get_lst_nm                      /* [fnc] Strip last component of full name */
 (char *nm_in);                  /* I [sng] Full name; it contains '/' as last character */
 
-void
-nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst */
-(char * const var_nm,      /* I [sng] Variable name */
- char * const var_nm_fll,  /* I [sng] Full variable name */
- char * const grp_nm_fll,  /* I [sng] Full group name */
- char * const grp_nm,      /* I [sng] Group name */
- int const var_id,         /* I [ID] Variable ID */
- int const grp_id,         /* I [ID] Group ID */ 
- nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
- int * xtr_nbr);           /* I/O [nbr] Current index in exclusion/extraction list */
-
 nm_id_sct *                /* O [sct] Extraction list */
 nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
 (char * const var_nm,      /* I [sng] Variable name */
@@ -237,15 +226,6 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
  grp_tbl_sct *trv_tbl);       /* I [sct] Traversal table */
 
 nm_id_sct *                      /* O [sct] Extraction list */
-nco_var_lst_crd_add_rec          /* [fnc] Add all coordinates to extraction list */
-(const int nc_id,                /* I [ID] netCDF file ID */
- nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
- int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
-
-nm_id_sct *                      /* O [sct] Extraction list */
 nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */
 (const int nc_id,                /* I [ID] netCDF file ID */
  nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
@@ -254,17 +234,6 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
  int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
  grp_tbl_sct *trv_tbl);          /* I [sct] Traversal table */
-
-void                  
-nco_var_lst_crd_add_itr          /* [fnc] Iterator function for nco4_var_lst_crd_add */
-(const int in_id,                /* I [ID] Group ID */
- char * const grp_nm_fll,        /* I [sng] Group path */
- char * const grp_nm,            /* I [sng] Group name */
- nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
- int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in);/* I [sng] User-specified list of groups names to extract (specified with -g ) */
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */

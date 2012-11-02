@@ -1,3 +1,9 @@
+2012-11-02  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks regression test #28: Extract coordinate variables
+
+	* ncks: nco_var_lst_crd_add_trv: Add all coordinates to extraction list 
+
 2012-11-02  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.3 release procedure:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.444 2012-11-02 00:07:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.445 2012-11-02 21:39:26 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.444 2012-11-02 00:07:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.444 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.445 2012-11-02 21:39:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.445 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -669,7 +669,7 @@ main(int argc,char **argv)
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES){ 
     if(HAS_SUBGRP){
-      xtr_lst=nco_var_lst_crd_add_rec(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,&grp_nbr,grp_lst_in);
+      xtr_lst=nco_var_lst_crd_add_trv(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF,&grp_nbr,grp_lst_in,trv_tbl);
     }else{
       xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
     } /* HAS_SUBGRP */
