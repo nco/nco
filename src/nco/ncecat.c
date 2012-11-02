@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.230 2012-10-30 18:08:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.231 2012-11-02 00:07:22 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.230 2012-10-30 18:08:53 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.230 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.231 2012-11-02 00:07:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.231 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -845,13 +845,13 @@ main(int argc,char **argv)
       rcd+=nco_def_grp_full(out_id,grp_lst_out[fl_idx],grp_id_arr+fl_idx);
 
       /* Define requested/necessary input groups/variables/attributes/global attributes/chunksize parameters in output file */
-      (void)nco4_grp_lst_mk(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,(nco_bool)True,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+      (void)nco_grp_var_mk_trv(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Copy all variables to output file */
-      (void)nco4_grp_var_cpy(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);
+      (void)nco_grp_var_mk_trv(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
  
       /* Close input netCDF file */
       (void)nco_close(in_id);

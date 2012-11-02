@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.443 2012-11-01 22:41:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.444 2012-11-02 00:07:22 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.443 2012-11-01 22:41:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.443 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.444 2012-11-02 00:07:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.444 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -791,9 +791,9 @@ main(int argc,char **argv)
     } /* !GROUP_PATH_EDIT */
 
     if(HAS_SUBGRP){
-      /* Define requested input groups/variables/attributes/chunksize parameters in output file */
-      nco_grp_lst_mk_trv(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_tbl);
-      /* Define requested global/group attributes in output file */
+      /* Define requested input groups/variables/chunksize parameters in output file */
+      nco_grp_var_mk_trv(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE*)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
+      /* Define requested group attributes in output file */
       if(PRN_GLB_METADATA){
 
       }/* PRN_GLB_METADATA */
@@ -837,8 +837,8 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
     /* Copy all variables to output file */
-    if(HAS_SUBGRP){     
-      (void)nco4_grp_var_cpy(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,NCO_BNR_WRT);   
+    if(HAS_SUBGRP){      
+      nco_grp_var_mk_trv(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
     }else{
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
