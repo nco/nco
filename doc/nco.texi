@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.732 2012-10-31 19:52:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.733 2012-11-02 17:13:40 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6929,7 +6929,7 @@ The syntax is
 @example
 output=array(val_srt,val_ncr,$dmn_nm); // One-dimensional output
 output=array(val_srt,val_ncr,var_tpl);  // Multi-dimensional output
-h@end example
+@end example
 @noindent
 where the arguments are the starting value @var{val_srt}, 
 incremental value @var{val_ncr}, and, for one-dimensional output, the
@@ -7058,7 +7058,7 @@ prs(:,0,:,:)=th0;
 prs(:,1,:,:)=th1
 @end example
 
-@noindent @strong{Reverse method} @*
+@noindent @strong{Reverse method}@*
 @cindex reverse()
 Use the @code{reverse()} method to reverse a dimension's elements in a
 variable with at least one dimension.
@@ -7068,7 +7068,7 @@ th_rv=th(1 ,:,:).reverse($lon); // @{12,11,10,9 @}, @{16,15,14,13@}
 od_rv=od.reverse($time);        // @{38,36,34,32,30,28,26,24,22,20@}
 @end example
 
-@noindent @strong{Permute method} @*
+@noindent @strong{Permute method}p@*
 @cindex permute()
 Use the @code{permute()} method to swap the dimensions of a variable.
 The number and names of dimension arguments must match the dimensions in
@@ -7142,7 +7142,7 @@ sng_arr[$sng_len]=a1@@long_name; // sng_arr now contains "Kelvin"
 Attributes defined in a script are stored in memory and are written to Output after script completion.
 To stop the attribute being written use the ram_delete() method or use a bogus variable name.
 
-@noindent @strong{Attribute Propagation & Inheritance}
+@noindent @strong{Attribute Propagation and Inheritance}
 @cindex attribute propagation
 @cindex attribute inheritance
 @itemize @bullet

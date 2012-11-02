@@ -1,11 +1,11 @@
 2012-11-01  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks regression test #26: Extract group attributes
-	
+
 	* ncks regression test #27: Extract global attributes
 
-	* ncks: nco_grp_var_mk_trv: Create groups/write variables in output file 
-	
+	* ncks: nco_grp_var_mk_trv: Create groups/write variables in output file
+
 2012-10-31  Charlie Zender  <zender@uci.edu>
 
  	* NCO 4.2.3 release procedure:

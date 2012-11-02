@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1208 2012-11-01 00:01:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1209 2012-11-02 17:13:40 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -705,7 +705,8 @@ nco1074. nco: wget: add -p option to enable clobber?
 nco1076. ncpdq: change number of dimensions by unrolling 
 	 ncpdq --unroll lat,lon # Unroll lat and lon in all multi-dimensional (R > 1) arrays
 nco1077. wnd: utilize netCDF CMake for linking so DAP/UDUNITS support is automatic
-nco1079. 
+nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggestion
+nco1080. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
