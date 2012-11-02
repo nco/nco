@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.132 2012-10-26 19:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.133 2012-11-02 20:24:03 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -718,7 +718,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
     /* For modify-mode, type may be inherited when not explicitly specified */
     if(aed_lst[idx].mode == aed_modify && arg_lst[3] == NULL){
-      /* 20120711: Problem is that nc_id info is needed now to get the att_typ so file validation becomes involved */
+      /* 20120711: Problem with inherit is that nc_id info is needed now to get att_typ to inherit
+	 Hence file information/validation becomes involved here, earlier than expected */
       ATT_TYP_INHERIT=True;
       (void)fprintf(stderr,"%s: ERROR: Inherited attribute type not yet supported. TODO nco1060 fxm.",prg_nm_get());
       nco_exit(EXIT_FAILURE);
@@ -933,6 +934,39 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   return 1;
 } /* end nco_prs_att() */
 
+int /* O [rcd] Return code */
+nco_prs_oge_arg /* [fnc] Parse Output Group Editing (OGE) argument */
+(char * const oge_arg, /* I [sng] User-specified OGE argument */
+ oge_sct * const oge) /* O [sng] OGE structure */
+{
+  /* Purpose: Parse user-specified Output Group Editing (OGE) argument */
+    char *colon_cp;
+    char *at_cp;
+    int rcd=NC_NOERR; /* [rcd] Return code */
+
+    /* Find positions of commas and number of characters between (non-inclusive) them */
+    colon_cp=strchr(oge_arg,':');
+    at_cp=strchr(oge_arg,'@');
+  
+    oge->lvl_nbr=0; /* [nbr] Number of levels to shift */
+    oge->arg=(char *)strdup(oge_arg); /* [sng] User-specified argument */
+    oge->lvl_nbr=0; /* [nbr] Number of levels to shift */
+
+    /* Before doing any pointer arithmetic, make sure pointers are valid */
+    if(colon_cp == NULL && at_cp == NULL){
+      oge->grp_nm=(char *)strdup(oge_arg); /* [sng] Group name */
+      oge->mode=oge_append; /* [enm] Editing mode to perform */
+    } /* end if */
+
+    /* Before doing any pointer arithmetic, make sure pointers are valid */
+    if(colon_cp == NULL && at_cp == NULL){
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+
+    return rcd;
+} /* end nco_prs_oge_arg() */
+
 rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
 (const int nbr_rnm, /* I [nbr] Number of elements in rename list */
@@ -967,7 +1001,7 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
     lng_arg_2=rnm_arg[idx]+strlen(rnm_arg[idx])-comma_1_cp-1; 
     
     /* Exit if length of either argument is zero */
-    if(lng_arg_1 <= 0 || lng_arg_2 <= 0){
+    if(lng_arg_1 <= 0L || lng_arg_2 <= 0L){
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */

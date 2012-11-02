@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.191 2012-10-25 20:14:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.192 2012-11-02 20:24:03 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -332,14 +332,21 @@ extern "C" {
     ncwa
   }; /* end prg enum */
   
-  enum aed{ /* [enm] Attribute editor mode */
+  typedef enum aed{ /* [enm] Attribute editor mode */
     aed_append,
     aed_create,
     aed_delete,
     aed_modify,
     aed_overwrite
-  }; /* end aed enum */
+  } aed_enm; /* end aed enum */
   
+  typedef enum oge{ /* [enm] Output Group Editing mode */
+    oge_append,
+    oge_delete,
+    oge_flatten,
+    oge_backup
+  } oge_enm; /* end oge enum */
+
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */
     nco_dbg_quiet, /* 0 [enm] Quiet all non-error messages */
@@ -563,7 +570,7 @@ extern "C" {
     long sz; /* Number of elements in attribute */
     nc_type type; /* Type of attribute */
     ptr_unn val; /* Pointer to attribute value */
-    short mode; /* Action to perform with attribute */
+    aed_enm mode; /* Action to perform with attribute */
   } aed_sct;
   
   /* Attribute structure */
@@ -574,6 +581,14 @@ extern "C" {
     char fmt[5];
     ptr_unn val;
   } att_sct;
+  
+  /* Output Group Editing (OGE) structure */
+  typedef struct{ /* oge_sct */
+    char *arg; /* [sng] User-specified argument */
+    char *grp_nm; /* [sng] Group name */
+    short lvl_nbr; /* [nbr] Number of levels to shift */
+    oge_enm mode; /* [enm] Editing mode to perform */
+  } oge_sct;
   
   /* Chunking structure */
   typedef struct{ /* cnk_sct */

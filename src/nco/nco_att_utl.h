@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.39 2012-08-10 19:08:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.40 2012-11-02 20:24:03 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -81,6 +81,11 @@ int /* [flg] Variable and attribute names are conjoined */
 nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
 (rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
  char * const var_nm); /* O [sng] Variable name, if any */
+
+int /* O [rcd] Return code */
+nco_prs_oge_arg /* [fnc] Parse Output Group Editing (OGE) argument */
+(char * const oge_arg, /* I [sng] User-specified OGE argument */
+ oge_sct * const oge); /* O [sng] OGE structure */
 
 rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */

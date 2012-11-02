@@ -1,3 +1,13 @@
+2012-11-02  Charlie Zender  <zender@uci.edu>
+
+ 	* NCO 4.2.3 release procedure:
+ 	Changes since nco-4_2_2: nothing yet
+	cd ~/nco;cvs tag -d nco-4_2_3;cvs tag -d nco-4_2_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.3 release"
+	cvs tag -c nco-4_2_3;cvs tag -c nco-4_2_3-1
+
+	* Add Output Group Editing (OGE) structures
+
 2012-11-01  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks regression test #26: Extract group attributes
@@ -7,12 +17,6 @@
 	* ncks: nco_grp_var_mk_trv: Create groups/write variables in output file
 
 2012-10-31  Charlie Zender  <zender@uci.edu>
-
- 	* NCO 4.2.3 release procedure:
- 	Changes since nco-4_2_2: nothing yet
-	cd ~/nco;cvs tag -d nco-4_2_3;cvs tag -d nco-4_2_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.3 release"
-	cvs tag -c nco-4_2_3;cvs tag -c nco-4_2_3-1
 
 	* ncflint: verify output type is float when interpolating between two packed floats
 
