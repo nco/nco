@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.222 2012-11-02 20:26:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.223 2012-11-02 20:57:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1212,7 +1212,7 @@ nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst 
 } /* end nco4_xtr_lst_add() */
 
 
-void
+nm_id_sct *                /* O [sct] Extraction list */
 nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
 (char * const var_nm,      /* I [sng] Variable name */
  char * const var_nm_fll,  /* I [sng] Full variable name */
@@ -1223,9 +1223,42 @@ nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst 
  nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
  int * xtr_nbr)            /* I/O [nbr] Current index in exclusion/extraction list */
 {
-  
 
-  return;
+  /* Check if variable is on extraction list */
+  for(int idx_lst=0;idx_lst<*xtr_nbr;idx_lst++){
+    nm_id_sct xtr=xtr_lst[idx_lst];
+
+    /* Compare item on list with current variable name (NOTE: using full name to compare ) */
+    if(strcmp(xtr.var_nm_fll,var_nm_fll) == 0){
+
+      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO nco_xtr_lst_add: %s ALREADY IN LIST\n",prg_nm_get(),var_nm_fll); 
+      return xtr_lst;
+    } /* End compare item on list with current variable name */
+  } /* End check if variable is on extraction list */
+
+  /* Coordinate is not already on the list, put it there */
+  if(*xtr_nbr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*xtr_nbr+1)*sizeof(nm_id_sct)); 
+  else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+
+  /* ncks needs only:
+  1) xtr_lst.grp_nm_fll (full group name where variable resides, to get group ID) 
+  2) xtr_lst.var_nm_fll
+  3) xtr_lst.id
+  4) xtr_lst.nm (relative variable name) 
+  NOTE: 
+  1) xtr_lst.grp_id is stored for validation
+  2) xtr_lst.grp_nm is not used 
+  */
+  xtr_lst[*xtr_nbr].nm=(char*)strdup(var_nm);
+  xtr_lst[*xtr_nbr].grp_nm_fll=(char*)strdup(grp_nm_fll);
+  xtr_lst[*xtr_nbr].var_nm_fll=(char*)strdup(var_nm_fll);
+  xtr_lst[*xtr_nbr].id=var_id;
+  xtr_lst[*xtr_nbr].grp_nm=(char*)strdup(grp_nm);
+  xtr_lst[*xtr_nbr].grp_id=grp_id;
+
+  (*xtr_nbr)++;
+
+  return xtr_lst;
 } /* end nco_xtr_lst_add() */
 
 
@@ -2031,7 +2064,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
           if(strcmp(dmn_nm,var_nm) == 0){
             /* No groups case, just add  */
             if (*grp_xtr_nbr == 0 ){
-              (void)nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
+              xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
 
               if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
             }
@@ -2043,7 +2076,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
                 char* pch=strstr(trv.nm,grp_lst_in[idx_grp]);
                 /* strstr returns the first occurrence of 'grp_lst_in' in 'trv.nm', the higher level group( closer to root) */
                 if(pch != NULL){
-                  (void)nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
+                  xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
 
                   if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
                 }
@@ -2538,12 +2571,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
-
-      /* ...for each dimension in input group... */ 
-      for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){ 
-        (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
-        if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"dimension: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]); 
-      } /* end idx_dmn dimensions */ 
 
       /* Construct the full variable name for all variables in group */
       for(int idx_var_grp=0;idx_var_grp<nbr_var;idx_var_grp++){
