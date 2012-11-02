@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.225 2012-11-02 21:44:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.226 2012-11-02 23:13:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1939,7 +1939,6 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
 (const int nc_id,                /* I [ID] netCDF file ID */
  nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
  int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] file obeys CCM/CCSM/CF conventions */
  int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
  grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
@@ -2638,120 +2637,20 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
 
-  int rcd=NC_NOERR;         /* [rcd] Return code */
-  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
-  int nbr_att;              /* [nbr] Number of attributes */
-  int var_id;               /* [id]  Variable ID */
-  int grp_id;               /* [id]  Group ID */
-  char **bnd_lst;           /* [sng] 1D array of list elements */
-  const char dlm_sng[]=" "; /* [sng] Delimiter string */
-  int nbr_bnd;              /* [nbr] Number of coordinates specified in "bounds" (or "coordinates") attribute */
-  
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var){
       if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"TRV %s\n",trv.nm_fll);
+
+      /* Check if current variable is in extraction list */
       if(xtr_lst_fnd(trv.nm_fll,xtr_lst,*xtr_nbr) == 1 ){
 
         if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"IN list %s\n",trv.nm_fll);
 
-        /* Obtain group ID using nco_aux_grp_id (get ID from full variable name ) */
-        grp_id=nco_aux_grp_id(nc_id,trv.nm_fll);
+        /* Try to add to extraction list */
+        xtr_lst=nco_aux_add_cf(nc_id,trv.nm_fll,trv.nm,cf_nm,xtr_lst,xtr_nbr,trv_tbl);
 
-        /* Obtain variable ID from netCDF API using group ID. NOTE: using relative var name  */
-        (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-
-        /* Find number of attributes */
-        (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
-        for(int idx_att=0;idx_att<nbr_att;idx_att++){
-          (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
-
-          if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"  IN ATTR list %s\n",att_nm);
-
-          /* Is attribute part of CF convention? */
-          if(strcmp(att_nm,cf_nm) == 0){
-            char *att_val;
-            long att_sz;
-            nc_type att_typ;
-            int bnd_id;
-            
-            if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
-
-            /* Yes, get list of specified attributes */
-            (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
-            if(att_typ != NC_CHAR){
-              (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore will skip this attribute.\n",prg_nm_get(),att_nm,trv.nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
-              return xtr_lst;
-            } /* end if */
-            att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-            if(att_sz > 0) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
-            /* NUL-terminate attribute */
-            att_val[att_sz]='\0';
-
-            if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"    ATTR=%s\n",att_val);
-
-            /* Split list into separate coordinate names
-            Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
-            bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
-            /* ...for each coordinate in "bounds" attribute... */
-            for(int idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
-              if(bnd_lst[idx_bnd]==NULL)
-                continue;
-              /* Verify "bounds" exists in input file. NOTE: using group ID */
-              rcd=nco_inq_varid_flg(grp_id,bnd_lst[idx_bnd],&bnd_id);
-              /* NB: Coordinates of rank N have bounds of rank N+1 */
-              if(rcd == NC_NOERR){
-                int idx_var2;
-                /* idx_var2 labels inner loop over variables */
-                /* Is "bound" already on extraction list? */
-                for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
-                  if(bnd_id == xtr_lst[idx_var2].id) break;
-                } /* end loop over idx_var2 */
-                if(idx_var2 == *xtr_nbr){
-
-                  if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"     ADD bnd_lst[%d]=%s\n",idx_bnd,bnd_lst[idx_bnd]);
-
-                  /* Try to find the varriable */
-                  nm_id_sct nm_id;
-                  if (nco_fnd_var_trv(nc_id,bnd_lst[idx_bnd],trv_tbl,&nm_id) == 1 )
-                  {
-                    if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"      MATCH variable FOUND: %s \n",nm_id.var_nm_fll); 
-                 
-                    /* Add variable to list
-                    NOTE: Needed members for traversal code:
-                    1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
-                    2) "nm": needed to "nco_prn_var_dfn" to print variable's definition 
-                    3) "grp_id": needed to "nco_prn_var_dfn" to print variable's definition 
-                    4) "id": needed for "nco_prn_att"  to print variable's attributes
-                    5) "var_nm_fll": using full name to compare criteria */
-
-                    /* Out with it */
-                    xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
-                    xtr_lst[*xtr_nbr].grp_nm_fll=nm_id.grp_nm_fll;    
-                    xtr_lst[*xtr_nbr].var_nm_fll=nm_id.var_nm_fll;
-                    xtr_lst[*xtr_nbr].nm=nm_id.nm;
-                    xtr_lst[*xtr_nbr].grp_id=nm_id.grp_id;
-                    xtr_lst[*xtr_nbr].id=nm_id.id; 
-                    xtr_lst[*xtr_nbr].grp_nm=nm_id.grp_nm;                  
-                    (*xtr_nbr)++; 
-
-                  } /* end nco_fnd_var_trv() */   
-
-                  /* Continue to next coordinate in loop */
-                  continue;
-                } /* end if coordinate was not already in list */
-              }else{ /* end if named coordinate exists in input file */
-                if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],trv.nm_fll);
-              } /* end else named coordinate exists in input file */
-            } /* end loop over idx_bnd */
-
-            /* Free allocated memory */
-            att_val=(char *)nco_free(att_val);
-            bnd_lst=nco_sng_lst_free(bnd_lst,nbr_bnd);
-
-          } /* end strcmp Is attribute part of CF convention? */
-        } /* end idx_att */
-      } /* end in_xtr_lst */
+      } /* end check if current variable is in extraction list */
     } /* end nc_typ_var */
   } /* end uidx  */
 
@@ -2762,6 +2661,268 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
 
   return xtr_lst;
 } /* nco_var_lst_crd_ass_add_cf_trv() */
+
+
+nm_id_sct *                      /* O [sct] Extraction list */
+nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
+(const int nc_id,                /* I netCDF file ID */
+ const char * const var_nm_fll,  /* I [sng] Full variable name */
+ const char * const var_nm,      /* I [sng] Variable relative name */
+ const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
+ int * const xtr_nbr,            /* I/O number of variables in current extraction list */
+ grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
+{
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system 
+  NB: Only difference between this algorithm and CF algorithm in 
+  nco_var_lst_crd_ass_add() is that this algorithm loops over 
+  all variables in file, not just over current extraction list. */ 
+
+  int rcd=NC_NOERR;         /* [rcd] Return code */
+  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
+  int nbr_att;              /* [nbr] Number of attributes */
+  int var_id;               /* [id]  Variable ID */
+  int grp_id;               /* [id]  Group ID */
+  char **bnd_lst;           /* [sng] 1D array of list elements */
+  const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  int nbr_bnd;              /* [nbr] Number of coordinates specified in "bounds" (or "coordinates") attribute */
+
+  /* Obtain group ID using nco_aux_grp_id (get ID from full variable name ) */
+  grp_id=nco_aux_grp_id(nc_id,var_nm_fll);
+
+  /* Obtain variable ID from netCDF API using group ID. NOTE: using relative var name  */
+  (void)nco_inq_varid(grp_id,var_nm,&var_id);
+
+  /* Find number of attributes */
+  (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+  for(int idx_att=0;idx_att<nbr_att;idx_att++){
+    (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
+
+    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"  IN ATTR list %s\n",att_nm);
+
+    /* Is attribute part of CF convention? */
+    if(strcmp(att_nm,cf_nm) == 0){
+      char *att_val;
+      long att_sz;
+      nc_type att_typ;
+      int bnd_id;
+
+      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
+
+      /* Yes, get list of specified attributes */
+      (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
+      if(att_typ != NC_CHAR){
+        (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore will skip this attribute.\n",prg_nm_get(),att_nm,var_nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+        return xtr_lst;
+      } /* end if */
+      att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+      if(att_sz > 0) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+      /* NUL-terminate attribute */
+      att_val[att_sz]='\0';
+
+      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"    ATTR=%s\n",att_val);
+
+      /* Split list into separate coordinate names
+      Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+      bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
+      /* ...for each coordinate in "bounds" attribute... */
+      for(int idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
+        if(bnd_lst[idx_bnd]==NULL)
+          continue;
+        /* Verify "bounds" exists in input file. NOTE: using group ID */
+        rcd=nco_inq_varid_flg(grp_id,bnd_lst[idx_bnd],&bnd_id);
+        /* NB: Coordinates of rank N have bounds of rank N+1 */
+        if(rcd == NC_NOERR){
+          int idx_var2;
+          /* idx_var2 labels inner loop over variables */
+          /* Is "bound" already on extraction list? */
+          for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
+            if(bnd_id == xtr_lst[idx_var2].id) break; /* CHK */
+          } /* end loop over idx_var2 */
+          if(idx_var2 == *xtr_nbr){
+
+            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"     ADD bnd_lst[%d]=%s\n",idx_bnd,bnd_lst[idx_bnd]);
+
+            /* Try to find the variable */
+            nm_id_sct nm_id;
+            if (nco_fnd_var_trv(nc_id,bnd_lst[idx_bnd],trv_tbl,&nm_id) == 1 )
+            {
+              if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"      MATCH variable FOUND: %s \n",nm_id.var_nm_fll); 
+
+              /* Add variable to list
+              NOTE: Needed members for traversal code:
+              1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
+              2) "nm": needed to "nco_prn_var_dfn" to print variable's definition 
+              3) "grp_id": needed to "nco_prn_var_dfn" to print variable's definition 
+              4) "id": needed for "nco_prn_att"  to print variable's attributes
+              5) "var_nm_fll": using full name to compare criteria */
+
+              /* Out with it */
+              xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+              xtr_lst[*xtr_nbr].grp_nm_fll=nm_id.grp_nm_fll;    
+              xtr_lst[*xtr_nbr].var_nm_fll=nm_id.var_nm_fll;
+              xtr_lst[*xtr_nbr].nm=nm_id.nm;
+              xtr_lst[*xtr_nbr].grp_id=nm_id.grp_id;
+              xtr_lst[*xtr_nbr].id=nm_id.id; 
+              xtr_lst[*xtr_nbr].grp_nm=nm_id.grp_nm;                  
+              (*xtr_nbr)++; 
+
+            } /* end nco_fnd_var_trv() */   
+
+            /* Continue to next coordinate in loop */
+            continue;
+          } /* end if coordinate was not already in list */
+        }else{ /* end if named coordinate exists in input file */
+          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],var_nm_fll);
+        } /* end else named coordinate exists in input file */
+      } /* end loop over idx_bnd */
+
+      /* Free allocated memory */
+      att_val=(char *)nco_free(att_val);
+      bnd_lst=nco_sng_lst_free(bnd_lst,nbr_bnd);
+
+    } /* end strcmp Is attribute part of CF convention? */
+  } /* end find number of attributes */
+
+  return xtr_lst;
+} /* nco_var_lst_crd_add_cf_trv() */
+
+nm_id_sct *                      /* O [sct] Extraction list */
+nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int nc_id,                /* I netCDF file ID */
+ const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
+ int * const xtr_nbr,            /* I/O number of variables in current extraction list */
+ grp_tbl_sct *trv_tbl)           /* I [sct] Traversal table */
+{
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system 
+  NB: Only difference between this algorithm and CF algorithm in 
+  nco_var_lst_crd_ass_add() is that this algorithm loops over 
+  all variables in file, not just over current extraction list. */ 
+
+  int rcd=NC_NOERR;         /* [rcd] Return code */
+  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
+  int nbr_att;              /* [nbr] Number of attributes */
+  int var_id;               /* [id]  Variable ID */
+  int grp_id;               /* [id]  Group ID */
+  char **bnd_lst;           /* [sng] 1D array of list elements */
+  const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  int nbr_bnd;              /* [nbr] Number of coordinates specified in "bounds" (or "coordinates") attribute */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_var){
+      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"TRV %s\n",trv.nm_fll);
+
+      /* Obtain group ID using nco_aux_grp_id (get ID from full variable name ) */
+      grp_id=nco_aux_grp_id(nc_id,trv.nm_fll);
+
+      /* Obtain variable ID from netCDF API using group ID. NOTE: using relative var name  */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+
+      /* Find number of attributes */
+      (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+      for(int idx_att=0;idx_att<nbr_att;idx_att++){
+        (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
+
+        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"  IN ATTR list %s\n",att_nm);
+
+        /* Is attribute part of CF convention? */
+        if(strcmp(att_nm,cf_nm) == 0){
+          char *att_val;
+          long att_sz;
+          nc_type att_typ;
+          int bnd_id;
+
+          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
+
+          /* Yes, get list of specified attributes */
+          (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
+          if(att_typ != NC_CHAR){
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore will skip this attribute.\n",prg_nm_get(),att_nm,trv.nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+            return xtr_lst;
+          } /* end if */
+          att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+          if(att_sz > 0) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+          /* NUL-terminate attribute */
+          att_val[att_sz]='\0';
+
+          if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"    ATTR=%s\n",att_val);
+
+          /* Split list into separate coordinate names
+          Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+          bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
+          /* ...for each coordinate in "bounds" attribute... */
+          for(int idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
+            if(bnd_lst[idx_bnd]==NULL)
+              continue;
+            /* Verify "bounds" exists in input file. NOTE: using group ID */
+            rcd=nco_inq_varid_flg(grp_id,bnd_lst[idx_bnd],&bnd_id);
+            /* NB: Coordinates of rank N have bounds of rank N+1 */
+            if(rcd == NC_NOERR){
+              int idx_var2;
+              /* idx_var2 labels inner loop over variables */
+              /* Is "bound" already on extraction list? */
+              for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
+                if(bnd_id == xtr_lst[idx_var2].id) break; /* CHK */
+              } /* end loop over idx_var2 */
+              if(idx_var2 == *xtr_nbr){
+
+                if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"     ADD bnd_lst[%d]=%s\n",idx_bnd,bnd_lst[idx_bnd]);
+
+                /* Try to find the variable */
+                nm_id_sct nm_id;
+                if (nco_fnd_var_trv(nc_id,bnd_lst[idx_bnd],trv_tbl,&nm_id) == 1 )
+                {
+                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"      MATCH variable FOUND: %s \n",nm_id.var_nm_fll); 
+
+                  /* Add variable to list
+                  NOTE: Needed members for traversal code:
+                  1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
+                  2) "nm": needed to "nco_prn_var_dfn" to print variable's definition 
+                  3) "grp_id": needed to "nco_prn_var_dfn" to print variable's definition 
+                  4) "id": needed for "nco_prn_att"  to print variable's attributes
+                  5) "var_nm_fll": using full name to compare criteria */
+
+                  /* Out with it */
+                  xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+                  xtr_lst[*xtr_nbr].grp_nm_fll=nm_id.grp_nm_fll;    
+                  xtr_lst[*xtr_nbr].var_nm_fll=nm_id.var_nm_fll;
+                  xtr_lst[*xtr_nbr].nm=nm_id.nm;
+                  xtr_lst[*xtr_nbr].grp_id=nm_id.grp_id;
+                  xtr_lst[*xtr_nbr].id=nm_id.id; 
+                  xtr_lst[*xtr_nbr].grp_nm=nm_id.grp_nm;                  
+                  (*xtr_nbr)++; 
+
+                } /* end nco_fnd_var_trv() */   
+
+                /* Continue to next coordinate in loop */
+                continue;
+              } /* end if coordinate was not already in list */
+            }else{ /* end if named coordinate exists in input file */
+              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],trv.nm_fll);
+            } /* end else named coordinate exists in input file */
+          } /* end loop over idx_bnd */
+
+          /* Free allocated memory */
+          att_val=(char *)nco_free(att_val);
+          bnd_lst=nco_sng_lst_free(bnd_lst,nbr_bnd);
+
+        } /* end strcmp Is attribute part of CF convention? */
+      } /* end find number of attributes */
+    } /* end nc_typ_var */
+  } /* end uidx  */
+
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_cf_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+  } 
+
+  return xtr_lst;
+} /* nco_var_lst_crd_add_cf_trv() */
+
 
 
 nco_bool                          /* O [flg] Is name in file */
