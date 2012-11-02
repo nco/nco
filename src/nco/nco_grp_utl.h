@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.111 2012-11-02 19:46:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.112 2012-11-02 20:26:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -181,6 +181,17 @@ get_lst_nm                      /* [fnc] Strip last component of full name */
 
 void
 nco4_xtr_lst_add           /* [fnc] Auxiliary function; add an entry to xtr_lst */
+(char * const var_nm,      /* I [sng] Variable name */
+ char * const var_nm_fll,  /* I [sng] Full variable name */
+ char * const grp_nm_fll,  /* I [sng] Full group name */
+ char * const grp_nm,      /* I [sng] Group name */
+ int const var_id,         /* I [ID] Variable ID */
+ int const grp_id,         /* I [ID] Group ID */ 
+ nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
+ int * xtr_nbr);           /* I/O [nbr] Current index in exclusion/extraction list */
+
+void
+nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
 (char * const var_nm,      /* I [sng] Variable name */
  char * const var_nm_fll,  /* I [sng] Full variable name */
  char * const grp_nm_fll,  /* I [sng] Full group name */
