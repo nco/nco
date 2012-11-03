@@ -2,7 +2,7 @@
 
 	* ncks regression test #28: Extract coordinate variables
 
-	* ncks: nco_var_lst_crd_add_trv: Add all coordinates to extraction list 
+	* ncks: nco_var_lst_crd_add_trv: Add all coordinates to extraction list
 
 2012-11-02  Charlie Zender  <zender@uci.edu>
 
@@ -11,6 +11,8 @@
 	cd ~/nco;cvs tag -d nco-4_2_3;cvs tag -d nco-4_2_3-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.3 release"
 	cvs tag -c nco-4_2_3;cvs tag -c nco-4_2_3-1
+
+	* Call nco_prs_oge_arg() to parse OGE argument into OGE structure
 
 	* Add Output Group Editing (OGE) structures
 

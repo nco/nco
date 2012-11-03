@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.133 2012-11-02 20:24:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.134 2012-11-03 00:30:57 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -939,33 +939,103 @@ nco_prs_oge_arg /* [fnc] Parse Output Group Editing (OGE) argument */
 (char * const oge_arg, /* I [sng] User-specified OGE argument */
  oge_sct * const oge) /* O [sng] OGE structure */
 {
-  /* Purpose: Parse user-specified Output Group Editing (OGE) argument */
-    char *colon_cp;
-    char *at_cp;
-    int rcd=NC_NOERR; /* [rcd] Return code */
+  /* Purpose: Parse user-specified Output Group Editing (OGE) argument
+     ncks -O -D 3 -G test ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 3 -G g2:1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 3 -G test ~/nco/data/in_grp.nc ~/foo.nc */
 
-    /* Find positions of commas and number of characters between (non-inclusive) them */
-    colon_cp=strchr(oge_arg,':');
-    at_cp=strchr(oge_arg,'@');
+  const char fnc_nm[]="nco_prs_oge_arg()"; /* [sng] Function name */
+
+  char *at_cp;
+  char *colon_cp;
+  char *spr_cp; /* [sng] Separator location */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
   
-    oge->lvl_nbr=0; /* [nbr] Number of levels to shift */
-    oge->arg=(char *)strdup(oge_arg); /* [sng] User-specified argument */
-    oge->lvl_nbr=0; /* [nbr] Number of levels to shift */
+  /* Find positions of commas and number of characters between (non-inclusive) them */
+  colon_cp=strchr(oge_arg,':');
+  at_cp=strchr(oge_arg,'@');
+  
+  oge->lvl_nbr=0; /* [nbr] Number of levels to shift */
+  oge->arg=(char *)strdup(oge_arg); /* [sng] User-specified argument */
+  oge->lvl_nbr=0; /* [nbr] Number of levels to shift */
+  
+  /* Basic sanity checks */
+  if(colon_cp && at_cp){
+    (void)fprintf(stdout,"%s: ERROR %s reports OGE argument \"%s\" contains both a colon ':' and an at '@'\n",prg_nm_get(),fnc_nm,oge_arg);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+  
+  if(colon_cp){
+    oge->mode=oge_delete; /* [enm] Editing mode to perform */
+    spr_cp=colon_cp; /* [sng] Separator location */
+  } /* endif colon */
 
-    /* Before doing any pointer arithmetic, make sure pointers are valid */
-    if(colon_cp == NULL && at_cp == NULL){
-      oge->grp_nm=(char *)strdup(oge_arg); /* [sng] Group name */
-      oge->mode=oge_append; /* [enm] Editing mode to perform */
+  if(at_cp){
+    oge->mode=oge_backup; /* [enm] Editing mode to perform */
+    spr_cp=at_cp; /* [sng] Separator location */
+  } /* endif at */
+
+  if(colon_cp || at_cp){
+    char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+    char *nbr_sng; /* [sng] Number string */
+    size_t nbr_lng;
+
+    oge->grp_nm=(char *)nco_malloc(spr_cp-oge_arg+1L); /* [sng] Group name */
+    oge->grp_nm=(char *)strncpy(oge->grp_nm,oge_arg,spr_cp-oge_arg+1L); /* [sng] Group name */
+    oge->grp_nm[oge_arg-spr_cp]='\0'; /* [sng] Group name */
+
+    /* Is there anything after the separator? */
+    nbr_sng=spr_cp+1L; /* [sng] Number string */
+    nbr_lng=strlen(nbr_sng);
+
+    if(nbr_lng){
+      /* Convert it */
+      oge->lvl_nbr=(int)strtol(nbr_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(nbr_sng,"strtol",sng_cnv_rcd);
     } /* end if */
 
-    /* Before doing any pointer arithmetic, make sure pointers are valid */
-    if(colon_cp == NULL && at_cp == NULL){
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
+    if(colon_cp && !nbr_lng) oge->mode=oge_flatten; /* [enm] Editing mode to perform */
 
-    return rcd;
+    if(at_cp && !nbr_lng) (void)fprintf(stdout,"%s: WARNING %s reports OGE argument \"%s\" contains specifies no level after the a '@'\n",prg_nm_get(),fnc_nm,oge_arg);
+
+  } /* end if */
+
+  if(!colon_cp && !at_cp){
+    oge->grp_nm=(char *)strdup(oge_arg); /* [sng] Group name */
+    oge->mode=oge_append; /* [enm] Editing mode to perform */
+  } /* end if */
+  
+  /* Basic sanity checks */
+  if(dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stdout,"%s: INFO %s reports oge->arg = %s\n",prg_nm_get(),fnc_nm,oge->arg);
+    (void)fprintf(stdout,"%s: INFO %s reports oge->grp_nm = %s\n",prg_nm_get(),fnc_nm,oge->grp_nm);
+    (void)fprintf(stdout,"%s: INFO %s reports oge->mode = %s\n",prg_nm_get(),fnc_nm,nco_oed_sng(oge->mode));
+    (void)fprintf(stdout,"%s: INFO %s reports oge->lvl_nbr = %i\n",prg_nm_get(),fnc_nm,oge->lvl_nbr);
+  } /* end if */
+
+  return rcd;
 } /* end nco_prs_oge_arg() */
+
+const char * /* O [sng] String describing OGE */
+nco_oed_sng /* [fnc] Convert OGE enum to string */
+(const oge_enm oge_md) /* I [enm] OGE mode */
+{
+  switch(oge_md){
+  case oge_delete:
+    return "oge_delete";
+  case oge_append:
+    return "oge_append";
+  case oge_flatten:
+    return "oge_flatten";
+  case oge_backup:
+    return "oge_backup";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_oed_sng() */
 
 rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */

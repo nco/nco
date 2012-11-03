@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.446 2012-11-02 23:13:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.447 2012-11-03 00:30:57 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.446 2012-11-02 23:13:31 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.446 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.447 2012-11-03 00:30:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.447 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -200,6 +200,8 @@ main(int argc,char **argv)
 
   nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+
+  oge_sct oge; /* [sng] Output Group Editing (OGE) structure */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -471,6 +473,7 @@ main(int argc,char **argv)
       break;
     case 'G': /* Extract variables into specified output group */
       grp_out=(char *)strdup(optarg);
+      (void)nco_prs_oge_arg(grp_out,&oge);
       GROUP_PATH_EDIT=!GROUP_PATH_EDIT;
       fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;

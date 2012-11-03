@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.40 2012-11-02 20:24:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.41 2012-11-03 00:30:57 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -86,6 +86,10 @@ int /* O [rcd] Return code */
 nco_prs_oge_arg /* [fnc] Parse Output Group Editing (OGE) argument */
 (char * const oge_arg, /* I [sng] User-specified OGE argument */
  oge_sct * const oge); /* O [sng] OGE structure */
+
+const char * /* O [sng] String describing OGE */
+nco_oed_sng /* [fnc] Convert OGE enum to string */
+(const oge_enm oge_md); /* I [enm] OGE mode */
 
 rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
