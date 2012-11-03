@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.448 2012-11-03 00:43:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.449 2012-11-03 06:16:28 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.448 2012-11-03 00:43:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.448 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.449 2012-11-03 06:16:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.449 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -474,7 +474,7 @@ main(int argc,char **argv)
     case 'G': /* Extract variables into specified output group */
       grp_out=(char *)strdup(optarg);
       (void)nco_prs_gpe_arg(grp_out,&gpe);
-      GROUP_PATH_EDIT=!GROUP_PATH_EDIT;
+      GROUP_PATH_EDIT=True;
       fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'g': /* Copy group argument for later processing */
