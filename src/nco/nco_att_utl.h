@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.41 2012-11-03 00:30:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.42 2012-11-03 00:43:54 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -83,13 +83,13 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
  char * const var_nm); /* O [sng] Variable name, if any */
 
 int /* O [rcd] Return code */
-nco_prs_oge_arg /* [fnc] Parse Output Group Editing (OGE) argument */
-(char * const oge_arg, /* I [sng] User-specified OGE argument */
- oge_sct * const oge); /* O [sng] OGE structure */
+nco_prs_gpe_arg /* [fnc] Parse Group Path Editing (GPE) argument */
+(char * const gpe_arg, /* I [sng] User-specified GPE argument */
+ gpe_sct * const gpe); /* O [sng] GPE structure */
 
-const char * /* O [sng] String describing OGE */
-nco_oed_sng /* [fnc] Convert OGE enum to string */
-(const oge_enm oge_md); /* I [enm] OGE mode */
+const char * /* O [sng] String describing GPE */
+nco_oed_sng /* [fnc] Convert GPE enum to string */
+(const gpe_enm gpe_md); /* I [enm] GPE mode */
 
 rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */

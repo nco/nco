@@ -12,9 +12,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.2.3 release"
 	cvs tag -c nco-4_2_3;cvs tag -c nco-4_2_3-1
 
-	* Call nco_prs_oge_arg() to parse OGE argument into OGE structure
+	* Call nco_prs_gpe_arg() to parse GPE argument into GPE structure
 
-	* Add Output Group Editing (OGE) structures
+	* Add Group Path Editing (GPE) structures
 
 2012-11-01  Pedro Vicente  <pvicente@uci.edu>
 

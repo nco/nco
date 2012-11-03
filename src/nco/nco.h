@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.192 2012-11-02 20:24:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.193 2012-11-03 00:43:54 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -340,12 +340,12 @@ extern "C" {
     aed_overwrite
   } aed_enm; /* end aed enum */
   
-  typedef enum oge{ /* [enm] Output Group Editing mode */
-    oge_append,
-    oge_delete,
-    oge_flatten,
-    oge_backup
-  } oge_enm; /* end oge enum */
+  typedef enum gpe{ /* [enm] Group Path Editing mode */
+    gpe_append,
+    gpe_delete,
+    gpe_flatten,
+    gpe_backup
+  } gpe_enm; /* end gpe enum */
 
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */
@@ -582,13 +582,13 @@ extern "C" {
     ptr_unn val;
   } att_sct;
   
-  /* Output Group Editing (OGE) structure */
-  typedef struct{ /* oge_sct */
+  /* Group Path Editing (GPE) structure */
+  typedef struct{ /* gpe_sct */
     char *arg; /* [sng] User-specified argument */
     char *grp_nm; /* [sng] Group name */
     short lvl_nbr; /* [nbr] Number of levels to shift */
-    oge_enm mode; /* [enm] Editing mode to perform */
-  } oge_sct;
+    gpe_enm mode; /* [enm] Editing mode to perform */
+  } gpe_sct;
   
   /* Chunking structure */
   typedef struct{ /* cnk_sct */
