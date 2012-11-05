@@ -1,3 +1,7 @@
+2012-11-05  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks regression test #29: Extract a 'bounds' variable
+
 2012-11-02  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks regression test #28: Extract coordinate variables

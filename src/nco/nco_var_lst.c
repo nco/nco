@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.121 2012-10-08 06:02:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.122 2012-11-05 19:48:07 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -425,6 +425,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
     char **crd_lst; /* [sng] 1D array of list elements */
     char *att_val;
     char att_nm[NC_MAX_NAME];
+    char var_nm[NC_MAX_NAME];
     int idx_att;
     int idx_crd;
     int idx_var;
@@ -442,6 +443,10 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
     for(idx_var=0;idx_var<nbr_var;idx_var++){
       /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
       var_id=idx_var;
+
+      /* Get name current variable in current group */
+      (void)nco_inq_varname(nc_id,var_id,var_nm);
+  
       /* fxm: Functionalize remainder and call from both 
       nco_var_lst_crd_ass_add() and nco_var_lst_crd_add()? */
       /* Find number of attributes */

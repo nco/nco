@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.113 2012-10-29 00:46:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.114 2012-11-05 19:48:07 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -829,14 +829,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get dimension IDs for group */
   (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,0);
 
-  if(dbg_lvl_get() == nco_dbg_crr){
-    long dmn_sz;                     
-    for(idx_dnm=0;idx_dnm<nbr_dmn;idx_dnm++){
-      (void)nco_inq_dim(in_id,dmn_ids_grp[idx_dnm],dmn_nm,&dmn_sz);
-      (void)fprintf(stdout,"  nco_msa_prn_var_val: GRP dim: %s id(%d)\n",dmn_nm,dmn_ids_grp[idx_dnm]);    
-    } 
-  } 
-
 #ifdef GRP_DEV
   /* Obtain netCDF file format */
   int fl_fmt;
@@ -850,17 +842,9 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       long dmn_sz;  
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
-      if(dbg_lvl_get() == nco_dbg_crr) 
-        (void)fprintf(stdout,"  nco_msa_prn_var_val: VAR dim: %s id(%d)\n",dmn_nm,dmn_id[idx]);   
-
       for(jdx=0;jdx<lmt_nbr;jdx++){
         if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0){
           lmt_msa[idx]=lmt_lst[jdx];
-
-          if(dbg_lvl_get() == nco_dbg_crr)
-            (void)fprintf(stdout,"  nco_msa_prn_var_val: MATCH %s id(%d) sz=%ld -->lmt_lst %s cnt=%ld\n",
-            dmn_nm,dmn_id[idx],dmn_sz,lmt_lst[jdx]->lmt_dmn[0]->nm,lmt_lst[jdx]->lmt_dmn[0]->cnt); 
-
           break;
         } /* end if */
       } /* end loop over jdx */

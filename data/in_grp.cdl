@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.25 2012-10-29 21:51:55 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.26 2012-11-05 19:48:06 pvicente Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -76,14 +76,14 @@ data:
 
 group: g1 { 
 
-	variables:
+variables:
 	float lon(lon);
 	lon:long_name = "g1 Longitude (typically midpoints)";
 	lon:units = "g1 degrees_east";
 	float scl;
 	int g1v1;
 	int v1;
-      data:
+data:
 	lon=0,90,180,270;
 	scl=1.1;
 	g1v1=1;
@@ -206,5 +206,28 @@ data:
 	gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 
 } // end g7
+
+group: g8 { 
+dimensions:
+	lev=3,vrt_nbr=2;
+variables:
+    float lev(lev);
+	lev:purpose = "Monotonically increasing coordinate pressure";
+	lev:units = "hybrid_sigma_pressure";
+	lev:positive = "down";
+	lev:A_var = "hyam";
+	lev:B_var = "hybm";
+	lev:P0_var = "P0";
+	lev:PS_var = "PS";
+	lev:bounds = "ilev";
+	
+	float ilev(lev,vrt_nbr);
+	ilev:purpose = "Cell boundaries for lev coordinate";
+
+data:
+    lev=100,500,1000;
+	ilev=0,300,300,750,750,1013.25;
+
+} // end g8
 	
 } // end root group

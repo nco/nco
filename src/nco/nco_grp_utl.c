@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.227 2012-11-02 23:21:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.228 2012-11-05 19:48:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1192,7 +1192,6 @@ nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst 
     /* Compare item on list with current variable name (NOTE: using full name to compare ) */
     if(strcmp(xtr.var_nm_fll,var_nm_fll) == 0){
 
-      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO nco_xtr_lst_add: %s ALREADY IN LIST\n",prg_nm_get(),var_nm_fll); 
       return xtr_lst;
     } /* End compare item on list with current variable name */
   } /* End check if variable is on extraction list */
@@ -2008,8 +2007,6 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
-        if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv: PATH: %s\n",prg_nm_get(),var_nm_fll);
-      
         /* List dimensions */
         for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
 
@@ -2022,7 +2019,6 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
             if (*grp_xtr_nbr == 0 ){
               xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
 
-              if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
             }
             /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
             else{  
@@ -2034,7 +2030,6 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
                 if(pch != NULL){
                   xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
 
-                  if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv() add coordinate variable: %s\n",prg_nm_get(),var_nm_fll);
                 }
               } /* end grp_idx */       
             } /* end groups case */
@@ -2640,12 +2635,9 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var){
-      if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"TRV %s\n",trv.nm_fll);
 
       /* Check if current variable is in extraction list */
       if(xtr_lst_fnd(trv.nm_fll,xtr_lst,*xtr_nbr) == 1 ){
-
-        if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"IN list %s\n",trv.nm_fll);
 
         /* Try to add to extraction list */
         xtr_lst=nco_aux_add_cf(nc_id,trv.nm_fll,trv.nm,cf_nm,xtr_lst,xtr_nbr,trv_tbl);
@@ -2699,16 +2691,12 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
   for(int idx_att=0;idx_att<nbr_att;idx_att++){
     (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
-    if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"  IN ATTR list %s\n",att_nm);
-
     /* Is attribute part of CF convention? */
     if(strcmp(att_nm,cf_nm) == 0){
       char *att_val;
       long att_sz;
       nc_type att_typ;
       int bnd_id;
-
-      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"   CF %s IN ATTR list %s\n",cf_nm,att_nm);
 
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
@@ -2720,8 +2708,6 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
       if(att_sz > 0) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
       /* NUL-terminate attribute */
       att_val[att_sz]='\0';
-
-      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"    ATTR=%s\n",att_val);
 
       /* Split list into separate coordinate names
       Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
@@ -2742,14 +2728,11 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
           } /* end loop over idx_var2 */
           if(idx_var2 == *xtr_nbr){
 
-            if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"     ADD bnd_lst[%d]=%s\n",idx_bnd,bnd_lst[idx_bnd]);
-
             /* Try to find the variable */
             nm_id_sct nm_id;
             if (nco_fnd_var_trv(nc_id,bnd_lst[idx_bnd],trv_tbl,&nm_id) == 1 )
             {
-              if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"      MATCH variable FOUND: %s \n",nm_id.var_nm_fll); 
-
+ 
               /* Add variable to list
               NOTE: Needed members for traversal code:
               1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
@@ -2805,7 +2788,6 @@ nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var){
-      if(dbg_lvl_get() == nco_dbg_crr)(void)fprintf(stdout,"TRV %s\n",trv.nm_fll);
 
       /* Try to add to extraction list */
       xtr_lst=nco_aux_add_cf(nc_id,trv.nm_fll,trv.nm,cf_nm,xtr_lst,xtr_nbr,trv_tbl);
