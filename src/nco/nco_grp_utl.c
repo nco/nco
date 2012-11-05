@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.228 2012-11-05 19:48:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.229 2012-11-05 21:04:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -350,8 +350,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
         /* Increment number of variables */
         var_idx_crr++;
-
-        if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"var_nm=%s, var_nm_fll=%s\n",var_nm,var_nm_fll);
 
         /* Full variable name has been duplicated, re-terminate with NUL for next variable */
         *var_nm_fll_sls_ptr='\0'; /* [ptr] Pointer to first character following last slash */
@@ -1106,8 +1104,6 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
-        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco_grp_var_mk_trv: PATH: %s\n",prg_nm_get(),var_nm_fll);  
-
         /* Check if input variable is on extraction list; if yes, define it in the output file */
         for(int idx_xtr=0;idx_xtr<xtr_nbr;idx_xtr++){
           nm_id_sct xtr=xtr_lst[idx_xtr];
@@ -1122,8 +1118,6 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
               if(strcmp(var_nm,dmn_ult_nm) == 0){
                 rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
                 strcpy(rec_dmn_nm,dmn_ult_nm);  
-
-                if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO nco_grp_var_mk_trv: rec_dmn_nm: %s\n",prg_nm_get(),rec_dmn_nm); 
 
               } /* strcmp */
             } /* idx_dmn */     
@@ -1873,13 +1867,11 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
         for(int idx=0;idx<trv.nbr_dmn;idx++){
           (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
 
-          if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-
           /* NOTE: using obtained group ID */
           for(int kdx=0;kdx<lmt_nbr;kdx++) {
             if(strcmp(lmt[kdx]->nm,dmn_nm) == 0 ){
               (void)nco_lmt_evl(grp_id,lmt[kdx],0L,FORTRAN_IDX_CNV);
-              if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"dimension limit: %s (%ld)\n",lmt[kdx]->nm,lmt[kdx]->cnt);
+             
 #ifdef NCO_SANITY_CHECK
               assert(lmt[kdx]->id == dmn_ids[idx]);
 #endif
@@ -2287,8 +2279,7 @@ nco_fnd_dmm_trv                /* [fnc] Find a coordinate variable that matches 
 
         /* Check if the variable is the requested name */ 
         if(strcmp(dmn_nm,var_nm) == 0){
-          if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"dimension MATCH %s id=%d\n",dmn_nm,dmn_id[idx_dmn]);
-
+   
            /* Obtain variable ID from netCDF API using group ID */
           int var_id;
           (void)nco_inq_varid(grp_id,trv.nm,&var_id);
@@ -2384,14 +2375,12 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
           strcat(var_nm_fll,"/");
         strcat(var_nm_fll,var_nm); /* Concatenate variable to absolute group path */
 
-        if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]); 
-
         /* Check if the variable is itself a coordinate variable... in this case do NOT add and continue VAR loop  */ 
         int is_var_crd=0;
         for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){ 
           (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
           if(strcmp(var_nm,dmn_nm) == 0){
-            if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"variable IS coordinate...continue: %s id=%d\n",dmn_nm,dmn_id[idx_dmn]); 
+     
             is_var_crd=1;
           } /* strcmp */     
         } /* end idx_dmn dimensions */ 
@@ -2409,8 +2398,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
           /* Compare item on list with current variable name (NOTE: using full name to compare ) */
           if(strcmp(xtr.var_nm_fll,var_nm_fll) == 0){
 
-            if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"MATCH variable: %s id=%d\n",var_nm_fll,var_ids[idx_var_grp]); 
-
             /* Get number of dimensions for variable */
             (void)nco_inq_varndims(grp_id,var_ids[idx_var_grp],&nbr_var_dim);
 
@@ -2426,16 +2413,13 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
               /* Try to find the dimension */
               nm_id_sct nm_id;
               if (nco_fnd_dmm_trv(nc_id,dmn_nm,trv_tbl,&nm_id) == 1 )
-              {
-                if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"MATCH dimension FOUND: %s \n",dmn_nm); 
-
+              {              
                 /* Check if requested coordinate variable is already on extraction list */
                 int var_in_lst=0;
                 for(int idx=0;idx<*xtr_nbr;idx++){
                   nm_id_sct xtr2=xtr_lst[idx];
                   /* Compare item on list with current variable name (NOTE: using full name to compare ) */
-                  if(strcmp(xtr2.var_nm_fll,nm_id.var_nm_fll) == 0){
-                    if(dbg_lvl_get() == nco_dbg_dev)(void)fprintf(stdout,"ALREADY in list %s\n",xtr2.var_nm_fll);
+                  if(strcmp(xtr2.var_nm_fll,nm_id.var_nm_fll) == 0){          
                     var_in_lst=1;                 
                   }
                 } /* idx */
@@ -2836,6 +2820,15 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
 } /* end nco_chk_trv() */
 
 
-
+void 
+crr_xtr_lst_ptr                 /* [fnc] Print extraction list */
+(nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
+ const int xtr_nbr)             /* I [nbr] Name ID structure list size */
+{
+  if(dbg_lvl_get() == nco_dbg_crr){
+    (void)fprintf(stdout,"%s: INFO crr_xtr_lst_ptr() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
+    xtr_lst_ptr(xtr_lst,xtr_nbr);
+  } 
+} /* crr_xtr_lst_ptr() */
 
 
