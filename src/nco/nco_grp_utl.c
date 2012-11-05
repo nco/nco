@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.229 2012-11-05 21:04:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.230 2012-11-05 22:04:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2038,6 +2038,11 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
 
     } /* end nc_typ_grp */
   } /* end uidx  */
+
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+  } /* endif dbg */
 
   return xtr_lst;
 } /* end nco_var_lst_crd_add_trv() */

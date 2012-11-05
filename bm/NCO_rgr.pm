@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.139 2012-11-05 19:48:06 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.140 2012-11-05 22:04:12 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -721,7 +721,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 	
-#NCO 4.2.2: groups: add associated variable "lat" of "area" to extraction list
+#NCO 4.2.2: #19 groups: add associated variable "lat" of "area" to extraction list
     $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
     $dsc_sng="(Groups required) Check extraction of associated coordinate variable";
@@ -730,7 +730,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 	
-#NCO 4.2.2: groups: test a chunk run: the output check is just the value of "area" not the validation of the chunk
+#NCO 4.2.2: #20 groups: test a chunk run: the output check is just the value of "area" not the validation of the chunk
     $tst_cmd[0]="ncks -O -D 4 --cnk_plc=all -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v area %tmp_fl_00%";
     $dsc_sng="(Groups required) Check chunking policy all";
@@ -739,7 +739,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 	
-#NCO 4.2.2: groups: Add to extraction list all coordinates associated with CF convention
+#NCO 4.2.2: #21 groups: Add to extraction list all coordinates associated with CF convention
     $tst_cmd[0]="ncks -O -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_gds %tmp_fl_00%";
     $dsc_sng="(Groups required) Add CF convention variables";
@@ -748,7 +748,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 	
-#NCO 4.2.2: groups: Extract variables in groups (test -g with -v )
+#NCO 4.2.2: #22 groups: Extract variables in groups (test -g with -v )
     $tst_cmd[0]="ncks -O -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
     $dsc_sng="(Groups required) Extract variables in groups";
@@ -757,7 +757,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array	
 	
-#NCO 4.2.2: groups: Create variables in groups (test -G with -v and -g )
+#NCO 4.2.2: #23 groups: Create variables in groups (test -G with -v and -g )
     $tst_cmd[0]="ncks -O -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
     $dsc_sng="(Groups required) Create variables in groups";
@@ -766,7 +766,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array		
 	
-#NCO 4.2.2: groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
+#NCO 4.2.2: #24 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
     $tst_cmd[0]="ncks -O -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%";
     $dsc_sng="(Groups required) Hyperslabs in groups";
@@ -775,7 +775,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array	
 	
-#NCO 4.2.2: groups: Extract dimensions (test -v dimension)
+#NCO 4.2.2: #25 groups: Extract dimensions (test -v dimension)
     $tst_cmd[0]="ncks -O -v time3 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -s '%g' %tmp_fl_00%";
     $dsc_sng="(Groups required) Extract dimensions";
@@ -784,7 +784,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array	
 	
-#NCO 4.2.3: groups: Extract group attributes
+#NCO 4.2.3: #26 groups: Extract group attributes
     $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $dsc_sng="(Groups required) Extract group attributes";
@@ -793,7 +793,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array	
 	
-#NCO 4.2.3: groups: Extract global attributes
+#NCO 4.2.3: #27 groups: Extract global attributes
     $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep Conventions";
     $dsc_sng="Extract global attributes";
@@ -802,7 +802,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array		
 	
-#NCO 4.2.3: groups: Extract coordinate variables
+#NCO 4.2.3: #28 groups: Extract coordinate variables
     $tst_cmd[0]="ncks  -O -c -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O -H  -s '%g'  -v time2  -d time2,0,4 %tmp_fl_00% ";
     $dsc_sng="(Groups required) Extract coordinate variables";
@@ -811,7 +811,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array			
 	
-#NCO 4.2.3: groups: Extract "bounds" variables (extract /g8/ilev)
+#NCO 4.2.3: #29 groups: Extract "bounds" variables (extract /g8/ilev)
     $tst_cmd[0]="ncks -O -g g8 -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00% ";
     $dsc_sng="(Groups required) Extract 'bounds' variables";
