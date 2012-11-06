@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.117 2012-11-06 07:23:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.118 2012-11-06 08:13:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -124,18 +124,6 @@ nco_def_grp_rcr
  const char * const prn_nm, /* I [sng] Parent group name */
  const int rcr_lvl); /* I [nbr] Recursion level */
 
-int                              /* O [rcd] Return code, bool */
-nco4_has_grp                     /* [fnc] Auxiliary function; find if a group in grp_lst_in is in grp_trv_sct */
-(const int nc_id,                /* I [ID] netCDF file ID */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_trv_sct trv);               /* I [sct] Group traversal table entry */
-
-void                      
-nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
-(int nc_id,                /* I [ID]  netCDF file ID */
- int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
- grp_tbl_sct *trv_tbl);    /* I [sct] Traversal table */
 
 int                                      /* O [rcd] Return code */
 nco_grp_itr
@@ -174,9 +162,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
  int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
  grp_tbl_sct *trv_tbl);         /* I [sct] Traversal table */
 
-char*                           /* O [sng] Return substring */
-get_lst_nm                      /* [fnc] Strip last component of full name */
-(char *nm_in);                  /* I [sng] Full name; it contains '/' as last character */
 
 nm_id_sct *                /* O [sct] Extraction list */
 nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
@@ -333,14 +318,11 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
  grp_tbl_sct *trv_tbl);                /* I [sct] Traversal table */
 
-void 
-crr_xtr_lst_ptr                 /* [fnc] Print extraction list */
-(nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
- const int xtr_nbr);            /* I [nbr] Name ID structure list size */
 
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_GRP_UTL_H */
+
 

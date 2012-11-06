@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.234 2012-11-06 07:23:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.235 2012-11-06 08:13:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -999,29 +999,6 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
   return;
 } /* end nco4_xtr_grp_nm_fll() */
 
-char*           /* O [sng] Return substring */
-get_lst_nm      /* [fnc] Strip last component of full name */
-(char *nm_in)   /* I [sng] Full name; it contains '/' as last character */
-{
-  int len;  /* Input string lenght */
-  char *cp; 
-
-  len=strlen(nm_in);
-  if(len == 0) return NULL; 
-  cp=(char*)(nm_in+len);     /* Point to the NULL ending the string */
-  cp--;                      /* Back up one character */
-  cp--;                      /* Back up one character; avoid the last '/' */
-  while(cp != nm_in)         
-  { 
-    if('/' == *cp){          /* Found path separator */
-      break;                 /* End traversal */
-    }
-    cp--;                    /* Traverse from end */
-  }
-
-  return cp+1;               /* Return component without leading '/' */
-} /* end get_lst_nm() */
-
 void
 nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in output file */
 (const int nc_id,                      /* I [ID] netCDF input file ID  */
@@ -1579,62 +1556,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
 #endif
 } /* end nco4_msa_lmt_all_int() */
 
-
-int                              /* O [rcd] Return code, bool */
-nco4_has_grp                     /* [fnc] Auxiliary function; find if a group in grp_lst_in is in grp_trv_sct */
-(const int nc_id,                /* I [ID] netCDF file ID */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- grp_trv_sct trv)                /* I [sct] Group traversal table entry */
-{
-  char *pch;                    /* Pointer to character in string */
-  int   pos;                    /* Position of character */
-  char *nm_fll;                 /* Path */
-  int  grp_id;                  /* Group ID */
-  int  len_fll;                 /* Lenght of fully qualified group where variable resides */
-  char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
-  int  fnd=0;                   /* Return value; name was found or not */
-
-  len_fll=strlen(trv.nm_fll);
-  nm_fll=(char *)nco_malloc((len_fll+1L)*sizeof(char));
-  strcpy(nm_fll,trv.nm_fll);
-
-  /* Find last occurence of '/' */
-  pch=strrchr(nm_fll,'/');
-
-#ifdef NCO_SANITY_CHECK
-  /* trv.nm_fll must have a '/'  */
-  assert(pch != NULL);
-#endif
-
-  /* Trim the variable name */
-  pos=pch-nm_fll+1;
-  nm_fll[pos]='\0';
-
-  /* Obtain group ID from netCDF API using full group name */
-#ifdef NCO_SANITY_CHECK
-  (void)nco_inq_grp_full_ncid(nc_id,nm_fll,&grp_id);
-#endif
-
-  /* Loop through user-specified group list */
-  for(int grp_idx=0;grp_idx<*grp_xtr_nbr;grp_idx++){
-
-    /* Get group name from -g */
-    strcpy(grp_nm_lst,grp_lst_in[grp_idx]);
-
-    /* Locate group name from -g in traversal name */
-    pch=strstr(nm_fll,grp_nm_lst);
-
-    /* strstr returns the first occurrence of 'grp_nm_lst' in 'nm_fll', the higher level group( closer to root) */
-    if(pch != NULL){    
-      fnd=1;
-    } /* end pch was found */
-  } /* end loop user-specified group list */
-
-  /* Free allocated memory */
-  nm_fll=(char *)nco_free(nm_fll);
-  return fnd;
-} /* end nco4_xtr_grp_nm() */
 
 void                      
 nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
@@ -2840,17 +2761,5 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
 
   return True;
 } /* end nco_chk_trv() */
-
-
-void 
-crr_xtr_lst_ptr                 /* [fnc] Print extraction list */
-(nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
- const int xtr_nbr)             /* I [nbr] Name ID structure list size */
-{
-  if(dbg_lvl_get() == nco_dbg_crr){
-    (void)fprintf(stdout,"%s: INFO crr_xtr_lst_ptr() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),xtr_nbr,(xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,xtr_nbr);
-  } 
-} /* crr_xtr_lst_ptr() */
 
 
