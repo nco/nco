@@ -31,24 +31,16 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.27 2012-11-06 03:50:25 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.28 2012-11-06 05:42:09 pvicente Exp $";
 
 	float lat(lat);
-	lat:long_name = "Latitude (typically midpoints)";
 	lat:units = "degrees_north";
 
 	float lev(lev);
-	lev:purpose = "Monotonically increasing coordinate pressure";
 	lev:units = "hybrid_sigma_pressure";
-	lev:positive = "down";
-	lev:A_var = "hyam";
-	lev:B_var = "hybm";
-	lev:P0_var = "P0";
-	lev:PS_var = "PS";
 	lev:bounds = "ilev";
 
 	float lon(lon);
-	lon:long_name = "Longitude (typically midpoints)";
 	lon:units = "degrees_east";
 
 	double time(time);
@@ -56,13 +48,10 @@ variables:
 	float scl;
         
 	float area(lat);
-	area:long_name = "area";
 	area:units = "meter2";
 	
 	float gds_crd(gds_crd);
-	gds_crd:long_name = "Geodesic coordinate";
 	gds_crd:units = "degree";
-	gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
 	gds_crd:coordinates = "lat_gds lon_gds";
 	
 data:
@@ -78,7 +67,6 @@ group: g1 {
 
 variables:
 	float lon(lon);
-	lon:long_name = "g1 Longitude (typically midpoints)";
 	lon:units = "g1 degrees_east";
 	float scl;
 	int g1v1;
@@ -124,7 +112,6 @@ group: g3 {
 group: g4 { 
 	variables:
 	int one_dmn_rec_var(time);
-	one_dmn_rec_var:long_name = "one dimensional record variable";
 	one_dmn_rec_var:units = "second";
 	data:
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
@@ -161,7 +148,6 @@ group: g6 {
 
 	variables:
 	  float area(lat);
-          area:long_name = "area";
 	  area:units = "meter2";
 
 	data:
@@ -175,28 +161,18 @@ dimensions:
 variables:
 
 	float gds_crd(gds_crd);
-	gds_crd:long_name = "Geodesic coordinate";
 	gds_crd:units = "degree";
-	gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
 	gds_crd:coordinates = "lat_gds lon_gds";
 
 	float gds_var(gds_crd);
-	gds_var:long_name = "Geodesic variable";
 	gds_var:units = "meter";
-	gds_var:purpose = "Test auxiliary coordinates like those that define geodesic grids";
 	gds_var:coordinates = "lat_gds lon_gds";
 	
 	double lat_gds(gds_crd);
-	lat_gds:long_name = "Latitude";  
-	lat_gds:standard_name = "latitude";
 	lat_gds:units="degree";
-	lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
 
 	double lon_gds(gds_crd);
-	lon_gds:long_name = "Longitude";
-	lon_gds:standard_name = "longitude";
 	lon_gds:units="degree";
-	lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
 	
 data:
 
@@ -212,10 +188,10 @@ dimensions:
 	lev=3,vrt_nbr=2;
 variables:
     float lev(lev);
+	lev:units = "hybrid_sigma_pressure";
 	lev:bounds = "ilev";
 	
 	float ilev(lev,vrt_nbr);
-	ilev:purpose = "Cell boundaries for lev coordinate";
 
 data:
     lev=100,500,1000;
