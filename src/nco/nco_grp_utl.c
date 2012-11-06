@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.231 2012-11-06 03:33:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.232 2012-11-06 06:24:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2561,7 +2561,9 @@ nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if(trv.typ == nc_typ_var){   
+    if(trv.typ == nc_typ_var){ 
+
+      /* Compare name with current relative name */
       if(strcmp(trv.nm,var_nm) == 0){
         char *pch;        /* Pointer to character in string */
         int   pos;        /* Position of character */
@@ -2707,25 +2709,22 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
       bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
       /* ...for each coordinate in "bounds" attribute... */
       for(int idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
-        if(bnd_lst[idx_bnd]==NULL)
+        char* bnd_lst_var=bnd_lst[idx_bnd];
+        if(bnd_lst_var==NULL)
           continue;
         /* Verify "bounds" exists in input file. NOTE: using group ID */
-        rcd=nco_inq_varid_flg(grp_id,bnd_lst[idx_bnd],&bnd_id);
+        rcd=nco_inq_varid_flg(grp_id,bnd_lst_var,&bnd_id);
         /* NB: Coordinates of rank N have bounds of rank N+1 */
         if(rcd == NC_NOERR){
-          int idx_var2;
-          /* idx_var2 labels inner loop over variables */
-          /* Is "bound" already on extraction list? */
-          for(idx_var2=0;idx_var2<*xtr_nbr;idx_var2++){
-            if(bnd_id == xtr_lst[idx_var2].id) break; /* CHK */
-          } /* end loop over idx_var2 */
-          if(idx_var2 == *xtr_nbr){
 
-            /* Try to find the variable */
-            nm_id_sct nm_id;
-            if (nco_fnd_var_trv(nc_id,bnd_lst[idx_bnd],trv_tbl,&nm_id) == 1 )
-            {
- 
+          /* Try to find the variable */
+          nm_id_sct nm_id;
+          if (nco_fnd_var_trv(nc_id,bnd_lst_var,trv_tbl,&nm_id) == 1 )
+          {
+
+            /* Check if the  variable is already in the  extraction list: NOTE using relative name "bnd_lst_var" */
+            if(xtr_lst_fnd(bnd_lst_var,xtr_lst,*xtr_nbr) == 0 ){
+
               /* Add variable to list
               NOTE: Needed members for traversal code:
               1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
@@ -2743,13 +2742,15 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
               xtr_lst[*xtr_nbr].id=nm_id.id; 
               xtr_lst[*xtr_nbr].grp_nm=nm_id.grp_nm;                  
               (*xtr_nbr)++; 
+            }
 
-            } /* end nco_fnd_var_trv() */   
+          } /* end nco_fnd_var_trv() */   
 
-            /* Continue to next coordinate in loop */
-            continue;
-          } /* end if coordinate was not already in list */
-        }else{ /* end if named coordinate exists in input file */
+          /* Continue to next coordinate in loop */
+          continue;
+
+
+        }else{ /* end Verify "bounds" exists in input file */
           if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],var_nm_fll);
         } /* end else named coordinate exists in input file */
       } /* end loop over idx_bnd */

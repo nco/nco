@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.140 2012-11-05 22:04:12 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.141 2012-11-06 06:24:32 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -812,7 +812,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array			
 	
 #NCO 4.2.3: #29 groups: Extract "bounds" variables (extract /g8/ilev)
-    $tst_cmd[0]="ncks -O -g g8 -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00% ";
     $dsc_sng="(Groups required) Extract 'bounds' variables";
     $tst_cmd[2]="03003007507501013.25";
