@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.235 2012-11-06 08:13:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.236 2012-11-06 08:22:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1555,57 +1555,6 @@ nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group
   assert(nbr_dmn_fl == nbr_dmn_all);
 #endif
 } /* end nco4_msa_lmt_all_int() */
-
-
-void                      
-nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions */
-(int nc_id,                /* I [ID]  netCDF file ID */
- int * const dmn_nbr_all,  /* O [nbr] Number of dimensions in file */
- grp_tbl_sct *trv_tbl)     /* I [sct] Traversal table */
-{
-  int nbr_dmn_all=0;       /* [nbr] Total number of dimensions in file */
-  char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
-  long dmn_sz;             /* [nbr] Dimension size */ 
-  int *dmn_ids;            /* [ID]  Dimension IDs */ 
-  int grp_id;              /* [ID]  Group ID */
-  int nbr_att;             /* [nbr] Number of attributes */
-  int nbr_var;             /* [nbr] Number of variables */
-  int nbr_dmn;             /* [nbr] Number of dimensions */
-
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
-    if (trv.typ == nc_typ_grp ) {    
-
-      /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
-#ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-
-      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
-
-      /* List dimensions using obtained group ID */
-      for(int jdx=0;jdx<trv.nbr_dmn;jdx++){
-        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-      } /* end jdx dimensions */
-      (void)nco_free(dmn_ids);
-
-      /* Increment total number of dimensions in file */
-      nbr_dmn_all+=trv.nbr_dmn;
-
-    } /* end nc_typ_grp */
-  } /* end uidx  */
-
-  /* Export */
-  *dmn_nbr_all=nbr_dmn_all;
-
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO nco4_inq_dmn() reports file contains %d dimension%s\n",prg_nm_get(),*dmn_nbr_all,(*dmn_nbr_all > 1) ? "s" : "");
-
-  return;
-} /* end nco4_inq_dmn() */
 
 
 void                       
