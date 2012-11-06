@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.42 2012-11-03 00:43:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.43 2012-11-06 07:23:09 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -82,13 +82,21 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
 (rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
  char * const var_nm); /* O [sng] Variable name, if any */
 
-int /* O [rcd] Return code */
-nco_prs_gpe_arg /* [fnc] Parse Group Path Editing (GPE) argument */
-(char * const gpe_arg, /* I [sng] User-specified GPE argument */
- gpe_sct * const gpe); /* O [sng] GPE structure */
+gpe_sct * /* O [sng] GPE structure */
+nco_gpe_prs_arg /* [fnc] Parse Group Path Editing (GPE) argument */
+(const char * const gpe_arg); /* I [sng] User-specified GPE specification */
+
+char * /* O [sng] Result of applying GPE to input path */
+nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
+(const gpe_sct * const gpe, /* I [sng] GPE structure */
+ const char * const grp_nm_fll_in); /* I [sng] Full group name */
+
+gpe_sct * /* O [sct] Structure with dynamic memory free()'d */
+nco_gpe_free /* [fnc] Free dynamic memory of GPE structure */
+(gpe_sct * const gpe); /* O [sct] GPE structure */
 
 const char * /* O [sng] String describing GPE */
-nco_oed_sng /* [fnc] Convert GPE enum to string */
+nco_gpe_sng /* [fnc] Convert GPE enum to string */
 (const gpe_enm gpe_md); /* I [enm] GPE mode */
 
 rnm_sct * /* O [sng] Structured list of old, new names */

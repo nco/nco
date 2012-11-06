@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.141 2012-11-06 06:24:32 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.142 2012-11-06 07:23:04 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -715,7 +715,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncks -O %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -v -O -s 'n2=global\@_FillValue;' %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="ncks -C -H -s '%d' -v n2 %tmp_fl_02%";
-    $dsc_sng="Check creation/copying of global _FillValue";
+    $dsc_sng="Create/copy of global _FillValue";
     $tst_cmd[4]="222";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -724,7 +724,7 @@ sub tst_rgr {
 #NCO 4.2.2: #19 groups: add associated variable "lat" of "area" to extraction list
     $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
-    $dsc_sng="(Groups required) Check extraction of associated coordinate variable";
+    $dsc_sng="(Groups required) Extract associated coordinate variable";
     $tst_cmd[2]="-9090";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -733,7 +733,7 @@ sub tst_rgr {
 #NCO 4.2.2: #20 groups: test a chunk run: the output check is just the value of "area" not the validation of the chunk
     $tst_cmd[0]="ncks -O -D 4 --cnk_plc=all -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v area %tmp_fl_00%";
-    $dsc_sng="(Groups required) Check chunking policy all";
+    $dsc_sng="(Groups required) Chunking policy all";
     $tst_cmd[2]="1010";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);

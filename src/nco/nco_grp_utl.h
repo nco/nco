@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.116 2012-11-05 21:04:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.117 2012-11-06 07:23:09 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -46,7 +46,7 @@ int /* O [rcd] Return code */
 nco_def_grp_full /* [fnc] Ensure all components of group path are defined */
 (const int nc_id, /* I [ID] netCDF output-file ID */
  const char * const grp_nm_fll, /* I [sng] Full group name */
- int * grp_out_id); /* O [ID] Full group ID */
+ int * const grp_out_id); /* O [ID] Deepest group ID */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -140,7 +140,7 @@ nco4_inq_dmn               /* [fnc] Find and return global totals of dimensions 
 int                                      /* O [rcd] Return code */
 nco_grp_itr
 (const int grp_id,                       /* I [id] Group ID */
- char * grp_pth,                         /* I [sng] Absolute group path */
+ char * const grp_pth,                         /* I [sng] Absolute group path */
  grp_tbl_sct *trv_tbl);                  /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
 
@@ -148,7 +148,6 @@ int                                      /* O [rcd] Return code */
 nco_has_subgrps
 (const int nc_id);                       /* I [ID] NetCDF file ID */  
 /* end nco_has_subgrps() */
-
 
 nm_id_sct *                     /* O [sct] Extraction list */
 nco4_var_lst_xcl                /* [fnc] Convert exclusion list to extraction list */
@@ -311,11 +310,11 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
  nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
  grp_tbl_sct *trv_tbl);           /* I [sct] Traversal table */
 
-
 void
 nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in output file */
 (const int nc_id,                      /* I [ID] netCDF input file ID  */
  const int nc_out_id,                  /* I [ID] netCDF output file ID  */
+ const gpe_sct * const gpe,            /* I [sng] GPE structure */
  nm_id_sct * const xtr_lst,            /* I [sct] Extraction list  */
  const int xtr_nbr,                    /* I [nbr] Number of members in list */
  const int lmt_nbr,                    /* I [nbr] Number of dimensions with limits */

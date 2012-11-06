@@ -1,3 +1,9 @@
+2012-11-05  Charlie Zender  <zender@uci.edu>
+
+	* ncks/ncecat: Complete and test GPE infrastructure
+
+	* ncecat: Fix 4.2.2 bug that skips first input file in RECORD_AGGREGATE mode with NINTAP
+
 2012-11-05  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks regression test #29: Extract a 'bounds' variable

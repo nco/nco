@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.450 2012-11-05 19:48:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.451 2012-11-06 07:23:09 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -49,6 +49,8 @@
    ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
    ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc
    ncks -O -G foo ~/nco/data/in.nc ~/foo.nc
+   ncks -O -G :-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
+   ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
@@ -97,7 +99,6 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
-  nco_bool GROUP_PATH_EDIT=False; /* Option G */
   nco_bool HAS_SUBGRP=False; /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
@@ -139,17 +140,17 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
-  char *grp_out=NULL; /* [sng] Group name */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
+  char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.450 2012-11-05 19:48:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.450 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.451 2012-11-06 07:23:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.451 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -164,6 +165,8 @@ main(int argc,char **argv)
   extern int optind;
   
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
@@ -200,8 +203,6 @@ main(int argc,char **argv)
 
   nm_id_sct *grp_lst=NULL; /* [sct] Groups to be extracted */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-
-  gpe_sct gpe; /* [sng] Group Path Editing (GPE) structure */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -471,10 +472,8 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
-    case 'G': /* Extract variables into specified output group */
-      grp_out=(char *)strdup(optarg);
-      (void)nco_prs_gpe_arg(grp_out,&gpe);
-      GROUP_PATH_EDIT=True;
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
+      gpe=nco_gpe_prs_arg(optarg);
       fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'g': /* Copy group argument for later processing */
@@ -599,7 +598,7 @@ main(int argc,char **argv)
   rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
   /* Check for valid -v <names> (handles wilcards) */
-  (void)nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST); 
+  (void)nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST);
 
    /* Check for invalid -g <names>  */
   if(nco_chk_trv(grp_lst_in,grp_nbr,nc_typ_grp,trv_tbl) == 0){
@@ -783,7 +782,7 @@ main(int argc,char **argv)
     /* Copy global attributes */
     if(PRN_GLB_METADATA)(void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
 
-    if(GROUP_PATH_EDIT){
+    if(gpe){
 #ifndef ENABLE_NETCDF4
       (void)fprintf(stderr,"%s: ERROR Group Path Edit requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
       nco_exit(EXIT_FAILURE);
@@ -793,14 +792,11 @@ main(int argc,char **argv)
         (void)fprintf(stderr,"%s: ERROR Group Path Edit requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
         nco_exit(EXIT_FAILURE);
       } /* endif err */
-      
-      /* If user-specified root group for extracted variables does not exist, create it */
-      if(nco_inq_grp_full_ncid_flg(out_id,grp_out,&grp_out_id)) nco_def_grp_full(out_id,grp_out,&grp_out_id);
-    } /* !GROUP_PATH_EDIT */
+    } /* !gpe */
 
     if(HAS_SUBGRP){
       /* Define requested input groups/variables/chunksize parameters in output file */
-      nco_grp_var_mk_trv(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE*)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
+      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
       /* Define requested group attributes in output file */
       if(PRN_GLB_METADATA){
 
@@ -846,7 +842,7 @@ main(int argc,char **argv)
 
     /* Copy all variables to output file */
     if(HAS_SUBGRP){      
-      nco_grp_var_mk_trv(in_id,grp_out_id,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
+      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
     }else{
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
@@ -1010,6 +1006,7 @@ out:
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(grp_out) grp_out=(char *)nco_free(grp_out);
     if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
@@ -1024,6 +1021,7 @@ out:
   } /* !flg_cln */
 
   trv_tbl_free(trv_tbl);
+  if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */

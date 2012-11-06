@@ -6,7 +6,7 @@
 // NB: ncgen arguments depend on version:
 // "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
-// ncgen -k netCDF-4 -b -o ~/in_grp.nc ${HOME}/nco/data/in_grp.cdl
+// ncgen -k netCDF-4 -b -o ~/nco/data/in_grp.nc ${HOME}/nco/data/in_grp.cdl
 // scp ~/nco/data/in_grp.cdl givre.ess.uci.edu:nco/data
 // scp ~/nco/data/in_grp.nc dust.ess.uci.edu:/var/www/html/nco
 // scp dust.ess.uci.edu:/var/www/html/nco/in_grp.nc ~/nco/data
@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.28 2012-11-06 05:42:09 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.29 2012-11-06 07:23:06 zender Exp $";
 
 	float lat(lat);
 	lat:units = "degrees_north";
@@ -46,6 +46,9 @@ variables:
 	double time(time);
 
 	float scl;
+
+	integer unique;
+        unique:purpose = "the only variable of this name in this file, to test smallest possible access requests";
         
 	float area(lat);
 	area:units = "meter2";
@@ -62,6 +65,7 @@ data:
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	area=10.,10.;
 	gds_crd=0,1,2,3,4,5,6,7;
+	unique=73;
 
 group: g1 { 
 
@@ -199,4 +203,23 @@ data:
 
 } // end g8
 	
+ group: g9 { // Level 1
+	group: g9g1 { // Level 2
+	  group: g9g1g1 { // Level 3
+	    group: g9g1g1g1 { // Level 4
+	      group: g9g1g1g1g1 { // Level 5
+		group: g9g1g1g1g1g1 { // Level 6
+		  group: g9g1g1g1g1g1g1 { // Level 7
+		    variables:
+		      int v7;
+		    data:
+		      v7=73;
+		    } // end g9g1g1g1g1g1g1
+		  } // end g9g1g1g1g1g1
+		} // end g9g1g1g1g1
+	      } // end g9g1g1g1
+	    } // end g9g1g1
+	  } // end g9g1
+	} // end g9
+
 } // end root group

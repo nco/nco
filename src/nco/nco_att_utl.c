@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.135 2012-11-03 00:43:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.136 2012-11-06 07:23:09 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -934,56 +934,195 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   return 1;
 } /* end nco_prs_att() */
 
-int /* O [rcd] Return code */
-nco_prs_gpe_arg /* [fnc] Parse Group Path Editing (GPE) argument */
-(char * const gpe_arg, /* I [sng] User-specified GPE argument */
- gpe_sct * const gpe) /* O [sng] GPE structure */
+char * /* O [sng] Result of applying GPE to input path */
+nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
+(const gpe_sct * const gpe, /* I [sng] GPE structure */
+ const char * const grp_nm_fll_in) /* I [sng] Full group name */
+{
+  /* Purpose: Apply Group Path Editing (GPE) to input full group name, return result
+     grp_nm_fll_in:  "Input"  path---usually full group path of object in input  file
+     grp_nm_fll_out: "Output" path---usually full group path of object in output file
+     grp_nm_fll_in usually is not terminated by a slash
+     grp_nm_fll_in is assumed to begin with a slash
+     The "group path" includes only groups--variable names should be omitted
+     GPE string is the path argument supplied to the GPE option */
+
+  const char fnc_nm[]="nco_gpe_evl()"; /* [sng] Function name */
+  const char sls_sng[]="/"; /* [sng] Slash string */
+  const char sls_chr='/'; /* [sng] Slash character */
+
+  char *grp_nm_fll_out; /* [sng] Returned output name. Safe to free() in calling routine. */
+  char *grp_out; /* [sng] Mutable pointer to output name. Unsafe to free(). */
+  char *grp_nm_fll_in_dpl; /* [sng] Allocated pointer to output name. Safe to free(). */
+  char *sls_ptr; /* [sng] Pointer to slash character. Unsafe to free(). */
+  
+  int lvl_idx=0; /* [idx] Level counter (gets incremented) */
+  
+  size_t in_lng; /* [nbr] Length of grp_nm_fll_in */
+  size_t out_lng; /* [nbr] Length of grp_nm_fll_out */
+
+  /* Default */
+  in_lng=strlen(grp_nm_fll_in);
+  if(!in_lng) (void)fprintf(stdout,"%s: WARNING %s reports grp_nm_fll_in is empty\n",prg_nm_get(),fnc_nm);
+  grp_nm_fll_in_dpl=(char *)strdup(grp_nm_fll_in);
+  sls_ptr=grp_out=grp_nm_fll_in_dpl;
+
+  /* If GPE was not invoked, perform identity translation and return */
+  if(!gpe->arg) return grp_out;
+
+  /* Sanity checks */
+  if(grp_out[0] != '/') (void)fprintf(stdout,"%s: WARNING %s reports GPE input path %s does not begin with slash\n",prg_nm_get(),fnc_nm,grp_out);
+
+  switch(gpe->md){
+  case gpe_delete:
+    /* Delete up to lvl_nbr levels by advancing one slash per level */
+    while(grp_out && (lvl_idx++ < gpe->lvl_nbr)) grp_out=strchr(grp_out+1,sls_chr);
+
+    if(grp_out){
+      /* More levels remain */
+      if(gpe->lng_cnn > 1L){
+	/* Prepend argument to remaining levels */
+	out_lng=gpe->lng_cnn+strlen(grp_out);
+	grp_nm_fll_out=(char *)nco_malloc((out_lng+1L)*sizeof(char));
+	(void)strcpy(grp_nm_fll_out,gpe->nm_cnn);
+	grp_nm_fll_out=strcat(grp_nm_fll_out,grp_out);
+      }else{
+	/* No argument to prepend */
+	grp_nm_fll_out=(char *)strdup(grp_out);
+      } /* !gpe->nm */
+    }else{ /* !grp_out */
+      /* All levels already deleted */
+      if(gpe->nm_cnn) grp_nm_fll_out=(char *)strdup(gpe->nm_cnn); else grp_nm_fll_out=(char *)strdup(sls_sng);
+    } /* !grp_out */
+    break;
+
+  case gpe_append:
+    /* Append: Append input name to GPE name */
+    out_lng=gpe->lng_cnn+in_lng;
+    grp_nm_fll_out=(char *)nco_malloc((out_lng+1L)*sizeof(char));
+    (void)strcpy(grp_nm_fll_out,gpe->nm_cnn);
+    grp_nm_fll_out=strcat(grp_nm_fll_out,grp_nm_fll_in);
+    break;
+
+  case gpe_flatten:
+    /* Delete all levels */
+    if(gpe->nm_cnn) grp_nm_fll_out=(char *)strdup(gpe->nm_cnn); else grp_nm_fll_out=(char *)strdup(sls_sng);
+    break;
+
+  case gpe_backspace:
+    /* Truncate up-to lvl_nbr levels by backspacing one slash per level */
+    while(sls_ptr && (lvl_idx++ < gpe->lvl_nbr)){
+      sls_ptr=strrchr(grp_out+1,sls_chr);
+      /* Replace slash by NUL */
+      if(sls_ptr) *sls_ptr='\0';
+    } /* end while */
+
+    if(sls_ptr){
+      /* More levels remain */
+      if(gpe->lng_cnn > 1L){
+	/* Append argument to remaining levels */
+	out_lng=strlen(grp_out)+gpe->lng_cnn;
+	grp_nm_fll_out=(char *)nco_malloc((out_lng+1L)*sizeof(char));
+	(void)strcpy(grp_nm_fll_out,grp_out);
+	grp_nm_fll_out=strcat(grp_nm_fll_out,gpe->nm_cnn);
+      }else{ /* !gpe->nm */
+	/* No argument to append */
+	grp_nm_fll_out=(char *)strdup(grp_out);
+      } /* !gpe->nm */
+    }else{ /* !sls_ptr */
+      /* All levels already truncated */
+      if(gpe->nm_cnn) grp_nm_fll_out=(char *)strdup(gpe->nm_cnn); else grp_nm_fll_out=(char *)strdup(sls_sng);
+    } /* !sls_ptr */
+    break;
+
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Final parsing results */
+  if(dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stdout,"%s: INFO %s reports GPE changes input grp_nm_fll_in = %s to output grp_nm_fll_out = %s\n",prg_nm_get(),fnc_nm,grp_nm_fll_in,grp_nm_fll_out);
+  } /* end if */
+
+  if(grp_nm_fll_in_dpl) grp_nm_fll_in_dpl=(char *)nco_free(grp_nm_fll_in_dpl);
+
+  return grp_nm_fll_out;
+
+} /* end nco_gpe_evl() */
+
+gpe_sct * /* O [sct] Structure with dynamic memory free()'d */
+nco_gpe_free /* [fnc] Free dynamic memory of GPE structure */
+(gpe_sct * gpe) /* O [sct] GPE structure */
+{
+  /* Purpose: Free GPE structure */
+  if(gpe->arg) gpe->arg=(char *)nco_free(gpe->arg);
+  if(gpe->nm) gpe->nm=(char *)nco_free(gpe->nm);
+  if(gpe->edt) gpe->edt=(char *)nco_free(gpe->edt);
+  if(gpe->nm_cnn) gpe->nm_cnn=(char *)nco_free(gpe->nm_cnn);
+  if(gpe) gpe=(gpe_sct *)nco_free(gpe);
+  return gpe;
+} /* end nco_gpe_free() */
+
+gpe_sct * /* O [sng] GPE structure */
+nco_gpe_prs_arg /* [fnc] Parse Group Path Editing (GPE) argument */
+(const char * const gpe_arg) /* I [sng] User-specified GPE specification */
 {
   /* Purpose: Parse user-specified Group Path Editing (GPE) argument
      ncks -O -D 3 -G test ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 3 -G g2:1 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 3 -G @-2 ~/nco/data/in_grp.nc ~/foo.nc */
 
-  const char fnc_nm[]="nco_prs_gpe_arg()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_gpe_prs_arg()"; /* [sng] Function name */
 
   char *at_cp;
   char *colon_cp;
-  char *spr_cp; /* [sng] Separator location */
+  char *spr_cp=NULL; /* [sng] Separator location */
 
-  int rcd=NC_NOERR; /* [rcd] Return code */
+  gpe_sct *gpe; /* [sct] GPE structure */
+
+  /* Initialize structure */
+  /* NB: Be sure to free() all dynamic memory in nco_gpe_free() */
+  gpe=(gpe_sct *)nco_malloc(sizeof(gpe_sct));
+  gpe->arg=NULL; /* [sng] Full GPE specification (for debugging) */
+  gpe->edt=NULL; /* [sng] Editing component of full GPE specification */
+  gpe->nm=NULL; /* [sng] Group name component of full GPE specification */
+  gpe->nm_cnn=NULL; /* [sng] Canonicalized (i.e., slash-prefixed) group name */
+  gpe->lng=0L; /* [nbr] Length of user-specified group path */
+  gpe->lng_cnn=0L; /* [nbr] Length of canonicalized user-specified group path */
+  gpe->lng_edt=0L; /* [nbr] Length of editing component of full GPE specification */
+  gpe->lvl_nbr=0; /* [nbr] Number of levels to shift */
+  gpe->md=gpe_append; /* [enm] Editing mode to perform */
   
+  /* Structure has been initialized, safe to return now on no-ops */
+  if(gpe_arg) gpe->arg=(char *)strdup(gpe_arg); else return gpe;
+
   /* Find positions of commas and number of characters between (non-inclusive) them */
-  colon_cp=strchr(gpe_arg,':');
-  at_cp=strchr(gpe_arg,'@');
-  
-  gpe->lvl_nbr=0; /* [nbr] Number of levels to shift */
-  gpe->arg=(char *)strdup(gpe_arg); /* [sng] User-specified argument */
-  gpe->lvl_nbr=0; /* [nbr] Number of levels to shift */
-  
+  colon_cp=strchr(gpe->arg,':');
+  at_cp=strchr(gpe->arg,'@');
+
   /* Basic sanity checks */
   if(colon_cp && at_cp){
-    (void)fprintf(stdout,"%s: ERROR %s reports GPE argument \"%s\" contains both a colon ':' and an at '@'\n",prg_nm_get(),fnc_nm,gpe_arg);
+    (void)fprintf(stdout,"%s: ERROR %s reports GPE specification \"%s\" contains both a colon ':' and an at-sign '@'\n",prg_nm_get(),fnc_nm,gpe->arg);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   
   if(colon_cp){
-    gpe->mode=gpe_delete; /* [enm] Editing mode to perform */
+    gpe->md=gpe_delete; /* [enm] Editing mode to perform */
     spr_cp=colon_cp; /* [sng] Separator location */
   } /* endif colon */
 
   if(at_cp){
-    gpe->mode=gpe_backup; /* [enm] Editing mode to perform */
+    gpe->md=gpe_backspace; /* [enm] Editing mode to perform */
     spr_cp=at_cp; /* [sng] Separator location */
   } /* endif at */
 
-  if(colon_cp || at_cp){
+  if(spr_cp){
     char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
     char *nbr_sng; /* [sng] Number string */
     size_t nbr_lng;
 
-    gpe->grp_nm=(char *)nco_malloc(spr_cp-gpe_arg+1L); /* [sng] Group name */
-    gpe->grp_nm=(char *)strncpy(gpe->grp_nm,gpe_arg,spr_cp-gpe_arg); /* [sng] Group name */
-    gpe->grp_nm[gpe_arg-spr_cp]='\0'; /* [sng] Group name */
+    gpe->nm=(char *)nco_malloc(((spr_cp-gpe->arg)+1L)*sizeof(char)); /* [sng] Group name */
+    gpe->nm=(char *)strncpy(gpe->nm,gpe->arg,spr_cp-gpe->arg); /* [sng] Group name */
+    gpe->nm[spr_cp-gpe->arg]='\0'; /* [sng] Group name */
 
     /* Is there anything after the separator? */
     nbr_sng=spr_cp+1L; /* [sng] Number string */
@@ -995,35 +1134,78 @@ nco_prs_gpe_arg /* [fnc] Parse Group Path Editing (GPE) argument */
       if(*sng_cnv_rcd) nco_sng_cnv_err(nbr_sng,"strtol",sng_cnv_rcd);
     } /* end if */
 
+    if(gpe->lvl_nbr < 0 && colon_cp){
+      /* Equate negative number following colon to positive number following at-sign  */
+      gpe->md=gpe_backspace; /* [enm] Editing mode to perform */
+      gpe->lvl_nbr=-gpe->lvl_nbr;
+    } /* end if */
+
     if(gpe->lvl_nbr < 0){
       (void)fprintf(stdout,"%s: ERROR %s reports GPE level shift number gpe->lvl_nbr = %d is less than zero. Level shift number must not be negative.\n",prg_nm_get(),fnc_nm,gpe->lvl_nbr);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-    if(colon_cp && !nbr_lng) gpe->mode=gpe_flatten; /* [enm] Editing mode to perform */
+    if(colon_cp && !nbr_lng) gpe->md=gpe_flatten; /* [enm] Editing mode to perform */
 
-    if(at_cp && !nbr_lng) (void)fprintf(stdout,"%s: WARNING %s reports GPE argument \"%s\" contains specifies no level after the a '@'\n",prg_nm_get(),fnc_nm,gpe_arg);
+    if(at_cp && !nbr_lng) (void)fprintf(stdout,"%s: WARNING %s reports GPE specification \"%s\" specifies no level after the at-sign '@'\n",prg_nm_get(),fnc_nm,gpe->arg);
 
-  } /* end if */
+    gpe->edt=(char *)strdup(spr_cp); /* [sng] Editing component of full GPE specification */
+    gpe->lng_edt=strlen(gpe->edt); /* [nbr] Length of editing component of full GPE specification */
+  } /* !spr_cp */
 
-  if(!colon_cp && !at_cp){
-    gpe->grp_nm=(char *)strdup(gpe_arg); /* [sng] Group name */
-    gpe->mode=gpe_append; /* [enm] Editing mode to perform */
-  } /* end if */
+  if(!spr_cp){
+    gpe->nm=(char *)strdup(gpe->arg); /* [sng] Group name */
+    gpe->md=gpe_append; /* [enm] Editing mode to perform */
+  } /* spr_cp */
   
-  /* Basic sanity checks */
+  /* Name is known, save length for later use */
+  gpe->lng=strlen(gpe->nm); /* [nbr] Length of user-specified group path */
+
+  /* Obtain "canonical" (slash-prefixed) name */
+
+  /* Slash-initiate name */
+  if(gpe->nm[0] == '/'){
+    gpe->nm_cnn=(char *)strdup(gpe->nm);
+    gpe->lng_cnn=gpe->lng;
+  }else{
+    gpe->lng_cnn=gpe->lng+1L;
+    gpe->nm_cnn=(char *)nco_malloc((gpe->lng_cnn+1L)*sizeof(char));
+    (void)strcpy(gpe->nm_cnn+1L,gpe->nm);
+    gpe->nm_cnn[0]='/';
+  } /* endif */
+
+#if 0  
+  /* Slash-terminate name */
+  if(gpe->nm[gpe->lng_cnn-1L] == '/'){
+    gpe->nm_cnn=(char *)strdup(gpe->nm);
+    gpe->lng_cnn=gpe->lng;
+  }else{
+    gpe->lng_cnn=gpe->lng+1L;
+    gpe->nm_cnn=(char *)nco_malloc((gpe->lng_cnn+1L)*sizeof(char));
+    (void)strcpy(gpe->nm_cnn,gpe->nm);
+    gpe->nm_cnn[gpe->lng_cnn-1L]='/';
+    gpe->nm_cnn[gpe->lng_cnn]='\0';
+  } /* endif */
+#endif /* !0 */  
+
+  /* Final parsing results */
   if(dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stdout,"%s: INFO %s reports gpe->arg = %s\n",prg_nm_get(),fnc_nm,gpe->arg);
-    (void)fprintf(stdout,"%s: INFO %s reports gpe->grp_nm = %s\n",prg_nm_get(),fnc_nm,gpe->grp_nm);
-    (void)fprintf(stdout,"%s: INFO %s reports gpe->mode = %s\n",prg_nm_get(),fnc_nm,nco_oed_sng(gpe->mode));
+    (void)fprintf(stdout,"%s: INFO %s reports gpe->nm = %s\n",prg_nm_get(),fnc_nm,gpe->nm);
+    (void)fprintf(stdout,"%s: INFO %s reports gpe->lng = %zi\n",prg_nm_get(),fnc_nm,gpe->lng);
+    (void)fprintf(stdout,"%s: INFO %s reports gpe->nm_cnn = %s\n",prg_nm_get(),fnc_nm,gpe->nm_cnn);
+    (void)fprintf(stdout,"%s: INFO %s reports gpe->lng_cnn = %zi\n",prg_nm_get(),fnc_nm,gpe->lng_cnn);
+    (void)fprintf(stdout,"%s: INFO %s reports gpe->edt = %s\n",prg_nm_get(),fnc_nm,gpe->edt);
+    (void)fprintf(stdout,"%s: INFO %s reports gpe->lng_edt = %zi\n",prg_nm_get(),fnc_nm,gpe->lng_edt);
+    (void)fprintf(stdout,"%s: INFO %s reports gpe->md = %s\n",prg_nm_get(),fnc_nm,nco_gpe_sng(gpe->md));
     (void)fprintf(stdout,"%s: INFO %s reports gpe->lvl_nbr = %i\n",prg_nm_get(),fnc_nm,gpe->lvl_nbr);
   } /* end if */
 
-  return rcd;
-} /* end nco_prs_gpe_arg() */
+  return gpe;
+} /* end nco_gpe_prs_arg() */
 
 const char * /* O [sng] String describing GPE */
-nco_oed_sng /* [fnc] Convert GPE enum to string */
+nco_gpe_sng /* [fnc] Convert GPE enum to string */
 (const gpe_enm gpe_md) /* I [enm] GPE mode */
 {
   switch(gpe_md){
@@ -1033,14 +1215,14 @@ nco_oed_sng /* [fnc] Convert GPE enum to string */
     return "gpe_append";
   case gpe_flatten:
     return "gpe_flatten";
-  case gpe_backup:
-    return "gpe_backup";
+  case gpe_backspace:
+    return "gpe_backspace";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_oed_sng() */
+} /* end nco_gpe_sng() */
 
 rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */

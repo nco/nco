@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.193 2012-11-03 00:43:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.194 2012-11-06 07:23:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -344,7 +344,7 @@ extern "C" {
     gpe_append,
     gpe_delete,
     gpe_flatten,
-    gpe_backup
+    gpe_backspace
   } gpe_enm; /* end gpe enum */
 
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
@@ -584,10 +584,15 @@ extern "C" {
   
   /* Group Path Editing (GPE) structure */
   typedef struct{ /* gpe_sct */
-    char *arg; /* [sng] User-specified argument */
-    char *grp_nm; /* [sng] Group name */
+    char *arg; /* [sng] Full GPE specification (for debugging) */
+    char *edt; /* [sng] Editing component of full GPE specification */
+    char *nm; /* [sng] Group name component of full GPE specification */
+    char *nm_cnn; /* [sng] Canonicalized (i.e., slash-terminated) group name */
+    gpe_enm md; /* [enm] Editing mode to perform */
     short lvl_nbr; /* [nbr] Number of levels to shift */
-    gpe_enm mode; /* [enm] Editing mode to perform */
+    size_t lng; /* [nbr] Length of user-specified group path */
+    size_t lng_cnn; /* [nbr] Length of canonicalized user-specified group path */
+    size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
   
   /* Chunking structure */

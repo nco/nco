@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.233 2012-11-02 23:13:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.234 2012-11-06 07:23:09 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -32,8 +32,10 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
 
    Usage:
+   ncecat -O -D 1 -G ensemble:-1 -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
+   ncecat -O -D 1 -G ensemble:1 -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
    ncecat -O -D 1 -G ensemble -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
-   ncecat -O -D 1 -G -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
+   ncecat -O -D 1 --gag -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
@@ -96,7 +98,6 @@ main(int argc,char **argv)
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
-  char **grp_lst_out; /* [sng] Group name */
   char **grp_lst_in=NULL;
   char **var_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
@@ -109,6 +110,7 @@ main(int argc,char **argv)
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *gpe_arg=NULL; /* [sng] GPE argument */
   char *grp_out=NULL; /* [sng] Group name */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
@@ -116,12 +118,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
+  /* NCO_GRP_OUT_SFX_LNG is number of consecutive numeric digits autumatically generated as group name suffixes */
 #define	NCO_GRP_OUT_SFX_LNG 2
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
-  char rth[]="/"; /* Group path */
+  char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.233 2012-11-02 23:13:31 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.233 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.234 2012-11-06 07:23:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.234 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -145,9 +148,10 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
+
   grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
-  int *grp_id_arr;   
   int *in_id_arr;
 
   int abb_arg_nbr=0;
@@ -193,7 +197,7 @@ main(int argc,char **argv)
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
-  size_t grp_out_lng; /* [nbr] Length of group name */
+  size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   var_sct **var;
@@ -335,7 +339,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-      if(!strcmp(opt_crr,"gag") || !strcmp(opt_crr,"aggregate_group")) GROUP_AGGREGATE=True;
+      if(!strcmp(opt_crr,"gag") || !strcmp(opt_crr,"aggregate_group")) GROUP_AGGREGATE=True; /* [flg] Aggregate files into groups not records */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -395,10 +399,12 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       grp_nbr=grp_lst_in_nbr;
       break;
-    case 'G': /* Aggregate files into groups not records */
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
       /* NB: GNU getopt() optional argument syntax is ugly, requires "=" sign
 	 http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
-      if(optarg) grp_out=(char *)strdup(optarg);
+      gpe=nco_gpe_prs_arg(optarg);
+      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
+      grp_out_lng=gpe->lng_cnn;
       GROUP_AGGREGATE=True;
       break;
     case 'H': /* Toggle writing input file list attribute */
@@ -497,16 +503,17 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
     
+  /* Parse filename */
+  fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  /* Make sure file is on local system and is readable or die trying */
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+
   if(RECORD_AGGREGATE){
     
     /* Initialize thread information */
     thr_nbr=nco_openmp_ini(thr_nbr);
     in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
     
-    /* Parse filename */
-    fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    /* Make sure file is on local system and is readable or die trying */
-    fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
     /* Open file using appropriate buffer size hints and verbosity */
     if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
     rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
@@ -712,7 +719,6 @@ main(int argc,char **argv)
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
-
   } /* !RECORD_AGGREGATE */
 
   if(GROUP_AGGREGATE){
@@ -725,52 +731,61 @@ main(int argc,char **argv)
       (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
       nco_exit(EXIT_FAILURE);
     } /* endif err */
-    grp_lst_out=(char **)nco_malloc(fl_nbr*sizeof(char *));
-    if(grp_out) grp_out_lng=strlen(grp_out);
-    grp_id_arr=(int *)nco_malloc(fl_nbr*sizeof(int));
   } /* !GROUP_AGGREGATE */
 
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
-    fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+    if(fl_idx) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
-    fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+    if(fl_idx) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
     if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     if(GROUP_AGGREGATE){
-      if(grp_out){;
+      size_t gpe_arg_lng; /* [nbr] Length of group specification */
+      if(grp_out){
 	/* Append enumerated counter to end of user-specified root group path */
 	sprintf(grp_out_sfx,"%02d",fl_idx);
-	grp_lst_out[fl_idx]=(char *)nco_malloc(grp_out_lng+NCO_GRP_OUT_SFX_LNG+1L);
-	(void)strcpy(grp_lst_out[fl_idx],grp_out);
-	(void)strncat(grp_lst_out[fl_idx],grp_out_sfx,(size_t)NCO_GRP_OUT_SFX_LNG);
+	gpe_arg_lng=grp_out_lng+NCO_GRP_OUT_SFX_LNG+gpe->lng_edt;
+	gpe_arg=(char *)nco_malloc((gpe_arg_lng+1L)*sizeof(char));
+	(void)strcpy(gpe_arg,grp_out);
+	(void)strcat(gpe_arg,grp_out_sfx);
+	if(gpe->edt) (void)strcat(gpe_arg,gpe->edt);
       }else{
 	/* Use filename stub as group name */
-	int fl_nm_sfx_lng;
-	char *stb_srt_psn;
+	char *stb_srt_psn; /* [sng] Starting position of "stub", i.e., last component of filename */
+	size_t fl_in_lng; /* [nbr] Length of filename */
+	size_t sfx_fst; /* [nbr] Offset of suffix from start of string */
+	size_t sfx_lng; /* [nbr] Suffix has this many characters */
 
 	/* Is there a .nc, .cdf, .nc3, or .nc4 suffix? */
-	fl_nm_sfx_lng=3;
-	if(strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".nc",fl_nm_sfx_lng)){
-	  fl_nm_sfx_lng=4;
-	  if(strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".cdf",fl_nm_sfx_lng) &&
-	     strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".nc3",fl_nm_sfx_lng) &&
-	     strncmp(fl_in+strlen(fl_in)-fl_nm_sfx_lng,".nc4",fl_nm_sfx_lng)){
+	fl_in_lng=strlen(fl_in);
+	sfx_lng=3L;
+	sfx_fst=fl_in_lng-sfx_lng;
+	if(strncmp(fl_in+sfx_fst,".nc",sfx_lng)){
+	  sfx_lng=4L;
+	  sfx_fst=fl_in_lng-sfx_lng;
+	  if(strncmp(fl_in+sfx_fst,".cdf",sfx_lng) &&
+	     strncmp(fl_in+sfx_fst,".nc3",sfx_lng) &&
+	     strncmp(fl_in+sfx_fst,".nc4",sfx_lng)){
 	    (void)fprintf(stderr,"%s: WARNING GAG filename suffix is unusual---using whole filename as group name\n",prg_nm_get());
-	    fl_nm_sfx_lng=0;
+	    sfx_lng=0;
 	  } /* endif */
 	} /* endif */
 
 	stb_srt_psn=strrchr(fl_in,'/');
 	if(!stb_srt_psn) stb_srt_psn=fl_in; else stb_srt_psn++;
-	grp_lst_out[fl_idx]=(char *)nco_malloc(strlen(stb_srt_psn)-fl_nm_sfx_lng+1L);
-	grp_lst_out[fl_idx]=strncpy(grp_lst_out[fl_idx],stb_srt_psn,strlen(stb_srt_psn)-fl_nm_sfx_lng);
-	grp_lst_out[fl_idx][strlen(stb_srt_psn)-fl_nm_sfx_lng]='\0';
+	gpe_arg_lng=strlen(stb_srt_psn)-sfx_lng;
+	gpe_arg=(char *)nco_malloc((gpe_arg_lng+1L)*sizeof(char));
+	gpe_arg=strncpy(gpe_arg,stb_srt_psn,strlen(stb_srt_psn)-sfx_lng);
+	gpe_arg[gpe_arg_lng]='\0';
       } /* !grp_out */
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file will be placed in top-level group named %s\n",prg_nm_get(),grp_lst_out[fl_idx]);
+      /*     if(gpe) nco_gpe_free(gpe);*/
+      gpe=nco_gpe_prs_arg(gpe_arg);
+      gpe_arg=(char *)nco_free(gpe_arg);
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",prg_nm_get(),gpe_arg);
 
       /* Open file using appropriate buffer size hints and verbosity */
       if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
@@ -793,7 +808,7 @@ main(int argc,char **argv)
 
       /* Get objects in file */
       trv_tbl_init(&trv_tbl);
-      rcd+=nco_grp_itr(in_id,rth,trv_tbl);
+      rcd+=nco_grp_itr(in_id,sls_sng,trv_tbl);
 
       /* Get number of variables, dimensions, and global attributes in file */
       (void)nco4_inq_trv((int *)NULL,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,trv_tbl);
@@ -841,17 +856,14 @@ main(int argc,char **argv)
       /* Initialize lmt_all_sct's */ 
       (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
 
-      /* Define root group for extracted variables */
-      rcd+=nco_def_grp_full(out_id,grp_lst_out[fl_idx],grp_id_arr+fl_idx);
-
       /* Define requested/necessary input groups/variables/attributes/global attributes/chunksize parameters in output file */
-      (void)nco_grp_var_mk_trv(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
+      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Copy all variables to output file */
-      (void)nco_grp_var_mk_trv(in_id,grp_id_arr[fl_idx],xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
+      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
  
       /* Close input netCDF file */
       (void)nco_close(in_id);
@@ -964,7 +976,6 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-    if(grp_lst_out) grp_lst_out=nco_sng_lst_free(grp_lst_out,fl_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
