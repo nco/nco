@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.230 2012-11-05 22:04:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.231 2012-11-06 03:33:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2246,75 +2246,79 @@ nco_fnd_dmm_trv                /* [fnc] Find a coordinate variable that matches 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nc_typ_var ) {   
-      char *pch;        /* Pointer to character in string */
-      int   pos;        /* Position of character */
-      char *grp_nm_fll; /* Group path */
-      int  grp_id;      /* Group ID */
-      int  len_fll;     /* Lenght of fully qualified group where variable resides */
 
-      /* Obtain group ID and group full name from full variable name */
-      len_fll=strlen(trv.nm_fll);
-      grp_nm_fll=(char *)nco_malloc((len_fll+1L)*sizeof(char));
-      strcpy(grp_nm_fll,trv.nm_fll);
-      /* Find last occurence of '/' */
-      pch=strrchr(grp_nm_fll,'/');
-      /* Trim the variable name */
-      pos=pch-grp_nm_fll+1;
-      grp_nm_fll[pos]='\0';
+      /* Check if current variable matches requested variable */ 
+      if(strcmp(trv.nm,var_nm) == 0){
+        char *pch;        /* Pointer to character in string */
+        int   pos;        /* Position of character */
+        char *grp_nm_fll; /* Group path */
+        int  grp_id;      /* Group ID */
+        int  len_fll;     /* Lenght of fully qualified group where variable resides */
 
-      /* Obtain netCDF file format */
-      int fl_fmt;
-      (void)nco_inq_format(nc_id,&fl_fmt);
-      /* Obtain group ID from netCDF API using full group name */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-        (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
-      }else{ /* netCDF3 case */
-        grp_id=nc_id;
-      }
+        /* Obtain group ID and group full name from full variable name */
+        len_fll=strlen(trv.nm_fll);
+        grp_nm_fll=(char *)nco_malloc((len_fll+1L)*sizeof(char));
+        strcpy(grp_nm_fll,trv.nm_fll);
+        /* Find last occurence of '/' */
+        pch=strrchr(grp_nm_fll,'/');
+        /* Trim the variable name */
+        pos=pch-grp_nm_fll+1;
+        grp_nm_fll[pos]='\0';
 
-      /* Obtain number of dimensions for group: NOTE using group ID */
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+        /* Obtain netCDF file format */
+        int fl_fmt;
+        (void)nco_inq_format(nc_id,&fl_fmt);
+        /* Obtain group ID from netCDF API using full group name */
+        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+          (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+        }else{ /* netCDF3 case */
+          grp_id=nc_id;
+        }
 
-      /* Obtain dimension IDs */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,0);
+        /* Obtain number of dimensions for group: NOTE using group ID */
+        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 
-      /* List dimensions in group */ 
-      for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){ 
-        (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
+        /* Obtain dimension IDs */
+        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,0);
 
-        /* Check if the variable is the requested name */ 
-        if(strcmp(dmn_nm,var_nm) == 0){
-   
-           /* Obtain variable ID from netCDF API using group ID */
-          int var_id;
-          (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+        /* List dimensions in group */ 
+        for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){ 
+          (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
 
-          char tmp[]="not_used";
+          /* Check if dimension matches the requested variable (it is a coordinate variable) */ 
+          if(strcmp(dmn_nm,var_nm) == 0){
 
-          /* Define new nm_id_sct */
-          nm_id->grp_nm_fll=strdup(grp_nm_fll);    
-          nm_id->var_nm_fll=strdup(trv.nm_fll);
-          nm_id->nm=strdup(var_nm);
-          nm_id->grp_id=grp_id;
-          nm_id->id=var_id; 
-          nm_id->grp_nm=strdup(tmp); ;  
+            /* Obtain variable ID from netCDF API using group ID */
+            int var_id;
+            (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
-          /* Free allocated memory */
-          grp_nm_fll=(char *)nco_free(grp_nm_fll);
+            char tmp[]="not_used";
 
-          return 1;
+            /* Define new nm_id_sct */
+            nm_id->grp_nm_fll=strdup(grp_nm_fll);    
+            nm_id->var_nm_fll=strdup(trv.nm_fll);
+            nm_id->nm=strdup(var_nm);
+            nm_id->grp_id=grp_id;
+            nm_id->id=var_id; 
+            nm_id->grp_nm=strdup(tmp); ;  
 
-        }/* strcmp var_nm */        
-      } /* end idx_dmn dimensions */ 
+            /* Free allocated memory */
+            grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
-      /* Free allocated memory */
-      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+            return 1;
 
+          }/* end check if dimension matches the requested variable */        
+        } /* end idx_dmn dimensions */ 
+
+        /* Free allocated memory */
+        grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
+      } /* end check if current variable matches requested variable */
     } /* end nc_typ_var */
   } /* end uidx  */
 
   return 0;
-} /* end nco_fnd_dmm_trv */ 
+} /* end nco_fnd_dmm_trv() */ 
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */
