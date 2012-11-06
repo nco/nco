@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.232 2012-11-06 06:24:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.233 2012-11-06 06:39:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2424,20 +2424,11 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
               if (nco_fnd_dmm_trv(nc_id,dmn_nm,trv_tbl,&nm_id) == 1 )
               {              
                 /* Check if requested coordinate variable is already on extraction list */
-                int var_in_lst=0;
-                for(int idx=0;idx<*xtr_nbr;idx++){
-                  nm_id_sct xtr2=xtr_lst[idx];
-                  /* Compare item on list with current variable name (NOTE: using full name to compare ) */
-                  if(strcmp(xtr2.var_nm_fll,nm_id.var_nm_fll) == 0){          
-                    var_in_lst=1;                 
-                  }
-                } /* idx */
-
-                if (var_in_lst){
+                if(xtr_lst_fnd(nm_id.var_nm_fll,xtr_lst,*xtr_nbr) == 1 ){
                   nco_free(nm_id.grp_nm_fll);
                   nco_free(nm_id.var_nm_fll);
                   nco_free(nm_id.nm);
-                  break; /* break idx_var_dim CHK */
+                  break; /* break idx_var_dim */
                 }
 
                 /* Add coordinate to list
