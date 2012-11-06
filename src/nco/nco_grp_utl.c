@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.236 2012-11-06 08:22:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.237 2012-11-06 20:06:16 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1020,7 +1020,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
- grp_tbl_sct *trv_tbl)                 /* I [sct] Traversal table */
+ const grp_tbl_sct * const trv_tbl)                 /* I [sct] Traversal table */
 {
   /* Purpose: */
 
