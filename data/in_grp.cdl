@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.26 2012-11-05 19:48:06 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.27 2012-11-06 03:50:25 pvicente Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -212,13 +212,6 @@ dimensions:
 	lev=3,vrt_nbr=2;
 variables:
     float lev(lev);
-	lev:purpose = "Monotonically increasing coordinate pressure";
-	lev:units = "hybrid_sigma_pressure";
-	lev:positive = "down";
-	lev:A_var = "hyam";
-	lev:B_var = "hybm";
-	lev:P0_var = "P0";
-	lev:PS_var = "PS";
 	lev:bounds = "ilev";
 	
 	float ilev(lev,vrt_nbr);
