@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.194 2012-11-06 07:23:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.195 2012-11-06 23:20:46 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -670,6 +670,11 @@ extern "C" {
     size_t *cnk_sz; /* [id] Contiguous vector of chunk sizes */
     struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
   } var_sct; /* end var_sct_tag */
+
+  /* GPE duplicate name check structure */
+  typedef struct{ /* gpe_nm_sct */
+    char *var_nm_fll; /* Fully qualified variable name */
+  } gpe_nm_sct;
   
 #ifdef __cplusplus
 } /* end extern "C" */

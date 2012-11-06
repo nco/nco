@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.14 2012-10-13 07:19:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.15 2012-11-06 23:20:46 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -44,7 +44,7 @@ typedef struct{
 typedef struct{
   unsigned sz;            /* [nbr] Allocated size */
   unsigned nbr;           /* [nbr] Number of current elements */
-  grp_trv_sct *grp_lst;   /*       Array of grp_trv_sct */
+  grp_trv_sct *grp_lst;   /* [sct] Array of grp_trv_sct */
 } grp_tbl_sct;
 /* end grp_tbl_sct */
 
