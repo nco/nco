@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.240 2012-11-07 20:17:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.241 2012-11-07 21:00:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1114,7 +1114,6 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
             /* Detect GPE duplicate names */
-            int var_fnd=0;
             char *gpe_var_nm_fll=NULL;  
             if(gpe && DEF_MODE){
               /* Construct the absolute GPE variable path */
@@ -1131,18 +1130,15 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
                 /* GPE might be already on the list, put it there only if not found */
                 for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
                   if(strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll) == 0){
-                    var_fnd=1;
                     (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports following variable %s already defined:\n",prg_nm_get(),gpe_var_nm_fll);
                     for(int idx=0;idx<nbr_gpe_nm;idx++)
                       gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
                     nco_exit(EXIT_FAILURE);
                   } /* End string comparison */
                 } /* End search in array */
-                if(var_fnd == 0 ){
-                  gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
-                  gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-                  nbr_gpe_nm++;
-                } /* End name found */
+                gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+                gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+                nbr_gpe_nm++;
               } /* End might be on list */
             }/* End GPE */
 
