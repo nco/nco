@@ -1,30 +1,24 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.519 2012-10-30 00:08:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.520 2012-11-07 20:50:09 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release finishes some older work and introduces new functionality
-supported by our NASA ACCESS grant. Old stuff first: 
-Optional specification of header pads in all operators and of negative
-hyperslab indices (to count backwards from the end) are now supported
-on all operators for which they make sense. And ncwa is now present 
-in the Windows tarball.
+This release is occuring sooner than expected because it contains both
+an important bufgix and a new feature: 
+We fixed a bug introduced in the last version, NCO 4.2.2, that could
+cause ncecat, under rare circumstances, to skip a single file.
+And we added a feature called Group Path Editing (GPE) that permits
+users to move data en masse amongst arbitrary netCDF4 groups.
 
-This release improves netCDF4/HDF5 support in ncks and ncecat. 
-ncks now supports printing and subsetting group hierarchies. 
-Similarly, ncecat now aggregates files into group hierarchies. 
-They will work as is on most netCDF4 files. They do not yet support 
-user-defined and compound types, which are still rarely seen.
-
-Let us know how you like or dislike the way we have implemented the
-equivalent functionality for netCDF4 that NCO already had for netCDF3.  
+Again, let us know how you like or dislike the way we have implemented
+the netCDF4 group functionality in ncks and ncecat.
 Your feedback will help us finalize details like the printed output
 format for group information and the syntax of switches.
 This improved netCDF4 support will eventually come to all of NCO.
 
-Work on NCO 4.2.3 is underway: better netCDF4 support for ncrename
+Work on NCO 4.2.4 is underway: better netCDF4 support for ncrename
 and ncbo operators.
 
 Enjoy,
@@ -34,84 +28,24 @@ Charlie
 
 NEW FEATURES:
 
-A. ncks and ncecat support netCDF4 groups.
-   The key new switches are -g and -G, which do what you would expect:
-   extract (or exclude) members of the specified (with -g) groups and
-   place them in the specified (with -G) output group. Regular
-   expressions work on group names as on variable names, giving users
-   precise control over subsetting and hyperslabbing netCDF4 files 
-   % ncks -g grp1,grp2 in.nc out.nc
-   http://nco.sf.net/nco.html#sbs
-
-B. ncecat supports Group AGgregation (GAG).
-   GAG means placing each input file into its own output file group.
-   By default ncecat still glues input files together with a record 
-   dimension (whose size is the number of input files). This is called
-   Record AGgregation (RAG). RAG can only be used on classic input
-   files that have the same shape. GAG must be used for files of
-   different shapes or files that contain groups.   
-   Users may choose GAG instead of RAG with the --gag switch.
-   The -G switch for choosing output group names also implies GAG:
-   ncecat -O -G ensemble in1.nc in2.nc in3.nc out.nc
-   ncecat -O --gag       in1.nc in2.nc in3.nc out.nc
-   http://nco.sf.net/nco.html#ncecat
-
-C. ncks now prints missing values as underscores ("_") by default.
-   Previously ncks printed the numeric representation, e.g., "1.0e36".
-   The new behavior mimics ncdump and looks cleaner:
-   % ncks -s '%+5.1f, ' -H -C -v mss_val in.nc 
-   +73.0, _, +73.0, _, 
-   To revert to the old behavior, use the new --no_blank switch.
-   http://nco.sf.net/nco.html#xmp_ncks
-
-D. ncap2 now understands that negative integers as min or max elements
-   of hyperslab specifications indicate offsets from the end.
-   The other NCO operators initiated this support as of NCO 4.2.1.
-   NCO support for this convention is now complete.
-   http://nco.sf.net/nco.html#hyp
-
-E. Our distribution of native-Windows binaries now includes ncwa,
-   making it a complete NCO distribution built with Windows Visual Studio.
-   Due to limitations of the Windows programming environment however,
-   these executables lack some powerful features present in UNIX:
-   Regular expressions, globbing, and network capabilities
-   Download your self-extracting executables today
-   http://nco.sf.net#windows
-
-F. The --hdr_pad option is now supported by all operators.
-   This option is useful in preventing re-copying of netCDF3 files
-   whose metadata may be changed after the file is first written.
-   Formerly it was present only in ncatted, ncks, and ncrename.
-   http://nco.sf.net/nco.html#hdr
-
-G. ncap2's bilinear_interp() and bilinear_interp_wrap() now have 
-   semi-intelligent handling of missing values. Thanks to Henry.
-   http://nco.sf.net/nco.html#bln_ntp
+A. ncks and ncecat support Group Path Editing (GPE):
+   The -G switch has been extended. Formerly it specified the root
+   group in the output file where to store data. In other words, full
+   output group paths were determined by appending the input group
+   path to the -G argument, if any. This now is a special case of GPE,
+   which handles appending, deleting, backspacing, and flattening
+   group paths. GPE examples: 
+   ncks -G :2 in.nc out.nc # Move data up two group levels
+   ncks -G g1:-2 in.nc out.nc # Replace last two groups levels by "g1"
+   http://nco.sf.net/nco.html#gpe
 
 BUG FIXES:
 
-A. ncks --fix_rec_dmn could misbehave since 20111130. Under some
-   circumstances it would fail to convert the record dimension to a 
-   fixed dimension, but it would not produce any errors so the user
-   was unaware that the operation had failed. This has been fixed.
+A. ncecat: Fix 4.2.2 bug that can skip first input file in the default 
+   mode (RECORD_AGGREGATE) when -n  NINTAP switch used to generate
+   filenames. 
 
-B. ncks now dies when user attempts --mk_rec_dmn with non-existent
-   dimension 
-
-C. Fix ncpdq which sometimes exited instead of re-ordering dimensions
-   in variables that were record in input, fixed in output, and yet
-   themselves lacked an output record dimension, i.e., they became
-   fixed (were neutered?) because record dimension had to be fixed to
-   satisfy re-ordering of other variables.
-
-D. ncatted stopped adding trailing NULs to string (NC_CHAR) attributes
-   in NCO version 4.0.2. This was inadvertent. ncatted once again
-   ensures string (NC_CHAR) attributes are NUL-terminated, as per the
-   netCDF Best Practices recommendation.
-
-E. Attempts to reach non-existing files behind DAP servers can no
-   longer lead to multiple attempts to find the files with wget.
-   At most one wget will be attempted.
+B. ncks correctly copies group attributes
 
 KNOWN BUGS NOT YET FIXED:
 

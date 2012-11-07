@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.733 2012-11-02 17:13:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.734 2012-11-07 20:50:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11055,12 +11055,17 @@ such descriptive coordinates are used.
 <a name="dmn_rcd_rm"></a> <!-- http://nco.sf.net/nco.html#dmn_rcd_rm -->
 @end html
 @cindex record dimension
+@cindex fixed dimension
+@cindex fix record dimension
+@cindex @code{--mk_rec_dmn @var{dim}}
 Consider a file with an existing record dimension named @code{time}. 
 and suppose the user wishes to convert @code{time} from a record
 dimension to a non-record dimension.
 This may be useful, for example, when the user has another use for the
 record variable.
-The procedure is to use @command{ncecat} followed by @command{ncwa}:
+The simplest method is to use @samp{cks --fix_rec_dmn} but another
+possibility is to use @command{ncecat} followed by 
+@command{ncwa}: 
 @cindex degenerate dimension
 @example
 ncecat in.nc out.nc # Convert time to non-record dimension
@@ -11338,9 +11343,10 @@ ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c]
 DESCRIPTION
 
 @cindex @command{ncextr}
-@command{ncks} combines selected features of @command{ncdump},
-@command{ncextr}, and the nccut and ncpaste specifications into one
-versatile utility. 
+The nickname ``kitchen sink'' is a catch-all because @command{ncks}
+combines selected features of @command{ncdump} with (non-existent but
+easily imaginable) operators @command{ncextract}, @command{nccut}, and
+@command{ncpaste}, into one versatile utility. 
 @command{ncks} extracts a subset of the data from @var{input-file} and
 prints it as @acronym{ASCII} text to @file{stdout}, writes it in
 flat binary format to @file{binary-file}, and writes (or pastes) it in
@@ -11514,6 +11520,7 @@ Also @samp{--no_rec_dmn}.
 @end html
 @cindex record dimension
 @cindex fixed dimension
+@cindex fix record dimension
 @cindex @code{--mk_rec_dmn @var{dim}}
 @item --mk_rec_dmn @var{dim}
 Change existing dimension @var{dim} to a record dimension in the output file.
@@ -12507,6 +12514,7 @@ lat[1]=-90 lev[2]=100 lon[3]=0 three_dmn_var[23]=0
 
 @html
 <a name="dmn_rcd_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rcd_mk -->
+<a name="mk_rcd_dmn"></a> <!-- http://nco.sf.net/nco.html#mk_rcd_dmn -->
 @end html
 Creating a record dimension named, e.g., @code{time}, in a file which
 has no existing record dimension is simple with @command{ncecat}:
