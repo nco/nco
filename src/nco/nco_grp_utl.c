@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.243 2012-11-07 21:32:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.244 2012-11-07 21:44:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1055,6 +1055,9 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
         grp_id=nc_id;
       }
 
+      /* Edit group name */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.nm_fll); else grp_out_fll=(char *)strdup(trv.nm_fll);
+
       /* Obtain info for group */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
       (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
@@ -1105,9 +1108,6 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
               } /* strcmp */
             } /* idx_dmn */     
 
-            /* Edit group name */
-            if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.nm_fll); else grp_out_fll=(char *)strdup(trv.nm_fll);
-
             /* If output group does not exist, create it */
             if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
@@ -1115,8 +1115,10 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             char *gpe_var_nm_fll=NULL;  
             if(gpe && DEF_MODE){
               /* Construct the absolute GPE variable path */
-              gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(xtr.nm)+1L);
+              gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(xtr.nm)+2L);
               strcpy(gpe_var_nm_fll,grp_out_fll);
+              /* If not root group, concatenate separator */
+              if(strcmp(grp_out_fll,"/")) strcat(gpe_var_nm_fll,"/");
               strcat(gpe_var_nm_fll,xtr.nm);
 
               /* GPE name is not already on the list, put it there */
@@ -1141,8 +1143,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             }/* End GPE */
 
             /* Free full path name */
-            if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-            if(gpe_var_nm_fll) grp_out_fll=(char *)nco_free(gpe_var_nm_fll);
+            if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
 
             /* Define mode: create variables */
             if(DEF_MODE){
@@ -1180,8 +1181,17 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
 
       } /* end get variables for this group */  
 
+      /* If there are group attributes, write them, avoid root case, these are always copied elsewhere */
+      if(nbr_att && strcmp("/",trv.nm_fll) != 0){
+        /* Check if group is on extraction list */
+        for(int idx_lst=0;idx_lst<xtr_nbr;idx_lst++){
+        
+        } /* End check if group is on extraction list */
+      } /* End nbr_att */
+
       /* Memory management after current group */
       var_ids=(int *)nco_free(var_ids);
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
     } /* end nc_typ_grp */
   } /* end uidx  */
