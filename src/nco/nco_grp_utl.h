@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.120 2012-11-06 23:20:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.121 2012-11-07 07:07:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -316,10 +316,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
- const grp_tbl_sct * const trv_tbl,    /* I [sct] Traversal table */
- gpe_nm_sct * gpe_nm,                  /* I/O [sct] GPE name duplicate check array  */
- int * nbr_gpe_nm);                    /* I/O [nbr] Number of GPE name duplicate check array items  */
-
+ const grp_tbl_sct * const trv_tbl);    /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

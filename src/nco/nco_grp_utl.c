@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.238 2012-11-06 23:20:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.239 2012-11-07 07:07:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1020,9 +1020,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
- const grp_tbl_sct * const trv_tbl,    /* I [sct] Traversal table */
- gpe_nm_sct * gpe_nm,                  /* I/O [sct] GPE name duplicate check array  */
- int * nbr_gpe_nm)                     /* I/O [nbr] Number of GPE name duplicate check array items  */
+ const grp_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   /* Purpose: */
 
@@ -1041,8 +1039,11 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
   int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
   int nbr_grp;                   /* [nbr] Number of groups for group */
   int nbr_var;                   /* [nbr] Number of variables for group */
-  int var_out_id;                /* [ID]  Variable ID in output file */ 
+  int var_out_id;                /* [ID]  Variable ID in output file */
+  int nbr_gpe_nm;                /* [nbr] Number of GPE entries */
+  gpe_nm_sct *gpe_nm;            /* [sct] GPE name duplicate check array  */
 
+  nbr_gpe_nm=0;
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1112,8 +1113,42 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             /* If output group does not exist, create it */
             if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
+            /* Detect GPE duplicate names */
+            int var_fnd=0;
+            char *gpe_var_nm_fll=NULL;  
+            if(gpe && DEF_MODE){
+              /* Construct the absolute GPE variable path */
+              gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(xtr.nm)+1L);
+              strcpy(gpe_var_nm_fll,grp_out_fll);
+              strcat(gpe_var_nm_fll,xtr.nm);
+
+              /* GPE name is not already on the list, put it there */
+              if(nbr_gpe_nm == 0){
+                gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+                gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+                nbr_gpe_nm++;
+              }else{
+                /* GPE might be already on the list, put it there only if not found */
+                for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+                  if(strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll) == 0){
+                    var_fnd=1;
+                    (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports following variable %s already defined:\n",prg_nm_get(),gpe_var_nm_fll);
+                    for(int idx=0;idx<nbr_gpe_nm;idx++)
+                      gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+                    nco_exit(EXIT_FAILURE);
+                  } /* End string comparison */
+                } /* End search in array */
+                if(var_fnd == 0 ){
+                  gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+                  gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+                  nbr_gpe_nm++;
+                } /* End name found */
+              } /* End might be on list */
+            }/* End GPE */
+
             /* Free full path name */
             if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+            if(gpe_var_nm_fll) grp_out_fll=(char *)nco_free(gpe_var_nm_fll);
 
             /* Define mode: create variables */
             if(DEF_MODE){
@@ -1156,6 +1191,11 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
 
     } /* end nc_typ_grp */
   } /* end uidx  */
+
+  /* Memory management for GPE names */
+  for(int idx=0;idx<nbr_gpe_nm;idx++)
+    gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+
 } /* end nco_grp_var_mk_trv() */
 
 nm_id_sct *                /* O [sct] Extraction list */

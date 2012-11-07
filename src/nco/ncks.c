@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.452 2012-11-06 23:20:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.453 2012-11-07 07:07:20 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.452 2012-11-06 23:20:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.452 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.453 2012-11-07 07:07:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.453 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -167,8 +167,6 @@ main(int argc,char **argv)
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-  gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array  */
-  int nbr_gpe_nm=0; /* [nbr] Number of GPE name duplicate check array items  */
 
   grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
@@ -798,7 +796,7 @@ main(int argc,char **argv)
 
     if(HAS_SUBGRP){
       /* Define requested input groups/variables/chunksize parameters in output file */
-      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl,gpe_nm,&nbr_gpe_nm);
+      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
       /* Define requested group attributes in output file */
       if(PRN_GLB_METADATA){
 
@@ -844,7 +842,7 @@ main(int argc,char **argv)
 
     /* Copy all variables to output file */
     if(HAS_SUBGRP){      
-      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl,gpe_nm,&nbr_gpe_nm);
+      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
     }else{
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
@@ -1024,8 +1022,6 @@ out:
 
   trv_tbl_free(trv_tbl);
   if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
-  for(idx=0;idx<nbr_gpe_nm;idx++)
-    gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
   
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.235 2012-11-06 23:20:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.236 2012-11-07 07:07:20 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.235 2012-11-06 23:20:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.235 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.236 2012-11-07 07:07:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.236 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -149,9 +149,6 @@ main(int argc,char **argv)
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-  gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array  */
-  int nbr_gpe_nm=0; /* [nbr] Number of GPE name duplicate check array items  */
-
   grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
   int *in_id_arr;
@@ -859,22 +856,19 @@ main(int argc,char **argv)
       (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
 
       /* Define requested/necessary input groups/variables/attributes/global attributes/chunksize parameters in output file */
-      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl,gpe_nm,&nbr_gpe_nm);
+      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Copy all variables to output file */
-      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl,gpe_nm,&nbr_gpe_nm);
+      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
 
       /* Close input netCDF file */
       (void)nco_close(in_id);
 
       /* Free traversal table */
       trv_tbl_free(trv_tbl);
-
-      for(idx=0;idx<nbr_gpe_nm;idx++)
-        gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
     } /* !GROUP_AGGREGATE */
 

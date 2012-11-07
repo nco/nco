@@ -1,3 +1,7 @@
+2012-11-06  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks: Handle GPE redundancy
+	
 2012-11-05  Charlie Zender  <zender@uci.edu>
 
 	* ncks/ncecat: Complete and test GPE infrastructure
