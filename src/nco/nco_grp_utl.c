@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.241 2012-11-07 21:00:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.242 2012-11-07 21:10:49 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -805,8 +805,6 @@ nco_has_subgrps
   return ngrps;
 } /* nco_has_subgrps() */
 
-
-
 nm_id_sct *             /* O [sct] Extraction list */
 nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id,       /* I [ID] netCDF file ID */
@@ -1129,8 +1127,8 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
               }else{
                 /* GPE might be already on the list, put it there only if not found */
                 for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
-                  if(strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll) == 0){
-                    (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports following variable %s already defined:\n",prg_nm_get(),gpe_var_nm_fll);
+                  if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+                    (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Moving groups of flattening files can lead to ambiguous situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. Instead of arbitrarily copying only one (e.g., the last) variable to the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
                     for(int idx=0;idx<nbr_gpe_nm;idx++)
                       gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
                     nco_exit(EXIT_FAILURE);

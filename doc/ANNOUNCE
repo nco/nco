@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.520 2012-11-07 20:50:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.521 2012-11-07 21:10:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.3 are ready. 
 
@@ -35,8 +35,11 @@ A. ncks and ncecat support Group Path Editing (GPE):
    path to the -G argument, if any. This now is a special case of GPE,
    which handles appending, deleting, backspacing, and flattening
    group paths. GPE examples: 
-   ncks -G :2 in.nc out.nc # Move data up two group levels
-   ncks -G g1:-2 in.nc out.nc # Replace last two groups levels by "g1"
+   ncks -G scenario1  in.nc out.nc # Put input file in group scenario1
+   ncks -G :          in.nc out.nc # Flatten (remove groups from) input file
+   ncks -G :2         in.nc out.nc # Remove first two group levels
+   ncks -G g1:-2      in.nc out.nc # Replace last two groups levels by "g1"
+   ncks -G g2:1 -g g1 in.nc out.nc # Move data from g1 to g2
    http://nco.sf.net/nco.html#gpe
 
 BUG FIXES:
