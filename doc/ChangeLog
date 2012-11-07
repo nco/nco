@@ -1,3 +1,7 @@
+2012-11-07  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks: nco_att_cpy_trv: Copy group attributes
+	
 2012-11-06  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncks: Handle GPE redundancy

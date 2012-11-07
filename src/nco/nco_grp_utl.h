@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.121 2012-11-07 07:07:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.122 2012-11-07 20:17:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -317,6 +317,15 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
  const grp_tbl_sct * const trv_tbl);    /* I [sct] Traversal table */
+
+
+void
+nco_att_cpy_trv                        /* [fnc] Write group attributes */
+(const int nc_id,                      /* I [ID] netCDF input file ID  */
+ const int nc_out_id,                  /* I [ID] netCDF output file ID  */
+ nm_id_sct * const xtr_lst,            /* I [sct] Extraction list  */
+ const int xtr_nbr,                    /* I [nbr] Number of members in list */
+ const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

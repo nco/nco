@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.239 2012-11-07 07:07:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.240 2012-11-07 20:17:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2750,5 +2750,69 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
 
   return True;
 } /* end nco_chk_trv() */
+
+
+
+void
+nco_att_cpy_trv                        /* [fnc] Write group attributes */
+(const int nc_id,                      /* I [ID] netCDF input file ID  */
+ const int nc_out_id,                  /* I [ID] netCDF output file ID  */
+ nm_id_sct * const xtr_lst,            /* I [sct] Extraction list  */
+ const int xtr_nbr,                    /* I [nbr] Number of members in list */
+ const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  int rcd=NC_NOERR;   /* [rcd] Return code */
+  int grp_id;         /* [ID]  Group ID */
+  int grp_out_id;     /* [ID]  Group ID */
+  int nbr_att;        /* [nbr] Number of attributes */
+  int nbr_var;        /* [nbr] Number of variables */
+  int nbr_dmn;        /* [nbr] Number of dimensions */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nc_typ_grp ){
+
+      /* Root always copied in another place NOTE: no need for netCDF3 root handdling */
+      if(strcmp("/",trv.nm_fll) == 0){
+        continue;
+      }
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+
+      /* Obtain info for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+#ifdef NCO_SANITY_CHECK
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+      /* If there are attributes, write them */
+      if(nbr_att){
+        /* Check if group is on extraction list */
+        for(int idx_lst=0;idx_lst<xtr_nbr;idx_lst++){
+          nm_id_sct xtr=xtr_lst[idx_lst];
+          int  len_fll;    
+          /* xtr.grp_nm_fll has a "/" at end */
+          len_fll=strlen(xtr.grp_nm_fll);
+          if(len_fll>1){
+            xtr.grp_nm_fll[len_fll-1]='\0';
+          }
+
+          /* Compare item on list with current group name (NOTE: using full name to compare ) */
+          if(strcmp(xtr.grp_nm_fll,trv.nm_fll) == 0){
+
+            /* Obtain group ID from netCDF API using full group name */
+            rcd=nco_inq_grp_full_ncid_flg(nc_out_id,trv.nm_fll,&grp_out_id);
+
+            if(rcd == NC_NOERR)
+
+            /* Copy global attributes */
+            (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+          } /* End compare item on list with current group name */
+        } /* End check if group is on extraction list */
+      } /* End nbr_att */
+    } /* End nc_typ_grp */
+  }/* End uidx  */
+}
 
 
