@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.734 2012-11-07 20:50:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.735 2012-11-08 19:46:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.3
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 29 October 2012
-@set update-month October 2012
+@set update-date 8 November 2012
+@set update-month November 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -2200,8 +2200,9 @@ feature is automatic and cannot be controlled by the user.
 * Retaining Retrieved Files::   
 * Selecting Output File Format::  
 * Large File Support::          
-* Subsetting Files::        
+* Subsetting Files::            
 * Subsetting Coordinate Variables::  
+* Group Path Editing::          
 * C and Fortran Index Conventions::  
 * Hyperslabs::                  
 * Stride::                      
@@ -3381,16 +3382,14 @@ build time.
 @cindex @code{-g @var{grp}}
 @cindex @code{--grp @var{grp}}
 @cindex @code{--group @var{grp}}
-@cindex @code{-G @var{out_grp}}
-@cindex @code{--root_out @var{out_grp}}
 @cindex @code{-x}
 @cindex @code{--exclude}
 @cindex @code{--xcl}
 @cartouche
-Options @code{-g @var{grp}} and @code{-G @var{out_grp}}@*
+Options @code{-g @var{grp}}@*
 Availability: @command{ncecat}, @command{ncks}@*
-Short options: @samp{-G}, @samp{-g}@*
-Long options: @samp{--grp} and @samp{--group} or @samp{--out_grp}@*
+Short options: @samp{-g}@*
+Long options: @samp{--grp} and @samp{--group}@*
 Options @code{-v @var{var}} and @code{-x}@*
 Availability: (@command{ncap2}), @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
@@ -3436,30 +3435,6 @@ For @command{ncap2}, the @samp{-v} switch takes no arguments and
 indicates that @emph{only} user-defined variables should be output. 
 @command{ncap2} neither accepts nor understands the @var{-x} and
 @var{-g} switches.
-
-As of @acronym{NCO} 4.2.2 (October, 2012), all operators that accept
-netCDF4 files with groups accept the @samp{-G} switch, or its
-long-option equivalent @samp{--root_out} to specify the root group in 
-the output file where results will be placed.
-Combining the subsetting controls yields powerful control over the 
-extracted (or excluded) variables and groups and their placement in the 
-output file:
-@example
-ncks in_grp.nc           # Extract all groups and variables
-ncks -v scl in_grp.nc    # Extract variable scl from all groups
-ncks -g g1  in_grp.nc    # Extract all of group g1
-ncks -g g2,g3 -v scl in_grp.nc # Extract scl from groups g2 and g3
-ncks -G g1 in_grp.nc out.nc        # Put everything into group g1
-ncks -G g1 -v scl in_grp.nc out.nc # Put variable scl into group g1
-ncks -G g1 -g g1  in_grp.nc out.nc # Put group g1 into group g1
-# Put scl from groups g1 and g1g2 into group g6/g6g1
-ncks -G g6/g6g1 -g g1,g1g2 -v scl in_grp.nc out.nc
-@end example
-Overwriting and appending work as expected:
-@example
-# Replace scl in group g2 in out.nc with scl from group g2 from in_grp.nc
-ncks -A -g g2 -v scl in_grp.nc out.nc
-@end example
 
 @html
 <a name="rx"></a> <!-- http://nco.sf.net/nco.html#rx -->
@@ -3609,7 +3584,7 @@ filename expansion (globbing).
 <a name="-C"></a> <!-- http://nco.sf.net/nco.html#-C -->
 <a name="-c"></a> <!-- http://nco.sf.net/nco.html#-c -->
 @end html
-@node Subsetting Coordinate Variables, C and Fortran Index Conventions, Subsetting Files, Common features
+@node Subsetting Coordinate Variables, Group Path Editing, Subsetting Files, Common features
 @section Subsetting Coordinate Variables
 @cindex subsetting
 @cindex @code{-C}
@@ -3650,10 +3625,98 @@ both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{bounds}
 convention described in @ref{CF Conventions}. 
 
 @html
+<a name="gpe"></a> <!-- http://nco.sf.net/nco.html#gpe -->
+@end html
+@node Group Path Editing, C and Fortran Index Conventions, Subsetting Coordinate Variables, Common features
+@section Group Path Editing
+@cindex @code{-G @var{gpe_dsc}}
+@cindex @code{--gpe @var{gpe_dsc}}
+@cartouche
+Options @code{-G @var{gpe_dsc}}@*
+Availability: @command{ncecat}, @command{ncks}@*
+Short options: @samp{-G}@*
+Long options: @samp{--gpe}@*
+@end cartouche
+
+As of @acronym{NCO} 4.2.3 (November, 2012), all operators that accept
+netCDF4 files with groups accept the @samp{-G} switch, or its
+long-option equivalent @samp{--gpe} to specify the output group
+where results will be placed.
+
+To master Group Path Editing (GPE) one must understand the meaning of the
+structure that specifies the editing, @var{gpe_dsc}, specified by the
+required option @samp{-G} or @samp{--gpe}. 
+
+@example       
+Goal: Put variables from any group into any group
+All commands below may be assumed to end with "in.nc out.nc"
+# Existing capability is appending paths (apn):
+ncks                   # /g?/v? -> /g?/v?
+ncks             -v v1 # /g?/v1 -> /g?/v1
+ncks       -g g1       # /g1/v? -> /g1/v?
+ncks -G o1             # /g?/v? -> /o1/g?/v?
+ncks -G o1 -g g1       # /g1/v? -> /o1/g1/v?
+ncks       -g g1 -v v1 # /g1/v1 -> /g1/v1
+ncks -G o1       -v v1 # /g?/v1 -> /o1/g?/v1
+ncks -G o1 -g g1 -v v1 # /g1/v1 -> /o1/g1/v1
+ncks -G g1 -g /  -v v1 # /v1    -> /g1/v1
+ncks -G /  -g g1 -v v1 # /g1/v1 -> /g1/v1
+# Proposed capability #1 is "deleting" (dlt)
+# Syntax: -G [ppn]:dlt_nbr = # of levels to delete
+ncks -G :1    -g g1    -v v1 # /g1/v1    -> /v1
+ncks -G :1    -g g1/g1 -v v1 # /g1/g1/v1 -> /g1/v1
+ncks -G :2    -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
+ncks -G :2    -g g1    -v v1 # Error
+ncks -G g2:1  -g g1    -v v1 # /g1/v1    -> /g2/v1
+ncks -G g2:2  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
+ncks -G g2:1  -g       -v v1 # /v1       -> /g2/v1
+ncks -G g2:1  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/g1/v1
+# Proposed capability #2 is "flattening" (ftn)
+# Syntax: -G [apn]: colon without numerical argument
+ncks -G :            -v v1 # /g?/v1    -> /v1
+ncks -G :   -g g1    -v v1 # /g1/v1    -> /v1
+ncks -G :   -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
+ncks -G g2:          -v v1 # /g?/v1    -> /g2/v1
+ncks -G g2:                # /g?/v?    -> /g2/v?
+ncks -G g2: -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
+# Proposed capability #3 is "backing up" (bku)
+# Syntax: -G [apn]:-bku_nbr = # of levels to back-up
+# NB: -G [apn]:-bku_nbr is equivalent to -G [apn]@@bku_nbr
+ncks -G :-1   -g g1    -v v1 # /g1/v1    -> /v1
+ncks -G :-1   -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/v1
+ncks -G :-2   -g g1/g2 -v v1 # /g1/g2/v1 -> /v1
+ncks -G :-2   -g g1    -v v1 # Error
+ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
+ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
+ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g1/g2/v1
+ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
+@end example
+
+Combining GPE with subsetting controls yields powerful control over the 
+extracted (or excluded) variables and groups and their placement in the 
+output file:
+@example       
+ncks in_grp.nc           # Extract all groups and variables
+ncks -v scl in_grp.nc    # Extract variable scl from all groups
+ncks -g g1  in_grp.nc    # Extract all of group g1
+ncks -g g2,g3 -v scl in_grp.nc # Extract scl from groups g2 and g3
+ncks -G g1 in_grp.nc out.nc        # Put everything into group g1
+ncks -G g1 -v scl in_grp.nc out.nc # Put variable scl into group g1
+ncks -G g1 -g g1  in_grp.nc out.nc # Put group g1 into group g1
+# Put scl from groups g1 and g1g2 into group g6/g6g1
+ncks -G g6/g6g1 -g g1,g1g2 -v scl in_grp.nc out.nc
+@end example
+Overwriting and appending work as expected:
+@example
+# Replace scl in group g2 in out.nc with scl from group g2 from in_grp.nc
+ncks -A -g g2 -v scl in_grp.nc out.nc
+@end example
+
+@html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
 <a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
 @end html
-@node C and Fortran Index Conventions, Hyperslabs, Subsetting Coordinate Variables, Common features
+@node C and Fortran Index Conventions, Hyperslabs, Group Path Editing, Common features
 @section C and Fortran Index conventions
 @cindex index convention
 @cindex Fortran index convention
@@ -9987,8 +10050,8 @@ concatenated together, e.g., by @command{ncrcat}, without losing any
 information.   
 @xref{Missing Values}, for more information.
 
-The key to mastering @command{ncatted} is understanding the meaning of
-the structure that describes the attribute modification, @var{att_dsc}
+To master @command{ncatted} one must understand the meaning of the
+structure that describes the attribute modification, @var{att_dsc} 
 specified by the required option @samp{-a} or @samp{--attribute}. 
 Each @var{att_dsc} contains five elements, which makes using
 @command{ncatted} somewhat complicated, but powerful.
@@ -10856,7 +10919,7 @@ SYNTAX
 ncecat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-G @var{root_grp}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdr_pad @var{nbr}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -10926,17 +10989,18 @@ is placed in its own top-level group in @var{output-file}, which
 is automatically made as a netCDF4-format file.
 
 GAG has two methods to specify group names for the @var{output-file}.   
-The @samp{-G} option, or its long-option equivalent @samp{--root_out},
-takes as argument the root group path @var{root_grp} which is the group 
-in @var{output-file} file where the results will be placed. 
+The @samp{-G} option, or its long-option equivalent @samp{--gpe},
+takes as argument a group path editing description @var{gpe_dsc} of
+where to place the results.
 Each input file needs a distinct output group name to avoid namespace
 conflicts in the @var{output-file}. 
 Hence @command{ncecat} automatically creates unique output group names
-based on either the input filenames or the @var{root_grp} option.
-When the user provides @var{root_grp} (i.e., with @samp{-G}), then the
+based on either the input filenames or the @var{gpe_dsc} arguments.
+When the user provides @var{gpe_dsc} (i.e., with @samp{-G}), then the
 output groups are formed by enumerating sequential two-digit numeric
-suffixes starting with zero. 
-When @var{root_grp} is not provided (i.e., user requests GAG with
+suffixes starting with zero, and appending them to the specified group
+path (@pxref{Group Path Editing}).
+When @var{gpe_dsc} is not provided (i.e., user requests GAG with
 @samp{--gag} instead of @samp{-G}), then @command{ncecat} forms the
 output groups by stripping the input file name of any type-suffix
 (e.g., @code{.nc}), and all but the final component of the full
@@ -11332,7 +11396,7 @@ SYNTAX
 ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
-[--fix_rec_dmn] [-G @var{root}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
+[--fix_rec_dmn] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
 [-R] [-r] [--ram_all] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 

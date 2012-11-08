@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.237 2012-11-08 19:17:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.238 2012-11-08 19:46:58 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.237 2012-11-08 19:17:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.237 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.238 2012-11-08 19:46:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.238 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -257,7 +257,7 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
-      {"root_out",required_argument,0,'G'},
+      {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
       {"group",required_argument,0,'g'},
       {"grp",required_argument,0,'g'},
       {"fl_lst_in",no_argument,0,'H'},
