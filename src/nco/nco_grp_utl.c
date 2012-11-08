@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.248 2012-11-08 23:10:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.249 2012-11-08 23:19:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2756,9 +2756,6 @@ nco_add_dmm_trv                     /* [fnc] Add a coordinate variable that matc
               xtr_lst[*xtr_nbr].id=var_id; 
               xtr_lst[*xtr_nbr].grp_nm=strdup(tmp);                  
               (*xtr_nbr)++; /* NB: Changes size  */
-
-              /* Free allocated memory */
-              grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
             } /* End check if requested coordinate variable is already on extraction list */
           }/* end check if dimension matches the requested variable */        
