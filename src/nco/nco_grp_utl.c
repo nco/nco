@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.244 2012-11-07 21:44:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.245 2012-11-08 18:22:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1185,7 +1185,23 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
       if(nbr_att && strcmp("/",trv.nm_fll) != 0){
         /* Check if group is on extraction list */
         for(int idx_lst=0;idx_lst<xtr_nbr;idx_lst++){
-        
+          nm_id_sct xtr=xtr_lst[idx_lst];
+          int  len_fll;    
+          /* xtr.grp_nm_fll has a "/" at end */
+          len_fll=strlen(xtr.grp_nm_fll);
+          if(len_fll>1){
+            xtr.grp_nm_fll[len_fll-1]='\0';
+          }
+
+          /* Compare item on list with current group name (NOTE: using original xtr.grp_nm_fll full name to compare ) */
+          if(strcmp(xtr.grp_nm_fll,trv.nm_fll) == 0){
+
+            /* Obtain group ID from netCDF API using full group name (NOTE: using GPE grp_out_fll name to write ) */
+            nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
+            /* Copy global attributes */
+            (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+          } /* End compare item on list with current group name */
+
         } /* End check if group is on extraction list */
       } /* End nbr_att */
 
