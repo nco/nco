@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.246 2012-11-08 19:17:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.247 2012-11-08 19:22:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2599,7 +2599,10 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
         lmt_all_crr->dmn_sz_org=dmn_sz;
         lmt_all_crr->WRP=False;
         lmt_all_crr->BASIC_DMN=True;
-        lmt_all_crr->MSA_USR_RDR=False;    
+        lmt_all_crr->MSA_USR_RDR=False;
+
+        /* Store group path */
+        lmt_all_crr->grp_nm_fll=strdup(trv.nm_fll);
 
         lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
         /* Dereference */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.122 2012-11-07 20:17:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.123 2012-11-08 19:17:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -151,17 +151,6 @@ nco4_xtr_grp_nm_fll              /* [fnc] Auxiliary function; extract full group
  nm_id_sct *xtr_lst,             /* I/O [sct] Current exclusion list */
  int * const xtr_nbr,            /* I [nbr] Current index in exclusion/extraction list */
  grp_trv_sct trv);               /* I [sct] Group traversal table entry */
-
-void 
-nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
-(int in_id,                     /* [ID]  netCDF file ID */
- nco_bool MSA_USR_RDR,          /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
- int nbr_dmn_fl,                /* I [nbr] Number of dimensions in file */
- lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
- int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
- const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
 
 nm_id_sct *                /* O [sct] Extraction list */
 nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
@@ -316,15 +305,16 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
- const grp_tbl_sct * const trv_tbl);    /* I [sct] Traversal table */
+ const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
-
-void
-nco_att_cpy_trv                        /* [fnc] Write group attributes */
-(const int nc_id,                      /* I [ID] netCDF input file ID  */
- const int nc_out_id,                  /* I [ID] netCDF output file ID  */
- nm_id_sct * const xtr_lst,            /* I [sct] Extraction list  */
- const int xtr_nbr,                    /* I [nbr] Number of members in list */
+void 
+nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recursive version */ 
+(int in_id,                            /* [ID]  netCDF file ID */
+ nco_bool MSA_USR_RDR,                 /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ lmt_all_sct **lmt_all_lst,            /* [sct] List of *lmt_all_sct structures */
+ int nbr_dmn_fl,                       /* I [nbr] Number of dimensions in file */
+ lmt_sct **lmt,                        /* [sct] Limits of the current hyperslab */
+ int lmt_nbr,                          /* I [nbr] Number of limit structures in list */
  const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 #ifdef __cplusplus
