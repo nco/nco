@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.455 2012-11-08 18:22:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.456 2012-11-08 19:17:29 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.455 2012-11-08 18:22:12 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.455 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.456 2012-11-08 19:17:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.456 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -720,7 +720,7 @@ main(int argc,char **argv)
 
   /* Initialize lmt_all_sct's */ 
   if(HAS_SUBGRP){
-    (void)nco4_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
+    (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
   }else{
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
   } /* HAS_SUBGRP */

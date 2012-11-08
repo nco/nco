@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.245 2012-11-08 18:22:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.246 2012-11-08 19:17:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1375,246 +1375,7 @@ nco_grp_itr
   return rcd;
 }/* end nco_grp_itr() */
 
-void 
-nco4_msa_lmt_all_int            /* [fnc] Initilaize lmt_all_sct's; netCDF4 group recursive version */ 
-(int in_id,                     /* [ID]  netCDF file ID */
- nco_bool MSA_USR_RDR,          /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- lmt_all_sct **lmt_all_lst,     /* [sct] List of *lmt_all_sct structures */
- int nbr_dmn_fl,                /* I [nbr] Number of dimensions in file */
- lmt_sct **lmt,                 /* [sct] Limits of the current hyperslab */
- int lmt_nbr,                   /* I [nbr] Number of limit structures in list */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  lmt_sct *lmt_rgl;
-  lmt_all_sct * lmt_all_crr;
-  int nbr_dmn_all;             /* [nbr] Total number of dimensions in file */
-  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
-  long dmn_sz;                 /* [nbr] Dimension size */ 
-  int *dmn_ids;                /* [ID]  Dimension IDs */ 
-  int grp_id;                  /* [ID]  Group ID */
-  int nbr_att;                 /* [nbr] Number of attributes */
-  int nbr_var;                 /* [nbr] Number of variables */
-  int nbr_dmn;                 /* [nbr] number of dimensions */
-  int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
-  int dmn_ids_ult[NC_MAX_DIMS];/* [nbr] Unlimited dimensions IDs array */
-  int idx;                     /* [idx] Global index for lmt_all_lst */
-  int jdx;
-  int fl_fmt;                  /* [enm] netCDF file format */
 
-  (void)nco_inq_format(in_id,&fl_fmt);
-  
-#ifdef GRP_DEV
-  /* Initialize counters/indices */
-  nbr_dmn_all=0;
-  idx=0;
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nc_typ_grp ) {
-
-      /* Obtain group ID from netCDF API using full group name */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-        (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
-      }else{ /* netCDF3 case */
-        grp_id=in_id;
-      }
-
-      /* Obtain unlimited dimensions for group: NOTE using group ID */
-      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
-
-      /* Obtain dimensions for group: NOTE using group ID */
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-#ifdef NCO_SANITY_CHECK
-      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-
-      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
-
-      /* List dimensions using obtained group ID */
-      for(jdx=0;jdx<nbr_dmn;jdx++){
-        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
-
-        /*NB: increment lmt_all_lst with global idx */
-        lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
-        lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-        lmt_all_crr->dmn_nm=strdup(dmn_nm);
-        lmt_all_crr->lmt_dmn_nbr=1;
-        lmt_all_crr->dmn_sz_org=dmn_sz;
-        lmt_all_crr->WRP=False;
-        lmt_all_crr->BASIC_DMN=True;
-        lmt_all_crr->MSA_USR_RDR=False;    
-
-        lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
-        /* Dereference */
-        lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
-        lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
-        /* NB: ID is dmn_ids[jdx] */
-        lmt_rgl->id=dmn_ids[jdx];
-
-        /* NOTE: for a group case, to find out if a dimension is a record dimension, compare the 
-        dimension ID with the unlimited dimension ID */
-        lmt_rgl->is_rec_dmn=False;
-        for(int kdx=0;kdx<nbr_dmn_ult;kdx++){
-          if (dmn_ids[jdx] == dmn_ids_ult[kdx]){
-            lmt_rgl->is_rec_dmn=True;
-          }
-        } /* end kdx */
-
-        lmt_rgl->srt=0L;
-        lmt_rgl->end=dmn_sz-1L;
-        lmt_rgl->cnt=dmn_sz;
-        lmt_rgl->srd=1L;
-        lmt_rgl->drn=1L;
-        lmt_rgl->flg_mro=False;
-        lmt_rgl->min_sng=NULL;
-        lmt_rgl->max_sng=NULL;
-        lmt_rgl->srd_sng=NULL;
-        lmt_rgl->drn_sng=NULL;
-        lmt_rgl->mro_sng=NULL;
-        lmt_rgl->rbs_sng=NULL;
-        lmt_rgl->origin=0.0;
-
-        /* A hack so we know structure has been initialized */
-        lmt_rgl->lmt_typ=-1;
-
-        /*NB: increment lmt_all_lst with global idx */
-        idx++;
-
-      } /* end jdx dimensions */
-      (void)nco_free(dmn_ids);
-
-      /* Increment total number of dimensions in file */
-      nbr_dmn_all+=trv.nbr_dmn;
-
-    } /* end nc_typ_grp */
-  } /* end uidx  */
-
-#else /* GRP_DEV */ 
-
-  int idx;
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  long dmn_sz;
-  char dmn_nm[NC_MAX_NAME];
-  
-
-  (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
-
-  for(idx=0;idx<nbr_dmn_fl;idx++){
-    (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
-    lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-    lmt_all_crr->dmn_nm=strdup(dmn_nm);
-    lmt_all_crr->lmt_dmn_nbr=1;
-    lmt_all_crr->dmn_sz_org=dmn_sz;
-    lmt_all_crr->WRP=False;
-    lmt_all_crr->BASIC_DMN=True;
-    lmt_all_crr->MSA_USR_RDR=False;    
-
-    lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
-    /* Dereference */
-    lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
-    lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
-    lmt_rgl->id=idx;
-
-    /* NB: nco_lmt_evl() may alter this */
-    if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
-
-    lmt_rgl->srt=0L;
-    lmt_rgl->end=dmn_sz-1L;
-    lmt_rgl->cnt=dmn_sz;
-    lmt_rgl->srd=1L;
-    lmt_rgl->drn=1L;
-    lmt_rgl->flg_mro=False;
-    lmt_rgl->min_sng=NULL;
-    lmt_rgl->max_sng=NULL;
-    lmt_rgl->srd_sng=NULL;
-    lmt_rgl->drn_sng=NULL;
-    lmt_rgl->mro_sng=NULL;
-    lmt_rgl->rbs_sng=NULL;
-    lmt_rgl->origin=0.0;
-
-    /* A hack so we know structure has been initialized */
-    lmt_rgl->lmt_typ=-1;
-  } /* end loop over dimensions */
-
-#endif /* GRP_DEV */ 
-
-  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
-  /* Add user specified limits lmt_all_lst */
-  for(idx=0;idx<lmt_nbr;idx++){
-    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
-        lmt_all_crr=lmt_all_lst[jdx];
-        lmt_all_crr->BASIC_DMN=False;
-        if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
-          /* Free default limit set above structure first */
-          lmt_all_crr->lmt_dmn[0]=(lmt_sct*)nco_lmt_free(lmt_all_crr->lmt_dmn[0]);
-          lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
-        }else{ 
-          lmt_all_crr->lmt_dmn=(lmt_sct**)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
-          lmt_all_crr->lmt_dmn[(lmt_all_crr->lmt_dmn_nbr)++]=lmt[idx];
-        } /* endif */
-        break;
-      } /* end if */
-    } /* end loop over dimensions */
-    /* Dimension in limit not found */
-    if(jdx == nbr_dmn_fl){
-      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n",lmt[idx]->nm);
-      nco_exit(EXIT_FAILURE);
-    } /* end if err */
-  } /* end loop over idx */       
-
-  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
-  for(idx=0;idx<nbr_dmn_fl;idx++){
-    nco_bool flg_ovl;
-
-    /* NB: ncra/ncrcat have only one limit for record dimension so skip 
-    evaluation otherwise this messes up multi-file operation */
-    if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
-
-    /* Split-up wrapped limits */   
-    (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
-
-    /* NB: Wrapped hyperslabs are dimensions broken into the "wrong" order,
-    e.g., from -d time,8,2 broken into -d time,8,9 -d time,0,2
-    WRP flag set only when list contains dimensions split as above */
-    if(lmt_all_lst[idx]->WRP == True){
-      /* Find and store size of output dim */  
-      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-      continue;
-    } /* endif */
-
-    /* Single slab---no analysis needed */  
-    if(lmt_all_lst[idx]->lmt_dmn_nbr == 1){
-      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-      continue;    
-    } /* endif */
-
-    if(MSA_USR_RDR){
-      lmt_all_lst[idx]->MSA_USR_RDR=True;
-      /* Find and store size of output dimension */  
-      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-      continue;
-    } /* endif */
-
-    /* Sort limits */
-    (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
-    /* Check for overlap */
-    flg_ovl=nco_msa_ovl(lmt_all_lst[idx]);  
-    if(flg_ovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
-
-    /* Find and store size of output dimension */  
-    (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-    if(dbg_lvl_get() > 1){
-      if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
-    } /* endif */
-
-  } /* end idx */    
-
-#ifdef NCO_SANITY_CHECK
-  assert(nbr_dmn_fl == nbr_dmn_all);
-#endif
-} /* end nco4_msa_lmt_all_int() */
 
 
 void                       
@@ -2771,68 +2532,244 @@ nco_chk_trv                       /* [fnc] Check if input names of -v or -g are 
   return True;
 } /* end nco_chk_trv() */
 
-
-
-void
-nco_att_cpy_trv                        /* [fnc] Write group attributes */
-(const int nc_id,                      /* I [ID] netCDF input file ID  */
- const int nc_out_id,                  /* I [ID] netCDF output file ID  */
- nm_id_sct * const xtr_lst,            /* I [sct] Extraction list  */
- const int xtr_nbr,                    /* I [nbr] Number of members in list */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+void 
+nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recursive version */ 
+(int in_id,                            /* [ID]  netCDF file ID */
+ nco_bool MSA_USR_RDR,                 /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ lmt_all_sct **lmt_all_lst,            /* [sct] List of *lmt_all_sct structures */
+ int nbr_dmn_fl,                       /* I [nbr] Number of dimensions in file */
+ lmt_sct **lmt,                        /* [sct] Limits of the current hyperslab */
+ int lmt_nbr,                          /* I [nbr] Number of limit structures in list */
+ const grp_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
-  int rcd=NC_NOERR;   /* [rcd] Return code */
-  int grp_id;         /* [ID]  Group ID */
-  int grp_out_id;     /* [ID]  Group ID */
-  int nbr_att;        /* [nbr] Number of attributes */
-  int nbr_var;        /* [nbr] Number of variables */
-  int nbr_dmn;        /* [nbr] Number of dimensions */
+  lmt_sct *lmt_rgl;
+  lmt_all_sct * lmt_all_crr;
+  int nbr_dmn_all;             /* [nbr] Total number of dimensions in file */
+  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+  long dmn_sz;                 /* [nbr] Dimension size */ 
+  int *dmn_ids;                /* [ID]  Dimension IDs */ 
+  int grp_id;                  /* [ID]  Group ID */
+  int nbr_att;                 /* [nbr] Number of attributes */
+  int nbr_var;                 /* [nbr] Number of variables */
+  int nbr_dmn;                 /* [nbr] number of dimensions */
+  int nbr_dmn_ult;             /* [nbr] Number of unlimited dimensions */
+  int dmn_ids_ult[NC_MAX_DIMS];/* [nbr] Unlimited dimensions IDs array */
+  int idx;                     /* [idx] Global index for lmt_all_lst */
+  int jdx;
+  int fl_fmt;                  /* [enm] netCDF file format */
 
+  (void)nco_inq_format(in_id,&fl_fmt);
+  
+#ifdef GRP_DEV
+  /* Initialize counters/indices */
+  nbr_dmn_all=0;
+  idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nc_typ_grp ){
-
-      /* Root always copied in another place NOTE: no need for netCDF3 root handdling */
-      if(strcmp("/",trv.nm_fll) == 0){
-        continue;
-      }
+    if (trv.typ == nc_typ_grp ) {
 
       /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(in_id,trv.nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=in_id;
+      }
 
-      /* Obtain info for group */
+      /* Obtain unlimited dimensions for group: NOTE using group ID */
+      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
+
+      /* Obtain dimensions for group: NOTE using group ID */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
-      /* If there are attributes, write them */
-      if(nbr_att){
-        /* Check if group is on extraction list */
-        for(int idx_lst=0;idx_lst<xtr_nbr;idx_lst++){
-          nm_id_sct xtr=xtr_lst[idx_lst];
-          int  len_fll;    
-          /* xtr.grp_nm_fll has a "/" at end */
-          len_fll=strlen(xtr.grp_nm_fll);
-          if(len_fll>1){
-            xtr.grp_nm_fll[len_fll-1]='\0';
+      dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+
+      /* List dimensions using obtained group ID */
+      for(jdx=0;jdx<nbr_dmn;jdx++){
+        (void)nco_inq_dim(grp_id,dmn_ids[jdx],dmn_nm,&dmn_sz);
+
+        /*NB: increment lmt_all_lst with global idx */
+        lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+        lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+        lmt_all_crr->dmn_nm=strdup(dmn_nm);
+        lmt_all_crr->lmt_dmn_nbr=1;
+        lmt_all_crr->dmn_sz_org=dmn_sz;
+        lmt_all_crr->WRP=False;
+        lmt_all_crr->BASIC_DMN=True;
+        lmt_all_crr->MSA_USR_RDR=False;    
+
+        lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
+        /* Dereference */
+        lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
+        lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
+        /* NB: ID is dmn_ids[jdx] */
+        lmt_rgl->id=dmn_ids[jdx];
+
+        /* NOTE: for a group case, to find out if a dimension is a record dimension, compare the 
+        dimension ID with the unlimited dimension ID */
+        lmt_rgl->is_rec_dmn=False;
+        for(int kdx=0;kdx<nbr_dmn_ult;kdx++){
+          if (dmn_ids[jdx] == dmn_ids_ult[kdx]){
+            lmt_rgl->is_rec_dmn=True;
           }
+        } /* end kdx */
 
-          /* Compare item on list with current group name (NOTE: using full name to compare ) */
-          if(strcmp(xtr.grp_nm_fll,trv.nm_fll) == 0){
+        lmt_rgl->srt=0L;
+        lmt_rgl->end=dmn_sz-1L;
+        lmt_rgl->cnt=dmn_sz;
+        lmt_rgl->srd=1L;
+        lmt_rgl->drn=1L;
+        lmt_rgl->flg_mro=False;
+        lmt_rgl->min_sng=NULL;
+        lmt_rgl->max_sng=NULL;
+        lmt_rgl->srd_sng=NULL;
+        lmt_rgl->drn_sng=NULL;
+        lmt_rgl->mro_sng=NULL;
+        lmt_rgl->rbs_sng=NULL;
+        lmt_rgl->origin=0.0;
 
-            /* Obtain group ID from netCDF API using full group name */
-            rcd=nco_inq_grp_full_ncid_flg(nc_out_id,trv.nm_fll,&grp_out_id);
+        /* A hack so we know structure has been initialized */
+        lmt_rgl->lmt_typ=-1;
 
-            if(rcd == NC_NOERR)
+        /*NB: increment lmt_all_lst with global idx */
+        idx++;
 
-            /* Copy global attributes */
-            (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-          } /* End compare item on list with current group name */
-        } /* End check if group is on extraction list */
-      } /* End nbr_att */
-    } /* End nc_typ_grp */
-  }/* End uidx  */
-}
+      } /* end jdx dimensions */
+      (void)nco_free(dmn_ids);
 
+      /* Increment total number of dimensions in file */
+      nbr_dmn_all+=trv.nbr_dmn;
+
+    } /* end nc_typ_grp */
+  } /* end uidx  */
+
+#else /* GRP_DEV */ 
+
+  int idx;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  long dmn_sz;
+  char dmn_nm[NC_MAX_NAME];
+  
+
+  (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
+
+  for(idx=0;idx<nbr_dmn_fl;idx++){
+    (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
+    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+    lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+    lmt_all_crr->dmn_nm=strdup(dmn_nm);
+    lmt_all_crr->lmt_dmn_nbr=1;
+    lmt_all_crr->dmn_sz_org=dmn_sz;
+    lmt_all_crr->WRP=False;
+    lmt_all_crr->BASIC_DMN=True;
+    lmt_all_crr->MSA_USR_RDR=False;    
+
+    lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
+    /* Dereference */
+    lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
+    lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
+    lmt_rgl->id=idx;
+
+    /* NB: nco_lmt_evl() may alter this */
+    if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
+
+    lmt_rgl->srt=0L;
+    lmt_rgl->end=dmn_sz-1L;
+    lmt_rgl->cnt=dmn_sz;
+    lmt_rgl->srd=1L;
+    lmt_rgl->drn=1L;
+    lmt_rgl->flg_mro=False;
+    lmt_rgl->min_sng=NULL;
+    lmt_rgl->max_sng=NULL;
+    lmt_rgl->srd_sng=NULL;
+    lmt_rgl->drn_sng=NULL;
+    lmt_rgl->mro_sng=NULL;
+    lmt_rgl->rbs_sng=NULL;
+    lmt_rgl->origin=0.0;
+
+    /* A hack so we know structure has been initialized */
+    lmt_rgl->lmt_typ=-1;
+  } /* end loop over dimensions */
+
+#endif /* GRP_DEV */ 
+
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
+  /* Add user specified limits lmt_all_lst */
+  for(idx=0;idx<lmt_nbr;idx++){
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
+      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
+        lmt_all_crr=lmt_all_lst[jdx];
+        lmt_all_crr->BASIC_DMN=False;
+        if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
+          /* Free default limit set above structure first */
+          lmt_all_crr->lmt_dmn[0]=(lmt_sct*)nco_lmt_free(lmt_all_crr->lmt_dmn[0]);
+          lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
+        }else{ 
+          lmt_all_crr->lmt_dmn=(lmt_sct**)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+          lmt_all_crr->lmt_dmn[(lmt_all_crr->lmt_dmn_nbr)++]=lmt[idx];
+        } /* endif */
+        break;
+      } /* end if */
+    } /* end loop over dimensions */
+    /* Dimension in limit not found */
+    if(jdx == nbr_dmn_fl){
+      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n",lmt[idx]->nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if err */
+  } /* end loop over idx */       
+
+  /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
+  for(idx=0;idx<nbr_dmn_fl;idx++){
+    nco_bool flg_ovl;
+
+    /* NB: ncra/ncrcat have only one limit for record dimension so skip 
+    evaluation otherwise this messes up multi-file operation */
+    if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
+
+    /* Split-up wrapped limits */   
+    (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
+
+    /* NB: Wrapped hyperslabs are dimensions broken into the "wrong" order,
+    e.g., from -d time,8,2 broken into -d time,8,9 -d time,0,2
+    WRP flag set only when list contains dimensions split as above */
+    if(lmt_all_lst[idx]->WRP == True){
+      /* Find and store size of output dim */  
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;
+    } /* endif */
+
+    /* Single slab---no analysis needed */  
+    if(lmt_all_lst[idx]->lmt_dmn_nbr == 1){
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;    
+    } /* endif */
+
+    if(MSA_USR_RDR){
+      lmt_all_lst[idx]->MSA_USR_RDR=True;
+      /* Find and store size of output dimension */  
+      (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+      continue;
+    } /* endif */
+
+    /* Sort limits */
+    (void)nco_msa_qsort_srt(lmt_all_lst[idx]);
+    /* Check for overlap */
+    flg_ovl=nco_msa_ovl(lmt_all_lst[idx]);  
+    if(flg_ovl==False) lmt_all_lst[idx]->MSA_USR_RDR=True;
+
+    /* Find and store size of output dimension */  
+    (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
+    if(dbg_lvl_get() > 1){
+      if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
+    } /* endif */
+
+  } /* end idx */    
+
+#ifdef NCO_SANITY_CHECK
+  assert(nbr_dmn_fl == nbr_dmn_all);
+#endif
+} /* end nco4_msa_lmt_all_int() */
 
