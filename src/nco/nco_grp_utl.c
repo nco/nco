@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.250 2012-11-09 18:24:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.251 2012-11-09 19:48:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1161,8 +1161,8 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             }else{ /* Write mode */
 
               /* Write output variable */
-              if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm,lmt_all_lst,lmt_all_lst_nbr); 
-              else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm);
+              if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm,xtr.grp_nm_fll,lmt_all_lst,lmt_all_lst_nbr); 
+              else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm,xtr.grp_nm_fll);
 
             } /* Define mode */
 

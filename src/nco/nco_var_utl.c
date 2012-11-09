@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.199 2012-11-09 18:24:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.200 2012-11-09 19:48:54 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -268,7 +268,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
- const char *var_nm) /* I [sng] Variable name */
+ const char *var_nm, /* I [sng] Variable name */
+ const char * const grp_nm_fll) /* I [sng] Input variable full group name */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
   /* Purpose: Copy single variable from input netCDF file to output netCDF file

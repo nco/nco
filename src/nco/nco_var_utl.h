@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.71 2012-11-09 18:24:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.72 2012-11-09 19:48:54 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -68,7 +68,8 @@ extern "C" {
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
    const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
-   const char *var_nm); /* I [sng] Variable name */
+   const char *var_nm, /* I [sng] Variable name */
+   const char * const grp_nm_fll); /* I [sng] Input variable full group name */
 
   void
   nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simple hyperslabs */
