@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.116 2012-11-09 20:06:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.117 2012-11-09 23:57:19 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -698,22 +698,46 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   int fl_fmt;
   (void)nco_inq_format(in_id,&fl_fmt);
 
-#ifdef GRP_DEV
+#ifdef GRP_DEV_TO_DO
 
-  /* Initialize lmt_msa with multi-limits from lmt_lst limits */
-  /* Get dimension sizes from input file */
-  for(idx=0;idx<nbr_dim;idx++){
-    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-      if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
-        lmt_msa[idx]=lmt_lst[jdx];
-        break;
-      } /* end if */
-    } /* end loop over jdx */
-    /* Create maps now---they maybe useful later */ 
-    (void)nco_inq_dimlen(in_id,dmn_id[idx],&dmn_map_in[idx]);
-    dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
-    dmn_map_srt[idx]=0L;
-  } /* end for */
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+
+    for(idx=0;idx<nbr_dim;idx++){
+      char dmn_nm[NC_MAX_NAME];
+      long dmn_sz;
+      (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
+
+      for(jdx=0;jdx<nbr_dmn_fl;jdx++){
+        if(strcmp(grp_nm_fll,lmt_lst[jdx]->grp_nm_fll) == 0 && strcmp(dmn_nm,lmt_lst[jdx]->dmn_nm) == 0){
+          lmt_msa[idx]=lmt_lst[jdx];
+          break;
+        } /* end if */
+      } /* end loop over jdx */
+      /* Create maps now---they maybe useful later */ 
+      (void)nco_inq_dimlen(in_id,dmn_id[idx],&dmn_map_in[idx]);
+      dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
+      dmn_map_srt[idx]=0L;
+    } /* end loop over idx */
+  } /* NC_FORMAT_NETCDF4 */
+
+  else { 
+
+    /* Initialize lmt_msa with multi-limits from lmt_lst limits */
+    /* Get dimension sizes from input file */
+    for(idx=0;idx<nbr_dim;idx++){
+      for(jdx=0;jdx<nbr_dmn_fl;jdx++){
+        if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
+          lmt_msa[idx]=lmt_lst[jdx];
+          break;
+        } /* end if */
+      } /* end loop over jdx */
+      /* Create maps now---they maybe useful later */ 
+      (void)nco_inq_dimlen(in_id,dmn_id[idx],&dmn_map_in[idx]);
+      dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
+      dmn_map_srt[idx]=0L;
+    } /* end for */
+
+  } /* NC_FORMAT_NETCDF4 */
 
 #else
 
