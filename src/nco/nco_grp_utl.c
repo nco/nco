@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.252 2012-11-09 20:15:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.253 2012-11-09 22:34:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1275,12 +1275,9 @@ nco_grp_itr
 
   char grp_nm[NC_MAX_NAME+1];   /* O [sng] Group name */
   char var_nm[NC_MAX_NAME+1];  /* O [sng] Variable name */ 
-
   grp_trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
-
   int *dmn_ids;                /* O [ID]  Dimension IDs */ 
   int *grp_ids;                /* O [ID]  Sub-group IDs */ 
-
   int idx;                     /* I [idx] Index */             
   int nbr_att;                 /* O [nbr] Number of attributes */
   int nbr_dmn;                 /* O [nbr] Number of dimensions */
@@ -1290,7 +1287,6 @@ nco_grp_itr
   int rcd=NC_NOERR;            /* O [rcd] Return code */
   int rec_dmn_id;              /* O [ID] Record dimension ID */
   int var_id;                  /* O [ID] Variable ID */ 
-
   nc_type var_typ;             /* O [enm] Variable type */
 
   /* Get all information for this group */
@@ -1305,7 +1301,7 @@ nco_grp_itr
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn_prn,NULL,1);
 
   /* Add to table: this is a group */
-  obj.nm_fll=grp_nm_fll;
+  obj.nm_fll=strdup(grp_nm_fll);
   strcpy(obj.nm,grp_nm);
   obj.typ=nc_typ_grp;
   obj.nbr_att=nbr_att;
