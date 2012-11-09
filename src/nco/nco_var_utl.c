@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.200 2012-11-09 19:48:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.201 2012-11-09 20:06:49 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -193,6 +193,9 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Get dimension IDs */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_in_id);
 
+  /* Get netCDF file format */
+  (void)nco_inq_format(in_id,&fl_fmt);
+
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
@@ -200,6 +203,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     int rcd_lcl; /* [rcd] Return code */
 
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
+
+#ifdef GRP_DEV
 
     /* Has dimension been defined in output file? */
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
@@ -223,6 +228,34 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
         rec_dmn_out_id=dmn_out_id[idx];
       } /* end else */
     } /* end if */
+
+
+#else
+
+    /* Has dimension been defined in output file? */
+    rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
+
+    /* If dimension has not been defined, copy it */
+    if(rcd_lcl != NC_NOERR){
+      if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
+        int lmt_all_idx;
+
+        /* Does dimension have user-specified limits? */
+        for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
+          if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
+            dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
+            break;
+          } /* end if */
+        } /* end loop over lmt_all_idx */
+
+        (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
+      }else{
+        (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
+        rec_dmn_out_id=dmn_out_id[idx];
+      } /* end else */
+    } /* end if */
+
+#endif /* GRP_DEV */
 
     /* Die if record dimension is not first dimension */
     if(idx>0 && dmn_out_id[idx]==rec_dmn_out_id){

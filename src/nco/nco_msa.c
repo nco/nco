@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.115 2012-11-09 19:48:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.116 2012-11-09 20:06:49 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -694,6 +694,12 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
 
+  /* Get netCDF file format */
+  int fl_fmt;
+  (void)nco_inq_format(in_id,&fl_fmt);
+
+#ifdef GRP_DEV
+
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<nbr_dim;idx++){
@@ -708,6 +714,25 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
     dmn_map_srt[idx]=0L;
   } /* end for */
+
+#else
+
+  /* Initialize lmt_msa with multi-limits from lmt_lst limits */
+  /* Get dimension sizes from input file */
+  for(idx=0;idx<nbr_dim;idx++){
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++){
+      if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
+        lmt_msa[idx]=lmt_lst[jdx];
+        break;
+      } /* end if */
+    } /* end loop over jdx */
+    /* Create maps now---they maybe useful later */ 
+    (void)nco_inq_dimlen(in_id,dmn_id[idx],&dmn_map_in[idx]);
+    dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
+    dmn_map_srt[idx]=0L;
+  } /* end for */
+
+#endif
 
   /* Initalize vara with in_id, var_in_id, nctype, etc., so recursive routine can read data */
   vara.nm=var_nm;
