@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.254 2012-11-09 22:43:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.255 2012-11-09 23:21:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1295,7 +1295,8 @@ nco_grp_itr
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn_prn,NULL,1);
 
   /* Add to table: this is a group */
-  obj.nm_fll=strdup(grp_nm_fll);
+  obj.nm_fll=grp_nm_fll;
+  obj.grp_nm_fll=grp_nm_fll;
   strcpy(obj.nm,grp_nm);
   obj.typ=nc_typ_grp;
   obj.nbr_att=nbr_att;
@@ -1323,6 +1324,7 @@ nco_grp_itr
 
     /* Add to table: this is a variable NOTE: nbr_var, nbr_grp not valid here */
     obj.nm_fll=var_nm_fll;
+    obj.grp_nm_fll=grp_nm_fll;
     obj.typ=nc_typ_var;
     strcpy(obj.nm,var_nm);
     obj.nbr_att=nbr_att;

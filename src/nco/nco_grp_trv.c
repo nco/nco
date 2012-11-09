@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.11 2012-09-20 18:25:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.12 2012-11-09 23:21:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -25,6 +25,7 @@ trv_tbl_init
 
   for(idx=0;idx<tb->sz;idx++){
     tb->grp_lst[idx].nm_fll  = NULL;
+    tb->grp_lst[idx].grp_nm_fll  = NULL;
     tb->grp_lst[idx].typ     = nc_typ_err;
     tb->grp_lst[idx].nm[0]   = '\0';
     tb->grp_lst[idx].flg     = -1;
@@ -45,9 +46,8 @@ trv_tbl_free
   unsigned int idx;
 
   for(idx=0;idx<tbl->sz;idx++){
-    if (tbl->grp_lst[idx].nm_fll){
-      nco_free(tbl->grp_lst[idx].nm_fll);
-    }
+    nco_free(tbl->grp_lst[idx].nm_fll);
+    nco_free(tbl->grp_lst[idx].grp_nm_fll);
   }
   nco_free(tbl->grp_lst);
   nco_free(tbl);
@@ -69,10 +69,12 @@ trv_tbl_add
 
     for(idx=tbl->nbr;idx<tbl->sz;idx++) {
       tbl->grp_lst[idx].nm_fll = NULL;
+      tbl->grp_lst[idx].grp_nm_fll = NULL;
     } /* idx */
   } /* tbl->sz */
   idx=tbl->nbr++;
   tbl->grp_lst[idx].nm_fll=(char*)strdup(obj.nm_fll);
+  tbl->grp_lst[idx].grp_nm_fll=(char*)strdup(obj.grp_nm_fll);
   strcpy(tbl->grp_lst[idx].nm,obj.nm);
   tbl->grp_lst[idx].typ=obj.typ;
   tbl->grp_lst[idx].nbr_att=obj.nbr_att;

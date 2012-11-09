@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.15 2012-11-06 23:20:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.16 2012-11-09 23:21:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -29,7 +29,8 @@ typedef enum{               /* [enm] netCDF4 object type: group, variable */
    this identifies an "object", as having a path and a type, like in HDF5 
 */
 typedef struct{ 
-  char    *nm_fll;         /* [sng] Absolute name (path) */
+  char    *nm_fll;         /* [sng] Absolute name (path): this can be a variable or group */
+  char    *grp_nm_fll;     /* [sng] Full group name (for variables, for convenience to avoid to obtain several times) */
   nc_typ  typ;             /* [enm] netCDF4 object type: group or variable */
   char    nm[NC_MAX_NAME]; /* [sng] Relative name */
   int     flg;             /* [flg] mark flag (several actions) */
