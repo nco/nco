@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.249 2012-11-08 23:19:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.250 2012-11-09 18:24:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1149,8 +1149,8 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             if(DEF_MODE){
 
               /* Define variable */
-              if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,xtr.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
-              else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,xtr.nm,dfl_lvl);
+              if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,xtr.nm,xtr.grp_nm_fll,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
+              else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,xtr.nm,xtr.grp_nm_fll,dfl_lvl);
 
               /* Set chunksize parameters */
               if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
