@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.36 2012-06-02 05:42:19 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.37 2012-11-09 20:15:40 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for ncap2
 
@@ -124,9 +124,9 @@ g4(2,0,0)=987654.0;
 // Attribute string handling
 h1=10.0;
 h1@units="microns";
-h1@long_name="Teslar\t";
+h1@long_name="Tesla\t";
 // variable string handling
-//Create a variable string ( currently a painfull process)
+// Create a variable string (currently painful)
 h2[char_dmn_lng04]="a";  // string is now "aaa"
 h2()="hell";            // string is now "hell"
 // hyperslab a variable string;

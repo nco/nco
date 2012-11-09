@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.77 2012-10-16 06:20:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.78 2012-11-09 20:15:40 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -9,13 +9,14 @@
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
 
 void 
-nco_prn_att /* [fnc] Print all attributes of single variable */
-(const int in_id, /* I [id] netCDF input file ID */
+nco_prn_att /* [fnc] Print all attributes of single variable or group */
+(const int in_id, /* I [id] netCDF file ID */
+ const int grp_id, /* I [id] netCDF group ID */
  const int var_id) /* I [id] netCDF input variable ID */
 {
-  /* Purpose: Print all global attributes in netCDF file,
+  /* Purpose: Print all global attributes in netCDF group,
      or all attributes for particular netCDF variable. 
-     If var_id == NC_GLOBAL ( = -1) then global attributes are printed,
+     If var_id == NC_GLOBAL ( = -1) then global/group attributes are printed,
      otherwise variable's attributes are printed. */
 
   att_sct *att=NULL_CEWI;
@@ -31,12 +32,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
   int nbr_att;
 
   if(var_id == NC_GLOBAL){
-    /* Get number of global attributes in file */
-    (void)nco_inq(in_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
-    (void)strcpy(src_sng,"Global");
+    /* Get number of global attributes in group */
+    (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
+    if(in_id == grp_id) (void)strcpy(src_sng,"Global"); else (void)strcpy(src_sng,"Group");
   }else{
     /* Get name and number of attributes for variable */
-    (void)nco_inq_var(in_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
+    (void)nco_inq_var(grp_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
 
   /* Allocate space for attribute names and types */
@@ -46,15 +47,15 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
   for(idx=0;idx<nbr_att;idx++){
 
     att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
-    (void)nco_inq_attname(in_id,var_id,idx,att[idx].nm);
-    (void)nco_inq_att(in_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
+    (void)nco_inq_attname(grp_id,var_id,idx,att[idx].nm);
+    (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
 
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=att[idx].sz;
 
     /* Allocate enough space to hold attribute */
     att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
-    (void)nco_get_att(in_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+    (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
     (void)fprintf(stdout,"%s attribute %i: %s, size = %li %s, value = ",src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
     
     /* Typecast pointer to values before access */

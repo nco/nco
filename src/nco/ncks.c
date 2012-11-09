@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.459 2012-11-09 19:48:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.460 2012-11-09 20:15:40 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.459 2012-11-09 19:48:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.459 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.460 2012-11-09 20:15:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.460 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -901,7 +901,7 @@ main(int argc,char **argv)
           (void)fprintf(stdout,"Record dimension: None\n\n");
         } /* NCO_REC_DMN_UNDEFINED */
         /* Print global attributes */
-        (void)nco_prn_att(in_id,NC_GLOBAL);
+        (void)nco_prn_att(in_id,in_id,NC_GLOBAL);
       } /* HAS_SUBGRP */
     } /* endif PRN_GLB_METADATA */
     
@@ -922,7 +922,7 @@ main(int argc,char **argv)
           /* Print variable's definition using the obtained grp_id instead of the netCDF file ID; Voila  */
           (void)nco_prn_var_dfn(nm_id.grp_id,nm_id.nm); 
           /* Print variable's attributes */
-          (void)nco_prn_att(nm_id.grp_id,nm_id.id);
+          (void)nco_prn_att(in_id,nm_id.grp_id,nm_id.id);
         } /* end loop over idx */
 
       } else { /* HAS_SUBGRP */
@@ -930,7 +930,7 @@ main(int argc,char **argv)
           /* Print variable's definition */
           (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
           /* Print variable's attributes */
-          (void)nco_prn_att(in_id,xtr_lst[idx].id);
+          (void)nco_prn_att(in_id,in_id,xtr_lst[idx].id);
         } /* end loop over idx */
       } /* HAS_SUBGRP */
     } /* end if PRN_VAR_METADATA */

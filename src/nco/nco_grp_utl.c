@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.251 2012-11-09 19:48:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.252 2012-11-09 20:15:40 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1627,13 +1627,12 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
 
       /* List attributes using obtained group ID */
       if(nbr_att){
-        (void)fprintf(stdout,"Global attributes for: %s\n",trv.nm_fll); 
-        (void)nco_prn_att(grp_id,NC_GLOBAL); 
+        (void)fprintf(stdout,"%s attributes for: %s\n",(strlen(trv.nm_fll) == 1L) ? "Global" : "Group",trv.nm_fll); 
+        (void)nco_prn_att(nc_id,grp_id,NC_GLOBAL); 
       } /*nbr_att */
     } /* end nc_typ_grp */
-  } /* end uidx  */
+  } /* end uidx */
 } /* end nco_prn_att_trv() */
-
 
 nm_id_sct *                      /* O [sct] Extraction list */
 nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */

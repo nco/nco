@@ -1,3 +1,7 @@
+2012-11-09  Charlie Zender  <zender@uci.edu>
+
+	* Change most "Global" to "Group" attributes when printing metadata
+
 2012-11-08  Charlie Zender  <zender@uci.edu>
 
  	* Start GPE documentation
