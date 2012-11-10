@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.735 2012-11-08 19:46:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.736 2012-11-10 04:24:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3427,6 +3427,18 @@ Remember, if averaging or concatenating large files stresses your
 systems memory or disk resources, then the easiest solution is often to
 use the @samp{-v} option to retain only the most important variables
 (@pxref{Memory Requirements}).
+@example       
+ncks in_grp.nc           # Extract all groups and variables
+ncks -v scl in_grp.nc    # Extract variable scl from all groups
+ncks -g g1 in_grp.nc     # Extract all of group g1
+ncks -x -g g1 in_grp.nc  # Extract all groups except g1
+ncks -g g2,g3 -v scl in_grp.nc # Extract scl from groups g2 and g3
+@end example
+Overwriting and appending work as expected:
+@example
+# Replace scl in group g2 in out.nc with scl from group g2 from in_grp.nc
+ncks -A -g g2 -v scl in_grp.nc out.nc
+@end example
 
 Due to its special capabilities, @command{ncap2} interprets the
 @samp{-v} switch differently 
@@ -3638,19 +3650,102 @@ Short options: @samp{-G}@*
 Long options: @samp{--gpe}@*
 @end cartouche
 
-As of @acronym{NCO} 4.2.3 (November, 2012), all operators that accept
+@dfn{Group Path Editing}, or @acronym{GPE}, allows the user to
+restructure (i.e., add, remove, and rename groups) in the output file 
+relative to input file based on the patterns they provide.
+As of  @acronym{NCO} 4.2.3 (November, 2012), all operators that accept  
 netCDF4 files with groups accept the @samp{-G} switch, or its
-long-option equivalent @samp{--gpe} to specify the output group
-where results will be placed.
+long-option equivalent @samp{--gpe}.
+To master @acronym{GPE} one must understand the meaning of the
+required @var{gpe_dsc} argument that specifies the transformation of 
+input-to-output group paths.
 
-To master Group Path Editing (GPE) one must understand the meaning of the
-structure that specifies the editing, @var{gpe_dsc}, specified by the
-required option @samp{-G} or @samp{--gpe}. 
+Each @var{gpe_dsc} contains three elements, two of which are optional,
+in the following order:@*  
+@var{gpe_dsc} = @var{grp_pth}:@var{lvl_nbr}
 
+@table @var
+@item grp_pth
+Group Path.
+@cindex group path
+This (optional) component specifies the output group path that should be 
+appended after any editing (i.e., deletion or truncation) of the input
+path is performed.
+@item lvl_nbr
+The number of levels to truncate or delete from the input path.
+@end table
+@noindent
+A single character, either the colon or at-sign (@code{:} or
+@code{@@}), must separate these two arguments, if both are present.
+If only @var{grp_pth} is specifed, the separator character may be
+omitted, e.g., @samp{-G g1}.
+If only @var{lvl_nbr} is specifed, the separator character is still
+required to indicate it is a @var{lvl_nbr} arugment and not a
+@var{grp_pth}, e.g., @samp{-G :-1} or @samp{-G @@1}.
+
+If the at-sign separator character @code{@@} is used instead of the colon
+separator character @code{:}, then the following @var{lvl_nbr} arugment 
+must be positive and it will be assumed to refer to Truncation Mode.
+Hence, @samp{-G :-1} is the same as @samp{-G @@1}. 
+This is simply a way of making the @var{lvl_nbr} argument
+positive-definite. 
+
+@cindex @code{@@} (separator character)
+@cindex @code{:} (separator character)
+@cindex deletion (groups)
+@cindex truncation (groups)
+@cindex flattening (groups)
+@acronym{GPE} has three editing modes: Deletion, Truncation, and
+Flattening.
+Select one of @acronym{GPE}'s three editing modes by supplying a
+@var{lvl_nbr} that is positive, negative, or zero for Deletion, 
+Truncation, and Flattening mode, respectively. 
+
+In Deletion Mode, @var{lvl_nbr} is a positive integer which specifies
+how many group path components (i.e., groups) @acronym{GPE} to
+delete from the head of @var{grp_pth}. 
+For example @math{@var{lvl_nbr} = 3} changes the input path
+@file{/g1/g2/g3/g4/g5} to the output path @file{/g4/g5}.
+If the input path has fewer than @var{lvl_nbr} components (groups)
+then all groups will be deleted.
+
+In Truncation Mode, @var{lvl_nbr} is a negative integer which specifies
+how many group path components (i.e., groups) @acronym{GPE} to
+truncate from the tail of @var{grp_pth}. 
+For example @math{@var{lvl_nbr} = -3} change the input path
+@file{/g1/g2/g3/g4/g5} to the output path @file{/g1/g2}.
+If the input path has fewer than @var{lvl_nbr} components (groups)
+then all groups will be deleted.
+
+In Flattening Mode, indicated by the separator character alone
+or with @math{@var{lvl_nbr} = 0}, @acronym{GPE} removes the entire group
+path from the input file.  
+For example @code{-G :0} and @code{-G :} are identical and change the
+input path @file{/g1/g2/g3/g4/g5} to the output path @file{/}.
+
+Subsequent to the alteration of the input path by the specified
+editing mode, if any, @acronym{GPE} prepends (in Deletion Mode)
+or Appends (in Truncation Mode) any specifed @var{grp_pth} to the output
+path. 
+For example @code{-G g2} changes the input paths @file{/} and @file{/g1}
+to @file{/g2} and @file{/g1/g2}, respectively.
+Likewise, @code{-G g2/g3} changes the input paths @file{/} and @file{/g1}
+to @file{/g2/g3} and @file{/g1/g2/g3}, respectively.
+When @var{grp_pth} and @var{lvl_nbr} are both specified, the editing
+actions are taken in sequence so that, e.g., @code{-G g1/g2:2} 
+changes the input paths @file{/} and @file{/h1/h2/h3/h4}
+to @file{/g1/g2} and @file{/g1/g2/h3/h4}, respectively.
+Likewise, @code{-G g1/g2:-2} changes the input paths @file{/} and
+@file{/h1/h2/h3/h4} to @file{/g1/g2} and @file{/h1/h2/g1/g2},
+respectively. 
+
+Combining @acronym{GPE} with subsetting (@pxref{Subsetting Files}) 
+yields powerful control over the extracted (or excluded) variables and
+groups and their placement in the output file as shown by the following
+commands. 
+All commands below may be assumed to end with @samp{in.nc out.nc}.
 @example       
-Goal: Put variables from any group into any group
-All commands below may be assumed to end with "in.nc out.nc"
-# Existing capability is appending paths (apn):
+# Appending paths without editing:
 ncks                   # /g?/v? -> /g?/v?
 ncks             -v v1 # /g?/v1 -> /g?/v1
 ncks       -g g1       # /g1/v? -> /g1/v?
@@ -3661,8 +3756,8 @@ ncks -G o1       -v v1 # /g?/v1 -> /o1/g?/v1
 ncks -G o1 -g g1 -v v1 # /g1/v1 -> /o1/g1/v1
 ncks -G g1 -g /  -v v1 # /v1    -> /g1/v1
 ncks -G /  -g g1 -v v1 # /g1/v1 -> /g1/v1
-# Proposed capability #1 is "deleting" (dlt)
-# Syntax: -G [ppn]:dlt_nbr = # of levels to delete
+# Deletion Mode: Delete from and Prepend to path head
+# Syntax: -G [ppn]:lvl_nbr = # of levels to delete
 ncks -G :1    -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G :1    -g g1/g1 -v v1 # /g1/g1/v1 -> /g1/v1
 ncks -G :2    -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
@@ -3671,7 +3766,7 @@ ncks -G g2:1  -g g1    -v v1 # /g1/v1    -> /g2/v1
 ncks -G g2:2  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
 ncks -G g2:1  -g       -v v1 # /v1       -> /g2/v1
 ncks -G g2:1  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/g1/v1
-# Proposed capability #2 is "flattening" (ftn)
+# Flattening Mode: Remove all input path components
 # Syntax: -G [apn]: colon without numerical argument
 ncks -G :            -v v1 # /g?/v1    -> /v1
 ncks -G :   -g g1    -v v1 # /g1/v1    -> /v1
@@ -3679,9 +3774,9 @@ ncks -G :   -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
 ncks -G g2:          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:                # /g?/v?    -> /g2/v?
 ncks -G g2: -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
-# Proposed capability #3 is "backing up" (bku)
-# Syntax: -G [apn]:-bku_nbr = # of levels to back-up
-# NB: -G [apn]:-bku_nbr is equivalent to -G [apn]@@bku_nbr
+# Truncation Mode: Truncate from and Append to path tail
+# Syntax: -G [apn]:-lvl_nbr = # of levels to truncate
+# NB: -G [apn]:-lvl_nbr is equivalent to -G [apn]@@lvl_nbr
 ncks -G :-1   -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G :-1   -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/v1
 ncks -G :-2   -g g1/g2 -v v1 # /g1/g2/v1 -> /v1
@@ -3690,26 +3785,6 @@ ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g1/g2/v1
 ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
-@end example
-
-Combining GPE with subsetting controls yields powerful control over the 
-extracted (or excluded) variables and groups and their placement in the 
-output file:
-@example       
-ncks in_grp.nc           # Extract all groups and variables
-ncks -v scl in_grp.nc    # Extract variable scl from all groups
-ncks -g g1  in_grp.nc    # Extract all of group g1
-ncks -g g2,g3 -v scl in_grp.nc # Extract scl from groups g2 and g3
-ncks -G g1 in_grp.nc out.nc        # Put everything into group g1
-ncks -G g1 -v scl in_grp.nc out.nc # Put variable scl into group g1
-ncks -G g1 -g g1  in_grp.nc out.nc # Put group g1 into group g1
-# Put scl from groups g1 and g1g2 into group g6/g6g1
-ncks -G g6/g6g1 -g g1,g1g2 -v scl in_grp.nc out.nc
-@end example
-Overwriting and appending work as expected:
-@example
-# Replace scl in group g2 in out.nc with scl from group g2 from in_grp.nc
-ncks -A -g g2 -v scl in_grp.nc out.nc
 @end example
 
 @html

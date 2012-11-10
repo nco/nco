@@ -1,10 +1,10 @@
 2012-11-09  Charlie Zender  <zender@uci.edu>
 
+ 	* GPE documentation
+
 	* Change most "Global" to "Group" attributes when printing metadata
 
 2012-11-08  Charlie Zender  <zender@uci.edu>
-
- 	* Start GPE documentation
 
 	* NCO 4.2.3 release procedure:
  	Changes since nco-4_2_2: GPE, ncecat fix, group atts.
