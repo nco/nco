@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.202 2012-11-09 23:57:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.203 2012-11-10 02:25:59 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -200,39 +200,43 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
-    int rcd_lcl; /* [rcd] Return code */
+    int rcd_lcl; 
 
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
 
 #ifdef GRP_DEV_TO_DO
-    /* Has dimension been defined in output file? */
-    rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
+    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 
-    /* If dimension has not been defined, copy it */
-    if(rcd_lcl != NC_NOERR){
+      /* Has dimension been defined in output file? */
+      rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id);
 
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-
+      /* If dimension has not been defined, copy it */
+      if(rcd_lcl != NC_NOERR){
         if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
           int lmt_all_idx;
 
           /* Does dimension have user-specified limits? */
           for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-            if(strcmp(grp_nm_fll,lmt_all_lst[lmt_all_idx]->grp_nm_fll) == 0 && strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->dmn_nm) == 0){
+            if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
               dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
               break;
-            } /* end if strcmp */
+            } /* end if */
           } /* end loop over lmt_all_idx */
 
-          (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
-
+          (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id);
         }else{
-          (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
+          (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id);
           rec_dmn_out_id=dmn_out_id[idx];
         } /* end else record dimension */
+      } /* end if NC_NOERR */
 
-      }else { /* NC_FORMAT_NETCDF4 */
+    } else { /* NC_FORMAT_NETCDF4 */
 
+      /* Has dimension been defined in output file? */
+      rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
+
+      /* If dimension has not been defined, copy it */
+      if(rcd_lcl != NC_NOERR){
         if(!rec_dmn_nm || strcmp(dmn_nm,rec_dmn_nm)){
           int lmt_all_idx;
 
@@ -249,12 +253,10 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
           (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
           rec_dmn_out_id=dmn_out_id[idx];
         } /* end else record dimension */
+      } /* end if NC_NOERR */
+    } /* NC_FORMAT_NETCDF4 */
 
-      } /* NC_FORMAT_NETCDF4 */
-
-    } /* end If dimension has not been defined, copy it */
-
-#else
+#else  /* GRP_DEV */
 
     /* Has dimension been defined in output file? */
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
