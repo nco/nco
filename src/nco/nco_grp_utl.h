@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.125 2012-11-11 21:29:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.126 2012-11-11 23:19:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -317,6 +317,12 @@ nco_aux_add_dmn_trv                     /* [fnc] Add a coordinate variable that 
  nm_id_sct *xtr_lst,                /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,               /* I/O [nbr] Number of variables in extraction list */
  const grp_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
+
+nco_bool                    /* O [flg] Dimension was found */
+nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
+(int grp_id,                /* I [id] Group ID */
+ const char * const dmn_nm, /* I [sng] Dimension name to find */
+ int const dmn_len);        /* I [nbr] Dimension size to find */
 
 
 #ifdef __cplusplus
