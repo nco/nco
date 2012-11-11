@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.460 2012-11-09 20:15:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.461 2012-11-11 20:52:32 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.460 2012-11-09 20:15:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.460 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.461 2012-11-11 20:52:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.461 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -909,13 +909,15 @@ main(int argc,char **argv)
       if (HAS_SUBGRP){
         for(idx=0;idx<xtr_nbr;idx++){    
           nm_id_sct nm_id=xtr_lst[idx];
-#ifdef NCO_SANITY_CHECK
+#ifdef NCO_SANITY_CHECK        
           /* Obtain group ID from netCDF API using full group name */
+          int grp_id; 
           if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-            int grp_id;   
-            rcd+=nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
-            assert(grp_id == nm_id.grp_id );
-          }/* fl_fmt */
+            (void)nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
+          }else{ /* netCDF3 case */
+            grp_id=in_id;
+          }
+          assert(grp_id == nm_id.grp_id );
 #endif
           /* Print full name of variable */
           (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
@@ -947,18 +949,17 @@ main(int argc,char **argv)
           }else{ /* netCDF3 case */
             grp_id=in_id;
           }
-
           assert(grp_id == nm_id.grp_id );
 #endif
           /* Print full name of variable */
           (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
-          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
+          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,nm_id.grp_nm_fll,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
       }else { /* HAS_SUBGRP */
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
         for(idx=0;idx<xtr_nbr;idx++) {
-          (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
+          (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,xtr_lst[idx].grp_nm_fll,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
       } /* HAS_SUBGRP */
     } /* end if PRN_VAR_DATA */  

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.117 2012-11-09 23:57:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.118 2012-11-11 20:52:33 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -805,6 +805,7 @@ void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
+ const char * const grp_nm_fll, /* I [sng] Input variable full group name */
  lmt_all_sct * const *lmt_lst, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] Number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
@@ -833,7 +834,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   int nbr_dmn;                      /* [nbr] Number of dimensions in group */
   int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
   char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
-  int idx_dnm;
 
   lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
