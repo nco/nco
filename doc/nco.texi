@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.736 2012-11-10 04:24:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.737 2012-11-11 05:36:30 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3652,17 +3652,17 @@ Long options: @samp{--gpe}@*
 
 @dfn{Group Path Editing}, or @acronym{GPE}, allows the user to
 restructure (i.e., add, remove, and rename groups) in the output file 
-relative to input file based on the patterns they provide.
+relative to the input file based on the instructions they provide.
 As of  @acronym{NCO} 4.2.3 (November, 2012), all operators that accept  
 netCDF4 files with groups accept the @samp{-G} switch, or its
 long-option equivalent @samp{--gpe}.
 To master @acronym{GPE} one must understand the meaning of the
-required @var{gpe_dsc} argument that specifies the transformation of 
-input-to-output group paths.
+required @var{gpe_dsc} structure/argument that specifies the
+transformation of input-to-output group paths.
 
-Each @var{gpe_dsc} contains three elements, two of which are optional,
-in the following order:@*  
-@var{gpe_dsc} = @var{grp_pth}:@var{lvl_nbr}
+Each @var{gpe_dsc} contains up to three elements (two are optional) in
+the following order:@*   
+@var{gpe_dsc} = @var{grp_pth}:@var{lvl_nbr} or @var{grp_pth}@@@var{lvl_nbr}
 
 @table @var
 @item grp_pth
@@ -3672,11 +3672,13 @@ This (optional) component specifies the output group path that should be
 appended after any editing (i.e., deletion or truncation) of the input
 path is performed.
 @item lvl_nbr
-The number of levels to truncate or delete from the input path.
+The number of levels to delete (from the head) or truncate (from the
+tail) of the input path.
 @end table
 @noindent
 A single character, either the colon or at-sign (@code{:} or
-@code{@@}), must separate these two arguments, if both are present.
+@code{@@}), must separate these two components of the argument, if both
+are present. 
 If only @var{grp_pth} is specifed, the separator character may be
 omitted, e.g., @samp{-G g1}.
 If only @var{lvl_nbr} is specifed, the separator character is still
@@ -3702,20 +3704,25 @@ Select one of @acronym{GPE}'s three editing modes by supplying a
 Truncation, and Flattening mode, respectively. 
 
 In Deletion Mode, @var{lvl_nbr} is a positive integer which specifies
-how many group path components (i.e., groups) @acronym{GPE} to
-delete from the head of @var{grp_pth}. 
+the maximum number of group path components (i.e., groups) that
+@acronym{GPE} will try to delete from the head of @var{grp_pth}. 
 For example @math{@var{lvl_nbr} = 3} changes the input path
 @file{/g1/g2/g3/g4/g5} to the output path @file{/g4/g5}.
-If the input path has fewer than @var{lvl_nbr} components (groups)
-then all groups will be deleted.
+Input paths with @var{lvl_nbr} or fewer components (groups)
+will be completely deleted.
+
+In other words, @acronym{GPE} is tolerant of specifying too many group
+components to delete. 
+It deletes as many as possible, without complaint, and then begins to
+flatten the file (which may fail if namespace conflicts arise).
 
 In Truncation Mode, @var{lvl_nbr} is a negative integer which specifies
-how many group path components (i.e., groups) @acronym{GPE} to
-truncate from the tail of @var{grp_pth}. 
-For example @math{@var{lvl_nbr} = -3} change the input path
+the maximum number of group path components (i.e., groups) that
+@acronym{GPE} will try to truncate from the tail of @var{grp_pth}. 
+For example @math{@var{lvl_nbr} = -3} changeS the input path
 @file{/g1/g2/g3/g4/g5} to the output path @file{/g1/g2}.
-If the input path has fewer than @var{lvl_nbr} components (groups)
-then all groups will be deleted.
+Input paths with @var{lvl_nbr} or fewer components (groups)
+will be completely deleted.
 
 In Flattening Mode, indicated by the separator character alone
 or with @math{@var{lvl_nbr} = 0}, @acronym{GPE} removes the entire group
@@ -3755,13 +3762,13 @@ ncks       -g g1 -v v1 # /g1/v1 -> /g1/v1
 ncks -G o1       -v v1 # /g?/v1 -> /o1/g?/v1
 ncks -G o1 -g g1 -v v1 # /g1/v1 -> /o1/g1/v1
 ncks -G g1 -g /  -v v1 # /v1    -> /g1/v1
-ncks -G /  -g g1 -v v1 # /g1/v1 -> /g1/v1
+ncks -G g1/g2    -v v1 # /g?/v1 -> /g1/g2/g?/v1
 # Deletion Mode: Delete from and Prepend to path head
 # Syntax: -G [ppn]:lvl_nbr = # of levels to delete
 ncks -G :1    -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G :1    -g g1/g1 -v v1 # /g1/g1/v1 -> /g1/v1
 ncks -G :2    -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
-ncks -G :2    -g g1    -v v1 # Error
+ncks -G :2    -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G g2:1  -g g1    -v v1 # /g1/v1    -> /g2/v1
 ncks -G g2:2  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
 ncks -G g2:1  -g       -v v1 # /v1       -> /g2/v1
@@ -3780,7 +3787,7 @@ ncks -G g2: -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
 ncks -G :-1   -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G :-1   -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/v1
 ncks -G :-2   -g g1/g2 -v v1 # /g1/g2/v1 -> /v1
-ncks -G :-2   -g g1    -v v1 # Error
+ncks -G :-2   -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g1/g2/v1
@@ -11081,9 +11088,9 @@ output groups by stripping the input file name of any type-suffix
 (e.g., @code{.nc}), and all but the final component of the full
 filename. 
 @example
-ncecat --gag 85.nc 86.nc 87.nc 8589.nc # Output groups 85, 86, 87
-ncecat -G 85_ 85.nc 85.nc 85.nc 8589.nc # Output groups 85_00, 85_01, 85_02
-ncecat -G 85/ 85.nc 85.nc 85.nc 8589.nc # Output groups 85/00, 85/01, 85/02
+ncecat --gag 85.nc 86.nc 87.nc 8587.nc # Output groups 85, 86, 87
+ncecat -G 85_ a.nc b.nc c.nc 8589.nc # Output groups 85_00, 85_01, 85_02
+ncecat -G 85/ a.nc b.nc c.nc 8589.nc # Output groups 85/00, 85/01, 85/02
 @end example
 
 With both RAG and GAG the @var{output-file} size is the sum of the sizes

@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.30 2012-11-06 20:06:15 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.31 2012-11-11 05:36:29 zender Exp $";
 
 	float lat(lat);
 	lat:units = "degrees_north";
@@ -84,8 +84,10 @@ data:
 	group: g1g1 { 
 		variables:
 			float scl;
+			int v1;
 		data:
 			scl=1.11;
+			v1=11;
 	} // end g1g1
 
 } // end g1
