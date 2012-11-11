@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.124 2012-11-08 23:10:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.125 2012-11-11 21:29:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -311,10 +311,9 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
  const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 nm_id_sct *                         /* O [sct] Extraction list */                                
-nco_add_dmm_trv                     /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
+nco_aux_add_dmn_trv                     /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
 (const int nc_id,                   /* I [id] netCDF file ID */
  const char * const var_nm,         /* I [sng] Variable name to find */
- const char * const dm_nm_fll,     /* I [sng] Full dimension/variable name to avoid duplicates */
  nm_id_sct *xtr_lst,                /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,               /* I/O [nbr] Number of variables in extraction list */
  const grp_tbl_sct * const trv_tbl);/* I [sct] Traversal table */

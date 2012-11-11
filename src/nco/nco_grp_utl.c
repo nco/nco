@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.256 2012-11-09 23:37:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.257 2012-11-11 21:29:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1988,17 +1988,8 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
               /* Get dimension name */
               (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
-              /* Construct the possible full (dimension/variable) name */
-              char* dm_nm_fll=(char*)nco_malloc(strlen(trv.nm_fll)+strlen(dmn_nm)+2);
-              strcpy(dm_nm_fll,trv.nm_fll);
-              if(strcmp(trv.nm_fll,"/")!=0) strcat(dm_nm_fll,"/");
-              strcat(dm_nm_fll,dmn_nm); 
-
               /* Add all possible coordinate variables for current variable */
-              xtr_lst=nco_add_dmm_trv(nc_id,dmn_nm,dm_nm_fll,xtr_lst,xtr_nbr,trv_tbl);
-
-              /* Memory management after dimension */
-              dm_nm_fll=(char*)nco_free(dm_nm_fll);
+              xtr_lst=nco_aux_add_dmn_trv(nc_id,dmn_nm,xtr_lst,xtr_nbr,trv_tbl);
 
             } /* End loop over idx_var_dim: list dimensions for variable */
           } /* End strcmp: match in compare item on list with current item */
@@ -2617,10 +2608,9 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
 
 
 nm_id_sct *                         /* O [sct] Extraction list */                                
-nco_add_dmm_trv                     /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
+nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
 (const int nc_id,                   /* I [id] netCDF file ID */
  const char * const var_nm,         /* I [sng] Variable name to find */
- const char * const dm_nm_fll,      /* I [sng] Full dimension/variable name to avoid duplicates */
  nm_id_sct *xtr_lst,                /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,               /* I/O [nbr] Number of variables in extraction list */
  const grp_tbl_sct * const trv_tbl)/* I [sct] Traversal table */
@@ -2661,6 +2651,12 @@ nco_add_dmm_trv                     /* [fnc] Add a coordinate variable that matc
           /* Check if dimension matches the requested variable (it is a coordinate variable) */ 
           if(strcmp(dmn_nm,var_nm) == 0){
 
+            /* Construct the full (dimension/variable) name to avoid duplicate insertions */
+            char* dm_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2);
+            strcpy(dm_nm_fll,trv.grp_nm_fll);
+            if(strcmp(trv.grp_nm_fll,"/") !=0 ) strcat(dm_nm_fll,"/");
+            strcat(dm_nm_fll,dmn_nm); 
+
             /* Check if requested coordinate variable is already on extraction list */
             if(xtr_lst_fnd(dm_nm_fll,xtr_lst,*xtr_nbr) == 0 ){
 
@@ -2697,11 +2693,11 @@ nco_add_dmm_trv                     /* [fnc] Add a coordinate variable that matc
 
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco_add_dmm_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
+    (void)fprintf(stdout,"%s: INFO nco_aux_add_dmn_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
     xtr_lst_ptr(xtr_lst,*xtr_nbr);
   } 
 
   return xtr_lst;
-} /* end nco_add_dmm_trv() */ 
+} /* end nco_aux_add_dmn_trv() */ 
 
 
