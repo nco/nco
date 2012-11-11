@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.118 2012-11-11 20:52:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.119 2012-11-11 23:37:32 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -8,6 +8,7 @@
 
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 #include "nco_var_utl.h" /* Variable utilities */
+#include "nco_grp_utl.h" /* Group utilities */
 
 /* fxm: strings statically allocated with NCR_MAX_LEN_FMT_SNG chars may be susceptible to buffer overflow attacks */
 /* Length should be computed at run time but doing so would be painful */
@@ -805,7 +806,6 @@ void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
- const char * const grp_nm_fll, /* I [sng] Input variable full group name */
  lmt_all_sct * const *lmt_lst, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] Number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
@@ -893,7 +893,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
       for(jdx=0;jdx<lmt_nbr;jdx++){
-        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0){
+        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm,dmn_sz)){
           lmt_msa[idx]=lmt_lst[jdx];
           break;
         } /* end if */

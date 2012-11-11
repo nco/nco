@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.258 2012-11-11 23:19:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.259 2012-11-11 23:37:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2704,11 +2704,11 @@ nco_bool                    /* O [flg] Dimension was found */
 nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
 (int grp_id,                /* I [id] Group ID */
  const char * const dmn_nm, /* I [sng] Dimension name to find */
- int const dmn_len)         /* I [nbr] Dimension size to find */
+ int const dmn_sz)          /* I [nbr] Dimension size to find */
 {
   typedef struct {			
     char nm[NC_MAX_NAME];
-    size_t len;
+    size_t sz;
   } nco_dmn_t;
   int nbr_dmn;
   int dmn_idx;
@@ -2721,11 +2721,11 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in grou
   (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,1);
 
   for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-    nc_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_lst[dmn_idx].nm,&dmn_lst[dmn_idx].len);
+    nc_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_lst[dmn_idx].nm,&dmn_lst[dmn_idx].sz);
   }
 
   for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-    if(strcmp(dmn_nm,dmn_lst[dmn_idx].nm) == 0 && (dmn_len == dmn_lst[dmn_idx].len) ){
+    if(strcmp(dmn_nm,dmn_lst[dmn_idx].nm) == 0 && (dmn_sz == dmn_lst[dmn_idx].sz) ){
       dmn_ids=(int *)nco_free(dmn_ids);
       dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
       return True;
