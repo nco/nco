@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.462 2012-11-11 23:37:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.463 2012-11-12 01:53:36 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.462 2012-11-11 23:37:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.462 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.463 2012-11-12 01:53:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.463 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -804,8 +804,8 @@ main(int argc,char **argv)
       for(idx=0;idx<xtr_nbr;idx++){
         int var_out_id;
         /* Define variable in output file */
-        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,xtr_lst[idx].grp_nm_fll,lmt_all_lst,nbr_dmn_fl,dfl_lvl); 
-        else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,xtr_lst[idx].grp_nm_fll,dfl_lvl);
+        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); 
+        else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
         /* Copy variable's attributes */
         if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,grp_out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
       } /* end loop over idx */
@@ -854,7 +854,7 @@ main(int argc,char **argv)
           /* Multi-slab routines */
           /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
           if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,xtr_lst[idx].grp_nm_fll,lmt_all_lst,nbr_dmn_fl); 
-          else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,xtr_lst[idx].grp_nm_fll);
+          else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
         } /* end loop over idx */
       }else{
         /* MM3 workaround algorithm */
@@ -869,7 +869,7 @@ main(int argc,char **argv)
         for(idx=0;idx<fix_nbr;idx++){
           if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
           if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-          (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm,fix_lst[idx]->grp_nm_fll);
+          (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
         } /* end loop over idx */
         /* Copy record data record-by-record */
         (void)nco_cpy_rec_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);

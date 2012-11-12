@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.119 2012-11-11 23:37:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.120 2012-11-12 01:53:36 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -692,6 +692,11 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
 
+  /* Initialize */
+  for(idx=0;idx<nbr_dim;idx++){
+    lmt_msa[idx]=NULL;
+  }
+
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
 
@@ -699,17 +704,15 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   int fl_fmt;
   (void)nco_inq_format(in_id,&fl_fmt);
 
-#ifdef GRP_DEV_TO_DO
-
+#ifdef GRP_DEV
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-
     for(idx=0;idx<nbr_dim;idx++){
       char dmn_nm[NC_MAX_NAME];
       long dmn_sz;
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
       for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-        if(strcmp(grp_nm_fll,lmt_lst[jdx]->grp_nm_fll) == 0 && strcmp(dmn_nm,lmt_lst[jdx]->dmn_nm) == 0){
+        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm,dmn_sz)){
           lmt_msa[idx]=lmt_lst[jdx];
           break;
         } /* end if */
@@ -719,6 +722,11 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
       dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
       dmn_map_srt[idx]=0L;
     } /* end loop over idx */
+#ifdef NCO_SANITY_CHECK
+    for(idx=0;idx<nbr_dim;idx++){
+      assert(lmt_msa[idx]);
+    }
+#endif
   } /* NC_FORMAT_NETCDF4 */
 
   else { 

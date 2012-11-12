@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.144 2012-11-09 21:35:51 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.145 2012-11-12 01:53:35 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -731,7 +731,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
 	
 #NCO 4.2.2: #20 groups: test a chunk run: the output check is just the value of "area" not the validation of the chunk
-    $tst_cmd[0]="ncks -O -D 4 --cnk_plc=all -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O --cnk_plc=all -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v area %tmp_fl_00%";
     $dsc_sng="(Groups required) Chunking policy all";
     $tst_cmd[2]="1010";
@@ -828,6 +828,15 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array		
+	
+#NCO 4.2.3: #31 groups: Group dimension hyperslabs
+    $tst_cmd[0]=" ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]=" ncks -v lat_gds -O -H  -s '%g' %tmp_fl_00%";
+    $dsc_sng="(Groups required) Group dimension hyperslabs";
+    $tst_cmd[2]="1";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array			
 
 #####################
 #### ncpdq tests #### -OK !

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.72 2012-11-09 19:48:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.73 2012-11-12 01:53:36 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -47,7 +47,6 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
    const char * const var_nm, /* I [sng] Input variable name */
-   const char * const grp_nm_fll, /* I [sng] Input variable full group name */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   int /* O [id] Output file variable ID */
@@ -56,7 +55,6 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
    const char * const var_nm, /* I [sng] Input variable name */
-   const char * const grp_nm_fll, /* I [sng] Input variable full group name */
    CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
    const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
@@ -68,8 +66,7 @@ extern "C" {
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
    const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
-   const char *var_nm, /* I [sng] Variable name */
-   const char * const grp_nm_fll); /* I [sng] Input variable full group name */
+   const char *var_nm); /* I [sng] Variable name */
 
   void
   nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simple hyperslabs */

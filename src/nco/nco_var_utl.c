@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.204 2012-11-10 02:32:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.205 2012-11-12 01:53:36 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_var_utl.h" /* Variable utilities */
+#include "nco_grp_utl.h" /* Variable utilities */
 
 int /* O [id] Output file variable ID */
 nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
@@ -14,7 +15,6 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
  const int out_id, /* I [id] netCDF output file ID */
  const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
  const char * const var_nm, /* I [sng] Input variable name */
- const char * const grp_nm_fll, /* I [sng] Input variable full group name */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -136,7 +136,6 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const int out_id, /* I [id] netCDF output file ID */
  const char *rec_dmn_nm, /* I [sng] Output file record dimension name  */
  const char * const var_nm, /* I [sng] Input variable name */
- const char * const grp_nm_fll, /* I [sng] Input variable full group name */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
@@ -204,7 +203,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
 
-#ifdef GRP_DEV_TO_DO
+#ifdef GRP_DEV
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 
       /* Has dimension been defined in output file? */
@@ -217,7 +216,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
           /* Does dimension have user-specified limits? */
           for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-            if(strcmp(grp_nm_fll,lmt_all_lst[lmt_all_idx]->grp_nm_fll) == 0 && strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->dmn_nm) == 0){
+            if(strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm,dmn_sz)){
               dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
               break;
             } /* end if */
@@ -327,8 +326,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
- const char *var_nm, /* I [sng] Variable name */
- const char * const grp_nm_fll) /* I [sng] Input variable full group name */
+ const char *var_nm) /* I [sng] Variable name */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
   /* Purpose: Copy single variable from input netCDF file to output netCDF file
