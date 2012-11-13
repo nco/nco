@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.740 2012-11-13 13:56:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.741 2012-11-13 14:34:48 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -142,7 +142,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2012 Dec&nbsp;??: NCO 4.2.3</li>
+<li>2012 Dec&nbsp;??: NCO 4.2.4</li>
+<li>2012 Nov&nbsp;13: NCO 4.2.3</li>
 <li>2012 Oct&nbsp;29: NCO 4.2.2 (Groups)</li>
 <li>2012 Aug&nbsp;02: NCO 4.2.1 (RAM disks)</li>
 <li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>

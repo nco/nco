@@ -1,8 +1,14 @@
-nco (4.2.3-1) unstable; urgency=low
+nco (4.2.4-1) unstable; urgency=low
 
   * new upstream version
 
  -- Charlie Zender <zender@uci.edu>  Fri, 29 Nov 2012 16:00:42 -0700
+
+nco (4.2.3-1) unstable; urgency=low
+
+  * new upstream version (GPE, ncecat fix, group atts.)
+
+ -- Charlie Zender <zender@uci.edu>  Tue, 13 Nov 2012 16:00:42 -0700
 
 nco (4.2.2-1) unstable; urgency=low
 

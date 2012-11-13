@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.737 2012-11-11 05:36:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.738 2012-11-13 14:34:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.2.3
-@set doc-edition 4.2.3
+@set nco-edition 4.2.4
+@set doc-edition 4.2.4
 @set copyright-years 1995--2012
 @set update-year 2012
 @set update-date 8 November 2012
@@ -3479,7 +3479,7 @@ of the @samp{-v} switch may contain @dfn{extended regular expressions}.
 As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
 to @command{ncatted} may contain @dfn{extended regular expressions}. 
 @c fxm
-@c As of @acronym{NCO} 4.2.3 (November, 2012), group names arguments 
+@c As of @acronym{NCO} 4.2.4 (November, 2012), group names arguments 
 @c of the @samp{-g} switch may contain @dfn{extended regular expressions}.
 
 @cindex @acronym{POSIX}
