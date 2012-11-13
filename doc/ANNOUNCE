@@ -1,14 +1,14 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.521 2012-11-07 21:10:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.522 2012-11-13 13:56:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release is occuring sooner than expected because it contains both
+This release occurs sooner than expected because it contains both
 an important bufgix and a new feature: 
 We fixed a bug introduced in the last version, NCO 4.2.2, that could
-cause ncecat, under rare circumstances, to skip a single file.
+cause ncecat, under limited circumstances, to skip a single file.
 And we added a feature called Group Path Editing (GPE) that permits
 users to move data en masse amongst arbitrary netCDF4 groups.
 
