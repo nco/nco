@@ -1,5 +1,7 @@
 2012-11-13  Charlie Zender  <zender@uci.edu>
 
+	* ncunits filter
+
 	* NCO 4.2.4 release procedure:
  	Changes since nco-4_2_3:
 	cd ~/nco;cvs tag -d nco-4_2_4;cvs tag -d nco-4_2_4-1
