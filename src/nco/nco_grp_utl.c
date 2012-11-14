@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.260 2012-11-12 01:53:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.261 2012-11-14 22:55:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1344,12 +1344,12 @@ nco_grp_itr
 
 
 void                       
-nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
- int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all, /* O [nbr] Number of variables in file  */
- int * const grp_nbr_all, /* O [nbr] Number of groups in file */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+nco_inq_trv                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(int * const att_nbr_glb,            /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all,            /* O [nbr] Number of variables in file  */
+ int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
+ const grp_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
   int att_nbr_lcl; /* [nbr] Number of global attributes in file */
@@ -1376,7 +1376,7 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
   } /* end uidx  */
 
   if(dbg_lvl_get() >= nco_dbg_fl){
-    (void)fprintf(stdout,"%s: INFO nco4_inq_trv() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",
+    (void)fprintf(stdout,"%s: INFO nco_inq_trv() reports file contains %d group%s comprising %d variable%s, %d dimension%s, and %d global attribute%s\n",
       prg_nm_get(),grp_nbr_lcl,(grp_nbr_lcl != 1) ? "s" : "",var_nbr_lcl,(var_nbr_lcl != 1) ? "s" : "",dmn_nbr_lcl,(dmn_nbr_lcl != 1) ? "s" : "",att_nbr_lcl,(att_nbr_lcl != 1) ? "s" : "");
   }
 
@@ -1386,7 +1386,7 @@ nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, 
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
 
   return;
-} /* end nco4_inq_trv() */
+} /* end nco_inq_trv() */
 
 int                       /* [rcd] Return code */
 nco4_inq_vars             /* [fnc] Find and return total of variables */
@@ -2701,7 +2701,7 @@ nco_bool                    /* O [flg] Dimension was found */
 nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
 (int grp_id,                /* I [id] Group ID */
  const char * const dmn_nm, /* I [sng] Dimension name to find */
- int const dmn_sz)          /* I [nbr] Dimension size to find */
+ long const dmn_sz)         /* I [nbr] Dimension size to find */
 {
   typedef struct {			
     char nm[NC_MAX_NAME];
@@ -2722,7 +2722,7 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in grou
   }
 
   for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-    if(strcmp(dmn_nm,dmn_lst[dmn_idx].nm) == 0 && (dmn_sz == dmn_lst[dmn_idx].sz) ){
+    if(strcmp(dmn_nm,dmn_lst[dmn_idx].nm) == 0 && ((size_t)dmn_sz == dmn_lst[dmn_idx].sz) ){
       dmn_ids=(int *)nco_free(dmn_ids);
       dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
       return True;

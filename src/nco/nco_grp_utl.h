@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.127 2012-11-11 23:37:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.128 2012-11-14 22:55:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -164,12 +164,12 @@ nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst 
  int * xtr_nbr);           /* I/O [nbr] Current index in exclusion/extraction list */
 
 void                       
-nco4_inq_trv              /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(int * const att_nbr_glb, /* O [nbr] Number of global attributes in file */
- int * const dmn_nbr_all, /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all, /* O [nbr] Number of variables in file  */
- int * const grp_nbr_all, /* O [nbr] Number of groups in file */
- const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+nco_inq_trv                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(int * const att_nbr_glb,            /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all,            /* O [nbr] Number of variables in file  */
+ int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
+ const grp_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 int                       /* [rcd] Return code */
 nco4_inq_vars             /* [fnc] Find and return total of variables */
@@ -322,7 +322,7 @@ nco_bool                    /* O [flg] Dimension was found */
 nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
 (int grp_id,                /* I [id] Group ID */
  const char * const dmn_nm, /* I [sng] Dimension name to find */
- int const dmn_sz);         /* I [nbr] Dimension size to find */
+ long const dmn_sz);        /* I [nbr] Dimension size to find */
 
 
 #ifdef __cplusplus

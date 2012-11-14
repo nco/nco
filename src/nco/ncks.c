@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.463 2012-11-12 01:53:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.464 2012-11-14 22:55:23 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.463 2012-11-12 01:53:36 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.463 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.464 2012-11-14 22:55:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.464 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -180,7 +180,7 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
-  int glb_att_nbr;
+  int nbr_glb_att;
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_nbr=0; /* [nbr] Number of groups to extract */
   int idx;
@@ -629,19 +629,18 @@ main(int argc,char **argv)
      } /* endif aux */
   } /* endif aux_nbr */
 
-  /* Get number of variables, dimensions, and global attributes in file */
-#ifdef ENABLE_NETCDF4
-  (void)nco4_inq_trv(&glb_att_nbr,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
+  /* Get number of variables, dimensions, and global attributes in file, file format */
+  (void)nco_inq_trv(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
   (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
-# ifdef NCO_SANITY_CHECK
-  int var_nbr_all;
-  (void)nco4_inq_vars(in_id,&var_nbr_all);
-  assert(var_nbr_all == nbr_var_fl);
-# endif
-#else /* !ENABLE_NETCDF4 */
-  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
-#endif /* ENABLE_NETCDF4 */
   (void)nco_inq_format(in_id,&fl_in_fmt);
+#ifdef NCO_SANITY_CHECK 
+  if(fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT){
+    int nbr_dmm,nbr_var,nbr_att;
+    (void)nco_inq(in_id,&nbr_dmm,&nbr_var,&nbr_att,NULL);
+    assert(nbr_dmm == nbr_dmn_fl && nbr_var == nbr_var_fl && nbr_att == nbr_glb_att );
+  } /* NC_FORMAT_CLASSIC */
+#endif /* NCO_SANITY_CHECK */
+  
 
   /* Get record dimension name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
   if(!FIX_REC_DMN && !rec_dmn_nm && (rec_dmn_id != NCO_REC_DMN_UNDEFINED)){ 
@@ -887,7 +886,7 @@ main(int argc,char **argv)
   }else{ /* !fl_out */
     /* No output file was specified so PRN_ tokens refer to screen printing */
     if(PRN_GLB_METADATA){
-      (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,nco_fmt_sng(fl_in_fmt));
+      (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
       if(HAS_SUBGRP){
         /* Print global attributes recursive */
         (void)nco_prn_att_trv(in_id,trv_tbl);
