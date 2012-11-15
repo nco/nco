@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.262 2012-11-15 20:16:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.263 2012-11-15 23:18:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1268,6 +1268,10 @@ nco_grp_itr
   dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn_prn,NULL,1);
+
+#ifndef ENABLE_NETCDF4
+  nbr_grp=0;
+#endif
 
   /* Add to table: this is a group */
   obj.nm_fll=grp_nm_fll;
