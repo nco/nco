@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.742 2012-11-15 01:15:26 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.743 2012-11-15 19:39:01 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -67,7 +67,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is 4.2.3 last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is 4.2.2 last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 
