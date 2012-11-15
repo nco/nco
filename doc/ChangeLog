@@ -1,3 +1,9 @@
+2012-11-15  Charlie Zender  <zender@uci.edu>
+
+	* Change var and grp to obj where usage is generic
+
+	* Change nc_typ to nco_obj_typ
+
 2012-11-13  Charlie Zender  <zender@uci.edu>
 
 	* ncunits filter

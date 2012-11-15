@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.128 2012-11-14 22:55:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.129 2012-11-15 20:16:01 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -123,7 +123,6 @@ nco_def_grp_rcr
  const int out_id, /* I [ID] netCDF output-file ID */
  const char * const prn_nm, /* I [sng] Parent group name */
  const int rcr_lvl); /* I [nbr] Recursion level */
-
 
 int                                      /* O [rcd] Return code */
 nco_grp_itr
@@ -270,11 +269,11 @@ nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter
  const grp_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
 
-nco_bool                          /* O [flg] Is name in file */
-nco_chk_trv                       /* [fnc] Check if input names of -v or -g are in file */
+nco_bool /* O [flg] Is name in file */
+nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 (char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
- int const var_xtr_nbr,           /* I [nbr] Number of items in the above list */
- nc_typ  typ,                     /* I [enm] netCDF4 object type: is list group or variable */
+ const int var_xtr_nbr, /* I [nbr] Number of items in the above list */
+ const nco_obj_typ typ, /* I [enm] netCDF4 object type: is list group or variable */
  const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.464 2012-11-14 22:55:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.465 2012-11-15 20:16:00 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.464 2012-11-14 22:55:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.464 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.465 2012-11-15 20:16:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.465 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -601,7 +601,7 @@ main(int argc,char **argv)
   (void)nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST);
 
    /* Check for invalid -g <names>  */
-  if(nco_chk_trv(grp_lst_in,grp_nbr,nc_typ_grp,trv_tbl) == 0){
+  if(nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl) == 0){
     goto out;
   }
 

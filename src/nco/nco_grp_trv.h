@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.16 2012-11-09 23:21:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.17 2012-11-15 20:16:00 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -19,19 +19,19 @@
 #include "nco_mmr.h" /* Memory management */
 
 typedef enum{               /* [enm] netCDF4 object type: group, variable */
- nc_typ_err=-1,                /* -1 Invalid type for initialization */
- nc_typ_grp,                   /*  0, Group */
- nc_typ_var                    /*  1, variable */
-}nc_typ; 
-/* end nc_typ */
+ nco_obj_typ_err=-1,        /* -1 Invalid type for initialization */
+ nco_obj_typ_grp,           /*  0, Group */
+ nco_obj_typ_var            /*  1, variable */
+} nco_obj_typ; 
+/* end nco_obj_typ */
 
-/* struct to store basic info needed for the traversal algorythm: 
+/* Structure to store basic info needed for the traversal algorithm: 
    this identifies an "object", as having a path and a type, like in HDF5 
 */
 typedef struct{ 
   char    *nm_fll;         /* [sng] Absolute name (path): this can be a variable or group */
   char    *grp_nm_fll;     /* [sng] Full group name (for variables, for convenience to avoid to obtain several times) */
-  nc_typ  typ;             /* [enm] netCDF4 object type: group or variable */
+  nco_obj_typ typ;         /* [enm] netCDF4 object type: group or variable */
   char    nm[NC_MAX_NAME]; /* [sng] Relative name */
   int     flg;             /* [flg] mark flag (several actions) */
   int     nbr_att;         /* [nbr] Number of attributes */
@@ -39,12 +39,12 @@ typedef struct{
   int     nbr_dmn;         /* [nbr] Number of dimensions */
   int     nbr_grp;         /* [nbr] Number of sub-groups ( for group ) */
 } grp_trv_sct;
-/* end nc_typ */
+/* end grp_trv_sct */
 
-/* struct that stores all objects */
+/* Structure that stores all objects */
 typedef struct{
-  unsigned sz;            /* [nbr] Allocated size */
-  unsigned nbr;           /* [nbr] Number of current elements */
+  unsigned int sz;            /* [nbr] Allocated size */
+  unsigned int nbr;           /* [nbr] Number of current elements */
   grp_trv_sct *grp_lst;   /* [sct] Array of grp_trv_sct */
 } grp_tbl_sct;
 /* end grp_tbl_sct */
@@ -64,6 +64,5 @@ trv_tbl_add
 (grp_trv_sct obj,          /* I   [sct] Object to store */
  grp_tbl_sct *tbl);        /* I/O [sct] Traversal table */
 /* end trv_tbl_add */
-
 
 #endif /* NCO_GRP_TRV_H */
