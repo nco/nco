@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.465 2012-11-15 20:16:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.466 2012-11-15 20:33:58 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.465 2012-11-15 20:16:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.465 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.466 2012-11-15 20:33:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.466 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -641,7 +641,6 @@ main(int argc,char **argv)
   } /* NC_FORMAT_CLASSIC */
 #endif /* NCO_SANITY_CHECK */
   
-
   /* Get record dimension name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
   if(!FIX_REC_DMN && !rec_dmn_nm && (rec_dmn_id != NCO_REC_DMN_UNDEFINED)){ 
     rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
@@ -696,14 +695,8 @@ main(int argc,char **argv)
   } /* EXTRACT_ASSOCIATED_COORDINATES */
 
   /* Sort extraction list alphabetically or by variable ID */
-  if(xtr_nbr > 1){
-    if(HAS_SUBGRP){
-      
-    }else{
-      xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
-    }/* HAS_SUBGRP */
-  }/* xtr_nbr */
-    
+  if(xtr_nbr > 1)xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
+
   /* We now have final list of variables to extract. Phew. */
 
   /* Find coordinate/dimension values associated with user-specified limits

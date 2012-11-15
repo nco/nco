@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.145 2012-11-12 01:53:35 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.146 2012-11-15 20:33:58 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -815,7 +815,7 @@ sub tst_rgr {
     $tst_cmd[0]="ncks -O -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00% ";
     $dsc_sng="(Groups required) Extract 'bounds' variables";
-    $tst_cmd[2]="03003007507501013.25";
+    $tst_cmd[2]="1005001000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array				
@@ -830,13 +830,22 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array		
 	
 #NCO 4.2.3: #31 groups: Group dimension hyperslabs
-    $tst_cmd[0]=" ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]=" ncks -v lat_gds -O -H  -s '%g' %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -v lat_gds -O -H  -s '%g' %tmp_fl_00%";
     $dsc_sng="(Groups required) Group dimension hyperslabs";
-    $tst_cmd[2]="1";
+    $tst_cmd[2]="-30";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array			
+	 
+#NCO 4.2.4: #32 groups: Sort output alphabetically
+    $tst_cmd[0]="ncks -O -v lat,area $in_pth_arg in_grp.nc  %tmp_fl_00%";
+	$tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00%";
+    $dsc_sng="(Groups required) Sort output alphabetically";
+    $tst_cmd[2]="-9090";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array				
 
 #####################
 #### ncpdq tests #### -OK !

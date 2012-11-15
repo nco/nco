@@ -1,3 +1,7 @@
+2012-11-15  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks regression test #32: Sort output alphabetically
+	
 2012-11-15  Charlie Zender  <zender@uci.edu>
 
 	* Change var and grp to obj where usage is generic

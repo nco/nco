@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.162 2012-10-29 23:03:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.163 2012-11-15 20:33:58 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1661,6 +1661,9 @@ int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const gr
 int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id){return 1;}
 int nco_inq_grp_parent(const int nc_id,int * const prn_id){return 1;}
 int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){return 1;}
+int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){return 1;}
+int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id){return 1;}
+int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id){return 1;}
 #endif /* HAVE_NETCDF4_H */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
