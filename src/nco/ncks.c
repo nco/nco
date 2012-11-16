@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.468 2012-11-16 03:34:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.469 2012-11-16 18:13:00 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.468 2012-11-16 03:34:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.468 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.469 2012-11-16 18:13:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.469 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -600,11 +600,10 @@ main(int argc,char **argv)
 #ifdef ENABLE_NETCDF4
   /* Check for valid -v <names> (handles wilcards) */
   (void)nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST);
-#endif
-   /* Check for invalid -g <names>  */
-  if(nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl) == 0){
-    goto out;
-  }
+
+  /* Ensure all specified group names are valid */
+  if(grp_nbr) nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl);
+#endif /* !ENABLE_NETCDF4 */
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
@@ -958,7 +957,7 @@ main(int argc,char **argv)
     } /* end if PRN_VAR_DATA */  
   } /* !fl_out */
   
-out:
+out: /* goto out */
   /* Extraction list no longer needed */
   if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   

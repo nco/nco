@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.264 2012-11-16 00:35:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.265 2012-11-16 18:13:00 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -521,7 +521,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     } /* end grp_idx */
   } /* end grp_xtr_nbr */
 
-
 #else /* GRP_DEV */ 
 
   int jdx;
@@ -921,8 +920,6 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   return xtr_lst;
 } /* end nco4_var_lst_xcl() */
 
-
-
 void
 nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */
 (const int nc_id,       /* I [ID] netCDF file ID */
@@ -942,9 +939,9 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
     /* Obtain group ID from netCDF API using full group name */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-    }else{ /* netCDF3 case */
+    }else{ /* netCDF3 */
       grp_id=nc_id;
-    }
+    } /* netCDF3 */
 
     /* Obtain variable ID from netCDF API using group ID */
     (void)nco_inq_varid(grp_id,trv.nm,&var_id);
@@ -967,7 +964,7 @@ nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name fro
     xtr_lst[*xtr_nbr].id=var_id;
     xtr_lst[*xtr_nbr].grp_nm=(char*)strdup(tmp);
     xtr_lst[*xtr_nbr].grp_id=grp_id;
-  }
+  } /* endif variable */
 
   return;
 } /* end nco4_xtr_grp_nm_fll() */
@@ -1275,6 +1272,7 @@ nco_grp_itr
 
   /* Add to table: this is a group */
   obj.nm_fll=grp_nm_fll;
+  obj.nm_fll_lng=strlen(obj.nm_fll);
   obj.grp_nm_fll=grp_nm_fll;
   strcpy(obj.nm,grp_nm);
   obj.typ=nco_obj_typ_grp;
@@ -1303,6 +1301,7 @@ nco_grp_itr
 
     /* Add to table: this is a variable NOTE: nbr_var, nbr_grp not valid here */
     obj.nm_fll=var_nm_fll;
+    obj.nm_fll_lng=strlen(obj.nm_fll);
     obj.grp_nm_fll=grp_nm_fll;
     obj.typ=nco_obj_typ_var;
     strcpy(obj.nm,var_nm);
@@ -2065,7 +2064,7 @@ nco_aux_grp_id                  /* [fnc] Return the group ID from the variable f
   strcpy(grp_nm_fll,var_nm_fll);
   /* Find last occurence of '/' */
   pch=strrchr(grp_nm_fll,'/');
-  /* Trim the variable name */
+  /* Trim variable name */
   pos=pch-grp_nm_fll;
   grp_nm_fll[pos]='\0';
 
@@ -2333,34 +2332,100 @@ nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates
   return xtr_lst;
 } /* nco_var_lst_crd_add_cf_trv() */
 
-nco_bool                          /* O [flg] Is name in file */
-nco_chk_trv                       /* [fnc] Check if input names of -v or -g are in file */
-(char * const * const obj_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
- const int obj_xtr_nbr,           /* I [nbr] Number of items in the above list */
- nco_obj_typ typ,                     /* I [enm] netCDF4 object type: is list group or variable */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+nco_bool /* O [flg] All names are in file */
+nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
+(char * const * const obj_lst_in, /* I [sng] User-specified list of object names */
+ const int obj_nbr, /* I [nbr] Number of items in list */
+ const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
+ const grp_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
-  nco_bool has_obj; /* [flg] Is name in file */
-  char *obj_sng;    /* [sng] User-specified variable name or regular expression */
+  /* Purpose: Verify all user-specified objects exist in file
+     Currently verifies only variables or groups independently of the other
+     Only tested for groups
+     Does not handle regular expressions 
+     Used as check prior to full list generation in nco4_var_lst_mk()
 
-  for(int idx=0;idx<obj_xtr_nbr;idx++){
+     Tests:
+     ncks -O -g '/' ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -g '' ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -g '/g1' ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -g '/g1/g1' ~/nco/data/in_grp.nc ~/foo.nc
+  */
+
+  char *sbs_srt; /* [sng] Location of user-string match start in object path */
+  char *sbs_end; /* [sng] Location of user-string match end   in object path */
+  char *usr_sng; /* [sng] User-supplied object name */
+
+  const char sls_chr='/'; /* [chr] Slash character */
+
+  grp_trv_sct trv; /* [sct] Traversal table */
+
+  nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
+  nco_bool flg_pth_end_bnd; /* [flg] String ends   at path component boundary */
+  nco_bool has_obj; /* [flg] Name is in file */
+
+  size_t usr_sng_lng; /* [nbr] Length of user-supplied string */
+
+  for(int obj_idx=0;obj_idx<obj_nbr;obj_idx++){
+
+    /* Initialize state for current user-specified string */
     has_obj=False;
-    obj_sng=obj_lst_in[idx];
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-      if(trv.typ == typ ){
-        if(strcmp(obj_sng,trv.nm) == 0 ){
-          has_obj=True;
-        } /* strcmp */
-      } /* nco_obj_typ */
-    } /* uidx */
-    if(has_obj == False){
-      (void)fprintf(stderr,"%s: ERROR nco_chk_trv() reports user-specified name %s is not in input file \n",prg_nm_get(),obj_sng);
-      return False;
-    } /* False */
-  } /* idx */
 
-  return True;
+    usr_sng=strdup(obj_lst_in[obj_idx]);
+    usr_sng_lng=strlen(usr_sng);
+    if(usr_sng_lng == 1L) assert(usr_sng[0] == sls_chr);
+
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+      /* Initialize state for current candidate path to match */
+      flg_pth_srt_bnd=False;
+      flg_pth_end_bnd=False;
+      trv=trv_tbl->grp_lst[tbl_idx];
+
+      if(trv.typ == obj_typ){
+
+	if((sbs_srt=strstr(trv.nm_fll,usr_sng))){
+	  /* Match must span whole group components */
+
+	  /* Does match begin at path component boundary ... directly on a slash? */
+	  if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
+
+	  /* ...or one after a component boundary? */
+	  if((sbs_srt > trv.nm_fll) && (*(sbs_srt-1) == sls_chr)) flg_pth_srt_bnd=True;
+
+	  /* Does match end at path component boundary ... directly on a slash? */
+	  sbs_end=sbs_srt+usr_sng_lng-1L;
+
+	  if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
+
+	  /* ...or one before a component boundary? */
+	  if(sbs_end < trv.nm_fll+trv.nm_fll_lng-1L)
+	    if((*(sbs_end+1) == sls_chr) || (*(sbs_end+1) == '\0'))
+	      flg_pth_end_bnd=True;
+
+	  if(flg_pth_srt_bnd && flg_pth_end_bnd){
+	    /* User-supplied string was found in object */
+	    has_obj=True;
+	    break;
+	  } /* endif */
+
+	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO nco_chk_trv() reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
+
+        } /* endif strstr() */
+      } /* endif nco_obj_typ */
+    } /* end loop over tbl_idx */
+
+    if(has_obj == False){
+      (void)fprintf(stderr,"%s: ERROR nco_chk_trv() reports user-supplied %s name %s is not in input file\n",prg_nm_get(),(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+      nco_exit(EXIT_FAILURE);
+    } /* False */
+    /* Free dynamic memory */
+    if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
+
+  } /* obj_idx */
+
+  return has_obj;
+
 } /* end nco_chk_trv() */
 
 void 
@@ -2604,9 +2669,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
 #endif
 } /* end nco4_msa_lmt_all_int() */
 
-
-nm_id_sct *                         /* O [sct] Extraction list */                                
-nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
+nm_id_sct *                         /* O [sct] Extraction list */                         nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
 (const int nc_id,                   /* I [id] netCDF file ID */
  const char * const var_nm,         /* I [sng] Variable name to find */
  nm_id_sct *xtr_lst,                /* I/O [sct] Current extraction list  */
@@ -2683,7 +2746,7 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
               (*xtr_nbr)++; /* NB: Changes size  */
 
             } /* End check if requested coordinate variable is already on extraction list */
-          }/* end check if dimension matches the requested variable */        
+          }/* end check if dimension matches the requested variable */
         } /* end idx_dmn dimensions */ 
       } /* end check if current variable matches requested variable */
     } /* end nco_obj_typ_var */

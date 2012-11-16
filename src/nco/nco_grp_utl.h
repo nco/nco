@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.129 2012-11-15 20:16:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.130 2012-11-16 18:13:00 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -269,12 +269,12 @@ nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter
  const grp_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
 
-nco_bool /* O [flg] Is name in file */
+nco_bool /* O [flg] All names are in file */
 nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
-(char * const * const var_lst_in, /* I [sng] User-specified list of variable or group names ( -v or -g ) */
- const int var_xtr_nbr, /* I [nbr] Number of items in the above list */
- const nco_obj_typ typ, /* I [enm] netCDF4 object type: is list group or variable */
- const grp_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+(char * const * const obj_lst_in, /* I [sng] User-specified list of object names */
+ const int obj_xtr_nbr, /* I [nbr] Number of items in list */
+ const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
+ const grp_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void
 nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in output file */

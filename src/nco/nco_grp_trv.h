@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.17 2012-11-15 20:16:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.18 2012-11-16 18:13:00 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -30,6 +30,7 @@ typedef enum{               /* [enm] netCDF4 object type: group, variable */
 */
 typedef struct{ 
   char    *nm_fll;         /* [sng] Absolute name (path): this can be a variable or group */
+  size_t  nm_fll_lng;      /* [sng] Length of full name */
   char    *grp_nm_fll;     /* [sng] Full group name (for variables, for convenience to avoid to obtain several times) */
   nco_obj_typ typ;         /* [enm] netCDF4 object type: group or variable */
   char    nm[NC_MAX_NAME]; /* [sng] Relative name */
@@ -43,8 +44,8 @@ typedef struct{
 
 /* Structure that stores all objects */
 typedef struct{
-  unsigned int sz;            /* [nbr] Allocated size */
-  unsigned int nbr;           /* [nbr] Number of current elements */
+  unsigned int sz;        /* [nbr] Allocated size */
+  unsigned int nbr;       /* [nbr] Number of current elements */
   grp_trv_sct *grp_lst;   /* [sct] Array of grp_trv_sct */
 } grp_tbl_sct;
 /* end grp_tbl_sct */

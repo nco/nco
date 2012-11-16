@@ -31,7 +31,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.31 2012-11-11 05:36:29 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.32 2012-11-16 18:12:58 zender Exp $";
 
 	float lat(lat);
 	lat:units = "degrees_north";
@@ -67,41 +67,41 @@ data:
 	gds_crd=0,1,2,3,4,5,6,7;
 	unique=73;
 
-group: g1 { 
-
-variables:
-	float lon(lon);
-	lon:units = "g1 degrees_east";
-	float scl;
-	int g1v1;
-	int v1;
-data:
-	lon=0,90,180,270;
-	scl=1.1;
-	g1v1=1;
-	v1=1;
-
-	group: g1g1 { 
-		variables:
-			float scl;
-			int v1;
-		data:
-			scl=1.11;
-			v1=11;
-	} // end g1g1
-
-} // end g1
-
-group: g2 { 
+ group: g1 { 
+	  
 	variables:
-		double time(time);
-	float scl;
-      data:
-	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
-	scl=1.2;
-} // end g2
-
-group: g3 {
+	  float lon(lon);
+	lon:units = "g1 degrees_east";
+	  float scl;
+	  int g1v1;
+	  int v1;
+	data:
+	  lon=0,90,180,270;
+	  scl=1.1;
+	  g1v1=1;
+	  v1=1;
+	  
+	group: g1g1 { 
+	  variables:
+	    float scl;
+	    int v1;
+	  data:
+	    scl=1.11;
+	    v1=11;
+	  } // end g1g1
+	  
+	} // end g1
+	
+ group: g2 { 
+	variables:
+	  double time(time);
+	  float scl;
+	data:
+	  time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	  scl=1.2;
+	} // end g2
+	
+ group: g3 {
 	dimensions:
 	  rlev=3,time2=unlimited;
 	variables:
@@ -170,49 +170,49 @@ group: g6 {
 
 } // end g6
 
-group: g7 { 
-dimensions:
-	gds_crd=8;
-variables:
-
-	float gds_crd(gds_crd);
+ group: g7 { 
+	dimensions:
+	  gds_crd=8;
+	variables:
+	  
+	  float gds_crd(gds_crd);
 	gds_crd:units = "degree";
 	gds_crd:coordinates = "lat_gds lon_gds";
-
-	float gds_var(gds_crd);
+	  
+	  float gds_var(gds_crd);
 	gds_var:units = "meter";
 	gds_var:coordinates = "lat_gds lon_gds";
-	
-	double lat_gds(gds_crd);
+	  
+	  double lat_gds(gds_crd);
 	lat_gds:units="degree";
-
-	double lon_gds(gds_crd);
+	  
+	  double lon_gds(gds_crd);
 	lon_gds:units="degree";
+	  
+	data:
+	  
+	  gds_crd=0,1,2,3,4,5,6,7;
+	  lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
+	  lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
+	  gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
+	  
+	} // end g7
 	
-data:
-
-	gds_crd=0,1,2,3,4,5,6,7;
-	lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
-	lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
-	gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
-
-} // end g7
-
-group: g8 { 
-dimensions:
-	lev=3,vrt_nbr=2;
-variables:
-    float lev(lev);
+ group: g8 { 
+	dimensions:
+	  lev=3,vrt_nbr=2;
+	variables:
+	  float lev(lev);
 	lev:units = "hybrid_sigma_pressure";
 	lev:bounds = "ilev";
-	
-	float ilev(lev,vrt_nbr);
-
-data:
-    lev=100,500,1000;
-	ilev=0,300,300,750,750,1013.25;
-
-} // end g8
+	  
+	  float ilev(lev,vrt_nbr);
+	  
+	data:
+	  lev=100,500,1000;
+	  ilev=0,300,300,750,750,1013.25;
+	  
+	} // end g8
 	
  group: g9 { // Level 1
 	group: g9g1 { // Level 2
@@ -232,5 +232,5 @@ data:
 	    } // end g9g1g1
 	  } // end g9g1
 	} // end g9
-
+	
 } // end root group

@@ -1,11 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.13 2012-11-15 20:16:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.14 2012-11-16 18:13:00 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
 /* Copyright (C) 2011--2012 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
-
 
 /* Testing:
    ncks -D 1 ~/nco/data/in_grp.nc
@@ -25,6 +24,7 @@ trv_tbl_init
 
   for(idx=0;idx<tb->sz;idx++){
     tb->grp_lst[idx].nm_fll  = NULL;
+    tb->grp_lst[idx].nm_fll_lng  = 0L;
     tb->grp_lst[idx].grp_nm_fll  = NULL;
     tb->grp_lst[idx].typ     = nco_obj_typ_err;
     tb->grp_lst[idx].nm[0]   = '\0';
@@ -70,6 +70,7 @@ trv_tbl_add
   } /* tbl->sz */
   idx=tbl->nbr++;
   tbl->grp_lst[idx].nm_fll=(char *)strdup(obj.nm_fll);
+  tbl->grp_lst[idx].nm_fll_lng=strlen(obj.nm_fll);
   tbl->grp_lst[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
   strcpy(tbl->grp_lst[idx].nm,obj.nm);
   tbl->grp_lst[idx].typ=obj.typ;
