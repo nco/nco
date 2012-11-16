@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.165 2012-11-16 23:07:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.166 2012-11-16 23:19:56 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -839,6 +839,16 @@ int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varids()");
   return rcd;
 } /* end nco_inq_varids() */
+
+int
+nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
+{
+  /* Purpose: Wrapper for nc_inq_unlimdims() */
+  int rcd;
+  rcd=nc_inq_unlimdims(nc_id,nbr_dmn_ult,dmn_ids_ult);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_inq_unlimdims()");
+  return rcd;
+} /* end nco_inq_unlimdims() */
 #endif /* !ENABLE_NETCDF4 */
 /* End Group routines */
 
@@ -929,16 +939,6 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim()");
   return rcd;
 }  /* end nco_inq_rename_dim */
-
-int
-nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
-{
-  /* Purpose: Wrapper for nc_inq_unlimdims() */
-  int rcd;
-  rcd=nc_inq_unlimdims(nc_id,nbr_dmn_ult,dmn_ids_ult);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_inq_unlimdims()");
-  return rcd;
-} /* end nco_inq_unlimdims() */
 /* End Dimension routines */
 
 /* Begin Variable routines (_var) */
