@@ -1,6 +1,6 @@
 2012-11-16  Charlie Zender  <zender@uci.edu>
 
-	* nco_chk_trv() inspects multi-component user-supplied paths
+	* nco_chk_trv() allows multi-component user-supplied paths
 
 2012-11-15  Pedro Vicente  <pvicente@uci.edu>
 

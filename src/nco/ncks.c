@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.469 2012-11-16 18:13:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.470 2012-11-16 22:35:20 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.469 2012-11-16 18:13:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.469 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.470 2012-11-16 22:35:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.470 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -608,12 +608,12 @@ main(int argc,char **argv)
   /* Process -z option if requested */ 
   if(GET_LIST){ 
     nco_prt_trv(trv_tbl);
-    goto out; 
+    goto close_and_free; 
   } /* end GET_LIST */ 
 
   if(GET_GRP_INFO){ 
     nco_prt_grp_trv(in_id,trv_tbl);
-    goto out; 
+    goto close_and_free; 
   } /* end GET_GRP_INFO */
 
   /* Parse auxiliary coordinates */
@@ -957,7 +957,7 @@ main(int argc,char **argv)
     } /* end if PRN_VAR_DATA */  
   } /* !fl_out */
   
-out: /* goto out */
+ close_and_free: /* goto close_and_free */
   /* Extraction list no longer needed */
   if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   
