@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.265 2012-11-16 18:13:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.266 2012-11-17 23:03:53 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2357,6 +2357,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
   char *usr_sng; /* [sng] User-supplied object name */
 
   const char sls_chr='/'; /* [chr] Slash character */
+  const char fnc_nm[]="nco_chk_trv()"; /* [sng] Function name */
 
   grp_trv_sct trv; /* [sct] Traversal table */
 
@@ -2371,8 +2372,14 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     /* Initialize state for current user-specified string */
     has_obj=False;
 
-    usr_sng=strdup(obj_lst_in[obj_idx]);
-    usr_sng_lng=strlen(usr_sng);
+    if(obj_lst_in[obj_idx]){
+      usr_sng=strdup(obj_lst_in[obj_idx]); 
+      usr_sng_lng=strlen(usr_sng);
+    }else{
+      (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
+      nco_exit(EXIT_FAILURE);
+    } /* end else */
+
     if(usr_sng_lng == 1L) assert(usr_sng[0] == sls_chr);
 
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
@@ -2409,14 +2416,14 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	    break;
 	  } /* endif */
 
-	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO nco_chk_trv() reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
+	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
 
         } /* endif strstr() */
       } /* endif nco_obj_typ */
     } /* end loop over tbl_idx */
 
     if(has_obj == False){
-      (void)fprintf(stderr,"%s: ERROR nco_chk_trv() reports user-supplied %s name %s is not in input file\n",prg_nm_get(),(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+      (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name %s is not in input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
       nco_exit(EXIT_FAILURE);
     } /* False */
     /* Free dynamic memory */
