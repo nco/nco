@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.166 2012-11-16 23:19:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.167 2012-11-17 10:02:57 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1650,22 +1650,23 @@ int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){
 #endif /* HAVE_NETCDF4_H */
 #if !defined(HAVE_NETCDF4_H) || !defined(ENABLE_NETCDF4)
 /* Stubs for netCDF4 group routines */
-int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){return 1;}
-int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm){return 1;}
-int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){return 1;}
-int nco_inq_grpname(const int nc_id,char * const grp_nm){return 1;}
-int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){return 1;}
-int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){return 1;}
-int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return 1;}
-int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id){return 1;}
-int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id){return 1;}
-int nco_inq_grp_parent(const int nc_id,int * const prn_id){return 1;}
-int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){return 1;}
-int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){return 1;}
-int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id){return 1;}
-int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id){return 1;}
-int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){return 1;}
+int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){return NC_NOERR;}
+int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm){return NC_NOERR;}
+int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){return NC_NOERR;}
+int nco_inq_grpname(const int nc_id,char * const grp_nm){return NC_NOERR;}
+int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){return NC_NOERR;}
+int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){return NC_NOERR;}
+int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}
+int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id){return NC_NOERR;}
+int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id){return NC_NOERR;}
+int nco_inq_grp_parent(const int nc_id,int * const prn_id){return NC_NOERR;}
+int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){return NC_NOERR;}
+int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){return NC_NOERR;}
+int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id){return NC_NOERR;}
+int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id){return NC_NOERR;}
+int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){return NC_NOERR;}
 #endif /* HAVE_NETCDF4_H */
+#ifndef _MSC_VER
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
 int NCO_GET_VAR1_USHORT(const int nc_id,const int var_id,const size_t *srt,nco_ushort *usp){return 1;}
@@ -1748,4 +1749,5 @@ int NCO_GET_ATT_INT64(const int nc_id,const int var_id,const char *att_nm,nco_in
 int NCO_GET_ATT_UINT64(const int nc_id,const int var_id,const char *att_nm,nco_uint64 *ui64p){return 1;}
 int NCO_GET_ATT_STRING(const int nc_id,const int var_id,const char *att_nm,nco_string *sngp){return 1;}
 #endif /* ENABLE_NETCDF4 */
+#endif /* _MSC_VER */
 /* end netCDF4 stubs */
