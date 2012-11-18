@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.269 2012-11-18 08:01:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.270 2012-11-18 19:21:47 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -247,10 +247,13 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   char *var_nm_fll; /* [sng] Fully qualified variable name */
   char *grp_nm_fll_sls; /* [sng] Fully qualified group name plus terminating '/' */
   char *var_nm_fll_sls_ptr; /* Pointer to first character following last slash */
+
   char grp_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
+
   int *grp_ids; /* [ID] Group IDs of children */
   int *var_ids;
+
   int grp_id; /* [ID] Group ID */
   int grp_idx;
   int grp_nbr; /* [nbr] Number of groups in input file */
@@ -260,16 +263,14 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   int var_nbr; /* [nbr] Number of variables in current group */
   int var_nbr_all; /* [nbr] Number of variables in input file */
   int var_nbr_tbl;   /* Number of variables in table list (table list stores all paths, groups and variables ) */
-  nco_bool var_prn;  /* Variable to print or not (variable exists only in var_lst_all )*/
   int var_nbr_tmp;
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
-  var_idx_crr=0; /* Incremented at cycle end */
-
-  nco_bool FLG_ROOT_GRP=True; /* [flg] Current group is root group */
   nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
+  nco_bool FLG_ROOT_GRP=True; /* [flg] Current group is root group */
+  nco_bool var_prn;  /* Variable to print or not (variable exists only in var_lst_all )*/
 
   nm_id_sct *var_lst_all=NULL; /* [sct] All variables in input file */
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
@@ -286,6 +287,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
 
   /* Initialize variables that accumulate */
+  var_idx_crr=0; /* [idx] Index into full variable list */
   var_nbr_all=0; /* [nbr] Total number of variables in file */
 
   /* Create list of all variables in input file */
@@ -321,8 +323,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       /* Copy canonical name into new space for full name with slash */
       grp_nm_fll_sls=strcpy(grp_nm_fll_sls,grp_nm_fll);
 
-      /* Add trailing slash to group name 
-      Except this would cause full name of root group to be "//" */
+      /* Add trailing slash to group name except this would cause full name of root group to be "//" */
       if(!FLG_ROOT_GRP) grp_nm_fll_sls=strcat(grp_nm_fll_sls,"/");
 
       var_nm_fll=(char *)nco_malloc((grp_nm_sls_lng+NC_MAX_NAME+1L)*sizeof(char)); /* [sng] Fully qualified variable name */
@@ -331,7 +332,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
       /* Append all variables in current group to variable list */
       for(var_idx=0;var_idx<var_nbr;var_idx++){
-
         var_lst_all=(nm_id_sct *)nco_realloc(var_lst_all,var_nbr_all*sizeof(nm_id_sct));
 
         /* Get name current variable in current group */
@@ -369,32 +369,29 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
 #ifdef NCO_SANITY_CHECK
   var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables) */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var) var_nbr_tbl++; 
-  }
+  for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var) var_nbr_tbl++; 
   assert(var_nbr_tbl == var_nbr_all);
   var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
   var_idx_crr=0;
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+  for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(var_idx_crr == var_nbr_all) break;
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     nm_id_sct nm_id=var_lst_all[var_idx_crr]; 
-    if(var_prn == True){
-      var_prn=False;
-    } /* end var_prn */
+    if(var_prn) var_prn=False;
     /* Increment var_lst_all index only when table object is a variable; this keeps two lists in sync */
     if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
-      /* Match 2 lists */
-      assert(strcmp(nm_id.nm,trv.nm)==0);
-      assert(strcmp(nm_id.var_nm_fll,trv.nm_fll)==0);
+      /* Match both lists */
+      assert(!strcmp(nm_id.nm,trv.nm));
+      assert(!strcmp(nm_id.var_nm_fll,trv.nm_fll));
       var_idx_crr++; 
       var_prn=True;
     } /* end nco_obj_typ_var */
-  }/* end uidx */
+  } /* end uidx */
 #endif /* NCO_SANITY_CHECK */
 
-  /* Return all variables if none were specified and not -c ... */
 #ifdef GRP_DEV
+  /* Return all variables if none were specified and not -c ... */
   if(*var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
 
@@ -409,12 +406,10 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
-  /* Create
-     Case 1: -v was specified and -g was or was not specified (either way)
+  /* Case 1: -v was specified (regardles of whether -g was specified)
      Method: Outer loop over all objects in file contains inner loop over user-supplied variable list
      Add variable to extraction list if it matches user-supplied name
-     Regular expressions are allowed
-     Case 2: -v was not specified and -g was specified */
+     Regular expressions are allowed */
   grp_nm_fll=NULL;
   var_nm_fll=NULL;
   if(*var_xtr_nbr){
@@ -422,7 +417,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     var_idx_crr=0;
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       if(var_idx_crr == var_nbr_all) break;    
-      if(var_prn == True) {
+      if(var_prn == True){
         strcpy(grp_nm,var_lst_all[var_idx_crr].grp_nm);
         var_nm_fll=(char *)strdup(var_lst_all[var_idx_crr].var_nm_fll);
         strcpy(var_nm,var_lst_all[var_idx_crr].nm);
@@ -485,25 +480,18 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   }else if(grp_xtr_nbr){ /* *var_xtr_nbr == 0 */
 
-    /* Case 2: -v was not specified but -g was: traverse -g list first and add all matching variables
-       Regular expressions are not allowed in -g arguments */
+    /* Case 2: -v was not specified and -g was
+       Regular expressions are not yet allowed in -g arguments */
+
 #ifdef NCO_SANITY_CHECK
     /* var_idx_crr was used to traverse all groups and variables to make var_lst_all */
     assert(var_nbr_all == var_idx_crr);
 #endif /* !NCO_SANITY_CHECK */
-    /* Loop through user-specified group list */
-    for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++){
-      /* Get current group name */
-      strcpy(grp_nm,grp_lst_in[grp_idx]);
-      /* Loop through found variable list */
-      for(var_idx_crr=0;var_idx_crr<var_nbr_all;var_idx_crr++){
-        nm_id_sct nm_id=var_lst_all[var_idx_crr];   
-        /* Find group specified in -g and mark any match for inclusion to extract */
-        if(strcmp(nm_id.grp_nm,grp_nm)==0){
-          var_xtr_rqs[var_idx_crr]=True;
-        } /* end strcmp */
-      } /* end var_idx_crr */
-    } /* end grp_idx */
+
+    for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++) /* Outer loop over user-specified group list */
+      for(var_idx_crr=0;var_idx_crr<var_nbr_all;var_idx_crr++) /* Inner loop over variables */
+        if(!strcmp(var_lst_all[var_idx_crr].grp_nm,grp_lst_in[grp_idx])) var_xtr_rqs[var_idx_crr]=True;
+
   } /* end grp_xtr_nbr */
 
 #else /* !GRP_DEV */
@@ -2361,7 +2349,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 
     if(usr_sng_lng == 1L) assert(usr_sng[0] == sls_chr);
 
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
       /* Initialize state for current candidate path to match */
       flg_pth_srt_bnd=False;
@@ -2401,10 +2389,10 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
       } /* endif nco_obj_typ */
     } /* end loop over tbl_idx */
 
-    if(has_obj == False){
+    if(!has_obj){
       (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name %s is not in input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
       nco_exit(EXIT_FAILURE);
-    } /* False */
+    } /* has_obj */
     /* Free dynamic memory */
     if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
 
@@ -2746,39 +2734,43 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
 } /* end nco_aux_add_dmn_trv() */ 
 
 nco_bool                    /* O [flg] Dimension was found */
-nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
-(const int grp_id,                /* I [id] Group ID */
+nco_fnd_dmn                 /* [fnc] Find a dimension that matches dmn_nm in group grp_id and its parents */
+(const int grp_id,          /* I [id] Group ID */
  const char * const dmn_nm, /* I [sng] Dimension name to find */
- long const dmn_sz)         /* I [nbr] Dimension size to find */
+ const long dmn_sz)         /* I [nbr] Dimension size to find */
 {
-  typedef struct {			
-    char nm[NC_MAX_NAME];
+  typedef struct{			
+    char nm[NC_MAX_NAME+1];
     size_t sz;
   } nco_dmn_t;
-  int nbr_dmn;
-  int dmn_idx;
-  int* dmn_ids=NULL;
+
   nco_dmn_t *dmn_lst=NULL;
 
-  (void)nco_inq_dimids(grp_id,&nbr_dmn,NULL,1);
+  const int flg_prn=1;
+
+  int *dmn_ids=NULL;
+
+  int dmn_idx;
+  int nbr_dmn;
+
+  (void)nco_inq_dimids(grp_id,&nbr_dmn,NULL,flg_prn);
   dmn_lst=(nco_dmn_t *)nco_malloc(nbr_dmn*sizeof(nco_dmn_t));
   dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-  (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,1);
+  (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
+
+  for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++) nc_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_lst[dmn_idx].nm,&dmn_lst[dmn_idx].sz);
 
   for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-    nc_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_lst[dmn_idx].nm,&dmn_lst[dmn_idx].sz);
-  }
-
-  for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-    if(strcmp(dmn_nm,dmn_lst[dmn_idx].nm) == 0 && ((size_t)dmn_sz == dmn_lst[dmn_idx].sz) ){
+    if(!strcmp(dmn_nm,dmn_lst[dmn_idx].nm) && ((size_t)dmn_sz == dmn_lst[dmn_idx].sz)){
       dmn_ids=(int *)nco_free(dmn_ids);
       dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
       return True;
-    }
-  } 
+    } /* endif */
+  } /* end loop */
 
   dmn_ids=(int *)nco_free(dmn_ids);
   dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
+
   return False;
 } /* end nco_fnd_dmn() */ 
 
