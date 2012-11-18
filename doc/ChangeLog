@@ -1,5 +1,7 @@
 2012-11-17  Charlie Zender  <zender@uci.edu>
 
+	* Fix nco_chk_trv() off-by-one error on end boundary
+
 	* Fix nco_chk_trv() for -g '' and -v ''
 
 2012-11-16  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.136 2012-11-06 07:23:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.137 2012-11-18 02:17:54 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -12,7 +12,7 @@
 #ifdef _MSC_VER
 # define strtoull _strtoui64 
 # define strtoll  _strtoi64
-#endif /* _MSC_VER */
+#endif /* !_MSC_VER */
 
 void
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.266 2012-11-17 23:03:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.267 2012-11-18 02:17:54 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2346,10 +2346,11 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
      Used as check prior to full list generation in nco4_var_lst_mk()
 
      Tests:
-     ncks -O -g '/' ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -g / ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -g '' ~/nco/data/in_grp.nc ~/foo.nc
-     ncks -O -g '/g1' ~/nco/data/in_grp.nc ~/foo.nc
-     ncks -O -g '/g1/g1' ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -g g1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -g /g1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -g /g1/g1 ~/nco/data/in_grp.nc ~/foo.nc
   */
 
   char *sbs_srt; /* [sng] Location of user-string match start in object path */
@@ -2406,17 +2407,17 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	  if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
 
 	  /* ...or one before a component boundary? */
-	  if(sbs_end < trv.nm_fll+trv.nm_fll_lng-1L)
+	  if(sbs_end <= trv.nm_fll+trv.nm_fll_lng-1)
 	    if((*(sbs_end+1) == sls_chr) || (*(sbs_end+1) == '\0'))
 	      flg_pth_end_bnd=True;
 
+	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
+
 	  if(flg_pth_srt_bnd && flg_pth_end_bnd){
-	    /* User-supplied string was found in object */
+	    /* User-supplied string is a complete component of object path */
 	    has_obj=True;
 	    break;
 	  } /* endif */
-
-	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
 
         } /* endif strstr() */
       } /* endif nco_obj_typ */

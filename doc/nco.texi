@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.739 2012-11-14 01:35:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.740 2012-11-18 02:17:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3422,22 +3422,74 @@ Variables or groups explicitly specified for extraction with
 Variables explicitly specified for @emph{exclusion} with
 @samp{-x -v @var{var}[,@dots{}]} need not be present in the input
 file.
+To accord with the sophistication of the underlying hierarchy,
+group subsetting is controlled by a few powerful yet subtle syntactical
+distinctions.
+When learning this syntax it is helpful to keep in mind the similarity
+between group hierarchies and directory structures. 
+
+@cindex @command{mv}
+@cindex @command{cp}
+@cindex recursion
+@cindex recursive
+The @acronym{UNIX} command @command{mv src dst} moves @file{src}
+@emph{and all its subdirectories} (and all their subdirectories etc.)
+to @file{dst}.
+Hence @command{mv} is, by default, @emph{recursive}.
+The @acronym{UNIX} command @command{cp src dst} moves @file{src}, 
+and only @file{src}, to @file{dst},
+If @file{src} is a directory, not a file, then that command fails.
+One must explicitly request to copy directories recursively, i.e.,
+with @command{cp -r src dst}.
+
+Consider the following commands, all of which may be assumed to end with
+@samp{in.nc out.nc}:
+@example       
+ncks -g  g1  # Extract, recursively, all groups with a g1 component
+ncks -g  g1/ # Extract, non-recursively, all groups terminating in g1
+ncks -g /g1  # Extract, recursively, root group g1
+ncks -g /g1/ # Extract, non-recursively root group g1
+@end example
+The first command is probably the most useful and common.
+It would extract these groups, if present, and all their direct
+ancestors and children:
+@file{/g1}, @file{/g2/g1}, and @file{/g3/g1/g2}.
+In other words, the simplest form of @samp{-g grp} grabs all groups that 
+(and their direct ancestors and children, recursively) that have
+@file{grp} as a complete component of their path.
+A simple string match is insufficient, @var{grp} must be a complete 
+component (i.e., group name) in the path.
+The option @samp{-g g1} would not extract these groups because @file{g1} 
+is not a complete component of the path: @file{/g12}, @file{/fg1}, and
+@file{/g1g1}.
+The second command above shows how a terminating slash character
+@kbd{/} cancels the recursive copying of groups.
+An argument to @samp{-g} which terminates with a slash character
+extracts the group and its direct ancestors, but none of its children. 
+The third command above shows how an initial slash character @kbd{/}
+anchors the argument to the root group.
+The third command would not extract the group @file{/g2/g1} because 
+the @file{g1} group is not at the root level, but it would extract,
+any group @file{/g1} at the root level and all its children,
+recursively.  
+The fourth command is the non-recursive version of the third command.
+
 @cindex memory requirements
 Remember, if averaging or concatenating large files stresses your
 systems memory or disk resources, then the easiest solution is often to
-use the @samp{-v} option to retain only the most important variables
-(@pxref{Memory Requirements}).
+subset (with @samp{-g} and/or @samp{-v}) to retain only the most
+important variables (@pxref{Memory Requirements}).
 @example       
-ncks in_grp.nc           # Extract all groups and variables
-ncks -v scl in_grp.nc    # Extract variable scl from all groups
-ncks -g g1 in_grp.nc     # Extract all of group g1
-ncks -x -g g1 in_grp.nc  # Extract all groups except g1
-ncks -g g2,g3 -v scl in_grp.nc # Extract scl from groups g2 and g3
+ncks          in.nc out.nc # Extract all groups and variables
+ncks -v scl   in.nc out.nc # Extract variable scl from all groups
+ncks -g g1    in.nc out.nc # Extract all of group g1
+ncks -x -g g1 in.nc out.nc # Extract all groups except g1
+ncks -g g2,g3 -v scl in.nc out.nc # Extract scl from groups g2 and g3
 @end example
 Overwriting and appending work as expected:
 @example
-# Replace scl in group g2 in out.nc with scl from group g2 from in_grp.nc
-ncks -A -g g2 -v scl in_grp.nc out.nc
+# Replace scl in group g2 in out.nc with scl from group g2 from in.nc
+ncks -A -g g2 -v scl in.nc out.nc
 @end example
 
 Due to its special capabilities, @command{ncap2} interprets the
