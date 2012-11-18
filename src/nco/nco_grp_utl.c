@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.272 2012-11-18 20:30:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.273 2012-11-18 20:43:14 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -437,7 +437,7 @@ p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expres
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 	} /* end if regular expression */
 	
-          /* Compare var_nm from main iteration with var_sng found and, if equal, add to extraction list */
+        /* Compare var_nm from main iteration with var_sng found and, if equal, add to extraction list */
 	if(!strcmp(var_sng,var_lst_all[var_idx_crr].nm)){
 	  if(!grp_xtr_nbr){
 	    /* No groups specified with -g, so add variable to extraction list */
@@ -1700,6 +1700,7 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
   int grp_idx;
   int grp_nbr; /* [nbr] Number of groups in input file */
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int xtr_idx;
   int var_idx;
   int var_idx_crr; /* [idx] Total variable index */
   int var_nbr; /* [nbr] Number of variables in current group */
@@ -1809,15 +1810,15 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
   /* Loop through user-specified variable list */
-  for(int idx=0;idx<var_xtr_nbr;idx++){
-    var_sng=var_lst_in[idx];
+  for(xtr_idx=0;xtr_idx<var_xtr_nbr;xtr_idx++){
+    var_sng=var_lst_in[xtr_idx];
 
     /* Convert pound signs (back) to commas */
     while(*var_sng){
       if(*var_sng == '#') *var_sng=',';
       var_sng++;
     } /* end while */
-    var_sng=var_lst_in[idx];
+    var_sng=var_lst_in[xtr_idx];
 
     /* If var_sng is regular expression ... */
     if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
@@ -1833,16 +1834,12 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
     } /* end if regular expression */
 
     /* Normal variable so search through variable array */
-    int jdx;
-    for(jdx=0;jdx<var_nbr_all;jdx++){
-      if(!strcmp(var_sng,var_lst_all[jdx].nm)){
-        break;
-      }
-    } /* jdx */
+    for(var_idx=0;var_idx<var_nbr_all;var_idx++)
+      if(!strcmp(var_sng,var_lst_all[var_idx].nm)) break;
 
     /* Mark any match as requested for inclusion by user */
-    if(jdx != var_nbr_all){
-      var_xtr_rqs[jdx]=True;
+    if(var_idx != var_nbr_all){
+      var_xtr_rqs[var_idx]=True;
     }else{
       if(EXCLUDE_INPUT_LIST){ 
         /* Variable need not be present if list will be excluded later ... */
@@ -1854,13 +1851,12 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
 
-  } /* end loop over var_lst_in idx */ 
+  } /* end loop over var_lst_in xtr_idx */ 
 
   var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
 } /* end nco_chk_var_var() */
-
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */
