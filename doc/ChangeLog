@@ -1,5 +1,9 @@
 2012-11-17  Charlie Zender  <zender@uci.edu>
 
+	* Add NCO spiral logos in Scalable Vector Graphic and
+	GIMP format, logo_srl.svg and logo_srl.xcf, respectively.
+	Contributed by Andrea Cimatoribus A.Cimatoribus@uu.nl
+
 	* Fix nco_chk_trv() off-by-one error on end boundary
 
 	* Fix nco_chk_trv() for -g '' and -v ''

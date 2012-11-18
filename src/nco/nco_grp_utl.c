@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.267 2012-11-18 02:17:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.268 2012-11-18 02:42:21 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -368,7 +368,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   *nbr_var_fl=var_nbr_all; /* O [nbr] Number of variables in input file */
 
 #ifdef NCO_SANITY_CHECK
-  var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables ) */
+  var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables) */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var) var_nbr_tbl++; 
   }
@@ -382,7 +382,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     if(var_prn == True){
       var_prn=False;
     } /* end var_prn */
-    /* Increment var_lst_all index only when table object is a variable; this keeps the 2 lists in sync */
+    /* Increment var_lst_all index only when table object is a variable; this keeps two lists in sync */
     if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
       /* Match 2 lists */
       assert(strcmp(nm_id.nm,trv.nm)==0);
@@ -410,20 +410,20 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
   /* Create variable extraction list using regular expressions:  
-  2 cases to deal with extraction with supplied -v (variable) and -g (group) names: 
-
-  Case 1) -v was specified:  
-  Do a loop cycle to iterate all objects found in the file. 
-  For each variable found, do a second loop through the user-specified variable list.
-  Add the variable to the extraction list if a name found in the second loop matches.
-  This achieves printing all the variables.
-  NOTE: the -g case is handled here too, if present, add only the variable if present in the group.
-
-  Case 2) -v was not specified but -g was: traverse the -g list first and add all variables from that group */
+     Two cases handle extraction with supplied -v (variable) and -g (group) names: 
+     
+     Case 1) -v was specified:  
+     Do a loop cycle to iterate all objects found in the file
+     For each variable found, do a second loop through the user-specified variable list
+     Add variable to extraction list if name found in second loop matches
+     This achieves printing all variables
+     NOTE: -g case is handled here too, if present, add only variable if present in group
+     
+     Case 2) -v was not specified but -g was: traverse -g list first and add all variables from that group */
   grp_nm_fll=NULL;
   var_nm_fll=NULL;
-  if (*var_xtr_nbr) {
-    var_prn=True; /* Variable to print or not (variable exists only in var_lst_all )*/
+  if(*var_xtr_nbr){
+    var_prn=True; /* Variable to print or not (variable exists only in var_lst_all) */
     var_idx_crr=0;
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       if(var_idx_crr == var_nbr_all) break;    
@@ -452,19 +452,19 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
             rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
             if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
             continue;
-#else
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
             (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
             nco_exit(EXIT_FAILURE);
-#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
           } /* end if regular expression */
 
-          /* Compare var_nm from main iteration with var_sng found; if the same add to extraction list at index VAR_IDX_CRR  */
-          if(strcmp(var_sng,var_nm) == 0 ){
-            /* No groups case, just add  */
-            if (grp_xtr_nbr == 0 ){
+          /* Compare var_nm from main iteration with var_sng found and, if equal, add to extraction list */
+          if(!strcmp(var_sng,var_nm)){
+            /* No groups case, just add */
+            if(!grp_xtr_nbr){
               var_xtr_rqs[var_idx_crr]=True;
-              /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
-            }else{
+            }else{ /* grp_xtr_nbr */
+              /* Groups specified with -g case: add group if grp_nm matches user-supplied name */
               /* Loop through user-specified group list */
               for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++){
                 char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
@@ -2399,7 +2399,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	  if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
 
 	  /* ...or one after a component boundary? */
-	  if((sbs_srt > trv.nm_fll) && (*(sbs_srt-1) == sls_chr)) flg_pth_srt_bnd=True;
+	  if((sbs_srt > trv.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
 
 	  /* Does match end at path component boundary ... directly on a slash? */
 	  sbs_end=sbs_srt+usr_sng_lng-1L;
@@ -2407,8 +2407,8 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	  if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
 
 	  /* ...or one before a component boundary? */
-	  if(sbs_end <= trv.nm_fll+trv.nm_fll_lng-1)
-	    if((*(sbs_end+1) == sls_chr) || (*(sbs_end+1) == '\0'))
+	  if(sbs_end <= trv.nm_fll+trv.nm_fll_lng-1L)
+	    if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
 	      flg_pth_end_bnd=True;
 
 	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
