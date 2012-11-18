@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.273 2012-11-18 20:43:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.274 2012-11-18 21:16:06 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -416,13 +416,8 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       /* Loop through user-specified variable list */
       for(int idx=0;idx<*var_xtr_nbr;idx++){
 	var_sng=var_lst_in[idx];
-	
 	/* Convert pound signs (back) to commas */
-	while(*var_sng){
-	  if(*var_sng == '#') *var_sng=',';
-	  var_sng++;
-	} /* end while */
-	var_sng=var_lst_in[idx];
+	nco_hash2comma(var_sng);
 	
 	/* If var_sng is regular expression ... */
 	if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
@@ -490,13 +485,8 @@ p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expres
   /* Loop through user-specified variable list */
   for(idx=0;idx<*var_xtr_nbr;idx++){
     var_sng=var_lst_in[idx];
-
     /* Convert pound signs (back) to commas */
-    while(*var_sng){
-      if(*var_sng == '#') *var_sng=',';
-      var_sng++;
-    } /* end while */
-    var_sng=var_lst_in[idx];
+    nco_hash2comma(var_sng);
 
     /* If var_sng is regular expression ... */
     if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
@@ -681,14 +671,9 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   /* Loop through user-specified group list */
   for(idx=0;idx<*grp_xtr_nbr;idx++){
     grp_sng=grp_lst_in[idx];
-    
     /* Convert pound signs (back) to commas */
-    while(*grp_sng){
-      if(*grp_sng == '#') *grp_sng=',';
-      grp_sng++;
-    } /* end while */
-    grp_sng=grp_lst_in[idx];
-    
+    nco_hash2comma(grp_sng);
+
     /* If grp_sng is regular expression ... */
     if(strpbrk(grp_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
@@ -1812,13 +1797,8 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
   /* Loop through user-specified variable list */
   for(xtr_idx=0;xtr_idx<var_xtr_nbr;xtr_idx++){
     var_sng=var_lst_in[xtr_idx];
-
     /* Convert pound signs (back) to commas */
-    while(*var_sng){
-      if(*var_sng == '#') *var_sng=',';
-      var_sng++;
-    } /* end while */
-    var_sng=var_lst_in[xtr_idx];
+    nco_hash2comma(var_sng);
 
     /* If var_sng is regular expression ... */
     if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
@@ -2336,8 +2316,10 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 
       if(trv.typ == obj_typ){
 
+	/* Look for partial match, not necessarily on path boundaries */
 	if((sbs_srt=strstr(trv.nm_fll,usr_sng))){
-	  /* Match must span whole group components */
+
+	  /* Ensure match spans (begins and ends on) whole group components */
 
 	  /* Does match begin at path component boundary ... directly on a slash? */
 	  if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;

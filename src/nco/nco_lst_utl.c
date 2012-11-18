@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.66 2012-11-18 20:30:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.67 2012-11-18 21:16:06 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -657,7 +657,23 @@ nco_cmp_ptr_unn /* Compare values of two pointer unions of same type */
 } /* end nco_cmp_ptr_unn() */
 
 void 
-nco_lst_comma2hash /* [fnc] Replace commas with hashes when within braces */
+nco_hash2comma /* [fnc] Replace hashes with commas */
+(char * const rx_sng) /* [sng] Regular expression */
+{
+  /* Purpose: Convert hashes in a string to commas
+     Normally this function is called to undo effects of nco_rx_comma2hash() 
+     Thus assumption is that string may be an rx that needs careful handling before evaluation
+     NB: Usually this code may operate on system memory (e.g., optarg) so be very careful 
+     not to overwrite ends of strings */
+  char *sng=rx_sng;
+  while(*sng){
+    if(*sng == '#') *sng=',';
+    sng++;
+  } /* end while */
+} /* end nco_lst_hash2comma() */
+
+void 
+nco_rx_comma2hash /* [fnc] Replace commas with hashes when within braces */
 (char * const rx_sng) /* [sng] Regular expression */
 {
   /* Purpose: Convert commas within braces to hashes within braces in regular expressions
@@ -685,7 +701,7 @@ nco_lst_comma2hash /* [fnc] Replace commas with hashes when within braces */
     /* Increment position in regular expression */
     cp++;
   } /* end while character is not NUL */
-} /* end nco_lst_comma2hash() */
+} /* end nco_rx_comma2hash() */
 
 nm_id_sct * /* O [sct] Sorted output list */
 nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically */

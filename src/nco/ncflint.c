@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.209 2012-10-31 23:33:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.210 2012-11-18 21:16:06 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.209 2012-10-31 23:33:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.209 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.210 2012-11-18 21:16:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.210 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -419,7 +419,7 @@ main(int argc,char **argv)
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
-      (void)nco_lst_comma2hash(optarg_lcl);
+      (void)nco_rx_comma2hash(optarg_lcl);
       var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       xtr_nbr=var_lst_in_nbr;

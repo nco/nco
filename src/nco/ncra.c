@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.308 2012-10-16 00:39:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.309 2012-11-18 21:16:06 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.308 2012-10-16 00:39:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.308 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.309 2012-11-18 21:16:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.309 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -488,7 +488,7 @@ main(int argc,char **argv)
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
-      (void)nco_lst_comma2hash(optarg_lcl);
+      (void)nco_rx_comma2hash(optarg_lcl);
       var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       xtr_nbr=var_lst_in_nbr;

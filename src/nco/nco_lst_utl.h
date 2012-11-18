@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.46 2012-10-07 05:24:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.47 2012-11-18 21:16:06 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -127,7 +127,11 @@ nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list *
  const int dmn_nbr); /* I [nbr] Number of dimension structures in list */
 
 void 
-nco_lst_comma2hash /* [fnc] Convert {...,...} to {...#...} in regular expressions */
+nco_hash2comma /* [fnc] Replace hashes with commas */
+(char * const rx_sng); /* [sng] Regular expression */
+
+void 
+nco_rx_comma2hash /* [fnc] Convert {...,...} to {...#...} in regular expressions */
 (char * const rx_sng); /* [sng] Regular expression */
 
 nm_id_sct * /* O [sct] Sorted output list */
