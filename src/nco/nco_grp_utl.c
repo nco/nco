@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.271 2012-11-18 19:51:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.272 2012-11-18 20:30:39 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -406,8 +406,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
      Method: Outer loop over all objects in file contains inner loop over user-supplied variable list
      Add variable to extraction list if it matches user-supplied name
      Regular expressions are allowed */
-  grp_nm_fll=NULL;
-  var_nm_fll=NULL;
   if(*var_xtr_nbr){
     var_idx_crr=0;
     /* Loop over all objects in file */
@@ -415,12 +413,6 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       /* No need to look through more objects if extraction list already contains all variables in file */
       if(var_idx_crr == var_nbr_all) break;    
 
-      strcpy(grp_nm,var_lst_all[var_idx_crr].grp_nm);
-      var_nm_fll=(char *)strdup(var_lst_all[var_idx_crr].var_nm_fll);
-      strcpy(var_nm,var_lst_all[var_idx_crr].nm);
-      grp_id=var_lst_all[var_idx_crr].grp_id;
-      grp_nm_fll=(char *)strdup(var_lst_all[var_idx_crr].grp_nm_fll);
-      
       /* Loop through user-specified variable list */
       for(int idx=0;idx<*var_xtr_nbr;idx++){
 	var_sng=var_lst_in[idx];
@@ -440,33 +432,31 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 	  if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
 	  continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
 	  nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 	} /* end if regular expression */
 	
           /* Compare var_nm from main iteration with var_sng found and, if equal, add to extraction list */
-	if(!strcmp(var_sng,var_nm)){
-	  /* No groups specified with -g, so add variable to extraction list */
+	if(!strcmp(var_sng,var_lst_all[var_idx_crr].nm)){
 	  if(!grp_xtr_nbr){
+	    /* No groups specified with -g, so add variable to extraction list */
 	    var_xtr_rqs[var_idx_crr]=True;
 	  }else{ /* grp_xtr_nbr */
 	    /* Groups specified with -g, so add variable to extraction list only if in matching group */
 	    for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++)
-	      if(!strcmp(grp_nm,grp_lst_in[grp_idx])) var_xtr_rqs[var_idx_crr]=True;
+	      if(!strcmp(var_lst_all[var_idx_crr].grp_nm,grp_lst_in[grp_idx])) var_xtr_rqs[var_idx_crr]=True;
 	  } /* end grp_xtr_nbr */
 	}  /* end strcmp() */
       } /* end loop over var_lst_in */ 
       
       /* Increment variable index for var_lst_all if table object is a variable; this keeps two lists in sync */
       if(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
-        var_idx_crr++; 
-        /* Full variable names in both lists must agree */
 #ifdef NCO_SANITY_CHECK
-        assert(!strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll));
+        /* Full variable names in both lists must agree */
+        assert(!strcmp(var_lst_all[var_idx_crr].var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll));
 #endif /* !NCO_SANITY_CHECK */
-        grp_nm_fll=(char *)nco_free(grp_nm_fll);
-        var_nm_fll=(char *)nco_free(var_nm_fll);
+        var_idx_crr++; 
       } /* end nco_obj_typ_var */
     } /* end loop over trv_tbl uidx */
     
@@ -563,7 +553,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   /* realloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
-
+  
   var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 

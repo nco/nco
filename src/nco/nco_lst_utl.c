@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.65 2012-10-15 21:17:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.66 2012-11-18 20:30:39 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -109,7 +109,7 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
 } /* end nco_fmt_sng_printf_subst() */
 
 int /* O [nbr] Number of matches found */
-nco_lst_rx_search /* [fnc] Search for pattern matches in var string list */
+nco_lst_rx_search /* [fnc] Search for pattern matches in list of variables */
 (int var_nbr_all, /* I [nbr] Size of var_lst_all and var_xtr_rqs */
  nm_id_sct *var_lst_all, /* I [sct] All variables in input file (with IDs) */
  char *rx_sng, /* I [sng] Regular expression pattern */
@@ -139,21 +139,21 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in var string list */
     char const * rx_err_sng;  
     /* POSIX regcomp return error codes */
     switch(err_id){
-    case REG_BADPAT: rx_err_sng="Invalid pattern."; break;  
-    case REG_ECOLLATE: rx_err_sng="Not implemented."; break;
-    case REG_ECTYPE: rx_err_sng="Invalid character class name."; break;
-    case REG_EESCAPE: rx_err_sng="Trailing backslash."; break;
-    case REG_ESUBREG: rx_err_sng="Invalid back reference."; break;
-    case REG_EBRACK: rx_err_sng="Unmatched left bracket."; break;
-    case REG_EPAREN: rx_err_sng="Parenthesis imbalance."; break;
-    case REG_EBRACE: rx_err_sng="Unmatched {."; break;
-    case REG_BADBR: rx_err_sng="Invalid contents of { }."; break;
-    case REG_ERANGE: rx_err_sng="Invalid range end."; break;
-    case REG_ESPACE: rx_err_sng="Ran out of memory."; break;
+    case REG_BADPAT: rx_err_sng="Invalid pattern"; break;  
+    case REG_ECOLLATE: rx_err_sng="Not implemented"; break;
+    case REG_ECTYPE: rx_err_sng="Invalid character class name"; break;
+    case REG_EESCAPE: rx_err_sng="Trailing backslash"; break;
+    case REG_ESUBREG: rx_err_sng="Invalid back reference"; break;
+    case REG_EBRACK: rx_err_sng="Unmatched left bracket"; break;
+    case REG_EPAREN: rx_err_sng="Parenthesis imbalance"; break;
+    case REG_EBRACE: rx_err_sng="Unmatched {"; break;
+    case REG_BADBR: rx_err_sng="Invalid contents of { }"; break;
+    case REG_ERANGE: rx_err_sng="Invalid range end"; break;
+    case REG_ESPACE: rx_err_sng="Ran out of memory"; break;
     case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
-    default: rx_err_sng="Invalid pattern."; break;  
+    default: rx_err_sng="Invalid pattern"; break;  
     } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR nco_lst_rx_search() error in regular expression \"%s\" %s \n",prg_nm_get(),rx_sng,rx_err_sng); 
+    (void)fprintf(stdout,"%s: ERROR nco_lst_rx_search() error in regular expression \"%s\" %s\n",prg_nm_get(),rx_sng,rx_err_sng); 
     nco_exit(EXIT_FAILURE);
   } /* end if err */
 
