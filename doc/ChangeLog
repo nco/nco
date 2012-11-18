@@ -1,4 +1,8 @@
+2012-11-18  Charlie Zender  <zender@uci.edu>
+
 2012-11-17  Charlie Zender  <zender@uci.edu>
+
+	* Tidy nco_grp_utl.[ch]
 
 	* Add NCO spiral logos in Scalable Vector Graphic and
 	GIMP format, logo_srl.svg and logo_srl.xcf, respectively.

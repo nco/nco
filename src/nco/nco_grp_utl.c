@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.268 2012-11-18 02:42:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.269 2012-11-18 08:01:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -400,7 +400,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
     if(dbg_lvl_get() >= nco_dbg_vrb){
       (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
-      xtr_lst_ptr(var_lst_all,var_nbr_all);
+      xtr_lst_prn(var_lst_all,var_nbr_all);
     } /* endif dbg */
 
     return var_lst_all;
@@ -409,17 +409,12 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
-  /* Create variable extraction list using regular expressions:  
-     Two cases handle extraction with supplied -v (variable) and -g (group) names: 
-     
-     Case 1) -v was specified:  
-     Do a loop cycle to iterate all objects found in the file
-     For each variable found, do a second loop through the user-specified variable list
-     Add variable to extraction list if name found in second loop matches
-     This achieves printing all variables
-     NOTE: -g case is handled here too, if present, add only variable if present in group
-     
-     Case 2) -v was not specified but -g was: traverse -g list first and add all variables from that group */
+  /* Create
+     Case 1: -v was specified and -g was or was not specified (either way)
+     Method: Outer loop over all objects in file contains inner loop over user-supplied variable list
+     Add variable to extraction list if it matches user-supplied name
+     Regular expressions are allowed
+     Case 2: -v was not specified and -g was specified */
   grp_nm_fll=NULL;
   var_nm_fll=NULL;
   if(*var_xtr_nbr){
@@ -460,52 +455,42 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
           /* Compare var_nm from main iteration with var_sng found and, if equal, add to extraction list */
           if(!strcmp(var_sng,var_nm)){
-            /* No groups case, just add */
+            /* No groups specified with -g, so add variable to extraction list */
             if(!grp_xtr_nbr){
               var_xtr_rqs[var_idx_crr]=True;
             }else{ /* grp_xtr_nbr */
-              /* Groups specified with -g case: add group if grp_nm matches user-supplied name */
-              /* Loop through user-specified group list */
-              for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++){
-                char grp_nm_lst[NC_MAX_NAME]; /* Group name from the supplied argument list */
-                /* Get current group name */
-                strcpy(grp_nm_lst,grp_lst_in[grp_idx]);
-                /* Find group specified in -g and mark any match for inclusion to extract */
-                if(strcmp(grp_nm,grp_nm_lst) == 0){
-                  var_xtr_rqs[var_idx_crr]=True;
-                } /* end strcmp */
-              } /* end grp_idx */
-            } /* end else */
-          }  /* end strcmp */
-
-        } /* end loop over var_lst_in idx */ 
+              /* Groups specified with -g, so add variable to extraction list only if in matching group */
+              for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++)
+                if(!strcmp(grp_nm,grp_lst_in[grp_idx])) var_xtr_rqs[var_idx_crr]=True;
+            } /* end grp_xtr_nbr */
+          }  /* end strcmp() */
+        } /* end loop over var_lst_in */ 
 
         var_prn=False;
 
       } /* end var_prn == True */
 
-      /* Increment var index for var_lst_all only when table object is a variable; this keeps the 2 lists in sync */
+      /* Increment variable index for var_lst_all if table object is a variable; this keeps two lists in sync */
       if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
         var_idx_crr++; 
         var_prn=True;
-        /* Full variable names between the 2 lists must be the same */
+        /* Full variable names in both lists must agree */
 #ifdef NCO_SANITY_CHECK
-        assert(strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll) == 0);
-#endif
+        assert(!strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll));
+#endif /* !NCO_SANITY_CHECK */
         grp_nm_fll=(char *)nco_free(grp_nm_fll);
         var_nm_fll=(char *)nco_free(var_nm_fll);
       } /* end nco_obj_typ_var */
     }/* end loop over trv_tbl uidx */
-  } /* end *var_xtr_nbr>0 */
 
-  /* Case 2) 
-  -v was not specified but -g was: traverse the -g list first and add all variables from that group 
-  */
-  else if (grp_xtr_nbr) {  
+  }else if(grp_xtr_nbr){ /* *var_xtr_nbr == 0 */
+
+    /* Case 2: -v was not specified but -g was: traverse -g list first and add all matching variables
+       Regular expressions are not allowed in -g arguments */
 #ifdef NCO_SANITY_CHECK
     /* var_idx_crr was used to traverse all groups and variables to make var_lst_all */
     assert(var_nbr_all == var_idx_crr);
-#endif
+#endif /* !NCO_SANITY_CHECK */
     /* Loop through user-specified group list */
     for(grp_idx=0;grp_idx<grp_xtr_nbr;grp_idx++){
       /* Get current group name */
@@ -521,7 +506,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     } /* end grp_idx */
   } /* end grp_xtr_nbr */
 
-#else /* GRP_DEV */ 
+#else /* !GRP_DEV */
 
   int jdx;
   if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
@@ -550,10 +535,10 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
       rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
       if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
       continue;
-#else
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
       (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
       nco_exit(EXIT_FAILURE);
-#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
 
     /* Normal variable so search through variable array */
@@ -576,7 +561,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   } /* end loop over var_lst_in */
 
-#endif /* GRP_DEV */
+#endif /* !GRP_DEV */
 
   /* Create final variable list using boolean flag array */
 
@@ -596,7 +581,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     } /* end if */
   } /* end loop over var */
 
-  /* re-alloc() list to actual size */  
+  /* realloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
 
   var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
@@ -607,7 +592,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*var_xtr_nbr);
+    xtr_lst_prn(xtr_lst,*var_xtr_nbr);
   } /* endif dbg */
 
   return xtr_lst;
@@ -825,7 +810,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be excluded:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+    xtr_lst_prn(xtr_lst,*xtr_nbr);
   } /* endif dbg */
  
 #ifdef GRP_DEV
@@ -909,7 +894,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be extracted:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+    xtr_lst_prn(xtr_lst,*xtr_nbr);
   } /* endif dbg */
 
   /* Reset mark field */
@@ -1719,7 +1704,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+    xtr_lst_prn(xtr_lst,*xtr_nbr);
   } /* endif dbg */
 
   return xtr_lst;
@@ -2010,28 +1995,24 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+    xtr_lst_prn(xtr_lst,*xtr_nbr);
   } /* endif dbg */
 
   return xtr_lst;
 } /* end nco_var_lst_crd_ass_add_trv */
 
 void 
-xtr_lst_ptr           /*   [fnc] Print Name ID structure list */
-(nm_id_sct *xtr_lst,  /* I [sct] Name ID structure list */
- const int xtr_nbr)   /* I [nbr] Name ID structure list size */
+xtr_lst_prn /* [fnc] Print name-ID structure list */
+(nm_id_sct *xtr_lst, /* I [sct] name-ID structure list */
+ const int xtr_nbr) /* I [nbr] name-ID structure list size */
 {
   for(int idx=0;idx<xtr_nbr;idx++){
     nm_id_sct nm_id=xtr_lst[idx];
-    if(dbg_lvl_get() >= nco_dbg_dev)
-      (void)fprintf(stdout," nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll, nm_id.grp_nm, nm_id.grp_id, nm_id.id);
-    else
-      (void)fprintf(stdout," %s\n",nm_id.var_nm_fll);
+    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout," nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll,nm_id.grp_nm,nm_id.grp_id,nm_id.id); else (void)fprintf(stdout," %s\n",nm_id.var_nm_fll);
   } /* idx */
-}/* end xtr_lst_ptr() */
+}/* end xtr_lst_prn() */
 
-
-int                             /* O [nbr] True/False */
+nco_bool                        /* O [flg] Name is in extraction list */
 xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
 (const char * const var_nm_fll, /* I [sng] Full variable name to find */
  nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
@@ -2039,13 +2020,10 @@ xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction 
 {
   for(int idx=0;idx<xtr_nbr;idx++){
     nm_id_sct nm_id=xtr_lst[idx];
-    if(strcmp(var_nm_fll,nm_id.var_nm_fll) == 0){
-      return 1;
-    }
-  }
-  return 0;
+    if(!strcmp(var_nm_fll,nm_id.var_nm_fll)) return True;
+  } /* end loop */
+  return False;
 } /* end xtr_lst_fnd */ 
-
 
 int                             /* O [id] Group ID */
 nco_aux_grp_id                  /* [fnc] Return the group ID from the variable full name */
@@ -2146,7 +2124,7 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
     if (trv.typ == nco_obj_typ_var){
 
       /* Check if current variable is in extraction list */
-      if(xtr_lst_fnd(trv.nm_fll,xtr_lst,*xtr_nbr) == 1 ){
+      if(xtr_lst_fnd(trv.nm_fll,xtr_lst,*xtr_nbr)){
 
         /* Try to add to extraction list */
         xtr_lst=nco_aux_add_cf(nc_id,trv.nm_fll,trv.nm,cf_nm,xtr_lst,xtr_nbr,trv_tbl);
@@ -2157,7 +2135,7 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_cf() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+    xtr_lst_prn(xtr_lst,*xtr_nbr);
   } /* endif dbg */
 
   return xtr_lst;
@@ -2258,7 +2236,7 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
             grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
             /* Check if the  variable is already in the  extraction list: NOTE using full name "cf_nm_fll" */
-            if(xtr_lst_fnd(cf_nm_fll,xtr_lst,*xtr_nbr) == 0 ){
+            if(!xtr_lst_fnd(cf_nm_fll,xtr_lst,*xtr_nbr)){
 
               /* Add variable to list
               NOTE: Needed members for traversal code:
@@ -2326,7 +2304,7 @@ nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_cf_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*xtr_nbr);
+    xtr_lst_prn(xtr_lst,*xtr_nbr);
   } 
 
   return xtr_lst;
@@ -2677,7 +2655,8 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
 #endif
 } /* end nco4_msa_lmt_all_int() */
 
-nm_id_sct *                         /* O [sct] Extraction list */                         nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
+nm_id_sct *                         /* O [sct] Extraction list */                         
+nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
 (const int nc_id,                   /* I [id] netCDF file ID */
  const char * const var_nm,         /* I [sng] Variable name to find */
  nm_id_sct *xtr_lst,                /* I/O [sct] Current extraction list  */
@@ -2693,10 +2672,10 @@ nm_id_sct *                         /* O [sct] Extraction list */               
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nco_obj_typ_var ) {   
+    if (trv.typ == nco_obj_typ_var){
 
       /* Check if current variable matches requested variable */ 
-      if(strcmp(trv.nm,var_nm) == 0){
+      if(!strcmp(trv.nm,var_nm)){
         int  grp_id;     
         int fl_fmt;
         (void)nco_inq_format(nc_id,&fl_fmt);
@@ -2718,7 +2697,7 @@ nm_id_sct *                         /* O [sct] Extraction list */               
           (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
 
           /* Check if dimension matches the requested variable (it is a coordinate variable) */ 
-          if(strcmp(dmn_nm,var_nm) == 0){
+          if(!strcmp(dmn_nm,var_nm)){
 
             /* Construct the full (dimension/variable) name to avoid duplicate insertions */
             char* dm_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2);
@@ -2727,8 +2706,7 @@ nm_id_sct *                         /* O [sct] Extraction list */               
             strcat(dm_nm_fll,dmn_nm); 
 
             /* Check if requested coordinate variable is already on extraction list */
-            if(xtr_lst_fnd(dm_nm_fll,xtr_lst,*xtr_nbr) == 0 ){
-
+            if(!xtr_lst_fnd(dm_nm_fll,xtr_lst,*xtr_nbr)){
               /* Obtain variable ID from netCDF API using group ID */
               int var_id;
               (void)nco_inq_varid(grp_id,trv.nm,&var_id);
@@ -2752,7 +2730,6 @@ nm_id_sct *                         /* O [sct] Extraction list */               
               xtr_lst[*xtr_nbr].id=var_id; 
               xtr_lst[*xtr_nbr].grp_nm=strdup(tmp);                  
               (*xtr_nbr)++; /* NB: Changes size  */
-
             } /* End check if requested coordinate variable is already on extraction list */
           }/* end check if dimension matches the requested variable */
         } /* end idx_dmn dimensions */ 
@@ -2762,15 +2739,15 @@ nm_id_sct *                         /* O [sct] Extraction list */               
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco_aux_add_dmn_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_ptr(xtr_lst,*xtr_nbr);
-  } 
+    xtr_lst_prn(xtr_lst,*xtr_nbr);
+  } /* endif dbg */
 
   return xtr_lst;
 } /* end nco_aux_add_dmn_trv() */ 
 
 nco_bool                    /* O [flg] Dimension was found */
 nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
-(int grp_id,                /* I [id] Group ID */
+(const int grp_id,                /* I [id] Group ID */
  const char * const dmn_nm, /* I [sng] Dimension name to find */
  long const dmn_sz)         /* I [nbr] Dimension size to find */
 {
@@ -2803,6 +2780,6 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in grou
   dmn_ids=(int *)nco_free(dmn_ids);
   dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
   return False;
-} /* end fnd_dmn() */ 
+} /* end nco_fnd_dmn() */ 
 
 

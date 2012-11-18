@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.130 2012-11-16 18:13:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.131 2012-11-18 08:01:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -221,11 +221,11 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
  const nco_bool EXCLUDE_INPUT_LIST); /* I [flg] Exclude rather than extract */
 
 void 
-xtr_lst_ptr                     /*   [fnc] Print Name ID structure list */
+xtr_lst_prn                     /*   [fnc] Print Name ID structure list */
 (nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
  const int xtr_nbr);            /* I [nbr] Name ID structure list size */
 
-int                             /* O [nbr] True/False */
+nco_bool                        /* O [flg] Name is in extraction list */
 xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
 (const char * const var_nm_fll, /* I [sng] Full variable name to find */
  nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
@@ -319,7 +319,7 @@ nco_aux_add_dmn_trv                     /* [fnc] Add a coordinate variable that 
 
 nco_bool                    /* O [flg] Dimension was found */
 nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
-(int grp_id,                /* I [id] Group ID */
+(const int grp_id,                /* I [id] Group ID */
  const char * const dmn_nm, /* I [sng] Dimension name to find */
  long const dmn_sz);        /* I [nbr] Dimension size to find */
 
