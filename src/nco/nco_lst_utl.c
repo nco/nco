@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.70 2012-11-19 03:41:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.71 2012-11-19 20:52:37 pvicente Exp $ */
 
 /* Purpose: List utilities */
 
@@ -194,7 +194,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 
   int mch_nbr=0;
 #ifndef NCO_HAVE_REGEX_FUNCTIONALITY
-  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),rx_sng);
   nco_exit(EXIT_FAILURE);
 #else /* NCO_HAVE_REGEX_FUNCTIONALITY */
   int err_id;

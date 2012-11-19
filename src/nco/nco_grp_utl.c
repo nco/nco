@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.279 2012-11-19 07:08:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.280 2012-11-19 20:52:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2338,9 +2338,14 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     /* If usr_sng is regular expression ... */
     if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) has_obj=True;
       if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
       continue;
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+	  nco_exit(EXIT_FAILURE);
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
 
     /* usr_sng is not rx, so manually search for multicomponent matches */
