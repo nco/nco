@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.278 2012-11-19 06:28:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.279 2012-11-19 07:08:07 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2293,7 +2293,9 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
      ncks -O -D 5 -g /g1/g1 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -g g1.+ ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -v v1 ~/nco/data/in_grp.nc ~/foo.nc
-  */
+     ncks -O -D 5 -g g1.+ -v v1,sc. ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -g g9 -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc */
 
   char *sbs_srt; /* [sng] Location of user-string match start in object path */
   char *sbs_end; /* [sng] Location of user-string match end   in object path */
