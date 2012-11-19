@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.45 2012-11-11 23:37:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.46 2012-11-19 00:37:52 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -46,7 +46,6 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
- const char * const grp_nm_fll, /* I [sng] Input variable full group name */
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
   

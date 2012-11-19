@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.47 2012-11-18 21:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.48 2012-11-19 00:37:52 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -36,6 +36,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_grp_trv.h" /* Group traversal */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
 
@@ -49,10 +50,16 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
 
 int /* O [nbr] Number of matches found */
 nco_lst_rx_search /* [fnc] Search for pattern matches in var string list */
-(int var_nbr_all, /* I [nbr] Size of var_lst_all and var_xtr_rqs */
+(const int var_nbr_all, /* I [nbr] Size of var_lst_all and var_xtr_rqs */
  nm_id_sct *var_lst_all, /* I [sct] All variables in input file (with IDs) */
  char *rx_sng, /* I [sng] Regular expression pattern */
  nco_bool *var_xtr_rqs); /* O [flg] Matched vars holder */
+
+int /* O [nbr] Number of matches found */
+nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
+(char *rx_sng, /* I [sng] Regular expression pattern */
+ const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */

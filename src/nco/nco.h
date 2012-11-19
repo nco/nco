@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.199 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.200 2012-11-19 00:42:38 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -606,7 +606,10 @@ extern "C" {
   /* Object structure 
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
-     Node/object is either group or variable like in HDF5 */
+     Node/object is either group or variable like in HDF5
+     Fill actual value of grp_trv_sct structure in trv_tbl_init()
+     free() each pointer member of grp_trv_sct structure in trv_tbl_free()
+     deep-copy each pointer member of grp_trv_sct structure in trv_tbl_add() */
   typedef struct{ 
     char    *nm_fll;         /* [sng] Fully qualified name (path) */
     size_t  nm_fll_lng;      /* [sng] Length of full name */

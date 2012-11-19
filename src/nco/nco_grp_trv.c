@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.16 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.17 2012-11-19 00:42:38 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -29,11 +29,12 @@ trv_tbl_init
     tb->grp_lst[idx].typ     = nco_obj_typ_err;
     tb->grp_lst[idx].nm[0]   = '\0';
     tb->grp_lst[idx].flg     = -1;
+    tb->grp_lst[idx].flg_mch = -1;
     tb->grp_lst[idx].nbr_att = -1;
     tb->grp_lst[idx].nbr_var = -1;
     tb->grp_lst[idx].nbr_dmn = -1;
     tb->grp_lst[idx].nbr_grp = -1;
-  }
+  } /* end loop over objects */
 
   *tbl = tb;
 } /* trv_tbl_init() */
@@ -74,6 +75,7 @@ trv_tbl_add
   tbl->grp_lst[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
   strcpy(tbl->grp_lst[idx].nm,obj.nm);
   tbl->grp_lst[idx].typ=obj.typ;
+  tbl->grp_lst[idx].flg_mch=obj.flg_mch;
   tbl->grp_lst[idx].nbr_att=obj.nbr_att;
   tbl->grp_lst[idx].nbr_var=obj.nbr_var;
   tbl->grp_lst[idx].nbr_dmn=obj.nbr_dmn;

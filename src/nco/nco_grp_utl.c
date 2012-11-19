@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.274 2012-11-18 21:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.275 2012-11-19 00:37:52 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -17,8 +17,6 @@
  */
 
 #include "nco_grp_utl.h"  /* Group utilities */
-#include "nco_cnk.h"      /* Chunking */
-#include "nco_msa.h"      /* Multi-slabbing algorithm */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
@@ -235,7 +233,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
  char * const * const grp_lst_in, /* I [sng] User-specified list of groups names to extract (specified with -g) */
  const int grp_xtr_nbr, /* I [nbr] Number of groups in current extraction list (specified with -g) */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
- const grp_tbl_sct * const trv_tbl, /* I [sct] Group traversal table */
+ const trv_tbl_sct * const trv_tbl, /* I [sct] Group traversal table */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const var_xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  int * const nbr_var_fl) /* O [nbr] Number of variables in input file */
@@ -386,7 +384,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   } /* end uidx */
 #endif /* NCO_SANITY_CHECK */
 
-#ifdef GRP_DEV
+#ifdef NCO_GRP_DEV
   /* Return all variables if none were specified and not -c ... */
   if(*var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
@@ -424,10 +422,10 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
 	  /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
 	  rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
-	  if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+	  if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
 	  continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
 	  nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 	} /* end if regular expression */
@@ -471,7 +469,7 @@ p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expres
     
   } /* end grp_xtr_nbr */
 
-#else /* !GRP_DEV */
+#else /* !NCO_GRP_DEV */
 
   int jdx;
   if(*var_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
@@ -493,7 +491,7 @@ p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expres
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
-      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+      if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
       continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
       (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
@@ -501,7 +499,7 @@ p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expres
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
 
-    /* Normal variable so search through variable array */
+    /* Not a regular expression so search through variable array */
     for(jdx=0;jdx<var_nbr_all;jdx++)
       if(!strcmp(var_sng,var_lst_all[jdx].nm)) break;
 
@@ -521,7 +519,7 @@ p	  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expres
 
   } /* end loop over var_lst_in */
 
-#endif /* !GRP_DEV */
+#endif /* !NCO_GRP_DEV */
 
   /* Create final variable list using boolean flag array */
 
@@ -679,7 +677,7 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       rx_mch_nbr=nco_lst_rx_search(grp_nbr_top,grp_lst_all,grp_sng,grp_xtr_rqs);
-      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any groups\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),grp_sng); 
+      if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any groups\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),grp_sng); 
       continue;
 #else
       (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to groups) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),grp_sng);
@@ -750,7 +748,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
  const int nbr_var,     /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list (destroyed) */
  int * const xtr_nbr,   /* I/O [nbr] Number of variables in exclusion/extraction list */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Purpose: Convert exclusion list to extraction list
      User wants to extract all variables except those currently in list
@@ -768,7 +766,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
     xtr_lst_prn(xtr_lst,*xtr_nbr);
   } /* endif dbg */
  
-#ifdef GRP_DEV
+#ifdef NCO_GRP_DEV
   /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as flagged;
   A second traversal extracts all variables that are not marked (this reverses the list);
   The second traversal is needed because we need to find nbr_xcl, the number of variables to exclude, first
@@ -815,7 +813,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
     }
   } /* end loop over uidx */
 
-#else /* GRP_DEV */
+#else /* NCO_GRP_DEV */
   /* Turn extract list into exclude list and reallocate extract list  */
   nbr_xcl=*xtr_nbr;
   *xtr_nbr=0;
@@ -841,7 +839,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   /* NB: cannot free memory if list points to names in argv[] */
   /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
   xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
-#endif /* GRP_DEV */
+#endif /* NCO_GRP_DEV */
 
 #ifdef NCO_SANITY_CHECK
   assert(*xtr_nbr == nbr_xcl);
@@ -930,7 +928,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
- const grp_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   /* Purpose: */
 
@@ -1073,7 +1071,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             }else{ /* Write mode */
 
               /* Write output variable */
-              if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm,xtr.grp_nm_fll,lmt_all_lst,lmt_all_lst_nbr); 
+              if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm,lmt_all_lst,lmt_all_lst_nbr); 
               else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm);
 
             } /* Define mode */
@@ -1175,7 +1173,7 @@ int                            /* [rcd] Return code */
 nco_grp_itr
 (const int grp_id,             /* I [ID] Group ID */
  char * const grp_nm_fll,      /* I [sng] Absolute group name (path) */
- grp_tbl_sct *trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct *trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Recursively iterate grp_id */
 
@@ -1291,7 +1289,7 @@ nco_inq_trv                          /* [fnc] Find and return global totals of d
  int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all,            /* O [nbr] Number of variables in file  */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
- const grp_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
   int att_nbr_lcl; /* [nbr] Number of global attributes in file */
@@ -1371,7 +1369,7 @@ nco4_inq_vars             /* [fnc] Find and return total of variables */
 
 void                          
 nco_prt_trv             /* [fnc] Print table with -z */
-(const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */  
+(const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */  
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
@@ -1387,7 +1385,7 @@ nco_prt_trv             /* [fnc] Print table with -z */
 void                          
 nco_prt_grp_trv         /* [fnc] Print table  */
 (const int nc_id,       /* I [ID] File ID */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1449,7 +1447,7 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
  int lmt_nbr,              /* [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,            /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
   long dmn_sz;                 /* [nbr] Dimension size */ 
@@ -1507,7 +1505,7 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
 void 
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
 (const int nc_id,             /* I [id] netCDF file ID */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   int grp_id;                 /* [ID]  Group ID */
   int nbr_att;                /* [nbr] Number of attributes */
@@ -1550,7 +1548,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
  int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
  int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
  char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Purpose: Add all coordinates to extraction list
   Find all coordinates (dimensions which are also variables) and
@@ -1805,7 +1803,7 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
-      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+      if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
       continue;
 #else
       (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
@@ -1843,7 +1841,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 (const int nc_id,                 /* I netCDF file ID */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (changed) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   int rcd=NC_NOERR;            /* [rcd] Return code */
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
@@ -2013,7 +2011,7 @@ int                            /* O [nbr] Item found or not */
 nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "var_nm" and export to "nm_id" */
 (const int nc_id,              /* I [id] netCDF file ID */
  const char * const var_nm,    /* I [sng] Variable name to find */
- const grp_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  nm_id_sct *nm_id)             /* O [sct] Entry to add to list */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2060,7 +2058,7 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
  const char * const cf_nm,        /* I [sng] CF name to find ( "coordinates" or "bounds" ) */
  nm_id_sct *xtr_lst,              /* I/O current extraction list (modified) */
  int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
@@ -2097,7 +2095,7 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
  const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
  nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,            /* I/O number of variables in current extraction list */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system 
@@ -2230,7 +2228,7 @@ nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates
  const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
  nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,            /* I/O number of variables in current extraction list */
- const grp_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system 
@@ -2261,7 +2259,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 (char * const * const obj_lst_in, /* I [sng] User-specified list of object names */
  const int obj_nbr, /* I [nbr] Number of items in list */
  const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
- const grp_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
   /* Purpose: Verify all user-specified objects exist in file
      Currently verifies only variables or groups independently of the other
@@ -2297,15 +2295,32 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     /* Initialize state for current user-specified string */
     has_obj=False;
 
-    if(obj_lst_in[obj_idx]){
-      usr_sng=strdup(obj_lst_in[obj_idx]); 
-      usr_sng_lng=strlen(usr_sng);
-    }else{
+    if(!obj_lst_in[obj_idx]){
       (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
       nco_exit(EXIT_FAILURE);
     } /* end else */
 
+    usr_sng=strdup(obj_lst_in[obj_idx]); 
+    usr_sng_lng=strlen(usr_sng);
     if(usr_sng_lng == 1L) assert(usr_sng[0] == sls_chr);
+
+#if 0
+    /* Convert pound signs (back) to commas */
+    nco_hash2comma(usr_sng);
+
+    /* If var_sng is regular expression ... */
+    if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
+      /* ... and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+      if((rx_mch_nbr=nco_lst_trv_search(usr_sng,trv_tbl,obj_typ))) has_obj=True;
+      if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng); 
+      continue;
+#else
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+      nco_exit(EXIT_FAILURE);
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+    } /* end if regular expression */
+#endif
 
     for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
@@ -2370,7 +2385,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
  int nbr_dmn_fl,                       /* I [nbr] Number of dimensions in file */
  lmt_sct **lmt,                        /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                          /* I [nbr] Number of limit structures in list */
- const grp_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   lmt_sct *lmt_rgl;
   lmt_all_sct * lmt_all_crr;
@@ -2390,7 +2405,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
 
   (void)nco_inq_format(in_id,&fl_fmt);
   
-#ifdef GRP_DEV
+#ifdef NCO_GRP_DEV
   /* Initialize counters/indices */
   nbr_dmn_all=0;
   idx=0;
@@ -2476,7 +2491,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 
-#else /* GRP_DEV */ 
+#else /* NCO_GRP_DEV */ 
 
   int idx;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
@@ -2524,7 +2539,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
     lmt_rgl->lmt_typ=-1;
   } /* end loop over dimensions */
 
-#endif /* GRP_DEV */ 
+#endif /* NCO_GRP_DEV */ 
 
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
@@ -2609,7 +2624,7 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
  const char * const var_nm,         /* I [sng] Variable name to find */
  nm_id_sct *xtr_lst,                /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,               /* I/O [nbr] Number of variables in extraction list */
- const grp_tbl_sct * const trv_tbl)/* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)/* I [sct] Traversal table */
 {
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
   long dmn_sz;                 /* [nbr] Dimension size */  

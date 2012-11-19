@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.120 2012-11-12 01:53:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.121 2012-11-19 00:37:52 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -619,7 +619,6 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
- const char * const grp_nm_fll, /* I [sng] Input variable full group name */
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
@@ -704,7 +703,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   int fl_fmt;
   (void)nco_inq_format(in_id,&fl_fmt);
 
-#ifdef GRP_DEV
+#ifdef NCO_GRP_DEV
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     for(idx=0;idx<nbr_dim;idx++){
       char dmn_nm[NC_MAX_NAME];
@@ -887,7 +886,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get dimension IDs for group */
   (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,0);
 
-#ifdef GRP_DEV
+#ifdef NCO_GRP_DEV
   /* Obtain netCDF file format */
   int fl_fmt;
   (void)nco_inq_format(in_id,&fl_fmt);
