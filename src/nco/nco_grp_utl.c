@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.276 2012-11-19 03:17:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.277 2012-11-19 03:41:53 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2331,14 +2331,9 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     /* If usr_sng is regular expression ... */
     if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
-#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) has_obj=True;
       if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
       continue;
-#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
-      nco_exit(EXIT_FAILURE);
-#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
 
     /* usr_sng is not rx, so manually search for multicomponent matches */
@@ -2355,7 +2350,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	/* Look for partial match, not necessarily on path boundaries */
 	if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
 
-	  /* Ensure match spans (begins and ends on) whole group components */
+	  /* Ensure match spans (begins and ends on) whole path-component boundaries */
 
 	  /* Does match begin at path component boundary ... directly on a slash? */
 	  if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
@@ -2394,7 +2389,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     } /* end loop over tbl_idx */
 
     if(!has_obj){
-      (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name %s is not in input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+      (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
       nco_exit(EXIT_FAILURE);
     } /* has_obj */
     /* Free dynamic memory */

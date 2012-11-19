@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.69 2012-11-19 03:17:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.70 2012-11-19 03:41:53 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -180,10 +180,11 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in list of objects (groups
 
   return mch_nbr;
 } /* end nco_lst_rx_search() */
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
 int /* O [nbr] Number of matches to current rx */
 nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
-(char *rx_sng, /* I [sng] Regular expression pattern */
+(const char * const rx_sng, /* I [sng] Regular expression pattern */
  const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -191,10 +192,14 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
      NB: This function only writes True to the match flag, it never writes False.
      Input flags are assumed to be statefull, and may contain Trues from previous calls */
 
+  int mch_nbr=0;
+#ifndef NCO_HAVE_REGEX_FUNCTIONALITY
+  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+  nco_exit(EXIT_FAILURE);
+#else /* NCO_HAVE_REGEX_FUNCTIONALITY */
   int err_id;
   int flg_cmp; /* Comparison flags */
   int flg_exe; /* Execution flages */
-  int mch_nbr=0;
   
   regmatch_t *result;
   regex_t *rx;
@@ -252,11 +257,10 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
   regfree(rx); /* Free regular expression data structure */
   rx=(regex_t *)nco_free(rx);
   result=(regmatch_t *)nco_free(result);
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
   return mch_nbr;
 } /* end nco_trv_rx_search() */
-
-#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */

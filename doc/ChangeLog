@@ -1,5 +1,7 @@
 2012-11-18  Charlie Zender  <zender@uci.edu>
 
+	* Move rx #ifdef logic from nco_chk_trv() down into nco_trv_rx_search()
+
 	* Implement additional checks for variables in nco_chk_trv()
 
 	* Implement rx for groups in nco_chk_trv()
