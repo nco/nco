@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.198 2012-11-18 20:30:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.199 2012-11-19 00:37:52 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -11,9 +11,6 @@
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
-
-#define NCO_SANITY_CHECK /* Calls several assert calls in the form assert(expected variable value == actual variable value) */
-#define GRP_DEV          /* Symbol that encapsulates group development code; just keeps old non-group code commented in #else */
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
@@ -151,6 +148,11 @@ extern "C" {
 # endif /* !NCO_USE_FILL_VALUE */
 # define NCO_MSS_VAL_SNG
 #endif /* NCO_MSS_VAL_SNG */
+
+  /* Call assert() in form assert(expected==) */
+#define NCO_SANITY_CHECK
+  /* Encapsulate group development code by putting non-group code in #else */
+#define NCO_GRP_DEV
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
@@ -332,21 +334,6 @@ extern "C" {
     ncwa
   }; /* end prg enum */
   
-  typedef enum aed{ /* [enm] Attribute editor mode */
-    aed_append,
-    aed_create,
-    aed_delete,
-    aed_modify,
-    aed_overwrite
-  } aed_enm; /* end aed enum */
-  
-  typedef enum gpe{ /* [enm] Group Path Editing mode */
-    gpe_append,
-    gpe_delete,
-    gpe_flatten,
-    gpe_backspace
-  } gpe_enm; /* end gpe enum */
-
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */
     nco_dbg_quiet, /* 0 [enm] Quiet all non-error messages */
@@ -363,29 +350,6 @@ extern "C" {
     nco_dbg_dev,   /* 11 [enm] NCO developer information; only useful for debugging  */
     nco_dbg_nbr    /* 12 [enm] Number of debugging types (equals last enumerated value) */
   }; /* end nco_dbg_typ_enm */
-
-  typedef enum { /* [enm] Memory allocation type */
-    nco_mmr_calloc, /* [enm] nco_calloc() */
-    nco_mmr_free, /* [enm] nco_free() */
-    nco_mmr_malloc, /* [enm] nco_malloc() */
-    nco_mmr_realloc /* [enm] nco_realloc() */
-  } nco_mmr_typ_enm; /* end nco_mmr_typ enum */
-
-  typedef enum { /* [enm] Arithmetic precision rank */
-    /* Ranked ordering of "arithmetic precision" from lowest to highest */
-    nco_rth_prc_rnk_string, /* [enm] */ /* Least precise */
-    nco_rth_prc_rnk_char, /* [enm] */
-    nco_rth_prc_rnk_ubyte, /* [enm] */
-    nco_rth_prc_rnk_byte, /* [enm] */
-    nco_rth_prc_rnk_ushort, /* [enm] */
-    nco_rth_prc_rnk_short, /* [enm] */
-    nco_rth_prc_rnk_uint, /* [enm] */
-    nco_rth_prc_rnk_int, /* [enm] */
-    nco_rth_prc_rnk_uint64, /* [enm] */
-    nco_rth_prc_rnk_int64, /* [enm] */
-    nco_rth_prc_rnk_float, /* [enm] */
-    nco_rth_prc_rnk_double /* [enm] */ /* Most precise */
-  } nco_rth_prc_rnk_enm; /* end nco_rth_prc_rnk enum */
 
   enum nco_op_typ{ /* [enm] Operation type */
     /* Types used in ncbo(): */
@@ -415,6 +379,50 @@ extern "C" {
     nco_op_ge /* Greater than or equal to */
   }; /* end nco_rlt_opr enum */
   
+  typedef enum nco_obj_typ_enm{ /* [enm] netCDF4 object type: group, variable */
+    nco_obj_typ_err=-1, /* -1 Invalid type for initialization */
+    nco_obj_typ_grp,    /*  0, Group */
+    nco_obj_typ_var     /*  1, variable */
+  } nco_obj_typ; 
+  
+  typedef enum aed{ /* [enm] Attribute editor mode */
+    aed_append,
+    aed_create,
+    aed_delete,
+    aed_modify,
+    aed_overwrite
+  } aed_enm; /* end aed enum */
+  
+  typedef enum gpe{ /* [enm] Group Path Editing mode */
+    gpe_append,
+    gpe_delete,
+    gpe_flatten,
+    gpe_backspace
+  } gpe_enm; /* end gpe enum */
+
+  typedef enum { /* [enm] Memory allocation type */
+    nco_mmr_calloc, /* [enm] nco_calloc() */
+    nco_mmr_free, /* [enm] nco_free() */
+    nco_mmr_malloc, /* [enm] nco_malloc() */
+    nco_mmr_realloc /* [enm] nco_realloc() */
+  } nco_mmr_typ_enm; /* end nco_mmr_typ enum */
+
+  typedef enum { /* [enm] Arithmetic precision rank */
+    /* Ranked ordering of "arithmetic precision" from lowest to highest */
+    nco_rth_prc_rnk_string, /* [enm] */ /* Least precise */
+    nco_rth_prc_rnk_char, /* [enm] */
+    nco_rth_prc_rnk_ubyte, /* [enm] */
+    nco_rth_prc_rnk_byte, /* [enm] */
+    nco_rth_prc_rnk_ushort, /* [enm] */
+    nco_rth_prc_rnk_short, /* [enm] */
+    nco_rth_prc_rnk_uint, /* [enm] */
+    nco_rth_prc_rnk_int, /* [enm] */
+    nco_rth_prc_rnk_uint64, /* [enm] */
+    nco_rth_prc_rnk_int64, /* [enm] */
+    nco_rth_prc_rnk_float, /* [enm] */
+    nco_rth_prc_rnk_double /* [enm] */ /* Most precise */
+  } nco_rth_prc_rnk_enm; /* end nco_rth_prc_rnk enum */
+
   typedef enum { /* [enm] Timer flag */
     nco_tmr_srt, /* [enm] Initialize timer (first timer call) */
     nco_tmr_mtd, /* [enm] Metadata timer (second timer call) */
@@ -595,6 +603,32 @@ extern "C" {
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
   
+  /* Object structure 
+     Information for each object/node in traversal tree
+     Contains basic information about this object/node needed by traversal algorithm
+     Node/object is either group or variable like in HDF5 */
+  typedef struct{ 
+    char    *nm_fll;         /* [sng] Fully qualified name (path) */
+    size_t  nm_fll_lng;      /* [sng] Length of full name */
+    char    *grp_nm_fll;     /* [sng] Full group name (for groups, same as nm_fll) */
+    char    nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
+    nco_obj_typ typ;     /* [enm] netCDF4 object type: group or variable */
+    int     flg;             /* [flg] mark flag (several actions) */
+    int     flg_mch;         /* [flg] Object matches extraction criteria */
+    int     nbr_att;         /* [nbr] Number of attributes */
+    int     nbr_var;         /* [nbr] Number of variables (for group) */
+    int     nbr_dmn;         /* [nbr] Number of dimensions */
+    int     nbr_grp;         /* [nbr] Number of sub-groups (for group) */
+  } grp_trv_sct;
+  
+  /* Traversal table structure
+     Stores all objects/nodes in file tree */
+  typedef struct{
+    unsigned int sz;        /* [nbr] Allocated size */
+    unsigned int nbr;       /* [nbr] Number of current elements */
+    grp_trv_sct *grp_lst;   /* [sct] Array of grp_trv_sct */
+  } trv_tbl_sct;
+
   /* Chunking structure */
   typedef struct{ /* cnk_sct */
     char *nm; /* [sng] Dimension name */

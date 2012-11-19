@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.472 2012-11-18 21:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.473 2012-11-19 00:37:52 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.472 2012-11-18 21:16:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.472 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.473 2012-11-19 00:37:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.473 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -168,7 +168,7 @@ main(int argc,char **argv)
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
-  grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
@@ -695,7 +695,7 @@ main(int argc,char **argv)
   } /* EXTRACT_ASSOCIATED_COORDINATES */
 
   /* Sort extraction list alphabetically or by variable ID */
-  if(xtr_nbr > 1)xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
+  if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
 
   /* We now have final list of variables to extract. Phew. */
 
@@ -845,7 +845,7 @@ main(int argc,char **argv)
           /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,grp_out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
           /* Multi-slab routines */
           /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
-          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,xtr_lst[idx].grp_nm_fll,lmt_all_lst,nbr_dmn_fl); 
+          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); 
           else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
         } /* end loop over idx */
       }else{

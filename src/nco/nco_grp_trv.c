@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.15 2012-11-16 22:35:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.16 2012-11-19 00:37:52 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -10,17 +10,17 @@
    ncks -D 1 ~/nco/data/in_grp.nc
  */
 
-#include "nco_grp_trv.h" /* Group traversal storage */
+#include "nco_grp_trv.h" /* Group traversal */
 
 void                          
 trv_tbl_init
-(grp_tbl_sct **tbl)       /* I/O [sct] Traversal table */
+(trv_tbl_sct **tbl)       /* I/O [sct] Traversal table */
 {
   unsigned int idx;
-  grp_tbl_sct* tb=(grp_tbl_sct*)nco_malloc(sizeof(grp_tbl_sct));
+  trv_tbl_sct *tb=(trv_tbl_sct *)nco_malloc(sizeof(trv_tbl_sct));
   tb->sz=100;
   tb->nbr=0;
-  tb->grp_lst=(grp_trv_sct*)nco_malloc(tb->sz*sizeof(grp_trv_sct));
+  tb->grp_lst=(grp_trv_sct *)nco_malloc(tb->sz*sizeof(grp_trv_sct));
 
   for(idx=0;idx<tb->sz;idx++){
     tb->grp_lst[idx].nm_fll  = NULL;
@@ -40,14 +40,14 @@ trv_tbl_init
 
 void 
 trv_tbl_free
-(grp_tbl_sct *tbl)   /* I [sct] Traversal table */
+(trv_tbl_sct *tbl)   /* I [sct] Traversal table */
 {
   unsigned int idx;
 
   for(idx=0;idx<tbl->sz;idx++){
     nco_free(tbl->grp_lst[idx].nm_fll);
     nco_free(tbl->grp_lst[idx].grp_nm_fll);
-  }
+  } /* end loop */
   nco_free(tbl->grp_lst);
   nco_free(tbl);
 } /* end trv_tbl_free() */
@@ -55,7 +55,7 @@ trv_tbl_free
 void 
 trv_tbl_add
 (grp_trv_sct obj,          /* I   [sct] Object to store */
- grp_tbl_sct *tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct *tbl)         /* I/O [sct] Traversal table */
 {
   unsigned int idx;
 
@@ -63,9 +63,9 @@ trv_tbl_add
     tbl->sz*=2;
     tbl->grp_lst=(grp_trv_sct*)nco_realloc(tbl->grp_lst,tbl->sz*sizeof(grp_trv_sct));
 
-    for(idx=tbl->nbr;idx<tbl->sz;idx++) {
-      tbl->grp_lst[idx].nm_fll = NULL;
-      tbl->grp_lst[idx].grp_nm_fll = NULL;
+    for(idx=tbl->nbr;idx<tbl->sz;idx++){
+      tbl->grp_lst[idx].nm_fll=NULL;
+      tbl->grp_lst[idx].grp_nm_fll=NULL;
     } /* idx */
   } /* tbl->sz */
   idx=tbl->nbr++;
@@ -79,4 +79,3 @@ trv_tbl_add
   tbl->grp_lst[idx].nbr_dmn=obj.nbr_dmn;
   tbl->grp_lst[idx].nbr_grp=obj.nbr_grp;
 } /* end trv_tbl_add() */
-

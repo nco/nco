@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.240 2012-11-18 21:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.241 2012-11-19 00:37:52 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.240 2012-11-18 21:16:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.240 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.241 2012-11-19 00:37:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.241 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -149,7 +149,7 @@ main(int argc,char **argv)
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-  grp_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
   int *in_id_arr;
 
