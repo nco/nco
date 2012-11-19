@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.277 2012-11-19 03:41:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.278 2012-11-19 06:28:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1208,12 +1208,14 @@ nco_grp_itr
   nbr_grp=0;
 #endif
 
-  /* Add to table: this is a group */
+  /* Add group to table */
+  obj.typ=nco_obj_typ_grp;
   obj.nm_fll=grp_nm_fll;
   obj.nm_fll_lng=strlen(obj.nm_fll);
   obj.grp_nm_fll=grp_nm_fll;
+  obj.nm_lng=strlen(grp_nm);
   strcpy(obj.nm,grp_nm);
-  obj.typ=nco_obj_typ_grp;
+  obj.flg_mch=False;
   obj.nbr_att=nbr_att;
   obj.nbr_var=nbr_var;
   obj.nbr_dmn=nbr_dmn;
@@ -1237,16 +1239,18 @@ nco_grp_itr
     /* Concatenate variable to absolute group path */
     strcat(var_nm_fll,var_nm);
 
-    /* Add to table: this is a variable NOTE: nbr_var, nbr_grp not valid here */
-    obj.nm_fll=var_nm_fll;
-    obj.nm_fll_lng=strlen(obj.nm_fll);
-    obj.grp_nm_fll=grp_nm_fll;
+    /* Add variable to table NB: nbr_var, nbr_grp not valid here */
     obj.typ=nco_obj_typ_var;
-    strcpy(obj.nm,var_nm);
+    obj.flg_mch=False;
+    obj.grp_nm_fll=grp_nm_fll;
     obj.nbr_att=nbr_att;
     obj.nbr_dmn=nbr_dmn;
-    obj.nbr_var=-1;
     obj.nbr_grp=-1;
+    obj.nbr_var=-1;
+    obj.nm_fll=var_nm_fll;
+    obj.nm_fll_lng=strlen(var_nm_fll);
+    obj.nm_lng=strlen(var_nm);
+    strcpy(obj.nm,var_nm);
     trv_tbl_add(obj,trv_tbl);
     var_nm_fll=(char*)nco_free(var_nm_fll);
   } /* end loop over variables */
@@ -1962,9 +1966,11 @@ trv_lst_prn /* [fnc] Print name-ID structure list */
  const nco_obj_typ obj_typ) /* I [enm] Object type (group or variable) */
 {
   /* Print all matching objects of given type from traversal table */
+  grp_trv_sct trv_obj;
   for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    grp_trv_sct trv_obj=trv_tbl->grp_lst[tbl_idx];
-    if((trv_obj.typ == obj_typ) && (trv_obj.flg_mch == True)) (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
+    trv_obj=trv_tbl->grp_lst[tbl_idx];
+    if((trv_obj.typ == obj_typ) && (trv_obj.flg_mch == True)) 
+      (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
   } /* end loop over trv_tbl */
 }/* end trv_lst_prn() */
 
@@ -2309,7 +2315,6 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
   nco_bool has_obj; /* [flg] Name is in file */
 
   size_t usr_sng_lng; /* [nbr] Length of user-supplied string */
-  size_t var_nm_lng; /* [nbr] Length of short-form of variable name */
 
   for(int obj_idx=0;obj_idx<obj_nbr;obj_idx++){
 
@@ -2370,17 +2375,17 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 
 	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
 
-	  /* Additional condition for variables is match must end with short form of variable name */
+	  /* Additional condition for variables is user-supplied string must end with short form of variable name */
 	  if(obj_typ == nco_obj_typ_var){
-	    var_nm_lng=strlen(trv_obj.nm);
-	    var_mch_srt=strstr(usr_sng,trv_obj.nm);
-	    if(var_mch_srt == usr_sng+usr_sng_lng-var_nm_lng) flg_var_cnd=True; else flg_var_cnd=False;
+	    var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
+	    if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True; else flg_var_cnd=False;
 	    if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied variable name %s %s additional conditions for a variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
 	  } /* endif var */
 
 	  if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
-	    /* User-supplied string is a complete component of object path */
-	    trv_obj.flg_mch=True;
+	    /* User-supplied string is complete component of object path and, if variable, meets additional constraints */
+	    /* NB: Deep-write to full trv_tbl not shallow write to local trv_obj */
+	    trv_tbl->grp_lst[tbl_idx].flg_mch=True;
 	    has_obj=True;
 	  } /* endif */
 
@@ -2402,7 +2407,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     trv_lst_prn(trv_tbl,obj_typ);
   } /* endif dbg */
 
-  return has_obj;
+  return (nco_bool)True;
 
 } /* end nco_chk_trv() */
 

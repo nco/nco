@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.200 2012-11-19 00:42:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.201 2012-11-19 06:28:55 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -615,7 +615,8 @@ extern "C" {
     size_t  nm_fll_lng;      /* [sng] Length of full name */
     char    *grp_nm_fll;     /* [sng] Full group name (for groups, same as nm_fll) */
     char    nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
-    nco_obj_typ typ;     /* [enm] netCDF4 object type: group or variable */
+    size_t  nm_lng;          /* [sng] Length of short name */
+    nco_obj_typ typ;         /* [enm] netCDF4 object type: group or variable */
     int     flg;             /* [flg] mark flag (several actions) */
     int     flg_mch;         /* [flg] Object matches extraction criteria */
     int     nbr_att;         /* [nbr] Number of attributes */

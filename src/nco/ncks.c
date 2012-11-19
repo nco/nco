@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.475 2012-11-19 03:41:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.476 2012-11-19 06:28:55 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.475 2012-11-19 03:41:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.475 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.476 2012-11-19 06:28:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.476 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -599,8 +599,8 @@ main(int argc,char **argv)
 
 #ifdef ENABLE_NETCDF4
   /* Ensure all specified variable names are valid */
-  if(xtr_nbr) nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST);
-  /*  if(xtr_nbr) nco_chk_trv(var_lst_in,xtr_nbr,nco_obj_typ_var,trv_tbl);*/
+  /*  if(xtr_nbr) nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST);*/
+  if(xtr_nbr) nco_chk_trv(var_lst_in,xtr_nbr,nco_obj_typ_var,trv_tbl); /* NB: using this causes two ncap2 regressions, presumably because EXCLUDE_INPUT_LIST not yet handled */
 
   /* Ensure all specified group names are valid */
   if(grp_nbr) nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl);
