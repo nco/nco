@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.68 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.69 2012-11-19 03:17:12 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -181,15 +181,15 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in list of objects (groups
   return mch_nbr;
 } /* end nco_lst_rx_search() */
 
-int /* O [nbr] Number of matches found */
+int /* O [nbr] Number of matches to current rx */
 nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 (char *rx_sng, /* I [sng] Regular expression pattern */
  const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Set flags indicating whether each list member matches given regular expression
-     NB: This function never writes False into a flag, in only writes True.
-     This is because input flags are not assumed to be stateless */
+     NB: This function only writes True to the match flag, it never writes False.
+     Input flags are assumed to be statefull, and may contain Trues from previous calls */
 
   int err_id;
   int flg_cmp; /* Comparison flags */
@@ -241,7 +241,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
   for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){  
     /* Check apples against apples and oranges against oranges */
     if(trv_tbl->grp_lst[obj_idx].typ == obj_typ){
-      /* NB: Here is where flag would be set to False if input were stateless */
+      /* NB: Here is where match flag would be set to False if input were stateless */
       if(!regexec(rx,trv_tbl->grp_lst[obj_idx].nm,rx_prn_sub_xpr_nbr,result,flg_exe)){
 	trv_tbl->grp_lst[obj_idx].flg_mch=True;
 	mch_nbr++;

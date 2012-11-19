@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.275 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.276 2012-11-19 03:17:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1956,6 +1956,18 @@ xtr_lst_prn /* [fnc] Print name-ID structure list */
   } /* idx */
 }/* end xtr_lst_prn() */
 
+void 
+trv_lst_prn /* [fnc] Print name-ID structure list */
+(const trv_tbl_sct * const trv_tbl, /* I [sct] Traversal table */
+ const nco_obj_typ obj_typ) /* I [enm] Object type (group or variable) */
+{
+  /* Print all matching objects of given type from traversal table */
+  for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    grp_trv_sct trv_obj=trv_tbl->grp_lst[tbl_idx];
+    if((trv_obj.typ == obj_typ) && (trv_obj.flg_mch == True)) (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
+  } /* end loop over trv_tbl */
+}/* end trv_lst_prn() */
+
 nco_bool                        /* O [flg] Name is in extraction list */
 xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
 (const char * const var_nm_fll, /* I [sng] Full variable name to find */
@@ -2259,7 +2271,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 (char * const * const obj_lst_in, /* I [sng] User-specified list of object names */
  const int obj_nbr, /* I [nbr] Number of items in list */
  const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Verify all user-specified objects exist in file
      Currently verifies only variables or groups independently of the other
@@ -2268,27 +2280,36 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
      Used as check prior to full list generation in nco4_var_lst_mk()
 
      Tests:
-     ncks -O -g / ~/nco/data/in_grp.nc ~/foo.nc
-     ncks -O -g '' ~/nco/data/in_grp.nc ~/foo.nc
-     ncks -O -g g1 ~/nco/data/in_grp.nc ~/foo.nc
-     ncks -O -g /g1 ~/nco/data/in_grp.nc ~/foo.nc
-     ncks -O -g /g1/g1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -g / ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -g '' ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -g g1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -g /g1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -g /g1/g1 ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -g g1.+ ~/nco/data/in_grp.nc ~/foo.nc
+     ncks -O -D 5 -v v1 ~/nco/data/in_grp.nc ~/foo.nc
   */
 
   char *sbs_srt; /* [sng] Location of user-string match start in object path */
   char *sbs_end; /* [sng] Location of user-string match end   in object path */
   char *usr_sng; /* [sng] User-supplied object name */
+  char *var_mch_srt; /* [sng] Location of variable short name in user-string */
 
   const char sls_chr='/'; /* [chr] Slash character */
   const char fnc_nm[]="nco_chk_trv()"; /* [sng] Function name */
 
-  grp_trv_sct trv; /* [sct] Traversal table */
+  grp_trv_sct trv_obj; /* [sct] Traversal table object */
+
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  int rx_mch_nbr;
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
   nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
   nco_bool flg_pth_end_bnd; /* [flg] String ends   at path component boundary */
+  nco_bool flg_var_cnd; /* [flg] Match meets addition condition(s) for variable */
   nco_bool has_obj; /* [flg] Name is in file */
 
   size_t usr_sng_lng; /* [nbr] Length of user-supplied string */
+  size_t var_nm_lng; /* [nbr] Length of short-form of variable name */
 
   for(int obj_idx=0;obj_idx<obj_nbr;obj_idx++){
 
@@ -2304,35 +2325,35 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     usr_sng_lng=strlen(usr_sng);
     if(usr_sng_lng == 1L) assert(usr_sng[0] == sls_chr);
 
-#if 0
     /* Convert pound signs (back) to commas */
     nco_hash2comma(usr_sng);
 
-    /* If var_sng is regular expression ... */
+    /* If usr_sng is regular expression ... */
     if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-      if((rx_mch_nbr=nco_lst_trv_search(usr_sng,trv_tbl,obj_typ))) has_obj=True;
-      if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng); 
+      if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) has_obj=True;
+      if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
       continue;
-#else
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
       (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
       nco_exit(EXIT_FAILURE);
-#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
-#endif
 
+    /* usr_sng is not rx, so manually search for multicomponent matches */
     for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
       /* Initialize state for current candidate path to match */
       flg_pth_srt_bnd=False;
       flg_pth_end_bnd=False;
-      trv=trv_tbl->grp_lst[tbl_idx];
+      flg_var_cnd=True;
+      trv_obj=trv_tbl->grp_lst[tbl_idx];
 
-      if(trv.typ == obj_typ){
+      if(trv_obj.typ == obj_typ){
 
 	/* Look for partial match, not necessarily on path boundaries */
-	if((sbs_srt=strstr(trv.nm_fll,usr_sng))){
+	if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
 
 	  /* Ensure match spans (begins and ends on) whole group components */
 
@@ -2340,7 +2361,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	  if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
 
 	  /* ...or one after a component boundary? */
-	  if((sbs_srt > trv.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
+	  if((sbs_srt > trv_obj.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
 
 	  /* Does match end at path component boundary ... directly on a slash? */
 	  sbs_end=sbs_srt+usr_sng_lng-1L;
@@ -2348,16 +2369,24 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	  if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
 
 	  /* ...or one before a component boundary? */
-	  if(sbs_end <= trv.nm_fll+trv.nm_fll_lng-1L)
+	  if(sbs_end <= trv_obj.nm_fll+trv_obj.nm_fll_lng-1L)
 	    if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
 	      flg_pth_end_bnd=True;
 
-	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
+	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
 
-	  if(flg_pth_srt_bnd && flg_pth_end_bnd){
+	  /* Additional condition for variables is match must end with short form of variable name */
+	  if(obj_typ == nco_obj_typ_var){
+	    var_nm_lng=strlen(trv_obj.nm);
+	    var_mch_srt=strstr(usr_sng,trv_obj.nm);
+	    if(var_mch_srt == usr_sng+usr_sng_lng-var_nm_lng) flg_var_cnd=True; else flg_var_cnd=False;
+	    if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied variable name %s %s additional conditions for a variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+	  } /* endif var */
+
+	  if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
 	    /* User-supplied string is a complete component of object path */
+	    trv_obj.flg_mch=True;
 	    has_obj=True;
-	    break;
 	  } /* endif */
 
         } /* endif strstr() */
@@ -2372,6 +2401,11 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
 
   } /* obj_idx */
+
+  if(dbg_lvl_get() == nco_dbg_crr){
+    (void)fprintf(stdout,"%s: INFO nco_chk_trv() reports following %s match sub-setting and regular expressions:\n",prg_nm_get(),(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
+    trv_lst_prn(trv_tbl,obj_typ);
+  } /* endif dbg */
 
   return has_obj;
 
@@ -2411,7 +2445,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
   idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nco_obj_typ_grp ) {
+    if(trv.typ == nco_obj_typ_grp){
 
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){

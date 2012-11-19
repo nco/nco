@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.133 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.134 2012-11-19 03:17:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -224,6 +224,11 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
  const nco_bool EXCLUDE_INPUT_LIST); /* I [flg] Exclude rather than extract */
 
 void 
+trv_lst_prn /* [fnc] Print name-ID structure list */
+(const trv_tbl_sct * const trv_tbl, /* I [sct] Traversal table */
+ const nco_obj_typ obj_typ); /* I [enm] Object type (group or variable) */
+ 
+void 
 xtr_lst_prn                     /*   [fnc] Print Name ID structure list */
 (nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
  const int xtr_nbr);            /* I [nbr] Name ID structure list size */
@@ -277,7 +282,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 (char * const * const obj_lst_in, /* I [sng] User-specified list of object names */
  const int obj_xtr_nbr, /* I [nbr] Number of items in list */
  const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
- const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void
 nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in output file */
@@ -326,11 +331,8 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dm_nm in grou
  const char * const dmn_nm, /* I [sng] Dimension name to find */
  const long dmn_sz);        /* I [nbr] Dimension size to find */
 
-
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_GRP_UTL_H */
-
-

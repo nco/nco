@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.48 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.49 2012-11-19 03:17:12 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -55,11 +55,11 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in var string list */
  char *rx_sng, /* I [sng] Regular expression pattern */
  nco_bool *var_xtr_rqs); /* O [flg] Matched vars holder */
 
-int /* O [nbr] Number of matches found */
+int /* O [nbr] Number of matches to current rx */
 nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 (char *rx_sng, /* I [sng] Regular expression pattern */
  const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
- const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */

@@ -1,5 +1,9 @@
 2012-11-18  Charlie Zender  <zender@uci.edu>
 
+	* Implement additional checks for variables in nco_chk_trv()
+
+	* Implement rx for groups in nco_chk_trv()
+
 	* Re-organize and rename nco_grp_trv structures
 
 	* Functionalize nco_hash2comma()
