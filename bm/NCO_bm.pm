@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.77 2012-11-20 23:43:34 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.78 2012-11-20 23:46:56 pvicente Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -966,11 +966,11 @@ sub rsl_smr_rgr {
     else { &bm_vrb($dbg_lvl, $wnt_log, $reportstr); }
     
     my $skp_rpt = $ENV{'NCO_AVOID_BM_REPORT'};
-    print "skp_rpt=", $skp_rpt;
-    print "udp_rpt=", $udp_rpt;
+    #print "skp_rpt=", $skp_rpt;
+    #print "udp_rpt=", $udp_rpt;
     if ($skp_rpt == 1){
      $udp_rpt = 0;
-     print "udp_rpt=", $udp_rpt;
+     #print "udp_rpt=", $udp_rpt;
      }
 
     if ($udp_rpt == 1 ) { # set either explicitly (1st time) or set in ~/.ncorc after user agreed to it
