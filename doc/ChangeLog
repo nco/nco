@@ -1,3 +1,8 @@
+2012-11-20  Pedro Vicente  <pvicente@uci.edu>
+
+	* Benchmark results: if the environment variable NCO_AVOID_BM_REPORT is set to 1, there is not an
+    attempt to ask input regarding sending benchmark results to the NCO team
+    
 2012-11-18  Charlie Zender  <zender@uci.edu>
 
 	* rx seems to work for both variables and groups in nco_chk_trv()

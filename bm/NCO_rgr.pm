@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.146 2012-11-15 20:33:58 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.147 2012-11-20 23:43:34 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -561,14 +561,18 @@ sub tst_rgr {
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
-    
-    #passes, but returned string includes tailing NULLS (<nul> in nedit)
+
+#ncks #01   
+#passes, but returned string includes tailing NULLS (<nul> in nedit)
+
     $tst_cmd[0]="ncks -C -H -s '%c' -v fl_nm $in_pth_arg in.nc";
     $dsc_sng="extract filename string";
     $tst_cmd[1]="/home/zender/nco/data/in.cdl";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+#ncks #02
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f,' -v lev %tmp_fl_00%";
@@ -578,6 +582,8 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
+#ncks #03
+    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 %tmp_fl_00%";
     $dsc_sng="extract a variable with limits";
@@ -585,6 +591,8 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+#ncks #04
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v int_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v int_var %tmp_fl_00%";
@@ -594,6 +602,8 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
+#ncks #05
+    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
     $dsc_sng="Multi-slab lat and lon with srd";
@@ -601,6 +611,8 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+#ncks #06
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
@@ -610,6 +622,8 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
+#ncks #07
+    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
     $dsc_sng="Multi-slab with coordinates";
@@ -617,6 +631,7 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
     
     if(0){ # fxm use this test once script allows error exits to be intended result
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat -d lat,20.,20.001 $in_pth_arg in.nc %tmp_fl_00%";
@@ -628,6 +643,8 @@ sub tst_rgr {
 	$#tst_cmd=0;  # Reset array
     } # endif 0
     
+#ncks #09
+    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tmp_fl_00%";
     $dsc_sng="Double-wrapped hyperslab";
@@ -635,6 +652,8 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+#ncks #10
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%6.0f' -d time_udunits,'1999-12-08 18:00:0.0','1999-12-09 12:00:0.0',2 -v time_udunits $in_pth_arg in.nc";
@@ -644,7 +663,8 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-
+#ncks #11
+    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lon_cal -d lon_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'lon_cln_ttl=lon_cal.total();print(lon_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="lon_cln_ttl = 10";
@@ -652,6 +672,8 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+#ncks #12
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lat_cal -d lat_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'lat_cln_ttl=lat_cal.total();print(lat_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
@@ -660,6 +682,8 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+#ncks #13
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' $in_pth_arg in.nc";
     $dsc_sng="dimension slice using UDUnit conversion (fails without UDUnits library support)";
@@ -668,7 +692,8 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    #fails
+#ncks #14
+
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^three_*' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -C -v three %tmp_fl_00%";
     $dsc_sng="variable wildcards A (fails without regex library)";
@@ -676,7 +701,9 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
-    
+
+#ncks #15
+
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^[a-z]{3}_[a-z]{3}_[a-z]{3,}\$' $in_pth_arg in.nc %tmp_fl_00%";
     # for this test, the regex is mod'ed                       ^
     $tst_cmd[1]="ncks -C -H -s '%d' -C -v val_one_int %tmp_fl_00%";
@@ -695,13 +722,17 @@ sub tst_rgr {
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0;  # Reset array
     } # endif 0
-    
+
+#ncks #16
+
     $tst_cmd[0]="ncks -C -H -s '%d' -v byte_var $in_pth_arg in.nc";
     $dsc_sng="Print byte value";
     $tst_cmd[1]="122";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+
+#ncks #17
 
     $tst_cmd[0]="ncks -O -v cnv_CF_crd $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lon_gds -d gds_crd,2 %tmp_fl_00%";
@@ -710,6 +741,8 @@ sub tst_rgr {
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+#ncks #18 
 
     $tst_cmd[0]="ncatted -O -a _FillValue,global,c,l,222 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O %tmp_fl_00% %tmp_fl_01%";
@@ -720,7 +753,7 @@ sub tst_rgr {
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
-	
+    
 #NCO 4.2.2: #19 groups: add associated variable "lat" of "area" to extraction list
     $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
