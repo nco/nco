@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.152 2012-11-21 06:35:00 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.153 2012-11-21 06:43:39 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -786,11 +786,12 @@ if ($line =~ /$find_define/){
     $tst_cmd[4]="222";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0;  # Reset array  
     
+#NCO 4.2.2    
+#ncks #19 groups: add associated variable "lat" of "area" to extraction list
+
     if ($ENABLE_NETCDF4 == 1) {
-    
-#NCO 4.2.2: #19 groups: add associated variable "lat" of "area" to extraction list
     $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
     $dsc_sng="(Groups required) Extract associated coordinate variable";
@@ -798,6 +799,16 @@ if ($line =~ /$find_define/){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    }elsif ($ENABLE_NETCDF4 == 0) {
+    $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $dsc_sng="(Groups required) Extract associated coordinate variable";
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 
+    }#end ENABLE_NETCDF4 
+    
+    if ($ENABLE_NETCDF4 == 1) {
 	
 #NCO 4.2.2: #20 groups: test a chunk run: the output check is just the value of "area" not the validation of the chunk
     $tst_cmd[0]="ncks -O --cnk_plc=all -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
