@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.148 2012-11-21 04:23:36 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.149 2012-11-21 04:32:23 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -94,6 +94,7 @@ open FILE, "../config.h" or die $!;
 while (my $line = <FILE>) { 
 if ($line =~ /$find_undef/){
   print "ENABLE_NETCDF4 is disabled in config.h\n";
+  my $ENABLE_NETCDF4=0;
  }
 }
 
