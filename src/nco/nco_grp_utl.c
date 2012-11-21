@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.281 2012-11-20 22:10:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.282 2012-11-21 01:13:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -228,7 +228,7 @@ nco_grp_stk_free /* [fnc] Free group stack */
 } /* end nco_grp_stk_free() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
-nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
+nco_var_lst_mk_trv /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [ID] Apex group ID */
  char * const * const grp_lst_in, /* I [sng] User-specified list of groups names to extract (specified with -g) */
  const int grp_xtr_nbr, /* I [nbr] Number of groups in current extraction list (specified with -g) */
@@ -390,7 +390,7 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     *var_xtr_nbr=var_nbr_all;
 
     if(dbg_lvl_get() >= nco_dbg_vrb){
-      (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
+      (void)fprintf(stdout,"%s: INFO nco_var_lst_mk_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
       xtr_lst_prn(var_lst_all,var_nbr_all);
     } /* endif dbg */
 
@@ -509,10 +509,10 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
     }else{
       if(EXCLUDE_INPUT_LIST){ 
         /* Variable need not be present if list will be excluded later ... */
-        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var_lst_mk_trv() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
       }else{ /* !EXCLUDE_INPUT_LIST */
         /* Variable should be included but no matches found so die */
-        (void)fprintf(stdout,"%s: ERROR nco4_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+        (void)fprintf(stdout,"%s: ERROR nco_var_lst_mk_trv() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
         nco_exit(EXIT_FAILURE);
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
@@ -549,12 +549,12 @@ nco4_var_lst_mk /* [fnc] Create variable extraction list using regular expressio
   *var_xtr_nbr=var_nbr_tmp;  
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco4_var_lst_mk() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
+    (void)fprintf(stdout,"%s: INFO nco_var_lst_mk_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
     xtr_lst_prn(xtr_lst,*var_xtr_nbr);
   } /* endif dbg */
 
   return xtr_lst;
-} /* end nco4_var_lst_mk() */
+} /* end nco_var_lst_mk_trv() */
 
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
@@ -2279,7 +2279,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
      Currently verifies only variables or groups independently of the other
      Only tested for groups
      Does not handle regular expressions 
-     Used as check prior to full list generation in nco4_var_lst_mk()
+     Used as check prior to full list generation in nco_var_lst_mk_trv()
 
      Tests:
      ncks -O -D 5 -g / ~/nco/data/in_grp.nc ~/foo.nc
