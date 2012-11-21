@@ -1,8 +1,13 @@
+2012-11-20  Charlie Zender  <zender@uci.edu>
+
+	* Document anchoring and recursion at http://nco.sf.net/nco.html#rcr
+
+	* Implement logic for anchoring and recursion in nco_chk_trv()
+
 2012-11-20  Pedro Vicente  <pvicente@uci.edu>
 
-	* Benchmark results: if the environment variable NCO_AVOID_BM_REPORT is set to 1, there is not an
-    attempt to ask input regarding sending benchmark results to the NCO team
-    
+	* bm: If NCO_AVOID_BM_REPORT do not prompt to send benchmark results to project
+
 2012-11-18  Charlie Zender  <zender@uci.edu>
 
 	* rx seems to work for both variables and groups in nco_chk_trv()

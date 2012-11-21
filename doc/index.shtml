@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.745 2012-11-16 18:12:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.746 2012-11-21 04:44:32 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -787,6 +787,7 @@ Improve IRIX&nbsp;6.5 support</li>
 <!-- End http://nco.sf.net#vrs -->
 
 <!-- http://nco.sf.net#bnr -->
+<!-- http://nco.sf.net#binaries -->
 <dt><a name="Binaries"></a><a name="bnr"></a></dt>
 <h2>Get NCO Binary Executables</h2>
 

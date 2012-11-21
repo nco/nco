@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.283 2012-11-21 01:29:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.284 2012-11-21 04:44:32 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1078,19 +1078,11 @@ nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst 
 {
 
   /* Check if variable is on extraction list */
-  for(int idx_lst=0;idx_lst<*xtr_nbr;idx_lst++){
-    nm_id_sct xtr=xtr_lst[idx_lst];
-
-    /* Compare item on list with current variable name (NOTE: using full name to compare ) */
-    if(strcmp(xtr.var_nm_fll,var_nm_fll) == 0){
-
-      return xtr_lst;
-    } /* End compare item on list with current variable name */
-  } /* End check if variable is on extraction list */
+  for(int idx_lst=0;idx_lst<*xtr_nbr;idx_lst++)
+    if(!strcmp(xtr_lst[idx_lst].var_nm_fll,var_nm_fll)) return xtr_lst;
 
   /* Coordinate is not already on the list, put it there */
-  if(*xtr_nbr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*xtr_nbr+1)*sizeof(nm_id_sct)); 
-  else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
+  if(*xtr_nbr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*xtr_nbr+1)*sizeof(nm_id_sct)); else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
 
   /* ncks needs only:
   1) xtr_lst.grp_nm_fll (full group name where variable resides, to get group ID) 
@@ -1122,9 +1114,12 @@ nco_grp_itr
 
   char grp_nm[NC_MAX_NAME+1];  /* O [sng] Group name */
   char var_nm[NC_MAX_NAME+1];  /* O [sng] Variable name */ 
+
   grp_trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
+
   int *dmn_ids;                /* O [ID]  Dimension IDs */ 
   int *grp_ids;                /* O [ID]  Sub-group IDs */ 
+
   int idx;                     /* I [idx] Index */             
   int nbr_att;                 /* O [nbr] Number of attributes */
   int nbr_dmn;                 /* O [nbr] Number of dimensions */
@@ -1134,6 +1129,7 @@ nco_grp_itr
   int rcd=NC_NOERR;            /* O [rcd] Return code */
   int rec_dmn_id;              /* O [ID] Record dimension ID */
   int var_id;                  /* O [ID] Variable ID */ 
+
   nc_type var_typ;             /* O [enm] Variable type */
 
   /* Get all information for this group */
@@ -1155,6 +1151,7 @@ nco_grp_itr
   obj.nm_lng=strlen(grp_nm);
   strcpy(obj.nm,grp_nm);
   obj.flg_mch=False;
+  obj.flg_rcr=False;
   obj.nbr_att=nbr_att;
   obj.nbr_var=nbr_var;
   obj.nbr_dmn=nbr_dmn;
@@ -1178,9 +1175,10 @@ nco_grp_itr
     /* Concatenate variable to absolute group path */
     strcat(var_nm_fll,var_nm);
 
-    /* Add variable to table NB: nbr_var, nbr_grp not valid here */
+    /* Add variable to table NB: nbr_var, nbr_grp, flg_rcr not valid here */
     obj.typ=nco_obj_typ_var;
     obj.flg_mch=False;
+    obj.flg_rcr=False;
     obj.grp_nm_fll=grp_nm_fll;
     obj.nbr_att=nbr_att;
     obj.nbr_dmn=nbr_dmn;
@@ -2219,10 +2217,9 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Verify all user-specified objects exist in file
-     Currently verifies only variables or groups independently of the other
-     Only tested for groups
-     Does not handle regular expressions 
-     Used as check prior to full list generation in nco_var_lst_mk_trv()
+     Verify variables or groups independently of the other
+     Handles regular expressions 
+     Sets flags in traversal table to help generate extraction list
 
      Tests:
      ncks -O -D 5 -g / ~/nco/data/in_grp.nc ~/foo.nc
@@ -2234,7 +2231,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
      ncks -O -D 5 -v v1 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -g g1.+ -v v1,sc. ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc
-     ncks -O -D 5 -g g9 -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc */
+     ncks -O -D 5 -g g3g.+,g9/ -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc */
 
   char *sbs_srt; /* [sng] Location of user-string match start in object path */
   char *sbs_end; /* [sng] Location of user-string match end   in object path */
@@ -2250,17 +2247,23 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
   int rx_mch_nbr;
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
-  nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
+  nco_bool flg_ncr_mch_crr; /* [flg] Current group meets anchoring properties of this user-supplied string */
+  nco_bool flg_ncr_mch_grp; /* [flg] User-supplied string anchors at root */
   nco_bool flg_pth_end_bnd; /* [flg] String ends   at path component boundary */
+  nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
+  nco_bool flg_rcr_mch_crr; /* [flg] Current group meets recursion criteria of this user-supplied string */
+  nco_bool flg_rcr_mch_grp; /* [flg] User-supplied string will match groups recursively */
+  nco_bool flg_usr_mch_obj; /* [flg] One or more objects match each user-supplied string */
   nco_bool flg_var_cnd; /* [flg] Match meets addition condition(s) for variable */
-  nco_bool has_obj; /* [flg] Name is in file */
 
   size_t usr_sng_lng; /* [nbr] Length of user-supplied string */
 
   for(int obj_idx=0;obj_idx<obj_nbr;obj_idx++){
 
     /* Initialize state for current user-specified string */
-    has_obj=False;
+    flg_ncr_mch_grp=False;
+    flg_rcr_mch_grp=True;
+    flg_usr_mch_obj=False;
 
     if(!obj_lst_in[obj_idx]){
       (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
@@ -2271,6 +2274,20 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     usr_sng_lng=strlen(usr_sng);
     if(usr_sng_lng == 1L) assert(usr_sng[0] == sls_chr);
 
+    /* Turn-off recursion for groups? */
+    if(obj_typ == nco_obj_typ_grp)
+      if(usr_sng_lng > 1L && usr_sng[usr_sng_lng-1L] == sls_chr){
+	/* Remove trailing slash for subsequent searches since canonical group names do not end with slash */
+	flg_rcr_mch_grp=False;
+	usr_sng[usr_sng_lng-1L]='\0';
+	usr_sng_lng--;
+      } /* flg_rcr_mch_grp */
+
+    /* Turn-on root-anchoring for groups? */
+    if(obj_typ == nco_obj_typ_grp)
+      if(usr_sng[0L] == sls_chr)
+	flg_ncr_mch_grp=True;
+
     /* Convert pound signs (back) to commas */
     nco_hash2comma(usr_sng);
 
@@ -2278,7 +2295,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-      if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) has_obj=True;
+      if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
       if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
       continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
@@ -2290,13 +2307,17 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     /* usr_sng is not rx, so manually search for multicomponent matches */
     for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
-      /* Initialize state for current candidate path to match */
-      flg_pth_srt_bnd=False;
-      flg_pth_end_bnd=False;
-      flg_var_cnd=True;
+      /* Create shallow copy to avoid indirection */
       trv_obj=trv_tbl->grp_lst[tbl_idx];
 
       if(trv_obj.typ == obj_typ){
+
+	/* Initialize defaults for current candidate path to match */
+	flg_pth_srt_bnd=False;
+	flg_pth_end_bnd=False;
+	flg_var_cnd=False;
+	flg_rcr_mch_crr=True;
+	flg_ncr_mch_crr=True;
 
 	/* Look for partial match, not necessarily on path boundaries */
 	if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
@@ -2319,30 +2340,52 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	    if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
 	      flg_pth_end_bnd=True;
 
-	  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied %s name %s is found in filepath %s. The match %s on a path boundary. The match %s on a path boundary.\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "begins" : "does not begin",(flg_pth_end_bnd) ? "ends" : "does not end");
-
 	  /* Additional condition for variables is user-supplied string must end with short form of variable name */
 	  if(obj_typ == nco_obj_typ_var){
 	    var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
 	    if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True; else flg_var_cnd=False;
-	    if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports user-supplied variable name %s %s additional conditions for a variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+	    if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
 	  } /* endif var */
 
-	  if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
-	    /* User-supplied string is complete component of object path and, if variable, meets additional constraints */
-	    /* NB: Deep-write to full trv_tbl not shallow write to local trv_obj */
-	    trv_tbl->grp_lst[tbl_idx].flg_mch=True;
-	    has_obj=True;
-	  } /* endif */
+	  /* If anchoring, match must begin at root */
+	  if(flg_ncr_mch_grp && *sbs_srt != sls_chr) flg_ncr_mch_crr=False;
+
+	  /* If no recursion, match must terminate user-supplied string */
+	  if(!flg_rcr_mch_grp && *(sbs_end+1L)) flg_rcr_mch_crr=False;
+
+	  /* Set traversal table flags */
+	  if(obj_typ == nco_obj_typ_var){
+	    /* Variables must meet necessary flags for variables */
+	    if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
+	      trv_tbl->grp_lst[tbl_idx].flg_mch=True;
+	      trv_tbl->grp_lst[tbl_idx].flg_rcr=False;
+	    } /* end flags */
+	  }else{ /* !nco_obj_typ_var */
+	    /* Groups must meet necessary flags for groups */
+	    if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
+	      trv_tbl->grp_lst[tbl_idx].flg_mch=True;
+	      trv_tbl->grp_lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
+	    } /* end flags */
+	  }  /* !nco_obj_typ_var */
+
+	  /* Set function return condition */
+	  if(trv_tbl->grp_lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
+
+	  if(dbg_lvl_get() == nco_dbg_crr){
+	    (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->grp_lst[tbl_idx].flg_mch) ?  "Yes" : "No");
+	    if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
+	    if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->grp_lst[tbl_idx].flg_rcr) ? "Yes" : "No");
+	    (void)fprintf(stderr,"\n");
+	  } /* end if */
 
         } /* endif strstr() */
       } /* endif nco_obj_typ */
     } /* end loop over tbl_idx */
 
-    if(!has_obj){
+    if(!flg_usr_mch_obj){
       (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
       nco_exit(EXIT_FAILURE);
-    } /* has_obj */
+    } /* flg_usr_mch_obj */
     /* Free dynamic memory */
     if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
 
@@ -2728,5 +2771,3 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dmn_nm in gro
 
   return False;
 } /* end nco_fnd_dmn() */ 
-
-

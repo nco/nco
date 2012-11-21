@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.19 2012-11-19 06:28:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.20 2012-11-21 04:44:32 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -31,6 +31,7 @@ trv_tbl_init
     tb->grp_lst[idx].nm_lng  = 0L;
     tb->grp_lst[idx].flg     = -1;
     tb->grp_lst[idx].flg_mch = False;
+    tb->grp_lst[idx].flg_rcr = False;
     tb->grp_lst[idx].nbr_att = -1;
     tb->grp_lst[idx].nbr_var = -1;
     tb->grp_lst[idx].nbr_dmn = -1;
@@ -79,6 +80,7 @@ trv_tbl_add
   tbl->grp_lst[idx].typ=obj.typ;
   tbl->grp_lst[idx].flg=obj.flg;
   tbl->grp_lst[idx].flg_mch=obj.flg_mch;
+  tbl->grp_lst[idx].flg_rcr=obj.flg_rcr;
   tbl->grp_lst[idx].nbr_att=obj.nbr_att;
   tbl->grp_lst[idx].nbr_var=obj.nbr_var;
   tbl->grp_lst[idx].nbr_dmn=obj.nbr_dmn;

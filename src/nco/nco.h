@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.201 2012-11-19 06:28:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.202 2012-11-21 04:44:32 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -619,6 +619,7 @@ extern "C" {
     nco_obj_typ typ;         /* [enm] netCDF4 object type: group or variable */
     int     flg;             /* [flg] mark flag (several actions) */
     int     flg_mch;         /* [flg] Object matches extraction criteria */
+    int     flg_rcr;         /* [flg] Extract group recursively */
     int     nbr_att;         /* [nbr] Number of attributes */
     int     nbr_var;         /* [nbr] Number of variables (for group) */
     int     nbr_dmn;         /* [nbr] Number of dimensions */

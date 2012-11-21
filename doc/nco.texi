@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.740 2012-11-18 02:17:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.741 2012-11-21 04:44:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.4
 @set copyright-years 1995--2012
 @set update-year 2012
-@set update-date 13 November 2012
+@set update-date 20 November 2012
 @set update-month November 2012
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3432,15 +3432,43 @@ between group hierarchies and directory structures.
 @cindex @command{cp}
 @cindex recursion
 @cindex recursive
+@cindex anchor
+@cindex anchoring
+@html
+<a name="rcr"></a> <!-- http://nco.sf.net/nco.html#rcr -->
+<a name="recursion"></a> <!-- http://nco.sf.net/nco.html#recursion -->
+<a name="recursive"></a> <!-- http://nco.sf.net/nco.html#recursive -->
+<a name="ncr"></a> <!-- http://nco.sf.net/nco.html#ncr -->
+<a name="anchor"></a> <!-- http://nco.sf.net/nco.html#anchor -->
+<a name="anchoring"></a> <!-- http://nco.sf.net/nco.html#anchoring -->
+@end html
+Two properties of subsetting, recursion and anchoring, are best
+illustrated by reminding the user of their @acronym{UNIX} equivalents.
 The @acronym{UNIX} command @command{mv src dst} moves @file{src}
 @emph{and all its subdirectories} (and all their subdirectories etc.)
 to @file{dst}.
-Hence @command{mv} is, by default, @emph{recursive}.
-The @acronym{UNIX} command @command{cp src dst} moves @file{src}, 
-and only @file{src}, to @file{dst},
+In other words @command{mv} is, by default, @emph{recursive}.
+In contrast, the @acronym{UNIX} command @command{cp src dst} moves
+@file{src}, and only @file{src}, to @file{dst},
 If @file{src} is a directory, not a file, then that command fails.
 One must explicitly request to copy directories recursively, i.e.,
 with @command{cp -r src dst}.
+In @acronym{NCO} recursive extraction (and copying) of groups is the
+default (like with @command{mv}, not with @command{cp}).
+Recursion is turned off by appending a trailing slash to the path.
+
+These @acronym{UNIX} commands also illustrate a property we call
+@emph{anchoring}. 
+The command @command{mv src dst} moves (recursively) the source
+directory @file{src} to the destination directory @file{dst}. 
+If @file{src} begins with the slash charcter then the specified path is
+relative to the root directory, otherwise the path is relative to the
+current working directory. 
+In other words, an initial slash character anchors the subsequent path
+to the root directory.
+In @acronym{NCO} an initial slash anchors the path at the root group.
+Paths that begin and end with slash characters (e.g., @file{//},
+@file{/g1/}, and @file{/g1/g2/}) are both anchored and non-recursive. 
 
 Consider the following commands, all of which may be assumed to end with
 @samp{in.nc out.nc}:
@@ -3449,6 +3477,7 @@ ncks -g  g1  # Extract, recursively, all groups with a g1 component
 ncks -g  g1/ # Extract, non-recursively, all groups terminating in g1
 ncks -g /g1  # Extract, recursively, root group g1
 ncks -g /g1/ # Extract, non-recursively root group g1
+ncks -g //   # Extract, non-recursively the root group
 @end example
 The first command is probably the most useful and common.
 It would extract these groups, if present, and all their direct
@@ -3473,6 +3502,7 @@ the @file{g1} group is not at the root level, but it would extract,
 any group @file{/g1} at the root level and all its children,
 recursively.  
 The fourth command is the non-recursive version of the third command.
+The fifth command is a special case of the fourth command.
 
 @cindex memory requirements
 Remember, if averaging or concatenating large files stresses your
