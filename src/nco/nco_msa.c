@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.121 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.122 2012-11-21 05:26:53 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -886,7 +886,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get dimension IDs for group */
   (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,0);
 
-#ifdef NCO_GRP_DEV
+#ifdef ENABLE_NETCDF4
   /* Obtain netCDF file format */
   int fl_fmt;
   (void)nco_inq_format(in_id,&fl_fmt);
@@ -918,7 +918,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   } /* NC_FORMAT_CLASSIC */
 
-#else
+#else /* !ENABLE_NETCDF4 */
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx<var.nbr_dim;idx++)
@@ -928,7 +928,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         break;
       } /* end if */
     } /* end loop over jdx */
-#endif
+#endif /* !ENABLE_NETCDF4 */
 
 #ifdef NCO_SANITY_CHECK
     for(idx=0;idx<var.nbr_dim;idx++){
