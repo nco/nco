@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.153 2012-11-21 06:43:39 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.154 2012-11-21 07:18:44 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -86,25 +86,42 @@ sub tst_rgr {
 
 # NCO 4.2.4
 # output for some tests vary when ENABLE_NETCDF4 is not set
-# add a check for ENABLE_NETCDF4 by reading config.h
-#
+# add a check for ENABLE_NETCDF4 by reading config.h 
+
+# error messages for ENABLE_NETCDF4 not defined
 my $ncks_msg_no_netcdf4 = "ncks: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
 my $ncecat_msg_no_netcdf4 = "ncecat: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
-my $find_undef = "undef ENABLE_NETCDF4";
-my $find_define = "define ENABLE_NETCDF4";
-open FILE, "../config.h" or die $!;
+# error messages for HAVE_NETCDF4_H not defined
+my $ncks_msg_no_have_netcdf4 = "Aborted";
+# strings to find
+my $find_undef_enable_netcdf4 = "undef ENABLE_NETCDF4";
+my $find_define_enable_netcdf4 = "define ENABLE_NETCDF4";
+my $find_undef_have_netcdf4 = "undef HAVE_NETCDF4_H";
+my $find_define_have_netcdf4 = "define HAVE_NETCDF4_H";
 my $ENABLE_NETCDF4=-1;
+my $HAVE_NETCDF4_H=-1;
+
+# read config.h
+open FILE, "../config.h" or die $!;
 while (my $line = <FILE>) { 
-if ($line =~ /$find_undef/){
-  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n\n";
+if ($line =~ /$find_undef_enable_netcdf4/){
+  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n";
   $ENABLE_NETCDF4=0;
  }
-if ($line =~ /$find_define/){
-  print "INFO: ENABLE_NETCDF4 is defined in config.h\n\n";
+if ($line =~ /$find_define_enable_netcdf4/){
+  print "INFO: ENABLE_NETCDF4 is defined in config.h\n";
   $ENABLE_NETCDF4=1;
  }
+if ($line =~ /$find_undef_have_netcdf4/){
+  print "INFO: HAVE_NETCDF4_H is disabled in config.h\n";
+  $HAVE_NETCDF4_H=0;
+ }
+if ($line =~ /$find_define_have_netcdf4/){
+  print "INFO: HAVE_NETCDF4_H is defined in config.h\n";
+  $HAVE_NETCDF4_H=1;
+ } 
 }
-
+print "\n";
 
 
 ####################
@@ -791,6 +808,14 @@ if ($line =~ /$find_define/){
 #NCO 4.2.2    
 #ncks #19 groups: add associated variable "lat" of "area" to extraction list
 
+    if ($HAVE_NETCDF4_H == 0) {
+    $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $dsc_sng="(Groups required) Extract associated coordinate variable";
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array    
+    } elsif ($HAVE_NETCDF4_H == 1) {
     if ($ENABLE_NETCDF4 == 1) {
     $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
@@ -807,6 +832,7 @@ if ($line =~ /$find_define/){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array 
     }#end ENABLE_NETCDF4 
+    }#end HAVE_NETCDF4_H
     
     if ($ENABLE_NETCDF4 == 1) {
 	
