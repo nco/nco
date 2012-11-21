@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.150 2012-11-21 04:45:01 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.151 2012-11-21 05:38:08 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -507,6 +507,8 @@ if ($line =~ /$find_define/){
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+    if ($ENABLE_NETCDF4 == 1) {
 
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
@@ -516,6 +518,8 @@ if ($line =~ /$find_define/){
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
+    
+    } # end if ($ENABLE_NETCDF4 == 1)
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
@@ -776,6 +780,8 @@ if ($line =~ /$find_define/){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
+    if ($ENABLE_NETCDF4 == 1) {
+    
 #NCO 4.2.2: #19 groups: add associated variable "lat" of "area" to extraction list
     $tst_cmd[0]="ncks -O -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
@@ -900,7 +906,9 @@ if ($line =~ /$find_define/){
     $tst_cmd[2]="-9090";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array				
+    $#tst_cmd=0;  # Reset array
+    
+    } # end if ($ENABLE_NETCDF4 == 1) 
 
 #####################
 #### ncpdq tests #### -OK !
