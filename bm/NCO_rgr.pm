@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.155 2012-11-21 07:49:09 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.156 2012-11-21 07:52:27 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -92,7 +92,7 @@ sub tst_rgr {
 my $ncks_msg_no_netcdf4 = "ncks: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
 my $ncecat_msg_no_netcdf4 = "ncecat: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
 # error messages for HAVE_NETCDF4_H not defined
-my $ncks_msg_no_have_netcdf4 = "nco_err_exit(): ERROR NCO will now exit with system call abort()";
+my $ncks_msg_no_have_netcdf4 = "nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)";
 # strings to find
 my $find_undef_enable_netcdf4 = "undef ENABLE_NETCDF4";
 my $find_define_enable_netcdf4 = "define ENABLE_NETCDF4";
