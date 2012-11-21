@@ -1,5 +1,11 @@
 2012-11-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.2.4 release procedure:
+ 	Changes since nco-4_2_3: anchoring, recursion
+	cd ~/nco;cvs tag -d nco-4_2_4;cvs tag -d nco-4_2_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.4 release"
+	cvs tag -c nco-4_2_4;cvs tag -c nco-4_2_4-1
+
 	* Document anchoring and recursion at http://nco.sf.net/nco.html#rcr
 
 	* Implement logic for anchoring and recursion in nco_chk_trv()
@@ -43,12 +49,6 @@
 	* ncks regression test #32: Sort output alphabetically
 
 2012-11-15  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.4 release procedure:
- 	Changes since nco-4_2_3:
-	cd ~/nco;cvs tag -d nco-4_2_4;cvs tag -d nco-4_2_4-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.4 release"
-	cvs tag -c nco-4_2_4;cvs tag -c nco-4_2_4-1
 
 	* Start multi-component path work in nco_chk_trv()
 

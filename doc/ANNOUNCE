@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.523 2012-11-13 14:34:48 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.524 2012-11-21 04:52:42 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -6,11 +6,12 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release occurs sooner than expected because it contains both
-an important bufgix and a new feature: 
-We fixed a bug introduced in the last version, NCO 4.2.2, that could
-cause ncecat, under limited circumstances, to skip a single file.
-And we added a feature called Group Path Editing (GPE) that permits
-users to move data en masse amongst arbitrary netCDF4 groups.
+a useful bufgix and a new feature:
+We fixed a bug introduced in version NCO 4.2.2 that prevented building
+from source when only the netCDF version 3 library was available.
+And we added features called Anchoring and Recursion that permit the
+user fine-grained control over the extraction and copying of netCDF4
+groups. 
 
 Again, let us know how you like or dislike the way we have implemented
 the netCDF4 group functionality in ncks and ncecat.
@@ -28,6 +29,16 @@ Charlie
 
 NEW FEATURES:
 
+A. ncks and ncecat support Anchoring and Recursion.
+   Formerly arguments to -g were extracted recursively by default.
+   Also, a prepended slash had no special significance.
+   Initial and trailing slashes now control Anchoring and Recursion:
+   ncks -g  g1  # Extract, recursively, all groups with a g1 component
+   ncks -g  g1/ # Extract, non-recursively, all groups terminating in g1
+   ncks -g /g1  # Extract, recursively, root group g1
+   ncks -g /g1/ # Extract, non-recursively root group g1
+   http://nco.sf.net/nco.html#rcr
+
 A. ncks and ncecat support Group Path Editing (GPE):
    The -G switch has been extended. Formerly it specified the root
    group in the output file where to store data. In other words, full
@@ -43,6 +54,9 @@ A. ncks and ncecat support Group Path Editing (GPE):
    http://nco.sf.net/nco.html#gpe
 
 BUG FIXES:
+
+A. Fix 4.2.2 and 4.2.3 bug that kept NCO from building from source
+   when netCDF version 3 library was not available.
 
 A. ncecat: Fix 4.2.2 bug that can skip first input file in the default 
    mode (RECORD_AGGREGATE) when -n  NINTAP switch used to generate
