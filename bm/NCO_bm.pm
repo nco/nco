@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.78 2012-11-20 23:46:56 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.79 2012-11-21 06:35:00 pvicente Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -363,7 +363,7 @@ sub drc_dat_set {
     
     if (defined $ENV{'DATA'} && $ENV{'DATA'} ne "") { # then is it readwritable?
 	if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
-	    if ($que == 0) {print "INFO: Using your environment variable DATA \n\t   [$ENV{'DATA'}]\n\t as the root DATA directory for this series of tests.\n\n";}
+	    if ($que == 0) {print "INFO: Using your environment variable DATA \n\t   [$ENV{'DATA'}]\n\t as the root DATA directory for this series of tests.\n";}
 	    if ($caseid ne "") {
 		$drc_dat = "$ENV{'DATA'}/nco_bm/$caseid";
 		my $err = `mkdir -p -m0777 $drc_dat`;

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.151 2012-11-21 05:38:08 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.152 2012-11-21 06:35:00 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -88,17 +88,19 @@ sub tst_rgr {
 # output for some tests vary when ENABLE_NETCDF4 is not set
 # add a check for ENABLE_NETCDF4 by reading config.h
 #
+my $ncks_msg_no_netcdf4 = "ncks: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
+my $ncecat_msg_no_netcdf4 = "ncecat: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
 my $find_undef = "undef ENABLE_NETCDF4";
 my $find_define = "define ENABLE_NETCDF4";
 open FILE, "../config.h" or die $!;
 my $ENABLE_NETCDF4=-1;
 while (my $line = <FILE>) { 
 if ($line =~ /$find_undef/){
-  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n";
+  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n\n";
   $ENABLE_NETCDF4=0;
  }
 if ($line =~ /$find_define/){
-  print "INFO: ENABLE_NETCDF4 is defined in config.h\n";
+  print "INFO: ENABLE_NETCDF4 is defined in config.h\n\n";
   $ENABLE_NETCDF4=1;
  }
 }
@@ -509,7 +511,6 @@ if ($line =~ /$find_define/){
     $#tst_cmd=0;  # Reset array
     
     if ($ENABLE_NETCDF4 == 1) {
-
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -O -h -m -v area %tmp_fl_01% | grep \"ensemble../area\" | wc | cut -c 7";
@@ -517,9 +518,16 @@ if ($line =~ /$find_define/){
     $tst_cmd[3]="2"; 
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
-    
-    } # end if ($ENABLE_NETCDF4 == 1)
+    $#tst_cmd=0;  # Reset array 
+    }elsif ($ENABLE_NETCDF4 == 0) {
+    $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $dsc_sng="group aggregate var with hyperslabbing (requires netCDF4)";
+    $tst_cmd[2]=$ncecat_msg_no_netcdf4; 
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 
+    } # end $ENABLE_NETCDF4
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
