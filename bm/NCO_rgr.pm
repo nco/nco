@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.149 2012-11-21 04:32:23 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.150 2012-11-21 04:45:01 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -91,10 +91,15 @@ sub tst_rgr {
 my $find_undef = "undef ENABLE_NETCDF4";
 my $find_define = "define ENABLE_NETCDF4";
 open FILE, "../config.h" or die $!;
+my $ENABLE_NETCDF4=-1;
 while (my $line = <FILE>) { 
 if ($line =~ /$find_undef/){
-  print "ENABLE_NETCDF4 is disabled in config.h\n";
-  my $ENABLE_NETCDF4=0;
+  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n";
+  $ENABLE_NETCDF4=0;
+ }
+if ($line =~ /$find_define/){
+  print "INFO: ENABLE_NETCDF4 is defined in config.h\n";
+  $ENABLE_NETCDF4=1;
  }
 }
 
