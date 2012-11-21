@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.147 2012-11-20 23:43:34 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.148 2012-11-21 04:23:36 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -82,7 +82,23 @@ sub tst_rgr {
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
     if(0){} #################  SKIP THESE #####################
-    
+
+
+# NCO 4.2.4
+# output for some tests vary when ENABLE_NETCDF4 is not set
+# add a check for ENABLE_NETCDF4 by reading config.h
+#
+my $find_undef = "undef ENABLE_NETCDF4";
+my $find_define = "define ENABLE_NETCDF4";
+open FILE, "../config.h" or die $!;
+while (my $line = <FILE>) { 
+if ($line =~ /$find_undef/){
+  print "ENABLE_NETCDF4 is disabled in config.h\n";
+ }
+}
+
+
+
 ####################
 #### ncap2 tests ####
 ####################
