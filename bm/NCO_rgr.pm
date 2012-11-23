@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.157 2012-11-23 01:23:25 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.158 2012-11-23 02:11:29 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -866,115 +866,214 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    if ($ENABLE_NETCDF4 == 1) {
-	
 #ncks #22 groups: Extract variables in groups (test -g with -v )
-    $tst_cmd[0]="ncks -O -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
+
     $dsc_sng="(Groups required) Extract variables in groups";
+    $tst_cmd[0]="ncks -O -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="1.11";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array	
-	
+    $#tst_cmd=0;  # Reset array
+
 #ncks #23 groups: Create variables in groups (test -G with -v and -g )
-    $tst_cmd[0]="ncks -O -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
+
     $dsc_sng="(Groups required) Create variables in groups";
+    $tst_cmd[0]="ncks -O -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%"; 
     $tst_cmd[2]="1.3";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array		
-	
+    $#tst_cmd=0;  # Reset array
+    
 #ncks #24 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
-    $tst_cmd[0]="ncks -O -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%";
+
     $dsc_sng="(Groups required) Hyperslabs in groups";
+    $tst_cmd[0]="ncks -O -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%"; 
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array	
-	
+    $#tst_cmd=0;  # Reset array
+    
 #ncks #25 groups: Extract dimensions (test -v dimension)
-    $tst_cmd[0]="ncks -O -v time3 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -H -s '%g' %tmp_fl_00%";
+
     $dsc_sng="(Groups required) Extract dimensions";
+    $tst_cmd[0]="ncks -O -v time3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -H -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="123";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array	
+    $#tst_cmd=0;  # Reset array
+    
 #   
 #NCO 4.2.3   
 # 
 
 #ncks #26 groups: Extract group attributes
-    $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
+
     $dsc_sng="(Groups required) Extract group attributes";
+    $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array	
+    $#tst_cmd=0;  # Reset array
+    
+    
 	
 #ncks #27 groups: Extract global attributes
-    $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep Conventions";
+
     $dsc_sng="Extract global attributes";
+    $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep Conventions";
     $tst_cmd[2]="Global attribute 0: Conventions, size = 6 NC_CHAR, value = CF-1.0";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array		
-	
+    $#tst_cmd=0;  # Reset array
+    
 #ncks #28 groups: Extract coordinate variables
-    $tst_cmd[0]="ncks  -O -c -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -O -H  -s '%g'  -v time2  -d time2,0,4 %tmp_fl_00% ";
+
     $dsc_sng="(Groups required) Extract coordinate variables";
+    $tst_cmd[0]="ncks  -O -c -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -O -H  -s '%g'  -v time2  -d time2,0,4 %tmp_fl_00% ";  
     $tst_cmd[2]="12345";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array			
-	
+    $#tst_cmd=0;  # Reset array
+    
 #ncks #29 groups: Extract "bounds" variables (extract /g8/ilev)
-    $tst_cmd[0]="ncks -O -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00% ";
+
     $dsc_sng="(Groups required) Extract 'bounds' variables";
+    $tst_cmd[0]="ncks -O -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00% ";    
     $tst_cmd[2]="1005001000";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array				
-	
+    $#tst_cmd=0;  # Reset array
+    
 #ncks #30 groups: Extract group attributes with GPE
-    $tst_cmd[0]="ncks -O -G g9 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
+
     $dsc_sng="(Groups required) GPE group attribute extraction";
+    $tst_cmd[0]="ncks -O -G g9 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array		
+    $#tst_cmd=0;  # Reset array
 	
 #ncks #31 groups: Group dimension hyperslabs
-    $tst_cmd[0]="ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -v lat_gds -O -H  -s '%g' %tmp_fl_00%";
+
     $dsc_sng="(Groups required) Group dimension hyperslabs";
+    $tst_cmd[0]="ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -v lat_gds -O -H  -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="-30";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array			
+    $#tst_cmd=0;  # Reset array
 
 #   
 #NCO 4.2.4   
 # 
     
 #ncks #32 groups: Sort output alphabetically
-    $tst_cmd[0]="ncks -O -v lat,area $in_pth_arg in_grp.nc  %tmp_fl_00%";
-	$tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00%";
+
     $dsc_sng="(Groups required) Sort output alphabetically";
+    $tst_cmd[0]="ncks -O -v lat,area $in_pth_arg in_grp.nc  %tmp_fl_00%";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="-9090";
     $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    } #if ($ENABLE_NETCDF4 == 1) 
 
 #####################
 #### ncpdq tests #### -OK !
