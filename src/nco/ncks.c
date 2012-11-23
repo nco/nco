@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.482 2012-11-23 04:40:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.483 2012-11-23 07:36:27 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.482 2012-11-23 04:40:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.482 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.483 2012-11-23 07:36:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.483 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -591,7 +591,8 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
   /* Check if any sub-groups */
-  if(nco_has_subgrps(in_id)) HAS_SUBGRP=True; else HAS_SUBGRP=False;
+  (void)nco_inq_grps(in_id,&nbr_grp_fl,NULL);
+  if(nbr_grp_fl) HAS_SUBGRP=True; else HAS_SUBGRP=False;
 
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
@@ -613,7 +614,7 @@ main(int argc,char **argv)
   /* Make output and input files consanguinous */
    if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 #ifndef ENABLE_NETCDF4
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC || HAS_SUBGRP){
     (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support\n",prg_nm_get());
     (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
@@ -658,11 +659,13 @@ main(int argc,char **argv)
   } /* endif rec_dmn_nm */
 
   /* Form initial extraction list which may include extended regular expressions */
-#ifdef ENABLE_NETCDF4 
-  xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr); 
-#else /* !ENABLE_NETCDF4 */ 
+  /* netCDF3 library must use this */
+#ifndef HAVE_NETCDF4_H
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr); 
-#endif /* ENABLE_NETCDF4 */
+#else
+  /* netCDF4 library must use this */
+  xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr); 
+#endif /* HAVE_NETCDF4_H */
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){

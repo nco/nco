@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.285 2012-11-23 04:40:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.286 2012-11-23 07:36:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -672,18 +672,6 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   *grp_xtr_nbr=grp_nbr_tmp;    
   return grp_lst;
 } /* end nco_grp_lst_mk() */
-
-int                            /* [rcd] Number of sub-groups */
-nco_has_subgrps
-(const int nc_id)              /* I [ID] NetCDF file ID */  
-{
-  /* Purpose: 
-     Return a bool value telling if the netCDF file has groups other than root 
-  */
-  int ngrps=0;           
-  (void)nco_inq_grps(nc_id,&ngrps,NULL);
-  return ngrps;
-} /* nco_has_subgrps() */
 
 nm_id_sct *             /* O [sct] Extraction list */
 nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
