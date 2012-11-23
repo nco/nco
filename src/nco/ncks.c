@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.480 2012-11-21 04:45:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.481 2012-11-23 01:23:25 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.480 2012-11-21 04:45:02 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.480 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.481 2012-11-23 01:23:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.481 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -177,7 +177,7 @@ main(int argc,char **argv)
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
-  int fl_in_fmt; /* [enm] Input file format */
+  int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int nbr_glb_att;
@@ -597,6 +597,29 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
+   /* Get number of variables, dimensions, and global attributes in file, file format */
+  (void)nco_inq_trv(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
+  (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
+  (void)nco_inq_format(in_id,&fl_in_fmt);
+#ifdef NCO_SANITY_CHECK 
+  if(fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT){
+    int nbr_dmm,nbr_var,nbr_att;
+    (void)nco_inq(in_id,&nbr_dmm,&nbr_var,&nbr_att,NULL);
+    assert(nbr_dmm == nbr_dmn_fl && nbr_var == nbr_var_fl && nbr_att == nbr_glb_att );
+  } /* NC_FORMAT_CLASSIC */
+#endif /* NCO_SANITY_CHECK */
+
+  /* Basic checks for ENABLE_NETCDF4 */
+  /* Make output and input files consanguinous */
+   if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+#ifndef ENABLE_NETCDF4
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* netCDF4 */
+#endif /* ENABLE_NETCDF4 */
+
 #ifdef ENABLE_NETCDF4
   /* Ensure all specified variable names are valid */
   /*  if(xtr_nbr) nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST);*/
@@ -629,18 +652,6 @@ main(int argc,char **argv)
         lmt_nbr=lmt_nbr_new;
      } /* endif aux */
   } /* endif aux_nbr */
-
-  /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)nco_inq_trv(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
-  (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
-  (void)nco_inq_format(in_id,&fl_in_fmt);
-#ifdef NCO_SANITY_CHECK 
-  if(fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT){
-    int nbr_dmm,nbr_var,nbr_att;
-    (void)nco_inq(in_id,&nbr_dmm,&nbr_var,&nbr_att,NULL);
-    assert(nbr_dmm == nbr_dmn_fl && nbr_var == nbr_var_fl && nbr_att == nbr_glb_att );
-  } /* NC_FORMAT_CLASSIC */
-#endif /* NCO_SANITY_CHECK */
   
   /* Get record dimension name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
   if(!FIX_REC_DMN && !rec_dmn_nm && (rec_dmn_id != NCO_REC_DMN_UNDEFINED)){ 
