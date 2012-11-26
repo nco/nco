@@ -60,7 +60,7 @@ To build NCO from the command line, do:
 As of NCO 4.2.0, it is possible to build NCO with <a target="_top" href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a>. 
 To build NCO with MSVC, open the file /qt/nco.sln with Visual Studio.
 
-<p>NCO depends on several pre-installed libraries, namely HDF5 (including HDF5 High-Level), netCDF, zlib, UDunits and Expat. The NCO supplied Visual Studio projects assume static builds of these libraries. These are specified by means of the following Windows enviroments variables in the projects:</p>
+<p>NCO depends on several pre-installed libraries, namely HDF5 (including HDF5 High-Level), netCDF, zlib. The NCO supplied Visual Studio projects assume static builds of these libraries. These are specified by means of the following Windows enviroments variables in the projects:</p>
 <tt>LIB_NETCDF</tt>
 <br><tt>LIB_DISPATCH</tt>
 <br><tt>LIB_NETCDF4</tt>
