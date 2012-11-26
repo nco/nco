@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.159 2012-10-31 23:44:57 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.160 2012-11-26 23:49:00 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -687,7 +687,7 @@ variables:
 
 	int one_dmn_rec_var(time);
 	one_dmn_rec_var:long_name = "one dimensional record variable";
-	one_dmn_rec_var:units = "second";
+	one_dmn_rec_var:units = "kelvin";
         
 	int one_dmn_rec_var_mdn(time);
 	one_dmn_rec_var_mdn:long_name = "one dimensional record variable to test median";
