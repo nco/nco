@@ -1,7 +1,11 @@
+2012-11-27  Pedro Vicente  <pvicente@uci.edu>
+
+	* bm: Add exclusion (-x) tests
+
 2012-11-20  Pedro Vicente  <pvicente@uci.edu>
 
 	* bm: If NCO_AVOID_BM_REPORT do not prompt to send benchmark results to project
-
+   
     * bm: Detect ENABLE_NETCDF4 and HAVE_NETCDF4_H in config.h and run tests accordingly
 
 2012-11-20  Charlie Zender  <zender@uci.edu>
