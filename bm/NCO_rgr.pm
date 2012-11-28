@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.159 2012-11-28 05:22:53 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.160 2012-11-28 06:30:56 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1080,6 +1080,23 @@ print "\n";
     $tst_cmd[0]="ncks -O -x $in_pth_arg in.nc";
     $tst_cmd[1]="Global attribute 3: RCS_Header, size = 8 NC_CHAR, value = \$Header\$";
     $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array   
+    
+#ncks #34 exclude 2 NOTE: \$Header\$ must be escaped    
+
+    $dsc_sng="Exclude all variables (netCDF4 file)";
+    $tst_cmd[0]="ncks -O -x $in_pth_arg in_grp.nc";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="Global attribute 3: RCS_Header, size = 8 NC_CHAR, value = \$Header\$";
+    $tst_cmd[2]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
     
