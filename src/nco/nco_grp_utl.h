@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.137 2012-11-23 07:36:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.138 2012-11-28 08:36:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -133,13 +133,13 @@ nco_grp_itr
  trv_tbl_sct *trv_tbl);                  /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
 
-nm_id_sct *                     /* O [sct] Extraction list */
-nco4_var_lst_xcl                /* [fnc] Convert exclusion list to extraction list */
-(const int nc_id,               /* I [ID] netCDF file ID */
- const int nbr_var,             /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst,            /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr,           /* I/O [nbr] Number of variables in exclusion/extraction list */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+nm_id_sct *                              /* O [sct] Extraction list */
+nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extraction list */
+(const int nc_id,                        /* I [ID] netCDF file ID */
+ const int nbr_var,                      /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst,                     /* I/O [sct] Current exclusion list (destroyed) */
+ int * const xtr_nbr,                    /* I/O [nbr] Number of variables in exclusion/extraction list */
+ const trv_tbl_sct * const trv_tbl);     /* I [sct] Traversal table */
 
 void
 nco4_xtr_grp_nm_fll              /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */

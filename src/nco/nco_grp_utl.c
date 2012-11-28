@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.286 2012-11-23 07:36:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.287 2012-11-28 08:36:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -673,13 +673,13 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   return grp_lst;
 } /* end nco_grp_lst_mk() */
 
-nm_id_sct *             /* O [sct] Extraction list */
-nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
-(const int nc_id,       /* I [ID] netCDF file ID */
- const int nbr_var,     /* I [nbr] Number of variables in input file */
- nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr,   /* I/O [nbr] Number of variables in exclusion/extraction list */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+nm_id_sct *                              /* O [sct] Extraction list */
+nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extraction list */
+(const int nc_id,                        /* I [ID] netCDF file ID */
+ const int nbr_var,                      /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst,                     /* I/O [sct] Current exclusion list (destroyed) */
+ int * const xtr_nbr,                    /* I/O [nbr] Number of variables in exclusion/extraction list */
+ const trv_tbl_sct * const trv_tbl)      /* I [sct] Traversal table */
 {
   /* Purpose: Convert exclusion list to extraction list
      User wants to extract all variables except those currently in list
@@ -691,11 +691,6 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   int idx;
   int nbr_xcl;
   unsigned int uidx;
-
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be excluded:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*xtr_nbr);
-  } /* endif dbg */
  
 #ifdef NCO_GRP_DEV
   /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as flagged;
@@ -787,7 +782,7 @@ nco4_var_lst_xcl        /* [fnc] Convert exclusion list to extraction list */
   }
 
   return xtr_lst;
-} /* end nco4_var_lst_xcl() */
+} /* end nco_var_lst_xcl_trv() */
 
 void
 nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */
