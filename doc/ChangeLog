@@ -1,6 +1,10 @@
 2012-11-27  Pedro Vicente  <pvicente@uci.edu>
 
-	* bm: Add exclusion (-x) tests
+	* bm: ncks: Add exclusion (-x) tests
+    
+    * bm: ncks: Add --get_grp_info test
+    
+    * Add --get_grp_info option
 
 2012-11-20  Pedro Vicente  <pvicente@uci.edu>
 

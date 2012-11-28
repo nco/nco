@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.161 2012-11-28 06:49:45 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.162 2012-11-28 09:44:17 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1100,6 +1100,14 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
     
+#ncks #35 --get_grp_info option
+
+    $dsc_sng="Get file information (netCDF3 file)";
+    $tst_cmd[0]="ncks -O --get_grp_info $in_pth_arg in.nc";
+    $tst_cmd[1]="/: 0 subgroups, 23 dimensions, 4 attributes, 298 variables";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array    
 
 #####################
 #### ncpdq tests #### -OK !

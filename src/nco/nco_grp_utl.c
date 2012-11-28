@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.287 2012-11-28 08:36:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.288 2012-11-28 09:44:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1311,6 +1311,10 @@ nco_prt_grp_trv         /* [fnc] Print table  */
 (const int nc_id,       /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
+  /* Obtain netCDF file format */
+  int fl_fmt;
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
   (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_grp ) {
@@ -1325,6 +1329,9 @@ nco_prt_grp_trv         /* [fnc] Print table  */
       int dmn_ids_ult[NC_MAX_DIMS];  /* [nbr] Unlimited dimensions IDs array */
       char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name */ 
       long dmn_sz;                   /* [nbr] Dimension size */ 
+
+      /* For classic files, the above is printed, and then return */
+      if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
 
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);

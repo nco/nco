@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.484 2012-11-28 08:36:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.485 2012-11-28 09:44:19 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.484 2012-11-28 08:36:57 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.484 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.485 2012-11-28 09:44:19 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.485 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -320,6 +320,7 @@ main(int argc,char **argv)
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
+      {"get_grp_info",no_argument,0,0},
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -634,6 +635,7 @@ main(int argc,char **argv)
     goto close_and_free; 
   } /* end GET_LIST */ 
 
+  /* Process --get_grp_info option if requested */ 
   if(GET_GRP_INFO){ 
     nco_prt_grp_trv(in_id,trv_tbl);
     goto close_and_free; 
