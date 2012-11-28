@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.164 2012-11-28 22:06:02 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.165 2012-11-28 22:12:53 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1087,10 +1087,18 @@ print "\n";
 
     $dsc_sng="Get group information (netCDF4 file)";
     $tst_cmd[0]="ncks --get_grp_info $in_pth_arg in_grp.nc";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
     $tst_cmd[1]="/g10: 0 subgroups, 0 dimensions, 0 attributes, 1 variables";
     $tst_cmd[2]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array  
+    $#tst_cmd=0;  # Reset array    
 
 #ncks #35 --get_file_info option (netCDF3 file)
 
@@ -1105,10 +1113,18 @@ print "\n";
 
     $dsc_sng="Get file information (netCDF4 file)";
     $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in_grp.nc";
+    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
     $tst_cmd[1]="22 subgroups, 14 dimensions, 22 attributes, 32 variables";
     $tst_cmd[2]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array         
+    $#tst_cmd=0;  # Reset array    
     
 #ncks #37 exclude all variables (netCDF3 file)
 
