@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.485 2012-11-28 09:44:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.486 2012-11-28 22:06:02 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -98,6 +98,7 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
+  nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool HAS_SUBGRP=False; /* [flg] Classic format, no groups (netCDF3 or netCDF4 with variables at root only) */
   nco_bool HISTORY_APPEND=True; /* Option h */
@@ -149,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.485 2012-11-28 09:44:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.485 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.486 2012-11-28 22:06:02 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.486 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -321,6 +322,7 @@ main(int argc,char **argv)
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
       {"get_grp_info",no_argument,0,0},
+      {"get_file_info",no_argument,0,0},
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -382,6 +384,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")){
         GET_GRP_INFO=True;
       } /* endif "get_grp_info" */
+      if(!strcmp(opt_crr,"get_file_info")){
+        GET_FILE_INFO=True;
+      } /* endif "get_file_info" */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -638,6 +643,13 @@ main(int argc,char **argv)
   /* Process --get_grp_info option if requested */ 
   if(GET_GRP_INFO){ 
     nco_prt_grp_trv(in_id,trv_tbl);
+    goto close_and_free; 
+  } /* end GET_GRP_INFO */
+
+  /* Process --get_file_info option if requested */ 
+  if(GET_FILE_INFO){ 
+    (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
+    (void)fprintf(stdout,"%d subgroups, %d dimensions, %d attributes, %d variables\n",nbr_grp_fl,nbr_dmn_fl,nbr_grp_fl,nbr_var_fl); 
     goto close_and_free; 
   } /* end GET_GRP_INFO */
 

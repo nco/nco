@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.163 2012-11-28 20:21:54 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.164 2012-11-28 22:06:02 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1074,7 +1074,43 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #33 exclude all variables (netCDF3 file)
+#ncks #33 --get_grp_info option (netCDF3 file)
+
+    $dsc_sng="Get group information (netCDF3 file)";
+    $tst_cmd[0]="ncks --get_grp_info $in_pth_arg in.nc";
+    $tst_cmd[1]="/: 0 subgroups, 23 dimensions, 4 attributes, 298 variables";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array   
+
+#ncks #34 --get_grp_info option (netCDF4 file)
+
+    $dsc_sng="Get group information (netCDF4 file)";
+    $tst_cmd[0]="ncks --get_grp_info $in_pth_arg in_grp.nc";
+    $tst_cmd[1]="/g10: 0 subgroups, 0 dimensions, 0 attributes, 1 variables";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array  
+
+#ncks #35 --get_file_info option (netCDF3 file)
+
+    $dsc_sng="Get file information (netCDF3 file)";
+    $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in.nc";
+    $tst_cmd[1]="0 subgroups, 23 dimensions, 0 attributes, 298 variables";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array    
+
+#ncks #36 --get_file_info option (netCDF4 file)
+
+    $dsc_sng="Get file information (netCDF4 file)";
+    $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in_grp.nc";
+    $tst_cmd[1]="22 subgroups, 14 dimensions, 22 attributes, 32 variables";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array         
+    
+#ncks #37 exclude all variables (netCDF3 file)
 
     $dsc_sng="Exclude all variables (netCDF3 file)";
     $tst_cmd[0]="ncks -O -x $in_pth_arg in.nc %tmp_fl_00%";
@@ -1084,7 +1120,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array   
     
-#ncks #34 exclude all variables (netCDF4 file)
+#ncks #38 exclude all variables (netCDF4 file)
 
     $dsc_sng="Exclude all variables (netCDF4 file)";
     $tst_cmd[0]="ncks -O -x $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1102,14 +1138,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
     
-#ncks #35 --get_grp_info option
-
-    $dsc_sng="Get file information (netCDF3 file)";
-    $tst_cmd[0]="ncks -O --get_grp_info $in_pth_arg in.nc";
-    $tst_cmd[1]="/: 0 subgroups, 23 dimensions, 4 attributes, 298 variables";
-    $tst_cmd[2]="SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array    
+ 
 
 #####################
 #### ncpdq tests #### -OK !

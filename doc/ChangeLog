@@ -1,9 +1,21 @@
+2012-11-28  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add --get_file_info option
+    
+    * bm: ncks #33 --get_grp_info option (netCDF3 file)
+    
+    * bm: ncks #34 --get_grp_info option (netCDF4 file)
+    
+    * bm: ncks #35 --get_file_info option (netCDF3 file)
+    
+    * bm: ncks #36 --get_file_info option (netCDF4 file)
+    
+    * bm: ncks #37 exclude all variables (netCDF3 file)
+    
+    * bm: ncks #38 exclude all variables (netCDF4 file)
+
 2012-11-27  Pedro Vicente  <pvicente@uci.edu>
 
-	* bm: ncks: Add exclusion (-x) tests
-    
-    * bm: ncks: Add --get_grp_info test
-    
     * Add --get_grp_info option
 
 2012-11-20  Pedro Vicente  <pvicente@uci.edu>
