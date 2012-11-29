@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.167 2012-11-29 20:41:21 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.168 2012-11-29 22:49:15 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1154,12 +1154,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
     
-#ncks #39 exclude a variable (netCDF3 file)
+#ncks #39 exclude variables (netCDF3 file)
 
-    $dsc_sng="Exclude a variables (netCDF3 file)";
-    $tst_cmd[0]="ncks -O -x -v area $in_pth_arg in.nc %tmp_fl_00%";
+    $dsc_sng="Exclude variables (netCDF3 file)";
+    $tst_cmd[0]="ncks -O -x -v lat_var,lat_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --get_file_info %tmp_fl_00%";
-    $tst_cmd[2]="0 subgroups, 23 dimensions, 5 attributes, 297 variables";
+    $tst_cmd[2]="0 subgroups, 23 dimensions, 5 attributes, 296 variables";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array 

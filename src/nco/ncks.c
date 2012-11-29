@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.487 2012-11-29 20:16:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.488 2012-11-29 22:49:18 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.487 2012-11-29 20:16:49 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.487 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.488 2012-11-29 22:49:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.488 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -614,6 +614,8 @@ main(int argc,char **argv)
     (void)nco_inq(in_id,&nbr_dmm,&nbr_var,&nbr_att,NULL);
     assert(nbr_dmm == nbr_dmn_fl && nbr_var == nbr_var_fl && nbr_att == nbr_glb_att );
   } /* NC_FORMAT_CLASSIC */
+  nm_id_sct *xtr_lst_chk=NULL; 
+  int xtr_nbr_chk=xtr_nbr;
 #endif /* NCO_SANITY_CHECK */
 
   /* Basic checks for ENABLE_NETCDF4 */
@@ -628,8 +630,7 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
 
   /* Ensure all specified variable names are valid */
-  /*  if(xtr_nbr) nco_chk_var(in_id,var_lst_in,xtr_nbr,EXCLUDE_INPUT_LIST);*/
-  if(xtr_nbr) nco_chk_trv(var_lst_in,xtr_nbr,nco_obj_typ_var,trv_tbl); /* NB: using this causes two ncap2 regressions, presumably because EXCLUDE_INPUT_LIST not yet handled */
+  if(xtr_nbr) nco_chk_trv(var_lst_in,xtr_nbr,nco_obj_typ_var,trv_tbl); 
 
   /* Ensure all specified group names are valid */
   if(grp_nbr) nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl);
@@ -673,21 +674,32 @@ main(int argc,char **argv)
   } /* endif rec_dmn_nm */
 
   /* Form initial extraction list which may include extended regular expressions */
-  /* netCDF3 library must use this */
 #ifndef HAVE_NETCDF4_H
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr); 
 #else
-  /* netCDF4 library must use this */
   xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr); 
 #endif /* HAVE_NETCDF4_H */
 
+#ifdef NCO_SANITY_CHECK  
+#ifndef HAVE_NETCDF4_H
+  xtr_lst_chk=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr_chk); 
+#else
+  xtr_lst_chk=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr_chk); 
+#endif /* HAVE_NETCDF4_H */
+  assert(xtr_nbr_chk == xtr_nbr);
+  for(idx=0;idx<xtr_nbr;idx++)assert(strcmp(xtr_lst_chk[idx].nm,xtr_lst[idx].nm) == 0);
+#endif /* NCO_SANITY_CHECK */
+
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
-    if(HAS_SUBGRP){
-      xtr_lst=nco_var_lst_xcl_trv(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
-    }else{
-      xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
-    } /* HAS_SUBGRP */
+    xtr_lst=nco_var_lst_xcl_trv(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
+#ifdef NCO_SANITY_CHECK 
+    if(fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT){
+      xtr_lst_chk=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst_chk,&xtr_nbr_chk);
+      assert(xtr_nbr_chk == xtr_nbr);
+      for(idx=0;idx<xtr_nbr;idx++)assert(strcmp(xtr_lst_chk[idx].nm,xtr_lst[idx].nm) == 0);
+    } /* NC_FORMAT_CLASSIC */
+#endif /* NCO_SANITY_CHECK */
   } /* EXCLUDE_INPUT_LIST */
 
   /* Is this a CCM/CCSM/CF-format history tape? */

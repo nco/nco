@@ -1,3 +1,9 @@
+2012-11-29  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncks #39 exclude variables (netCDF3 file)
+    
+    * deprecate nco_var_lst_xcl and use nco_var_lst_xcl_trv for both netCDF3 and netCDF4
+    
 2012-11-28  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add --get_file_info option
