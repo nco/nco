@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.165 2012-11-28 22:12:53 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.166 2012-11-29 20:16:49 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1104,7 +1104,7 @@ print "\n";
 
     $dsc_sng="Get file information (netCDF3 file)";
     $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in.nc";
-    $tst_cmd[1]="0 subgroups, 23 dimensions, 0 attributes, 298 variables";
+    $tst_cmd[1]="0 subgroups, 23 dimensions, 4 attributes, 298 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
@@ -1114,7 +1114,7 @@ print "\n";
     $dsc_sng="Get file information (netCDF4 file)";
     $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in_grp.nc";
     if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
-    $tst_cmd[1]="22 subgroups, 14 dimensions, 22 attributes, 32 variables";
+    $tst_cmd[1]="22 subgroups, 14 dimensions, 5 attributes, 32 variables";
     $tst_cmd[2]="SS_OK";
     }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
     $tst_cmd[1]=$ncks_msg_no_netcdf4; 

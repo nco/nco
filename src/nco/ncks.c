@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.486 2012-11-28 22:06:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.487 2012-11-29 20:16:49 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.486 2012-11-28 22:06:02 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.486 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.487 2012-11-29 20:16:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.487 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -649,7 +649,7 @@ main(int argc,char **argv)
   /* Process --get_file_info option if requested */ 
   if(GET_FILE_INFO){ 
     (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
-    (void)fprintf(stdout,"%d subgroups, %d dimensions, %d attributes, %d variables\n",nbr_grp_fl,nbr_dmn_fl,nbr_grp_fl,nbr_var_fl); 
+    (void)fprintf(stdout,"%d subgroups, %d dimensions, %d attributes, %d variables\n",nbr_grp_fl,nbr_dmn_fl,nbr_glb_att,nbr_var_fl); 
     goto close_and_free; 
   } /* end GET_GRP_INFO */
 
