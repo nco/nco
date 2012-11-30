@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.71 2012-11-19 20:52:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.72 2012-11-30 07:20:37 pvicente Exp $ */
 
 /* Purpose: List utilities */
 
@@ -817,10 +817,12 @@ nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list *
   for(idx=0;idx<nm_id_nbr;idx++){
     if(nm_id_lst[idx].nm) nm_id_lst[idx].nm=(char *)nco_free(nm_id_lst[idx].nm);
     /* fxm: not safe to free new nm_id_sct members until code consistently initializes them 
-       this will cause a temporary memory leak until initialization is consistent */
-    /*    if(nm_id_lst[idx].var_nm_fll) nm_id_lst[idx].var_nm_fll=(char *)nco_free(nm_id_lst[idx].var_nm_fll);*/
-    /*    if(nm_id_lst[idx].grp_nm) nm_id_lst[idx].grp_nm=(char *)nco_free(nm_id_lst[idx].grp_nm);*/
-    /*    if(nm_id_lst[idx].grp_nm_fll) nm_id_lst[idx].grp_nm_fll=(char *)nco_free(nm_id_lst[idx].grp_nm_fll);*/
+    this will cause a temporary memory leak until initialization is consistent */
+#if 0
+    if(nm_id_lst[idx].var_nm_fll) nm_id_lst[idx].var_nm_fll=(char *)nco_free(nm_id_lst[idx].var_nm_fll);
+    if(nm_id_lst[idx].grp_nm) nm_id_lst[idx].grp_nm=(char *)nco_free(nm_id_lst[idx].grp_nm);
+    if(nm_id_lst[idx].grp_nm_fll) nm_id_lst[idx].grp_nm_fll=(char *)nco_free(nm_id_lst[idx].grp_nm_fll);
+#endif
   } /* end loop over idx */
 
   /* Free structure pointer last */

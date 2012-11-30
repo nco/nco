@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.491 2012-11-30 04:57:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.492 2012-11-30 07:20:37 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.491 2012-11-30 04:57:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.491 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.492 2012-11-30 07:20:37 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.492 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -879,11 +879,6 @@ main(int argc,char **argv)
         for(idx=0;idx<xtr_nbr;idx++){
           if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
           if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-          /* Old hyperslab routines */
-          /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
-          /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,grp_out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
-          /* Multi-slab routines */
-          /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
           if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); 
           else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
         } /* end loop over idx */

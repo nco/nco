@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.206 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.207 2012-11-30 07:20:37 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -200,14 +200,15 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
     int rcd_lcl; 
+    int dmn_id;
 
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
 
-#ifdef NCO_GRP_DEV
+#ifdef ENABLE_NETCDF4
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 
       /* Has dimension been defined in output file? */
-      rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id);
+      rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,&dmn_id);
 
       /* If dimension has not been defined, copy it */
       if(rcd_lcl != NC_NOERR){
@@ -222,12 +223,15 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
             } /* end if */
           } /* end loop over lmt_all_idx */
 
-          (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id);
+          (void)nco_def_dim(out_id,dmn_nm,dmn_sz,&dmn_id);
         }else{
-          (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id);
-          rec_dmn_out_id=dmn_out_id[idx];
+          (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,&dmn_id);
+          rec_dmn_out_id=dmn_id;
         } /* end else record dimension */
       } /* end if NC_NOERR */
+
+      /* Store in array */
+      dmn_out_id[idx]=dmn_id;
 
     } else { /* NC_FORMAT_NETCDF4 */
 
@@ -255,7 +259,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
       } /* end if NC_NOERR */
     } /* NC_FORMAT_NETCDF4 */
 
-#else  /* NCO_GRP_DEV */
+#else  /* ENABLE_NETCDF4 */
 
     /* Has dimension been defined in output file? */
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
@@ -280,7 +284,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
       } /* end else */
     } /* end if */
 
-#endif /* NCO_GRP_DEV */
+#endif /* ENABLE_NETCDF4 */
 
     /* Die if record dimension is not first dimension */
     if(idx>0 && dmn_out_id[idx]==rec_dmn_out_id){

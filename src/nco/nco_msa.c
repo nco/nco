@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.122 2012-11-21 05:26:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.123 2012-11-30 07:20:37 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -703,7 +703,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   int fl_fmt;
   (void)nco_inq_format(in_id,&fl_fmt);
 
-#ifdef NCO_GRP_DEV
+#ifdef ENABLE_NETCDF4
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     for(idx=0;idx<nbr_dim;idx++){
       char dmn_nm[NC_MAX_NAME];
@@ -747,7 +747,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
 
   } /* NC_FORMAT_NETCDF4 */
 
-#else
+#else /* !ENABLE_NETCDF4 */
 
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
@@ -764,7 +764,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     dmn_map_srt[idx]=0L;
   } /* end for */
 
-#endif
+#endif /* !ENABLE_NETCDF4 */
 
   /* Initalize vara with in_id, var_in_id, nctype, etc., so recursive routine can read data */
   vara.nm=var_nm;
