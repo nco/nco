@@ -12,9 +12,24 @@ unix {
  INCLUDEPATH += /usr/local
  LIBS += -L/usr/local/lib -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5 
  LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/i386-linux-gnu/ -lz -ludunits2 -lexpat 
-
 }
-win32 {
+
+CONFIG -= qt
+#CONFIG += netcdf3
+
+win32{
+ CONFIG += console 
+ DEFINES += _CRT_SECURE_NO_WARNINGS
+ DEFINES += _CRT_NONSTDC_NO_DEPRECATE
+ DEFINES += NEED_STRCASECMP
+ DEFINES += NEED_STRCASESTR
+}
+
+win32{
+ netcdf3 {
+ INCLUDEPATH += $(HEADER_NETCDF3)
+ LIBS += $(LIB_NETCDF3)
+ } else {
  INCLUDEPATH += $(HEADER_NETCDF)
  LIBS += $(LIB_NETCDF)
  LIBS += $(LIB_DISPATCH)
@@ -23,13 +38,8 @@ win32 {
  LIBS += $(LIB_HDF5_HL)
  LIBS += $(LIB_ZLIB)
  LIBS += $(LIB_SZIP)
- DEFINES += _CRT_SECURE_NO_WARNINGS
- DEFINES += _CRT_NONSTDC_NO_DEPRECATE
- CONFIG += console
- # netCDF assumed in Windows build
  DEFINES += ENABLE_NETCDF4
  DEFINES += HAVE_NETCDF4_H
- DEFINES += NEED_STRCASECMP
- DEFINES += NEED_STRCASESTR
+}
 }
 

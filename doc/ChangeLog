@@ -1,8 +1,11 @@
 2012-11-29  Pedro Vicente  <pvicente@uci.edu>
 
-	* ncks #39 exclude variables (netCDF3 file)
+	* bm: ncks #39 exclude variables (netCDF3 file)
     
     * deprecate nco_var_lst_xcl and use nco_var_lst_xcl_trv for both netCDF3 and netCDF4
+    
+    * Qt: allow Win32 build with netCDF3; define environment $(HEADER_NETCDF3) and $(LIB_NETCDF3)
+      and use CONFIG += netcdf3 in /qt/nco.pri
     
 2012-11-28  Pedro Vicente  <pvicente@uci.edu>
 
