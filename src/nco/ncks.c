@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.490 2012-11-30 01:32:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.491 2012-11-30 04:57:20 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.490 2012-11-30 01:32:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.490 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.491 2012-11-30 04:57:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.491 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -692,7 +692,7 @@ main(int argc,char **argv)
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
-    xtr_lst=nco_var_lst_xcl_trv(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
+    xtr_lst=nco_var_lst_xcl_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
 #ifdef NCO_SANITY_CHECK 
     if(fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT){
       xtr_lst_chk=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst_chk,&xtr_nbr_chk);

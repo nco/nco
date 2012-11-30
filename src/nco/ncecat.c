@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.244 2012-11-28 08:36:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.245 2012-11-30 04:57:20 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.244 2012-11-28 08:36:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.244 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.245 2012-11-30 04:57:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.245 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -833,7 +833,7 @@ main(int argc,char **argv)
       xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 
       /* Change included variables to excluded variables */
-      if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl_trv(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
+      if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
 
       /* Is this a CCM/CCSM/CF-format history tape? */
       CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);

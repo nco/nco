@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.288 2012-11-28 09:44:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.289 2012-11-30 04:57:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -676,7 +676,6 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
 nm_id_sct *                              /* O [sct] Extraction list */
 nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id,                        /* I [ID] netCDF file ID */
- const int nbr_var,                      /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst,                     /* I/O [sct] Current exclusion list (destroyed) */
  int * const xtr_nbr,                    /* I/O [nbr] Number of variables in exclusion/extraction list */
  const trv_tbl_sct * const trv_tbl)      /* I [sct] Traversal table */
@@ -687,22 +686,24 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
      exclusion list, then construct new extraction list from scratch. */
 
   int nbr_var_xtr;   /* Number of variables to extract */
-  int nbr_var_tbl;   /* Number of variables in the table */
+  int nbr_var;       /* Number of variables in the table/file */      
+  int  grp_id;       /* Group ID */
+  int  var_id;       /* Variable ID */
+  int fl_fmt;
   int idx;
   int nbr_xcl;
   unsigned int uidx;
  
-#ifdef NCO_GRP_DEV
   /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as flagged;
   A second traversal extracts all variables that are not marked (this reverses the list);
   The second traversal is needed because we need to find nbr_xcl, the number of variables to exclude, first
   */
   nbr_var_xtr=0;
-  nbr_var_tbl=0;
+  nbr_var=0;
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
     if (trv.typ == nco_obj_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
-      nbr_var_tbl++;
+      nbr_var++;
       for(idx=0;idx<*xtr_nbr;idx++){
         /* Compare variable name between full list and input extraction list */
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
@@ -713,63 +714,56 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
     } /* end nco_obj_typ_var */
   } /* end loop over uidx */
 
-#ifdef NCO_SANITY_CHECK
-  assert(nbr_var_tbl == nbr_var);
-#endif
+  /* Variables to exclude = Total variables - Variables to extract */
   nbr_xcl=nbr_var-nbr_var_xtr;
 
-  /* Second traversal: extracts all variables that are not marked (this reverses the list); the xtr_lst must be reconstructed for:
-  1) grp_nm_fll (full group name)
-  2) grp_id (group ID) 
-  */
-
+  /* Second traversal: extracts all variables that are not marked (this reverses the list); the xtr_lst must be reconstructed */
   xtr_lst=(nm_id_sct *)nco_free(xtr_lst);
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
 
   /* Initialize index of extracted variables */
-  *xtr_nbr=0;
+  int idx_xtr=0;
 
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nco_obj_typ_var && trv.flg != 1 ){ /* trv_tbl lists non-variables also; filter just variables */
+    if (trv.typ == nco_obj_typ_var && trv.flg != 1 ){ 
       /* Extract the full group name from 'trv', that contains the full variable name, to xtr_lst */
-      (void)nco4_xtr_grp_nm_fll(nc_id,xtr_lst,xtr_nbr,trv);
+
+      (void)nco_inq_format(nc_id,&fl_fmt);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      }else{ 
+        grp_id=nc_id;
+      } 
+
+      /* Obtain variable ID from netCDF API using group ID */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+
+      /* ncks needs only:
+      1) xtr_lst.grp_nm_fll (full group name where variable resides, to get group ID) 
+      2) xtr_lst.var_nm_fll
+      3) xtr_lst.id
+      4) xtr_lst.nm (relative variable name) 
+      NOTE: 
+      1) xtr_lst.grp_id is stored for validation
+      2) xtr_lst.grp_nm is not used 
+      */
+
+      char tmp[]="not_used";
+      xtr_lst[idx_xtr].nm=(char*)strdup(trv.nm);
+      xtr_lst[idx_xtr].grp_nm_fll=(char*)strdup(trv.grp_nm_fll);
+      xtr_lst[idx_xtr].var_nm_fll=(char*)strdup(trv.nm_fll);
+      xtr_lst[idx_xtr].id=var_id;
+      xtr_lst[idx_xtr].grp_nm=(char*)strdup(tmp);
+      xtr_lst[idx_xtr].grp_id=grp_id;
+
       /* Increment index of extracted variables */
-      ++*xtr_nbr;
+      idx_xtr++;
     }
   } /* end loop over uidx */
 
-#else /* NCO_GRP_DEV */
-  /* Turn extract list into exclude list and reallocate extract list  */
-  nbr_xcl=*xtr_nbr;
-  *xtr_nbr=0;
-  xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
-  (void)memcpy((void *)xcl_lst,(void *)xtr_lst,nbr_xcl*sizeof(nm_id_sct));
-  xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
-
-  for(idx=0;idx<nbr_var;idx++){
-    /* Get name and ID of variable */
-    (void)nco_inq_varname(nc_id,idx,var_nm);
-    for(lst_idx=0;lst_idx<nbr_xcl;lst_idx++){
-      if(idx == xcl_lst[lst_idx].id) break;
-    } /* end loop over lst_idx */
-    /* If variable is not in exclusion list then add it to new list */
-    if(lst_idx == nbr_xcl){
-      xtr_lst[*xtr_nbr].nm=(char *)strdup(var_nm);
-      xtr_lst[*xtr_nbr].id=idx;
-      ++*xtr_nbr;
-    } /* end if */
-  } /* end loop over idx */
-
-  /* Free memory for names in exclude list before losing pointers to names */
-  /* NB: cannot free memory if list points to names in argv[] */
-  /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
-  xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
-#endif /* NCO_GRP_DEV */
-
-#ifdef NCO_SANITY_CHECK
-  assert(*xtr_nbr == nbr_xcl);
-#endif
+  /* Export */
+  *xtr_nbr=nbr_xcl;
 
   if(dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be extracted:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
@@ -783,55 +777,6 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
 
   return xtr_lst;
 } /* end nco_var_lst_xcl_trv() */
-
-void
-nco4_xtr_grp_nm_fll     /* [fnc] Auxiliary function; extract full group name from a grp_trv_sct to a nm_id_sct */
-(const int nc_id,       /* I [ID] netCDF file ID */
- nm_id_sct *xtr_lst,    /* I/O [sct] Current exclusion list */
- int * const xtr_nbr,   /* I [nbr] Current index in exclusion/extraction list */
- grp_trv_sct trv)       /* I [sct] Group traversal table entry */
-{
-  /* Purpose: Extract the full group name from a grp_trv_sct entry that contains the full variable name to a nm_id_sct struct. */
-  int  grp_id;      /* Group ID */
-  int  var_id;      /* Variable ID */
-
-  if (trv.typ == nco_obj_typ_var){
-
-    /* Obtain netCDF file format */
-    int fl_fmt;
-    (void)nco_inq_format(nc_id,&fl_fmt);
-    /* Obtain group ID from netCDF API using full group name */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-    }else{ /* netCDF3 */
-      grp_id=nc_id;
-    } /* netCDF3 */
-
-    /* Obtain variable ID from netCDF API using group ID */
-    (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-
-    /* ncks needs only:
-    1) xtr_lst.grp_nm_fll (full group name where variable resides, to get group ID) 
-    2) xtr_lst.var_nm_fll
-    3) xtr_lst.id
-    4) xtr_lst.nm (relative variable name) 
-    NOTE: 
-    1) xtr_lst.grp_id is stored for validation
-    2) xtr_lst.grp_nm is not used 
-    */
-
-    char tmp[]="not_used";
-
-    xtr_lst[*xtr_nbr].nm=(char*)strdup(trv.nm);
-    xtr_lst[*xtr_nbr].grp_nm_fll=(char*)strdup(trv.grp_nm_fll);
-    xtr_lst[*xtr_nbr].var_nm_fll=(char*)strdup(trv.nm_fll);
-    xtr_lst[*xtr_nbr].id=var_id;
-    xtr_lst[*xtr_nbr].grp_nm=(char*)strdup(tmp);
-    xtr_lst[*xtr_nbr].grp_id=grp_id;
-  } /* endif variable */
-
-  return;
-} /* end nco4_xtr_grp_nm_fll() */
 
 void
 nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in output file */
