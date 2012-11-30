@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.492 2012-11-30 07:20:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.493 2012-11-30 22:44:42 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.492 2012-11-30 07:20:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.492 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.493 2012-11-30 22:44:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.493 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -934,8 +934,7 @@ main(int argc,char **argv)
     if(PRN_VAR_METADATA){
       if (HAS_SUBGRP){
         for(idx=0;idx<xtr_nbr;idx++){    
-          nm_id_sct nm_id=xtr_lst[idx];
-#ifdef NCO_SANITY_CHECK        
+          nm_id_sct nm_id=xtr_lst[idx];    
           /* Obtain group ID from netCDF API using full group name */
           int grp_id; 
           if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -943,14 +942,12 @@ main(int argc,char **argv)
           }else{ /* netCDF3 case */
             grp_id=in_id;
           }
-          assert(grp_id == nm_id.grp_id );
-#endif
           /* Print full name of variable */
           (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
           /* Print variable's definition using the obtained grp_id instead of the netCDF file ID; Voila  */
-          (void)nco_prn_var_dfn(nm_id.grp_id,nm_id.nm); 
+          (void)nco_prn_var_dfn(grp_id,nm_id.nm); 
           /* Print variable's attributes */
-          (void)nco_prn_att(in_id,nm_id.grp_id,nm_id.id);
+          (void)nco_prn_att(in_id,grp_id,nm_id.id);
         } /* end loop over idx */
 
       } else { /* HAS_SUBGRP */
@@ -966,8 +963,7 @@ main(int argc,char **argv)
     if(PRN_VAR_DATA){
       if(HAS_SUBGRP){
         for(idx=0;idx<xtr_nbr;idx++) {
-          nm_id_sct nm_id=xtr_lst[idx];
-#ifdef NCO_SANITY_CHECK        
+          nm_id_sct nm_id=xtr_lst[idx];     
           /* Obtain group ID from netCDF API using full group name */
           int grp_id; 
           if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -975,12 +971,10 @@ main(int argc,char **argv)
           }else{ /* netCDF3 case */
             grp_id=in_id;
           }
-          assert(grp_id == nm_id.grp_id );
-#endif
           /* Print full name of variable */
           (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
-          (void)nco_msa_prn_var_val(nm_id.grp_id,nm_id.nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
+          (void)nco_msa_prn_var_val(grp_id,nm_id.nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
       }else { /* HAS_SUBGRP */
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.291 2012-11-30 05:20:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.292 2012-11-30 22:44:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -341,7 +341,6 @@ nco_var_lst_mk_trv                        /* [fnc] Create variable extraction li
         var_lst_all[var_idx_crr].var_nm_fll=(char *)strdup(var_nm_fll);
         var_lst_all[var_idx_crr].nm=(char *)strdup(var_nm);
         var_lst_all[var_idx_crr].id=var_ids[var_idx];
-        var_lst_all[var_idx_crr].grp_id=grp_id;
         var_lst_all[var_idx_crr].grp_nm_fll=(char *)strdup(grp_nm_fll);
 
         /* Increment number of variables */
@@ -476,7 +475,6 @@ nco_var_lst_mk_trv                        /* [fnc] Create variable extraction li
       xtr_lst[var_nbr_tmp].var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
       xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
       xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
-      xtr_lst[var_nbr_tmp].grp_id=var_lst_all[idx].grp_id;
       xtr_lst[var_nbr_tmp].grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
       var_nbr_tmp++;
     } /* end if */
@@ -749,9 +747,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
       2) xtr_lst.var_nm_fll
       3) xtr_lst.id
       4) xtr_lst.nm (relative variable name) 
-      NOTE: 
-      1) xtr_lst.grp_id is stored for validation
-      2) xtr_lst.grp_nm is not used 
+      NOTE: xtr_lst.grp_nm is not used 
       */
 
       char tmp[]="not_used";
@@ -760,7 +756,6 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
       xtr_lst[idx_xtr].var_nm_fll=(char*)strdup(trv.nm_fll);
       xtr_lst[idx_xtr].id=var_id;
       xtr_lst[idx_xtr].grp_nm=(char*)strdup(tmp);
-      xtr_lst[idx_xtr].grp_id=grp_id;
 
       /* Increment index of extracted variables */
       idx_xtr++;
@@ -1005,7 +1000,6 @@ nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst 
  char * const grp_nm_fll,  /* I [sng] Full group name */
  char * const grp_nm,      /* I [sng] Group name */
  int const var_id,         /* I [ID] Variable ID */
- int const grp_id,         /* I [ID] Group ID */ 
  nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
  int * xtr_nbr)            /* I/O [nbr] Current index in exclusion/extraction list */
 {
@@ -1022,15 +1016,12 @@ nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst 
   2) xtr_lst.var_nm_fll
   3) xtr_lst.id
   4) xtr_lst.nm (relative variable name) 
-  NB: 
-  1) xtr_lst.grp_id is stored for validation
-  2) xtr_lst.grp_nm is not used */
+  NB: xtr_lst.grp_nm is not used */
   xtr_lst[*xtr_nbr].nm=(char*)strdup(var_nm);
   xtr_lst[*xtr_nbr].grp_nm_fll=(char*)strdup(grp_nm_fll);
   xtr_lst[*xtr_nbr].var_nm_fll=(char*)strdup(var_nm_fll);
   xtr_lst[*xtr_nbr].id=var_id;
   xtr_lst[*xtr_nbr].grp_nm=(char*)strdup(grp_nm);
-  xtr_lst[*xtr_nbr].grp_id=grp_id;
 
   (*xtr_nbr)++;
 
@@ -1506,8 +1497,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
           if(strcmp(dmn_nm,var_nm) == 0){
             /* No groups case, just add  */
             if (*grp_xtr_nbr == 0 ){
-              xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
-
+              xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],xtr_lst,xtr_nbr);
             }
             /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
             else{  
@@ -1517,8 +1507,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
                 char* pch=strstr(trv.nm,grp_lst_in[idx_grp]);
                 /* strstr returns the first occurrence of 'grp_lst_in' in 'trv.nm', the higher level group( closer to root) */
                 if(pch != NULL){
-                  xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],grp_id,xtr_lst,xtr_nbr);
-
+                  xtr_lst=nco_xtr_lst_add(var_nm,var_nm_fll,trv.nm_fll,trv.nm,var_ids[idx_var],xtr_lst,xtr_nbr);
                 }
               } /* end grp_idx */       
             } /* end groups case */
@@ -1651,7 +1640,6 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
         var_lst_all[var_idx_crr].var_nm_fll=(char *)strdup(var_nm_fll);
         var_lst_all[var_idx_crr].nm=(char *)strdup(var_nm);
         var_lst_all[var_idx_crr].id=var_ids[var_idx];
-        var_lst_all[var_idx_crr].grp_id=grp_id;
         var_lst_all[var_idx_crr].grp_nm_fll=(char *)strdup(grp_nm_fll);
 
         /* Increment number of variables */
@@ -1833,7 +1821,7 @@ xtr_lst_prn /* [fnc] Print name-ID structure list */
 {
   for(int idx=0;idx<xtr_nbr;idx++){
     nm_id_sct nm_id=xtr_lst[idx];
-    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout," nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s grp_id=(%d) id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll,nm_id.grp_nm,nm_id.grp_id,nm_id.id); else (void)fprintf(stdout," %s\n",nm_id.var_nm_fll);
+    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout," nm=%s var_nm_fll=%s grp_nm_fll=%s grp_nm=%s id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll,nm_id.grp_nm,nm_id.id); else (void)fprintf(stdout," %s\n",nm_id.var_nm_fll);
   } /* idx */
 }/* end xtr_lst_prn() */
 
@@ -1935,7 +1923,6 @@ nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "
         nm_id->grp_nm_fll=strdup(trv.grp_nm_fll);    
         nm_id->var_nm_fll=strdup(trv.nm_fll);
         nm_id->nm=strdup(var_nm);
-        nm_id->grp_id=grp_id;
         nm_id->id=var_id; 
         nm_id->grp_nm=strdup(tmp);  
 
@@ -2090,7 +2077,6 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
               xtr_lst[*xtr_nbr].grp_nm_fll=nm_id.grp_nm_fll;    
               xtr_lst[*xtr_nbr].var_nm_fll=nm_id.var_nm_fll;
               xtr_lst[*xtr_nbr].nm=nm_id.nm;
-              xtr_lst[*xtr_nbr].grp_id=nm_id.grp_id;
               xtr_lst[*xtr_nbr].id=nm_id.id; 
               xtr_lst[*xtr_nbr].grp_nm=nm_id.grp_nm;                  
               (*xtr_nbr)++; 
@@ -2639,8 +2625,6 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
               int var_id;
               (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
-              char tmp[]="not_used";
-
               /* Add coordinate to list
               NOTE: Needed members for traversal code:
               1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
@@ -2650,11 +2634,11 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
               5) "var_nm_fll": using full name to compare criteria */
 
               /* Out with it */
+              char tmp[]="not_used";
               xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
               xtr_lst[*xtr_nbr].grp_nm_fll=strdup(trv.grp_nm_fll);     
               xtr_lst[*xtr_nbr].var_nm_fll=strdup(trv.nm_fll);
               xtr_lst[*xtr_nbr].nm=strdup(var_nm);
-              xtr_lst[*xtr_nbr].grp_id=grp_id;
               xtr_lst[*xtr_nbr].id=var_id; 
               xtr_lst[*xtr_nbr].grp_nm=strdup(tmp);                  
               (*xtr_nbr)++; /* NB: Changes size  */
