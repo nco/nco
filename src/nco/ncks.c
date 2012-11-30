@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.488 2012-11-29 22:49:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.489 2012-11-30 00:26:00 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.488 2012-11-29 22:49:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.488 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.489 2012-11-30 00:26:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.489 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -692,6 +692,9 @@ main(int argc,char **argv)
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
+#ifndef HAVE_NETCDF4_H
+    xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst_chk,&xtr_nbr);
+#else
     xtr_lst=nco_var_lst_xcl_trv(in_id,nbr_var_fl,xtr_lst,&xtr_nbr,trv_tbl);
 #ifdef NCO_SANITY_CHECK 
     if(fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT){
@@ -700,6 +703,7 @@ main(int argc,char **argv)
       for(idx=0;idx<xtr_nbr;idx++)assert(strcmp(xtr_lst_chk[idx].nm,xtr_lst[idx].nm) == 0);
     } /* NC_FORMAT_CLASSIC */
 #endif /* NCO_SANITY_CHECK */
+#endif /* HAVE_NETCDF4_H */
   } /* EXCLUDE_INPUT_LIST */
 
   /* Is this a CCM/CCSM/CF-format history tape? */
