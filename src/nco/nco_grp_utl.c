@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.289 2012-11-30 04:57:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.290 2012-11-30 05:02:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -718,7 +718,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
   nbr_xcl=nbr_var-nbr_var_xtr;
 
   /* Second traversal: extracts all variables that are not marked (this reverses the list); the xtr_lst must be reconstructed */
-  xtr_lst=(nm_id_sct *)nco_free(xtr_lst);
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,*xtr_nbr);
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
 
   /* Initialize index of extracted variables */
