@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.171 2012-12-01 06:38:25 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.172 2012-12-01 09:25:03 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1215,10 +1215,10 @@ print "\n";
 #ncks #43 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
-#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string 
+#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-1 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v area  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
+    $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
 	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";
@@ -1235,10 +1235,10 @@ print "\n";
 #ncks #44 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
-#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string 
+#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-2 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v area  $in_pth_arg in_grp.nc | grep -w /g6/area";
+    $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/area";
 	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK";
@@ -1255,10 +1255,10 @@ print "\n";
 #ncks #45 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
-#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string 
+#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-3 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v area  $in_pth_arg in_grp.nc | grep -w /area";
+    $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /area";
 	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
     $tst_cmd[1]="/area";
     $tst_cmd[2]="SS_OK";
