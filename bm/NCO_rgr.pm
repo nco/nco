@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.169 2012-11-30 07:20:37 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.170 2012-12-01 05:13:49 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -827,28 +827,9 @@ print "\n";
     }#end HAVE_NETCDF4_H
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
+ 
     
-#ncks #20 groups: test a chunk run: the output check is just the value of "area" not the validation of the chunk
-
-    $dsc_sng="(Groups required) Chunking policy all";
-    $tst_cmd[0]="ncks -O --cnk_plc=all -v area $in_pth_arg in_grp.nc %tmp_fl_00%"; 
-    if ($HAVE_NETCDF4_H == 0) {
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";
-    } elsif ($HAVE_NETCDF4_H == 1) {
-    if ($ENABLE_NETCDF4 == 1) {
-    $tst_cmd[1]="ncks -C -H -s '%g' -v area %tmp_fl_00%";
-    $tst_cmd[2]="1010";
-    $tst_cmd[3]="SS_OK";
-    }elsif ($ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";   
-    }#end ENABLE_NETCDF4 
-    }#end HAVE_NETCDF4_H
-     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array  
-    
-#ncks #21 groups: Add to extraction list all coordinates associated with CF convention
+#ncks #20 groups: Add to extraction list all coordinates associated with CF convention
 
     $dsc_sng="(Groups required) Add CF convention variables";
     $tst_cmd[0]="ncks -O -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -866,7 +847,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #22 groups: Extract variables in groups (test -g with -v )
+#ncks #21 groups: Extract variables in groups (test -g with -v )
 
     $dsc_sng="(Groups required) Extract variables in groups";
     $tst_cmd[0]="ncks -O -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -884,7 +865,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 
-#ncks #23 groups: Create variables in groups (test -G with -v and -g )
+#ncks #22 groups: Create variables in groups (test -G with -v and -g )
 
     $dsc_sng="(Groups required) Create variables in groups";
     $tst_cmd[0]="ncks -O -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -902,7 +883,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #24 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
+#ncks #23 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
 
     $dsc_sng="(Groups required) Hyperslabs in groups";
     $tst_cmd[0]="ncks -O -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -920,7 +901,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #25 groups: Extract dimensions (test -v dimension)
+#ncks #24 groups: Extract dimensions (test -v dimension)
 
     $dsc_sng="(Groups required) Extract dimensions";
     $tst_cmd[0]="ncks -O -v time3 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -942,7 +923,7 @@ print "\n";
 #NCO 4.2.3   
 # 
 
-#ncks #26 groups: Extract group attributes
+#ncks #25 groups: Extract group attributes
 
     $dsc_sng="(Groups required) Extract group attributes";
     $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -962,7 +943,7 @@ print "\n";
     
     
 	
-#ncks #27 groups: Extract global attributes
+#ncks #26 groups: Extract global attributes
 
     $dsc_sng="Extract global attributes";
     $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -980,7 +961,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #28 groups: Extract coordinate variables
+#ncks #27 groups: Extract coordinate variables
 
     $dsc_sng="(Groups required) Extract coordinate variables";
     $tst_cmd[0]="ncks  -O -c -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -998,7 +979,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #29 groups: Extract "bounds" variables (extract /g8/ilev)
+#ncks #28 groups: Extract "bounds" variables (extract /g8/ilev)
 
     $dsc_sng="(Groups required) Extract 'bounds' variables";
     $tst_cmd[0]="ncks -O -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1016,7 +997,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #30 groups: Extract group attributes with GPE
+#ncks #29 groups: Extract group attributes with GPE
 
     $dsc_sng="(Groups required) GPE group attribute extraction";
     $tst_cmd[0]="ncks -O -G g9 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1034,7 +1015,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
 	
-#ncks #31 groups: Group dimension hyperslabs
+#ncks #30 groups: Group dimension hyperslabs
 
     $dsc_sng="(Groups required) Group dimension hyperslabs";
     $tst_cmd[0]="ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1056,7 +1037,7 @@ print "\n";
 #NCO 4.2.4   
 # 
     
-#ncks #32 groups: Sort output alphabetically
+#ncks #31 groups: Sort output alphabetically
 
     $dsc_sng="(Groups required) Sort output alphabetically";
     $tst_cmd[0]="ncks -O -v lat,area $in_pth_arg in_grp.nc  %tmp_fl_00%";
@@ -1074,7 +1055,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-#ncks #33 --get_grp_info option (netCDF3 file)
+#ncks #32 --get_grp_info option (netCDF3 file)
 
     $dsc_sng="Get group information (netCDF3 file)";
     $tst_cmd[0]="ncks --get_grp_info $in_pth_arg in.nc";
@@ -1083,12 +1064,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array   
 
-#ncks #34 --get_grp_info option (netCDF4 file)
+#ncks #33 --get_grp_info option (netCDF4 file)
 
     $dsc_sng="Get group information (netCDF4 file)";
     $tst_cmd[0]="ncks --get_grp_info $in_pth_arg in_grp.nc";
     if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
-    $tst_cmd[1]="/g10: 0 subgroups, 0 dimensions, 0 attributes, 1 variables";
+    $tst_cmd[1]="/g9/g9g1/g9g1g1/g9g1g1g1/g9g1g1g1g1/g9g1g1g1g1g1/g9g1g1g1g1g1g1: 0 subgroups, 0 dimensions, 0 attributes, 1 variables";
     $tst_cmd[2]="SS_OK";
     }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
     $tst_cmd[1]=$ncks_msg_no_netcdf4; 
@@ -1100,7 +1081,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
 
-#ncks #35 --get_file_info option (netCDF3 file)
+#ncks #34 --get_file_info option (netCDF3 file)
 
     $dsc_sng="Get file information (netCDF3 file)";
     $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in.nc";
@@ -1109,12 +1090,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
 
-#ncks #36 --get_file_info option (netCDF4 file)
+#ncks #35 --get_file_info option (netCDF4 file)
 
     $dsc_sng="Get file information (netCDF4 file)";
     $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in_grp.nc";
     if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
-    $tst_cmd[1]="22 subgroups, 14 dimensions, 5 attributes, 32 variables";
+    $tst_cmd[1]="22 subgroups, 14 dimensions, 5 attributes, 33 variables";
     $tst_cmd[2]="SS_OK";
     }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
     $tst_cmd[1]=$ncks_msg_no_netcdf4; 
@@ -1126,7 +1107,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
     
-#ncks #37 exclude all variables (netCDF3 file)
+#ncks #36 exclude all variables (netCDF3 file)
 
     $dsc_sng="Exclude all variables (netCDF3 file)";
     $tst_cmd[0]="ncks -O -x $in_pth_arg in.nc %tmp_fl_00%";
@@ -1136,7 +1117,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array   
     
-#ncks #38 exclude all variables (netCDF4 file)
+#ncks #37 exclude all variables (netCDF4 file)
 
     $dsc_sng="Exclude all variables (netCDF4 file)";
     $tst_cmd[0]="ncks -O -x $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1154,7 +1135,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array    
     
-#ncks #39 exclude variables (netCDF3 file)
+#ncks #38 exclude variables (netCDF3 file)
 
     $dsc_sng="Exclude variables (netCDF3 file)";
     $tst_cmd[0]="ncks -O -x -v lat_var,lat_wgt $in_pth_arg in.nc %tmp_fl_00%";
@@ -1164,13 +1145,31 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array 
     
-#ncks #40 2D variable definition (netCDF4 file)
+#ncks #39 2D variable definition (netCDF4 file)
 
     $dsc_sng="2D variable definition (netCDF4 file)";
     $tst_cmd[0]="ncks  -O -C  -v ilev $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  %tmp_fl_00%";
     $tst_cmd[2]="lev[2] vrt_nbr[1] ilev[5]=1013.25";
     $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array   
+
+#ncks #40 Variable/Group extraction test 1 (netCDF4 file)
+
+    $dsc_sng="Variable/Group extraction test 1 (netCDF4 file)";
+    $tst_cmd[0]="ncks -O -C -g g6  $in_pth_arg in_grp.nc %tmp_fl_00%";
+	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    $tst_cmd[1]="ncks -v area1  %tmp_fl_00%";
+    $tst_cmd[2]="lat[1] area1[1]=31";
+    $tst_cmd[3]="SS_OK";
+	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array     
  
