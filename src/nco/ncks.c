@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.493 2012-11-30 22:44:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.494 2012-12-02 04:14:15 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.493 2012-11-30 22:44:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.493 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.494 2012-12-02 04:14:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.494 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -988,6 +988,9 @@ main(int argc,char **argv)
  close_and_free: /* goto close_and_free */
   /* Extraction list no longer needed */
   if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
+#ifdef NCO_SANITY_CHECK 
+  if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
+#endif
   
   /* Close input netCDF file */
   nco_close(in_id);
