@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.155 2012-10-16 00:39:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.156 2012-12-02 09:05:39 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.155 2012-10-16 00:39:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.155 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.156 2012-12-02 09:05:39 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.156 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -790,41 +790,53 @@ main(int argc,char **argv)
     for(idx=0;idx<dmn_in_vtr.size();idx++){
       dmn_item=dmn_in_vtr[idx]; /*de-reference */
       if(!dmn_item->is_crd_dmn) continue;
-      
+
       if(EXTRACT_ALL_COORDINATES && !dmn_item->xrf){
-	/* Add dimensions to output list dmn_out */
-	dmn_new=nco_dmn_dpl(dmn_item);
-	(void)nco_dmn_xrf(dmn_new,dmn_item);
-	/* Write dimension to output */
-	(void)nco_dmn_dfn(fl_out,out_id,&dmn_new,1);
-	(void)dmn_out_vtr.push_back(dmn_new);
+        /* Add dimensions to output list dmn_out */
+        dmn_new=nco_dmn_dpl(dmn_item);
+        (void)nco_dmn_xrf(dmn_new,dmn_item);
+        /* Write dimension to output */
+        (void)nco_dmn_dfn(fl_out,out_id,&dmn_new,1);
+        (void)dmn_out_vtr.push_back(dmn_new);
       } /* end if */
       /* Add coordinate variable to extraction list, dimension has already been output */
       if(dmn_item->xrf){
-	for(jdx=0;jdx<xtr_nbr;jdx++)
-	  if(!strcmp(xtr_lst[jdx].nm,dmn_item->nm)) break;
-  	
-	if(jdx != xtr_nbr) continue;
-	/* If coordinate is not on list then add it to extraction list */
-	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(xtr_nbr+1)*sizeof(nm_id_sct));
-	xtr_lst[xtr_nbr].nm=(char *)strdup(dmn_item->nm);
-	xtr_lst[xtr_nbr++].id=dmn_item->cid;
+        for(jdx=0;jdx<xtr_nbr;jdx++)
+          if(!strcmp(xtr_lst[jdx].nm,dmn_item->nm)) break;
+
+        if(jdx != xtr_nbr) continue;
+        /* If coordinate is not on list then add it to extraction list */
+        xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(xtr_nbr+1)*sizeof(nm_id_sct));
+        xtr_lst[xtr_nbr].nm=(char *)strdup(dmn_item->nm);
+        xtr_lst[xtr_nbr].id=dmn_item->cid;
+
+        /* netCDF3/netCDF4 compat */
+        xtr_lst[xtr_nbr].grp_nm_fll=(char *)strdup("/");
+        char var_nm_fll[NC_MAX_NAME+1];
+        strcpy(var_nm_fll,"/");
+        strcat(var_nm_fll,xtr_lst[xtr_nbr].nm);
+        xtr_lst[xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll); 
+
+        /* Increment */
+        xtr_nbr++;
+
+
       } /* endif */
     } /* end loop over idx */	      
   } /* end if */ 
-  
+
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-  
+
   /* Add coordinates defined by CF convention */
   if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&xtr_nbr);
-  
+
   /* Subtract list A again (it may contain re-defined coordinates) */
   if(xtr_nbr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&xtr_nbr,xtr_lst_a,nbr_lst_a);
-  
+
   /* Sort extraction list for faster I/O */
   if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,False);
-  
+
   /* Write "fixed" variables */
   var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
@@ -834,7 +846,7 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
-  
+
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.44 2012-01-01 20:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.45 2012-12-02 09:05:39 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -260,30 +260,38 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
       /* ...and searching each dimension of each output variable... */
       (void)nco_inq_var(nc_id,var[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dmn,dmn_id,(int *)NULL);
       for(idx_var_dmn=0;idx_var_dmn<nbr_var_dmn;idx_var_dmn++){
-	/* ...until output variable is found which contains input dimension... */
-	if(idx_dmn_in == dmn_id[idx_var_dmn]){
-	  /* ...then search each member of output dimension list... */
-	  for(idx_dmn_lst=0;idx_dmn_lst<*nbr_dmn;idx_dmn_lst++){
-	    /* ...until input dimension is found... */
-	    if(idx_dmn_in == dmn[idx_dmn_lst].id) break; /* ...then search no further... */
-	  } /* end loop over idx_dmn_lst */
-	  /* ...and if dimension was not found on output dimension list... */
-	  if(idx_dmn_lst == *nbr_dmn){
-	    /* ...then add dimension to output dimension list... */
-	    (void)nco_inq_dimname(nc_id,idx_dmn_in,dmn_nm);
-	    dmn[*nbr_dmn].id=idx_dmn_in;
-	    dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
-	    (*nbr_dmn)++;
-	  } /* end if dimension was not found in current output dimension list */
-	  /* ...call off the dogs for this input dimension... */
-	  dmn_has_been_placed_on_list=True;
-	} /* end if input dimension belongs to this output variable */
-	if(dmn_has_been_placed_on_list) break; /* break out of idx_var_dmn to idx_var */
+        /* ...until output variable is found which contains input dimension... */
+        if(idx_dmn_in == dmn_id[idx_var_dmn]){
+          /* ...then search each member of output dimension list... */
+          for(idx_dmn_lst=0;idx_dmn_lst<*nbr_dmn;idx_dmn_lst++){
+            /* ...until input dimension is found... */
+            if(idx_dmn_in == dmn[idx_dmn_lst].id) break; /* ...then search no further... */
+          } /* end loop over idx_dmn_lst */
+          /* ...and if dimension was not found on output dimension list... */
+          if(idx_dmn_lst == *nbr_dmn){
+            /* ...then add dimension to output dimension list... */
+            (void)nco_inq_dimname(nc_id,idx_dmn_in,dmn_nm);
+            dmn[*nbr_dmn].id=idx_dmn_in;
+            dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
+
+            /* netCDF3/netCDF4 compat */
+            dmn[*nbr_dmn].grp_nm_fll=(char *)strdup("/");
+            char var_nm_fll[NC_MAX_NAME+1];
+            strcpy(var_nm_fll,"/");
+            strcat(var_nm_fll,dmn[*nbr_dmn].nm);
+            dmn[*nbr_dmn].var_nm_fll=(char *)strdup(var_nm_fll);
+
+            (*nbr_dmn)++;
+          } /* end if dimension was not found in current output dimension list */
+          /* ...call off the dogs for this input dimension... */
+          dmn_has_been_placed_on_list=True;
+        } /* end if input dimension belongs to this output variable */
+        if(dmn_has_been_placed_on_list) break; /* break out of idx_var_dmn to idx_var */
       } /* end loop over idx_var_dmn */
       if(dmn_has_been_placed_on_list) break; /* break out of idx_var to idx_dmn_in */
     } /* end loop over idx_var */
   } /* end loop over idx_dmn_in */
-  
+
   /* We now have final list of dimensions to extract. Phew. */
   
   /* Free unused space in output dimension list */
@@ -326,6 +334,14 @@ nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
   for(idx=0;idx<nbr_dmn;idx++){
     /* Copy name and then get requested dimension ID from input file */
     dmn_lst[idx].nm=(char *)strdup(dmn_lst_in[idx]);
+
+    /* netCDF3/netCDF4 compat */
+    dmn_lst[idx].grp_nm_fll=(char *)strdup("/");
+    char var_nm_fll[NC_MAX_NAME+1];
+    strcpy(var_nm_fll,"/");
+    strcat(var_nm_fll,dmn_lst[idx].nm);
+    dmn_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll);
+
     (void)nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
   } /* end loop over idx */
   

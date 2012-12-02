@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.143 2012-08-15 14:22:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.144 2012-12-02 09:05:39 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -724,6 +724,15 @@ nco_var_lst_copy      /* [fnc] Purpose: Copy xtr_lst and return new list */
   for(idx=0;idx<lst_nbr;idx++){
     xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
     xtr_new_lst[idx].id=xtr_lst[idx].id;
+
+    /* netCDF3/netCDF4 compat */
+    xtr_new_lst[idx].grp_nm_fll=(char *)strdup("/");
+    char var_nm_fll[NC_MAX_NAME+1];
+    strcpy(var_nm_fll,"/");
+    strcat(var_nm_fll,xtr_new_lst[idx].nm);
+    xtr_new_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll); 
+
+
   } /* end loop over variable */
   return xtr_new_lst;           
 } /* end nco_var_lst_copy() */
@@ -753,7 +762,19 @@ nco_var_lst_sub
       if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[xtr_idx].nm)){match=True;break;}
     if(match) continue;
     xtr_new_lst[xtr_nbr_new].nm=(char *)strdup(xtr_lst[idx].nm);
-    xtr_new_lst[xtr_nbr_new++].id=xtr_lst[idx].id;
+    xtr_new_lst[xtr_nbr_new].id=xtr_lst[idx].id;
+
+    /* netCDF3/netCDF4 compat */
+    xtr_new_lst[xtr_nbr_new].grp_nm_fll=(char *)strdup("/");
+    char var_nm_fll[NC_MAX_NAME+1];
+    strcpy(var_nm_fll,"/");
+    strcat(var_nm_fll,xtr_new_lst[xtr_nbr_new].nm);
+    xtr_new_lst[xtr_nbr_new].var_nm_fll=(char *)strdup(var_nm_fll); 
+
+    /* Increment */
+    xtr_nbr_new++;
+
+
   } /* end loop over idx */
   /* realloc to actual size */
   xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
@@ -786,6 +807,14 @@ nco_var_lst_add
     for(idx=0;idx<xtr_nbr_crr;idx++){
       xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
       xtr_new_lst[idx].id=xtr_lst[idx].id;
+
+      /* netCDF3/netCDF4 compat */
+      xtr_new_lst[idx].grp_nm_fll=(char *)strdup("/");
+      char var_nm_fll[NC_MAX_NAME+1];
+      strcpy(var_nm_fll,"/");
+      strcat(var_nm_fll,xtr_new_lst[idx].nm);
+      xtr_new_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll); 
+
     } /* end loop over variables */
   }else{
     *xtr_nbr=nbr_lst_a;
@@ -799,7 +828,17 @@ nco_var_lst_add
     if(match) continue;
     xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(xtr_nbr_crr+1)*sizeof(nm_id_sct));
     xtr_new_lst[xtr_nbr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
-    xtr_new_lst[xtr_nbr_crr++].id=xtr_lst_a[idx].id;
+    xtr_new_lst[xtr_nbr_crr].id=xtr_lst_a[idx].id;
+
+    /* netCDF3/netCDF4 compat */
+    xtr_new_lst[xtr_nbr_crr].grp_nm_fll=(char *)strdup("/");
+    char var_nm_fll[NC_MAX_NAME+1];
+    strcpy(var_nm_fll,"/");
+    strcat(var_nm_fll,xtr_new_lst[xtr_nbr_crr].nm);
+    xtr_new_lst[xtr_nbr_crr].var_nm_fll=(char *)strdup(var_nm_fll); 
+
+    xtr_nbr_crr++;
+
   } /* end for */
   *xtr_nbr=xtr_nbr_crr;
   return xtr_new_lst;           
@@ -824,6 +863,14 @@ nco_dmn_lst /* [fnc] Create list of all dimensions in file  */
     (void)nco_inq_dimname(nc_id,idx,dmn_nm);
     dmn[idx].id=idx;
     dmn[idx].nm=(char *)strdup(dmn_nm);
+
+    /* netCDF3/netCDF4 compat */
+    dmn[idx].grp_nm_fll=(char *)strdup("/");
+    char var_nm_fll[NC_MAX_NAME+1];
+    strcpy(var_nm_fll,"/");
+    strcat(var_nm_fll,dmn[idx].nm);
+    dmn[idx].var_nm_fll=(char *)strdup(var_nm_fll); 
+
   } /* end loop over dmn */
   
   *nbr_dmn=nbr_dmn_in;
