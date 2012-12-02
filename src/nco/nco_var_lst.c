@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.123 2012-11-30 01:32:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.124 2012-12-02 06:48:08 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -648,6 +648,11 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
             xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
             xtr_lst[*xtr_nbr].nm=(char *)strdup(dmn_nm);
             xtr_lst[*xtr_nbr].id=crd_id;
+            xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
+            char var_nm_fll[NC_MAX_NAME+1];
+            strcpy(var_nm_fll,"/");
+            strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
+            xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
             (*xtr_nbr)++; /* NB: Changes size of current loop! */
             break;
           } /* end if */
@@ -718,6 +723,11 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
                 xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
                 xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_lst[idx_crd]);
                 xtr_lst[*xtr_nbr].id=crd_id;
+                xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
+                char var_nm_fll[NC_MAX_NAME+1];
+                strcpy(var_nm_fll,"/");
+                strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
+                xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
                 (*xtr_nbr)++; /* NB: Changes size of current loop! */
                 /* Continue to next coordinate in loop */
                 continue;
@@ -794,6 +804,11 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
                 xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
                 xtr_lst[*xtr_nbr].nm=(char *)strdup(bnd_lst[idx_bnd]);
                 xtr_lst[*xtr_nbr].id=bnd_id;
+                xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
+                char var_nm_fll[NC_MAX_NAME+1];
+                strcpy(var_nm_fll,"/");
+                strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
+                xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
                 (*xtr_nbr)++; /* NB: Changes size of current loop! */
                 /* Continue to next coordinate in loop */
                 continue;
