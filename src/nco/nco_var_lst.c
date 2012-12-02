@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.125 2012-12-02 07:44:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.126 2012-12-02 08:22:38 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -21,7 +21,6 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   
   char *var_sng;                  /* User-specified variable name or regular expression */
   char var_nm[NC_MAX_NAME];       /* [sng] Variable name */
-  char var_nm_fll[NC_MAX_NAME+1]; /* [sng] Fully qualified variable name */
   int idx;
   int jdx;
   int var_nbr_tmp;
@@ -40,9 +39,12 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     (void)nco_inq_varname(nc_id,idx,var_nm);
     var_lst_all[idx].nm=(char *)strdup(var_nm);
     var_lst_all[idx].id=idx;
-    /* Needed for netCDF4 NCO_SANITY_CHECK */
+
+    /* netCDF3/netCDF4 compability */
+    char var_nm_fll[NC_MAX_NAME+1];
+    var_lst_all[idx].grp_nm_fll=(char *)strdup("/");
     strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,var_nm);
+    strcat(var_nm_fll,var_lst_all[idx].nm);
     var_lst_all[idx].var_nm_fll=(char *)strdup(var_nm_fll);
   } /* end loop over idx */
   
@@ -109,6 +111,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     if(var_xtr_rqs[idx]){
       xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
       xtr_lst[var_nbr_tmp].var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
+      xtr_lst[var_nbr_tmp].grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
       xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
       var_nbr_tmp++;
     } /* end if */
