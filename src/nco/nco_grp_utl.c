@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.294 2012-12-02 03:54:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.295 2012-12-02 06:13:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1820,14 +1820,16 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
 } /* end nco_var_lst_crd_ass_add_trv */
 
 void 
-xtr_lst_prn /* [fnc] Print name-ID structure list */
-(nm_id_sct *xtr_lst, /* I [sct] name-ID structure list */
- const int xtr_nbr) /* I [nbr] name-ID structure list size */
+xtr_lst_prn                            /* [fnc] Validated name-ID structure list */
+(nm_id_sct *nm_id_lst,                 /* I [sct] Name-ID structure list */
+ const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
 {
-  for(int idx=0;idx<xtr_nbr;idx++){
-    nm_id_sct nm_id=xtr_lst[idx];
-    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout," nm=%s var_nm_fll=%s grp_nm_fll=%s id=(%d)\n",nm_id.nm, nm_id.var_nm_fll, nm_id.grp_nm_fll,nm_id.id); else (void)fprintf(stdout," %s\n",nm_id.var_nm_fll);
-  } /* idx */
+  for(int idx=0;idx<nm_id_nbr;idx++){
+    nm_id_sct nm_id=nm_id_lst[idx];
+    if(dbg_lvl_get() >= nco_dbg_dev) 
+    (void)fprintf(stdout,"[%d] %s %s %s (%d)\n",idx,nm_id.grp_nm_fll,nm_id.var_nm_fll,nm_id.nm,nm_id.id); 
+    else (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll); 
+  } 
 }/* end xtr_lst_prn() */
 
 void 
@@ -2693,3 +2695,29 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dmn_nm in gro
 
   return False;
 } /* end nco_fnd_dmn() */ 
+
+
+void 
+nco_nm_id_val          /* [fnc] Validated name-ID structure list */
+(nm_id_sct *nm_id_lst, /* I [sct] Name-ID structure list */
+ const int nm_id_nbr)  /* I [nbr] Number of name-ID structures in list */
+{
+  if(dbg_lvl_get() < nco_dbg_dev) return;
+  (void)fprintf(stdout,"%d items\n",nm_id_nbr);
+  for(int idx=0;idx<nm_id_nbr;idx++){
+    nm_id_sct nm_id=nm_id_lst[idx];
+    (void)fprintf(stdout,"[%d] %s %s %s (%d)\n",idx,nm_id.grp_nm_fll,nm_id.var_nm_fll,nm_id.nm,nm_id.id); 
+  } 
+
+  for(int idx=0;idx<nm_id_nbr;idx++){
+    nm_id_sct nm_id=nm_id_lst[idx];
+    assert(nm_id.nm);
+    assert(nm_id.grp_nm_fll); 
+    assert(nm_id.var_nm_fll);      
+  } 
+} /* end nco_nm_id_chk() */
+
+
+
+
+
