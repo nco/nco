@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.140 2012-11-30 22:44:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.141 2012-12-02 03:54:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -145,7 +145,6 @@ nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst 
 (char * const var_nm,      /* I [sng] Variable name */
  char * const var_nm_fll,  /* I [sng] Full variable name */
  char * const grp_nm_fll,  /* I [sng] Full group name */
- char * const grp_nm,      /* I [sng] Group name */
  int const var_id,         /* I [ID] Variable ID */
  nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
  int * xtr_nbr);           /* I/O [nbr] Current index in exclusion/extraction list */

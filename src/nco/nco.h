@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.203 2012-11-30 22:44:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.204 2012-12-02 03:54:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -498,7 +498,6 @@ extern "C" {
   
   /* Name ID structure */
   typedef struct{ /* nm_id_sct */
-    char *grp_nm; /* Group (stub name) where variable resides */
     char *grp_nm_fll; /* Fully qualified group where variable resides */
     char *var_nm_fll; /* Fully qualified variable name */
     char *nm; /* Variable (stub name) */
