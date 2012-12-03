@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.144 2012-12-02 09:05:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.145 2012-12-03 00:12:58 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -895,24 +895,35 @@ nco_att_lst_mk
     // Check for attribute
     if( var_vtr[idx]->xpr_typ !=ncap_att) continue;
     (void)strcpy(var_nm, var_vtr[idx]->getVar().c_str());
-    
+
     rcd=nco_inq_varid_flg(out_id,var_nm,&var_id);
     if(rcd== NC_NOERR) continue;   
     rcd=nco_inq_varid_flg(in_id,var_nm,&var_id);   
     if(rcd == NC_NOERR){
       /* eliminate any duplicates from list */
       for(jdx=0;jdx<size;jdx++)
-	if(!strcmp(xtr_lst[jdx].nm,var_nm)) break;
+        if(!strcmp(xtr_lst[jdx].nm,var_nm)) break;
       if(jdx!=size) continue;
       /* fxm mmr TODO 491: memory leak xtr_lst */
       xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(size+1)*sizeof(nm_id_sct));
       xtr_lst[size].id=var_id;
-      xtr_lst[size++].nm=(char *)strdup(var_nm);
+      xtr_lst[size].nm=(char *)strdup(var_nm);
+
+      /* netCDF3/netCDF4 compat */ 
+      xtr_lst[size].grp_nm_fll=(char *)strdup("/"); 
+      char var_nm_fll[NC_MAX_NAME+1]; 
+      strcpy(var_nm_fll,"/"); 
+      strcat(var_nm_fll, xtr_lst[size].nm); 
+      xtr_lst[size].var_nm_fll=(char *)strdup(var_nm_fll);  
+
+      /* Increment */
+      size++;
+
     } /* end if */
   } /* end loop over att */
-  
+
   *nbr_lst=size;
-  
+
   return xtr_lst;
 } /* end nco_att_lst_mk() */
 

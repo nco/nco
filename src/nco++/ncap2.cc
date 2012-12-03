@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.156 2012-12-02 09:05:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.157 2012-12-03 00:12:58 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.156 2012-12-02 09:05:39 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.156 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.157 2012-12-03 00:12:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.157 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -698,7 +698,7 @@ main(int argc,char **argv)
       if(!dmn_item) continue; 
       (void)nco_dmn_xrf(dmn_item,dmn_out_vtr[idx]);
       if(dmn_item->sz != dmn_out_vtr[idx]->sz) 
-	(void)fprintf(stdout,"%s: WARNING: dimension miss-match. Dimension \"%s\" is size=%ld in input file and size=%ld in output file.\nHINT: Command may work if Append mode (-A) is not used.\n",prg_nm_get(),dmn_item->nm,dmn_item->sz,dmn_out_vtr[idx]->sz);
+        (void)fprintf(stdout,"%s: WARNING: dimension miss-match. Dimension \"%s\" is size=%ld in input file and size=%ld in output file.\nHINT: Command may work if Append mode (-A) is not used.\n",prg_nm_get(),dmn_item->nm,dmn_item->sz,dmn_out_vtr[idx]->sz);
     } /* end loop over dimensions */
 
     /* Get number of variables in output file */
@@ -723,13 +723,13 @@ main(int argc,char **argv)
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0) err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
-    
+
     /* Print all command-line scripts */
     if(dbg_lvl_get() > 0){
       for(idx=0;idx<nbr_spt;idx++) 
-	(void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
+        (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */
-    
+
     /* Parse command line scripts */
     fl_spt_usr=(char *)strdup("Command-line script");
   }else{ /* ...endif command-line scripts, begin script file... */
@@ -747,6 +747,10 @@ main(int argc,char **argv)
   
   /* Make list of all new variables in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,False,&nbr_lst_a);
+
+#ifdef NCO_SANITY_CHECK  
+  nco_nm_id_val(xtr_lst_a,nbr_lst_a);
+#endif
   
   if(PROCESS_ALL_VARS){
     /* Get number of variables in input file */
@@ -757,6 +761,10 @@ main(int argc,char **argv)
     /* Make list of variables of new attributes whose parent variable is only in input file */
     xtr_lst=nco_att_lst_mk(in_id,out_id,var_vtr,&xtr_nbr);
   } /* endif */
+
+#ifdef NCO_SANITY_CHECK  
+  nco_nm_id_val(xtr_lst,xtr_nbr);
+#endif
   
   /* Subtract list A */
   if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&xtr_nbr,xtr_lst_a,nbr_lst_a);
@@ -1005,18 +1013,18 @@ main(int argc,char **argv)
     /* Free dimension vectors */
     if(dmn_in_vtr.size() > 0) { 
       for(idx=0;idx<dmn_in_vtr.size();idx++)
-	(void)nco_dmn_free(dmn_in_vtr[idx]);
+        (void)nco_dmn_free(dmn_in_vtr[idx]);
     }
     if(dmn_out_vtr.size() > 0) { 
       for(idx=0;idx< dmn_out_vtr.size();idx++)
-	(void)nco_dmn_free(dmn_out_vtr[idx]);
+        (void)nco_dmn_free(dmn_out_vtr[idx]);
     }
     /* Free var_vtr */
     if(var_vtr.size() > 0) { 
       for(idx=0; idx < var_vtr.size(); idx++)
-	delete var_vtr[idx];
+        delete var_vtr[idx];
     }  
-    
+
     /* Clear vectors */
     /*
     fmc_vtr.clear();
