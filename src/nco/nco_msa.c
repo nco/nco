@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.123 2012-11-30 07:20:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.124 2012-12-05 02:41:42 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -841,6 +841,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   int nbr_dmn;                      /* [nbr] Number of dimensions in group */
   int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
   char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
+  const int flg_prn=0;              /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
@@ -884,7 +885,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
 
   /* Get dimension IDs for group */
-  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,0);
+  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,flg_prn);
 
 #ifdef ENABLE_NETCDF4
   /* Obtain netCDF file format */

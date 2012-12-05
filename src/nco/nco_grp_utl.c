@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.295 2012-12-02 06:13:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.296 2012-12-05 02:41:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1044,12 +1044,9 @@ nco_grp_itr
 
   char grp_nm[NC_MAX_NAME+1];  /* O [sng] Group name */
   char var_nm[NC_MAX_NAME+1];  /* O [sng] Variable name */ 
-
   grp_trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
-
   int *dmn_ids;                /* O [ID]  Dimension IDs */ 
   int *grp_ids;                /* O [ID]  Sub-group IDs */ 
-
   int idx;                     /* I [idx] Index */             
   int nbr_att;                 /* O [nbr] Number of attributes */
   int nbr_dmn;                 /* O [nbr] Number of dimensions */
@@ -1059,7 +1056,7 @@ nco_grp_itr
   int rcd=NC_NOERR;            /* O [rcd] Return code */
   int rec_dmn_id;              /* O [ID] Record dimension ID */
   int var_id;                  /* O [ID] Variable ID */ 
-
+  const int flg_prn=0;         /* I [flg] All the dimensions in all parent groups will also be retrieved */        
   nc_type var_typ;             /* O [enm] Variable type */
 
   /* Get all information for this group */
@@ -1070,7 +1067,7 @@ nco_grp_itr
   rcd+=nco_inq_grps(grp_id,&nbr_grp,NULL);
   rcd+=nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
   dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-  rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+  rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn_prn,NULL,1);
 
   /* Add group to table */
@@ -1275,7 +1272,8 @@ nco_prt_grp_trv         /* [fnc] Print table  */
       int dmn_ids[NC_MAX_DIMS];      /* [nbr] Dimensions IDs array */
       int dmn_ids_ult[NC_MAX_DIMS];  /* [nbr] Unlimited dimensions IDs array */
       char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name */ 
-      long dmn_sz;                   /* [nbr] Dimension size */ 
+      long dmn_sz;                   /* [nbr] Dimension size */
+      const int flg_prn=0;           /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
       /* For classic files, the above is printed, and then return */
       if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
@@ -1290,7 +1288,7 @@ nco_prt_grp_trv         /* [fnc] Print table  */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 
       /* Obtain dimensions IDs for group */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
 
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
@@ -1334,6 +1332,7 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
   int nbr_att;                 /* [nbr] Number of attributes */
   int nbr_var;                 /* [nbr] Number of variables */
   int nbr_dmn;                 /* [nbr] Number of dimensions */
+  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   if(lmt_nbr){
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1356,7 +1355,7 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
         assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
         dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
 
         /* List dimensions using obtained group ID */
         for(int idx=0;idx<trv.nbr_dmn;idx++){
@@ -1446,6 +1445,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
   int dmn_ids[NC_MAX_DIMS];      /* [nbr] Dimensions IDs array */
   char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name */ 
   long dmn_sz;                   /* [nbr] Dimension size */ 
+  const int flg_prn=0;           /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   (void)nco_inq_format(nc_id,&fl_fmt);
 
@@ -1465,7 +1465,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
       (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
 
       /* Get dimension IDs for group */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
 #ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att && nbr_grp == trv.nbr_grp);
 #endif
@@ -1729,6 +1729,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int *var_ids;                /* [ID] Variable IDs array */
   int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
+  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
@@ -1748,7 +1749,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 
       /* Obtain dimension IDs */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,0);
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,flg_prn);
 
       /* Allocate space for and obtain variable IDs in current group */
       var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
@@ -2353,6 +2354,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
   int idx;                     /* [idx] Global index for lmt_all_lst */
   int jdx;
   int fl_fmt;                  /* [enm] netCDF file format */
+  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   (void)nco_inq_format(in_id,&fl_fmt);
   
@@ -2381,7 +2383,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
 #endif
 
       dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,0);
+      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
 
       /* List dimensions using obtained group ID */
       for(jdx=0;jdx<nbr_dmn;jdx++){
@@ -2583,6 +2585,7 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
   int nbr_var;                 /* [nbr] Number of variables */
   int nbr_dmn;                 /* [nbr] number of dimensions */
   int dmn_id[NC_MAX_DIMS];     /* [id] Dimensions IDs array for group */
+  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
@@ -2604,7 +2607,7 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
         (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
 
         /* Obtain dimension IDs */
-        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,0);
+        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_id,flg_prn);
 
         /* List dimensions in group */ 
         for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){ 
@@ -2667,11 +2670,8 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dmn_nm in gro
   } nco_dmn_t;
 
   nco_dmn_t *dmn_lst=NULL;
-
-  const int flg_prn=1;
-
+  const int flg_prn=1;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
   int *dmn_ids=NULL;
-
   int dmn_idx;
   int nbr_dmn;
 
