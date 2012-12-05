@@ -1,12 +1,16 @@
 2012-12-01  Pedro Vicente  <pvicente@uci.edu>
     
+    * bm: ncks #50 Extract associated coordinates test 1 (netCDF3 file)
+    
+2012-12-01  Pedro Vicente  <pvicente@uci.edu>
+    
     * deprecate grp_nm member of nm_id_sct; use full group name to get name as needed
 
 2012-11-30  Pedro Vicente  <pvicente@uci.edu>
 
 	* bm: ncks #39 2D variable definition (netCDF4 file)
     
-    * bm: ncks #40-50 Variable/Group extraction test 1-8
+    * bm: ncks #40-59 Variable/Group extraction test 1-8
     
     * deprecate grp_id member of nm_id_sct; use full group name to get ID as needed
       

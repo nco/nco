@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.495 2012-12-02 06:13:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.496 2012-12-05 05:34:57 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.495 2012-12-02 06:13:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.495 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.496 2012-12-05 05:34:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.496 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -992,6 +992,8 @@ main(int argc,char **argv)
       }else { /* HAS_SUBGRP */
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
         for(idx=0;idx<xtr_nbr;idx++) {
+          /* Print full name of variable */
+          (void)fprintf(stdout,"%s\n",xtr_lst[idx].var_nm_fll);
           (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
       } /* HAS_SUBGRP */
