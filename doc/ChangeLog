@@ -1,10 +1,10 @@
 2012-12-05  Pedro Vicente  <pvicente@uci.edu>
     
-    * bm: ncks #51 Extract associated coordinates test 2 (netCDF4 file)
+    * bm: ncks #51-54 Extract associated/all coordinates test 2-5 (netCDF3/4 file)
     
 2012-12-04  Pedro Vicente  <pvicente@uci.edu>
     
-    * bm: ncks #50 Extract associated coordinates test 1 (netCDF3 file)
+    * bm: ncks #50 Extract associated/all coordinates test 1 (netCDF3 file)
     
 2012-12-01  Pedro Vicente  <pvicente@uci.edu>
     

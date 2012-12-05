@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.176 2012-12-05 21:21:46 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.177 2012-12-05 22:08:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1341,19 +1341,39 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array 							
 	
-#ncks #50 Extract associated coordinates test 1 (netCDF3 file) 
+#ncks #50 Extract associated/all coordinates test 1 (netCDF3 file) 
 
-    $dsc_sng="Extract associated coordinates test 1 (netCDF3 file) ";
+    $dsc_sng="Extract associated/all coordinates test 1 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O -v rz $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /rlev";
 	$tst_cmd[2]="/rlev";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 							
+    $#tst_cmd=0;  # Reset array 
 	
-#ncks #51 Extract associated coordinates test 2 (netCDF4 file) 
+#ncks #51 Extract associated/all coordinates test 2 (netCDF3 file) 
 
-    $dsc_sng="Extract associated coordinates test 2 (netCDF4 file) ";
+    $dsc_sng="Extract associated/all coordinates test 2 (netCDF3 file) ";
+    $tst_cmd[0]="ncks -O -C -v rz $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /rlev";
+	$tst_cmd[2]="";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 	
+	
+#ncks #52 Extract all coordinates test 3 (netCDF3 file) 
+
+    $dsc_sng="Extract associated/all coordinates test 3 (netCDF3 file) ";
+    $tst_cmd[0]="ncks -O -c -v rz $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks --get_file_info %tmp_fl_00%";
+	$tst_cmd[2]="0 subgroups, 19 dimensions, 5 attributes, 24 variables";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 		
+	
+#ncks #53 Extract associated coordinates test 4 (netCDF4 file) 
+
+    $dsc_sng="Extract associated/all coordinates test 4 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
 	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /g3/rlev";
@@ -1368,6 +1388,24 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array 
+	
+#ncks #54 Extract associated coordinates test 5 (netCDF4 file) 
+
+    $dsc_sng="Extract associated/all coordinates test 5 (netCDF4 file) ";
+    $tst_cmd[0]="ncks -O -C -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
+	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /g3/rlev";
+	$tst_cmd[2]="";
+    $tst_cmd[3]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
+    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 	
 
 #####################
 #### ncpdq tests #### -OK !
