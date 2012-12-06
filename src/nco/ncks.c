@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.501 2012-12-06 05:58:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.502 2012-12-06 09:01:10 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.501 2012-12-06 05:58:59 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.501 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.502 2012-12-06 09:01:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.502 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -684,7 +684,9 @@ main(int argc,char **argv)
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
     xtr_lst=nco_var_lst_xcl_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
-#ifdef NCO_SANITY_CHECK 
+#ifdef NCO_SANITY_CHECK
+    /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
+    this assures that the netCDF4 function can handle netCDF3 files */
     if(!IS_NETCDF4){
       xtr_lst_chk=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst_chk,&xtr_nbr_chk);
       nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr);
@@ -708,19 +710,27 @@ main(int argc,char **argv)
       xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
     } /* IS_NETCDF4 */
   } /* EXTRACT_ALL_COORDINATES */
- 
+
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) {
-    if(IS_NETCDF4){
-      xtr_lst=nco_var_lst_crd_ass_add_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
-      if(CNV_CCM_CCSM_CF){
-        /* Add "coordinates" and "bounds" CF */
-        xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
-        xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
-      } /* CNV_CCM_CCSM_CF */
-    }else{
-      xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-    } /* IS_NETCDF4 */
+#ifndef HAVE_NETCDF4_H
+    xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
+#else
+    xtr_lst=nco_var_lst_crd_ass_add_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
+    if(CNV_CCM_CCSM_CF){
+      /* Add "coordinates" and "bounds" CF */
+      xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
+      xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
+    } /* CNV_CCM_CCSM_CF */
+#ifdef NCO_SANITY_CHECK 
+    /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
+    this assures that the netCDF4 function can handle netCDF3 files */
+    if(!IS_NETCDF4){
+      xtr_lst_chk=nco_var_lst_crd_ass_add(in_id,xtr_lst_chk,&xtr_nbr_chk,CNV_CCM_CCSM_CF);
+      nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr);
+    } 
+#endif /* NCO_SANITY_CHECK */
+#endif /* HAVE_NETCDF4_H */
   } /* EXTRACT_ASSOCIATED_COORDINATES */
 
 #ifdef NCO_SANITY_CHECK  
@@ -979,69 +989,69 @@ main(int argc,char **argv)
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */
-  /* Extraction list no longer needed */
-  if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
+ /* Extraction list no longer needed */
+ if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
 #ifdef NCO_SANITY_CHECK 
-  if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
+ if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
 #endif
-  
-  /* Close input netCDF file */
-  nco_close(in_id);
-  
-  /* Remove local copy of file */
-  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
-  
-  /* Clean memory unless dirty memory allowed */
-  if(flg_cln){
-    /* ncks-specific memory */
-    if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
-    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
 
-    /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
-    for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+ /* Close input netCDF file */
+ nco_close(in_id);
 
-    lmt=(lmt_sct**)nco_free(lmt); 
-    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
-    
-    /* NCO-generic clean-up */
-    /* Free individual strings/arrays */
-    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
-    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
-    if(fl_in) fl_in=(char *)nco_free(fl_in);
-    if(fl_out) fl_out=(char *)nco_free(fl_out);
-    if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-    if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
-    if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-    /* Free lists of strings */
-    if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-    if(grp_out) grp_out=(char *)nco_free(grp_out);
-    if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
-    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-    /* Free limits */
-    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    /* NB: lmt[idx] was free()'d earlier
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
-    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
-    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
-    /* Free chunking information */
-    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
-  } /* !flg_cln */
+ /* Remove local copy of file */
+ if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
-  trv_tbl_free(trv_tbl);
-  if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
-  
-  /* End timer */ 
-  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
-  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
-  nco_exit_gracefully();
-  return EXIT_SUCCESS;
+ /* Clean memory unless dirty memory allowed */
+ if(flg_cln){
+   /* ncks-specific memory */
+   if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
+   if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+
+   /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
+   for(idx=0;idx<nbr_dmn_fl;idx++)
+     for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+       lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
+   lmt=(lmt_sct**)nco_free(lmt); 
+   if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+
+   /* NCO-generic clean-up */
+   /* Free individual strings/arrays */
+   if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+   if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
+   if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
+   if(fl_in) fl_in=(char *)nco_free(fl_in);
+   if(fl_out) fl_out=(char *)nco_free(fl_out);
+   if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+   if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+   if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+   /* Free lists of strings */
+   if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+   if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+   if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+   if(grp_out) grp_out=(char *)nco_free(grp_out);
+   if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
+   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+   /* Free limits */
+   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+   /* NB: lmt[idx] was free()'d earlier
+   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
+   for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+   if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
+   /* Free chunking information */
+   for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+   if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
+ } /* !flg_cln */
+
+ trv_tbl_free(trv_tbl);
+ if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+
+ /* End timer */ 
+ ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+ rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+ if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
+ nco_exit_gracefully();
+ return EXIT_SUCCESS;
 
 } /* end main() */
 
