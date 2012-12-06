@@ -2,8 +2,6 @@
     
     * bm: ncks #51-53 Extract associated coordinates test 2-4 (netCDF3/4 file)
     
-    * deprecate nco_var_lst_crd_ass_add (netCDF3 only) and use nco_var_lst_crd_ass_add_trv/nco_var_lst_crd_ass_add_cf_trv (netCDF3/4) 
-    
 2012-12-04  Pedro Vicente  <pvicente@uci.edu>
     
     * bm: ncks #50 Extract associated coordinates test 1 (netCDF3 file)
