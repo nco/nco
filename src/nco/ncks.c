@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.504 2012-12-06 10:44:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.505 2012-12-06 11:31:57 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.504 2012-12-06 10:44:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.504 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.505 2012-12-06 11:31:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.505 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -679,6 +679,7 @@ main(int argc,char **argv)
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #else
   xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr);
+#endif /* HAVE_NETCDF4_H */
 #ifdef NCO_SANITY_CHECK 
   /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
   this assures that the netCDF4 function can handle netCDF3 files and both functions have the same result */
@@ -687,7 +688,6 @@ main(int argc,char **argv)
     nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
   }
 #endif /* NCO_SANITY_CHECK */
-#endif /* HAVE_NETCDF4_H */
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
@@ -710,12 +710,17 @@ main(int argc,char **argv)
 #ifndef HAVE_NETCDF4_H
     xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
 #else
-    xtr_lst=nco_var_lst_crd_add_trv(in_id,xtr_lst,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
-    if(CNV_CCM_CCSM_CF){
-      /* Add "coordinates" and "bounds" CF */
-      xtr_lst=nco_var_lst_crd_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
-      xtr_lst=nco_var_lst_crd_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
-    } /* CNV_CCM_CCSM_CF */
+    if(IS_NETCDF4){
+      xtr_lst=nco_var_lst_crd_add_trv(in_id,xtr_lst,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
+      if(CNV_CCM_CCSM_CF){
+        /* Add "coordinates" and "bounds" CF */
+        xtr_lst=nco_var_lst_crd_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
+        xtr_lst=nco_var_lst_crd_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
+      } /* CNV_CCM_CCSM_CF */
+    }else{
+      xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
+    }
+#endif /* HAVE_NETCDF4_H */
 #ifdef NCO_SANITY_CHECK 
     /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
     this assures that the netCDF4 function can handle netCDF3 files and both functions have the same result */
@@ -725,7 +730,6 @@ main(int argc,char **argv)
       nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
     } 
 #endif /* NCO_SANITY_CHECK */
-#endif /* HAVE_NETCDF4_H */
   } /* EXTRACT_ALL_COORDINATES */
 
   /* Extract coordinates associated with extracted variables */
@@ -739,6 +743,7 @@ main(int argc,char **argv)
       xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
       xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
     } /* CNV_CCM_CCSM_CF */
+#endif /* HAVE_NETCDF4_H */
 #ifdef NCO_SANITY_CHECK 
     /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
     this assures that the netCDF4 function can handle netCDF3 files and both functions have the same result */
@@ -747,7 +752,6 @@ main(int argc,char **argv)
       nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
     } 
 #endif /* NCO_SANITY_CHECK */
-#endif /* HAVE_NETCDF4_H */
   } /* EXTRACT_ASSOCIATED_COORDINATES */
 
 #ifdef NCO_SANITY_CHECK  
