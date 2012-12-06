@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.296 2012-12-05 02:41:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.297 2012-12-06 05:34:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2716,6 +2716,22 @@ nco_nm_id_val          /* [fnc] Validated name-ID structure list */
     assert(nm_id.var_nm_fll);      
   } 
 } /* end nco_nm_id_chk() */
+
+void 
+nco_nm_id_cmp            /* [fnc] Compare 2 name-ID structure lists */
+(nm_id_sct *nm_id_lst1,  /* I [sct] Name-ID structure list */
+ const int nm_id_nbr1,   /* I [nbr] Number of name-ID structures in list */
+ nm_id_sct *nm_id_lst2,  /* I [sct] Name-ID structure list */
+ const int nm_id_nbr2)  /* I [nbr] Number of name-ID structures in list */
+{
+  assert(nm_id_nbr1 == nm_id_nbr2);
+  for(int idx=0;idx<nm_id_nbr1;idx++){
+    assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[idx].nm) == 0);
+    assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[idx].grp_nm_fll) == 0);
+    assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[idx].var_nm_fll) == 0);
+    assert(nm_id_lst1[idx].id == nm_id_lst2[idx].id);
+  }
+} /* end nco_nm_id_cmp() */
 
 
 

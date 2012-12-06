@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.142 2012-12-02 06:13:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.143 2012-12-06 05:34:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -319,6 +319,13 @@ void
 nco_nm_id_val                          /* [fnc] Validated name-ID structure list */
 (nm_id_sct *nm_id_lst,                 /* I [sct] Name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
+
+void 
+nco_nm_id_cmp            /* [fnc] Compare 2 name-ID structure lists */
+(nm_id_sct *nm_id_lst1,  /* I [sct] Name-ID structure list */
+ const int nm_id_nbr1,   /* I [nbr] Number of name-ID structures in list */
+ nm_id_sct *nm_id_lst2,  /* I [sct] Name-ID structure list */
+ const int nm_id_nbr2);  /* I [nbr] Number of name-ID structures in list */
 
 #ifdef __cplusplus
 } /* end extern "C" */
