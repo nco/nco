@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.297 2012-12-06 05:34:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.298 2012-12-06 10:44:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2718,19 +2718,40 @@ nco_nm_id_val          /* [fnc] Validated name-ID structure list */
 } /* end nco_nm_id_chk() */
 
 void 
-nco_nm_id_cmp            /* [fnc] Compare 2 name-ID structure lists */
-(nm_id_sct *nm_id_lst1,  /* I [sct] Name-ID structure list */
- const int nm_id_nbr1,   /* I [nbr] Number of name-ID structures in list */
- nm_id_sct *nm_id_lst2,  /* I [sct] Name-ID structure list */
- const int nm_id_nbr2)  /* I [nbr] Number of name-ID structures in list */
+nco_nm_id_cmp               /* [fnc] Compare 2 name-ID structure lists */
+(nm_id_sct *nm_id_lst1,     /* I [sct] Name-ID structure list */
+ const int nm_id_nbr1,      /* I [nbr] Number of name-ID structures in list */
+ nm_id_sct *nm_id_lst2,     /* I [sct] Name-ID structure list */
+ const int nm_id_nbr2,      /* I [nbr] Number of name-ID structures in list */
+ const nco_bool SAME_ORDER) /* I [flg] Both lists have the same order */
 {
+  int idx,jdx;
   assert(nm_id_nbr1 == nm_id_nbr2);
-  for(int idx=0;idx<nm_id_nbr1;idx++){
-    assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[idx].nm) == 0);
-    assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[idx].grp_nm_fll) == 0);
-    assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[idx].var_nm_fll) == 0);
-    assert(nm_id_lst1[idx].id == nm_id_lst2[idx].id);
-  }
+  if(SAME_ORDER){
+    for(idx=0;idx<nm_id_nbr1;idx++){
+      assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[idx].nm) == 0);
+      assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[idx].grp_nm_fll) == 0);
+      assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[idx].var_nm_fll) == 0);
+      assert(nm_id_lst1[idx].id == nm_id_lst2[idx].id);
+    }
+  }else{ /* SAME_ORDER */
+
+    int nm_id_nbr=0;
+    for(idx=0;idx<nm_id_nbr1;idx++){
+      nm_id_sct nm_id_1=nm_id_lst1[idx];
+      for(jdx=0;jdx<nm_id_nbr2;jdx++){
+        nm_id_sct nm_id_2=nm_id_lst2[jdx];
+        if(strcmp(nm_id_1.var_nm_fll,nm_id_2.var_nm_fll) == 0){
+          nm_id_nbr++;
+          assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[jdx].nm) == 0);
+          assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[jdx].grp_nm_fll) == 0);
+          assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[jdx].var_nm_fll) == 0);
+          assert(nm_id_lst1[idx].id == nm_id_lst2[jdx].id);
+        }
+      }/* jdx */
+    }/* idx */
+    assert(nm_id_nbr == nm_id_nbr1);
+  } /* SAME_ORDER */
 } /* end nco_nm_id_cmp() */
 
 

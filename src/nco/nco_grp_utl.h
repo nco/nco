@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.143 2012-12-06 05:34:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.144 2012-12-06 10:44:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -321,11 +321,12 @@ nco_nm_id_val                          /* [fnc] Validated name-ID structure list
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
 
 void 
-nco_nm_id_cmp            /* [fnc] Compare 2 name-ID structure lists */
-(nm_id_sct *nm_id_lst1,  /* I [sct] Name-ID structure list */
- const int nm_id_nbr1,   /* I [nbr] Number of name-ID structures in list */
- nm_id_sct *nm_id_lst2,  /* I [sct] Name-ID structure list */
- const int nm_id_nbr2);  /* I [nbr] Number of name-ID structures in list */
+nco_nm_id_cmp               /* [fnc] Compare 2 name-ID structure lists */
+(nm_id_sct *nm_id_lst1,     /* I [sct] Name-ID structure list */
+ const int nm_id_nbr1,      /* I [nbr] Number of name-ID structures in list */
+ nm_id_sct *nm_id_lst2,     /* I [sct] Name-ID structure list */
+ const int nm_id_nbr2,      /* I [nbr] Number of name-ID structures in list */
+ const nco_bool SAME_ORDER); /* I [flg] Both lists have the same order */
 
 #ifdef __cplusplus
 } /* end extern "C" */
