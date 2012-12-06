@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.502 2012-12-06 09:01:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.503 2012-12-06 09:16:33 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.502 2012-12-06 09:01:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.502 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.503 2012-12-06 09:16:33 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.503 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -670,23 +670,22 @@ main(int argc,char **argv)
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #else
   xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr);
-#endif
-
 #ifdef NCO_SANITY_CHECK 
-  /* Obtain a check list to compare: used to compare nco_var_lst_xcl below for comparing the obtained list by netCDF4 function
-  nco_var_lst_xcl_trv with netCDF3 only nco_var_lst_xcl */
+  /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
+  this assures that the netCDF4 function can handle netCDF3 files and both functions have the same result */
   if(!IS_NETCDF4){
     xtr_lst_chk=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr_chk); 
     nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr);
   }
 #endif /* NCO_SANITY_CHECK */
+#endif /* HAVE_NETCDF4_H */
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
     xtr_lst=nco_var_lst_xcl_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
 #ifdef NCO_SANITY_CHECK
     /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
-    this assures that the netCDF4 function can handle netCDF3 files */
+    this assures that the netCDF4 function can handle netCDF3 files and both functions have the same result */
     if(!IS_NETCDF4){
       xtr_lst_chk=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst_chk,&xtr_nbr_chk);
       nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr);
@@ -724,7 +723,7 @@ main(int argc,char **argv)
     } /* CNV_CCM_CCSM_CF */
 #ifdef NCO_SANITY_CHECK 
     /* Use the netCDF3 function to get the check list and compare with the list obtained with the netCDF4 function;
-    this assures that the netCDF4 function can handle netCDF3 files */
+    this assures that the netCDF4 function can handle netCDF3 files and both functions have the same result */
     if(!IS_NETCDF4){
       xtr_lst_chk=nco_var_lst_crd_ass_add(in_id,xtr_lst_chk,&xtr_nbr_chk,CNV_CCM_CCSM_CF);
       nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr);
