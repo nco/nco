@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.178 2012-12-05 22:24:45 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.179 2012-12-06 03:04:49 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1053,12 +1053,9 @@ print "\n";
 
     $dsc_sng="Get group information (netCDF4 file)";
     $tst_cmd[0]="ncks --get_grp_info $in_pth_arg in_grp.nc";
-    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="/g9/g9g1/g9g1g1/g9g1g1g1/g9g1g1g1g1/g9g1g1g1g1g1/g9g1g1g1g1g1g1: 0 subgroups, 0 dimensions, 0 attributes, 1 variables";
-    $tst_cmd[2]="SS_OK";
-    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK"; 
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
     $tst_cmd[2]="SS_OK";     
@@ -1079,12 +1076,9 @@ print "\n";
 
     $dsc_sng="Get file information (netCDF4 file)";
     $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in_grp.nc";
-    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+    if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="22 subgroups, 14 dimensions, 5 attributes, 34 variables";
     $tst_cmd[2]="SS_OK";
-    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
     $tst_cmd[2]="SS_OK";     
@@ -1184,12 +1178,9 @@ print "\n";
 
     $dsc_sng="Variable/Group extraction test 3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -g g6g1  $in_pth_arg in_grp.nc";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="lat[1] area[1]=50";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK";  
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
     $tst_cmd[2]="SS_OK";     
@@ -1204,12 +1195,9 @@ print "\n";
 
     $dsc_sng="Variable/Group extraction test 4-1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="/g6/g6g1/area";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK";   
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=""; 
     $tst_cmd[2]="SS_OK";     
@@ -1224,12 +1212,9 @@ print "\n";
 
     $dsc_sng="Variable/Group extraction test 4-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/area";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="/g6/area";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK"; 
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=""; 
     $tst_cmd[2]="SS_OK";     
@@ -1244,12 +1229,9 @@ print "\n";
 
     $dsc_sng="Variable/Group extraction test 4-3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /area";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="/area";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK";   
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=""; 
     $tst_cmd[2]="SS_OK";     
@@ -1262,12 +1244,9 @@ print "\n";
 
     $dsc_sng="Variable/Group extraction test 5 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v area -g / $in_pth_arg in_grp.nc";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="lat[1]=90 area[1]=10 meter2";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK";    
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
     $tst_cmd[2]="SS_OK";     
@@ -1280,12 +1259,9 @@ print "\n";
 
     $dsc_sng="Variable/Group extraction test 6 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v area -g g6g1 $in_pth_arg in_grp.nc";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="lat[1] area[1]=50";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK";  
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
     $tst_cmd[2]="SS_OK";     
@@ -1295,15 +1271,12 @@ print "\n";
 	
 #ncks #47 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
-#NOTE: test repeated for the 2 strings, for non netcDF4 cases, output is an empty string 
+#NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
 
     $dsc_sng="Variable/Group extraction test 7-1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="/g6/g6g1/area";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=""; 
     $tst_cmd[2]="SS_OK";     
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=""; 
@@ -1314,16 +1287,13 @@ print "\n";
 	
 #ncks #48 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
-#NOTE: test repeated for the 2 strings, for non netcDF4 cases, output is an empty string 
+#NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
 
     $dsc_sng="Variable/Group extraction test 7-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/area";
-	if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
+	if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="/g6/area";
-    $tst_cmd[2]="SS_OK";
-	 }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK";   
     }elsif ($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=""; 
     $tst_cmd[2]="SS_OK";     
