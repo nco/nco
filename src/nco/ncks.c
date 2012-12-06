@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.500 2012-12-06 05:34:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.501 2012-12-06 05:58:59 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.500 2012-12-06 05:34:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.500 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.501 2012-12-06 05:58:59 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.501 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -666,10 +666,11 @@ main(int argc,char **argv)
   } /* endif rec_dmn_nm */
 
   /* Form initial extraction list which may include extended regular expressions */
-  if(IS_NETCDF4)
-    xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr); 
-  else
-    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);   
+#ifndef HAVE_NETCDF4_H 
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
+#else
+  xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr);
+#endif
 
 #ifdef NCO_SANITY_CHECK 
   /* Obtain a check list to compare: used to compare nco_var_lst_xcl below for comparing the obtained list by netCDF4 function
