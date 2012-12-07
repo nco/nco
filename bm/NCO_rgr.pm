@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.180 2012-12-07 05:32:14 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.181 2012-12-07 05:53:55 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1332,7 +1332,8 @@ print "\n";
     $#tst_cmd=0;  # Reset array 	
 
 	
-#ncks #52 Extract associated coordinates test 3 (netCDF4 file) 
+#ncks #52 Extract associated coordinates test 3 (netCDF4 file)
+# rlev is a dimension of rz 
 
     $dsc_sng="Extract associated coordinates test 3 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1351,6 +1352,7 @@ print "\n";
     $#tst_cmd=0;  # Reset array 
 	
 #ncks #53 Extract associated coordinates test 4 (netCDF4 file) 
+# rlev is a dimension of rz 
 
     $dsc_sng="Extract associated coordinates test 4 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O -C -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1367,6 +1369,56 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array 	
+	
+#ncks #54 Extract CF 'coordinates' variables(netCDF4 file)
+#gds_crd:coordinates = "lat_gds lon_gds";
+
+    $dsc_sng="Extract CF 'coordinates' variables(netCDF4 file)";
+    $tst_cmd[0]="ncks -v gds_crd $in_pth_arg in_grp.nc | grep -w /g7/lat_gds";
+	if ($HAVE_NETCDF4_H == 1) {
+    $tst_cmd[1]="/g7/lat_gds";
+    $tst_cmd[2]="SS_OK";   
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=""; 
+    $tst_cmd[2]="SS_OK";     
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 	
+	
+#ncks #55 Extract CF 'coordinates' variables (netCDF3 file)
+#gds_crd:coordinates = "lat_gds lon_gds";
+
+    $dsc_sng="Extract CF 'coordinates' variables (netCDF3 file)";
+    $tst_cmd[0]="ncks -v gds_crd $in_pth_arg in.nc | grep -w /lat_gds";
+    $tst_cmd[1]="/lat_gds";
+    $tst_cmd[2]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 		
+	
+#ncks #56 Extract CF 'bounds' variables (netCDF4 file)
+#lev:bounds = "ilev";
+
+    $dsc_sng="Extract CF 'bounds' variables (netCDF4 file)";
+    $tst_cmd[0]="ncks -v lev $in_pth_arg in_grp.nc | grep -w /g8/ilev";
+	if ($HAVE_NETCDF4_H == 1) {
+    $tst_cmd[1]="/g8/ilev";
+    $tst_cmd[2]="SS_OK";   
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=""; 
+    $tst_cmd[2]="SS_OK";     
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 		
+	
+#ncks #56 Extract CF 'bounds' variables (netCDF3 file)
+#lev:bounds = "ilev";
+
+    $dsc_sng="Extract CF 'bounds' variables (netCDF3 file)";
+    $tst_cmd[0]="ncks -v lev $in_pth_arg in.nc | grep -w /ilev";
+    $tst_cmd[1]="/ilev";
+    $tst_cmd[2]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array 			
 
 #####################
 #### ncpdq tests #### -OK !

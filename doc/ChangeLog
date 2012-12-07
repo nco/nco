@@ -1,6 +1,12 @@
-2012-12-05  Pedro Vicente  <pvicente@uci.edu>
+2012-12-06  Pedro Vicente  <pvicente@uci.edu>
     
-    * bm: ncks #54 Extract associated coordinates with CF "coordinates" attribute (netCDF4 file)
+    * bm: ncks #54 Extract CF 'coordinates' variables (netCDF4 file)
+    
+    * bm: ncks #55 Extract CF 'coordinates' variables (netCDF3 file)
+    
+    * bm: ncks #56 Extract CF 'bounds' variables (netCDF4 file)
+    
+    * bm: ncks #57 Extract CF 'bounds' variables (netCDF3 file)
     
 2012-12-05  Pedro Vicente  <pvicente@uci.edu>
     
