@@ -33,7 +33,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.39 2012-12-07 05:32:14 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.40 2012-12-07 06:53:37 pvicente Exp $";
 
 	float lat(lat);
 	lat:units = "degrees_north";
@@ -64,7 +64,7 @@ data:
 	lat=-90,90;
 	lev=100,500,1000;
 	lon=0,90,180,270;
-	time=1.;
+	time=1.,2.;
 	area=10.,10.;
 	gds_crd=0,1,2,3,4,5,6,7;
 	unique=73;
@@ -99,7 +99,7 @@ data:
 	  double time(time);
 	  float scl;
 	data:
-	  time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	  time=1.;
 	  scl=1.2;
 	} // end g2
 	
@@ -134,7 +134,7 @@ group: g4 {
 	int one_dmn_rec_var(time);
 	one_dmn_rec_var:units = "second";
 	data:
-	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var=1,2;
 
 	group: g4g1 { 
 	
