@@ -23,6 +23,8 @@
 // id_in=addfile("/home/zender/nco/data/in_grp.nc","r")
 // print(id_in)
 // list_filevars(id_in)
+// ncks --get_file_info  ~/nco/data/in_grp.nc
+// 20 subgroups, 12 dimensions, 5 attributes, 35 variables
 
 netcdf in_grp {
 dimensions:
@@ -31,7 +33,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.38 2012-12-06 10:44:13 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.39 2012-12-07 05:32:14 pvicente Exp $";
 
 	float lat(lat);
 	lat:units = "degrees_north";
@@ -136,7 +138,7 @@ group: g4 {
 
 	group: g4g1 { 
 	
-		group: g4g1g1 {  // Group with 2 unlimited dimensions and coordinate variables
+		group: g4g1g1 {  
 			dimensions:
 	      time3=unlimited;
 	      time4=unlimited;
@@ -151,15 +153,6 @@ group: g4 {
 } // end g4
 
 group: g5 { 
-
-	group: g5g1 { // Group with 2 unlimited dimensions
-			dimensions:
-			  time5=unlimited,time6=unlimited;
-	
-		group: g5g1g1 { 
-			
-			} // end g5g1g1
-		} // end g5g1
 } // end g5
 
 group: g6 { // Level 1
@@ -197,12 +190,10 @@ group: g6 { // Level 1
 	lon_gds:units="degree";
 	  
 	data:
-	  
 	  gds_crd=0,1,2,3,4,5,6,7;
 	  lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
 	  lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
 	  gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
-	  
 	} // end g7
 	
  group: g8 { 
@@ -210,15 +201,14 @@ group: g6 { // Level 1
 	  lev=3,vrt_nbr=2;
 	variables:
 	  float lev(lev);
-	lev:units = "hybrid_sigma_pressure";
-	lev:bounds = "ilev";
-	  
+        lev:units = "hybrid_sigma_pressure";
+        lev:bounds = "ilev";
+      float vrt_nbr(vrt_nbr);
 	  float ilev(lev,vrt_nbr);
-	  
 	data:
 	  lev=100,500,1000;
 	  ilev=0,300,300,750,750,1013.25;
-	  
+      vrt_nbr=1,2;
 	} // end g8
 	
  group: g9 { // Level 1

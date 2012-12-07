@@ -1,5 +1,9 @@
 2012-12-05  Pedro Vicente  <pvicente@uci.edu>
     
+    * bm: ncks #54 Extract associated coordinates with CF "coordinates" attribute (netCDF4 file)
+    
+2012-12-05  Pedro Vicente  <pvicente@uci.edu>
+    
     * bm: ncks #51-53 Extract associated coordinates test 2-4 (netCDF3/4 file)
     
 2012-12-04  Pedro Vicente  <pvicente@uci.edu>
