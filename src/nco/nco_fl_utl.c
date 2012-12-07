@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.199 2012-10-08 06:02:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.200 2012-12-07 19:01:15 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -403,7 +403,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
 	/* Allocate temporary space for input buffer */
 #define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of input file name */
-#define FL_LST_IN_MAX_LNG 1000000 /* [nbr] Maximum length of input file list */
+#define FL_LST_IN_MAX_LNG 10000000 /* [nbr] Maximum length of input file list */
+	/* 20121207: 10 MB is per user request of S. McGinnis on 20121130 */
 	bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
 	(void)sprintf(fmt_sng,"%%%ds\n",FL_NM_IN_MAX_LNG);
 

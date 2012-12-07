@@ -1,67 +1,71 @@
+2012-12-07  Charlie Zender  <zender@uci.edu>
+
+	* Change FL_LST_IN_MAX_LNG from 1 MB to 10 MB per user request
+
 2012-12-06  Pedro Vicente  <pvicente@uci.edu>
-    
-    * bm: ncks #54 Extract CF 'coordinates' variables (netCDF4 file)
-    
-    * bm: ncks #55 Extract CF 'coordinates' variables (netCDF3 file)
-    
-    * bm: ncks #56 Extract CF 'bounds' variables (netCDF4 file)
-    
-    * bm: ncks #57 Extract CF 'bounds' variables (netCDF3 file)
-    
+
+	* bm: ncks #54 Extract CF 'coordinates' variables (netCDF4 file)
+
+	* bm: ncks #55 Extract CF 'coordinates' variables (netCDF3 file)
+
+	* bm: ncks #56 Extract CF 'bounds' variables (netCDF4 file)
+
+	* bm: ncks #57 Extract CF 'bounds' variables (netCDF3 file)
+
 2012-12-05  Pedro Vicente  <pvicente@uci.edu>
-    
-    * bm: ncks #51-53 Extract associated coordinates test 2-4 (netCDF3/4 file)
-    
+
+	* bm: ncks #51-53 Extract associated coordinates test 2-4 (netCDF3/4 file)
+
 2012-12-04  Pedro Vicente  <pvicente@uci.edu>
-    
-    * bm: ncks #50 Extract associated coordinates test 1 (netCDF3 file)
-    
+
+	* bm: ncks #50 Extract associated coordinates test 1 (netCDF3 file)
+
 2012-12-01  Pedro Vicente  <pvicente@uci.edu>
-    
-    * deprecate grp_nm member of nm_id_sct; use full group name to get name as needed
+
+	* deprecate grp_nm member of nm_id_sct; use full group name to get name as needed
 
 2012-11-30  Pedro Vicente  <pvicente@uci.edu>
 
 	* bm: ncks #39 2D variable definition (netCDF4 file)
-    
-    * bm: ncks #40-49 Variable/Group extraction test 1-8
-    
-    * deprecate grp_id member of nm_id_sct; use full group name to get ID as needed
-      
+
+	* bm: ncks #40-49 Variable/Group extraction test 1-8
+
+	* deprecate grp_id member of nm_id_sct; use full group name to get ID as needed
+
 2012-11-29  Pedro Vicente  <pvicente@uci.edu>
 
 	* bm: ncks #39 exclude variables (netCDF3 file)
-    
-    * deprecate nco_var_lst_xcl and use nco_var_lst_xcl_trv for both netCDF3 and netCDF4
-    
-    * Qt: allow Win32 build with netCDF3; define environment $(HEADER_NETCDF3) and $(LIB_NETCDF3)
-      and use CONFIG += netcdf3 in /qt/nco.pri
-    
+
+	* deprecate nco_var_lst_xcl and use nco_var_lst_xcl_trv for both netCDF3 and netCDF4
+
+	* Qt: allow Win32 build with netCDF3; define environment $(HEADER_NETCDF3) and $(LIB_NETCDF3)
+	and use CONFIG += netcdf3 in /qt/nco.pri
+
 2012-11-28  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add --get_file_info option
-    
-    * bm: ncks #33 --get_grp_info option (netCDF3 file)
-    
-    * bm: ncks #34 --get_grp_info option (netCDF4 file)
-    
-    * bm: ncks #35 --get_file_info option (netCDF3 file)
-    
-    * bm: ncks #36 --get_file_info option (netCDF4 file)
-    
-    * bm: ncks #37 exclude all variables (netCDF3 file)
-    
-    * bm: ncks #38 exclude all variables (netCDF4 file)
+
+	* bm: ncks #33 --get_grp_info option (netCDF3 file)
+
+	* bm: ncks #34 --get_grp_info option (netCDF4 file)
+
+	* bm: ncks #35 --get_file_info option (netCDF3 file)
+
+	* bm: ncks #36 --get_file_info option (netCDF4 file)
+
+	* bm: ncks #37 exclude all variables (netCDF3 file)
+
+	* bm: ncks #38 exclude all variables (netCDF4 file)
 
 2012-11-27  Pedro Vicente  <pvicente@uci.edu>
 
-    * Add --get_grp_info option
+	* Add --get_grp_info option
 
 2012-11-20  Pedro Vicente  <pvicente@uci.edu>
 
 	* bm: If NCO_AVOID_BM_REPORT do not prompt to send benchmark results to project
-   
-    * bm: Detect ENABLE_NETCDF4 and HAVE_NETCDF4_H in config.h and run tests accordingly
+
+	* bm: Detect ENABLE_NETCDF4 and HAVE_NETCDF4_H in config.h and run tests accordingly
 
 2012-11-20  Charlie Zender  <zender@uci.edu>
 
@@ -74,7 +78,7 @@
 	* Document anchoring and recursion at http://nco.sf.net/nco.html#rcr
 
 	* Implement logic for anchoring and recursion in nco_chk_trv()
-    
+
 2012-11-18  Charlie Zender  <zender@uci.edu>
 
 	* rx seems to work for both variables and groups in nco_chk_trv()
