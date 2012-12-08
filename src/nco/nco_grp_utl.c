@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.300 2012-12-08 06:32:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.301 2012-12-08 06:52:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2742,7 +2742,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
   nm_id_sct *var_lst_all=NULL;/* [sct] All variables in input file */
   int fl_fmt;
 
-  /* Return all variables if none were specified and not -c ... */
+  /* CASE 1: both -v and -g were not specified: return all variables if none were specified and not -c ... */
   if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
       if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){   
@@ -2769,13 +2769,17 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
     } /* end nco_obj_typ_var */
   } /* end uidx */
 
+#ifdef NCO_SANITY_CHECK
+  assert(var_nbr_all == idx_var_crr);
+#endif /* !NCO_SANITY_CHECK */
+
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   /* Initialize and allocate extraction flag array to all False */
   var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
 
-  /* Case 1: -v was specified (regardles of whether -g was specified)
+  /* CASE 2: -v was specified (regardles of whether -g was specified)
   Method: Outer loop over all objects in file contains inner loop over user-supplied variable list
   Add variable to extraction list if it matches user-supplied name
   Regular expressions are allowed */
@@ -2836,11 +2840,10 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
 
   }else if(grp_xtr_nbr && var_xtr_nbr == 0){ 
 
-    /* Case 2: -v was not specified and -g was
+    /* CASE 3: -v was not specified and -g was
     Regular expressions are not yet allowed in -g arguments */
 
 #ifdef NCO_SANITY_CHECK
-    /* idx_var_crr was used to traverse all groups and variables to make var_lst_all */
     assert(var_nbr_all == idx_var_crr);
 #endif /* !NCO_SANITY_CHECK */
 
