@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.147 2012-12-08 08:19:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.148 2012-12-08 21:03:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -345,6 +345,18 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
 void
 nco_var_lst_xcl_trv2                  /* [fnc] Convert exclusion list to extraction list */
 (trv_tbl_sct * trv_tbl);              /* I/O [sct] Traversal table */
+
+void
+nco_var_lst_crd_add_trv2              /* [fnc] Add all coordinates to extraction list */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
+ char * const * const grp_lst_in,     /* I [sng] User-specified list of groups names to extract (specified with -g ) */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
+
+void
+nco_trv_tbl_mrk                       /* [fnc] Mark item in table */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
