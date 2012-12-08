@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.506 2012-12-08 03:51:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.507 2012-12-08 04:12:23 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.506 2012-12-08 03:51:02 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.506 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.507 2012-12-08 04:12:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.507 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -688,6 +688,12 @@ main(int argc,char **argv)
     nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
   }
 #endif /* NCO_SANITY_CHECK */
+
+#ifdef NCO_USE_TRV_TBL
+#ifdef HAVE_NETCDF4_H 
+  if(grp_nbr || var_lst_in_nbr) nco_var_lst_mk_trv2(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,trv_tbl);
+#endif /* HAVE_NETCDF4_H */
+#endif /* NCO_USE_TRV_TBL */
 
 #ifdef NCO_USE_TRV_TBL
   if(grp_nbr || var_lst_in_nbr) nco_var_lst_mk_trv2(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,trv_tbl);
