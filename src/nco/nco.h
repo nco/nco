@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.205 2012-12-08 03:51:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.206 2012-12-08 08:19:57 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -615,7 +615,8 @@ extern "C" {
     char    nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
     size_t  nm_lng;          /* [sng] Length of short name */
     nco_obj_typ typ;         /* [enm] netCDF4 object type: group or variable */
-    int     flg;             /* [flg] mark flag (several actions) */
+    int     flg;             /* [flg] Mark flag (Used to mark variable to extract) */
+    int     xcl_flg;         /* [flg] DEPRECATED (Used only in deprecated function nco_var_lst_xcl_trv) */
     int     flg_mch;         /* [flg] Object matches extraction criteria */
     int     flg_rcr;         /* [flg] Extract group recursively */
     int     nbr_att;         /* [nbr] Number of attributes */

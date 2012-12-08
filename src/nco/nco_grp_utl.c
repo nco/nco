@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.301 2012-12-08 06:52:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.302 2012-12-08 08:19:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -722,7 +722,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
       for(idx=0;idx<*xtr_nbr;idx++){
         /* Compare variable name between full list and input extraction list */
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
-          trv_tbl->grp_lst[uidx].flg=1;
+          trv_tbl->grp_lst[uidx].xcl_flg=True;
           nbr_var_xtr++;
           break;
         } /* endif strcmp */
@@ -746,7 +746,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
 
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
     grp_trv_sct trv=trv_tbl->grp_lst[uidx];
-    if (trv.typ == nco_obj_typ_var && trv.flg != 1 ){ 
+    if (trv.typ == nco_obj_typ_var && trv.xcl_flg != True ){ 
       /* Extract the full group name from 'trv', that contains the full variable name, to xtr_lst */
 
       (void)nco_inq_format(nc_id,&fl_fmt);
@@ -784,7 +784,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
 
   /* Reset mark field */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_tbl->grp_lst[uidx].flg=-1;
+    trv_tbl->grp_lst[uidx].xcl_flg=nco_obj_typ_err;
   }
 
   return xtr_lst;
@@ -1086,6 +1086,8 @@ nco_grp_itr
   obj.nbr_var=nbr_var;
   obj.nbr_dmn=nbr_dmn;
   obj.nbr_grp=nbr_grp;
+  obj.xcl_flg=nco_obj_typ_err;
+  obj.flg=nco_obj_typ_err;
   trv_tbl_add(obj,trv_tbl);
 
   /* Iterate variables for this group */
@@ -1117,6 +1119,8 @@ nco_grp_itr
     obj.nm_fll=var_nm_fll;
     obj.nm_fll_lng=strlen(var_nm_fll);
     obj.nm_lng=strlen(var_nm);
+    obj.xcl_flg=nco_obj_typ_err;
+    obj.flg=nco_obj_typ_err;
     strcpy(obj.nm,var_nm);
     trv_tbl_add(obj,trv_tbl);
     var_nm_fll=(char*)nco_free(var_nm_fll);
@@ -2714,6 +2718,7 @@ nco_trv_prt_flg                      /* [fnc] Print .flg member of traversal tab
     /* Object is marked to export */
     if(trv_tbl->grp_lst[uidx].flg == True){
       (void)fprintf(stdout,"[%d] %s\n",idx,trv_tbl->grp_lst[uidx].nm_fll); 
+      assert(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var);
       idx++;
     } /* end flg */
   } /* end uidx */
@@ -2728,7 +2733,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
  char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
  const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */
- trv_tbl_sct * trv_tbl)               /* I/O [sct] Group traversal table */
+ trv_tbl_sct * trv_tbl)               /* I/O [sct] Traversal table */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
 
@@ -2860,15 +2865,18 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
         } /* end strcmp */
       } /* end idx_var_crr */
     } /* end idx_grp */
-  } /* end Case 2 */
+  } /* end Case 3 */
 
   /* Create final variable list using boolean flag array */
   idx_var_crr=0;
   for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
     /* Increment idx_var_crr index only when table object is a variable; this keeps two lists in sync */
-    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){   
+    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){ 
+      /* NOTE: True/False must be set, initial value is -1; groups always stay -1 */ 
       if(var_xtr_rqs[idx_var_crr]){
         trv_tbl->grp_lst[uidx].flg=True;
+      }else {
+        trv_tbl->grp_lst[uidx].flg=False;
       }
       idx_var_crr++; 
     } /* end nco_obj_typ_var */
@@ -2879,5 +2887,19 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
 } /* end nco_var_lst_mk_trv2() */
+
+
+void
+nco_var_lst_xcl_trv2                  /* [fnc] Convert exclusion list to extraction list */
+(trv_tbl_sct * trv_tbl)               /* I/O [sct] Traversal table */
+{
+  /* Purpose: Convert exclusion list to extraction list */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var && trv_tbl->grp_lst[uidx].flg != nco_obj_typ_err){
+      trv_tbl->grp_lst[uidx].flg=!trv_tbl->grp_lst[uidx].flg;
+    } /* end nco_obj_typ_var */
+  } /* end loop over uidx */
+  return;
+} /* end nco_var_lst_xcl_trv2() */
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.20 2012-11-21 04:44:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.21 2012-12-08 08:19:57 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -29,13 +29,14 @@ trv_tbl_init
     tb->grp_lst[idx].typ     = nco_obj_typ_err;
     tb->grp_lst[idx].nm[0]   = '\0';
     tb->grp_lst[idx].nm_lng  = 0L;
-    tb->grp_lst[idx].flg     = -1;
+    tb->grp_lst[idx].flg     = nco_obj_typ_err;
+    tb->grp_lst[idx].xcl_flg = nco_obj_typ_err;
     tb->grp_lst[idx].flg_mch = False;
     tb->grp_lst[idx].flg_rcr = False;
-    tb->grp_lst[idx].nbr_att = -1;
-    tb->grp_lst[idx].nbr_var = -1;
-    tb->grp_lst[idx].nbr_dmn = -1;
-    tb->grp_lst[idx].nbr_grp = -1;
+    tb->grp_lst[idx].nbr_att = nco_obj_typ_err;
+    tb->grp_lst[idx].nbr_var = nco_obj_typ_err;
+    tb->grp_lst[idx].nbr_dmn = nco_obj_typ_err;
+    tb->grp_lst[idx].nbr_grp = nco_obj_typ_err;
   } /* end loop over objects */
 
   *tbl = tb;
@@ -79,6 +80,7 @@ trv_tbl_add
   tbl->grp_lst[idx].nm_lng=obj.nm_lng;
   tbl->grp_lst[idx].typ=obj.typ;
   tbl->grp_lst[idx].flg=obj.flg;
+  tbl->grp_lst[idx].xcl_flg=obj.xcl_flg;
   tbl->grp_lst[idx].flg_mch=obj.flg_mch;
   tbl->grp_lst[idx].flg_rcr=obj.flg_rcr;
   tbl->grp_lst[idx].nbr_att=obj.nbr_att;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.509 2012-12-08 07:03:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.510 2012-12-08 08:19:57 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.509 2012-12-08 07:03:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.509 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.510 2012-12-08 08:19:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.510 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -690,6 +690,7 @@ main(int argc,char **argv)
 #endif /* NCO_SANITY_CHECK */
 
 #ifdef NCO_USE_TRV_TBL
+  /* Form initial extraction list which may include extended regular expressions */
   (void)nco_var_lst_mk_trv2(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,trv_tbl);
 #ifdef NCO_SANITY_CHECK 
   (void)nco_trv_prt_flg(trv_tbl);
@@ -707,6 +708,13 @@ main(int argc,char **argv)
       nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
     } 
 #endif /* NCO_SANITY_CHECK */
+
+#ifdef NCO_USE_TRV_TBL
+    (void)nco_var_lst_xcl_trv2(trv_tbl);
+#ifdef NCO_SANITY_CHECK 
+    (void)nco_trv_prt_flg(trv_tbl);
+#endif /* NCO_SANITY_CHECK */
+#endif /* NCO_USE_TRV_TBL */
   } /* EXCLUDE_INPUT_LIST */
 
   /* Is this a CCM/CCSM/CF-format history tape? */
