@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.204 2012-12-02 03:54:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.205 2012-12-08 03:51:02 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -151,8 +151,8 @@ extern "C" {
 
   /* Call assert() in form assert(expected==) */
 #define NCO_SANITY_CHECK
-  /* Encapsulate group development code by putting non-group code in #else */
-#define NCO_GRP_DEV
+  /* Replace nm_id_sct by trv_tbl_sct */
+#define NCO_USE_TRV_TBL
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.298 2012-12-06 10:44:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.299 2012-12-08 03:51:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2358,7 +2358,6 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
 
   (void)nco_inq_format(in_id,&fl_fmt);
   
-#ifdef NCO_GRP_DEV
   /* Initialize counters/indices */
   nbr_dmn_all=0;
   idx=0;
@@ -2443,56 +2442,6 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
 
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
-
-#else /* NCO_GRP_DEV */ 
-
-  int idx;
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  long dmn_sz;
-  char dmn_nm[NC_MAX_NAME];
-  
-
-  (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
-
-  for(idx=0;idx<nbr_dmn_fl;idx++){
-    (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
-    lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-    lmt_all_crr->dmn_nm=strdup(dmn_nm);
-    lmt_all_crr->lmt_dmn_nbr=1;
-    lmt_all_crr->dmn_sz_org=dmn_sz;
-    lmt_all_crr->WRP=False;
-    lmt_all_crr->BASIC_DMN=True;
-    lmt_all_crr->MSA_USR_RDR=False;    
-
-    lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct)); 
-    /* Dereference */
-    lmt_rgl=lmt_all_crr->lmt_dmn[0]; 
-    lmt_rgl->nm=strdup(lmt_all_crr->dmn_nm);
-    lmt_rgl->id=idx;
-
-    /* NB: nco_lmt_evl() may alter this */
-    if(idx==rec_dmn_id) lmt_rgl->is_rec_dmn=True; else lmt_rgl->is_rec_dmn=False;
-
-    lmt_rgl->srt=0L;
-    lmt_rgl->end=dmn_sz-1L;
-    lmt_rgl->cnt=dmn_sz;
-    lmt_rgl->srd=1L;
-    lmt_rgl->drn=1L;
-    lmt_rgl->flg_mro=False;
-    lmt_rgl->min_sng=NULL;
-    lmt_rgl->max_sng=NULL;
-    lmt_rgl->srd_sng=NULL;
-    lmt_rgl->drn_sng=NULL;
-    lmt_rgl->mro_sng=NULL;
-    lmt_rgl->rbs_sng=NULL;
-    lmt_rgl->origin=0.0;
-
-    /* A hack so we know structure has been initialized */
-    lmt_rgl->lmt_typ=-1;
-  } /* end loop over dimensions */
-
-#endif /* NCO_GRP_DEV */ 
 
   /* fxm: subroutine-ize this MSA code block for portability TODO nco926 */
   /* Add user specified limits lmt_all_lst */
@@ -2732,7 +2681,6 @@ nco_nm_id_cmp               /* [fnc] Compare 2 name-ID structure lists */
       assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[idx].nm) == 0);
       assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[idx].grp_nm_fll) == 0);
       assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[idx].var_nm_fll) == 0);
-      assert(nm_id_lst1[idx].id == nm_id_lst2[idx].id);
     }
   }else{ /* SAME_ORDER */
 
@@ -2746,7 +2694,6 @@ nco_nm_id_cmp               /* [fnc] Compare 2 name-ID structure lists */
           assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[jdx].nm) == 0);
           assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[jdx].grp_nm_fll) == 0);
           assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[jdx].var_nm_fll) == 0);
-          assert(nm_id_lst1[idx].id == nm_id_lst2[jdx].id);
         }
       }/* jdx */
     }/* idx */
@@ -2755,6 +2702,283 @@ nco_nm_id_cmp               /* [fnc] Compare 2 name-ID structure lists */
 } /* end nco_nm_id_cmp() */
 
 
+void 
+nco_nm_id_cmp_trv                   /* [fnc] Compare name-ID structure list with group traversal table */
+(nm_id_sct *nm_id_lst,              /* I [sct] Name-ID structure list */
+ const int nm_id_nbr,               /* I [nbr] Number of name-ID structures in list */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+{
+  nm_id_sct *xtr_lst=NULL;    /* xtr_lst to build  */
+  int nbr_var_fl;             /* Number of variables in file */
+  int var_nbr_tmp=0;          /* var_nbr_tmp is incremented */
 
+  /* Get number of variables in file */
+  (void)nco_inq_trv((int*)NULL,(int*)NULL,&nbr_var_fl,(int*)NULL,trv_tbl);
+
+  xtr_lst=(nm_id_sct *)nco_malloc(nbr_var_fl*sizeof(nm_id_sct));
+
+  /* Loop over all objects in file */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    /* Object is marked to export */
+    if(trv.flg == True){
+
+      /* Object must be variable */
+      assert(trv.typ == nco_obj_typ_var);
+
+      xtr_lst[var_nbr_tmp].var_nm_fll=(char *)strdup(trv.nm_fll);
+      xtr_lst[var_nbr_tmp].nm=(char *)strdup(trv.nm);
+      xtr_lst[var_nbr_tmp].grp_nm_fll=(char *)strdup(trv.grp_nm_fll);
+      var_nbr_tmp++;
+
+    } /* nco_obj_typ_var */
+  } /* uidx */
+
+  nco_bool NM_ID_SAME_ORDER=True;
+  nco_nm_id_cmp(nm_id_lst,nm_id_nbr,xtr_lst,var_nbr_tmp,NM_ID_SAME_ORDER);
+
+  /* realloc() list to actual size */  
+  xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,var_nbr_tmp*sizeof(nm_id_sct));
+  xtr_lst=(nm_id_sct *)nco_nm_id_lst_free(xtr_lst,var_nbr_tmp);
+
+} /* end nco_nm_id_cmp_trv() */
+
+
+void
+nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list using regular expressions */
+(const int nc_id,                     /* I [ID] Apex group ID */
+ char * const * const grp_lst_in,     /* I [sng] User-specified list of groups names to extract (specified with -g) */
+ const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
+ char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
+ const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
+ trv_tbl_sct * trv_tbl)               /* I/O [sct] Group traversal table */
+{
+  /* Purpose: Create variable extraction list with or without regular expressions */
+
+  char *var_sng;           /* User-specified variable name or regular expression */
+  char *grp_nm_fll;        /* [sng] Fully qualified group name */
+  char *var_nm_fll;        /* [sng] Fully qualified variable name */
+  char *grp_nm_fll_sls;    /* [sng] Fully qualified group name plus terminating '/' */
+  char *var_nm_fll_sls_ptr;/* Pointer to first character following last slash */
+  char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
+  char var_nm[NC_MAX_NAME];/* [sng] Relative variable name */
+  int *grp_ids;            /* [ID] Group IDs of children */
+  int *var_ids;            /* [ID] Variable IDs */
+  int grp_id;              /* [ID] Group ID */
+  int grp_nbr;             /* [nbr] Number of groups in input file */
+  int rcd=NC_NOERR;        /* [rcd] Return code */
+  int idx_var;             /* [idx] Var index */
+  int idx_grp;             /* [idx] Group index */
+  int idx_var_crr;         /* [idx] Total variable index */
+  int var_nbr;             /* [nbr] Number of variables in current group */
+  int var_nbr_all;         /* [nbr] Number of variables in input file */
+  int var_nbr_tbl;         /* Number of variables in table list (table list stores all paths, groups and variables ) */
+  int var_nbr_tmp;
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  int rx_mch_nbr;
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+  nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
+  nco_bool FLG_ROOT_GRP=True; /* [flg] Current group is root group */
+  nm_id_sct *var_lst_all=NULL;/* [sct] All variables in input file */
+  nm_id_sct *xtr_lst=NULL;    /* xtr_lst may be alloc()'d from NULL with -c option */
+  size_t grp_nm_lng;
+  size_t grp_nm_sls_lng;
+  int fl_fmt;
+
+  /* Discover and return number of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
+
+  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
+
+  /* Discover and return IDs of apex and all sub-groups */
+  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
+
+  /* Initialize variables that accumulate */
+  idx_var_crr=0; /* [idx] Index into full variable list */
+  var_nbr_all=0; /* [nbr] Total number of variables in file */
+
+  /* Create list of all variables in input file */
+  for(idx_grp=0;idx_grp<grp_nbr;idx_grp++){
+    grp_id=grp_ids[idx_grp]; /* [ID] Group ID */
+
+    /* Re-set Root group flag */
+    FLG_ROOT_GRP=False; 
+
+    /* How many variables in current group? */
+    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
+
+    if(var_nbr > 0){
+      /* Augment total number of variables in file */
+      var_nbr_all+=var_nbr;
+
+      /* Allocate space for and obtain variable IDs in current group */
+      var_ids=(int *)nco_malloc(var_nbr*sizeof(int));
+      rcd+=nco_inq_varids(grp_id,&var_nbr,var_ids);
+
+      /* Allocate space for and obtain full name of current group */
+      rcd+=nco_inq_grpname(grp_id,grp_nm);
+      rcd+=nco_inq_grpname_len(grp_id,&grp_nm_lng);
+      grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
+      rcd+=nco_inq_grpname_full(grp_id,&grp_nm_lng,grp_nm_fll);
+
+      /* Allocate space for full group name */
+      if(!strcmp("/",grp_nm_fll)) FLG_ROOT_GRP=True;
+      /* Root group does not need space for additional */
+      if(FLG_ROOT_GRP) grp_nm_sls_lng=grp_nm_lng; else grp_nm_sls_lng=grp_nm_lng+1L;
+      grp_nm_fll_sls=(char *)nco_malloc((grp_nm_lng+2L)*sizeof(char)); /* Add space for a trailing NUL */
+
+      /* Copy canonical name into new space for full name with slash */
+      grp_nm_fll_sls=strcpy(grp_nm_fll_sls,grp_nm_fll);
+
+      /* Add trailing slash to group name except this would cause full name of root group to be "//" */
+      if(!FLG_ROOT_GRP) grp_nm_fll_sls=strcat(grp_nm_fll_sls,"/");
+
+      var_nm_fll=(char *)nco_malloc((grp_nm_sls_lng+NC_MAX_NAME+1L)*sizeof(char)); /* [sng] Fully qualified variable name */
+      var_nm_fll=strcpy(var_nm_fll,grp_nm_fll_sls);
+      var_nm_fll_sls_ptr=var_nm_fll+grp_nm_sls_lng; /* [ptr] Pointer to first character following last slash */
+
+      /* Append all variables in current group to variable list */
+      for(idx_var=0;idx_var<var_nbr;idx_var++){
+        var_lst_all=(nm_id_sct *)nco_realloc(var_lst_all,var_nbr_all*sizeof(nm_id_sct));
+
+        /* Get name current variable in current group */
+        (void)nco_inq_varname(grp_id,idx_var,var_nm);
+
+        /* Tack variable name onto slash following group name */
+        var_nm_fll_sls_ptr=(char *)strcat(var_nm_fll_sls_ptr,var_nm);
+
+        /* Create full name of each variable */
+        var_lst_all[idx_var_crr].var_nm_fll=(char *)strdup(var_nm_fll);
+        var_lst_all[idx_var_crr].nm=(char *)strdup(var_nm);
+        var_lst_all[idx_var_crr].id=var_ids[idx_var];
+        var_lst_all[idx_var_crr].grp_nm_fll=(char *)strdup(grp_nm_fll);
+
+        /* Increment number of variables */
+        idx_var_crr++;
+
+        /* Full variable name has been duplicated, re-terminate with NUL for next variable */
+        *var_nm_fll_sls_ptr='\0'; /* [ptr] Pointer to first character following last slash */
+      } /* end loop over idx_var */
+
+      /* Memory management after current group */
+      var_ids=(int *)nco_free(var_ids);
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+      var_nm_fll=(char *)nco_free(var_nm_fll);
+
+    } /* endif current group has variables */
+  } /* end loop over grp */
+
+#ifdef NCO_SANITY_CHECK
+  var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables) */
+  for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var) var_nbr_tbl++; 
+  assert(var_nbr_tbl == var_nbr_all);
+  assert(idx_var_crr == var_nbr_all);
+  idx_var_crr=0;
+  for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(idx_var_crr == var_nbr_all) break;
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    nm_id_sct nm_id=var_lst_all[idx_var_crr]; 
+    /* Increment var_lst_all index only when table object is a variable; this keeps two lists in sync */
+    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
+      /* Match both lists */
+      assert(!strcmp(nm_id.nm,trv.nm));
+      assert(!strcmp(nm_id.var_nm_fll,trv.nm_fll));
+      idx_var_crr++; 
+    } /* end nco_obj_typ_var */
+  } /* end uidx */
+#endif /* NCO_SANITY_CHECK */
+
+
+  /* Get number of variables in file */
+  (void)nco_inq_trv((int*)NULL,(int*)NULL,&var_nbr_all,(int*)NULL,trv_tbl);
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  /* Initialize and allocate extraction flag array to all False */
+  var_xtr_rqs=(nco_bool *)nco_calloc((size_t)var_nbr_all,sizeof(nco_bool));
+
+  idx_var_crr=0;
+  /* Loop over all objects in file */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    /* Object is variable */
+    if(trv.typ == nco_obj_typ_var){
+
+      /* Case 1: -v was specified (regardles of whether -g was specified)
+      Method: Outer loop over all objects in file contains inner loop over user-supplied variable list
+      Add variable to extraction list if it matches user-supplied name
+      Regular expressions are allowed */
+
+      /* Loop through user-specified variable list */
+      for(int idx=0;idx<var_xtr_nbr;idx++){
+        var_sng=var_lst_in[idx];
+        /* Convert pound signs (back) to commas */
+        nco_hash2comma(var_sng);
+
+        /* If var_sng is regular expression ... */
+        if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+          /* ... and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+          rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
+          if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+          continue;
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+          nco_exit(EXIT_FAILURE);
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+        } /* end if regular expression */
+
+        /* Compare var_nm from main iteration with var_sng found and, if equal, add to extraction list */
+        if(!strcmp(var_sng,trv.nm)){
+          if(!grp_xtr_nbr){
+            /* No groups specified with -g, so add variable to extraction list */
+            var_xtr_rqs[idx_var_crr]=True;
+            trv_tbl->grp_lst[uidx].flg=True;
+          }else{ /* grp_xtr_nbr */
+            /* Groups specified with -g, so add variable to extraction list only if in matching group */
+            for(idx_grp=0;idx_grp<grp_xtr_nbr;idx_grp++){
+              if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+                (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+              }else{ 
+                grp_id=nc_id;
+              } 
+              (void)nco_inq_grpname(grp_id,grp_nm);
+              if(!strcmp(grp_nm,grp_lst_in[idx_grp])){
+                var_xtr_rqs[idx_var_crr]=True;
+                trv_tbl->grp_lst[uidx].flg=True;
+              } /* end strcmp() */
+            } /* end idx_grp */
+          } /* end grp_xtr_nbr */
+        }  /* end strcmp() */
+      } /* end Loop through user-specified variable list */ 
+
+      /* Case 2: -v was not specified and -g was
+      Regular expressions are not yet allowed in -g arguments */
+      if(grp_xtr_nbr && var_xtr_nbr == 0){ 
+        for(idx_grp=0;idx_grp<grp_xtr_nbr;idx_grp++){ /* Loop over user-specified group list */
+          if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+            (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+          }else{ 
+            grp_id=nc_id;
+          } 
+          (void)nco_inq_grpname(grp_id,grp_nm);
+          if(!strcmp(grp_nm,grp_lst_in[idx_grp])){
+            var_xtr_rqs[idx_var_crr]=True;
+            trv_tbl->grp_lst[uidx].flg=True;
+          } /* end strcmp */
+        } /* end idx_grp */
+      } /* end Case 2 */
+
+      /* Increment variable index */
+      idx_var_crr++; 
+    } /* end Object is variable */ 
+  } /* end loop over trv_tbl uidx */
+
+  var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
+  var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
+
+} /* end nco_var_lst_mk_trv2() */
 
 
