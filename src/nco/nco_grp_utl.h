@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.145 2012-12-08 03:51:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.146 2012-12-08 06:32:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -312,27 +312,25 @@ nco_fnd_dmn                            /* [fnc] Find a dimension that matches dm
 
 void 
 xtr_lst_prn                            /* [fnc] Validated name-ID structure list */
-(nm_id_sct *nm_id_lst,                 /* I [sct] Name-ID structure list */
+(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
 
 void 
 nco_nm_id_val                          /* [fnc] Validated name-ID structure list */
-(nm_id_sct *nm_id_lst,                 /* I [sct] Name-ID structure list */
+(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
 
 void 
 nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists */
-(nm_id_sct *nm_id_lst1,               /* I [sct] Name-ID structure list */
+(nm_id_sct * const nm_id_lst1,        /* I [sct] Name-ID structure list */
  const int nm_id_nbr1,                /* I [nbr] Number of name-ID structures in list */
- nm_id_sct *nm_id_lst2,               /* I [sct] Name-ID structure list */
+ nm_id_sct * const nm_id_lst2,        /* I [sct] Name-ID structure list */
  const int nm_id_nbr2,                /* I [nbr] Number of name-ID structures in list */
  const nco_bool SAME_ORDER);          /* I [flg] Both lists have the same order */
 
 void 
-nco_nm_id_cmp_trv                   /* [fnc] Compare name-ID structure list with group traversal table */
-(nm_id_sct *nm_id_lst,              /* I [sct] Name-ID structure list */
- const int nm_id_nbr,               /* I [nbr] Number of name-ID structures in list */
- const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+nco_trv_prt_flg                      /* [fnc] Print .flg member of traversal table */
+(const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void
 nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list using regular expressions */
@@ -341,6 +339,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
  const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
  char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
+ const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] Group traversal table */
 
 #ifdef __cplusplus
