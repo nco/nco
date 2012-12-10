@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.309 2012-11-18 21:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.310 2012-12-10 16:40:43 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.309 2012-11-18 21:16:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.309 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.310 2012-12-10 16:40:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.310 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -807,9 +807,9 @@ main(int argc,char **argv)
 
       /* Master loop over records in current file */
       while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
-	/* Following logic is built-in to this loop:
+	/* Following logic/assumptions built-in to this loop:
 	   idx_rec_crr_in points to valid record before loop is entered
-	   Loop will never be entered if this file has no valid records
+	   Loop is never entered if this file has no valid records
 	   Much conditional logic needed to prescribe group position and next record
 
 	   Index juggling:
@@ -820,7 +820,7 @@ main(int argc,char **argv)
 	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
 	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
 	
-	/* Last stride will have distinct index-augmenting behavior */
+	/* Last stride in file has distinct index-augmenting behavior */
 	if(idx_rec_crr_in >= lmt_rec->end) REC_SRD_LST=True; else REC_SRD_LST=False;
 	/* Even strides commence group beginnings */
 	if(rec_rmn_prv_drn == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;

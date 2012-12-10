@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.524 2012-11-21 04:52:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.525 2012-12-10 16:40:41 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -30,9 +30,9 @@ Charlie
 NEW FEATURES:
 
 A. ncks and ncecat support Anchoring and Recursion.
-   Formerly arguments to -g were extracted recursively by default.
-   Also, a prepended slash had no special significance.
-   Initial and trailing slashes now control Anchoring and Recursion:
+   Previously arguments to -g were extracted recursively by default.
+   And prepended slashes had no special significance.
+   Now initial and trailing slashes control Anchoring and Recursion:
    ncks -g  g1  # Extract, recursively, all groups with a g1 component
    ncks -g  g1/ # Extract, non-recursively, all groups terminating in g1
    ncks -g /g1  # Extract, recursively, root group g1

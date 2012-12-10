@@ -61,9 +61,13 @@
 
 	* Add --get_grp_info option
 
+2012-11-27  Charlie Zender  <zender@uci.edu>
+
+	* Create nco-bugs@lists.sourceforge.net address for AC_INIT()
+
 2012-11-20  Pedro Vicente  <pvicente@uci.edu>
 
-	* bm: If NCO_AVOID_BM_REPORT do not prompt to send benchmark results to project
+	* bm: NCO_AVOID_BM_REPORT avoids prompt to send benchmark results
 
 	* bm: Detect ENABLE_NETCDF4 and HAVE_NETCDF4_H in config.h and run tests accordingly
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.303 2012-12-08 21:03:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.304 2012-12-10 16:40:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2206,9 +2206,6 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 
     usr_sng=strdup(obj_lst_in[obj_idx]); 
     usr_sng_lng=strlen(usr_sng);
-#if 0
-    if(usr_sng_lng == 1L) assert(usr_sng[0] == sls_chr);
-#endif
 
     /* Turn-off recursion for groups? */
     if(obj_typ == nco_obj_typ_grp)
