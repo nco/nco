@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.304 2012-12-10 16:40:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.305 2012-12-11 18:15:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3028,3 +3028,169 @@ nco_trv_tbl_mrk                       /* [fnc] Mark item in table */
   } /* end loop over uidx */
   return;
 } /* end nco_trv_tbl_mrk() */
+
+
+nco_bool
+nco_trv_tbl_fnd_mrk                   /* [fnc] Check if .flg is marked in table */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  /* Purpose: Search for var_nm_fll and mark it */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll) == 0){
+      assert(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var);
+      return True;
+    } /* end nco_obj_typ_var */
+  } /* end loop over uidx */
+  return False;
+} /* end nco_trv_tbl_fnd_mrk() */
+
+void
+nco_var_lst_crd_add_cf_trv2           /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int nc_id,                     /* I netCDF file ID */
+ const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
+{
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system 
+  NB: Only difference between this algorithm and CF algorithm in 
+  nco_var_lst_crd_ass_add() is that this algorithm loops over 
+  all variables in file, not just over current extraction list. */ 
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nco_obj_typ_var){
+
+      /* Try to add to extraction list */
+      (void)nco_aux_add_cf2(nc_id,trv.nm_fll,trv.nm,cf_nm,trv_tbl);
+
+    } /* end nco_obj_typ_var */
+  } /* end uidx  */
+
+  return;
+} /* nco_var_lst_crd_add_cf_trv2() */
+
+void
+nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
+(const int nc_id,                     /* I netCDF file ID */
+ const char * const var_nm_fll,       /* I [sng] Full variable name */
+ const char * const var_nm,           /* I [sng] Variable relative name */
+ const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
+{
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system 
+  NB: Only difference between this algorithm and CF algorithm in 
+  nco_var_lst_crd_ass_add() is that this algorithm loops over 
+  all variables in file, not just over current extraction list. */ 
+
+  int rcd=NC_NOERR;         /* [rcd] Return code */
+  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
+  int nbr_att;              /* [nbr] Number of attributes */
+  int var_id;               /* [id]  Variable ID */
+  int grp_id;               /* [id]  Group ID */
+  char **bnd_lst;           /* [sng] 1D array of list elements */
+  const char dlm_sng[]=" "; /* [sng] Delimiter string */
+  int nbr_bnd;              /* [nbr] Number of coordinates specified in "bounds" (or "coordinates") attribute */
+
+  /* Obtain group ID using nco_aux_grp_id (get ID from full variable name ) */
+  grp_id=nco_aux_grp_id(nc_id,var_nm_fll);
+
+  /* Obtain variable ID from netCDF API using group ID. NOTE: using relative var name  */
+  (void)nco_inq_varid(grp_id,var_nm,&var_id);
+
+  /* Find number of attributes */
+  (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+  for(int idx_att=0;idx_att<nbr_att;idx_att++){
+    (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
+
+    /* Is attribute part of CF convention? */
+    if(strcmp(att_nm,cf_nm) == 0){
+      char *att_val;
+      long att_sz;
+      nc_type att_typ;
+      int bnd_id;
+
+      /* Yes, get list of specified attributes */
+      (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
+      if(att_typ != NC_CHAR){
+        (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore will skip this attribute.\n",prg_nm_get(),att_nm,var_nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+        return;
+      } /* end if */
+      att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+      if(att_sz > 0) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+      /* NUL-terminate attribute */
+      att_val[att_sz]='\0';
+
+      /* Split list into separate coordinate names
+      Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+      bnd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_bnd);
+      /* ...for each coordinate in "bounds" attribute... */
+      for(int idx_bnd=0;idx_bnd<nbr_bnd;idx_bnd++){
+        char* bnd_lst_var=bnd_lst[idx_bnd];
+        if(bnd_lst_var==NULL)
+          continue;
+        /* Verify "bounds" exists in input file. NOTE: using group ID */
+        rcd=nco_inq_varid_flg(grp_id,bnd_lst_var,&bnd_id);
+        /* NB: Coordinates of rank N have bounds of rank N+1 */
+        if(rcd == NC_NOERR){
+
+          /* Try to find the variable */
+          nm_id_sct nm_id;
+          if (nco_fnd_var_trv(nc_id,bnd_lst_var,trv_tbl,&nm_id) == 1 )
+          {
+            char *pch;        /* Pointer to the last occurrence of character */
+            int   pos;        /* Position of character */
+            char *grp_nm_fll; /* Fully qualified group where variable resides */
+            int  len;         /* Lenght of fully qualified group where variable resides */
+
+            len=strlen(var_nm_fll);
+            grp_nm_fll=(char*)nco_malloc((len+1L)*sizeof(char));
+            strcpy(grp_nm_fll,var_nm_fll);
+            pch=strrchr(grp_nm_fll,'/');
+            pos=pch-grp_nm_fll;
+            grp_nm_fll[pos]='\0';
+
+            /* Construct the full variable name */
+            char* cf_nm_fll=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(bnd_lst_var)+2);
+            strcpy(cf_nm_fll,grp_nm_fll);
+            if(strcmp(grp_nm_fll,"/")!=0) strcat(cf_nm_fll,"/");
+            strcat(cf_nm_fll,bnd_lst_var); 
+
+            /* Free allocated memory */
+            grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
+            /* Check if the  variable is already in the  extraction list: NOTE using full name "cf_nm_fll" */
+            if(!nco_trv_tbl_fnd_mrk(cf_nm_fll,trv_tbl)){
+
+              /* Add variable to list
+              NOTE: Needed members for traversal code:
+              1) "grp_nm_fll": needed to "nco_inq_grp_full_ncid": obtain group ID from group path and netCDF file ID
+              2) "nm": needed to "nco_prn_var_dfn" to print variable's definition 
+              3) "grp_id": needed to "nco_prn_var_dfn" to print variable's definition 
+              4) "id": needed for "nco_prn_att"  to print variable's attributes
+              5) "var_nm_fll": using full name to compare criteria */
+
+              (void)nco_trv_tbl_mrk(cf_nm_fll,trv_tbl);
+            }
+
+          } /* end nco_fnd_var_trv() */   
+
+          /* Continue to next coordinate in loop */
+          continue;
+
+
+        }else{ /* end Verify "bounds" exists in input file */
+          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],var_nm_fll);
+        } /* end else named coordinate exists in input file */
+      } /* end loop over idx_bnd */
+
+      /* Free allocated memory */
+      att_val=(char *)nco_free(att_val);
+      bnd_lst=nco_sng_lst_free(bnd_lst,nbr_bnd);
+
+    } /* end strcmp Is attribute part of CF convention? */
+  } /* end find number of attributes */
+
+  return;
+} /* nco_aux_add_cf2() */

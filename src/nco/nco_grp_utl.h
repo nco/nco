@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.148 2012-12-08 21:03:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.149 2012-12-11 18:15:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -354,9 +354,28 @@ nco_var_lst_crd_add_trv2              /* [fnc] Add all coordinates to extraction
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 void
-nco_trv_tbl_mrk                       /* [fnc] Mark item in table */
+nco_trv_tbl_mrk                       /* [fnc] Mark item .flg in table */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+nco_bool
+nco_trv_tbl_fnd_mrk                   /* [fnc] Check if .flg is marked in table */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
+(const int nc_id,                     /* I netCDF file ID */
+ const char * const var_nm_fll,       /* I [sng] Full variable name */
+ const char * const var_nm,           /* I [sng] Variable relative name */
+ const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
+
+void
+nco_var_lst_crd_add_cf_trv2           /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int nc_id,                     /* I netCDF file ID */
+ const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.512 2012-12-10 21:12:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.513 2012-12-11 18:15:24 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.512 2012-12-10 21:12:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.512 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.513 2012-12-11 18:15:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.513 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -748,6 +748,11 @@ main(int argc,char **argv)
 
 #ifdef NCO_USE_TRV_TBL
     (void)nco_var_lst_crd_add_trv2(in_id,grp_nbr,grp_lst_in,trv_tbl);
+    if(CNV_CCM_CCSM_CF){
+      /* Add "coordinates" and "bounds" CF */
+      (void)nco_var_lst_crd_add_cf_trv2(in_id,"coordinates",trv_tbl);
+      (void)nco_var_lst_crd_add_cf_trv2(in_id,"bounds",trv_tbl);
+    } /* CNV_CCM_CCSM_CF */
 #ifdef NCO_SANITY_CHECK 
     (void)nco_trv_prt_flg(trv_tbl);
 #endif /* NCO_SANITY_CHECK */
