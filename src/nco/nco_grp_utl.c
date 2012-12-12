@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.312 2012-12-12 20:40:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.313 2012-12-12 21:01:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1835,9 +1835,7 @@ xtr_lst_prn                            /* [fnc] Validated name-ID structure list
 {
   for(int idx=0;idx<nm_id_nbr;idx++){
     nm_id_sct nm_id=nm_id_lst[idx];
-    if(dbg_lvl_get() >= nco_dbg_dev) 
-    (void)fprintf(stdout,"[%d] %s %s %s (%d)\n",idx,nm_id.grp_nm_fll,nm_id.var_nm_fll,nm_id.nm,nm_id.id); 
-    else (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll); 
+    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.var_nm_fll); 
   } 
 }/* end xtr_lst_prn() */
 
@@ -2711,7 +2709,18 @@ nco_trv_prt_flg                      /* [fnc] Print .flg member of traversal tab
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   if(dbg_lvl_get() < nco_dbg_dev) return;
-  (void)fprintf(stdout,"Table:\n"); 
+
+  int nbr_flg=0; /* [nbr] Number of marked .flg items in table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->lst[uidx].flg == True){
+#ifdef NCO_SANITY_CHECK
+      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
+#endif
+      nbr_flg++;
+    } /* end flg == True */
+  } /* end loop over uidx */
+
+  (void)fprintf(stdout,"Table: %d extraction variables\n", nbr_flg); 
   int idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     /* Object is marked to export */
@@ -3412,7 +3421,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
 {
   /* Purpose: Define a nm_id_sct* from a trv_tbl_sct* */
 
-  int nbr_tbl=0; /* [nbr] Number of items in table */
+  int nbr_tbl=0; /* [nbr] Number of marked .flg items in table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->lst[uidx].flg == True){
 #ifdef NCO_SANITY_CHECK
