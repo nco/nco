@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.309 2012-12-12 02:49:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.310 2012-12-12 04:09:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3040,7 +3040,9 @@ nco_trv_tbl_fnd_mrk                   /* [fnc] Check if .flg is marked in table 
   /* Purpose: Search for var_nm_fll and mark it */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+#ifdef NCO_SANITY_CHECK
       assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
+#endif
       return True;
     } /* end nco_obj_typ_var */
   } /* end loop over uidx */
@@ -3399,3 +3401,40 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
 
   return;
 } /* nco_var_lst_crd_ass_add_cf_trv2() */
+
+
+
+nm_id_sct *                           /* O [sct] Extraction list */  
+nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_sct */
+(nm_id_sct *xtr_lst,                  /* I/O [sct] Current extraction list  */
+ int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  /* Purpose: Define a nm_id_sct* from a trv_tbl_sct* */
+
+  int nbr_tbl=0; /* [nbr] Number of items in table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->lst[uidx].flg == True){
+#ifdef NCO_SANITY_CHECK
+      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
+#endif
+      nbr_tbl++;
+    } /* end flg == True */
+  } /* end loop over uidx */
+
+  xtr_lst=(nm_id_sct *)nco_malloc(nbr_tbl*sizeof(nm_id_sct));
+
+  nbr_tbl=0;
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if (trv_tbl->lst[uidx].flg == True){
+      xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
+      xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
+      xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+      nbr_tbl++;
+    } /* end flg == True */
+  } /* end loop over uidx */
+
+  *xtr_nbr=nbr_tbl;
+  return xtr_lst;
+} /* end nco_nm_id_trv_tbl() */
+
