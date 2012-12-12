@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.313 2012-12-12 21:01:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.314 2012-12-12 21:29:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3174,7 +3174,7 @@ nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordi
             grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
             /* Check if the  variable is already in the  extraction list: NOTE using full name "cf_nm_fll" */
-            if(!nco_trv_tbl_fnd_mrk(cf_nm_fll,trv_tbl)){
+            if(nco_trv_tbl_fnd_mrk(cf_nm_fll,trv_tbl)){
 
               /* Add variable to list
               NOTE: Needed members for traversal code:
