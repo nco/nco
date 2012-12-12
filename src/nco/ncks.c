@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.517 2012-12-12 04:09:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.518 2012-12-12 19:33:20 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.517 2012-12-12 04:09:44 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.517 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.518 2012-12-12 19:33:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.518 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -571,14 +571,6 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-#ifdef NCO_SANITY_CHECK 
-  nm_id_sct *xtr_lst_chk=NULL;
-  int xtr_nbr_chk;
-  nco_bool NM_ID_SAME_ORDER=True; /* [flg] both nm_id_sct lists have members in the same order;
-  Functions that return a different order:
-  1) for EXTRACT_ALL_COORDINATES, nco_var_lst_crd_add/nco_var_lst_crd_add_trv */
-#endif /* NCO_SANITY_CHECK */
-
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
@@ -672,12 +664,9 @@ main(int argc,char **argv)
 
 #ifdef NCO_USE_TRV_TBL
   /* Form initial extraction list which may include extended regular expressions */
-  (void)nco_var_lst_mk_trv2(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,trv_tbl);
+  (void)nco_var_lst_mk_trv2(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,trv_tbl);
 #ifdef NCO_SANITY_CHECK 
-  (void)nco_trv_prt_flg(trv_tbl);
-  xtr_lst_chk=nco_trv_tbl_nm_id(xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
-  (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
-  if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
+  (void)nco_trv_tbl_chk(xtr_lst,xtr_nbr,trv_tbl,True);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_USE_TRV_TBL */
 
