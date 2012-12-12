@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.209 2012-12-12 20:30:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.210 2012-12-12 21:29:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -312,11 +312,12 @@ extern "C" {
 # endif
 #endif /* !ENABLE_ZNETCDF */
 
-/* Return code indicating success for NCO routines */
-#define NCO_NOERR 0 
-/* Return code indicating failure for NCO routines */
-#define NCO_ERR 1
+/* Internal NCO return code indicating success */
+#define NCO_NOERR 1
+/* Internal NCO return code indicating failure */
+#define NCO_ERR 0
 
+  /* NB: Use EXIT_SUCCESS and EXIT_FAILURE as return codes to shell (e.g., Bash, Csh), not to other functions */
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 # define EXIT_SUCCESS 0
 #endif /* SUN4 */

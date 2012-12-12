@@ -1,5 +1,7 @@
 2012-12-12  Charlie Zender  <zender@uci.edu>
 
+	* Allow ncrename -a @Conventions,Geneva to work for global attributes
+
 	* Start re-vamp of ncrename global attribute handling
 
 	* Add NCO_NOERR and NCO_ERR tokens for generic success/failure return codes

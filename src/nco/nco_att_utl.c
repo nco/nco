@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.138 2012-12-12 20:30:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.139 2012-12-12 21:29:39 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -903,7 +903,7 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
      Valid syntax of combined string is actually [.][var_nm]@att_nm
      Preceding period means (to ncrename) that variable need not be present
      var_nm is optional and, if omitted, the attribute is assumed to be a global (or group) attribute
-     in this case the var_nm string.
+     In this case the var_nm string is set to "global" for (unused) compatibility with ncatted
      NB: Function replaces delimiter character in input by NUL so that, on output, rnm_att is just attribute name */
   
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
@@ -923,18 +923,24 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   /* Return if delimiter appears to be part of attribute name */
   if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm+att_nm_lng-1) return NCO_ERR;
 
-  if(dlm_ptr == rnm_att->old_nm) *IS_GLB_GRP_ATT=True;
+  if(dlm_ptr == rnm_att->old_nm || !strncmp(rnm_att->old_nm,".@",2)){
+    *IS_GLB_GRP_ATT=True;
+    strcpy(var_nm,"global");
+  } /* endif global */
 
   /* NUL-terminate variable name */
   *dlm_ptr='\0';
-  var_nm_lng=strlen(rnm_att->old_nm);
-  if(var_nm_lng > NC_MAX_NAME){
-    (void)fprintf(stdout,"%s: ERROR Derived variable name \"%s\" too long\n",prg_nm_get(),rnm_att->old_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */ 
 
-  /* Copy variable name only */
-  strcpy(var_nm,rnm_att->old_nm);
+  if(!*IS_GLB_GRP_ATT){
+    var_nm_lng=strlen(rnm_att->old_nm);
+    if(var_nm_lng > NC_MAX_NAME){
+      (void)fprintf(stdout,"%s: ERROR Derived variable name \"%s\" too long\n",prg_nm_get(),rnm_att->old_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */ 
+    /* Copy variable name only */
+    strcpy(var_nm,rnm_att->old_nm);
+  } /* *IS_GLB_GRP_ATT */
+
   /* Set to attribute name alone */
   rnm_att->old_nm=dlm_ptr+1; 
     
