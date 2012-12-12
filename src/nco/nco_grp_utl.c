@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.311 2012-12-12 19:33:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.312 2012-12-12 20:40:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2731,6 +2731,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
  const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
  char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
  const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
+ const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
  trv_tbl_sct * trv_tbl)               /* I/O [sct] Traversal table */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
@@ -2746,7 +2747,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
   int fl_fmt;
 
   /* CASE 1: both -v and -g were not specified: return all variables if none were specified and not -c ... */
-  if(var_xtr_nbr == 0 && grp_xtr_nbr == 0){
+  if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
       if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){   
         trv_tbl->lst[uidx].flg=True;
@@ -3443,7 +3444,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
 (nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
  const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
- const nco_bool NM_ID_SAME_ORDER)    /* I [flg] Both nm_id_sct have the same order */
+ const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
 {
   nm_id_sct *xtr_lst_chk=NULL;
   int xtr_nbr_chk;
