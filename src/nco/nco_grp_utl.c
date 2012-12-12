@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.307 2012-12-12 01:24:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.308 2012-12-12 01:44:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3370,3 +3370,30 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
 
   return;
 } /* end nco_aux_add_dmn_trv2() */ 
+
+
+void
+nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int nc_id,                     /* I netCDF file ID */
+ const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" ) */
+ trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
+{
+  /* Detect associated coordinates specified by CF "coordinates" convention
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    if (trv.typ == nco_obj_typ_var){
+
+      /* Check if the  variable is already in the  extraction list */
+      if(!nco_trv_tbl_fnd_mrk(trv.nm_fll,trv_tbl)){
+
+        /* Try to add to extraction list */
+        (void)nco_aux_add_cf2(nc_id,trv.nm_fll,trv.nm,cf_nm,trv_tbl);
+
+      } /* end check if current variable is in extraction list */
+    } /* end nco_obj_typ_var */
+  } /* end uidx  */
+
+  return;
+} /* nco_var_lst_crd_ass_add_cf_trv2() */

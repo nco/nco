@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.150 2012-12-11 23:39:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.151 2012-12-12 01:44:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -387,6 +387,12 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
 (const int nc_id,                      /* I [id] netCDF file ID */
  const char * const var_nm,            /* I [sng] Variable name to find */
  trv_tbl_sct *trv_tbl);                /* I/O [sct] Traversal table */
+
+void
+nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordinates associated with CF convention */
+(const int nc_id,                     /* I netCDF file ID */
+ const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" ) */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
