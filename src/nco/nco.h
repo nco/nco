@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.207 2012-12-10 22:18:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.208 2012-12-12 02:49:47 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -605,9 +605,9 @@ extern "C" {
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
      Node/object is either group or variable like in HDF5
-     Fill actual value of grp_trv_sct structure in trv_tbl_init()
-     free() each pointer member of grp_trv_sct structure in trv_tbl_free()
-     deep-copy each pointer member of grp_trv_sct structure in trv_tbl_add() */
+     Fill actual value of trv_sct structure in trv_tbl_init()
+     free() each pointer member of trv_sct structure in trv_tbl_free()
+     deep-copy each pointer member of trv_sct structure in trv_tbl_add() */
   typedef struct{ 
     char    *nm_fll;         /* [sng] Fully qualified name (path) */
     size_t  nm_fll_lng;      /* [sng] Length of full name */
@@ -628,7 +628,7 @@ extern "C" {
     int     flg_xsx;         /* [flg] Object matches intersection criteria */
     int     flg_rcr;         /* [flg] Extract group recursively */
     int     xcl_flg;         /* [flg] DEPRECATED (Used only in deprecated function nco_var_lst_xcl_trv) */
-  } grp_trv_sct;
+  } trv_sct;
 
  
   /* Traversal table structure
@@ -636,7 +636,7 @@ extern "C" {
   typedef struct{
     unsigned int sz;        /* [nbr] Allocated size */
     unsigned int nbr;       /* [nbr] Number of current elements */
-    grp_trv_sct *grp_lst;   /* [sct] Array of grp_trv_sct */
+    trv_sct *lst;           /* [sct] Array of trv_sct */
   } trv_tbl_sct;
 
   /* Chunking structure */

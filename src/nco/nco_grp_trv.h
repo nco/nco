@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.19 2012-11-19 00:37:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.20 2012-12-12 02:49:47 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -38,8 +38,8 @@ trv_tbl_free
 
 void 
 trv_tbl_add
-(grp_trv_sct obj, /* I [sct] Object to store */
- trv_tbl_sct *tbl); /* I/O [sct] Traversal table */
+(trv_sct obj,        /* I [sct] Object to store */
+ trv_tbl_sct *tbl);  /* I/O [sct] Traversal table */
 /* end trv_tbl_add */
 
 #endif /* NCO_GRP_TRV_H */

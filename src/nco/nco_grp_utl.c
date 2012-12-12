@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.308 2012-12-12 01:44:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.309 2012-12-12 02:49:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -361,16 +361,17 @@ nco_var_lst_mk_trv                        /* [fnc] Create variable extraction li
 
 #ifdef NCO_SANITY_CHECK
   var_nbr_tbl=0; /* Number of variables in table list (table list stores all paths, groups and variables) */
-  for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var) var_nbr_tbl++; 
+  for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var) var_nbr_tbl++; 
+  }
   assert(var_nbr_tbl == var_nbr_all);
   idx_var_crr=0;
   for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(idx_var_crr == var_nbr_all) break;
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     nm_id_sct nm_id=var_lst_all[idx_var_crr]; 
     /* Increment var_lst_all index only when table object is a variable; this keeps two lists in sync */
-    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
+    if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){
       /* Match both lists */
       assert(!strcmp(nm_id.nm,trv.nm));
       assert(!strcmp(nm_id.var_nm_fll,trv.nm_fll));
@@ -447,10 +448,10 @@ nco_var_lst_mk_trv                        /* [fnc] Create variable extraction li
       } /* end loop over var_lst_in */ 
 
       /* Increment variable index for var_lst_all if table object is a variable; this keeps two lists in sync */
-      if(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
+      if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
 #ifdef NCO_SANITY_CHECK
         /* Full variable names in both lists must agree */
-        assert(!strcmp(var_lst_all[idx_var_crr].var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll));
+        assert(!strcmp(var_lst_all[idx_var_crr].var_nm_fll,trv_tbl->lst[uidx].nm_fll));
 #endif /* !NCO_SANITY_CHECK */
         idx_var_crr++; 
       } /* end nco_obj_typ_var */
@@ -716,13 +717,13 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
   nbr_var_xtr=0;
   nbr_var=0;
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
       nbr_var++;
       for(idx=0;idx<*xtr_nbr;idx++){
         /* Compare variable name between full list and input extraction list */
         if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
-          trv_tbl->grp_lst[uidx].xcl_flg=True;
+          trv_tbl->lst[uidx].xcl_flg=True;
           nbr_var_xtr++;
           break;
         } /* endif strcmp */
@@ -745,7 +746,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
   int idx_xtr=0;
 
   for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var && trv.xcl_flg != True ){ 
       /* Extract the full group name from 'trv', that contains the full variable name, to xtr_lst */
 
@@ -784,7 +785,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
 
   /* Reset mark field */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_tbl->grp_lst[uidx].xcl_flg=nco_obj_typ_err;
+    trv_tbl->lst[uidx].xcl_flg=nco_obj_typ_err;
   }
 
   return xtr_lst;
@@ -838,7 +839,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ){
 
       /* Obtain group ID from netCDF API using full group name */
@@ -1047,7 +1048,7 @@ nco_grp_itr
 
   char grp_nm[NC_MAX_NAME+1];  /* O [sng] Group name */
   char var_nm[NC_MAX_NAME+1];  /* O [sng] Variable name */ 
-  grp_trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
+  trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
   int *dmn_ids;                /* O [ID]  Dimension IDs */ 
   int *grp_ids;                /* O [ID]  Sub-group IDs */ 
   int idx;                     /* I [idx] Index */             
@@ -1179,7 +1180,7 @@ nco_inq_trv                          /* [fnc] Find and return global totals of d
   grp_nbr_lcl=0;
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx]; 
+    trv_sct trv=trv_tbl->lst[uidx]; 
     if (trv.typ == nco_obj_typ_grp ) { 
 
       /* Increment/Export */
@@ -1247,13 +1248,13 @@ nco_prt_trv             /* [fnc] Print table with -z */
 (const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */  
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ) {
       (void)fprintf(stdout,"grp: ");
     } else if (trv.typ == nco_obj_typ_var ) {
       (void)fprintf(stdout,"var: ");
     }
-    (void)fprintf(stdout,"%s\n",trv_tbl->grp_lst[uidx].nm_fll); 
+    (void)fprintf(stdout,"%s\n",trv_tbl->lst[uidx].nm_fll); 
   } /* end uidx */
 } /* end nco_prt_trv() */
 
@@ -1268,8 +1269,8 @@ nco_prt_grp_trv         /* [fnc] Print table  */
 
   (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_grp ) {
-      grp_trv_sct trv=trv_tbl->grp_lst[uidx];            
+    if (trv_tbl->lst[uidx].typ == nco_obj_typ_grp ) {
+      trv_sct trv=trv_tbl->lst[uidx];            
       (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_att,trv.nbr_var); 
       int grp_id;                    /* [ID]  Group ID */
       int nbr_att;                   /* [nbr] Number of attributes */
@@ -1343,8 +1344,8 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
 
   if(lmt_nbr){
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_grp ) {
-        grp_trv_sct trv=trv_tbl->grp_lst[uidx];           
+      if (trv_tbl->lst[uidx].typ == nco_obj_typ_grp ) {
+        trv_sct trv=trv_tbl->lst[uidx];           
 
         /* Obtain netCDF file format */
         int fl_fmt;
@@ -1400,7 +1401,7 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ){
 
       /* Obtain group ID from netCDF API using full group name */
@@ -1457,7 +1458,7 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ){
 
       /* Obtain group ID from netCDF API using full group name */
@@ -1739,7 +1740,7 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ) {
 
       /* Obtain netCDF file format */
@@ -1846,9 +1847,9 @@ trv_lst_prn /* [fnc] Print name-ID structure list */
  const nco_obj_typ obj_typ) /* I [enm] Object type (group or variable) */
 {
   /* Print all matching objects of given type from traversal table */
-  grp_trv_sct trv_obj;
+  trv_sct trv_obj;
   for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    trv_obj=trv_tbl->grp_lst[tbl_idx];
+    trv_obj=trv_tbl->lst[tbl_idx];
     if((trv_obj.typ == obj_typ) && (trv_obj.flg_mch == True)) 
       (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
   } /* end loop over trv_tbl */
@@ -1913,7 +1914,7 @@ nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "
  nm_id_sct *nm_id)             /* O [sct] Entry to add to list */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if(trv.typ == nco_obj_typ_var){ 
 
       /* Compare name with current relative name */
@@ -1955,7 +1956,7 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var){
 
       /* Check if current variable is in extraction list */
@@ -2126,7 +2127,7 @@ nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates
   all variables in file, not just over current extraction list. */ 
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var){
 
       /* Try to add to extraction list */
@@ -2175,7 +2176,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
   const char sls_chr='/'; /* [chr] Slash character */
   const char fnc_nm[]="nco_chk_trv()"; /* [sng] Function name */
 
-  grp_trv_sct trv_obj; /* [sct] Traversal table object */
+  trv_sct trv_obj; /* [sct] Traversal table object */
 
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
@@ -2241,7 +2242,7 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
     for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
       /* Create shallow copy to avoid indirection */
-      trv_obj=trv_tbl->grp_lst[tbl_idx];
+      trv_obj=trv_tbl->lst[tbl_idx];
 
       if(trv_obj.typ == obj_typ){
 
@@ -2290,24 +2291,24 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	  if(obj_typ == nco_obj_typ_var){
 	    /* Variables must meet necessary flags for variables */
 	    if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
-	      trv_tbl->grp_lst[tbl_idx].flg_mch=True;
-	      trv_tbl->grp_lst[tbl_idx].flg_rcr=False;
+	      trv_tbl->lst[tbl_idx].flg_mch=True;
+	      trv_tbl->lst[tbl_idx].flg_rcr=False;
 	    } /* end flags */
 	  }else{ /* !nco_obj_typ_var */
 	    /* Groups must meet necessary flags for groups */
 	    if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
-	      trv_tbl->grp_lst[tbl_idx].flg_mch=True;
-	      trv_tbl->grp_lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
+	      trv_tbl->lst[tbl_idx].flg_mch=True;
+	      trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
 	    } /* end flags */
 	  }  /* !nco_obj_typ_var */
 
 	  /* Set function return condition */
-	  if(trv_tbl->grp_lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
+	  if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
 
 	  if(dbg_lvl_get() == nco_dbg_crr){
-	    (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->grp_lst[tbl_idx].flg_mch) ?  "Yes" : "No");
+	    (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
 	    if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
-	    if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->grp_lst[tbl_idx].flg_rcr) ? "Yes" : "No");
+	    if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
 	    (void)fprintf(stderr,"\n");
 	  } /* end if */
 
@@ -2366,7 +2367,7 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
   nbr_dmn_all=0;
   idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if(trv.typ == nco_obj_typ_grp){
 
       /* Obtain group ID from netCDF API using full group name */
@@ -2541,7 +2542,7 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
   const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var){
 
       /* Check if current variable matches requested variable */ 
@@ -2710,12 +2711,13 @@ nco_trv_prt_flg                      /* [fnc] Print .flg member of traversal tab
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   if(dbg_lvl_get() < nco_dbg_dev) return;
+  (void)fprintf(stdout,"Table:\n"); 
   int idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     /* Object is marked to export */
-    if(trv_tbl->grp_lst[uidx].flg == True){
-      (void)fprintf(stdout,"[%d] %s\n",idx,trv_tbl->grp_lst[uidx].nm_fll); 
-      assert(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var);
+    if(trv_tbl->lst[uidx].flg == True){
+      (void)fprintf(stdout,"[%d] %s\n",idx,trv_tbl->lst[uidx].nm_fll); 
+      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
       idx++;
     } /* end flg */
   } /* end uidx */
@@ -2747,8 +2749,8 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
   /* CASE 1: both -v and -g were not specified: return all variables if none were specified and not -c ... */
   if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
-      if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){   
-        trv_tbl->grp_lst[uidx].flg=True;
+      if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){   
+        trv_tbl->lst[uidx].flg=True;
       }
     } /* end uidx */
     return;
@@ -2763,10 +2765,10 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
   /* Build nm_id_sct needed for nco_lst_rx_search */ 
   idx_var_crr=0;
   for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
-      var_lst_all[idx_var_crr].var_nm_fll=(char *)strdup(trv_tbl->grp_lst[uidx].nm_fll);
-      var_lst_all[idx_var_crr].nm=(char *)strdup(trv_tbl->grp_lst[uidx].nm);
-      var_lst_all[idx_var_crr].grp_nm_fll=(char *)strdup(trv_tbl->grp_lst[uidx].grp_nm_fll);
+    if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){
+      var_lst_all[idx_var_crr].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
+      var_lst_all[idx_var_crr].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
+      var_lst_all[idx_var_crr].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
       idx_var_crr++; 
     } /* end nco_obj_typ_var */
   } /* end uidx */
@@ -2831,10 +2833,10 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
       } /* end loop over var_lst_in */ 
 
       /* Increment variable index for var_lst_all if table object is a variable; this keeps two lists in sync */
-      if(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){
+      if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
 #ifdef NCO_SANITY_CHECK
         /* Full variable names in both lists must agree */
-        assert(!strcmp(var_lst_all[idx_var_crr].var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll));
+        assert(!strcmp(var_lst_all[idx_var_crr].var_nm_fll,trv_tbl->lst[uidx].nm_fll));
 #endif /* !NCO_SANITY_CHECK */
         idx_var_crr++; 
       } /* end nco_obj_typ_var */
@@ -2868,12 +2870,12 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
   idx_var_crr=0;
   for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
     /* Increment idx_var_crr index only when table object is a variable; this keeps two lists in sync */
-    if (trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var){ 
+    if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){ 
       /* NOTE: True/False must be set, initial value is -1; groups always stay -1 */ 
       if(var_xtr_rqs[idx_var_crr]){
-        trv_tbl->grp_lst[uidx].flg=True;
+        trv_tbl->lst[uidx].flg=True;
       }else {
-        trv_tbl->grp_lst[uidx].flg=False;
+        trv_tbl->lst[uidx].flg=False;
       }
       idx_var_crr++; 
     } /* end nco_obj_typ_var */
@@ -2892,9 +2894,9 @@ nco_var_lst_xcl_trv2                  /* [fnc] Convert exclusion list to extract
 {
   /* Purpose: Convert exclusion list to extraction list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->grp_lst[uidx].flg != nco_obj_typ_err){
-      assert(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var);
-      trv_tbl->grp_lst[uidx].flg=!trv_tbl->grp_lst[uidx].flg;
+    if (trv_tbl->lst[uidx].flg != nco_obj_typ_err){
+      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
+      trv_tbl->lst[uidx].flg=!trv_tbl->lst[uidx].flg;
     } /* end nco_obj_typ_var */
   } /* end loop over uidx */
   return;
@@ -2930,7 +2932,7 @@ nco_var_lst_crd_add_trv2              /* [fnc] Add all coordinates to extraction
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ){
 
       /* Obtain group ID from netCDF API using full group name */
@@ -3021,9 +3023,9 @@ nco_trv_tbl_mrk                       /* [fnc] Mark item in table */
 {
   /* Purpose: Search for var_nm_fll and mark it */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll) == 0){
-      assert(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var);
-      trv_tbl->grp_lst[uidx].flg=True;
+    if (strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
+      trv_tbl->lst[uidx].flg=True;
     } /* end nco_obj_typ_var */
   } /* end loop over uidx */
   return;
@@ -3037,8 +3039,8 @@ nco_trv_tbl_fnd_mrk                   /* [fnc] Check if .flg is marked in table 
 {
   /* Purpose: Search for var_nm_fll and mark it */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (strcmp(var_nm_fll,trv_tbl->grp_lst[uidx].nm_fll) == 0){
-      assert(trv_tbl->grp_lst[uidx].typ == nco_obj_typ_var);
+    if (strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
       return True;
     } /* end nco_obj_typ_var */
   } /* end loop over uidx */
@@ -3058,7 +3060,7 @@ nco_var_lst_crd_add_cf_trv2           /* [fnc] Add to extraction list all coordi
   all variables in file, not just over current extraction list. */ 
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var){
 
       /* Try to add to extraction list */
@@ -3215,7 +3217,7 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
   const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ) {
 
       /* Obtain netCDF file format */
@@ -3260,7 +3262,7 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
 
         /* Check if variable is on extraction list */
         for(unsigned idx_lst_var=0;idx_lst_var<trv_tbl->nbr;idx_lst_var++){
-          grp_trv_sct trv2=trv_tbl->grp_lst[idx_lst_var];
+          trv_sct trv2=trv_tbl->lst[idx_lst_var];
 
           /* Compare item on list with current variable name (NOTE: using full name to compare ) */
           if(strcmp(trv2.nm_fll,var_nm_fll) == 0){
@@ -3314,7 +3316,7 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
   const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var){
 
       /* Check if current variable matches requested variable */ 
@@ -3382,7 +3384,7 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    grp_trv_sct trv=trv_tbl->grp_lst[uidx];
+    trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_var){
 
       /* Check if the  variable is already in the  extraction list */
