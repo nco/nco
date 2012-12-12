@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.208 2012-12-12 02:49:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.209 2012-12-12 20:30:05 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -311,6 +311,11 @@ extern "C" {
 #  define NC_COMPRESS 0x200 /* bn file is compressed */
 # endif
 #endif /* !ENABLE_ZNETCDF */
+
+/* Return code indicating success for NCO routines */
+#define NCO_NOERR 0 
+/* Return code indicating failure for NCO routines */
+#define NCO_ERR 1
 
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 # define EXIT_SUCCESS 0

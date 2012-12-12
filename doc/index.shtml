@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.746 2012-11-21 04:44:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.747 2012-12-12 20:30:04 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -51,7 +51,6 @@ Try to disable Spammers' machines:
 <a href="http://nco.sf.net">Homepage</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
 <a href="http://nco.cvs.sf.net/nco/nco/src/nco">Source</a> /
-<a href="http://nco.wiki.sf.net">Wiki</a> /
 </td>
 
 <td align="right" valign="top">
@@ -946,13 +945,16 @@ The screen-oriented formats&mdash;<tt>nco.html</tt>,
 <tt>nco.info</tt>, <tt>nco.txt</tt>, and <tt>nco.xml</tt>&mdash;contain 
 all the documentation except the highly mathematical sections.
 
+<!--
 <h3>Wiki:</h3>
 <ul>
-<li>As of August, 2008, NCO has a <a href="http://nco.wiki.sf.net">Wiki</a>.
-The Wiki contains a <a href="http://nco.wiki.sf.net/Cookbook">Cookbook</a>
-of NCO examples not found in the manual. 
-Volunteers are encourage to add their own &ldquo;NCO Hacks&rdquo; to this cookbook!
+<li>NCO had a <a href="http://nco.wiki.sf.net">Wiki</a> for a few
+  years beginning in August, 2008. 
+  The Wiki contained a <a href="http://nco.wiki.sf.net/Cookbook">Cookbook</a> 
+  of NCO examples not found in the manual. 
+  Volunteers are encouraged to add their own &ldquo;NCO Hacks&rdquo; to this cookbook!</li>
 </ul>
+-->
 
 <h3>Other documentation:</h3>
 <ul>
@@ -1993,7 +1995,6 @@ site.</li>
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
 <a href="http://nco.cvs.sf.net/nco/nco/src/nco/">Source</a> /
-<a href="http://nco.wiki.sf.net">Wiki</a> /
 </td>
 
 <td align="right" valign="top">

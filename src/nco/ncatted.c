@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.151 2012-10-16 00:39:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.152 2012-12-12 20:30:05 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -100,6 +100,9 @@
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp() */
+#ifdef HAVE_STRINGS_H
+# include <strings.h> /* strcasecmp() */
+#endif /* !HAVE_STRINGS_H */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #ifndef _MSC_VER
@@ -148,8 +151,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.151 2012-10-16 00:39:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.151 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.152 2012-12-12 20:30:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.152 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -368,7 +371,7 @@ main(int argc,char **argv)
       for(idx_var=0;idx_var<xtr_nbr;idx_var++) (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
       /* Free Extraction list  */
       xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
-    }else if(!strcmp(aed_lst[idx].var_nm,"global")){
+    }else if(!strcasecmp(aed_lst[idx].var_nm,"global")){
       /* Variable name indicates a global attribute ... */
       (void)nco_aed_prc(nc_id,NC_GLOBAL,aed_lst[idx]);
     }else{ 

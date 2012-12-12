@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.43 2012-11-06 07:23:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.44 2012-12-12 20:30:05 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -80,7 +80,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 int /* [flg] Variable and attribute names are conjoined */
 nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
 (rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
- char * const var_nm); /* O [sng] Variable name, if any */
+ char * const var_nm, /* O [sng] Variable name, if any */
+ nco_bool * const IS_GLB_GRP_ATT); /* O [flg] Attribute is Global or Group attribute */
 
 gpe_sct * /* O [sng] GPE structure */
 nco_gpe_prs_arg /* [fnc] Parse Group Path Editing (GPE) argument */

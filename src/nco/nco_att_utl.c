@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.137 2012-11-18 02:17:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.138 2012-12-12 20:30:05 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -895,23 +895,35 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 int /* [flg] Variable and attribute names are conjoined */
 nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
 (rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
- char * const var_nm) /* O [sng] Variable name, if any */
+ char * const var_nm, /* O [sng] Variable name, if any */
+ nco_bool * const IS_GLB_GRP_ATT) /* O [flg] Attribute is Global or Group attribute */
 {
-  /* Purpose: Check if attribute name space contains variable name before attribute name of form var_nm:att_nm
-     Attribute name is then extracted from from old_nm and new_nm as necessary */
+  /* Purpose: Check if attribute name space contains variable name before attribute name in form var_nm@att_nm
+     Variable name is then extracted from from old_nm and new_nm as necessary
+     Valid syntax of combined string is actually [.][var_nm]@att_nm
+     Preceding period means (to ncrename) that variable need not be present
+     var_nm is optional and, if omitted, the attribute is assumed to be a global (or group) attribute
+     in this case the var_nm string.
+     NB: Function replaces delimiter character in input by NUL so that, on output, rnm_att is just attribute name */
   
-  char *dlm_ptr; /* Ampersand pointer */
+  const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
+  char *dlm_ptr; /* Delimiter pointer */
 
   size_t att_nm_lng;
   size_t var_nm_lng;
 
-  dlm_ptr=strchr(rnm_att->old_nm,'@');	
-  if(dlm_ptr == NULL) return 0;
+  /* Initialize var_nm to NUL */
+  var_nm[0]='\0';
+
+  dlm_ptr=strchr(rnm_att->old_nm,dlm_chr);	
+  if(dlm_ptr == NULL) return NCO_ERR;
   
   att_nm_lng=strlen(rnm_att->old_nm);
   
-  /* Return if ampersand appears to be part of attribute name */
-  if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm || dlm_ptr == rnm_att->old_nm+att_nm_lng-1) return 0;
+  /* Return if delimiter appears to be part of attribute name */
+  if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm+att_nm_lng-1) return NCO_ERR;
+
+  if(dlm_ptr == rnm_att->old_nm) *IS_GLB_GRP_ATT=True;
 
   /* NUL-terminate variable name */
   *dlm_ptr='\0';
@@ -926,12 +938,13 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   /* Set to attribute name alone */
   rnm_att->old_nm=dlm_ptr+1; 
     
-  dlm_ptr=strchr(rnm_att->new_nm,'@');	
+  dlm_ptr=strchr(rnm_att->new_nm,dlm_chr);	
   if(dlm_ptr){
     att_nm_lng=strlen(rnm_att->new_nm);
-    if((dlm_ptr-rnm_att->new_nm) < (long int)att_nm_lng) rnm_att->new_nm=dlm_ptr+1; else return 0;
+    if((dlm_ptr-rnm_att->new_nm) < (long int)att_nm_lng) rnm_att->new_nm=dlm_ptr+1; else return NCO_ERR;
   } /* endif */
-  return 1;
+
+  return NCO_NOERR;
 } /* end nco_prs_att() */
 
 char * /* O [sng] Result of applying GPE to input path */
