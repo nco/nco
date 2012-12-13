@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.523 2012-12-13 02:34:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.524 2012-12-13 20:04:31 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -79,6 +79,7 @@
 #include <netcdf.h> /* netCDF definitions and C library */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
+#define NCO_BUILD_TRV_TBL /* Replace nm_id_sct by trv_tbl_sct */
 
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
@@ -150,8 +151,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.523 2012-12-13 02:34:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.523 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.524 2012-12-13 20:04:31 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.524 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -662,23 +663,23 @@ main(int argc,char **argv)
   xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr);
 #endif /* HAVE_NETCDF4_H */
 
-#ifdef NCO_USE_TRV_TBL
+#ifdef NCO_BUILD_TRV_TBL
   /* Form initial extraction list which may include extended regular expressions */
   (void)nco_var_lst_mk_trv2(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,trv_tbl);
 #ifdef NCO_SANITY_CHECK 
   (void)nco_trv_tbl_chk(xtr_lst,xtr_nbr,trv_tbl,True);
 #endif /* NCO_SANITY_CHECK */
-#endif /* NCO_USE_TRV_TBL */
+#endif /* NCO_BUILD_TRV_TBL */
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST){
     xtr_lst=nco_var_lst_xcl_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
-#ifdef NCO_USE_TRV_TBL
+#ifdef NCO_BUILD_TRV_TBL
     (void)nco_var_lst_xcl_trv2(trv_tbl);
 #ifdef NCO_SANITY_CHECK 
     (void)nco_trv_tbl_chk(xtr_lst,xtr_nbr,trv_tbl,True);
 #endif /* NCO_SANITY_CHECK */
-#endif /* NCO_USE_TRV_TBL */
+#endif /* NCO_BUILD_TRV_TBL */
   } /* EXCLUDE_INPUT_LIST */
 
   /* Is this a CCM/CCSM/CF-format history tape? */
@@ -701,7 +702,7 @@ main(int argc,char **argv)
     }
 #endif /* HAVE_NETCDF4_H */
 
-#ifdef NCO_USE_TRV_TBL
+#ifdef NCO_BUILD_TRV_TBL
     (void)nco_var_lst_crd_add_trv2(in_id,grp_nbr,grp_lst_in,trv_tbl);
     if(CNV_CCM_CCSM_CF){
       /* Add "coordinates" and "bounds" CF */
@@ -711,7 +712,7 @@ main(int argc,char **argv)
 #ifdef NCO_SANITY_CHECK 
     (void)nco_trv_tbl_chk(xtr_lst,xtr_nbr,trv_tbl,False);
 #endif /* NCO_SANITY_CHECK */
-#endif /* NCO_USE_TRV_TBL */
+#endif /* NCO_BUILD_TRV_TBL */
   } /* EXTRACT_ALL_COORDINATES */
 
   /* Extract coordinates associated with extracted variables */
@@ -727,7 +728,7 @@ main(int argc,char **argv)
     } /* CNV_CCM_CCSM_CF */
 #endif /* HAVE_NETCDF4_H */
 
-#ifdef NCO_USE_TRV_TBL
+#ifdef NCO_BUILD_TRV_TBL
     (void)nco_var_lst_crd_ass_add_trv2(in_id,trv_tbl);
     if(CNV_CCM_CCSM_CF){
       /* Add "coordinates" and "bounds" CF */
@@ -737,8 +738,14 @@ main(int argc,char **argv)
 #ifdef NCO_SANITY_CHECK 
     (void)nco_trv_tbl_chk(xtr_lst,xtr_nbr,trv_tbl,False);
 #endif /* NCO_SANITY_CHECK */
-#endif /* NCO_USE_TRV_TBL */
+#endif /* NCO_BUILD_TRV_TBL */
   } /* EXTRACT_ASSOCIATED_COORDINATES */
+
+#ifdef NCO_REPLACE_TRV_TBL
+  if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
+  /* Make a nm_id extraction list from the traversal table */
+  xtr_lst=nco_trv_tbl_nm_id(xtr_lst,&xtr_nbr,trv_tbl);
+#endif /* NCO_REPLACE_TRV_TBL */
 
   /* Sort extraction list alphabetically or by variable ID */
   if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
