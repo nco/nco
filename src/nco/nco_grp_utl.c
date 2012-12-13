@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.317 2012-12-13 03:33:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.318 2012-12-13 21:38:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3168,12 +3168,13 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
 {
-  if(dbg_lvl_get() < nco_dbg_dev) return;
   nm_id_sct *xtr_lst_chk=NULL;
   int xtr_nbr_chk;
 
-  (void)xtr_lst_prn(xtr_lst,xtr_nbr);
-  (void)trv_tbl_prn_xtr(trv_tbl);
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)xtr_lst_prn(xtr_lst,xtr_nbr);
+    (void)trv_tbl_prn_xtr(trv_tbl);
+  }
   xtr_lst_chk=nco_trv_tbl_nm_id(xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
   (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
   if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
