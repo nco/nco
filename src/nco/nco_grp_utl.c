@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.320 2012-12-13 23:21:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.321 2012-12-13 23:45:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3142,6 +3142,9 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Purpose: Define a nm_id_sct* from a trv_tbl_sct* */
+  int fl_fmt; /* [enm] netCDF file format */
+  
+  (void)nco_inq_format(nc_id,&fl_fmt);
 
   int nbr_tbl=0; /* [nbr] Number of marked .flg items in table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -3161,12 +3164,16 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
       xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
-      /* To deprecate: needed only to test netCDf3 library and netCDf3 only functions to deprecate */
-#ifndef HAVE_NETCDF4_H 
+      /* To deprecate: generate ID needed only to test netCDf3 library and netCDf3 only functions to deprecate */
       int var_id;
-      (void)nco_inq_varid(nc_id,trv_tbl->lst[uidx].nm,&var_id);
+      int grp_id;
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
+      }else{ 
+        grp_id=nc_id;
+      }
+      (void)nco_inq_varid(grp_id,trv_tbl->lst[uidx].nm,&var_id);
       xtr_lst[nbr_tbl].id=var_id;
-#endif
 
       nbr_tbl++;
     } /* end flg == True */
