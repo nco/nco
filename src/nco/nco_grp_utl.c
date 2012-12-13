@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.316 2012-12-13 01:57:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.317 2012-12-13 03:33:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -383,12 +383,6 @@ nco_var_lst_mk_trv                        /* [fnc] Create variable extraction li
   /* Return all variables if none were specified and not -c ... */
   if(*var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     *var_xtr_nbr=var_nbr_all;
-
-    if(dbg_lvl_get() >= nco_dbg_vrb){
-      (void)fprintf(stdout,"%s: INFO nco_var_lst_mk_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
-      xtr_lst_prn(var_lst_all,var_nbr_all);
-    } /* endif dbg */
-
     return var_lst_all;
   } /* end if */
 
@@ -506,12 +500,6 @@ nco_var_lst_mk_trv                        /* [fnc] Create variable extraction li
 
   /* Store values for return */
   *var_xtr_nbr=var_nbr_tmp;  
-
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco_var_lst_mk_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*var_xtr_nbr,(*var_xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*var_xtr_nbr);
-  } /* endif dbg */
-
   return xtr_lst;
 } /* end nco_var_lst_mk_trv() */
 
@@ -777,11 +765,6 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
 
   /* Export */
   *xtr_nbr=nbr_xcl;
-
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco4_var_lst_xcl() reports following %d variable%s to be extracted:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*xtr_nbr);
-  } /* endif dbg */
 
   /* Reset mark field */
   for(uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1479,11 +1462,6 @@ nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*xtr_nbr);
-  } /* endif dbg */
-
   return xtr_lst;
 } /* end nco_var_lst_crd_add_trv() */
 
@@ -1760,11 +1738,6 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*xtr_nbr);
-  } /* endif dbg */
-
   return xtr_lst;
 } /* end nco_var_lst_crd_ass_add_trv */
 
@@ -1773,6 +1746,7 @@ xtr_lst_prn                            /* [fnc] Validated name-ID structure list
 (nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
  const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
 {
+  (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",prg_nm_get(),nm_id_nbr); 
   for(int idx=0;idx<nm_id_nbr;idx++){
     nm_id_sct nm_id=nm_id_lst[idx];
     (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.var_nm_fll); 
@@ -1893,11 +1867,6 @@ nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinate
       } /* end check if current variable is in extraction list */
     } /* end nco_obj_typ_var */
   } /* end uidx  */
-
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_ass_add_cf() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*xtr_nbr);
-  } /* endif dbg */
 
   return xtr_lst;
 } /* nco_var_lst_crd_ass_add_cf_trv() */
@@ -2060,11 +2029,6 @@ nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates
 
     } /* end nco_obj_typ_var */
   } /* end uidx  */
-
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco_var_lst_crd_add_cf_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*xtr_nbr);
-  } 
 
   return xtr_lst;
 } /* nco_var_lst_crd_add_cf_trv() */
@@ -2528,11 +2492,6 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
       } /* end check if current variable matches requested variable */
     } /* end nco_obj_typ_var */
   } /* end uidx  */
-
-  if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"%s: INFO nco_aux_add_dmn_trv() reports following %d variable%s matched sub-setting and regular expressions:\n",prg_nm_get(),*xtr_nbr,(*xtr_nbr > 1) ? "s" : "");
-    xtr_lst_prn(xtr_lst,*xtr_nbr);
-  } /* endif dbg */
 
   return xtr_lst;
 } /* end nco_aux_add_dmn_trv() */ 
@@ -3209,9 +3168,11 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
 {
+  if(dbg_lvl_get() < nco_dbg_dev) return;
   nm_id_sct *xtr_lst_chk=NULL;
   int xtr_nbr_chk;
 
+  (void)xtr_lst_prn(xtr_lst,xtr_nbr);
   (void)trv_tbl_prn_xtr(trv_tbl);
   xtr_lst_chk=nco_trv_tbl_nm_id(xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
   (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);

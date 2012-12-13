@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.23 2012-12-13 01:57:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.24 2012-12-13 03:33:18 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -210,8 +210,6 @@ void
 trv_tbl_prn_xtr                      /* [fnc] Print extraction .flg members of traversal table */
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
-  if(dbg_lvl_get() < nco_dbg_dev) return;
-
   int nbr_flg=0; /* [nbr] Number of marked .flg items in table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->lst[uidx].flg == True){
