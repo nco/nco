@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.318 2012-12-13 21:38:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.319 2012-12-13 22:49:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -267,7 +267,7 @@ nco_var_lst_mk_trv                        /* [fnc] Create variable extraction li
   nm_id_sct *xtr_lst=NULL;    /* xtr_lst may be alloc()'d from NULL with -c option */
   size_t grp_nm_lng;
   size_t grp_nm_sls_lng;
-  int fl_fmt;
+  int fl_fmt;                 /* [enm] netCDF file format */
 
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
@@ -693,7 +693,7 @@ nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extr
   int nbr_var;       /* Number of variables in the table/file */      
   int  grp_id;       /* Group ID */
   int  var_id;       /* Variable ID */
-  int fl_fmt;
+  int fl_fmt;        /* [enm] netCDF file format */
   int idx;
   int nbr_xcl;
   unsigned int uidx;
@@ -1186,8 +1186,7 @@ nco_prt_grp_trv         /* [fnc] Print table  */
 (const int nc_id,       /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  /* Obtain netCDF file format */
-  int fl_fmt;
+  int fl_fmt; /* [enm] netCDF file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
@@ -1263,16 +1262,16 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
   int nbr_att;                 /* [nbr] Number of attributes */
   int nbr_var;                 /* [nbr] Number of variables */
   int nbr_dmn;                 /* [nbr] Number of dimensions */
-  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
+  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */  
+  int fl_fmt;                  /* [enm] netCDF file format */
+  
+  (void)nco_inq_format(nc_id,&fl_fmt);
 
   if(lmt_nbr){
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       if (trv_tbl->lst[uidx].typ == nco_obj_typ_grp ) {
         trv_sct trv=trv_tbl->lst[uidx];           
 
-        /* Obtain netCDF file format */
-        int fl_fmt;
-        (void)nco_inq_format(nc_id,&fl_fmt);
         /* Obtain group ID from netCDF API using full group name */
         if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
           (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
@@ -1655,15 +1654,15 @@ nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinate
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int *var_ids;                /* [ID] Variable IDs array */
   int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
-  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
+  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */ 
+  int fl_fmt;                  /* [enm] netCDF file format */
+  
+  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     if (trv.typ == nco_obj_typ_grp ) {
 
-      /* Obtain netCDF file format */
-      int fl_fmt;
-      (void)nco_inq_format(nc_id,&fl_fmt);
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
         (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
@@ -2487,6 +2486,9 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
               xtr_lst[*xtr_nbr].id=var_id;                  
               (*xtr_nbr)++; /* NB: Changes size  */
             } /* End check if requested coordinate variable is already on extraction list */
+            
+            /* Free allocated */
+            dm_nm_fll=(char *)nco_free(dm_nm_fll);
           }/* end check if dimension matches the requested variable */
         } /* end idx_dmn dimensions */ 
       } /* end check if current variable matches requested variable */
@@ -3039,7 +3041,10 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
   int nbr_var;                 /* [nbr] Number of variables */
   int nbr_dmn;                 /* [nbr] number of dimensions */
   int dmn_id[NC_MAX_DIMS];     /* [id] Dimensions IDs array for group */
-  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
+  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */ 
+  int fl_fmt;                  /* [enm] netCDF file format */
+  
+  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -3048,8 +3053,7 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
       /* Check if current variable matches requested variable */ 
       if(!strcmp(trv.nm,var_nm)){
         int  grp_id;     
-        int fl_fmt;
-        (void)nco_inq_format(nc_id,&fl_fmt);
+        
         /* Obtain group ID from netCDF API using full group name */
         if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
           (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
@@ -3090,6 +3094,10 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
               (void)trv_tbl_mrk(dm_nm_fll,trv_tbl);
 
             } /* End check if requested coordinate variable is already on extraction list */
+
+            /* Free allocated */
+            dm_nm_fll=(char *)nco_free(dm_nm_fll);
+
           }/* end check if dimension matches the requested variable */
         } /* end idx_dmn dimensions */ 
       } /* end check if current variable matches requested variable */
@@ -3224,8 +3232,19 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
-        /* Add all possible coordinate variables */
-        (void)nco_aux_add_dmn_trv2(nc_id,dmn_nm,trv_tbl);
+        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+          /* Add all possible coordinate variables traversing file */
+          (void)nco_aux_add_dmn_trv2(nc_id,dmn_nm,trv_tbl);
+        }else{
+          /* Construct the full (dimension/variable) name */
+          char* dm_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2);
+          strcpy(dm_nm_fll,trv.grp_nm_fll);
+          if(strcmp(trv.grp_nm_fll,"/") !=0 ) strcat(dm_nm_fll,"/");
+          strcat(dm_nm_fll,dmn_nm); 
+          (void)trv_tbl_mrk(dm_nm_fll,trv_tbl);
+          /* Free allocated */
+          dm_nm_fll=(char *)nco_free(dm_nm_fll);
+        }
 
       } /* End loop over idx_var_dim: list dimensions for variable */
     } /* end nco_obj_typ_var */
