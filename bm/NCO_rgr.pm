@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.182 2012-12-10 16:40:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.183 2012-12-13 21:46:24 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -101,28 +101,34 @@ my $find_define_have_netcdf4 = "define HAVE_NETCDF4_H";
 my $ENABLE_NETCDF4=-1;
 my $HAVE_NETCDF4_H=-1;
 
-# read config.h
-open FILE, "../config.h" or die $!;
-while (my $line = <FILE>) { 
-if ($line =~ /$find_undef_enable_netcdf4/){
-  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n";
-  $ENABLE_NETCDF4=0;
- }
-if ($line =~ /$find_define_enable_netcdf4/){
-  print "INFO: ENABLE_NETCDF4 is defined in config.h\n";
-  $ENABLE_NETCDF4=1;
- }
-if ($line =~ /$find_undef_have_netcdf4/){
-  print "INFO: HAVE_NETCDF4_H is disabled in config.h\n";
-  $HAVE_NETCDF4_H=0;
- }
-if ($line =~ /$find_define_have_netcdf4/){
-  print "INFO: HAVE_NETCDF4_H is defined in config.h\n";
-  $HAVE_NETCDF4_H=1;
- } 
-}
 print "\n";
 
+# read config.h
+my $use_config_h = 1;
+if ($use_config_h == 1){
+	open FILE, "../config.h" or die $!;
+	while (my $line = <FILE>) { 
+	if ($line =~ /$find_undef_enable_netcdf4/){
+	  print "INFO: ENABLE_NETCDF4 is disabled in config.h\n";
+	  $ENABLE_NETCDF4=0;
+	 }
+	if ($line =~ /$find_define_enable_netcdf4/){
+	  print "INFO: ENABLE_NETCDF4 is defined in config.h\n";
+	  $ENABLE_NETCDF4=1;
+	 }
+	if ($line =~ /$find_undef_have_netcdf4/){
+	  print "INFO: HAVE_NETCDF4_H is disabled in config.h\n";
+	  $HAVE_NETCDF4_H=0;
+	 }
+	if ($line =~ /$find_define_have_netcdf4/){
+	  print "INFO: HAVE_NETCDF4_H is defined in config.h\n";
+	  $HAVE_NETCDF4_H=1;
+	 } 
+	}
+} #$use_config_h
+
+
+print "\n";
 
 ####################
 #### ncap2 tests ####
