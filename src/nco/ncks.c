@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.521 2012-12-12 21:29:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.522 2012-12-13 01:57:12 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.521 2012-12-12 21:29:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.521 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.522 2012-12-13 01:57:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.522 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -597,7 +597,7 @@ main(int argc,char **argv)
   rcd+=nco_grp_itr(in_id,rth,trv_tbl);
 
    /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)nco_inq_trv(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
+  (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
   (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
 
   /* Basic checks for ENABLE_NETCDF4 */
@@ -619,7 +619,7 @@ main(int argc,char **argv)
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
-    nco_prt_trv(trv_tbl);
+    trv_tbl_prn(trv_tbl);
     goto close_and_free; 
   } /* end GET_LIST */ 
 
@@ -734,9 +734,7 @@ main(int argc,char **argv)
       (void)nco_var_lst_crd_ass_add_cf_trv2(in_id,"coordinates",trv_tbl);
       (void)nco_var_lst_crd_ass_add_cf_trv2(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
-#ifdef NCO_SANITY_CHECK 
-    (void)nco_trv_prt_flg(trv_tbl);
-#endif /* NCO_SANITY_CHECK */
+
 #endif /* NCO_USE_TRV_TBL */
   } /* EXTRACT_ASSOCIATED_COORDINATES */
 

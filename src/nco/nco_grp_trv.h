@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.20 2012-12-12 02:49:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.21 2012-12-13 01:57:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -28,18 +28,54 @@
 
 void                         
 trv_tbl_init
-(trv_tbl_sct **tbl); /* I/O [sct] Traversal table */
+(trv_tbl_sct **tbl);                 /* I/O [sct] Traversal table */
 /* end trv_tbl_init */
 
 void 
 trv_tbl_free
-(trv_tbl_sct *tbl); /* I [sct] Traversal table */
+(trv_tbl_sct *tbl);                  /* I/O [sct] Traversal table */
 /* end trv_tbl_free */
 
 void 
 trv_tbl_add
-(trv_sct obj,        /* I [sct] Object to store */
- trv_tbl_sct *tbl);  /* I/O [sct] Traversal table */
+(trv_sct obj,                        /* I [sct] Object to store */
+ trv_tbl_sct *tbl);                  /* I/O [sct] Traversal table */
 /* end trv_tbl_add */
+
+void                       
+trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
+(int * const att_nbr_glb,            /* O [nbr] Number of global attributes in file */
+ int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
+ int * const var_nbr_all,            /* O [nbr] Number of variables in file  */
+ int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+void 
+trv_tbl_prn_flg_mch                  /* [fnc] Print table items that have .flg_mch  */
+(const trv_tbl_sct * const trv_tbl,  /* I [sct] Traversal table */
+ const nco_obj_typ obj_typ);         /* I [enm] Object type (group or variable) */
+
+void                          
+trv_tbl_prn                          /* [fnc] Print table with -z */
+(const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */  
+
+nco_bool
+trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+nco_bool                              /* O [nbr] Item found or not */
+trv_tbl_fnd_var_nm                    /* [fnc] Find a variable that matches parameter "var_nm" */
+(const char * const var_nm,           /* I [sng] Variable (relative) name to find */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+trv_tbl_mrk                           /* [fnc] Mark item .flg in table */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void 
+trv_tbl_prn_xtr                      /* [fnc] Print .flg member of traversal table */
+(const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 #endif /* NCO_GRP_TRV_H */

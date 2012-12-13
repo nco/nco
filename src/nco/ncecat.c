@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.245 2012-11-30 04:57:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.246 2012-12-13 01:57:12 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.245 2012-11-30 04:57:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.245 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.246 2012-12-13 01:57:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.246 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -810,7 +810,7 @@ main(int argc,char **argv)
       rcd+=nco_grp_itr(in_id,sls_sng,trv_tbl);
 
       /* Get number of variables, dimensions, and global attributes in file */
-      (void)nco_inq_trv((int *)NULL,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,trv_tbl);
+      (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,trv_tbl);
 
       /* Parse auxiliary coordinates */
       if(aux_nbr > 0){
