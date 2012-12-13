@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.156 2012-12-13 01:57:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.157 2012-12-13 23:21:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -360,13 +360,15 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_sct */
-(nm_id_sct *xtr_lst,                  /* I/O [sct] Current extraction list  */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ nm_id_sct *xtr_lst,                  /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
 nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
-(nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
+(const int nc_id,                     /* I netCDF file ID */
+ nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
  const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  const nco_bool NM_ID_SAME_ORDER);    /* I [flg] Both nm_id_sct have the same order */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.319 2012-12-13 22:49:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.320 2012-12-13 23:21:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3136,7 +3136,8 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_sct */
-(nm_id_sct *xtr_lst,                  /* I/O [sct] Current extraction list  */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ nm_id_sct *xtr_lst,                  /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
@@ -3160,6 +3161,13 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
       xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+      /* To deprecate: needed only to test netCDf3 library and netCDf3 only functions to deprecate */
+#ifndef HAVE_NETCDF4_H 
+      int var_id;
+      (void)nco_inq_varid(nc_id,trv_tbl->lst[uidx].nm,&var_id);
+      xtr_lst[nbr_tbl].id=var_id;
+#endif
+
       nbr_tbl++;
     } /* end flg == True */
   } /* end loop over uidx */
@@ -3171,7 +3179,8 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
 
 void
 nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
-(nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
+(const int nc_id,                     /* I netCDF file ID */
+ nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
  const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
@@ -3183,7 +3192,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
     (void)xtr_lst_prn(xtr_lst,xtr_nbr);
     (void)trv_tbl_prn_xtr(trv_tbl);
   }
-  xtr_lst_chk=nco_trv_tbl_nm_id(xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
+  xtr_lst_chk=nco_trv_tbl_nm_id(nc_id,xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
   (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
   if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
   return;
