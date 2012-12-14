@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.24 2012-12-13 03:33:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.25 2012-12-14 03:40:31 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -161,12 +161,11 @@ trv_tbl_prn                          /* [fnc] Print table with -z */
   } /* end uidx */
 } /* end trv_tbl_prn() */
 
-nco_bool
+nco_bool                              /* O [nbr] Item found or not */
 trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  /* Purpose: Search for var_nm_fll and mark it */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->lst[uidx].typ == nco_obj_typ_var && strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
       return True;
@@ -194,14 +193,13 @@ trv_tbl_mrk                           /* [fnc] Mark "var_nm_fll" with .flg flag 
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  /* Purpose: Search for var_nm_fll and mark it */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
 #ifdef NCO_SANITY_CHECK
       assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
 #endif
       trv_tbl->lst[uidx].flg=True;
-    } /* end nco_obj_typ_var */
+    } /* end strcmp */
   } /* end loop over uidx */
   return;
 } /* end trv_tbl_mrk() */
