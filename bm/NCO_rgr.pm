@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.184 2012-12-14 00:29:10 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.185 2012-12-14 02:39:58 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -104,7 +104,7 @@ my $HAVE_NETCDF4_H=-1;
 print "\n";
 
 # read config.h
-my $use_config_h = 1;
+my $use_config_h = 0;
 if ($use_config_h == 1){
 	open FILE, "../config.h" or die $!;
 	while (my $line = <FILE>) { 
@@ -126,18 +126,21 @@ if ($use_config_h == 1){
 	 } 
 	}
 } #$use_config_h
-print "\n";
 
 system("ncks --get_prg_info");
+#system() runs a command and returns exit status information as a 16 bit value: 
+#the low 7 bits are the signal the process died from, if any, and the high 8 bits are the actual exit value
 if ( $? == -1 )
 {
-  print "ncks --get_prg_info: $!\n";
+  print "failed to execute: ncks --get_prg_info: $!\n";
 }
 else
 {
-  printf "ncks --get_prg_info with value %d", $? >> 8;
+  my $exit_value=$? >> 8;
+  printf "ncks --get_prg_info exited with value %d", $exit_value;
+  if ($exit_value==20) {$HAVE_NETCDF4_H=0;} else {$HAVE_NETCDF4_H=1;}
+  if ($exit_value==30) {$ENABLE_NETCDF4=1;} else {$ENABLE_NETCDF4=0;}
 }
-
 print "\n";
 
 ####################
