@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.527 2012-12-14 00:29:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.528 2012-12-14 19:21:11 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,9 +152,10 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.527 2012-12-14 00:29:11 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.527 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.528 2012-12-14 19:21:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.528 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
+
   cnk_sct **cnk=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -166,20 +167,21 @@ main(int argc,char **argv)
 
   extern char *optarg;
   extern int optind;
+
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
+
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
-  int fl_nbr=0;
   int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
+  int fl_nbr=0;
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
-  int nbr_glb_att;
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_nbr=0; /* [nbr] Number of groups to extract */
   int idx;
@@ -188,20 +190,27 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
-  int nbr_var_fl;
+  int nbr_glb_att;
   int nbr_grp_fl;
+  int nbr_var_fl;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
+
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
+
   lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
+
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
+
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */

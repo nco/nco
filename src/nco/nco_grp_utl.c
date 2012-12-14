@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.322 2012-12-14 00:29:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.323 2012-12-14 19:21:11 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -804,19 +804,23 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
   char *grp_out_fll;             /* [sng] Group name */
   char dmn_ult_nm[NC_MAX_NAME+1];/* [sng] Unlimited dimension name */ 
   char var_nm[NC_MAX_NAME+1];    /* [sng] Variable name */ 
+
+  gpe_nm_sct *gpe_nm;            /* [sct] GPE name duplicate check array  */
+
   int *var_ids;                  /* [ID]  Variable IDs array */
+
   int dmn_ids_ult[NC_MAX_DIMS];  /* [ID]  Unlimited dimensions IDs array */
+
   int fl_fmt;                    /* [enm] netCDF file format */
   int grp_id;                    /* [ID]  Group ID in input file */
   int grp_out_id;                /* [ID]  Group ID in output file */ 
   int nbr_att;                   /* [nbr] Number of attributes for group */
   int nbr_dmn;                   /* [nbr] Number of dimensions for group */
   int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
+  int nbr_gpe_nm;                /* [nbr] Number of GPE entries */
   int nbr_grp;                   /* [nbr] Number of groups for group */
   int nbr_var;                   /* [nbr] Number of variables for group */
   int var_out_id;                /* [ID]  Variable ID in output file */
-  int nbr_gpe_nm;                /* [nbr] Number of GPE entries */
-  gpe_nm_sct *gpe_nm;            /* [sct] GPE name duplicate check array  */
 
   nbr_gpe_nm=0;
   (void)nco_inq_format(nc_id,&fl_fmt);
