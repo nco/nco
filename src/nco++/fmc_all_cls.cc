@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.55 2012-08-27 10:20:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.56 2012-12-14 15:29:19 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2618,7 +2618,8 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
       
   nbr_args=args_vtr.size();  
 
-  
+  // function takes a coordinate var and value and returns the index of the nearest 
+  // grid point. returns -1 if value not in range
   susg="usage: crd_idx="+sfnm+"(crd_var,crd_value)"; 
 
   
@@ -2643,6 +2644,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
 
   {
+    bool bInc;
     long idx;
     long sz;
     double dval;
@@ -2660,20 +2662,33 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     dval=var2->val.dp[0];   
     sz=var1->sz;  
     
-    // check limits  
-    if(dval<dp_crd[0] || dval>dp_crd[sz-1]) 
-      lret=-1;  
-    else{
-    
-      for(idx=0 ; idx<sz-1 ; idx++)
-        if( dval >= dp_crd[idx] && dval <= dp_crd[idx+1] ){  
-	  lret=(dval-dp_crd[idx]<= dp_crd[idx+1]-dval ? idx: idx+1 );    
-          break;
-	}  
-
-    }
-    (void)cast_nctype_void(NC_DOUBLE,&var1->val);
+    // determine if co-ord is montonic increasing or decreasing 
+    // true if increasing 
+    bInc= ( dp_crd[1] > dp_crd[0]); 
+        
+    lret=-1; // set to not in range
+    // check limits co-ord increasing 
+    if(bInc){
+      if(dval>=dp_crd[0] && dval<=dp_crd[sz-1] )
+         for(idx=0 ; idx<sz-1 ; idx++)
+           if( dval >= dp_crd[idx] && dval <= dp_crd[idx+1] ){  
+	      lret=(dval-dp_crd[idx]<= dp_crd[idx+1]-dval ? idx: idx+1 );    
+              break;
+	   }  
+    }  
+    // check limits co-ord decreasing
+    if(!bInc){
+      if(dval<=dp_crd[0] && dval>=dp_crd[sz-1] )
+         for(idx=0 ; idx<sz-1 ; idx++)
+           if( dval <= dp_crd[idx] && dval >= dp_crd[idx+1] ){  
+	      lret=(dp_crd[idx]-dval <= dval-dp_crd[idx+1] ? idx: idx+1 );    
+              break;
+	   }  
+    }  
+                  
+     (void)cast_nctype_void(NC_DOUBLE,&var1->val);
     (void)cast_nctype_void(NC_DOUBLE,&var2->val);
+  
    
   }
 
