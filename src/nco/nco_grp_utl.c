@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.321 2012-12-13 23:45:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.322 2012-12-14 00:29:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3270,5 +3270,21 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
 } /* end nco_var_lst_crd_ass_add_trv2 */
 
 
+void
+nco_get_prg_info()                   /* [fnc] Get program info */
+{
+  int ret=10;
+#ifndef HAVE_NETCDF4_H 
+  ret=20;
+#else /* HAVE_NETCDF4_H */
+#ifdef ENABLE_NETCDF4 
+  ret=30;
+#else /* HAVE_NETCDF4_H */
+  ret=40;
+#endif /* ENABLE_NETCDF4 */
+#endif /* HAVE_NETCDF4_H */
 
+  (void)fprintf(stdout,"%s: INFO: %d\n",prg_nm_get(),ret);
+  exit(ret);
+} /* end nco_get_prg_info() */
 

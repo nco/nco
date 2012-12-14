@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.183 2012-12-13 21:46:24 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.184 2012-12-14 00:29:10 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -126,7 +126,17 @@ if ($use_config_h == 1){
 	 } 
 	}
 } #$use_config_h
+print "\n";
 
+system("ncks --get_prg_info");
+if ( $? == -1 )
+{
+  print "ncks --get_prg_info: $!\n";
+}
+else
+{
+  printf "ncks --get_prg_info with value %d", $? >> 8;
+}
 
 print "\n";
 

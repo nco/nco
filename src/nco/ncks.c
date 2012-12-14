@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.526 2012-12-13 23:21:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.527 2012-12-14 00:29:11 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -100,6 +100,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
   nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
+  nco_bool GET_PRG_INFO=False; /* [flg] Get compiled program information (e.g libraries) */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool IS_NETCDF4; /* [flg] is a netCDF4 file */
   nco_bool HISTORY_APPEND=True; /* Option h */
@@ -151,8 +152,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.526 2012-12-13 23:21:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.526 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.527 2012-12-14 00:29:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.527 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
   cnk_sct **cnk=NULL_CEWI;
 
@@ -315,6 +316,7 @@ main(int argc,char **argv)
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
       {"get_grp_info",no_argument,0,0},
+      {"get_prg_info",no_argument,0,0},
       {"get_file_info",no_argument,0,0},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -380,6 +382,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"get_file_info")){
         GET_FILE_INFO=True;
       } /* endif "get_file_info" */
+       if(!strcmp(opt_crr,"get_prg_info")){
+        GET_PRG_INFO=True;
+      } /* endif "get_prg_info" */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -571,6 +576,11 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+  /* Get program info */
+  if (GET_PRG_INFO){
+    nco_get_prg_info();
+  }
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
