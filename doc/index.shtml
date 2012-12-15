@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.747 2012-12-12 20:30:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.748 2012-12-15 04:58:34 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -573,6 +573,7 @@ Optimize diskless files?;
 <tt>ncbo -g</tt>?;</li>
 <li><b>NCO 4.2.4</b>: (<i>In Progress, features we are working on include</i>)
 Group wildcards;
+Group anchoring and recursions;
 more Robust RHEL/CentOS autoconf support?;</li>
 <li><b>NCO 4.2.3</b>: (<i>Current Stable Release</i>)
 Group Path Editing (GPE);

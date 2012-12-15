@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.139 2012-12-12 21:29:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.140 2012-12-15 04:58:35 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -904,6 +904,7 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
      Preceding period means (to ncrename) that variable need not be present
      var_nm is optional and, if omitted, the attribute is assumed to be a global (or group) attribute
      In this case the var_nm string is set to "global" for (unused) compatibility with ncatted
+     Also, the case-independent var_nm "global" on input, is assumed to mean a global attribute
      NB: Function replaces delimiter character in input by NUL so that, on output, rnm_att is just attribute name */
   
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
@@ -923,7 +924,7 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   /* Return if delimiter appears to be part of attribute name */
   if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm+att_nm_lng-1) return NCO_ERR;
 
-  if(dlm_ptr == rnm_att->old_nm || !strncmp(rnm_att->old_nm,".@",2)){
+  if(dlm_ptr == rnm_att->old_nm || !strncmp(rnm_att->old_nm,".@",2) || !strcasecmp(rnm_att->old_nm,"global")){
     *IS_GLB_GRP_ATT=True;
     strcpy(var_nm,"global");
   } /* endif global */
@@ -941,7 +942,7 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
     strcpy(var_nm,rnm_att->old_nm);
   } /* *IS_GLB_GRP_ATT */
 
-  /* Set to attribute name alone */
+  /* Point old var_nm@att_nm name to attribute name att_nm alone */
   rnm_att->old_nm=dlm_ptr+1; 
     
   dlm_ptr=strchr(rnm_att->new_nm,dlm_chr);	

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.525 2012-12-10 16:40:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.526 2012-12-15 04:58:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -39,19 +39,18 @@ A. ncks and ncecat support Anchoring and Recursion.
    ncks -g /g1/ # Extract, non-recursively root group g1
    http://nco.sf.net/nco.html#rcr
 
-A. ncks and ncecat support Group Path Editing (GPE):
-   The -G switch has been extended. Formerly it specified the root
-   group in the output file where to store data. In other words, full
-   output group paths were determined by appending the input group
-   path to the -G argument, if any. This now is a special case of GPE,
-   which handles appending, deleting, backspacing, and flattening
-   group paths. GPE examples: 
-   ncks -G scenario1  in.nc out.nc # Put input file in group scenario1
-   ncks -G :          in.nc out.nc # Flatten (remove groups from) input file
-   ncks -G :2         in.nc out.nc # Remove first two group levels
-   ncks -G g1:-2      in.nc out.nc # Replace last two groups levels by "g1"
-   ncks -G g2:1 -g g1 in.nc out.nc # Move data from g1 to g2
-   http://nco.sf.net/nco.html#gpe
+A. ncrename supports restricting actions to global/group attributes
+   Formerly ncrename arguments like -a old_nm,new_nm had no way of
+   restricting actions to global/group attributes and changing them
+   required implicit assumptions about whether variables could have
+   attributes of the same name. Now attribute renaming options can
+   be restricted to global/group attributes either by leaving the
+   var_nm portion empty (and retaining the @), or by using var_nm=
+   global to indicated that att_nm refers to a global attribute.
+   ncrename -a  global@old_att_nm,new_att_nm in.nc
+   ncrename -a        @old_att_nm,new_att_nm in.nc
+   ncrename -a global@.old_att_nm,new_att_nm in.nc
+   http://nco.sf.net/nco.html#xmp_ncrename
 
 BUG FIXES:
 

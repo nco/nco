@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.148 2012-12-12 20:30:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.149 2012-12-15 04:58:35 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.148 2012-12-12 20:30:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.149 2012-12-15 04:58:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -401,7 +401,7 @@ main(int argc,char **argv)
 	} /* end if */ 
 	/* Get var_id of variable */
 	if(IS_GLB_GRP_ATT){
-	  (void)fprintf(stderr,"%s: INFO Assuming \"%s\" is a Global or Group attribute\n",prg_nm,att_rnm_lst[idx].old_nm);
+	  (void)fprintf(stderr,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",prg_nm,att_rnm_lst[idx].old_nm);
 	  var_id=NC_GLOBAL;
 	}else{ /* !IS_GLB_GRP_ATT */
 	  if(var_nm[0] == opt_chr){

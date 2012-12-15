@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.743 2012-12-10 16:40:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.744 2012-12-15 04:58:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -10519,6 +10519,7 @@ variables in the file.
 The values of @var{att_type} and @var{att_val} were left blank because
 they are superfluous in @dfn{Delete} mode. 
 
+@cindex @code{global} attribute
 @cindex global attributes
 @cindex attributes, global
 Delete all attributes associated with the @code{tpt} variable, and
@@ -13099,10 +13100,11 @@ whose attributes are to be renamed.
 @cindex data safety
 @cindex safeguards
 @cindex temporary output files
-@command{ncrename} is the exception to the normal rules that the user will
-be interactively prompted before an existing file is changed, and that a
-temporary copy of an output file is constructed during the operation.
-If only @var{input-file} is specified, then @command{ncrename} will change
+@command{ncrename} is an exception to the normal @acronym{NCO} rule that
+the user will be interactively prompted before an existing file is
+changed, and that a temporary copy of an output file is constructed
+during the operation. 
+If only @var{input-file} is specified, then @command{ncrename} changes
 the names of the @var{input-file} in place without prompting and without
 creating a temporary copy of @code{input-file}.
 This is because the renaming operation is considered reversible if the
@@ -13134,6 +13136,7 @@ Attribute renaming.
 The old and new names of the attribute are specified with @samp{-a}
 (or @samp{--attribute}) by the associated @var{old_name} and
 @var{new_name} values.  
+@cindex @code{global} attribute
 @cindex global attributes
 @cindex attributes, global
 Global attributes are treated no differently than variable attributes.
@@ -13142,10 +13145,15 @@ As mentioned above, all occurrences of the attribute of a given name
 will be renamed unless the @samp{.} form is used, with one exception.
 To change the attribute name for a particular variable, specify 
 the @var{old_name} in the format @var{old_var_name@@old_att_name}.
-The @samp{@@} symbol delimits the variable and attribute names.
+The @samp{@@} symbol delimits the variable from the attribute name.
 If the attribute is uniquely named (no other variables contain the
 attribute) then the @var{old_var_name@@old_att_name} syntax is
 redundant. 
+The @var{var_nm} @code{global} has special significance---it indicates
+that @var{att_nm} refers to a global or group attribute, and not to a
+variable named @code{global}.
+In other words, a @var{var_nm} of @code{global} is syntactically
+equivalent to a @var{var_nm} that is empty.
 The @var{var_name@@att_name} syntax is accepted, but not required,
 for the @var{new_name}.
 
@@ -13181,7 +13189,7 @@ ncrename -v p,pressure -v .t,temperature in.nc
 Rename the attribute @code{long_name} to @code{largo_nombre} in the
 variable @code{u}, and no other variables in netCDF @file{in.nc}. 
 @example
-ncrename -a u:long_name,largo_nombre in.nc
+ncrename -a u@@long_name,largo_nombre in.nc
 @end example
  
 @cindex coordinate variables
@@ -13219,6 +13227,29 @@ the file at all (either as a global or a variable attribute).
 The variable @code{tpt} must contain the @code{hieght} attribute.
 The variable @code{prs_sfc} need not exist, and need not contain the
 @code{hieght} attribute.
+
+Rename the global or group attribute @code{Convention} to
+@code{Conventions}
+@example
+ncrename -a Convention,Conventions  in.nc # Variable and global atts.
+ncrename -a .Convention,Conventions in.nc # Variable and global atts.
+ncrename -a @@Convention,Conventions  in.nc # Global atts. only
+ncrename -a @@.Convention,Conventions in.nc # Global atts. only
+ncrename -a global@@Convention,Conventions   in.nc # Global atts. only
+ncrename -a .global@@.Convention,Conventions in.nc # Global atts. only
+@end example
+The examples without the @code{@@} character attempt to change the
+attribute name in both Global or Group and variable attributes.
+The examples with the @code{@@} character attempt to change only 
+global and group @code{Convention} attributes, and leave unchanged any
+@code{Convention} attributes attached directly to variables.
+Attributes prefixed with a period (@code{.Convention}) need not be
+present. 
+Attributes not prefixed with a period (@code{Convention}) must be
+present. 
+Variables prefixed with a period (@code{.} or @code{.global}) need not 
+be present.  
+Variables not prefixed with a period (@code{global}) must be present.  
 
 @page
 @html
