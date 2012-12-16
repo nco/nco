@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.324 2012-12-16 19:04:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.325 2012-12-16 19:50:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3346,6 +3346,10 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
     /* Object is marked to export */
     if(trv_tbl->lst[uidx].flg == True){
 
+#ifdef NCO_SANITY_CHECK
+      assert(trv.typ == nco_obj_typ_var);
+#endif
+
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
         (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
@@ -3490,3 +3494,46 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
     gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
 } /* end nco_grp_var_mk_trv2() */
+
+
+void
+nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
+(const int nc_id,                     /* I netCDF file ID */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{ 
+  int grp_id;                  /* [ID] Group ID */
+  int var_id;                  /* [ID] Variable ID */
+  int fl_fmt;                  /* [nbr] File format */
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct trv=trv_tbl->lst[uidx];
+    /* Object is marked to export */
+    if(trv_tbl->lst[uidx].flg == True){
+
+#ifdef NCO_SANITY_CHECK
+      assert(trv.typ == nco_obj_typ_var);
+#endif
+
+      /* Obtain group ID from netCDF API using full group name */
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=nc_id;
+      }
+      /* Obtain variable ID from netCDF API using group ID */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+
+      /* Print full name of variable */
+      (void)fprintf(stdout,"%s\n",trv.nm_fll);
+      /* Print variable's definition using the obtained grp_id instead of the netCDF file ID; Voila  */
+      (void)nco_prn_var_dfn(grp_id,trv.nm); 
+      /* Print variable's attributes */
+      (void)nco_prn_att(nc_id,grp_id,var_id);
+    } /* end  marked to export */
+  } /* end uidx  */
+
+  return;
+} /* end nco_prn_var_def_trv2() */

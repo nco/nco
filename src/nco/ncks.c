@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.532 2012-12-16 19:11:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.533 2012-12-16 19:50:54 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.532 2012-12-16 19:11:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.532 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.533 2012-12-16 19:50:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.533 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -870,7 +870,7 @@ main(int argc,char **argv)
       nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
 #else
       nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
-#endif   
+#endif  /* NCO_REPLACE_TRV_TBL2 */ 
     }else{ /* IS_NETCDF4 */
       for(idx=0;idx<xtr_nbr;idx++){
         int var_out_id;
@@ -912,7 +912,7 @@ main(int argc,char **argv)
       nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
 #else
       nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
-#endif    
+#endif  /* NCO_REPLACE_TRV_TBL2 */    
     }else{
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
@@ -977,6 +977,10 @@ main(int argc,char **argv)
     
     if(PRN_VAR_METADATA){
       if (IS_NETCDF4){
+
+#ifdef NCO_REPLACE_TRV_TBL2
+        (void)nco_prn_var_def_trv2(in_id,trv_tbl);
+#else
         for(idx=0;idx<xtr_nbr;idx++){    
           nm_id_sct nm_id=xtr_lst[idx];    
           /* Obtain group ID from netCDF API using full group name */
@@ -993,6 +997,8 @@ main(int argc,char **argv)
           /* Print variable's attributes */
           (void)nco_prn_att(in_id,grp_id,nm_id.id);
         } /* end loop over idx */
+
+#endif /* NCO_BUILD_TRV_TBL2 */
 
       } else { /* !IS_NETCDF4 */
         for(idx=0;idx<xtr_nbr;idx++){

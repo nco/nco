@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.159 2012-12-16 19:04:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.160 2012-12-16 19:50:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -402,6 +402,11 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/write var
  const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
+
+void
+nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
+(const int nc_id,                     /* I netCDF file ID */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 
 #ifdef __cplusplus
