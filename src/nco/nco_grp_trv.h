@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.21 2012-12-13 01:57:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.22 2012-12-16 05:04:08 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -77,5 +77,9 @@ trv_tbl_mrk                           /* [fnc] Mark item .flg in table */
 void 
 trv_tbl_prn_xtr                      /* [fnc] Print .flg member of traversal table */
 (const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+void 
+trv_tbl_srt                          /* [fnc] Sort traversal table */
+(trv_tbl_sct *trv_tbl);              /* I/O [sct] Traversal table */
 
 #endif /* NCO_GRP_TRV_H */

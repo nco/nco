@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.25 2012-12-14 03:40:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.26 2012-12-16 05:04:08 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -229,3 +229,24 @@ trv_tbl_prn_xtr                      /* [fnc] Print extraction .flg members of t
     } /* end flg */
   } /* end uidx */
 } /* end trv_tbl_prn_xtr() */
+
+
+static int          /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_trv_tbl_nm  /* [fnc] Compare two trv_sct's by name member */
+(const void *val_1, /* I [sct] trv_sct to compare */
+ const void *val_2) /* I [sct] trv_sct to compare */
+{
+  /* Purpose: Compare two trv_sct's by name structure member */
+  return strcmp((*(trv_sct const *)val_1).nm,(*(trv_sct const *)val_2).nm);
+} /* end nco_cmp_trv_tbl_nm() */
+
+void 
+trv_tbl_srt                          /* [fnc] Sort traversal table */
+(trv_tbl_sct *trv_tbl)               /* I/O [sct] Traversal table */
+{
+  /* Alphabetize list by variable name
+  This produces easy-to-search variable name screen output with ncks */
+  qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),nco_cmp_trv_tbl_nm);
+
+} /* end trv_tbl_srt() */
+
