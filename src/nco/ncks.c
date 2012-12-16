@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.529 2012-12-16 05:04:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.530 2012-12-16 06:39:04 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -86,7 +86,7 @@
 int 
 main(int argc,char **argv)
 {
-  nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
+  nco_bool ALPHABETIZE_OUTPUT=False; /* Option a */
   nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.529 2012-12-16 05:04:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.529 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.530 2012-12-16 06:39:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.530 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -639,6 +639,7 @@ main(int argc,char **argv)
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
+    if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
     trv_tbl_prn(trv_tbl);
     goto close_and_free; 
   } /* end GET_LIST */ 

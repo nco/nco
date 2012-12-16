@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.185 2012-12-14 02:39:58 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.186 2012-12-16 06:39:04 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -988,7 +988,7 @@ print "\n";
     $dsc_sng="(Groups required) Extract 'bounds' variables";
     $tst_cmd[0]="ncks -O -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
     if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
-    $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00% ";    
+    $tst_cmd[1]="ncks -a -O -H  -s '%g' %tmp_fl_00% ";    
     $tst_cmd[2]="1005001000";
     $tst_cmd[3]="SS_OK";
     }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
@@ -1044,18 +1044,9 @@ print "\n";
 #ncks #30 groups: Sort output alphabetically
 
     $dsc_sng="(Groups required) Sort output alphabetically";
-    $tst_cmd[0]="ncks -O -v lat,area $in_pth_arg in_grp.nc  %tmp_fl_00%";
-    if ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1) {
-    $tst_cmd[1]="ncks -O -H  -s '%g' %tmp_fl_00%";
-    $tst_cmd[2]="-9090";
-    $tst_cmd[3]="SS_OK";
-    }elsif ($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0) {
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif ($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
+    $tst_cmd[0]="ncks -a -z $in_pth_arg in_grp.nc";
+    $tst_cmd[1]="var: /g8/vrt_nbr";
+    $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
