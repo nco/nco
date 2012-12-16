@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.310 2012-12-10 16:40:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.311 2012-12-16 23:58:20 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.310 2012-12-10 16:40:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.310 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.311 2012-12-16 23:58:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.311 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1043,7 +1043,7 @@ main(int argc,char **argv)
 
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
      except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
-     Occassionally last input file(s) are superfluous so REC_LST_DSR never set
+     Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
      FLG_BFR_NRM is always true here for ncea */
   if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
@@ -1056,16 +1056,12 @@ main(int argc,char **argv)
   if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
   
   /* Copy averages to output file */
-  if(prg == ncea){
+  if(FLG_BFR_NRM){
     for(idx=0;idx<nbr_var_prc;idx++){
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       /* Packing/Unpacking */
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
-      if(var_prc_out[idx]->nbr_dim == 0){
-	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-      }else{ /* end if variable is scalar */
-	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-      } /* end if variable is an array */
+      if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
     } /* end loop over idx */
   } /* end if ncea */
   

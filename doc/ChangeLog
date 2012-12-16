@@ -1,3 +1,15 @@
+2012-12-16  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.2.4 release procedure:
+ 	Changes since nco-4_2_3: anchoring, recursion, ncra bugfix, ncrename
+	cd ~/nco;cvs tag -d nco-4_2_4;cvs tag -d nco-4_2_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.4 release"
+	cvs tag -c nco-4_2_4;cvs tag -c nco-4_2_4-1
+
+	* Fix bug introduced in 4.2.1 that caused ncra to skip writing
+	results of final normalization if trailing files were superfluous.
+	In the most common case, all zeroes appeared in the output file.
+
 2012-12-14  Charlie Zender  <zender@uci.edu>
 
 	* Document ncrename changes
@@ -88,12 +100,6 @@
 	* bm: Detect ENABLE_NETCDF4 and HAVE_NETCDF4_H in config.h and run tests accordingly
 
 2012-11-20  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.4 release procedure:
- 	Changes since nco-4_2_3: anchoring, recursion
-	cd ~/nco;cvs tag -d nco-4_2_4;cvs tag -d nco-4_2_4-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.4 release"
-	cvs tag -c nco-4_2_4;cvs tag -c nco-4_2_4-1
 
 	* Document anchoring and recursion at http://nco.sf.net/nco.html#rcr
 

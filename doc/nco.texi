@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.744 2012-12-15 04:58:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.745 2012-12-16 23:58:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3558,12 +3558,11 @@ sub-setting large data files.
 Extended regular expressions are defined by the @acronym{POSIX}
 @command{grep -E} (aka @command{egrep}) command.  
 As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
-of the @samp{-v} switch may contain @dfn{extended regular expressions}.
+to the @samp{-v} switch may contain @dfn{extended regular expressions}.
 As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
 to @command{ncatted} may contain @dfn{extended regular expressions}. 
-@c fxm
-@c As of @acronym{NCO} 4.2.4 (November, 2012), group names arguments 
-@c of the @samp{-g} switch may contain @dfn{extended regular expressions}.
+As of @acronym{NCO} 4.2.4 (November, 2012), group name arguments 
+to the @samp{-g} switch may contain @dfn{extended regular expressions}.
 
 @cindex @acronym{POSIX}
 @cindex @code{regex}

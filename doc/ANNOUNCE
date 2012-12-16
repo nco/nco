@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.526 2012-12-15 04:58:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.527 2012-12-16 23:58:20 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -54,14 +54,13 @@ A. ncrename supports restricting actions to global/group attributes
 
 BUG FIXES:
 
+A. Fix bug introduced in 4.2.1 where ncra did not write results of
+   final normalization if trailing file(s) was/were superfluous.
+   In the most common case, all zeroes appeared in the output file.
+   http://nco.sf.net#bug_ncra_flg_bfr_nrm
+
 A. Fix 4.2.2 and 4.2.3 bug that kept NCO from building from source
    when netCDF version 3 library was not available.
-
-A. ncecat: Fix 4.2.2 bug that can skip first input file in the default 
-   mode (RECORD_AGGREGATE) when -n  NINTAP switch used to generate
-   filenames. 
-
-B. ncks correctly copies group attributes
 
 KNOWN BUGS NOT YET FIXED:
 

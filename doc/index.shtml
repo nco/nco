@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.748 2012-12-15 04:58:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.749 2012-12-16 23:58:20 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -572,12 +572,13 @@ Optimize diskless files?;
 <tt>ncrename -g</tt>?;
 <tt>ncbo -g</tt>?;</li>
 <li><b>NCO 4.2.4</b>: (<i>In Progress, features we are working on include</i>)
-Group wildcards;
-Group anchoring and recursions;
-more Robust RHEL/CentOS autoconf support?;</li>
+Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
+Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
+<tt>ncrename</tt> global att. handling;
+<tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
 <li><b>NCO 4.2.3</b>: (<i>Current Stable Release</i>)
 Group Path Editing (GPE);
-<tt>ncecat</tt> bugfix;
+<tt>ncecat</tt> <a href="#bug_ncecat_nintap">bugfix</a></li>
 <li><b>NCO 4.2.2</b>: 
 <tt>ncks</tt>, <tt>ncecat</tt> support groups;
 <tt>--hdr_pad</tt> all operators;
@@ -594,7 +595,7 @@ Negative indices for <a href="http://nco.sf.net/nco.html#hyp">hyperslabs</a>;
 <tt>ncra/ncrcat</tt> rebase <a href="http://nco.sf.net/nco.html#rbs">bounds</a>;</li>
 <li><b>NCO 4.2.0</b>: 
 <tt>ncecat</tt> "fixes" auxiliary coordinates and bounds;
-<tt>ncks</tt> use <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
+<tt>ncks</tt> uses <tt>nc__open</tt>, format <tt>NC_INT</tt> with <tt>%i</tt>;
 <tt>ncra -y ttl</tt> fix;
 <tt>ncrcat</tt> UDUnits fix;
 <tt>ncwa</tt> and <tt>ncap2</tt> limited NaN support;
@@ -1526,11 +1527,11 @@ A new &ldquo;feature&rdquo; of netCDF3 has been identified that can
 lead to unusually slow performance. 
 Unfortunately, this problem is triggered by an aggregate pattern of
 file access so the workaround must be implemented in the application
-  software (i.e., NCO) rather than in the netCDF library itself.  
+software (i.e., NCO) rather than in the netCDF library itself.  
 It is normally encountered on Multi-record Multi-variable netCDF3
-  files (MM3s), so we call this the MM3-workaround.  
+files (MM3s), so we call this the MM3-workaround.  
 If you encounter unusually slow NCO performance while using NCO to
-  analyze MM3 files on a large blocksize filesystem, 
+analyze MM3 files on a large blocksize filesystem, 
 chances are you are encountering an MM3-induced slowdown. 
 NCO release 4.1.0 implements the MM3-workaround for <tt>ncks</tt>.  
 It speeds-up common ncks sub-setting on NCAR's GLADE by 10-50x.  
@@ -1637,6 +1638,25 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncra_flg_bfr_nrm -->
+<a name="bug_ncra_flg_bfr_nrm"></a>
+<li><i><tt>ncra</tt> bug when last file(s) is/are superfluous.
+Versions 4.2.1&mdash;4.2.3 of <tt>ncra</tt> incorrectly skipped
+writing the results of the final normalization when trailing files
+were superfluous (not used). 
+In the most common case, all values are zeros in the output file.
+Upgrade if you call <tt>ncra</tt> with trailing superfluous files. 
+</li>
+
+<!-- http://nco.sf.net#bug_ncecat_nintap -->
+<a name="bug_ncecat_nintap"></a>
+<li><i><tt>ncecat</tt> bug when files generated with <tt>-n</tt>.
+Version 4.2.2 of <tt>ncecat</tt> could incorrectly skip the first
+input file in the default mode (RECORD_AGGREGATE) when 
+the <tt>-n NINTAP</tt> switch is used to automate filename generation.
+Upgrade if you use <tt>ncecat -n</tt>.
+</li>
+
 <!-- http://nco.sf.net#bug_ncra_cf_crd_rec_crd -->
 <a name="bug_ncra_cf_crd_rec_crd"></a>
 <li><i><tt>ncra</tt> bug handling CF <tt>coordinates</tt> attributes   
@@ -1653,6 +1673,7 @@ One workaround that does not require NCO upgrades is to remove the
 record coordinate name (usually <tt>time</tt>) from
 the <tt>coordinates</tt> attribute of all variables in CF-compliant
 files before processing the file with <tt>ncra</tt>.
+</li>
 
 <!-- http://nco.sf.net#bug_ncra_cf_YYYYMMDD_date -->
 <a name="bug_ncra_cf_YYYYMMDD_date"></a>
@@ -1669,6 +1690,7 @@ NCO attempts this in CCSM/CF-compliant files by using the
 since <tt>nbdate</tt>) variables to find the average date,
 converting that to YYYYMMDD, and writing that as the average value
 of <tt>date</tt>. 
+</li>
 
 <!-- http://nco.sf.net#bug_ncks_nc4_nc4_hyp_fix -->
 <a name="bug_ncks_nc4_nc4_hyp_fix"></a>
@@ -1684,6 +1706,7 @@ to explicitly specify chunking with, e.g.,
 <tt>ncea -d 0,1,lat in4.nc out4.nc</tt> (<tt>ncea</tt> does a no-op
 when there is only one input file), or to write to a netCDF3 file,
 <tt>ncks -3 -d 0,1,lat in4.nc out3.nc</tt>.
+</li>
 
 <!-- http://nco.sf.net#bug_ncks_m -->
 <a name="bug_ncks_m"></a>
