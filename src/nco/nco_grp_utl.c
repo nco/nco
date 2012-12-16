@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.325 2012-12-16 19:50:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.326 2012-12-16 20:07:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3537,3 +3537,55 @@ nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called w
 
   return;
 } /* end nco_prn_var_def_trv2() */
+
+
+void
+nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+(const int nc_id,                     /* I netCDF file ID */
+ lmt_all_sct *  const * lmt_lst,      /* I [sct] Dimension limits */
+ const int lmt_nbr,                   /* I [nbr] Number of dimensions with user-specified limits */
+ char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
+ const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
+ const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{ 
+  int grp_id;                  /* [ID] Group ID */
+  int var_id;                  /* [ID] Variable ID */
+  int fl_fmt;                  /* [nbr] File format */
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct trv=trv_tbl->lst[uidx];
+    /* Object is marked to export */
+    if(trv_tbl->lst[uidx].flg == True){
+
+#ifdef NCO_SANITY_CHECK
+      assert(trv.typ == nco_obj_typ_var);
+#endif
+
+      /* Obtain group ID from netCDF API using full group name */
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      }else{ /* netCDF3 case */
+        grp_id=nc_id;
+      }
+      /* Obtain variable ID from netCDF API using group ID */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+
+      /* Print full name of variable */
+      (void)fprintf(stdout,"%s\n",trv.nm_fll);
+
+      /* Print variable using the obtained grp_id instead of the netCDF file ID */
+      (void)nco_msa_prn_var_val(grp_id,trv.nm,lmt_lst,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
+
+    } /* end  marked to export */
+  } /* end uidx  */
+
+  return;
+} /* end nco_prn_var_val_trv2() */

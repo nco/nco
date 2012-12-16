@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.160 2012-12-16 19:50:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.161 2012-12-16 20:07:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -406,6 +406,20 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/write var
 void
 nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+(const int nc_id,                     /* I netCDF file ID */
+ lmt_all_sct *  const * lmt_lst,      /* I [sct] Dimension limits */
+ const int lmt_nbr,                   /* I [nbr] Number of dimensions with user-specified limits */
+ char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
+ const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
+ const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 

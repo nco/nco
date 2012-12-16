@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.533 2012-12-16 19:50:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.534 2012-12-16 20:07:24 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.533 2012-12-16 19:50:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.533 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.534 2012-12-16 20:07:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.534 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -998,7 +998,7 @@ main(int argc,char **argv)
           (void)nco_prn_att(in_id,grp_id,nm_id.id);
         } /* end loop over idx */
 
-#endif /* NCO_BUILD_TRV_TBL2 */
+#endif /* NCO_REPLACE_TRV_TBL2 */
 
       } else { /* !IS_NETCDF4 */
         for(idx=0;idx<xtr_nbr;idx++){
@@ -1012,6 +1012,10 @@ main(int argc,char **argv)
 
     if(PRN_VAR_DATA){
       if(IS_NETCDF4){
+
+#ifdef NCO_REPLACE_TRV_TBL2
+        (void)nco_prn_var_val_trv2(in_id,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+#else
         for(idx=0;idx<xtr_nbr;idx++) {
           nm_id_sct nm_id=xtr_lst[idx];     
           /* Obtain group ID from netCDF API using full group name */
@@ -1022,6 +1026,8 @@ main(int argc,char **argv)
           /* Print variable using the obtained grp_id instead of the netCDF file ID */
           (void)nco_msa_prn_var_val(grp_id,nm_id.nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
         } /* idx */
+#endif /* NCO_REPLACE_TRV_TBL2 */
+
       }else { /* !IS_NETCDF4 */
         /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
         for(idx=0;idx<xtr_nbr;idx++) {
