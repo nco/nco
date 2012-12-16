@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.530 2012-12-16 06:39:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.531 2012-12-16 19:04:32 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.530 2012-12-16 06:39:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.530 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.531 2012-12-16 19:04:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.531 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -866,7 +866,11 @@ main(int argc,char **argv)
 
     if(IS_NETCDF4){
       /* Define requested input groups/variables/chunksize parameters in output file */
+#ifdef NCO_REPLACE_TRV_TBL2
+      nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
+#else
       nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
+#endif   
     }else{ /* IS_NETCDF4 */
       for(idx=0;idx<xtr_nbr;idx++){
         int var_out_id;

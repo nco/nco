@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.186 2012-12-16 06:39:04 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.187 2012-12-16 19:04:31 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1045,8 +1045,13 @@ print "\n";
 
     $dsc_sng="(Groups required) Sort output alphabetically";
     $tst_cmd[0]="ncks -a -z $in_pth_arg in_grp.nc";
+	 if ($HAVE_NETCDF4_H == 1) {
     $tst_cmd[1]="var: /g8/vrt_nbr";
     $tst_cmd[2]="SS_OK";
+    }elsif ($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     

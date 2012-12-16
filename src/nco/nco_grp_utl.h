@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.158 2012-12-14 00:29:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.159 2012-12-16 19:04:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -380,6 +380,27 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
 
 void
 nco_get_prg_info();                   /* [fnc] Get program info */
+
+void
+nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/write variables in output file */
+(const int nc_id,                      /* I [ID] netCDF input file ID  */
+ const int nc_out_id,                  /* I [ID] netCDF output file ID  */
+ const gpe_sct * const gpe,            /* I [sng] GPE structure */
+ const int lmt_nbr,                    /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst,    /* I multi-hyperslab limits */
+ const int lmt_all_lst_nbr,            /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ nco_bool PRN_VAR_METADATA,            /* I [flg] Copy variable metadata (attributes) */
+ int * const cnk_map_ptr,              /* I [enm] Chunking map */
+ int * const cnk_plc_ptr,              /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ FILE * const fp_bnr,                  /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
+ const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
+ const nco_bool DEF_MODE,              /* I [flg] netCDF define mode is true */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 
 
