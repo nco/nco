@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.527 2012-12-16 23:58:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.528 2012-12-17 00:30:22 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -56,7 +56,7 @@ BUG FIXES:
 
 A. Fix bug introduced in 4.2.1 where ncra did not write results of
    final normalization if trailing file(s) was/were superfluous.
-   In the most common case, all zeroes appeared in the output file.
+   In the most common case, all zeros appeared in the output file.
    http://nco.sf.net#bug_ncra_flg_bfr_nrm
 
 A. Fix 4.2.2 and 4.2.3 bug that kept NCO from building from source
