@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.327 2012-12-17 07:01:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.328 2012-12-17 19:14:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3589,3 +3589,111 @@ nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with 
 
   return;
 } /* end nco_prn_var_val_trv2() */
+
+
+void
+nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list using regular expressions */
+(const int nc_id,                     /* I [ID] Apex group ID */
+ char * const * const grp_lst_in,     /* I [sng] User-specified list of groups names to extract (specified with -g) */
+ const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
+ char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
+ const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
+ const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
+ trv_tbl_sct * trv_tbl)               /* I/O [sct] Traversal table */
+{
+  /* Purpose: Create variable extraction list with or without regular expressions */
+
+  char *var_sng;              /* [sng] User-specified variable name or regular expression */
+  char grp_nm[NC_MAX_NAME];   /* [sng] Relative group name */
+  int grp_id;                 /* [ID]  Group ID */
+  int fl_fmt;                 /* [enm] netCDF file format */
+  nco_bool flg_usr_mch_obj;   /* [flg] One or more objects match each user-supplied string */
+
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  int rx_mch_nbr;
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  /* CASE 1: both -v and -g were not specified: return all variables if none were specified and not -c ... */
+  if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
+    for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){   
+        trv_tbl->lst[uidx].flg=True;
+      }
+    } /* end uidx */
+    return;
+  } /* end if */
+
+  /* CASE 2: -v was specified (regardles of whether -g was specified)
+  Method: Outer loop over all objects in file contains inner loop over user-supplied variable list
+  Add variable to extraction list if it matches user-supplied name
+  Regular expressions are allowed */
+  if(var_xtr_nbr){
+    /* Loop over all objects in file */
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      /* Loop through user-specified variable list */
+      for(int idx=0;idx<var_xtr_nbr;idx++){
+        var_sng=var_lst_in[idx];
+
+        /* Convert pound signs (back) to commas */
+        nco_hash2comma(var_sng);
+
+        /* If var_sng is regular expression ... */
+        if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+          /* ... and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+          if((rx_mch_nbr=nco_trv_rx_search(var_sng,nco_obj_typ_var,trv_tbl))) flg_usr_mch_obj=True;
+          if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng,(trv_tbl->lst[uidx].typ == nco_obj_typ_grp) ? "group" : "variable"); 
+          continue;
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+          nco_exit(EXIT_FAILURE);
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+        } /* end if regular expression */
+
+        /* Compare var_nm from main iteration with var_sng found and, if equal, add to extraction list */
+        if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && !strcmp(var_sng,trv_tbl->lst[uidx].nm)){
+          if(!grp_xtr_nbr){
+            /* No groups specified with -g, so add variable to extraction list */
+            trv_tbl->lst[uidx].flg=True;
+          }else{ /* grp_xtr_nbr */
+            /* Groups specified with -g, so add variable to extraction list only if in matching group */
+            for(int idx_grp=0;idx_grp<grp_xtr_nbr;idx_grp++){
+              if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+                (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
+              }else{ 
+                grp_id=nc_id;
+              } 
+              (void)nco_inq_grpname(grp_id,grp_nm);
+              if(!strcmp(grp_nm,grp_lst_in[idx_grp])){
+                trv_tbl->lst[uidx].flg=True;
+              } /* end strcmp() */
+            } /* end idx_grp */
+          } /* end grp_xtr_nbr */
+        }  /* end strcmp() */
+      } /* end loop over var_lst_in */ 
+    } /* end loop over trv_tbl uidx */
+
+  }else if(grp_xtr_nbr && var_xtr_nbr == 0){ 
+
+    /* CASE 3: -v was not specified and -g was
+    Regular expressions are not yet allowed in -g arguments */
+
+    for(int idx_grp=0;idx_grp<grp_xtr_nbr;idx_grp++){ /* Outer loop over user-specified group list */
+      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){ /* Inner loop over variables */
+        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+          (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
+        }else{ 
+          grp_id=nc_id;
+        } 
+        (void)nco_inq_grpname(grp_id,grp_nm);
+        if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && !strcmp(grp_nm,grp_lst_in[idx_grp])){
+          trv_tbl->lst[uidx].flg=True;
+        } /* end strcmp */
+      } /* end idx_var_crr */
+    } /* end idx_grp */
+  } /* end Case 3 */
+
+} /* end nco_var_lst_mk_trv3() */
