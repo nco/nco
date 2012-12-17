@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.332 2012-12-17 20:53:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.333 2012-12-17 22:55:47 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2109,111 +2109,111 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
         usr_sng_lng--;
       } /* flg_rcr_mch_grp */
 
-      /* Turn-on root-anchoring for groups? */
-      if(obj_typ == nco_obj_typ_grp)
-        if(usr_sng[0L] == sls_chr)
-          flg_ncr_mch_grp=True;
+    /* Turn-on root-anchoring for groups? */
+    if(obj_typ == nco_obj_typ_grp)
+      if(usr_sng[0L] == sls_chr)
+	flg_ncr_mch_grp=True;
 
-      /* Convert pound signs (back) to commas */
-      nco_hash2comma(usr_sng);
+    /* Convert pound signs (back) to commas */
+    nco_hash2comma(usr_sng);
 
-      /* If usr_sng is regular expression ... */
-      if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
-        /* ... and regular expression library is present */
+    /* If usr_sng is regular expression ... */
+    if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
+      /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-        if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
-        if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
-        continue;
+      if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
+      if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
+      continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-        (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
-        nco_exit(EXIT_FAILURE);
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+      nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-      } /* end if regular expression */
+    } /* end if regular expression */
 
       /* usr_sng is not rx, so manually search for multicomponent matches */
-      for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+      
+      /* Create shallow copy to avoid indirection */
+      trv_obj=trv_tbl->lst[tbl_idx];
+      
+      if(trv_obj.typ == obj_typ){
+	
+	/* Initialize defaults for current candidate path to match */
+	flg_pth_srt_bnd=False;
+	flg_pth_end_bnd=False;
+	flg_var_cnd=False;
+	flg_rcr_mch_crr=True;
+	flg_ncr_mch_crr=True;
+	
+	/* Look for partial match, not necessarily on path boundaries */
+	if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
+	  
+	  /* Ensure match spans (begins and ends on) whole path-component boundaries */
+	  
+	  /* Does match begin at path component boundary ... directly on a slash? */
+	  if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
+	  
+	  /* ...or one after a component boundary? */
+	  if((sbs_srt > trv_obj.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
+	  
+	  /* Does match end at path component boundary ... directly on a slash? */
+	  sbs_end=sbs_srt+usr_sng_lng-1L;
+	  
+	  if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
+	  
+	  /* ...or one before a component boundary? */
+	  if(sbs_end <= trv_obj.nm_fll+trv_obj.nm_fll_lng-1L)
+	    if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
+	      flg_pth_end_bnd=True;
+	  
+	  /* Additional condition for variables is user-supplied string must end with short form of variable name */
+	  if(obj_typ == nco_obj_typ_var){
+	    var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
+	    if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True; else flg_var_cnd=False;
+	    if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+	  } /* endif var */
 
-        /* Create shallow copy to avoid indirection */
-        trv_obj=trv_tbl->lst[tbl_idx];
+	  /* If anchoring, match must begin at root */
+	  if(flg_ncr_mch_grp && *sbs_srt != sls_chr) flg_ncr_mch_crr=False;
+	  
+	  /* If no recursion, match must terminate user-supplied string */
+	  if(!flg_rcr_mch_grp && *(sbs_end+1L)) flg_rcr_mch_crr=False;
+	  
+	  /* Set traversal table flags */
+	  if(obj_typ == nco_obj_typ_var){
+	    /* Variables must meet necessary flags for variables */
+	    if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
+	      trv_tbl->lst[tbl_idx].flg_mch=True;
+	      trv_tbl->lst[tbl_idx].flg_rcr=False;
+	    } /* end flags */
+	  }else{ /* !nco_obj_typ_var */
+	    /* Groups must meet necessary flags for groups */
+	    if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
+	      trv_tbl->lst[tbl_idx].flg_mch=True;
+	      trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
+	    } /* end flags */
+	  }  /* !nco_obj_typ_var */
+	  
+	  /* Set function return condition */
+	  if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
+	  
+	  if(dbg_lvl_get() == nco_dbg_crr){
+	    (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
+	    if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
+	    if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
+	    (void)fprintf(stderr,"\n");
+	  } /* end if */
 
-        if(trv_obj.typ == obj_typ){
+	} /* endif strstr() */
+      } /* endif nco_obj_typ */
+    } /* end loop over tbl_idx */
 
-          /* Initialize defaults for current candidate path to match */
-          flg_pth_srt_bnd=False;
-          flg_pth_end_bnd=False;
-          flg_var_cnd=False;
-          flg_rcr_mch_crr=True;
-          flg_ncr_mch_crr=True;
-
-          /* Look for partial match, not necessarily on path boundaries */
-          if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
-
-            /* Ensure match spans (begins and ends on) whole path-component boundaries */
-
-            /* Does match begin at path component boundary ... directly on a slash? */
-            if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
-
-            /* ...or one after a component boundary? */
-            if((sbs_srt > trv_obj.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
-
-            /* Does match end at path component boundary ... directly on a slash? */
-            sbs_end=sbs_srt+usr_sng_lng-1L;
-
-            if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
-
-            /* ...or one before a component boundary? */
-            if(sbs_end <= trv_obj.nm_fll+trv_obj.nm_fll_lng-1L)
-              if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
-                flg_pth_end_bnd=True;
-
-            /* Additional condition for variables is user-supplied string must end with short form of variable name */
-            if(obj_typ == nco_obj_typ_var){
-              var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
-              if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True; else flg_var_cnd=False;
-              if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
-            } /* endif var */
-
-            /* If anchoring, match must begin at root */
-            if(flg_ncr_mch_grp && *sbs_srt != sls_chr) flg_ncr_mch_crr=False;
-
-            /* If no recursion, match must terminate user-supplied string */
-            if(!flg_rcr_mch_grp && *(sbs_end+1L)) flg_rcr_mch_crr=False;
-
-            /* Set traversal table flags */
-            if(obj_typ == nco_obj_typ_var){
-              /* Variables must meet necessary flags for variables */
-              if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
-                trv_tbl->lst[tbl_idx].flg_mch=True;
-                trv_tbl->lst[tbl_idx].flg_rcr=False;
-              } /* end flags */
-            }else{ /* !nco_obj_typ_var */
-              /* Groups must meet necessary flags for groups */
-              if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
-                trv_tbl->lst[tbl_idx].flg_mch=True;
-                trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
-              } /* end flags */
-            }  /* !nco_obj_typ_var */
-
-            /* Set function return condition */
-            if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
-
-            if(dbg_lvl_get() == nco_dbg_crr){
-              (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
-              if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
-              if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
-              (void)fprintf(stderr,"\n");
-            } /* end if */
-
-          } /* endif strstr() */
-        } /* endif nco_obj_typ */
-      } /* end loop over tbl_idx */
-
-      if(!flg_usr_mch_obj){
-        (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
-        nco_exit(EXIT_FAILURE);
-      } /* flg_usr_mch_obj */
-      /* Free dynamic memory */
-      if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
+    if(!flg_usr_mch_obj){
+      (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+      nco_exit(EXIT_FAILURE);
+    } /* flg_usr_mch_obj */
+    /* Free dynamic memory */
+    if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
 
   } /* obj_idx */
 
