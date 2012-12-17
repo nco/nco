@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.331 2012-12-17 20:37:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.332 2012-12-17 20:53:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3743,7 +3743,9 @@ nco_var_lst_mk_trv4                   /* [fnc] Create variable extraction list u
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     /* Object is a variable */
     if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){ 
-      trv_tbl->lst[uidx].flg=trv_tbl->lst[uidx].flg_mch;
+      if(trv_tbl->lst[uidx].flg_mch == True){
+        trv_tbl->lst[uidx].flg=trv_tbl->lst[uidx].flg_mch;
+      }
     } /* if nco_obj_typ_var */
   } /* end loop over trv_tbl uidx */
 
