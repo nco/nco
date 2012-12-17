@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.328 2012-12-17 19:14:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.329 2012-12-17 19:33:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1075,7 +1075,7 @@ nco_grp_itr
   obj.nbr_dmn=nbr_dmn;
   obj.nbr_grp=nbr_grp;
   obj.xcl_flg=nco_obj_typ_err;
-  obj.flg=nco_obj_typ_err;
+  obj.flg=nco_obj_typ_err; /* For groups, this should always be nco_obj_typ_err (-1) */
   trv_tbl_add(obj,trv_tbl);
 
   /* Iterate variables for this group */
@@ -1108,7 +1108,7 @@ nco_grp_itr
     obj.nm_fll_lng=strlen(var_nm_fll);
     obj.nm_lng=strlen(var_nm);
     obj.xcl_flg=nco_obj_typ_err;
-    obj.flg=nco_obj_typ_err;
+    obj.flg=False; /* For variables, initialize to False */
     strcpy(obj.nm,var_nm);
     trv_tbl_add(obj,trv_tbl);
     var_nm_fll=(char*)nco_free(var_nm_fll);
@@ -2766,8 +2766,7 @@ nco_var_lst_xcl_trv2                  /* [fnc] Convert exclusion list to extract
 {
   /* Purpose: Convert exclusion list to extraction list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->lst[uidx].flg != nco_obj_typ_err){
-      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
+    if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){
       trv_tbl->lst[uidx].flg=!trv_tbl->lst[uidx].flg;
     } /* end nco_obj_typ_var */
   } /* end loop over uidx */
