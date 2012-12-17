@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.535 2012-12-17 19:33:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.536 2012-12-17 20:37:58 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.535 2012-12-17 19:33:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.535 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.536 2012-12-17 20:37:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.536 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -685,8 +685,8 @@ main(int argc,char **argv)
 
 #ifdef NCO_BUILD_TRV_TBL2
   /* Form initial extraction list which may include extended regular expressions */
-  (void)nco_var_lst_mk_trv3(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,trv_tbl);
-#ifdef NCO_SANITY_CHECK 
+  (void)nco_var_lst_mk_trv4(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,trv_tbl);
+#ifdef NCO_SANITY_CHECK1 
   (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,True);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */
@@ -696,7 +696,7 @@ main(int argc,char **argv)
     xtr_lst=nco_var_lst_xcl_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
 #ifdef NCO_BUILD_TRV_TBL2
     (void)nco_var_lst_xcl_trv2(trv_tbl);
-#ifdef NCO_SANITY_CHECK 
+#ifdef NCO_SANITY_CHECK1 
     (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,True);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */
@@ -729,7 +729,7 @@ main(int argc,char **argv)
       (void)nco_var_lst_crd_add_cf_trv2(in_id,"coordinates",trv_tbl);
       (void)nco_var_lst_crd_add_cf_trv2(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
-#ifdef NCO_SANITY_CHECK 
+#ifdef NCO_SANITY_CHECK1 
     (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,False);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */
@@ -755,7 +755,7 @@ main(int argc,char **argv)
       (void)nco_var_lst_crd_ass_add_cf_trv2(in_id,"coordinates",trv_tbl);
       (void)nco_var_lst_crd_ass_add_cf_trv2(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
-#ifdef NCO_SANITY_CHECK 
+#ifdef NCO_SANITY_CHECK1 
     (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,False);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */

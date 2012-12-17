@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.330 2012-12-17 19:45:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.331 2012-12-17 20:37:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3702,3 +3702,50 @@ nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list u
   } /* end Case 3 */
 
 } /* end nco_var_lst_mk_trv3() */
+
+
+void
+nco_var_lst_mk_trv4                   /* [fnc] Create variable extraction list using regular expressions */
+(const int nc_id,                     /* I [ID] Apex group ID */
+ char * const * const grp_lst_in,     /* I [sng] User-specified list of groups names to extract (specified with -g) */
+ const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
+ char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
+ const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
+ const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
+ trv_tbl_sct * trv_tbl)               /* I/O [sct] Traversal table */
+{
+  /* Purpose: Create variable extraction list with or without regular expressions */
+
+  char *var_sng;              /* [sng] User-specified variable name or regular expression */
+  char grp_nm[NC_MAX_NAME];   /* [sng] Relative group name */
+  int grp_id;                 /* [ID]  Group ID */
+  int fl_fmt;                 /* [enm] netCDF file format */
+  nco_bool flg_usr_mch_obj;   /* [flg] One or more objects match each user-supplied string */
+
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  int rx_mch_nbr;
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  /* CASE 1: both -v and -g were not specified: return all variables if none were specified and not -c ... */
+  if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
+    for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){   
+        trv_tbl->lst[uidx].flg=True;
+      }
+    } /* end uidx */
+    return;
+  } /* end if */
+
+  /* Loop over all objects in file */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    /* Object is a variable */
+    if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){ 
+      trv_tbl->lst[uidx].flg=trv_tbl->lst[uidx].flg_mch;
+    } /* if nco_obj_typ_var */
+  } /* end loop over trv_tbl uidx */
+
+  return;
+} /* end nco_var_lst_mk_trv4() */
