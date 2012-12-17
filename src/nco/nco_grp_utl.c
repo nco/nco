@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.326 2012-12-16 20:07:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.327 2012-12-17 07:01:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3275,7 +3275,7 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
 
 
 void
-nco_get_prg_info()                   /* [fnc] Get program info */
+nco_get_prg_info(void)                 /* [fnc] Get program info */
 {
   int ret=10;
 #ifndef HAVE_NETCDF4_H 

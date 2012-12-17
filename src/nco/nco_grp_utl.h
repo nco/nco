@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.161 2012-12-16 20:07:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.162 2012-12-17 07:01:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -379,7 +379,7 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 void
-nco_get_prg_info();                   /* [fnc] Get program info */
+nco_get_prg_info(void);               /* [fnc] Get program info */
 
 void
 nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/write variables in output file */
