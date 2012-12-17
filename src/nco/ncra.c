@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.311 2012-12-16 23:58:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.312 2012-12-17 00:04:20 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.311 2012-12-16 23:58:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.311 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.312 2012-12-17 00:04:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.312 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -818,7 +818,10 @@ main(int argc,char **argv)
 	   lmt_rec->rec_rmn_prv_drn: Structure member, at start of this while loop, contains records remaining-to-be-read to complete duration group from previous file. Structure member remains constant until next file is read.
 	   rec_in_cml: Cumulative number of records, read or not, in all files opened so far. Similar to lmt_rec->rec_in_cml but augmented at end of record loop, rather than prior to record loop.
 	   rec_rmn_prv_drn: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from drn_nbr->0 for each group contained in current file.
-	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
+	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
+
+	   Flag juggling:
+	   REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops along with ncea normalization. FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR. */
 	
 	/* Last stride in file has distinct index-augmenting behavior */
 	if(idx_rec_crr_in >= lmt_rec->end) REC_SRD_LST=True; else REC_SRD_LST=False;
@@ -1055,7 +1058,7 @@ main(int argc,char **argv)
      NB: nco_cnv_arm_time_install() contains OpenMP critical region */
   if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
   
-  /* Copy averages to output file */
+  /* Copy averages to output file for ncea always and for ncra when trailing file(s) was/were superfluous */
   if(FLG_BFR_NRM){
     for(idx=0;idx<nbr_var_prc;idx++){
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
