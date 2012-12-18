@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.338 2012-12-18 16:38:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.339 2012-12-18 18:18:51 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2252,6 +2252,9 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
      ncks -O -D 5 -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc
      ncks -O -D 5 -g g3g.+,g9/ -v scl,/g1/g1g1/v1 ~/nco/data/in_grp.nc ~/foo.nc */
   
+  const char fnc_nm[]="nco_mk_xtr()"; /* [sng] Function name */
+  const char sls_chr='/'; /* [chr] Slash character */
+  
   char **obj_lst_in; /* [sng] User-specified list of objects */
 
   char *sbs_srt; /* [sng] Location of user-string match start in object path */
@@ -2259,18 +2262,15 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
   char *usr_sng; /* [sng] User-supplied object name */
   char *var_mch_srt; /* [sng] Location of variable short name in user-string */
   
-  const char sls_chr='/'; /* [chr] Slash character */
-  const char fnc_nm[]="nco_mk_xtr()"; /* [sng] Function name */
-  
   int obj_nbr; /* [nbr] Number of objects in list */
 
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
-  nco_bool flg_nsx; /* [flg] Select intersection of specified groups and variables */
   nco_bool flg_ncr_mch_crr; /* [flg] Current group meets anchoring properties of this user-supplied string */
   nco_bool flg_ncr_mch_grp; /* [flg] User-supplied string anchors at root */
+  nco_bool flg_nsx; /* [flg] Select intersection of specified groups and variables */
   nco_bool flg_pth_end_bnd; /* [flg] String ends   at path component boundary */
   nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
   nco_bool flg_rcr_mch_crr; /* [flg] Current group meets recursion criteria of this user-supplied string */
@@ -2287,10 +2287,11 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
   /* Initialize */
   flg_nsx=!flg_unn;
 
+  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s Extraction list will be formed as %s of group and variable specifications\n",prg_nm_get(),fnc_nm,(flg_unn) ? "union" : "intersection");
+
   /* Specifying no groups or variables is equivalent to requesting all */
-  if(grp_xtr_nbr == 0 && var_xtr_nbr == 0){
+  if(!grp_xtr_nbr && !var_xtr_nbr)
     for(int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++) trv_tbl->lst[obj_idx].flg_mch=True;
-  } /* grp_xtr_nbr && var_xtr_nbr */
 
   for(int itr_idx=0;itr_idx<2;itr_idx++){
     
@@ -2390,7 +2391,7 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
 	    if(obj_typ == nco_obj_typ_var){
 	      var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
 	      if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True; else flg_var_cnd=False;
-	      if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+	      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
 	    } /* endif var */
 	    
 	    /* If anchoring, match must begin at root */
@@ -2417,7 +2418,7 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
 	    /* Set function return condition */
 	    if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
 	    
-	    if(dbg_lvl_get() == nco_dbg_crr){
+	    if(dbg_lvl_get() >= nco_dbg_crr){
 	      (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
 	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
 	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
@@ -2437,12 +2438,27 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
 
     } /* obj_idx */
 
-    if(dbg_lvl_get() == nco_dbg_crr){
+    if(dbg_lvl_get() >= nco_dbg_var){
       (void)fprintf(stdout,"%s: INFO %s reports following %s match sub-setting and regular expressions:\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
       trv_tbl_prn_flg_mch(trv_tbl,obj_typ);
     } /* endif dbg */
 
   } /* itr_idx */
+
+  /* Compute intersection of groups and variables if necessary */
+  if(grp_xtr_nbr && var_xtr_nbr){
+    for(int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+      /* Create shallow copy to avoid indirection */
+      trv_obj=trv_tbl->lst[tbl_idx];
+
+      if(trv_obj.typ == nco_obj_typ_grp){
+
+	if(trv_tbl->lst[tbl_idx].flg_mch) trv_tbl->lst[tbl_idx].flg_mch=True;
+
+      } /* nco_obj_typ_grp */
+    } /* end loop over tbl_idx */
+  } /* grp_xtr_nbr && var_xtr_nbr */
 
   return (nco_bool)True;
 
