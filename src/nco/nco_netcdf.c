@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.173 2012-12-18 21:54:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.174 2012-12-18 22:25:40 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1654,6 +1654,15 @@ int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){
    Stubs thus present a fake library for manipulating netCDF3 files with the netCDF4 API */
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
+int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
+int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
+int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}
+int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
+int nco_inq_grp_parent(const int nc_id,int * const prn_id){assert(0);return NC_NOERR;}
+int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
+int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_grpname(const int nc_id,char * const grp_nm)
 {
   if (grp_nm) strcpy(grp_nm, "/");
@@ -1677,25 +1686,28 @@ int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
   rcd=nc_inq_unlimdim(nc_id, &unlimid);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdims()");
   if (unlimid != -1) {
-    if(nbr_dmn_ult) *nbr_dmn_ult = 1;
+    if(nbr_dmn_ult) *nbr_dmn_ult=1;
     if (dmn_ids_ult)
-      dmn_ids_ult[0] = unlimid;
+      dmn_ids_ult[0]=unlimid;
   } else {
-    if(nbr_dmn_ult) *nbr_dmn_ult = 0;
+    if(nbr_dmn_ult) *nbr_dmn_ult=0;
   }
   return NC_NOERR;
 }
-int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
-int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
-int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}
-int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
-int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
-int nco_inq_grp_parent(const int nc_id,int * const prn_id){assert(0);return NC_NOERR;}
-int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){assert(0);return NC_NOERR;}
-int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
-int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
-int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
-
+int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids)
+{
+  int rcd, v, nvars;
+  /* If this is a netcdf-3 file, there is only one group, the root
+  group, and its vars have ids 0 thru nvars - 1. */
+  rcd=nc_inq(nc_id, NULL, &nvars, NULL, NULL);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varids()");
+  if(var_nbr) *var_nbr=nvars;
+  if (var_ids){
+    for (v=0;v<nvars;v++)
+      var_ids[v]=v;
+  }
+  return NC_NOERR;
+}
 #endif /* HAVE_NETCDF4_H */
 #ifndef _MSC_VER
 #ifndef ENABLE_NETCDF4
