@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.537 2012-12-17 21:22:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.538 2012-12-18 03:18:17 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -153,8 +153,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.537 2012-12-17 21:22:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.537 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.538 2012-12-18 03:18:17 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.538 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -687,7 +687,7 @@ main(int argc,char **argv)
 #ifdef NCO_BUILD_TRV_TBL2
   /* Form initial extraction list which may include extended regular expressions */
   (void)nco_var_lst_mk_trv3(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,trv_tbl);
-#ifdef NCO_SANITY_CHECK1 
+#ifdef NCO_SANITY_CHECK 
   (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,True);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */
@@ -704,7 +704,7 @@ main(int argc,char **argv)
     /* Print extraction list in verbose mode */
     if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
 
-#ifdef NCO_SANITY_CHECK1 
+#ifdef NCO_SANITY_CHECK 
     (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,True);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */
@@ -741,7 +741,7 @@ main(int argc,char **argv)
     /* Print extraction list in verbose mode */
     if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
 
-#ifdef NCO_SANITY_CHECK1 
+#ifdef NCO_SANITY_CHECK 
     (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,False);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */
@@ -771,7 +771,7 @@ main(int argc,char **argv)
     /* Print extraction list in verbose mode */
     if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
 
-#ifdef NCO_SANITY_CHECK1 
+#ifdef NCO_SANITY_CHECK 
     (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,False);
 #endif /* NCO_SANITY_CHECK */
 #endif /* NCO_BUILD_TRV_TBL2 */

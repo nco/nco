@@ -10,7 +10,7 @@ unix {
  QMAKE_CFLAGS += -std=c99
  INCLUDEPATH += /usr/local/include
  INCLUDEPATH += /usr/local
- LIBS += -L/usr/local/lib -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5 
+ LIBS += -L/usr/local/lib -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5 -lgsl -lgslcblas -lm
  LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/i386-linux-gnu/ -lz -ludunits2 -lexpat 
 }
 

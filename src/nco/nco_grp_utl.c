@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.333 2012-12-17 22:55:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.334 2012-12-18 03:18:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3406,7 +3406,11 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
       } /* end get variables for this group */  
 
       /* If output group does not exist, create it */
-      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+      }else{ /* netCDF3 case */
+        grp_out_id=nc_out_id;
+      }
 
       /* Detect GPE duplicate names */
       char *gpe_var_nm_fll=NULL;  
