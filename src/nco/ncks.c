@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.540 2012-12-18 03:58:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.541 2012-12-18 06:43:45 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -103,6 +103,7 @@ main(int argc,char **argv)
   nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
   nco_bool GET_PRG_INFO=False; /* [flg] Get compiled program information (e.g libraries) */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool IS_NETCDF4; /* [flg] is a netCDF4 file */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
@@ -153,8 +154,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.540 2012-12-18 03:58:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.540 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.541 2012-12-18 06:43:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.541 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -249,6 +250,10 @@ main(int argc,char **argv)
       {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
       {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
       {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
+      {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+      {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+      {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+      {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
       /* Long options with argument, no short option counterpart */
@@ -436,6 +441,8 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nGroup sub-setting\t-g\nMD5 digests\t\t--md5_digest\nMPI implementation\t--mpi_implementation\nMSA user order\t\t--msa_usr_rdr\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
+      if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
+      if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
@@ -632,11 +639,16 @@ main(int argc,char **argv)
   } /* netCDF4 */
 #endif /* ENABLE_NETCDF4 */
 
+#if 1
   /* Ensure all specified variable names are valid */
   if(xtr_nbr) nco_chk_trv(var_lst_in,xtr_nbr,nco_obj_typ_var,trv_tbl); 
 
   /* Ensure all specified group names are valid */
   if(grp_nbr) nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl);
+#else
+  /* Check -v and -g input names and create extraction list */
+  nco_mk_xtr(grp_lst_in,grp_nbr,var_lst_in,var_nbr,GRP_VAR_UNN,trv_tbl);
+#endif
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

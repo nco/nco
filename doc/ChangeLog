@@ -1,3 +1,7 @@
+2012-12-17  Charlie Zender  <zender@uci.edu>
+
+	* Prototype new extraction list maker nco_mk_xtr()
+
 2012-12-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.4 release procedure:
@@ -7948,7 +7952,7 @@
 
 2003-03-25  Charlie Zender  <zender@uci.edu>
 
-	* Made --op_rlt, --cmp, --op_cmp, --compare synonymous with -o for ncwa 
+	* Made --op_rlt, --cmp, --op_cmp, --compare synonymous with -o for ncwa
 
 	* Re-arrange output from --usage, --help options
 
@@ -7996,7 +8000,7 @@
 	NB: Files in debian/ are for 2.2.0 (i.e., way out of date)
 	We are trying to Debian-ize upstream source for NCO ~2.8.0
 	Expect some hiccups when that finally happens
-	
+
 	* Insert LINUXARM in Linux portion of bld/Makefile
 
 	* Synchronize Debian nco/doc/man with CVS nco/man
@@ -8004,7 +8008,7 @@
 	* Add Debian files by Brian Mays to CVS repository:
  	debian: changelog control convert copyright postinst prerm rules
 	bld: linux1 linux2 (appear obsolete and may soon be removed)
-	
+
 2003-02-25  Charlie Zender  <zender@uci.edu>
 
 	* Builds cleanly on LINUX, IRIX, AIX
@@ -8021,7 +8025,7 @@
 2003-01-29  Charlie Zender  <zender@uci.edu>
 
         * Documented procedure for computing covariance of two variables
-	using http://jisao.washington.edu/data/nco/ as template 
+	using http://jisao.washington.edu/data/nco/ as template
 
 2003-01-20  Charlie Zender  <zender@uci.edu>
 

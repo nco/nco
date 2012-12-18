@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.164 2012-12-17 20:37:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.165 2012-12-18 06:43:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -244,6 +244,15 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 (char * const * const obj_lst_in, /* I [sng] User-specified list of object names */
  const int obj_xtr_nbr, /* I [nbr] Number of items in list */
  const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
+ trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+nco_bool /* O [flg] All names are in file */
+nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
+(char * const * const grp_lst_in, /* I [sng] User-specified list of groups */
+ const int grp_xtr_nbr, /* I [nbr] Number of groups in list */
+ char * const * const var_lst_in, /* I [sng] User-specified list of variables */
+ const int var_xtr_nbr, /* I [nbr] Number of variables in list */
+ const nco_bool flg_unn, /* I [flg] Select union of specified groups and variables */
  trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void
