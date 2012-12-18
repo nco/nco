@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.339 2012-12-18 18:18:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.340 2012-12-18 21:07:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3940,19 +3940,6 @@ nco_var_lst_mk_trv4                   /* [fnc] Create variable extraction list u
  trv_tbl_sct * trv_tbl)               /* I/O [sct] Traversal table */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
-
-  char *var_sng;              /* [sng] User-specified variable name or regular expression */
-  char grp_nm[NC_MAX_NAME];   /* [sng] Relative group name */
-  int grp_id;                 /* [ID]  Group ID */
-  int fl_fmt;                 /* [enm] netCDF file format */
-  nco_bool flg_usr_mch_obj;   /* [flg] One or more objects match each user-supplied string */
-
-#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-  int rx_mch_nbr;
-#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-
-  /* Get file format */
-  (void)nco_inq_format(nc_id,&fl_fmt);
 
   /* CASE 1: both -v and -g were not specified: return all variables if none were specified and not -c ... */
   if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
