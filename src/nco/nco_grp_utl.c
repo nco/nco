@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.335 2012-12-18 03:56:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.336 2012-12-18 04:46:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3473,11 +3473,8 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
 
       } /* Define mode */
 
-      /* Memory management */
-      if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-
       /* If there are group attributes, write them, avoid root case, these are always copied elsewhere */
-      if(nbr_att && strcmp("/",trv.grp_nm_fll) != 0){
+      if(DEF_MODE && nbr_att && strcmp("/",trv.grp_nm_fll) != 0){
 
         /* Obtain group ID from netCDF API using full group name (NOTE: using GPE grp_out_fll name to write ) */
         nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
@@ -3486,6 +3483,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
       } /* End nbr_att */
 
       /* Memory management after current group */
+      if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
       var_ids=(int *)nco_free(var_ids);
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
