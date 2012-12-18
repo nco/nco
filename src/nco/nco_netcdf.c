@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.171 2012-12-18 21:25:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.172 2012-12-18 21:41:18 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1654,10 +1654,21 @@ int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){
    Stubs thus present a fake library for manipulating netCDF3 files with the netCDF4 API */
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
-int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){assert(0);return NC_NOERR;}
 int nco_inq_grpname(const int nc_id,char * const grp_nm)
 {
   if (grp_nm) strcpy(grp_nm, "/");
+  return NC_NOERR;
+}
+int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
+{
+  int rcd, d,ndims;
+  rcd=nc_inq(nc_id, &ndims,  NULL, NULL, NULL);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimids()");
+  /* If this is a netcdf-3 file, then the dimids are going to be 0 thru ndims-1, so just provide them. */
+  if(dmn_nbr) *dmn_nbr = ndims;
+  if (dmn_ids)
+    for (d = 0; d < ndims; d++)
+      dmn_ids[d] = d;
   return NC_NOERR;
 }
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
