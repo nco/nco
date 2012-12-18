@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.27 2012-12-18 03:56:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.28 2012-12-18 04:10:46 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -237,7 +237,7 @@ nco_cmp_trv_tbl_nm  /* [fnc] Compare two trv_sct's by name member */
  const void *val_2) /* I [sct] trv_sct to compare */
 {
   /* Purpose: Compare two trv_sct's by name structure member */
-  return strcmp((*(trv_sct const *)val_1).nm,(*(trv_sct const *)val_2).nm);
+  return strcmp((*(trv_sct const *)val_1).nm_fll,(*(trv_sct const *)val_2).nm_fll);
 } /* end nco_cmp_trv_tbl_nm() */
 
 void 
