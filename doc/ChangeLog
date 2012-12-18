@@ -1,3 +1,7 @@
+2012-12-18  Charlie Zender  <zender@uci.edu>
+
+	* Dupe netCDF4 stubs to present a fake library for manipulating netCDF3 files with the netCDF4 API
+
 2012-12-17  Charlie Zender  <zender@uci.edu>
 
 	* Use new extraction list checker nco_mk_xtr()
