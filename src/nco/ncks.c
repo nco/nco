@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.541 2012-12-18 06:43:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.542 2012-12-18 16:38:48 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -154,8 +154,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.541 2012-12-18 06:43:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.541 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.542 2012-12-18 16:38:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.542 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -640,14 +640,14 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
 
 #if 1
+  /* Check -v and -g input names and create extraction list */
+  nco_mk_xtr(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,GRP_VAR_UNN,trv_tbl);
+#else
   /* Ensure all specified variable names are valid */
   if(xtr_nbr) nco_chk_trv(var_lst_in,xtr_nbr,nco_obj_typ_var,trv_tbl); 
 
   /* Ensure all specified group names are valid */
   if(grp_nbr) nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl);
-#else
-  /* Check -v and -g input names and create extraction list */
-  nco_mk_xtr(grp_lst_in,grp_nbr,var_lst_in,var_nbr,GRP_VAR_UNN,trv_tbl);
 #endif
 
   /* Process -z option if requested */ 

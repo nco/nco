@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.337 2012-12-18 06:43:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.338 2012-12-18 16:38:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2287,6 +2287,11 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
   /* Initialize */
   flg_nsx=!flg_unn;
 
+  /* Specifying no groups or variables is equivalent to requesting all */
+  if(grp_xtr_nbr == 0 && var_xtr_nbr == 0){
+    for(int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++) trv_tbl->lst[obj_idx].flg_mch=True;
+  } /* grp_xtr_nbr && var_xtr_nbr */
+
   for(int itr_idx=0;itr_idx<2;itr_idx++){
     
     /* Set object type (group or variable) */
@@ -3327,7 +3332,6 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
   return;
 } /* end nco_aux_add_dmn_trv2() */ 
 
-
 void
 nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordinates associated with CF convention */
 (const int nc_id,                     /* I netCDF file ID */
@@ -3339,10 +3343,8 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if (trv.flg_xtr == True){
-#ifdef NCO_SANITY_CHECK
-      assert(trv.typ == nco_obj_typ_var);
-#endif
+    if (trv.typ == nco_obj_typ_var && trv.flg_xtr){
+
       /* Try to add to extraction list */
       (void)nco_aux_add_cf2(nc_id,trv.nm_fll,trv.nm,cf_nm,trv_tbl);
 
@@ -3351,8 +3353,6 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
 
   return;
 } /* nco_var_lst_crd_ass_add_cf_trv2() */
-
-
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_sct */
@@ -3368,10 +3368,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
 
   int nbr_tbl=0; 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->lst[uidx].flg_xtr == True){
-#ifdef NCO_SANITY_CHECK
-      assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
-#endif
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr == True){
       nbr_tbl++;
     } /* end flg == True */
   } /* end loop over uidx */
@@ -3380,7 +3377,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
 
   nbr_tbl=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->lst[uidx].flg_xtr == True){
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr == True){
       xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
@@ -3402,7 +3399,6 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
   *xtr_nbr=nbr_tbl;
   return xtr_lst;
 } /* end nco_nm_id_trv_tbl() */
-
 
 void
 nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
@@ -3443,10 +3439,8 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if (trv.flg_xtr == True){
-#ifdef NCO_SANITY_CHECK
-      assert(trv.typ == nco_obj_typ_var);
-#endif
+    if (trv.typ == nco_obj_typ_var && trv.flg_xtr){
+
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
         (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
@@ -3560,11 +3554,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     /* Object is marked to export */
-    if(trv_tbl->lst[uidx].flg_xtr == True){
-
-#ifdef NCO_SANITY_CHECK
-      assert(trv.typ == nco_obj_typ_var);
-#endif
+    if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
 
       /* Obtain group ID from netCDF API using full group name */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
