@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.75 2012-12-17 19:14:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.76 2012-12-18 03:56:36 pvicente Exp $ */
 
 /* Purpose: List utilities */
 
@@ -249,7 +249,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
       /* NB: Here is where match flag would be set to False if input were stateless */
       if(!regexec(rx,trv_tbl->lst[obj_idx].nm,rx_prn_sub_xpr_nbr,result,flg_exe)){
         trv_tbl->lst[obj_idx].flg_mch=True;
-        trv_tbl->lst[obj_idx].flg=True;
+        trv_tbl->lst[obj_idx].flg_xtr=True;
         mch_nbr++;
       } /* end if match */
     } /* end if obj_typ */

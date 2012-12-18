@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.26 2012-12-16 05:04:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.27 2012-12-18 03:56:36 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -29,7 +29,7 @@ trv_tbl_init
     tb->lst[idx].typ     = nco_obj_typ_err;
     tb->lst[idx].nm[0]   = '\0';
     tb->lst[idx].nm_lng  = 0L;
-    tb->lst[idx].flg     = nco_obj_typ_err;
+    tb->lst[idx].flg_xtr = nco_obj_typ_err;
     tb->lst[idx].xcl_flg = nco_obj_typ_err;
     tb->lst[idx].flg_mch = False;
     tb->lst[idx].flg_rcr = False;
@@ -79,7 +79,7 @@ trv_tbl_add
   strcpy(tbl->lst[idx].nm,obj.nm);
   tbl->lst[idx].nm_lng=obj.nm_lng;
   tbl->lst[idx].typ=obj.typ;
-  tbl->lst[idx].flg=obj.flg;
+  tbl->lst[idx].flg_xtr=obj.flg_xtr;
   tbl->lst[idx].xcl_flg=obj.xcl_flg;
   tbl->lst[idx].flg_mch=obj.flg_mch;
   tbl->lst[idx].flg_rcr=obj.flg_rcr;
@@ -189,7 +189,7 @@ trv_tbl_fnd_var_nm                    /* [fnc] Find a variable that matches para
 } /* end trv_tbl_fnd_var_nm() */ 
 
 void
-trv_tbl_mrk                           /* [fnc] Mark "var_nm_fll" with .flg flag in table */
+trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
@@ -198,19 +198,19 @@ trv_tbl_mrk                           /* [fnc] Mark "var_nm_fll" with .flg flag 
 #ifdef NCO_SANITY_CHECK
       assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
 #endif
-      trv_tbl->lst[uidx].flg=True;
+      trv_tbl->lst[uidx].flg_xtr=True;
     } /* end strcmp */
   } /* end loop over uidx */
   return;
-} /* end trv_tbl_mrk() */
+} /* end trv_tbl_mrk_xtr() */
 
 void 
-trv_tbl_prn_xtr                      /* [fnc] Print extraction .flg members of traversal table */
+trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal table */
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
-  int nbr_flg=0; /* [nbr] Number of marked .flg items in table */
+  int nbr_flg=0; 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->lst[uidx].flg == True){
+    if (trv_tbl->lst[uidx].flg_xtr == True){
 #ifdef NCO_SANITY_CHECK
       assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
 #endif
@@ -222,7 +222,7 @@ trv_tbl_prn_xtr                      /* [fnc] Print extraction .flg members of t
   int idx=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     /* Object is marked to export */
-    if(trv_tbl->lst[uidx].flg == True){
+    if(trv_tbl->lst[uidx].flg_xtr == True){
       (void)fprintf(stdout,"[%d] %s\n",idx,trv_tbl->lst[uidx].nm_fll); 
       assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
       idx++;

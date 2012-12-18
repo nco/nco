@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.538 2012-12-18 03:18:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.539 2012-12-18 03:56:36 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -153,8 +153,8 @@ main(int argc,char **argv)
   char *grp_out=NULL; /* [sng] Group name */
   char rth[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.538 2012-12-18 03:18:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.538 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.539 2012-12-18 03:56:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.539 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -793,6 +793,8 @@ main(int argc,char **argv)
 #endif /* NCO_BUILD_TRV_TBL2 */
 
   /* We now have final list of variables to extract. Phew. */
+
+  IS_NETCDF4=1;
 
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */

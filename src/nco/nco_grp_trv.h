@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.22 2012-12-16 05:04:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.23 2012-12-18 03:56:36 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -70,12 +70,12 @@ trv_tbl_fnd_var_nm                    /* [fnc] Find a variable that matches para
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
-trv_tbl_mrk                           /* [fnc] Mark item .flg in table */
+trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void 
-trv_tbl_prn_xtr                      /* [fnc] Print .flg member of traversal table */
+trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal table */
 (const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void 

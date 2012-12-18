@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.334 2012-12-18 03:18:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.335 2012-12-18 03:56:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1075,7 +1075,7 @@ nco_grp_itr
   obj.nbr_dmn=nbr_dmn;
   obj.nbr_grp=nbr_grp;
   obj.xcl_flg=nco_obj_typ_err;
-  obj.flg=nco_obj_typ_err; /* For groups, this should always be nco_obj_typ_err (-1) */
+  obj.flg_xtr=nco_obj_typ_err; /* For groups, this should always be nco_obj_typ_err (-1) */
   trv_tbl_add(obj,trv_tbl);
 
   /* Iterate variables for this group */
@@ -1108,7 +1108,7 @@ nco_grp_itr
     obj.nm_fll_lng=strlen(var_nm_fll);
     obj.nm_lng=strlen(var_nm);
     obj.xcl_flg=nco_obj_typ_err;
-    obj.flg=False; /* For variables, initialize to False */
+    obj.flg_xtr=False; /* For variables, initialize to False */
     strcpy(obj.nm,var_nm);
     trv_tbl_add(obj,trv_tbl);
     var_nm_fll=(char*)nco_free(var_nm_fll);
@@ -2622,7 +2622,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
   if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
       if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){   
-        trv_tbl->lst[uidx].flg=True;
+        trv_tbl->lst[uidx].flg_xtr=True;
       }
     } /* end uidx */
     return;
@@ -2745,9 +2745,9 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
     if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){ 
       /* NOTE: True/False must be set, initial value is -1; groups always stay -1 */ 
       if(var_xtr_rqs[idx_var_crr]){
-        trv_tbl->lst[uidx].flg=True;
+        trv_tbl->lst[uidx].flg_xtr=True;
       }else {
-        trv_tbl->lst[uidx].flg=False;
+        trv_tbl->lst[uidx].flg_xtr=False;
       }
       idx_var_crr++; 
     } /* end nco_obj_typ_var */
@@ -2767,7 +2767,7 @@ nco_var_lst_xcl_trv2                  /* [fnc] Convert exclusion list to extract
   /* Purpose: Convert exclusion list to extraction list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){
-      trv_tbl->lst[uidx].flg=!trv_tbl->lst[uidx].flg;
+      trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
     } /* end nco_obj_typ_var */
   } /* end loop over uidx */
   return;
@@ -2856,7 +2856,7 @@ nco_var_lst_crd_add_trv2              /* [fnc] Add all coordinates to extraction
           if(strcmp(dmn_nm,var_nm) == 0){
             /* No groups case, just add  */
             if (grp_xtr_nbr == 0 ){
-              (void)trv_tbl_mrk(var_nm_fll,trv_tbl);
+              (void)trv_tbl_mrk_xtr(var_nm_fll,trv_tbl);
             }
             /* Groups -g case, add only if current group name GRP_NM matches any of the supplied GRP_LST_IN names */
             else{  
@@ -2866,7 +2866,7 @@ nco_var_lst_crd_add_trv2              /* [fnc] Add all coordinates to extraction
                 char* pch=strstr(trv.nm,grp_lst_in[idx_grp]);
                 /* strstr returns the first occurrence of 'grp_lst_in' in 'trv.nm', the higher level group( closer to root) */
                 if(pch != NULL){
-                  (void)trv_tbl_mrk(var_nm_fll,trv_tbl);
+                  (void)trv_tbl_mrk_xtr(var_nm_fll,trv_tbl);
                 }
               } /* end idx_grp */       
             } /* end groups case */
@@ -3008,7 +3008,7 @@ nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordi
               4) "id": needed for "nco_prn_att"  to print variable's attributes
               5) "var_nm_fll": using full name to compare criteria */
 
-              (void)trv_tbl_mrk(cf_nm_fll,trv_tbl);
+              (void)trv_tbl_mrk_xtr(cf_nm_fll,trv_tbl);
             }
 
           } /* end nco_fnd_var_trv() */   
@@ -3094,7 +3094,7 @@ nco_aux_add_dmn_trv2                   /* [fnc] Add a coordinate variable that m
               4) "id": needed for "nco_prn_att"  to print variable's attributes
               5) "var_nm_fll": using full name to compare criteria */
 
-              (void)trv_tbl_mrk(dm_nm_fll,trv_tbl);
+              (void)trv_tbl_mrk_xtr(dm_nm_fll,trv_tbl);
 
             } /* End check if requested coordinate variable is already on extraction list */
 
@@ -3122,7 +3122,7 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if (trv.flg == True){
+    if (trv.flg_xtr == True){
 #ifdef NCO_SANITY_CHECK
       assert(trv.typ == nco_obj_typ_var);
 #endif
@@ -3149,9 +3149,9 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
   
   (void)nco_inq_format(nc_id,&fl_fmt);
 
-  int nbr_tbl=0; /* [nbr] Number of marked .flg items in table */
+  int nbr_tbl=0; 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->lst[uidx].flg == True){
+    if (trv_tbl->lst[uidx].flg_xtr == True){
 #ifdef NCO_SANITY_CHECK
       assert(trv_tbl->lst[uidx].typ == nco_obj_typ_var);
 #endif
@@ -3163,7 +3163,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
 
   nbr_tbl=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if (trv_tbl->lst[uidx].flg == True){
+    if (trv_tbl->lst[uidx].flg_xtr == True){
       xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
@@ -3226,7 +3226,7 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if (trv.flg == True){
+    if (trv.flg_xtr == True){
 #ifdef NCO_SANITY_CHECK
       assert(trv.typ == nco_obj_typ_var);
 #endif
@@ -3260,7 +3260,7 @@ nco_var_lst_crd_ass_add_trv2          /* [fnc] Add to extraction list all coordi
           strcpy(dm_nm_fll,trv.grp_nm_fll);
           if(strcmp(trv.grp_nm_fll,"/") !=0 ) strcat(dm_nm_fll,"/");
           strcat(dm_nm_fll,dmn_nm); 
-          (void)trv_tbl_mrk(dm_nm_fll,trv_tbl);
+          (void)trv_tbl_mrk_xtr(dm_nm_fll,trv_tbl);
           /* Free allocated */
           dm_nm_fll=(char *)nco_free(dm_nm_fll);
         }
@@ -3343,7 +3343,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     /* Object is marked to export */
-    if(trv_tbl->lst[uidx].flg == True){
+    if(trv_tbl->lst[uidx].flg_xtr == True){
 
 #ifdef NCO_SANITY_CHECK
       assert(trv.typ == nco_obj_typ_var);
@@ -3514,7 +3514,7 @@ nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called w
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     /* Object is marked to export */
-    if(trv_tbl->lst[uidx].flg == True){
+    if(trv_tbl->lst[uidx].flg_xtr == True){
 
 #ifdef NCO_SANITY_CHECK
       assert(trv.typ == nco_obj_typ_var);
@@ -3566,7 +3566,7 @@ nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     /* Object is marked to export */
-    if(trv_tbl->lst[uidx].flg == True){
+    if(trv_tbl->lst[uidx].flg_xtr == True){
 
 #ifdef NCO_SANITY_CHECK
       assert(trv.typ == nco_obj_typ_var);
@@ -3623,7 +3623,7 @@ nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list u
   if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
       if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){   
-        trv_tbl->lst[uidx].flg=True;
+        trv_tbl->lst[uidx].flg_xtr=True;
       }
     } /* end uidx */
     return;
@@ -3662,7 +3662,7 @@ nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list u
           if(!strcmp(var_sng,trv_tbl->lst[uidx].nm)){
             if(!grp_xtr_nbr){
               /* No groups specified with -g, so add variable to extraction list */
-              trv_tbl->lst[uidx].flg=True;
+              trv_tbl->lst[uidx].flg_xtr=True;
             }else{ /* grp_xtr_nbr */
               /* Groups specified with -g, so add variable to extraction list only if in matching group */
               for(int idx_grp=0;idx_grp<grp_xtr_nbr;idx_grp++){
@@ -3673,7 +3673,7 @@ nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list u
                 } 
                 (void)nco_inq_grpname(grp_id,grp_nm);
                 if(!strcmp(grp_nm,grp_lst_in[idx_grp])){
-                  trv_tbl->lst[uidx].flg=True;
+                  trv_tbl->lst[uidx].flg_xtr=True;
                 } /* end strcmp() */
               } /* end idx_grp */
             } /* end grp_xtr_nbr */
@@ -3698,7 +3698,7 @@ nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list u
           } 
           (void)nco_inq_grpname(grp_id,grp_nm);
           if(!strcmp(grp_nm,grp_lst_in[idx_grp])){
-            trv_tbl->lst[uidx].flg=True;
+            trv_tbl->lst[uidx].flg_xtr=True;
           } /* end strcmp */
         } /* end inner loop over variables */
       } /* end object is a variable */
@@ -3737,7 +3737,7 @@ nco_var_lst_mk_trv4                   /* [fnc] Create variable extraction list u
   if(var_xtr_nbr == 0 && grp_xtr_nbr == 0 && !EXTRACT_ALL_COORDINATES){
     for(unsigned int uidx=0;uidx<trv_tbl->nbr;uidx++){
       if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){   
-        trv_tbl->lst[uidx].flg=True;
+        trv_tbl->lst[uidx].flg_xtr=True;
       }
     } /* end uidx */
     return;
@@ -3748,7 +3748,7 @@ nco_var_lst_mk_trv4                   /* [fnc] Create variable extraction list u
     /* Object is a variable */
     if (trv_tbl->lst[uidx].typ == nco_obj_typ_var){ 
       if(trv_tbl->lst[uidx].flg_mch == True){
-        trv_tbl->lst[uidx].flg=trv_tbl->lst[uidx].flg_mch;
+        trv_tbl->lst[uidx].flg_xtr=trv_tbl->lst[uidx].flg_mch;
       }
     } /* if nco_obj_typ_var */
   } /* end loop over trv_tbl uidx */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.211 2012-12-13 20:04:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.212 2012-12-18 03:56:36 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -623,7 +623,7 @@ extern "C" {
     int     nbr_var;         /* [nbr] Number of variables (for group) */
     int     nbr_dmn;         /* [nbr] Number of dimensions */
     int     nbr_grp;         /* [nbr] Number of sub-groups (for group) */
-    int     flg;             /* [flg] Mark flag (Used to mark variable to extract) */ 
+    int     flg_xtr;         /* [flg] Mark variable to extract */ 
     int     flg_mch;         /* [flg] Object matches user-specified strings */
     int     flg_crd;         /* [flg] Object matches coordinate extraction criteria */
     int     flg_cf;          /* [flg] Object matches CF-metadata extraction criteria */
