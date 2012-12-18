@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.340 2012-12-18 21:07:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.341 2012-12-18 21:54:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1059,7 +1059,6 @@ nco_grp_itr
   rcd+=nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
   dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
-  rcd+=nco_inq_dimids(grp_id,&nbr_dmn_prn,NULL,1);
 
   /* Add group to table */
   obj.typ=nco_obj_typ_grp;

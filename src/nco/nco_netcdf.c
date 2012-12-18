@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.172 2012-12-18 21:41:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.173 2012-12-18 21:54:45 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1661,7 +1661,7 @@ int nco_inq_grpname(const int nc_id,char * const grp_nm)
 }
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
 {
-  int rcd, d,ndims;
+  int rcd, d, ndims;
   rcd=nc_inq(nc_id, &ndims,  NULL, NULL, NULL);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimids()");
   /* If this is a netcdf-3 file, then the dimids are going to be 0 thru ndims-1, so just provide them. */
@@ -1669,6 +1669,20 @@ int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int f
   if (dmn_ids)
     for (d = 0; d < ndims; d++)
       dmn_ids[d] = d;
+  return NC_NOERR;
+}
+int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
+{
+  int rcd, unlimid;
+  rcd=nc_inq_unlimdim(nc_id, &unlimid);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdims()");
+  if (unlimid != -1) {
+    if(nbr_dmn_ult) *nbr_dmn_ult = 1;
+    if (dmn_ids_ult)
+      dmn_ids_ult[0] = unlimid;
+  } else {
+    if(nbr_dmn_ult) *nbr_dmn_ult = 0;
+  }
   return NC_NOERR;
 }
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
@@ -1681,7 +1695,7 @@ int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){asse
 int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
-int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){assert(0);return NC_NOERR;}
+
 #endif /* HAVE_NETCDF4_H */
 #ifndef _MSC_VER
 #ifndef ENABLE_NETCDF4
