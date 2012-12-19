@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.745 2012-12-16 23:58:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.746 2012-12-19 01:22:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2316,6 +2316,27 @@ If not user-specified, OpenMP obtains @var{thr_nbr} from the
 @code{OMP_NUM_THREADS} environment variable, if present, or from the
 @acronym{OS}, if not.
 
+@cartouche
+Caveat:
+Unfortunately, threading does not improve @acronym{NCO} throughput (i.e.,
+wallclock time) because nearly all @acronym{NCO} operations are
+I/O-bound. 
+This means that @acronym{NCO} spends negligible time doing anything
+compared to reading and writing. 
+We have seen some and can imagine other use cases where
+@command{ncwa}, @command{ncpdq}, and @command{ncap2} (with long scripts) 
+will complete faster due to threading. 
+The main benefits of threading so far have been to isolate the serial
+from parallel portions of code. 
+This parallelism is now exploited by OpenMP but then runs into the I/O
+bottleneck during output. 
+The bottleneck could be ameliorated for large files by the use of
+MPI-enabled calls in the netCDF4 library when the underlying filesystem
+is parallel (e.g., @acronym{PVFS} or @acronym{JFS}).
+Implementation of the parallel output calls in @acronym{NCO} is not a
+goal of our current funding and would require new volunteers or funding.  
+@end cartouche
+
 @cindex @var{thr_nbr}
 @cindex @code{OMP_NUM_THREADS}
 @cindex @command{ncrcat}
@@ -2334,9 +2355,9 @@ For example, @code{ncrcat} is extremely I/O-intensive so we restrict
 This is based on the notion that the best performance that can be
 expected from an operator which does no arithmetic is to have one thread
 reading and one thread writing simultaneously.
-In the future (perhaps with netCDF4), we hope to
-demonstrate significant threading improvements with operators
-like @code{ncrcat} by performing multiple simultaneous writes.
+In the future (perhaps with netCDF4), we hope to demonstrate significant
+threading improvements with operators like @code{ncrcat} by performing
+multiple simultaneous writes. 
 
 Compute-intensive operators (@code{ncap2}, @code{ncwa} and @code{ncpdq}) 
 benefit most from threading.
@@ -2346,7 +2367,7 @@ of floating point operations.
 Otherwise, the system overhead of setting up threads probably outweighs 
 the speed enhancements due to @acronym{SMP} parallelism.
 However, we have not yet demonstrated that the @acronym{SMP} parallelism 
-scales well beyond four threads for these operators.
+scales beyond four threads for these operators.
 Hence we restrict @math{@var{thr_nbr} <= 4} for all operators.
 We encourage users to play with these limits (edit file
 @file{nco_omp.c}) and send us their feedback.
@@ -7604,19 +7625,33 @@ n2=rec_var_int_mss_val_int + rec_var_int_mss_val_int.reverse($time);
 n2=-999,-999,11,11,11,11,11,11,999,-999;
 @end example
 
-The following methods are used to edit the missing value associated with
+@html
+<a name="set_miss"></a> <!-- http://nco.sf.net/nco.html#set_miss -->
+<a name="get_miss"></a> <!-- http://nco.sf.net/nco.html#get_miss -->
+<a name="change_miss"></a> <!-- http://nco.sf.net/nco.html#change_miss -->
+@end html
+The following methods edit missing value information associated with 
 a variable. 
 They only work on variables in Output. 
 @table @code
 @item set_miss(expr)
 @cindex set_miss()
- Takes one argument the missing value. 
- Sets or overwrites the existing missing value. 
- The argument given is converted if necessary to the variable type 
+ The numeric argument @var{expr} becomes the new missing value,
+ overwriting the old missing value, if any.
+ The argument given is converted if necessary to the variable type.
+ NB: This only changes the missing value attribute. 
+ Missing values in the origian variable remain unchanged, and thus 
+ are no long considered missing values.
+ They are ``orphaned''.
+ Thus @code{set_miss()} is normally used only when creating new
+ variables, not when editing values of existing variables.
 @item change_miss(expr)
 @cindex change_miss()
- Changes the missing value elements of the variable to the new missing
- value (nb an expensive function). 
+ Sets or changes (any pre-existing) missing value attribute and missing
+ data values to @var{expr}. 
+ NB: This is an expensive function since all values must be examined. 
+ Use this function when changing missing values for pre-existing
+ variables. 
 @item get_miss() 
 @cindex get_miss()
  Returns the missing value of a variable. 

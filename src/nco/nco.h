@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.212 2012-12-18 03:56:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.213 2012-12-19 01:22:12 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -623,17 +623,20 @@ extern "C" {
     int     nbr_var;         /* [nbr] Number of variables (for group) */
     int     nbr_dmn;         /* [nbr] Number of dimensions */
     int     nbr_grp;         /* [nbr] Number of sub-groups (for group) */
-    int     flg_xtr;         /* [flg] Mark variable to extract */ 
-    int     flg_mch;         /* [flg] Object matches user-specified strings */
-    int     flg_crd;         /* [flg] Object matches coordinate extraction criteria */
     int     flg_cf;          /* [flg] Object matches CF-metadata extraction criteria */
-    int     flg_xcl;         /* [flg] Object matches exclusion criteria */
-    int     flg_unn;         /* [flg] Object matches union criteria */
-    int     flg_xsx;         /* [flg] Object matches intersection criteria */
+    int     flg_crd;         /* [flg] Object matches coordinate extraction criteria */
+    int     flg_mch;         /* [flg] Object matches user-specified strings */
+    int     flg_nsx;         /* [flg] Object matches intersection criteria */
     int     flg_rcr;         /* [flg] Extract group recursively */
+    int     flg_unn;         /* [flg] Object matches union criteria */
+    int     flg_vsg;         /* [flg] Variable selected because group matches */
+    int     flg_gcv;         /* [flg] Group contains matched variable */
+    int     flg_vfp;         /* [flg] Variable matches full path specification */
+    int     flg_ncs;         /* [flg] Group is ancestor of specified group or variable */
+    int     flg_xcl;         /* [flg] Object matches exclusion criteria */
+    int     flg_xtr;         /* [flg] Extract object */
     int     xcl_flg;         /* [flg] DEPRECATED (Used only in deprecated function nco_var_lst_xcl_trv) */
   } trv_sct;
-
  
   /* Traversal table structure
      Stores all objects/nodes in file tree */

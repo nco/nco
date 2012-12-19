@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.165 2012-12-18 06:43:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.166 2012-12-19 01:22:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -34,7 +34,6 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 
-
 /* Dynamic array implementation of group stack */
 typedef struct {
   int grp_nbr; /* [nbr] Number of items in stack = number of elements in grp_id array */
@@ -45,11 +44,19 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
+void
+nco_flg_set_grp_var_ass /* [fnc] Set flags for groups and variables associated with matched object */
+(const char * const grp_nm_fll, /* I [sng] Full name of group */
+ const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+  /* end nco_flg_set_grp_var_ass() */
+
 int /* O [rcd] Return code */
 nco_def_grp_full /* [fnc] Ensure all components of group path are defined */
 (const int nc_id, /* I [ID] netCDF output-file ID */
  const char * const grp_nm_fll, /* I [sng] Full group name */
  int * const grp_out_id); /* O [ID] Deepest group ID */
+  /* end nco_def_grp_full() */
 
 int /* [rcd] Return code */
 nco_inq_grps_full /* [fnc] Discover and return IDs of apex and all sub-groups */
