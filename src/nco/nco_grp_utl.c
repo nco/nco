@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.342 2012-12-19 01:22:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.343 2013-01-03 01:55:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2328,11 +2328,11 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
     /* Set object type (group or variable) */
     if(itr_idx == 0){
       obj_typ=nco_obj_typ_grp;
-      obj_lst_in=grp_lst_in;
+      obj_lst_in=(char**)grp_lst_in;
       obj_nbr=grp_xtr_nbr;
     }else if(itr_idx == 1){
       obj_typ=nco_obj_typ_var;
-      obj_lst_in=var_lst_in;
+      obj_lst_in=(char**)var_lst_in;
       obj_nbr=var_xtr_nbr;
     } /* endelse */
     
@@ -3878,9 +3878,9 @@ nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list u
   char grp_nm[NC_MAX_NAME];   /* [sng] Relative group name */
   int grp_id;                 /* [ID]  Group ID */
   int fl_fmt;                 /* [enm] netCDF file format */
-  nco_bool flg_usr_mch_obj;   /* [flg] One or more objects match each user-supplied string */
-
+  
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  nco_bool flg_usr_mch_obj;   /* [flg] One or more objects match each user-supplied string */
   int rx_mch_nbr;
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
