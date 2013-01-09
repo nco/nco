@@ -1,3 +1,7 @@
+2013-01-08  Pedro Vicente  <pvicente@uci.edu>
+
+        * add Qt/MSVC gsl 1.8; to use a MSVC gsl 1.8 library, add environment variables LIB_GSL and HEADER_GSL
+
 2012-12-18  Charlie Zender  <zender@uci.edu>
 
 	* More work on flags
