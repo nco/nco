@@ -40,7 +40,11 @@
 #include "vtl_cls.hh"
 
 #ifndef NCO_GSL_MINOR_VERSION
+#ifdef _MSC_VER
+# define NCO_GSL_MINOR_VERSION 7
+#else
 # define NCO_GSL_MINOR_VERSION 12
+#endif // _MSC_VER
 #endif // NCO_GSL_MINOR_VERSION
 
 

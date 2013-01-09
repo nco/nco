@@ -1,7 +1,7 @@
 # template type is application
 TEMPLATE = app
 # name
-TARGET = tst
+TARGET = tst_nco_c++
 
 CONFIG -= qt
 CONFIG += debug_and_release
@@ -9,11 +9,11 @@ CONFIG += debug_and_release
 #nco++ library
 CONFIG( debug, debug|release ) {
     # debug
-	win32:LIBS += ../nco_c++/debug/libnco_c++.lib
+	win32:LIBS += ../libnco_c++/debug/libnco_c++.lib
     unix:LIBS  += ../nco_c++/debug/liblibnco_c++.a
 } else {
     # release
-	win32:LIBS += ../nco_c++/release/libnco_c++.lib
+	win32:LIBS += ../libnco_c++/release/libnco_c++.lib
     unix:LIBS  += ../nco_c++/release/liblibnco_c++.a
 }
 

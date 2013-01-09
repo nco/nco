@@ -9,10 +9,9 @@ SUBDIRS += ncks
 SUBDIRS += ncpdq
 SUBDIRS += ncra
 SUBDIRS += ncrename
-SUBDIRS += nco_c++
-SUBDIRS += tst_nco_c++
-SUBDIRS += nco++
 SUBDIRS += ncwa
 SUBDIRS += ncrcat
 SUBDIRS += ncea
-
+SUBDIRS += libnco_c++
+SUBDIRS += tst_nco_c++
+SUBDIRS += ncap2
