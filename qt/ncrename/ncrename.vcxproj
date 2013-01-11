@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E289007E-BE44-3BC3-A9D1-B6C5434099D5}</ProjectGuid>
+    <ProjectGuid>{FDF5AC04-9C64-37A2-827A-90F132C3B27B}</ProjectGuid>
     <RootNamespace>ncrename</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

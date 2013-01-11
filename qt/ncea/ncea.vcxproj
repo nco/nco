@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8CF4AAD2-335A-382C-85C8-64C27892CFEE}</ProjectGuid>
+    <ProjectGuid>{3D2A2905-0AE9-33AF-A87C-D27D4A395412}</ProjectGuid>
     <RootNamespace>ncea</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

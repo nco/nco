@@ -62,7 +62,8 @@ HEADERS   = ../../src/nco++/fmc_all_cls.hh \
 ../../src/nco++/sym_cls.hh \
 ../../src/nco++/sdo_utl.hh \
 ../../src/nco++/VarOp.hh \
-../../src/nco++/vtl_cls.hh
+../../src/nco++/vtl_cls.hh \
+../../src/nco++/fmc_gsl_cls.hh
 
 
 SOURCES   = ../../src/nco++/Invoke.cc \

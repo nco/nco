@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B55FEC36-039B-3C61-B9F7-6F20C4AD5B08}</ProjectGuid>
+    <ProjectGuid>{2CDF38AC-534F-3666-9F85-16E594C0379C}</ProjectGuid>
     <RootNamespace>libnco</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

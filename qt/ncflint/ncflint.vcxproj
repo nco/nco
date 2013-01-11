@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{219ADF9D-A070-3E92-9579-DAE76E96A040}</ProjectGuid>
+    <ProjectGuid>{19E62BA2-3637-30A7-91E1-514F5B8F08EC}</ProjectGuid>
     <RootNamespace>ncflint</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

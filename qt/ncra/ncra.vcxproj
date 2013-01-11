@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6AF7DC52-D1DD-31CB-A93D-6B0A53AEDA76}</ProjectGuid>
+    <ProjectGuid>{A5533F00-0B8D-30E2-8165-C0B70A14F0AA}</ProjectGuid>
     <RootNamespace>ncra</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

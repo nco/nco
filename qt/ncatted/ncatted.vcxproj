@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{FB9B6455-0E80-3B87-87E5-39B5FB2EC80F}</ProjectGuid>
+    <ProjectGuid>{0924133E-BB03-348B-AA57-D0B08DB839F9}</ProjectGuid>
     <RootNamespace>ncatted</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

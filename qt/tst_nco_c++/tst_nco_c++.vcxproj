@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5EB8CCED-BBE0-3174-BE7F-B2F991302FE4}</ProjectGuid>
+    <ProjectGuid>{590D2944-68B9-33F6-811B-50EB9C630DA0}</ProjectGuid>
     <RootNamespace>tst_nco_c++</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

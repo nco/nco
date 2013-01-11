@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F44BD129-4075-3131-AD84-0EF6D92930C3}</ProjectGuid>
+    <ProjectGuid>{9138FC87-57EC-32C6-B198-813BC35ABE8B}</ProjectGuid>
     <RootNamespace>ncap2</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>
@@ -162,6 +162,7 @@
     <ClInclude Include="..\..\src\nco++\VarOp.hh" />
     <ClInclude Include="..\..\src\nco++\fmc_all_cls.hh" />
     <ClInclude Include="..\..\src\nco++\fmc_cls.hh" />
+    <ClInclude Include="..\..\src\nco++\fmc_gsl_cls.hh" />
     <ClInclude Include="..\..\src\nco++\libnco++.hh" />
     <ClInclude Include="..\..\src\nco++\map_srt_tmp.hh" />
     <ClInclude Include="..\..\src\nco++\ncap2.hh" />

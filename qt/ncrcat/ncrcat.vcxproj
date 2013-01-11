@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8D4DFD55-98E0-37BB-9507-5D88B50D03DA}</ProjectGuid>
+    <ProjectGuid>{7F27A65D-81A7-3051-BE75-A8DB5284C7B2}</ProjectGuid>
     <RootNamespace>ncrcat</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>

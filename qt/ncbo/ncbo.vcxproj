@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{FB057CC9-3709-309F-BAE9-A92B2F9170CE}</ProjectGuid>
+    <ProjectGuid>{35749C57-211E-3520-A6BD-50E769C55415}</ProjectGuid>
     <RootNamespace>ncbo</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>
