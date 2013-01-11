@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1213 2012-12-12 20:30:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1214 2013-01-11 21:49:13 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -44,6 +44,7 @@ NCO 3.9.6, which suffers from bug on 64-bit systems, was released 20090122.
 Primordial bug, if any, probably pre-dates this.
 Triage: 
 Check latest NCO on 32-bit CPU (ashes) see if problem exists
+Unfortunately, I have no working systems with 32-bit CPUs.
 
 Flanner:
 I am writing about slight inconsistencies that I have noticed recently
@@ -717,7 +718,8 @@ nco1081. ncra rebasing regression
       ncra  -O -d time,0,19 -p ~ in1.nc in2.nc ~/foo.nc
 nco1082. ncrename fails with global attributes:
 	 ncrename -O -h -a Conventions,Geneva ~/nco/data/in.nc ~/foo.nc
-nco1083. 
+nco1083. nco_var_lst_crd_ass_add_trv2() gets too many coords in netCDF4 case
+nco1084. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

@@ -1,6 +1,14 @@
+2013-01-11  Charlie Zender  <zender@uci.edu>
+
+	* Commit changes to all but source code files
+
+2013-01-10  Charlie Zender  <zender@uci.edu>
+
+	* Finish initializing flags. Implement unions/intersections.
+
 2013-01-08  Pedro Vicente  <pvicente@uci.edu>
 
-        * add Qt/MSVC gsl 1.8; to use a MSVC gsl 1.8 library, add environment variables LIB_GSL and HEADER_GSL
+        * Add Qt/MSVC GSL 1.8d; to use add environment variables LIB_GSL and HEADER_GSL
 
 2012-12-18  Charlie Zender  <zender@uci.edu>
 

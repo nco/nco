@@ -5,13 +5,13 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.746 2012-12-19 01:22:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.747 2013-01-11 21:49:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2012 Charlie Zender
+Copyright (C) 1995--2013 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -105,10 +105,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 4.2.4
 @set doc-edition 4.2.4
-@set copyright-years 1995--2012
-@set update-year 2012
-@set update-date 20 November 2012
-@set update-month November 2012
+@set copyright-years 1995--2013
+@set update-year 2013
+@set update-date 9 January 2013
+@set update-month January 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -4919,15 +4919,16 @@ with version 3.9.2 (August, 2007).
 Prior to that, the @code{missing_value} attribute, if any, was assumed to  
 specify the value of data to ignore.
 Supporting both of these attributes simultaneously is not practical.
-Hence the behavior @acronym{NCO} once applied to @var{missing_value} it now applies 
-to any @var{_FillValue}. 
+Hence the behavior @acronym{NCO} once applied to @var{missing_value} it
+now applies to any @var{_FillValue}. 
 @acronym{NCO} now treats any @var{missing_value} as normal data 
 @footnote{
 The old functionality, i.e., where the ignored values are indicated by
 @code{missing_value} not @code{_FillValue}, may still be selected 
 @emph{at @acronym{NCO} build time} by compiling @acronym{NCO} 
 with the token definition 
-@kbd{CPPFLAGS='-DNCO_MSS_VAL_SNG=missing_value'}.
+@c @kbd{CPPFLAGS='-DNCO_MSS_VAL_SNG=missing_value'}.
+@kbd{CPPFLAGS='-UNCO_USE_FILL_VALUE'}.
 }.
 
 @findex ncrename
@@ -10541,6 +10542,30 @@ Change the value of the @code{long_name} attribute for variable @code{T}
 from whatever it currently is to "temperature":
 @example
 ncatted -a long_name,T,o,c,temperature in.nc
+@end example
+
+@html
+<a name="NaN"></a> <!-- http://nco.sf.net/nco.html#NaN -->
+@end html
+@cindex NaN
+@cindex IEEE NaN
+@cindex Not-a-Number
+@acronym{NCO} arithmetic operators will not work as expected on IEEE
+NaN (short for Not-a-Number) and NaN-like numbers such as positive
+infinity and negative infinity.  
+One way to work-around this problem is to change IEEE NaNs to normal
+missing values. 
+As of @acronym{NCO} 4.1.0 (March, 2012), @command{ncatted} works with
+NaNs.
+First set the missing value (i.e., the value of the @code{_FillValue}
+attribute) for the variable(s) in question to the IEEE NaN value. 
+@example
+ncatted -a _FillValue,,o,f,NaN in.nc
+@end example
+Then change the missing value from the IEEE NaN value to a normal IEEE
+number, like 1.0e36 (or to whatever the original missing value was).
+@example
+ncatted -a _FillValue,,m,f,1.0e36 in.nc
 @end example
 
 Delete all existing @code{units} attributes:
