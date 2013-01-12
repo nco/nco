@@ -150,6 +150,7 @@
     <ClCompile Include="..\..\src\nco++\ncoLexer.cpp" />
     <ClCompile Include="..\..\src\nco++\ncoParser.cpp" />
     <ClCompile Include="..\..\src\nco++\ncoTree.cpp" />
+    <ClCompile Include="..\..\src\nco++\nco_gsl.c" />
     <ClCompile Include="..\..\src\nco++\prs_cls.cc" />
     <ClCompile Include="..\..\src\nco++\sdo_utl.cc" />
     <ClCompile Include="..\..\src\nco++\sym_cls.cc" />
@@ -169,6 +170,7 @@
     <ClInclude Include="..\..\src\nco++\ncap2_utl.hh" />
     <ClInclude Include="..\..\src\nco++\ncoEnumTokenTypes.hpp" />
     <ClInclude Include="..\..\src\nco++\ncoTree.hpp" />
+    <ClInclude Include="..\..\src\nco++\nco_gsl.h" />
     <ClInclude Include="..\..\src\nco++\prs_cls.hh" />
     <ClInclude Include="..\..\src\nco++\sdo_utl.hh" />
     <ClInclude Include="..\..\src\nco++\sym_cls.hh" />
