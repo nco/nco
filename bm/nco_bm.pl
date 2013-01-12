@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.151 2012-09-19 03:15:59 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.152 2013-01-12 20:29:09 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -335,11 +335,11 @@ dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n command-line -D flag to t
 if ($xdat_pth eq '') {
     dbg_msg(2, "$prg_nm: Calling drc_dat_set()");
     drc_dat_set($caseid); # Set $drc_dat
-} else { # Validate $xdat_pth
+}else{ # Validate $xdat_pth
     if (-e $xdat_pth && -w $xdat_pth){
 	dbg_msg(1,"User-specified DATA path ($xdat_pth) exists and is writable");
 	$drc_dat = $xdat_pth; # and assign it to previously coded variable
-    } else {
+    }else{
 	die "FATAL(bm): The directory you specified on the commandline ($xdat_pth) does not exist or is not writable by you.\n";
     }
 }
@@ -407,10 +407,10 @@ if ($dodap ne 'FALSE') {
     if ($dodap eq '') {
 	$fl_pth = "http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata";
 	$fl_cnt = 4;
-    } elsif ($dodap =~ /http/) {
+    }elsif ($dodap =~ /http/){
 	$fl_pth = $dodap;
 	$fl_cnt = 4;
-    } else {
+    }else{
 	die "\nThe URL specified with the --dods option:\n $dodap \ndoesn't look like a valid URL.\nTry again\n\n";
     }
 }
@@ -421,21 +421,20 @@ dbg_msg(3, "after dodap assignment, \$fl_pth = $fl_pth, \$dodap = $dodap");
 #bm_ntl($bch_flg,$dbg_lvl);
 
 # Grok /usr/bin/time, as in shell scripts
-if (-e "/usr/bin/time" && -x "/usr/bin/time") {
+if(-e "/usr/bin/time" && -x "/usr/bin/time"){
     $tmr_app = "/usr/bin/time ";
-    if (`uname` =~ "inux"){$tmr_app.="-p ";}
-} else { # just use whatever the shell thinks is the time app
+    if(`uname` =~ "inux"){$tmr_app.="-p ";}
+}else{ # just use whatever the shell thinks is the time app
     $tmr_app = "time "; # bash builtin or other 'time'-like application (AIX)
 } # endif time
 
-if ($dbg_lvl > 1) {
+if($dbg_lvl > 1){
     print "\nAbout to begin requested tests; waiting for keypress to proceed.\n";
     my $tmp = <STDIN>;
 }
 
-
 # Regression tests
-if ($rgr){
+if($rgr){
     use NCO_rgr; # module that contains tst_rgr()
     NCO_rgr::tst_rgr();
     NCO_bm::rsl_smr_rgr();

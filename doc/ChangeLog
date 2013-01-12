@@ -1,3 +1,11 @@
+2013-01-12  Charlie Zender  <zender@uci.edu>
+
+	* Commit new extraction list API version of ncks
+
+	* All tests pass on netCDF4-enabled NCO
+
+	* Tweak regression tests to work with intersections, non-recursive requests
+
 2013-01-11  Charlie Zender  <zender@uci.edu>
 
 	* Commit changes to all but source code files

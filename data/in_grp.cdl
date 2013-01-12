@@ -33,7 +33,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.41 2012-12-17 20:33:50 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.42 2013-01-12 20:29:10 zender Exp $";
 
 	float lat(lat);
 	lat:units = "degrees_north";
@@ -153,28 +153,28 @@ group: g4 {
 } // end g4
 
 group: g5 { 
+	  // Purposefully empty group
 } // end g5
 
 group: g6 { // Level 1
-    variables:
+	variables:
 	  float area(lat);
-      float area1(lat);
+	  float area1(lat);
 	data:
 	  area=20.,30.;
-      area1=21.,31.;
-    group: g6g1 { // Level 2
-        variables:
+	  area1=21.,31.;
+	group: g6g1 { // Level 2
+	  variables:
             float area(lat);
-        data:
+	  data:
             area=40.,50.;
-      } //end g6g1
+	  } //end g6g1
 } // end g6
 
  group: g7 { 
 	dimensions:
 	  gds_crd=8;
 	variables:
-	  
 	  float gds_crd(gds_crd);
 	gds_crd:units = "degree";
 	gds_crd:coordinates = "lat_gds lon_gds";

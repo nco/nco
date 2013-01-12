@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.213 2012-12-19 01:22:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.214 2013-01-12 20:29:10 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -130,14 +130,14 @@ extern "C" {
      Running operators with --quiet automatically sets dbg_lvl=NCO_DBG_QUIET */
 #define NCO_DBG_QUIET 0
 
-  /* NCO_MSS_VAL_SNG names attribute whose value is "skipped" by arithmetic
-     Must be either "missing_value" or "_FillValue" */
+  /* NCO_MSS_VAL_SNG names attribute whose value is "skipped" by arithmetic, aka the missing value attribute
+     Attribute name should be either "missing_value" or "_FillValue" */
 #ifndef NCO_MSS_VAL_SNG
-  /* 20070831: TKN2SNG technique inserts quotes into string though same test code in c.c does not produce extra quotes. TODO nco905. */
+  /* 20070831: TKN2SNG() technique inserts quotes into string though same test code in c.c does not produce extra quotes. TODO nco905. */
   /*# define NCO_MSS_VAL_SNG missing_value */
   /*# define NCO_MSS_VAL_SNG _FillValue*/
   /*char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG);*/ /* [sng] Missing value attribute name */
-# define NCO_USE_FILL_VALUE
+  /* Arcane workaround using NCO_USE_FILL_VALUE necessary because TKN2SNG() macro above is broken. TODO nco905 */
 # ifdef NCO_USE_FILL_VALUE
   /* NCO_NETCDF4_AND_FILLVALUE tells whether netCDF4 restrictions on 
      _FillValue operations (must be defined before variable written,
@@ -146,7 +146,7 @@ extern "C" {
 #   define NCO_NETCDF4_AND_FILLVALUE
 #  endif /* !ENABLE_NETCDF4 */
 # endif /* !NCO_USE_FILL_VALUE */
-# define NCO_MSS_VAL_SNG
+#define NCO_USE_FILL_VALUE
 #endif /* NCO_MSS_VAL_SNG */
 
   /* Call assert() in form assert(expected==) */
@@ -173,6 +173,7 @@ extern "C" {
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
 
 # ifdef NCO_USE_FILL_VALUE
+  /* This arcane get()/set() usage necessary because TKN2SNG() macro above is broken. TODO nco905 */
   char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
   char nco_not_mss_val_sng[]="missing_value"; /* [sng] Not missing value attribute name */
 # else /* !NCO_USE_FILL_VALUE */
@@ -609,9 +610,10 @@ extern "C" {
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
      Node/object is either group or variable like in HDF5
-     Fill actual value of trv_sct structure in trv_tbl_init()
-     free() each pointer member of trv_sct structure in trv_tbl_free()
-     deep-copy each pointer member of trv_sct structure in trv_tbl_add() */
+     Initialize trv_sct structure to defaults in trv_tbl_init()
+     Populate trv_sct structure with correct values in nco_grp_itr()
+     Deep-copy each pointer member of trv_sct structure in trv_tbl_add()
+     free() each pointer member of trv_sct structure in trv_tbl_free() */
   typedef struct{ 
     char    *nm_fll;         /* [sng] Fully qualified name (path) */
     size_t  nm_fll_lng;      /* [sng] Length of full name */
@@ -623,20 +625,20 @@ extern "C" {
     int     nbr_var;         /* [nbr] Number of variables (for group) */
     int     nbr_dmn;         /* [nbr] Number of dimensions */
     int     nbr_grp;         /* [nbr] Number of sub-groups (for group) */
-    int     flg_cf;          /* [flg] Object matches CF-metadata extraction criteria */
-    int     flg_crd;         /* [flg] Object matches coordinate extraction criteria */
-    int     flg_mch;         /* [flg] Object matches user-specified strings */
-    int     flg_nsx;         /* [flg] Object matches intersection criteria */
-    int     flg_rcr;         /* [flg] Extract group recursively */
-    int     flg_unn;         /* [flg] Object matches union criteria */
-    int     flg_vsg;         /* [flg] Variable selected because group matches */
-    int     flg_gcv;         /* [flg] Group contains matched variable */
-    int     flg_vfp;         /* [flg] Variable matches full path specification */
-    int     flg_ncs;         /* [flg] Group is ancestor of specified group or variable */
-    int     flg_xcl;         /* [flg] Object matches exclusion criteria */
-    int     flg_xtr;         /* [flg] Extract object */
-    int     xcl_flg;         /* [flg] DEPRECATED (Used only in deprecated function nco_var_lst_xcl_trv) */
-  } trv_sct;
+    nco_bool flg_cf; /* [flg] Object matches CF-metadata extraction criteria */
+    nco_bool flg_crd; /* [flg] Object matches coordinate extraction criteria */
+    nco_bool flg_dfl; /* [flg] Object meets default subsetting criteria */
+    nco_bool flg_gcv; /* [flg] Group contains matched variable */
+    nco_bool flg_mch; /* [flg] Object matches user-specified strings */
+    nco_bool flg_ncs; /* [flg] Group is ancestor of specified group or variable */
+    nco_bool flg_nsx; /* [flg] Object matches intersection criteria */
+    nco_bool flg_rcr; /* [flg] Extract group recursively */
+    nco_bool flg_unn; /* [flg] Object matches union criteria */
+    nco_bool flg_vfp; /* [flg] Variable matches full path specification */
+    nco_bool flg_vsg; /* [flg] Variable selected because group matches */
+    nco_bool flg_xcl; /* [flg] Object matches exclusion criteria */
+    nco_bool flg_xtr; /* [flg] Extract object */
+   } trv_sct;
  
   /* Traversal table structure
      Stores all objects/nodes in file tree */

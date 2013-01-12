@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.23 2012-12-18 03:56:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.24 2013-01-12 20:29:11 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -79,7 +79,12 @@ trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal
 (const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void 
-trv_tbl_srt                          /* [fnc] Sort traversal table */
-(trv_tbl_sct *trv_tbl);              /* I/O [sct] Traversal table */
+trv_tbl_srt /* [fnc] Sort traversal table */
+(trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_trv_tbl_nm_fll  /* [fnc] Compare two trv_sct's by full name member */
+(const void *val_1, /* I [sct] trv_sct to compare */
+ const void *val_2); /* I [sct] trv_sct to compare */
 
 #endif /* NCO_GRP_TRV_H */

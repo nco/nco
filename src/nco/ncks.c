@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.542 2012-12-18 16:38:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.543 2013-01-12 20:29:10 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -34,7 +34,7 @@
 
    Usage:
    ncks ~/nco/data/in.nc 
-   ncks -v one ~/nco/data/in.nc 
+   ncks -v one ~/nco/data/in.nc
    ncks ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 ~/nco/data/in.nc ~/foo.nc
    ncks -v one ~/nco/data/in.nc ~/foo.nc
@@ -79,15 +79,13 @@
 #include <netcdf.h> /* netCDF definitions and C library */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#define NCO_BUILD_TRV_TBL2 /* Replace nm_id_sct by trv_tbl_sct */
-#define NCO_REPLACE_TRV_TBL2
 
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 int 
 main(int argc,char **argv)
 {
-  nco_bool ALPHABETIZE_OUTPUT=False; /* Option a */
+  nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
   nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
@@ -104,7 +102,6 @@ main(int argc,char **argv)
   nco_bool GET_PRG_INFO=False; /* [flg] Get compiled program information (e.g libraries) */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
-  nco_bool IS_NETCDF4; /* [flg] is a netCDF4 file */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -151,11 +148,10 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  char *grp_out=NULL; /* [sng] Group name */
-  char rth[]="/"; /* Group path */
+  char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.542 2012-12-18 16:38:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.542 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.543 2013-01-12 20:29:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.543 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -427,7 +423,7 @@ main(int argc,char **argv)
 #ifndef ENABLE_UDUNITS
         (void)fprintf(stdout,"%s: Build NCO with UDUnits support to use this option\n",prg_nm_get());
         nco_exit(EXIT_FAILURE);
-#endif 
+#endif /* !ENABLE_UDUNITS */
         cp=strdup(optarg); 
         args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
         nco_cln_clc_org(args[0],args[1],(lmt_nbr > 2 ? nco_cln_get_cln_typ(args[2]) : cln_nil),&crr_val);        
@@ -575,7 +571,7 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-    case 'z': /* Print list of variables in absolute path format and exit */
+    case 'z': /* Print absolute path of all input variables then exit */
       GET_LIST=True;
       break;
     case '?': /* Print proper usage */
@@ -618,7 +614,6 @@ main(int argc,char **argv)
 
   /* Get file format */
   (void)nco_inq_format(in_id,&fl_in_fmt);
-  if(fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT) IS_NETCDF4=False; else IS_NETCDF4=True;
 
   /* Get objects in file */
   trv_tbl_init(&trv_tbl);
@@ -639,16 +634,8 @@ main(int argc,char **argv)
   } /* netCDF4 */
 #endif /* ENABLE_NETCDF4 */
 
-#if 1
   /* Check -v and -g input names and create extraction list */
-  nco_mk_xtr(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,GRP_VAR_UNN,trv_tbl);
-#else
-  /* Ensure all specified variable names are valid */
-  if(xtr_nbr) nco_chk_trv(var_lst_in,xtr_nbr,nco_obj_typ_var,trv_tbl); 
-
-  /* Ensure all specified group names are valid */
-  if(grp_nbr) nco_chk_trv(grp_lst_in,grp_nbr,nco_obj_typ_grp,trv_tbl);
-#endif
+  nco_mk_xtr(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
@@ -689,140 +676,40 @@ main(int argc,char **argv)
     (void)nco_inq_dimname(in_id,rec_dmn_id,rec_dmn_nm);
   } /* endif rec_dmn_nm */
 
-  /* Form initial extraction list which may include extended regular expressions */
-#ifndef HAVE_NETCDF4_H 
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
-#else
-  xtr_lst=nco_var_lst_mk_trv(in_id,grp_lst_in,grp_nbr,var_lst_in,trv_tbl,EXTRACT_ALL_COORDINATES,&xtr_nbr);
-#endif /* HAVE_NETCDF4_H */
-
-#ifdef NCO_BUILD_TRV_TBL2
-  /* Form initial extraction list which may include extended regular expressions */
-  (void)nco_var_lst_mk_trv3(in_id,grp_lst_in,grp_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,trv_tbl);
-#ifdef NCO_SANITY_CHECK 
-  (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,True);
-#endif /* NCO_SANITY_CHECK */
-#endif /* NCO_BUILD_TRV_TBL2 */
-
   /* Print extraction list in verbose mode */
-  if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
+  if(dbg_lvl_get() == nco_dbg_crr) (void)trv_tbl_prn_xtr(trv_tbl);
 
   /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST){
-    xtr_lst=nco_var_lst_xcl_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
-#ifdef NCO_BUILD_TRV_TBL2
-    (void)nco_var_lst_xcl_trv2(trv_tbl);
+  if(EXCLUDE_INPUT_LIST) (void)nco_var_lst_xcl_trv2(trv_tbl);
 
-    /* Print extraction list in verbose mode */
-    if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
+  /* Add all coordinate variables to extraction list */
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(in_id,trv_tbl);
 
-#ifdef NCO_SANITY_CHECK 
-    (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,True);
-#endif /* NCO_SANITY_CHECK */
-#endif /* NCO_BUILD_TRV_TBL2 */
-  } /* EXCLUDE_INPUT_LIST */
+  /* Extract coordinates associated with extracted variables */
+  /* fxm: fix netCDF4 code path bug */
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add_drv(in_id,trv_tbl);
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_drv(in_id,"coordinates",trv_tbl);
+    (void)nco_xtr_cf_drv(in_id,"bounds",trv_tbl);
+  } /* CNV_CCM_CCSM_CF */
 
-  /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES){ 
-#ifndef HAVE_NETCDF4_H
-    xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-#else
-    if(IS_NETCDF4){
-      xtr_lst=nco_var_lst_crd_add_trv(in_id,xtr_lst,&xtr_nbr,&grp_nbr,grp_lst_in,trv_tbl);
-      if(CNV_CCM_CCSM_CF){
-        /* Add "coordinates" and "bounds" CF */
-        xtr_lst=nco_var_lst_crd_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
-        xtr_lst=nco_var_lst_crd_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
-      } /* CNV_CCM_CCSM_CF */
-    }else{
-      xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-    }
-#endif /* HAVE_NETCDF4_H */
+   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
 
-#ifdef NCO_BUILD_TRV_TBL2
-    (void)nco_var_lst_crd_add_trv2(in_id,grp_nbr,grp_lst_in,trv_tbl);
-    if(CNV_CCM_CCSM_CF){
-      /* Add "coordinates" and "bounds" CF */
-      (void)nco_var_lst_crd_add_cf_trv2(in_id,"coordinates",trv_tbl);
-      (void)nco_var_lst_crd_add_cf_trv2(in_id,"bounds",trv_tbl);
-    } /* CNV_CCM_CCSM_CF */
-
-    /* Print extraction list in verbose mode */
-    if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
-
-#ifdef NCO_SANITY_CHECK 
-    (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,False);
-#endif /* NCO_SANITY_CHECK */
-#endif /* NCO_BUILD_TRV_TBL2 */
-  } /* EXTRACT_ALL_COORDINATES */
-
-  /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) {
-#ifndef HAVE_NETCDF4_H
-    xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-#else
-    xtr_lst=nco_var_lst_crd_ass_add_trv(in_id,xtr_lst,&xtr_nbr,trv_tbl);
-    if(CNV_CCM_CCSM_CF){
-      /* Add "coordinates" and "bounds" CF */
-      xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"coordinates",xtr_lst,&xtr_nbr,trv_tbl);
-      xtr_lst=nco_var_lst_crd_ass_add_cf_trv(in_id,"bounds",xtr_lst,&xtr_nbr,trv_tbl);
-    } /* CNV_CCM_CCSM_CF */
-#endif /* HAVE_NETCDF4_H */
-
-#ifdef NCO_BUILD_TRV_TBL2
-    (void)nco_var_lst_crd_ass_add_trv2(in_id,trv_tbl);
-    if(CNV_CCM_CCSM_CF){
-      /* Add "coordinates" and "bounds" CF */
-      (void)nco_var_lst_crd_ass_add_cf_trv2(in_id,"coordinates",trv_tbl);
-      (void)nco_var_lst_crd_ass_add_cf_trv2(in_id,"bounds",trv_tbl);
-    } /* CNV_CCM_CCSM_CF */
-
-    /* Print extraction list in verbose mode */
-    if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
-
-#ifdef NCO_SANITY_CHECK 
-    (void)nco_trv_tbl_chk(in_id,xtr_lst,xtr_nbr,trv_tbl,False);
-#endif /* NCO_SANITY_CHECK */
-#endif /* NCO_BUILD_TRV_TBL2 */
-  } /* EXTRACT_ASSOCIATED_COORDINATES */
-
-#ifdef NCO_REPLACE_TRV_TBL2
-  if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
-  /* Make a nm_id extraction list from the traversal table */
-  xtr_lst=nco_trv_tbl_nm_id(in_id,xtr_lst,&xtr_nbr,trv_tbl);
-#endif /* NCO_REPLACE_TRV_TBL2 */
-
-  /* Sort extraction list alphabetically or by variable ID */
-  if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,ALPHABETIZE_OUTPUT);
-
-#ifdef NCO_BUILD_TRV_TBL2
-  if(ALPHABETIZE_OUTPUT){
-    trv_tbl_srt(trv_tbl);
-  }
-#endif /* NCO_BUILD_TRV_TBL2 */
-
-  /* We now have final list of variables to extract. Phew. */
+   /* We now have final list of variables to extract. Phew. */
 
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-  if(IS_NETCDF4){
-    if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
-  } else { 
-    for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
-  } /* IS_NETCDF4 */
+  if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
 
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
 
   /* Initialize lmt_all_sct's */ 
-  if(IS_NETCDF4){
-    (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
-  }else{
-    (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-  } /* IS_NETCDF4 */
+  (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
@@ -891,25 +778,8 @@ main(int argc,char **argv)
       } /* endif err */
     } /* !gpe */
 
-    if(IS_NETCDF4){
-      /* Define requested input groups/variables/chunksize parameters in output file */
-#ifdef NCO_REPLACE_TRV_TBL2
-      nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
-#else
-      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
-#endif  /* NCO_REPLACE_TRV_TBL2 */ 
-    }else{ /* IS_NETCDF4 */
-      for(idx=0;idx<xtr_nbr;idx++){
-        int var_out_id;
-        /* Define variable in output file */
-        if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dfl_lvl); 
-        else var_out_id=nco_cpy_var_dfn(in_id,grp_out_id,rec_dmn_nm,xtr_lst[idx].nm,dfl_lvl);
-        /* Copy variable's attributes */
-        if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,grp_out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
-      } /* end loop over idx */
-      /* Set chunksize parameters */
-      if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
-    } /* IS_NETCDF4 */
+    /* Define extracted groups/variables in output file */
+    nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
 
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -933,20 +803,17 @@ main(int argc,char **argv)
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
 
-    /* Copy all variables to output file */
-    if(IS_NETCDF4){   
-#ifdef NCO_REPLACE_TRV_TBL2
-      nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
-#else
-      nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
-#endif  /* NCO_REPLACE_TRV_TBL2 */    
-    }else{
+    /* Copy extracted variables to output file */
+    nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
+
+    /* To re-enable MM3, remove next line and put following block in universal write code */
+    USE_MM3_WORKAROUND=False;
+    if(USE_MM3_WORKAROUND){
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
       if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
-      USE_MM3_WORKAROUND=False;
       if(!USE_MM3_WORKAROUND){  
-        /* Copy all data variable-by-variable */
+        /* Copy extracted data variable-by-variable */
         for(idx=0;idx<xtr_nbr;idx++){
           if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
           if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
@@ -973,7 +840,7 @@ main(int argc,char **argv)
         if(fix_lst) fix_lst=(nm_id_sct**)nco_free(fix_lst);
         if(rec_lst) rec_lst=(nm_id_sct**)nco_free(rec_lst);
       } /* endif MM3 workaround */
-    } /* IS_NETCDF4 Copy all variables to output file */
+    } /* endif MM3 workaround */
 
     /* [fnc] Close unformatted binary data file */
     if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
@@ -985,7 +852,7 @@ main(int argc,char **argv)
     /* No output file was specified so PRN_ tokens refer to screen printing */
     if(PRN_GLB_METADATA){
       (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
-      if(IS_NETCDF4){
+      if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
         /* Print global attributes recursive */
         (void)nco_prn_att_trv(in_id,trv_tbl);
       }else{
@@ -1002,68 +869,9 @@ main(int argc,char **argv)
       } /* IS_NETCDF4 */
     } /* endif PRN_GLB_METADATA */
     
-    if(PRN_VAR_METADATA){
-      if (IS_NETCDF4){
+    if(PRN_VAR_METADATA) (void)nco_prn_var_def_trv2(in_id,trv_tbl);
 
-#ifdef NCO_REPLACE_TRV_TBL2
-        (void)nco_prn_var_def_trv2(in_id,trv_tbl);
-#else
-        for(idx=0;idx<xtr_nbr;idx++){    
-          nm_id_sct nm_id=xtr_lst[idx];    
-          /* Obtain group ID from netCDF API using full group name */
-          int grp_id; 
-          if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-            (void)nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
-          }else{ /* netCDF3 case */
-            grp_id=in_id;
-          }
-          /* Print full name of variable */
-          (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
-          /* Print variable's definition using the obtained grp_id instead of the netCDF file ID; Voila  */
-          (void)nco_prn_var_dfn(grp_id,nm_id.nm); 
-          /* Print variable's attributes */
-          (void)nco_prn_att(in_id,grp_id,nm_id.id);
-        } /* end loop over idx */
-
-#endif /* NCO_REPLACE_TRV_TBL2 */
-
-      } else { /* !IS_NETCDF4 */
-        for(idx=0;idx<xtr_nbr;idx++){
-          /* Print variable's definition */
-          (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
-          /* Print variable's attributes */
-          (void)nco_prn_att(in_id,in_id,xtr_lst[idx].id);
-        } /* end loop over idx */
-      } /* !IS_NETCDF4 */
-    } /* end if PRN_VAR_METADATA */
-
-    if(PRN_VAR_DATA){
-      if(IS_NETCDF4){
-
-#ifdef NCO_REPLACE_TRV_TBL2
-        (void)nco_prn_var_val_trv2(in_id,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
-#else
-        for(idx=0;idx<xtr_nbr;idx++) {
-          nm_id_sct nm_id=xtr_lst[idx];     
-          /* Obtain group ID from netCDF API using full group name */
-          int grp_id; 
-          (void)nco_inq_grp_full_ncid(in_id,nm_id.grp_nm_fll,&grp_id);
-          /* Print full name of variable */
-          (void)fprintf(stdout,"%s\n",nm_id.var_nm_fll);
-          /* Print variable using the obtained grp_id instead of the netCDF file ID */
-          (void)nco_msa_prn_var_val(grp_id,nm_id.nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
-        } /* idx */
-#endif /* NCO_REPLACE_TRV_TBL2 */
-
-      }else { /* !IS_NETCDF4 */
-        /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-        for(idx=0;idx<xtr_nbr;idx++) {
-          /* Print full name of variable */
-          (void)fprintf(stdout,"%s\n",xtr_lst[idx].var_nm_fll);
-          (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
-        } /* idx */
-      } /* !IS_NETCDF4 */
-    } /* end if PRN_VAR_DATA */  
+    if(PRN_VAR_DATA) (void)nco_prn_var_val_trv2(in_id,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */
@@ -1087,7 +895,7 @@ main(int argc,char **argv)
      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 
-   lmt=(lmt_sct**)nco_free(lmt); 
+   lmt=(lmt_sct **)nco_free(lmt); 
    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
 
    /* NCO-generic clean-up */
@@ -1104,7 +912,6 @@ main(int argc,char **argv)
    if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-   if(grp_out) grp_out=(char *)nco_free(grp_out);
    if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
    /* Free limits */
@@ -1129,5 +936,3 @@ main(int argc,char **argv)
  return EXIT_SUCCESS;
 
 } /* end main() */
-
-

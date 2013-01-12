@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.190 2013-01-11 21:49:15 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.191 2013-01-12 20:29:09 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -159,7 +159,7 @@ print "\n";
 #	$tst_cmd[3]="NO_SS";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 # printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
     
@@ -169,7 +169,7 @@ print "\n";
     $tst_cmd[2]="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
@@ -179,7 +179,7 @@ print "\n";
     $tst_cmd[2]="1.000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 #print "paused - hit return to continue"; my $wait = <STDIN>;
     
 # where did e_dbl tst_run??  it's in in.cdl but gets lost thru the rgrs...?
@@ -189,7 +189,7 @@ print "\n";
     $tst_cmd[2]="1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=4*atan(1)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tmp_fl_00%";
@@ -197,7 +197,7 @@ print "\n";
     $tst_cmd[2]="3.141592741013";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tmp_fl_00%";
@@ -205,7 +205,7 @@ print "\n";
     $tst_cmd[2]="0.842701";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     #fails - wrong result ???
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth_arg in.nc %tmp_fl_00%";
@@ -214,7 +214,7 @@ print "\n";
     $tst_cmd[2]="1.772453851";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tmp_fl_00%";
@@ -222,7 +222,7 @@ print "\n";
     $tst_cmd[2]="1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tmp_fl_00%";
@@ -230,7 +230,7 @@ print "\n";
     $tst_cmd[2]="-1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array\
+    $#tst_cmd=0; # Reset array\
     
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",3);defdim(\"b\",4); a[\$a,\$b]=10;c=a(1,1);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v c -s '%i' %tmp_fl_00%";
@@ -239,7 +239,7 @@ print "\n";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'defdim(\"a\",1); b[\$a]=10;c=b(0:0);' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncwa -h -O $fl_fmt $nco_D_flg -C -a a %tmp_fl_00% %tmp_fl_01%";
@@ -249,7 +249,7 @@ print "\n";
     $tst_cmd[3]="10";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait=<STDIN>;
     
@@ -266,7 +266,7 @@ print "\n";
 	$tst_cmd[2]="meter second-1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
 	
 #printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 	
@@ -277,7 +277,7 @@ print "\n";
 	$tst_cmd[2]="0";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
 
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,wgt_one,c,f,200.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v wgt_one %tmp_fl_00%";
@@ -285,7 +285,7 @@ print "\n";
 	$tst_cmd[2]="1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
 
 # Fragile: This test fails when length of command changes
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
@@ -295,7 +295,7 @@ print "\n";
 	$tst_cmd[3]="27";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
 
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999  $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
@@ -304,7 +304,7 @@ print "\n";
 	$tst_cmd[3]="999";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
     }
     
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
@@ -322,7 +322,7 @@ print "\n";
     $tst_cmd[3]="0.0";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array - ok
+    $#tst_cmd=0; # Reset array - ok
 
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time $in_pth_arg in.nc %tmp_fl_03%";;
     $tst_cmd[1]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth/in.nc %tmp_fl_03% %tmp_fl_00%";;
@@ -331,7 +331,7 @@ print "\n";
     $tst_cmd[3]="4.5";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array - ok
+    $#tst_cmd=0; # Reset array - ok
 
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
@@ -339,7 +339,7 @@ print "\n";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array - ok
+    $#tst_cmd=0; # Reset array - ok
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
@@ -347,7 +347,7 @@ print "\n";
     $tst_cmd[2]=1.0e36;
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array ok
+    $#tst_cmd=0; # Reset array ok
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -d lon,0 -v no_mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val %tmp_fl_00%";
@@ -355,7 +355,7 @@ print "\n";
     $tst_cmd[2]="0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array ok
+    $#tst_cmd=0; # Reset array ok
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v mss_val_fst $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val %tmp_fl_00%";
@@ -365,7 +365,7 @@ print "\n";
     $tst_cmd[4]="-999.000000,-999.000000,-999.000000,-999.000000";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array ok
+    $#tst_cmd=0; # Reset array ok
     
     $tst_cmd[0]="ncrename -h $nco_D_flg -O -v no_mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename -h $nco_D_flg -O -v mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tmp_fl_01%";
@@ -375,7 +375,7 @@ print "\n";
     $tst_cmd[4]=0.0;
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array ok
+    $#tst_cmd=0; # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
@@ -383,7 +383,7 @@ print "\n";
     $tst_cmd[2]=1.0e36;
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array ok
+    $#tst_cmd=0; # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
@@ -391,7 +391,7 @@ print "\n";
     $tst_cmd[2]=1.0e36;
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array ok
+    $#tst_cmd=0; # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,0 -v no_mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val %tmp_fl_00%";
@@ -399,7 +399,7 @@ print "\n";
     $tst_cmd[2]="0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array ok
+    $#tst_cmd=0; # Reset array ok
     
     $tst_cmd[0]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[1]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth/in.nc %tmp_fl_03% %tmp_fl_00%";
@@ -408,7 +408,7 @@ print "\n";
     $tst_cmd[3]="-1.0";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncks -C -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -O $fl_fmt $nco_D_flg -v -s 'three_dmn_var_dbl[lon]={0.0,1,2,3};' $in_pth_arg in.nc %tmp_fl_01%";
@@ -419,7 +419,7 @@ print "\n";
     $tst_cmd[5]="2697";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 	
     $tst_cmd[0]="ncks -C -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -O $fl_fmt $nco_D_flg -v -s 'three_dmn_var_dbl[lon]={0.0,1,2,3};' $in_pth_arg in.nc %tmp_fl_01%";
@@ -430,7 +430,7 @@ print "\n";
     $tst_cmd[5]="422";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #} # endif $mpi_prc == 0...
     
@@ -448,7 +448,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
@@ -456,7 +456,7 @@ print "\n";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_flt -d time,0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v rec_var_flt_mss_val_flt %tmp_fl_00%";
@@ -464,7 +464,7 @@ print "\n";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -473,7 +473,7 @@ print "\n";
     $tst_cmd[3]="2";
     $tst_cmd[4]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_arg in.nc %tmp_fl_00%";
@@ -482,7 +482,7 @@ print "\n";
     $tst_cmd[3]="3";
     $tst_cmd[4]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -491,7 +491,7 @@ print "\n";
     $tst_cmd[3]="-999 2 3 4 5 6 7 8 -999 -999";
     $tst_cmd[4]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl  $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -501,7 +501,7 @@ print "\n";
     $tst_cmd[4]="150";
     $tst_cmd[5]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
@@ -514,7 +514,7 @@ print "\n";
     $tst_cmd[6]="n2 = 1";
     $tst_cmd[7]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     
@@ -531,7 +531,7 @@ print "\n";
     $tst_cmd[4]=" 1.000, "; # is this effectively equal to the previous " 1.000,  1.000, "
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -v -O $fl_fmt $nco_D_flg -s 'three_dmn_var_int+=100;' $in_pth_arg in.nc %tmp_fl_01%";
@@ -542,7 +542,7 @@ print "\n";
     $tst_cmd[5]="84"; 
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     if ($ENABLE_NETCDF4 == 1) {
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
@@ -552,7 +552,7 @@ print "\n";
     $tst_cmd[3]="2"; 
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
     }elsif ($ENABLE_NETCDF4 == 0) {
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
@@ -560,7 +560,7 @@ print "\n";
     $tst_cmd[2]=$ncecat_msg_no_netcdf4; 
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
     } # end $ENABLE_NETCDF4
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
@@ -577,7 +577,7 @@ print "\n";
     $tst_cmd[3]="NO_SS";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     if ($dodap eq "FALSE"){
 	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo $in_pth_arg in.nc %tmp_fl_01%";
@@ -589,7 +589,7 @@ print "\n";
 	$tst_cmd[5]="NO_SS";
 	$tst_cmd[5]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
     }
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,1 -v mss_val $in_pth_arg in.nc %tmp_fl_01%";
@@ -602,7 +602,7 @@ print "\n";
     $tst_cmd[6]="1e+36";
     $tst_cmd[7]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_3 $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_5 $in_pth_arg in.nc %tmp_fl_02%";
@@ -613,7 +613,7 @@ print "\n";
     $tst_cmd[5]="4";
     $tst_cmd[6]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 ####################
 #### ncks tests #### OK !
@@ -631,7 +631,7 @@ print "\n";
     $tst_cmd[4]=1;
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 #ncks #02   
 #passes, but returned string includes tailing NULLS (<nul> in nedit)
@@ -641,7 +641,7 @@ print "\n";
     $tst_cmd[1]="/home/zender/nco/data/in.cdl";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #03
     
@@ -651,7 +651,7 @@ print "\n";
     $tst_cmd[2]="100.000000,500.000000,1000.000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #04
     
@@ -661,7 +661,7 @@ print "\n";
     $tst_cmd[2]="23";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #05
     
@@ -671,7 +671,7 @@ print "\n";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #06
     
@@ -681,7 +681,7 @@ print "\n";
     $tst_cmd[2]="12.0,13.0,14.0,15.0,20.0,21.0,22.0,23.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #07
     
@@ -691,7 +691,7 @@ print "\n";
     $tst_cmd[2]="20.0,21.0,22.0,23.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #08
     
@@ -701,7 +701,7 @@ print "\n";
     $tst_cmd[2]="20.0,21.0,22.0,23.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     
     if(0){ # fxm use this test once script allows error exits to be intended result
@@ -711,7 +711,7 @@ print "\n";
 	$tst_cmd[2]="ncks: ERROR Domain 20 <= lat <= 20.001 brackets no coordinate values.";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
     } # endif 0
     
 #ncks #09
@@ -722,7 +722,7 @@ print "\n";
     $tst_cmd[2]="23.0,20.0,15.0,12.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #10
     
@@ -732,7 +732,7 @@ print "\n";
     $tst_cmd[2]="876018";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #11
     
@@ -742,7 +742,7 @@ print "\n";
     $dsc_sng="dim slice using UDUnits library and cal 365_days (fails without UDUnits library support)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #12
 
@@ -752,7 +752,7 @@ print "\n";
     $dsc_sng="dim slice using UDUnits library and cal 360_days (fails without UDUnits library support)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #13
 
@@ -761,17 +761,17 @@ print "\n";
     $tst_cmd[1]="1.0e-06";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #14
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^three_*' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%f' -C -v three %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' -C -v three %tmp_fl_00%";
     $dsc_sng="variable wildcards A (fails without regex library)";
     $tst_cmd[2]="3";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 #ncks #15
 
@@ -782,7 +782,7 @@ print "\n";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     if(0){ # fxm use this test once script allows error exits to be intended result
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
@@ -791,7 +791,7 @@ print "\n";
 	$tst_cmd[2]="ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
     } # endif 0
 
 #ncks #16
@@ -801,7 +801,7 @@ print "\n";
     $tst_cmd[1]="122";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 #ncks #17
 
@@ -811,7 +811,7 @@ print "\n";
     $tst_cmd[2]="180";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #18 
 
@@ -823,7 +823,7 @@ print "\n";
     $tst_cmd[4]="222";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array  
+    $#tst_cmd=0; # Reset array  
 #   
 #NCO 4.2.2   
 # 
@@ -846,7 +846,7 @@ print "\n";
     } # !ENABLE_NETCDF4 
     } # !HAVE_NETCDF4_H
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array    
+    $#tst_cmd=0; # Reset array    
  
     
 #ncks #20 groups: Add to extraction list all coordinates associated with CF convention
@@ -865,7 +865,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #21 groups: Extract variables in groups (test -g with -v )
 
@@ -883,7 +883,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 #ncks #22 groups: Create variables in groups (test -G with -v and -g )
 
@@ -901,7 +901,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #23 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
 
@@ -919,7 +919,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #24 groups: Extract dimensions (test -v dimension)
 
@@ -937,7 +937,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #   
 #NCO 4.2.3   
@@ -959,7 +959,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #26 groups: Extract global attributes
 
@@ -977,7 +977,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #27 groups: Extract "bounds" variables (extract /g8/ilev)
 
@@ -995,7 +995,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #28 groups: Extract group attributes with GPE
 
@@ -1013,14 +1013,14 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 	
 #ncks #29 groups: Group dimension hyperslabs
 
     $dsc_sng="(Groups required) Group dimension hyperslabs";
     $tst_cmd[0]="ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
-    $tst_cmd[1]="ncks -v lat_gds -O -H  -s '%g' %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -v lat_gds -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="-30";
     $tst_cmd[3]="SS_OK";
     }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
@@ -1031,7 +1031,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 #   
 #NCO 4.2.4   
@@ -1040,8 +1040,8 @@ print "\n";
 #ncks #30 groups: Sort output alphabetically
 
     $dsc_sng="(Groups required) Sort output alphabetically";
-    $tst_cmd[0]="ncks -a -z $in_pth_arg in_grp.nc";
-	 if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[0]="ncks -z $in_pth_arg in_grp.nc | tail -1";
+    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="var: /unique";
     $tst_cmd[2]="SS_OK";
     }elsif($HAVE_NETCDF4_H == 0){
@@ -1049,7 +1049,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #ncks #31 --get_grp_info option (netCDF3 file)
 
@@ -1058,7 +1058,7 @@ print "\n";
     $tst_cmd[1]="/: 0 subgroups, 23 dimensions, 4 attributes, 298 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array   
+    $#tst_cmd=0; # Reset array   
 
 #ncks #32 --get_grp_info option (netCDF4 file)
 
@@ -1072,7 +1072,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array    
+    $#tst_cmd=0; # Reset array    
 
 #ncks #33 --get_file_info option (netCDF3 file)
 
@@ -1081,7 +1081,7 @@ print "\n";
     $tst_cmd[1]="0 subgroups, 23 dimensions, 4 attributes, 298 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array    
+    $#tst_cmd=0; # Reset array    
 
 #ncks #34 --get_file_info option (netCDF4 file)
 
@@ -1095,7 +1095,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array    
+    $#tst_cmd=0; # Reset array    
     
 #ncks #35 exclude all variables (netCDF3 file)
 
@@ -1105,7 +1105,7 @@ print "\n";
     $tst_cmd[2]="0 subgroups, 0 dimensions, 5 attributes, 0 variables";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array   
+    $#tst_cmd=0; # Reset array   
     
 #ncks #36 exclude all variables (netCDF4 file)
 
@@ -1123,7 +1123,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array    
+    $#tst_cmd=0; # Reset array    
     
 #ncks #37 exclude variables (netCDF3 file)
 
@@ -1133,7 +1133,7 @@ print "\n";
     $tst_cmd[2]="0 subgroups, 23 dimensions, 5 attributes, 296 variables";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
     
 #ncks #38 2D variable definition (netCDF4 file)
 
@@ -1143,7 +1143,7 @@ print "\n";
     $tst_cmd[2]="lev[2] vrt_nbr[1] ilev[5]=1013.25";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array   
+    $#tst_cmd=0; # Reset array   
 
 #ncks #39 Variable/Group extraction test 1 (netCDF4 file)
 #extract all variables in g6 = area,area1, refine to area1 only
@@ -1162,7 +1162,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
 
 #ncks #40 Variable/Group extraction test 2 (netCDF4 file)
 #extract all variables in g6 = area,area1, refine to area1 only
@@ -1182,7 +1182,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
  
 #ncks #41 Variable/Group extraction test 3 (netCDF4 file)
 #extract all variables in g6g1 (second level group) = area
@@ -1197,7 +1197,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
 	
 #ncks #42 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
@@ -1214,7 +1214,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
 	
 #ncks #43 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
@@ -1223,7 +1223,7 @@ print "\n";
 
     $dsc_sng="Variable/Group extraction test 4-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/area";
-	if($HAVE_NETCDF4_H == 1){
+    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK"; 
     }elsif($HAVE_NETCDF4_H == 0){
@@ -1231,7 +1231,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 		
+    $#tst_cmd=0; # Reset array 		
 	
 #ncks #44 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
@@ -1239,8 +1239,8 @@ print "\n";
 #NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-3 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /area";
-	if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[0]="ncks -O -C -v are. $in_pth_arg in_grp.nc | grep -w /area";
+    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/area";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
@@ -1248,22 +1248,22 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 			
+    $#tst_cmd=0; # Reset array 			
 	
 #ncks #45 Variable/Group extraction test 5 (netCDF4 file)
-#extract all variables "area" in g / = /area 
+# Extract all variables "area" in g6g1
 
     $dsc_sng="Variable/Group extraction test 5 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v area -g / $in_pth_arg in_grp.nc";
-	if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="lat[1]=90 area[1]=10 meter2";
+    $tst_cmd[0]="ncks -H -C -s '%g' -v area -g g6g1 -d lat,0 $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="40";
     $tst_cmd[2]="SS_OK";    
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 				
+    $#tst_cmd=0; # Reset array			
 	
 #ncks #46 Variable/Group extraction test 6 (netCDF4 file)
 #extract all variables "area" in g6g1 = g6/g6g1/area 
@@ -1278,7 +1278,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 						
+    $#tst_cmd=0; # Reset array 						
 	
 #ncks #47 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
@@ -1294,7 +1294,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 							
+    $#tst_cmd=0; # Reset array 							
 	
 #ncks #48 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
@@ -1310,7 +1310,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
 	
 #ncks #49 Variable/Group extraction test 8 (netCDF3 file)
 #extract all variables "area" = /area 
@@ -1320,7 +1320,7 @@ print "\n";
     $tst_cmd[1]="lat[1]=90 area[1]=10 meter2";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 							
+    $#tst_cmd=0; # Reset array 							
 	
 #ncks #50 Extract associated coordinates test 1 (netCDF3 file) 
 
@@ -1330,7 +1330,7 @@ print "\n";
 	$tst_cmd[2]="/rlev";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
 	
 #ncks #51 Extract associated coordinates test 2 (netCDF3 file) 
 
@@ -1340,7 +1340,7 @@ print "\n";
 	$tst_cmd[2]="";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 	
+    $#tst_cmd=0; # Reset array 	
 
 	
 #ncks #52 Extract associated coordinates test 3 (netCDF4 file)
@@ -1360,7 +1360,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 
+    $#tst_cmd=0; # Reset array 
 	
 #ncks #53 Extract associated coordinates test 4 (netCDF4 file) 
 # rlev is a dimension of rz 
@@ -1379,7 +1379,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 	
+    $#tst_cmd=0; # Reset array 	
 	
 #ncks #54 Extract CF 'coordinates' variables(netCDF4 file)
 #gds_crd:coordinates = "lat_gds lon_gds";
@@ -1394,7 +1394,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 	
+    $#tst_cmd=0; # Reset array 	
 	
 #ncks #55 Extract CF 'coordinates' variables (netCDF3 file)
 #gds_crd:coordinates = "lat_gds lon_gds";
@@ -1404,7 +1404,7 @@ print "\n";
     $tst_cmd[1]="/lat_gds";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 		
+    $#tst_cmd=0; # Reset array 		
 	
 #ncks #56 Extract CF 'bounds' variables (netCDF4 file)
 #lev:bounds = "ilev";
@@ -1419,7 +1419,7 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 		
+    $#tst_cmd=0; # Reset array 		
 	
 #ncks #56 Extract CF 'bounds' variables (netCDF3 file)
 #lev:bounds = "ilev";
@@ -1429,7 +1429,7 @@ print "\n";
     $tst_cmd[1]="/ilev";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array 			
+    $#tst_cmd=0; # Reset array 			
 
 #####################
 #### ncpdq tests #### -OK !
@@ -1443,7 +1443,7 @@ print "\n";
     $tst_cmd[2]="90";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-lev,-lon -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,0 -d lon,0 %tmp_fl_00%";
@@ -1451,7 +1451,7 @@ print "\n";
     $tst_cmd[2]=23;
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,2 -d lon,3 %tmp_fl_00%";
@@ -1459,7 +1459,7 @@ print "\n";
     $tst_cmd[2]="11";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var_dbl -d lat,0 -d lon,1 -d time,2 %tmp_fl_00%";
@@ -1467,7 +1467,7 @@ print "\n";
     $tst_cmd[2]="20";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,-time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var_dbl -d lat,1 -d lon,1 -d time,4 %tmp_fl_00%";
@@ -1475,7 +1475,7 @@ print "\n";
     $tst_cmd[2]="8";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
      $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var_dbl -d time,0,2 -d time,4 -d lat,1 -d lat,1 --msa_usr_rdr $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%2.f,' -v three_dmn_var_dbl -d time,1 -d lon,0  %tmp_fl_00%";
@@ -1483,7 +1483,7 @@ print "\n";
     $tst_cmd[2]="13,13";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P all_new -v upk $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P upk -v upk %tmp_fl_00% %tmp_fl_00%";
@@ -1492,7 +1492,7 @@ print "\n";
     $tst_cmd[3]="3";
     $tst_cmd[4]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 %tmp_fl_00%";
@@ -1500,7 +1500,7 @@ print "\n";
     $tst_cmd[2]="7";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%i' -v three_dmn_var_dbl -d time,2 -d lon,1 -d lat,0 %tmp_fl_00%";
@@ -1509,7 +1509,7 @@ print "\n";
     $tst_cmd[2]="17505";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
@@ -1525,7 +1525,7 @@ print "\n";
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc in.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d ' -v one_dmn_rec_var %tmp_fl_00%";
@@ -1533,7 +1533,7 @@ print "\n";
     $tst_cmd[2]="2 3 2 3";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max  %tmp_fl_00% %tmp_fl_01%"; 
@@ -1542,7 +1542,7 @@ print "\n";
     $tst_cmd[3]="20";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg -d time,,6 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01%"; 
@@ -1551,7 +1551,7 @@ print "\n";
     $tst_cmd[3]="28";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v four_dmn_rec_var $in_pth_arg -d time,0,,4 -d lat,0,0 -d lon,0,1 -d lon,3,3  in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -y max -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01%"; 
@@ -1560,7 +1560,7 @@ print "\n";
     $tst_cmd[3]="204";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tmp_fl_00%";    
     $tst_cmd[1]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,4  $in_pth/in.nc %tmp_fl_00%  %tmp_fl_01% 2> %tmp_fl_02%";
@@ -1569,7 +1569,7 @@ print "\n";
     $tst_cmd[3]=" 1, 5, 9,13,17";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tmp_fl_00%"; 
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=20;' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1579,7 +1579,7 @@ print "\n";
     $tst_cmd[4]=" 1, 9,17,25";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $fl_fmt $nco_D_flg -O -C -v time -d time,0,4 %tmp_fl_00% %tmp_fl_01%";  
@@ -1591,7 +1591,7 @@ print "\n";
     $tst_cmd[6]="11,13,15,27";
     $tst_cmd[7]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time  $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% 2> %tmp_fl_05%";
@@ -1600,7 +1600,7 @@ print "\n";
     $dsc_sng="Concatenate 1D variable across two files no limits. Requires UDUnits.";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-04-01 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1610,7 +1610,7 @@ print "\n";
     $dsc_sng="Concatenate 1D variable across three files double limits. Requires UDUnits.";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-04-01 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1620,7 +1620,7 @@ print "\n";
     $dsc_sng="Concatenate 1D variable across three files double limits2. Requires UDUnits.";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-04-01 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1630,7 +1630,7 @@ print "\n";
     $dsc_sng="Concatenate 1D variable across three files time stamp limits2. Requires UDUnits.";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1641,7 +1641,7 @@ print "\n";
     $dsc_sng="Cat. 1D var over 3 files with large stride. Requires UDUnits.";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1652,7 +1652,7 @@ print "\n";
     $dsc_sng="Cat. 1D var over 3 files coord limits+stride. Requires UDUnits.";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1663,7 +1663,7 @@ print "\n";
     $dsc_sng="Cat. 1D var over three files date-stamp limits+stride. Requires UDUnits.";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1674,7 +1674,7 @@ print "\n";
     $dsc_sng="Cat. 1D var over 3 files date-stamp limits+stride. Requires UDUnits.";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time-1;time\@units=\"hours since 1990-1-1 10:0:0\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -1685,7 +1685,7 @@ print "\n";
     $dsc_sng="Cat. 1D variable over 3 files dmn limits+stride. Requires UDUnits.";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,0 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-1' %tmp_fl_00%";   
@@ -1701,7 +1701,7 @@ print "\n";
     $dsc_sng="Cat. 1D var over 4 files different record sizes. Requires UDUnits.";
     $tst_cmd[11]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,0 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-1' %tmp_fl_00%";   
@@ -1717,7 +1717,7 @@ print "\n";
     $dsc_sng="Cat. 1D var over 4 files with srd=4 different rec sizes. Requires UDUnits.";
     $tst_cmd[11]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,0 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncatted -h -O $nco_D_flg -a units,time,o,c,'days since 1981-2-1' %tmp_fl_00%";   
@@ -1733,7 +1733,7 @@ print "\n";
     $dsc_sng="Cat. 1D var over 4 files with srd=3 str/end timestamps. Requires UDUnits.";
     $tst_cmd[11]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
 #    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
     
@@ -1753,7 +1753,7 @@ print "\n";
     $tst_cmd[5]="2";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 #    } else { print "NB: Current mpncra test skipped on sand because mpncrcat step hangs fxm TODO nco593\n";}
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -1762,7 +1762,7 @@ print "\n";
     $tst_cmd[2]="6";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -1770,7 +1770,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_int %tmp_fl_00%";
@@ -1778,7 +1778,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tmp_fl_00%";
@@ -1786,7 +1786,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tmp_fl_00%";
@@ -1794,7 +1794,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tmp_fl_00%";
@@ -1802,7 +1802,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tmp_fl_00%";
@@ -1810,7 +1810,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck %tmp_fl_00%";
@@ -1818,7 +1818,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_pck %tmp_fl_00%";
@@ -1826,7 +1826,7 @@ print "\n";
     $tst_cmd[2]="100.55";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%3.2f' -v rec_var_flt_pck %tmp_fl_00%";
@@ -1834,7 +1834,7 @@ print "\n";
     $tst_cmd[2]="100.55";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v pck,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tmp_fl_00%";
@@ -1842,7 +1842,7 @@ print "\n";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -1850,7 +1850,7 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -1858,7 +1858,7 @@ print "\n";
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -1866,7 +1866,7 @@ print "\n";
     $tst_cmd[2]="8";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -1874,7 +1874,7 @@ print "\n";
     $tst_cmd[2]="70";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%1.5f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -1882,7 +1882,7 @@ print "\n";
     $tst_cmd[2]="5.38516";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tmp_fl_00%";
@@ -1890,7 +1890,7 @@ print "\n";
     $tst_cmd[2]="5.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
@@ -1898,7 +1898,7 @@ print "\n";
     $tst_cmd[2]="110";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -X 0.,180.,-30.,30. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%8.1f' -v gds_3dvar %tmp_fl_00%";
@@ -1906,7 +1906,7 @@ print "\n";
     $tst_cmd[2]="   277.7   277.8   277.9   278.0   278.1   278.2";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra  $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
@@ -1918,7 +1918,7 @@ print "\n";
     $tst_cmd[6]="n2 = 1";
     $tst_cmd[7]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 #print "paused - hit return to continue"; my $wait=<STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;
@@ -1951,7 +1951,7 @@ print "\n";
     push(@tst_cmd, 1);
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
@@ -1959,7 +1959,7 @@ print "\n";
     $tst_cmd[2]="-90";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tmp_fl_00%";
@@ -1967,7 +1967,7 @@ print "\n";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mask %tmp_fl_00%";
@@ -1975,7 +1975,7 @@ print "\n";
     $tst_cmd[2]="50";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mss_val %tmp_fl_00%";
@@ -1983,7 +1983,7 @@ print "\n";
     $tst_cmd[2]="73";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v no_mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v no_mss_val %tmp_fl_00%";
@@ -1991,7 +1991,7 @@ print "\n";
     $tst_cmd[2]="5.0e35";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tmp_fl_00%";
@@ -1999,7 +1999,7 @@ print "\n";
     $tst_cmd[2]="90.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat_var -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat_var %tmp_fl_00%";
@@ -2007,7 +2007,7 @@ print "\n";
     $tst_cmd[2]="2.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev %tmp_fl_00%";
@@ -2015,7 +2015,7 @@ print "\n";
     $tst_cmd[2]="100.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev_var -m lev -M 100.0 -T gt -a lev -w lev_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev_var %tmp_fl_00%";
@@ -2023,7 +2023,7 @@ print "\n";
     $tst_cmd[2]="666.6667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -a lat -w gw -d lat,0 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tmp_fl_00%";
@@ -2031,7 +2031,7 @@ print "\n";
     $tst_cmd[2]="-90.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v mss_val_all -a lon -w lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_all %tmp_fl_00%";
@@ -2039,7 +2039,7 @@ print "\n";
     $tst_cmd[2]="1.0e36";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v val_one_mss -a lat -w wgt_one $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v val_one_mss %tmp_fl_00%";
@@ -2047,7 +2047,7 @@ print "\n";
     $tst_cmd[2]="1.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -T lt -a lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v msk_prt_mss_prt %tmp_fl_00%";
@@ -2055,7 +2055,7 @@ print "\n";
     $tst_cmd[2]="0.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
@@ -2063,7 +2063,7 @@ print "\n";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area_asm -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
@@ -2071,7 +2071,7 @@ print "\n";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area_asm -v area2 -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area2 %tmp_fl_00%";
@@ -2079,7 +2079,7 @@ print "\n";
     $tst_cmd[2]="10";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -2087,7 +2087,7 @@ print "\n";
     $tst_cmd[2]="2";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 # will fail SS - ncks not the last cmd
     @tst_cmd=(); # really reset array. $#tst_cmd=0; sets last index=0 --> list has one element.
@@ -2098,7 +2098,7 @@ print "\n";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -2109,7 +2109,7 @@ print "\n";
     push(@tst_cmd,"77");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -2119,7 +2119,7 @@ print "\n";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -2130,7 +2130,7 @@ print "\n";
     push(@tst_cmd, "25");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -2140,7 +2140,7 @@ print "\n";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -2151,7 +2151,7 @@ print "\n";
     push(@tst_cmd, "29");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tmp_fl_00%";
@@ -2159,7 +2159,7 @@ print "\n";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v four_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v four_dmn_rec_var %tmp_fl_00%";
@@ -2167,7 +2167,7 @@ print "\n";
     $tst_cmd[2]="240";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -2177,7 +2177,7 @@ print "\n";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -2188,7 +2188,7 @@ print "\n";
     push(@tst_cmd, "40");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -2198,7 +2198,7 @@ print "\n";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -2209,7 +2209,7 @@ print "\n";
     push(@tst_cmd, "29");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -2219,7 +2219,7 @@ print "\n";
     push(@tst_cmd, "-99");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -2230,7 +2230,7 @@ print "\n";
     push(@tst_cmd, "69");
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=();  # Reset array
+    @tst_cmd=(); # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v lat_cpy %tmp_fl_00%";;
@@ -2238,7 +2238,7 @@ print "\n";
     $tst_cmd[2]="90";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w val_half_half -v val_one_one_int $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_one_one_int %tmp_fl_00%";;
@@ -2246,7 +2246,7 @@ print "\n";
     $tst_cmd[2]="1";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v val_max_max_sht $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht %tmp_fl_00%";;
@@ -2254,7 +2254,7 @@ print "\n";
     $tst_cmd[2]="17000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v val_max_max_sht $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht %tmp_fl_00%";
@@ -2267,7 +2267,7 @@ print "\n";
     $tst_cmd[2]="-31536";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tmp_fl_00%";;
@@ -2275,7 +2275,7 @@ print "\n";
     $tst_cmd[2]="-900";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tmp_fl_00%";;
@@ -2283,7 +2283,7 @@ print "\n";
     $tst_cmd[2]="900";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tmp_fl_00%";
@@ -2291,7 +2291,7 @@ print "\n";
     $tst_cmd[2]="5.5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
@@ -2299,7 +2299,7 @@ print "\n";
     $tst_cmd[2]="55";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     
 #print "paused - hit return to continue"; my $wait=<STDIN>;
@@ -2317,7 +2317,7 @@ if(0){ #################  SKIP THESE #####################
     $tst_cmd[2]="1.000000e+00";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 # test 2
     my $sftp_url="sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco";
@@ -2332,7 +2332,7 @@ if(0){ #################  SKIP THESE #####################
     $tst_cmd[3]="1.000000e+00";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
 # test 3
     if($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
@@ -2344,14 +2344,14 @@ if(0){ #################  SKIP THESE #####################
     $tst_cmd[2]=1;
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     $tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
     $dsc_sng="OPeNDAP protocol (requires OPeNDAP/DODS-enabled NCO)";
     $tst_cmd[1]="0";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    $#tst_cmd=0; # Reset array
     
     if($USER eq 'zender'){
 	$tst_cmd[0]="/bin/rm -f /tmp/etr_A4.SRESA1B_9.CCSM.atmd.2000_cat_2099.nc";
@@ -2360,7 +2360,7 @@ if(0){ #################  SKIP THESE #####################
 	$tst_cmd[2]="182.5";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
 	
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -v one -p mss:/ZENDER/nc -l /tmp in.nc";
@@ -2369,7 +2369,7 @@ if(0){ #################  SKIP THESE #####################
 	$tst_cmd[3]="1";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
 	
     } else { print "WARN: Skipping net tests of mss: and password protected FTP protocol retrieval---user not zender\n";}
     
@@ -2380,7 +2380,7 @@ if(0){ #################  SKIP THESE #####################
  	$tst_cmd[2]="1";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0;  # Reset array
+	$#tst_cmd=0; # Reset array
 	
     } else { print "WARN: Skipping net test wget: protocol retrieval---not implemented yet\n";}
 } #################  SKIP THESE #####################
