@@ -63,8 +63,8 @@ HEADERS   = ../../src/nco++/fmc_all_cls.hh \
 ../../src/nco++/sdo_utl.hh \
 ../../src/nco++/VarOp.hh \
 ../../src/nco++/vtl_cls.hh \
-../../src/nco++/fmc_gsl_cls.hh
-
+../../src/nco++/fmc_gsl_cls.hh \
+../../src/nco++/nco_gsl.h
 
 SOURCES   = ../../src/nco++/Invoke.cc \
 ../../src/nco++/ncap2.cc \
@@ -79,5 +79,6 @@ SOURCES   = ../../src/nco++/Invoke.cc \
 ../../src/nco++/ncoLexer.cpp \
 ../../src/nco++/ncoParser.cpp \
 ../../src/nco++/ncoTree.cpp \
-../../src/nco++/prs_cls.cc
+../../src/nco++/prs_cls.cc \
+../../src/nco++/nco_gsl.c
 

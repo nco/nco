@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.119 2012-02-14 23:55:13 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.120 2013-01-12 22:14:46 pvicente Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1405,7 +1405,8 @@ $(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/sym_cls.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoParser.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoTree.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/prs_cls.o) \
-	$(libnco++).a(${MY_OBJ_DIR}/sdo_utl.o)
+	$(libnco++).a(${MY_OBJ_DIR}/sdo_utl.o) \
+        $(libnco++).a(${MY_OBJ_DIR}/nco_gsl.o)
 # NB: Do not place comments in the middle of a rule, or have \ at the end
 lib_cln :
 	rm -f $(libnco++).a $(libnco++).la $(libnco++).so*
