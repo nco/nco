@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.18 2013-01-13 06:07:48 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.19 2013-01-13 07:23:06 pvicente Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco++
 
@@ -20,6 +20,7 @@
 #include "sym_cls.hh"
 #include "fmc_cls.hh"
 #include "fmc_all_cls.hh"
+#include "nco_gsl.h"
 #ifdef ENABLE_GSL
 # include "fmc_gsl_cls.hh"
 #endif // !ENABLE_GSL

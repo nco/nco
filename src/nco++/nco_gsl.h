@@ -6,6 +6,7 @@
 
 #ifndef NCO_GSL_H
 #define NCO_GSL_H
+#define ENABLE_NCO_GSL
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +20,7 @@ extern "C" {
 #define CONCAT2(a,b) CONCAT2x(a,b)
 #define FUNCTION(dir,name) CONCAT2(dir,name)
 #define BASE double
-#define GSL_SUCCESS 0
+#define NCO_GSL_SUCCESS 0
 
 //nco_gsl forward declarations
 int

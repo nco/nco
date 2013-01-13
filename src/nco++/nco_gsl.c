@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.2 2013-01-12 23:24:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.3 2013-01-13 07:23:06 pvicente Exp $ */
 
 /* Purpose: gsl functions that handle netCDF fill value */
 
@@ -7,7 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_gsl.h"
-
 
 /* Fit the data (x_i, y_i) to the linear relationship 
 
@@ -124,7 +123,7 @@ nco_gsl_fit_linear
     *sumsq = d2;
   }
 
-  return GSL_SUCCESS;
+  return NCO_GSL_SUCCESS;
 }
 
 

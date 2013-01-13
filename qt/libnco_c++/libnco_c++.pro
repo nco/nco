@@ -41,7 +41,7 @@ win32 {
 
 # header files
 HEADERS += ../../src/nco_c++/libnco_c++.hh \
-../../src/src/nco_c++/nco_dmn.hh \
+../../src/nco_c++/nco_dmn.hh \
 ../../src/nco_c++/nco_hgh.hh \
 ../../src/nco_c++/nco_var.hh \
 ../../src/nco_c++/nco_att.hh \

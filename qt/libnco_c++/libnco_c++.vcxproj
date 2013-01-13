@@ -131,7 +131,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\nco_c++\libnco_c++.hh" />
     <ClInclude Include="..\..\src\nco_c++\nco_att.hh" />
-    <ClInclude Include="..\..\src\src\nco_c++\nco_dmn.hh" />
+    <ClInclude Include="..\..\src\nco_c++\nco_dmn.hh" />
     <ClInclude Include="..\..\src\nco_c++\nco_fl.hh" />
     <ClInclude Include="..\..\src\nco_c++\nco_hgh.hh" />
     <ClInclude Include="..\..\src\nco_c++\nco_utl.hh" />

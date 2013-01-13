@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.57 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.58 2013-01-13 07:23:06 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "fmc_gsl_cls.hh"
+#include "nco_gsl.h"
 
 // GSL Functions
 #ifdef ENABLE_GSL
@@ -5036,3 +5037,236 @@ int gsl_dmm_stb(void);
 int gsl_dmm_stb(void){return 1;}
  
 #endif // !ENABLE_GSL
+
+
+// nco_gsl Least Squares Fitting
+nco_gsl_fit_cls::nco_gsl_fit_cls(bool  flg_dbg)
+{
+  //Populate only on first constructor call
+  if(fmc_vtr.empty())
+  {
+    fmc_vtr.push_back( fmc_cls("nco_gsl_fit_linear",this,(int)PLIN));
+  }
+}
+
+var_sct *nco_gsl_fit_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &walker)
+{
+  const std::string fnc_nm("nco_gsl_fit_cls::fnd");
+  bool is_mtd;
+  int fdx=fmc_obj.fdx();   //index
+  RefAST tr;    
+  std::vector<RefAST> vtr_args; 
+
+  if(expr)
+    vtr_args.push_back(expr);
+
+  if(tr=fargs->getFirstChild()) 
+  {
+    do  
+    vtr_args.push_back(tr);
+    while(tr=tr->getNextSibling());    
+  }
+
+  is_mtd=(expr ? true: false);
+
+  switch(fdx)
+  {
+  case PLIN:
+    return fit_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+    break;
+  default:
+    assert(0);
+    break;
+  }
+} // end nco_gsl_fit_cls::fnd 
+
+
+var_sct *nco_gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args,fmc_cls &fmc_obj,ncoTree &walker)
+{
+  const std::string fnc_nm("nco_gsl_fit_cls::fit_fnd");
+  int idx;
+  int fdx=fmc_obj.fdx();   //index
+  int nbr_args;    // actual nunber of args
+  int in_nbr_args; // target number of args
+  int in_val_nbr_args; // number of expressions
+  int ret; 
+  prs_cls* prs_arg=walker.prs_arg;
+  std::string sfnm =fmc_obj.fnm(); //method name
+  std::string susg;
+  std::string serr;    
+  vtl_typ lcl_typ;
+  var_sct *var_in[13];  
+  nbr_args=vtr_args.size();  
+
+  switch(fdx)
+  {
+  case PLIN:
+    in_nbr_args=11;
+    in_val_nbr_args=5;
+    susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq)";
+    break;   
+  default:
+    assert(0);
+    break;
+  }   
+
+  if(nbr_args<in_nbr_args)
+  {   
+    serr="function requires "+ nbr2sng(in_nbr_args)+" arguments. You have only supplied "+nbr2sng(nbr_args)+ " arguments\n"; 
+    err_prn(sfnm,serr+susg);
+  }
+
+  for(idx=0;idx<in_nbr_args;idx++)
+  {
+    lcl_typ=expr_typ(vtr_args[idx]);  
+
+    // deal with regular arguments 
+    if(idx<in_val_nbr_args)
+    { 
+      if(lcl_typ == VCALL_REF || lcl_typ == VDIM )
+      {
+        serr="function requires that " + nbr2sng(idx)+ " argument be a variable name or an expression";
+        err_prn(sfnm,serr+susg);
+      }
+      var_in[idx] = walker.out(vtr_args[idx]);        
+    }
+    else // deal with call-by-ref variables      
+    {
+      var_sct *var_tmp;
+      std::string var_nm;
+      NcapVar  *Nvar;
+      var_nm=vtr_args[idx]->getFirstChild()->getText();
+      if(lcl_typ != VCALL_REF)
+      {
+        serr="function requires that " + nbr2sng(idx)+ " argument be a call by reference variable";
+        err_prn(sfnm,serr+susg);
+      }
+      // initial scan
+      if(prs_arg->ntl_scn)
+      {
+        if(prs_arg->ncap_var_init_chk(var_nm))
+          var_tmp=prs_arg->ncap_var_init(var_nm,false);  
+        else
+          var_tmp=ncap_sclr_var_mk(var_nm,NC_DOUBLE,false);
+      }
+      else // final scan
+      {
+        // we have a problem here - its possible that in the inital scan
+        // that some of the call-by-ref variables have been defined but 
+        // not populated. Cannot use ncap_var_init() as this will attempt
+        // to read var from input as it is unpopulated 
+        Nvar=prs_arg->var_vtr.find(var_nm);
+        if(Nvar && Nvar->flg_stt==1)
+        {
+          var_tmp=Nvar->cpyVarNoData();
+          // malloc space for var
+          var_tmp->val.vp=nco_malloc(var_tmp->sz * nco_typ_lng(var_tmp->type));   
+        }    
+        else if(prs_arg->ncap_var_init_chk(var_nm))
+        {
+          var_tmp=prs_arg->ncap_var_init(var_nm,true);
+        }
+        else   
+        {
+          var_tmp=ncap_sclr_var_mk(var_nm,NC_DOUBLE,1.0);
+        } //end if/else
+      } //end final scan
+      // convert to type double
+      if(!var_tmp->undefined)
+      {
+        var_tmp=nco_var_cnf_typ(NC_DOUBLE,var_tmp);
+      }
+      var_in[idx]=var_tmp;
+    } //end call-by-ref vars
+  } // end for  
+
+  // inital scan --free up  vars and return 
+  if(prs_arg->ntl_scn)
+  {
+    for(idx=0;idx<in_nbr_args;idx++)
+    {
+      if(idx<in_val_nbr_args)
+      {
+        var_in[idx]=nco_var_free(var_in[idx]);
+      }
+      else
+      {
+        // write newly defined call by ref args
+        // nb this call frees up var_in[idx] 
+        prs_arg->ncap_var_write(var_in[idx],false);
+      }
+    }//end for
+    return ncap_sclr_var_mk("~nco_gsl_fit_cls",NC_INT,false);   
+  }//end if/inital scan
+
+  // big switch 
+  switch(fdx)
+  {
+  case PLIN:
+    // recall aguments in order in var_in
+    /* 
+    0  x_in
+    1  x stride
+    2  y_in
+    3  y stride
+    4  n
+    5  c0
+    6  c1
+    7  c00 
+    8  c01
+    9  c11
+    10  sumsq       
+    */
+    // convert x,y to type double
+    var_in[0]=nco_var_cnf_typ(NC_DOUBLE,var_in[0]);
+    var_in[2]=nco_var_cnf_typ(NC_DOUBLE,var_in[2]);
+
+    // make x,y  conform 
+    (void)ncap_var_att_cnf(var_in[2],var_in[0]);
+
+    // convert strides to NC_UINT64
+    var_in[1]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[1]);   
+    var_in[3]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[3]);   
+    var_in[4]=nco_var_cnf_typ((nc_type)NC_UINT64,var_in[4]);   
+
+    //cast pointers from void 
+    for(idx=0 ;idx<in_nbr_args;idx++)
+    {
+      (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
+    }
+
+    // make the call -- 
+    ret=nco_gsl_fit_linear(var_in[0]->val.dp,
+      var_in[1]->val.ui64p[0],
+      var_in[2]->val.dp,
+      var_in[3]->val.ui64p[0],     
+      var_in[4]->val.ui64p[0],
+      var_in[5]->val.dp,
+      var_in[6]->val.dp,
+      var_in[7]->val.dp,
+      var_in[8]->val.dp,
+      var_in[9]->val.dp,
+      var_in[10]->val.dp,
+      NULL);
+    // free up or save values 
+    break; //PLIN 
+  default:
+    assert(0);
+  } // end big switch   
+
+  for(idx=0 ; idx< in_nbr_args ;idx++)
+  {
+    //cast pointers to void
+    (void)cast_nctype_void(var_in[idx]->type,&var_in[idx]->val);
+    if(idx<in_val_nbr_args)
+      nco_var_free(var_in[idx]);
+    else
+      // nb this write call also frees up pointer  
+      prs_arg->ncap_var_write(var_in[idx],false);
+  }
+  // return status flag
+  return ncap_sclr_var_mk("~nco_gsl_fit_cls",(nco_int)ret);   
+} // end nco_gsl_fit_cls::fit_fnd 
+
+
+
