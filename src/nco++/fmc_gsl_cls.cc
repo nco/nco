@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.58 2013-01-13 07:23:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.59 2013-01-13 11:07:15 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5235,6 +5235,13 @@ var_sct *nco_gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args,fm
       (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
     }
 
+    //get fill value from "y_in" only: assumes type convertion to "double"
+    if(dbg_lvl_get() == nco_dbg_dev)
+    {
+      if(var_in[2]->mss_val.dp)
+      (void)fprintf(stdout,"fill value for %s=%f\n",var_in[2]->nm,var_in[2]->mss_val.dp[0]);
+    }
+
     // make the call -- 
     ret=nco_gsl_fit_linear(var_in[0]->val.dp,
       var_in[1]->val.ui64p[0],
@@ -5247,7 +5254,7 @@ var_sct *nco_gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args,fm
       var_in[8]->val.dp,
       var_in[9]->val.dp,
       var_in[10]->val.dp,
-      NULL);
+      var_in[2]->mss_val.dp); //fill value "double" for variable "y_in" (var_in[2])
     // free up or save values 
     break; //PLIN 
   default:

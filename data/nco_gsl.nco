@@ -1,4 +1,9 @@
 //usage: ncap2 -D 11 -O -S ~/nco/data/nco_gsl.nco ~/nco/data/nco_gsl.nc out.nc 
+//fy variable contains a fill value, vx,vy,fx do not
+nco_gsl_fit_linear(vx,1,vy,1,$dim.size,&tc0,&tc1,&cov00,&cov01,&cov11,&sumsq);
+print(tc0);
+print(tc1);
 nco_gsl_fit_linear(fx,1,fy,1,$dim.size,&tc0,&tc1,&cov00,&cov01,&cov11,&sumsq);
 print(tc0);
 print(tc1);
+
