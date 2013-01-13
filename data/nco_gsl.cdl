@@ -1,10 +1,17 @@
 netcdf nco_gsl {
+//purpose: test nco_gsl_fit_linear()
+//vx,vy values with no fill value, fx,fy values with fill value
 	dimensions:
 	dim=4;
 	variables:
+	double vx(dim);
+	double vy(dim);
 	double fx(dim);
 	double fy(dim);
+	fy:_FillValue = -99.0;
 	data:
+	vx=2.0,3.0,2.0,3.0;
+	vy=4.0,6.0,6.0,8.0;
 	fx=2.0,3.0,2.0,3.0;
-	fy=4.0,6.0,6.0,8.0;
+	fy=4.0,-99.0,6.0,8.0;
 }
