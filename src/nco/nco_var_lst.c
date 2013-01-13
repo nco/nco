@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.127 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.128 2013-01-13 06:46:50 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -850,9 +850,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     var_typ=var[idx]->type;
     if((var_typ == NC_BYTE) || (var_typ == NC_UBYTE) || (var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
-    /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...) */
+    /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
+       20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true 
+       so no longer need to specify these conditions separately. 
+       Keep this old code here as a reminder that is_crd_var also incorporates these conditions
     is_spc_in_crd_att=nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id);
-    is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id);
+    is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */
 
     /* Override operation type based depending on variable properties and program */
     switch(prg_id){
@@ -863,18 +866,18 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Do nothing */
       break;
     case ncbo:
-      if(var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att || var_typ_fnk) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
       break;
     case ncea:
-      if(var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att || var_typ_fnk) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
       break;
     case ncecat:
       /* Allow ncecat to concatenate funky variables */
-      if(var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
       break;
     case ncflint:
       /* Allow ncflint to interpolate record variables, not fixed coordinates */
-      if((var[idx]->is_crd_var || is_spc_in_bnd_att || is_spc_in_crd_att || var_typ_fnk) && !var[idx]->is_rec_var) var_op_typ[idx]=fix;
+      if((var[idx]->is_crd_var || var_typ_fnk) && !var[idx]->is_rec_var) var_op_typ[idx]=fix;
       break;
     case ncks:
       /* Do nothing */
@@ -895,8 +898,6 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	   (var[idx]->is_crd_var && !(nco_pck_plc == nco_pck_plc_upk) ) ||
 	   /* unless if it's NOT a record variable and the policy is unpack 
 	      20120711. nco: ncpdq unpack coordinate variables */     
-	   /* ...likewise for variables listed in "coordinates" or "bounds" attributes... */
-	   (is_spc_in_crd_att || is_spc_in_bnd_att) ||
 	   /* ...unpacking requested for unpacked variable... */
 	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram) ||
 	   /* ...or packing unpacked requested and variable is already packed... */

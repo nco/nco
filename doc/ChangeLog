@@ -1,5 +1,12 @@
 2013-01-12  Charlie Zender  <zender@uci.edu>
 
+	* Set is_crd_var to True in nco_var_fll() when variable referenced
+	in either CF "bounds" or "coordinates" attributes. Effectively,
+	the only consequence of this is that the arithmetic operators now
+	treat CF coordinates like basic coordinates in all ways. More
+	consistent to have time_bnds be an average, like time, rather than
+	a total when -y ttl is specified.
+
 	* Commit new extraction list API version of ncks
 
 	* All tests pass on netCDF4-enabled NCO. MM3 still disabled.

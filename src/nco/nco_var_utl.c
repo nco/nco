@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.208 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.209 2013-01-13 06:46:50 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1580,14 +1580,14 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
       } /* end if */
     } /* end if */
 
-    /* 20130112: Variables associated with "bounds" and "coordinates" attributes should,
-       in most cases, be treated as coordinates */
-    if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
-    if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
-
     /* NB: This assumes default var->sz begins as 1 */
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
+
+  /* 20130112: Variables associated with "bounds" and "coordinates" attributes should,
+     in most cases, be treated as coordinates */
+  if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
+  if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
 
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
      nco_pck_dsk_inq() fills in these portions harmlessly */

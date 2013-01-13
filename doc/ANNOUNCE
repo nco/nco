@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.528 2012-12-17 00:30:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.529 2013-01-13 06:46:50 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -51,6 +51,14 @@ A. ncrename supports restricting actions to global/group attributes
    ncrename -a        @old_att_nm,new_att_nm in.nc
    ncrename -a global@.old_att_nm,new_att_nm in.nc
    http://nco.sf.net/nco.html#xmp_ncrename
+
+A. Handle variables specified in CF "bounds" and "coordinates"
+   attributes as coordinates in all ways. Specifically, dimension- 
+   reducing operations (e.g., min/max/ttl) no longer operate on
+   CF conventions (since performing these operations on grids 
+   usually makes no sense). Instead, the same dimension-reducing
+   operation applied to the coordinate (averaging) is now applied to 
+   any CF "bounds" and "coordinates" variables.
 
 BUG FIXES:
 

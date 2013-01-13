@@ -1,4 +1,4 @@
-v/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.61 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.62 2013-01-13 06:46:50 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
