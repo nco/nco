@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.30 2012-07-16 02:15:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.31 2013-01-13 06:07:47 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -108,7 +108,8 @@ rnd_nbr /* [fnc] Generate random fraction in [0,1] */
 (double x) /* I [frc] Immaterial */
 {
   /* Purpose: Wrapper for system random number generator 
-     Output does not depend on input value of x */
+     Output does not depend on input value of x
+     201207: Without srand() and srandom() seeds, same number would be generated each time */
   long rnd_nbr_lng;
   double rnd_nbr_dbl_frc;
   x=x+0.0; /* CEWI */

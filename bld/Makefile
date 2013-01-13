@@ -1,9 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.623 2012-12-10 16:40:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.624 2013-01-13 06:07:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
 
-# Copyright (C) 1994--2012 Charlie Zender
+# Copyright (C) 1994--2013 Charlie Zender
 # License: GNU General Public License (GPL) Version 3
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
@@ -560,7 +560,7 @@ MDL_BLD_SRC += $(addprefix ${MY_BM_DIR}/,NCO_bm.pm NCO_benchmarks.pm NCO_rgr.pm 
 TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
 
 # Variables having to do with Qt build system
-MDL_QT_SRC := $(addprefix ${MY_QT_DIR}/,nco.pro libnco/libnco.pro ncatted/ncatted.pro ncbo/ncbo.pro ncecat/ncecat.pro ncflint/ncflint.pro ncks/ncks.pro ncpdq/ncpdq.pro ncra/ncra.pro ncrename/ncrename.pro ncwa/ncwa.pro nco_c++/nco_c++.pro tst_nco_c++/tst_nco_c++.pro nco++/nco++.pro) # `make tags' includes these files
+MDL_QT_SRC := $(addprefix ${MY_QT_DIR}/,nco.pro libnco/libnco.pro ncatted/ncatted.pro ncbo/ncbo.pro ncecat/ncecat.pro ncflint/ncflint.pro ncks/ncks.pro ncpdq/ncpdq.pro ncra/ncra.pro ncrename/ncrename.pro ncwa/ncwa.pro tst_nco_c++/tst_nco_c++.pro) # `make tags' includes these files
 
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files

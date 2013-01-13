@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.190 2012-11-18 21:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.191 2013-01-13 06:07:47 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
 /* Purpose: Compute sum, difference, product, or ratio of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
    
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.190 2012-11-18 21:16:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.190 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.191 2013-01-13 06:07:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.191 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;

@@ -1,10 +1,10 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.62 2012-07-28 02:27:43 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.63 2013-01-13 06:07:47 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
 /* Purpose: Grammar parser for ncap */
   
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
      
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 

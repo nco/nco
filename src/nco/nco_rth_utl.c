@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.53 2012-07-25 03:33:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.54 2013-01-13 06:07:47 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -120,7 +120,9 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
      Reducing such grids to a single-value must be done
      The most representative value of the grid is the average 
      The total, min, max, rms, etc. of the grid usually makes no sense
-     Users are most interested in the mean grid coordinate */
+     Users are most interested in the mean grid coordinate
+     20130112: The same logic applies to CF-style coordinates, e.g., 
+     to variables matching the CF "bounds" and "coordinates" conventions */
   if(var_prc->is_crd_var){
     (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     return;

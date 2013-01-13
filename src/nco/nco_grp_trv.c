@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.29 2013-01-12 20:29:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.30 2013-01-13 06:07:47 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
-/* Copyright (C) 2011--2012 Charlie Zender
+/* Copyright (C) 2011--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

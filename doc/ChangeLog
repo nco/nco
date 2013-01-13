@@ -2,7 +2,7 @@
 
 	* Commit new extraction list API version of ncks
 
-	* All tests pass on netCDF4-enabled NCO
+	* All tests pass on netCDF4-enabled NCO. MM3 still disabled.
 
 	* Tweak regression tests to work with intersections, non-recursive requests
 

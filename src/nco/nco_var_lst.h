@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.60 2012-10-08 06:02:53 zender Exp $ */
+v/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.61 2013-01-13 06:07:48 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -69,16 +69,6 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
  int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
  const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
-
-nco_bool /* [flg] Variable is listed in a "bounds" attribute */
-nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
-(const int nc_id, /* I [id] netCDF file ID */
- const int var_trg_id); /* I [id] Variable ID */
-
-nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
-nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
-(const int nc_id, /* I [id] netCDF file ID */
- const int var_trg_id); /* I [id] Variable ID */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */

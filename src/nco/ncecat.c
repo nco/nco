@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.246 2012-12-13 01:57:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.247 2013-01-13 06:07:47 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
 /* Purpose: Join variables across files with new record variable or aggregate files as groups */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
 
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.246 2012-12-13 01:57:12 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.246 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.247 2013-01-13 06:07:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.247 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;

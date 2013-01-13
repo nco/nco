@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.73 2012-11-12 01:53:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.74 2013-01-13 06:07:48 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -137,6 +137,16 @@ extern "C" {
   nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
   (var_sct **var_lst, /* I/O [sct] Variable structure list to free */
    const int var_nbr); /* I [nbr] Number of variable structures in list */
+
+  nco_bool /* [flg] Variable is listed in a "bounds" attribute */
+  nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
+  (const int nc_id, /* I [id] netCDF file ID */
+   const int var_trg_id); /* I [id] Variable ID */
+
+  nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
+  nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
+  (const int nc_id, /* I [id] netCDF file ID */
+   const int var_trg_id); /* I [id] Variable ID */
 
   void
   nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */

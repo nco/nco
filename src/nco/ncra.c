@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.312 2012-12-17 00:04:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.313 2013-01-13 06:07:48 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -9,7 +9,7 @@
    specfied variables of multiple input netCDF files and output them 
    to a single file. */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
 
    License: GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.312 2012-12-17 00:04:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.312 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.313 2013-01-13 06:07:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.313 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -821,7 +821,7 @@ main(int argc,char **argv)
 	   rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 
 	   Flag juggling:
-	   REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops along with ncea normalization. FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR. */
+	   REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with ncea normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR. */
 	
 	/* Last stride in file has distinct index-augmenting behavior */
 	if(idx_rec_crr_in >= lmt_rec->end) REC_SRD_LST=True; else REC_SRD_LST=False;

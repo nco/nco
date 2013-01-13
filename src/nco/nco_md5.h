@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.9 2012-07-28 02:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.10 2013-01-13 06:07:47 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
-/* Copyright (C) 2012--2012 Charlie Zender
+/* Copyright (C) 2012--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -84,7 +84,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.9 2012-07-28 02:27:43 zender Exp $ */
+/* $Id: nco_md5.h,v 1.10 2013-01-13 06:07:47 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

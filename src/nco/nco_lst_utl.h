@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.50 2012-11-19 03:41:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.51 2013-01-13 06:07:47 zender Exp $ */
 
 /* Purpose: List utilities */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

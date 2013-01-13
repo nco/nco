@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.h,v 1.19 2012-07-21 07:12:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.h,v 1.20 2013-01-13 06:07:47 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
