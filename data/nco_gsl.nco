@@ -1,2 +1,3 @@
+//usage: ncap2 -D 11 -O -S ~/nco/data/nco_gsl.nco ~/nco/data/nco_gsl.nc out.nc 
 nco_gsl_fit_linear(fx,1,fy,1,$dim.size,&tc0,&tc1,&cov00,&cov01,&cov11,&sumsq);
 print(tc0);

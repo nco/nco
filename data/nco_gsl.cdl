@@ -1,0 +1,10 @@
+netcdf nco_gsl {
+	dimensions:
+	dim=4;
+	variables:
+	double fx(dim);
+	double fy(dim);
+	data:
+	fx=2.0,3.0,2.0,3.0;
+	fy=4.0,6.0,6.0,8.0;
+}
