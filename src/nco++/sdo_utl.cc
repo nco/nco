@@ -1,10 +1,10 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.cc,v 1.3 2008-03-02 14:25:33 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.cc,v 1.4 2013-01-13 19:19:22 zender Exp $ 
 
 // Purpose: Implementation (declaration) of SDO stand-alone utilities 
 
-/* Copyright (C) 1997--2005 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License Version 3
-   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+/* Copyright (C) 1997--2013 Charlie Zender
+   License: GNU General Public License (GPL) Version 3
+   See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 

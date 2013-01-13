@@ -1,3 +1,8 @@
+2013-01-13  Charlie Zender  <zender@uci.edu>
+
+	* Rework details of NCO GSL code: use mss_val as argument name,
+	eliminate C99/C++ "//" comment syntax, and attrbute copyrights back to original GSL code
+
 2013-01-12  Charlie Zender  <zender@uci.edu>
 
 	* Set is_crd_var to True in nco_var_fll() when variable referenced

@@ -1,12 +1,22 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.4 2013-01-13 11:44:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.5 2013-01-13 19:19:21 zender Exp $ */
 
-/* Purpose: gsl functions that handle netCDF fill value */
+/* Purpose: GSL functions that handle missing values */
 
-/* Copyright (C) 1995--2012 Charlie Zender
+/* nco_gsl.[ch] re-implement GSL functions without arithmetic changes _except_
+   that the NCO version (prefixed with nco_) accepts a missing value argument which,
+   if non-NULL, indicates data to be "skipped", i.e., treated as missing. 
+
+   GSL and NCO are both distributed under the GPL3 license.
+   The GSL code is copyright by its respective authors.
+   The NCO modifications that provide missing value support are, in addition, 
+   Copyright (C) 2013--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
-   See http://www.gnu.org/copyleft/gpl.html for full license text */
+   See http://www.gnu.org/copyleft/gpl.html for full license text
 
-#include "nco_gsl.h"
+   Original GSL files, copyright holders, and authors of functions below are:
+   gsl/fit/linear.c: Copyright (C) 2000, 2007 Brian Gough */
+
+#include "nco_gsl.h" /* Missing value-aware GSL functions */
 
 /* Fit the data (x_i, y_i) to the linear relationship 
 
@@ -37,12 +47,12 @@ nco_gsl_fit_linear
  double *cov_01, 
  double *cov_11, 
  double *sumsq,
- const double *flv)
+ const double *mss_val)
 {
   double m_x = 0, m_y = 0, m_dx2 = 0, m_dxdy = 0;
   size_t i;
 
-  if (flv==NULL)
+  if (mss_val==NULL)
   {
     for (i = 0; i < n; i++)
     {
@@ -54,7 +64,7 @@ nco_gsl_fit_linear
   {
     for (i = 0; i < n; i++)
     {
-      if (y[i * ystride]!=*flv)
+      if (y[i * ystride]!=*mss_val)
       {
         m_x += (x[i * xstride] - m_x) / (i + 1.0);
         m_y += (y[i * ystride] - m_y) / (i + 1.0);
@@ -63,7 +73,7 @@ nco_gsl_fit_linear
   }
 
 
-  if (flv==NULL)
+  if (mss_val==NULL)
   {
     for (i = 0; i < n; i++)
     {
@@ -77,7 +87,7 @@ nco_gsl_fit_linear
   {
     for (i = 0; i < n; i++)
     {
-      if (y[i * ystride]!=*flv)
+      if (y[i * ystride]!=*mss_val)
       {
         const double dx = x[i * xstride] - m_x;
         const double dy = y[i * ystride] - m_y;
@@ -99,7 +109,7 @@ nco_gsl_fit_linear
 
     /* Compute chi^2 = \sum (y_i - (a + b * x_i))^2 */
 
-    if (flv==NULL)
+    if (mss_val==NULL)
     {
       for (i = 0; i < n; i++)
       {
@@ -113,7 +123,7 @@ nco_gsl_fit_linear
     {
       for (i = 0; i < n; i++)
       {
-        if (y[i * ystride]!=*flv)
+        if (y[i * ystride]!=*mss_val)
         {
           const double dx = x[i * xstride] - m_x;
           const double dy = y[i * ystride] - m_y;
@@ -147,7 +157,7 @@ FUNCTION(compute,covariance)
  const size_t n, 
  const double mean1, 
  const double mean2,
- const double *flv) //fill value
+ const double *mss_val) /* Missing value */
 {
   /* takes a dataset and finds the covariance */
 
@@ -156,7 +166,7 @@ FUNCTION(compute,covariance)
   size_t i;
 
   /* find the sum of the squares */
-  if (flv==NULL)
+  if (mss_val==NULL)
   {
     for (i = 0; i < n; i++)
     {
@@ -170,7 +180,7 @@ FUNCTION(compute,covariance)
   {
     for (i = 0; i < n; i++)
     {
-      if (data2[i * stride2]!=*flv)
+      if (data2[i * stride2]!=*mss_val)
       {
         const long double delta1 = (data1[i * stride1] - mean1);
         const long double delta2 = (data2[i * stride2] - mean2);
@@ -191,9 +201,9 @@ FUNCTION(nco_gsl_stats,covariance_m)
  const size_t n, 
  const double mean1, 
  const double mean2,
- const double *flv) //fill value
+ const double *mss_val) /* Missing value */
 {
-  const double covariance = FUNCTION(compute,covariance) (data1, stride1, data2, stride2, n, mean1, mean2, flv);
+  const double covariance = FUNCTION(compute,covariance) (data1, stride1, data2, stride2, n, mean1, mean2, mss_val);
   return covariance * ((double)n / (double)(n - 1));
 }
 
@@ -204,11 +214,11 @@ FUNCTION(nco_gsl_stats,covariance)
  const BASE data2[], 
  const size_t stride2,
  const size_t n,
- const double *flv) //fill value
+ const double *mss_val) /* Missing value */
 {
-  const double mean1 = FUNCTION(nco_gsl_stats,mean) (data1, stride1, n, flv);
-  const double mean2 = FUNCTION(nco_gsl_stats,mean) (data2, stride2, n, flv);
-  return FUNCTION(nco_gsl_stats,covariance_m)(data1, stride1, data2, stride2, n, mean1, mean2, flv);
+  const double mean1 = FUNCTION(nco_gsl_stats,mean) (data1, stride1, n, mss_val);
+  const double mean2 = FUNCTION(nco_gsl_stats,mean) (data2, stride2, n, mss_val);
+  return FUNCTION(nco_gsl_stats,covariance_m)(data1, stride1, data2, stride2, n, mean1, mean2, mss_val);
 }
 
 
@@ -217,7 +227,7 @@ FUNCTION (nco_gsl_stats, mean)
 (const BASE data[], 
  const size_t stride, 
  const size_t size,
- const double *flv) //fill value
+ const double *mss_val) /* Missing value */
 {
   /* Compute the arithmetic mean of a dataset using the recurrence relation 
   mean_(n) = mean(n-1) + (data[n] - mean(n-1))/(n+1)   */
@@ -225,7 +235,7 @@ FUNCTION (nco_gsl_stats, mean)
   long double mean = 0;
   size_t i;
 
-  if (flv==NULL)
+  if (mss_val==NULL)
   {
     for (i = 0; i < size; i++)
     {
@@ -236,7 +246,7 @@ FUNCTION (nco_gsl_stats, mean)
   {
     for (i = 0; i < size; i++)
     {
-      if (data[i * stride]!=*flv)
+      if (data[i * stride]!=*mss_val)
       {
         mean += (data[i * stride] - mean) / (i + 1);
       }
