@@ -8,13 +8,13 @@ CONFIG += debug_and_release
 
 #nco++ library
 CONFIG( debug, debug|release ) {
-    # debug
+	# debug
 	win32:LIBS += ../libnco_c++/debug/libnco_c++.lib
-    unix:LIBS  += ../nco_c++/debug/liblibnco_c++.a
+	unix:LIBS  += ../libnco_c++/debug/liblibnco_c++.a
 } else {
-    # release
+	# release
 	win32:LIBS += ../libnco_c++/release/libnco_c++.lib
-    unix:LIBS  += ../nco_c++/release/liblibnco_c++.a
+	unix:LIBS  += ../libnco_c++/release/liblibnco_c++.a
 }
 
 INCLUDEPATH += ../../src/nco_c++
