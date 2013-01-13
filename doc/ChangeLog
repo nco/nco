@@ -5,7 +5,8 @@
 	the only consequence of this is that the arithmetic operators now
 	treat CF coordinates like basic coordinates in all ways. More
 	consistent to have time_bnds be an average, like time, rather than
-	a total when -y ttl is specified.
+	a total when -y ttl is specified. This simplifies nco_var_lst_dvd()
+	which no longer separately checks for CF coordinates.
 
 	* Commit new extraction list API version of ncks
 
