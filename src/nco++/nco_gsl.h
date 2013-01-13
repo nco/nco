@@ -42,7 +42,8 @@ double
 FUNCTION(nco_gsl_stats,mean) 
 (const BASE data[], 
  const size_t stride, 
- const size_t size);
+ const size_t size,
+ const double *flv); //fill value
 
 double 
 FUNCTION(nco_gsl_stats,covariance) 
@@ -50,7 +51,8 @@ FUNCTION(nco_gsl_stats,covariance)
  const size_t stride1,
  const BASE data2[], 
  const size_t stride2,
- const size_t n);
+ const size_t n,
+ const double *flv); //fill value
 
 
 #ifdef __cplusplus

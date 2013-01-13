@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.3 2013-01-13 07:23:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.4 2013-01-13 11:44:13 pvicente Exp $ */
 
 /* Purpose: gsl functions that handle netCDF fill value */
 
@@ -42,14 +42,17 @@ nco_gsl_fit_linear
   double m_x = 0, m_y = 0, m_dx2 = 0, m_dxdy = 0;
   size_t i;
 
-  for (i = 0; i < n; i++)
+  if (flv==NULL)
   {
-    if (flv==NULL)
+    for (i = 0; i < n; i++)
     {
       m_x += (x[i * xstride] - m_x) / (i + 1.0);
       m_y += (y[i * ystride] - m_y) / (i + 1.0);
     }
-    else
+  }
+  else
+  {
+    for (i = 0; i < n; i++)
     {
       if (y[i * ystride]!=*flv)
       {
@@ -59,16 +62,20 @@ nco_gsl_fit_linear
     }
   }
 
-  for (i = 0; i < n; i++)
+
+  if (flv==NULL)
   {
-    if (flv==NULL)
+    for (i = 0; i < n; i++)
     {
       const double dx = x[i * xstride] - m_x;
       const double dy = y[i * ystride] - m_y;
       m_dx2 += (dx * dx - m_dx2) / (i + 1.0);
       m_dxdy += (dx * dy - m_dxdy) / (i + 1.0);
     }
-    else
+  }
+  else
+  {
+    for (i = 0; i < n; i++)
     {
       if (y[i * ystride]!=*flv)
       {
@@ -92,16 +99,19 @@ nco_gsl_fit_linear
 
     /* Compute chi^2 = \sum (y_i - (a + b * x_i))^2 */
 
-    for (i = 0; i < n; i++)
+    if (flv==NULL)
     {
-      if (flv==NULL)
+      for (i = 0; i < n; i++)
       {
         const double dx = x[i * xstride] - m_x;
         const double dy = y[i * ystride] - m_y;
         const double d = dy - b * dx;
         d2 += d * d;
       }
-      else
+    }
+    else
+    {
+      for (i = 0; i < n; i++)
       {
         if (y[i * ystride]!=*flv)
         {
@@ -136,7 +146,8 @@ FUNCTION(compute,covariance)
  const size_t stride2,
  const size_t n, 
  const double mean1, 
- const double mean2)
+ const double mean2,
+ const double *flv) //fill value
 {
   /* takes a dataset and finds the covariance */
 
@@ -145,11 +156,27 @@ FUNCTION(compute,covariance)
   size_t i;
 
   /* find the sum of the squares */
-  for (i = 0; i < n; i++)
+  if (flv==NULL)
   {
-    const long double delta1 = (data1[i * stride1] - mean1);
-    const long double delta2 = (data2[i * stride2] - mean2);
-    covariance += (delta1 * delta2 - covariance) / (i + 1);
+    for (i = 0; i < n; i++)
+    {
+      const long double delta1 = (data1[i * stride1] - mean1);
+      const long double delta2 = (data2[i * stride2] - mean2);
+      covariance += (delta1 * delta2 - covariance) / (i + 1);
+    }
+
+  }
+  else
+  {
+    for (i = 0; i < n; i++)
+    {
+      if (data2[i * stride2]!=*flv)
+      {
+        const long double delta1 = (data1[i * stride1] - mean1);
+        const long double delta2 = (data2[i * stride2] - mean2);
+        covariance += (delta1 * delta2 - covariance) / (i + 1);
+      }
+    }
   }
 
   return covariance ;
@@ -163,9 +190,10 @@ FUNCTION(nco_gsl_stats,covariance_m)
  const size_t stride2, 
  const size_t n, 
  const double mean1, 
- const double mean2)
+ const double mean2,
+ const double *flv) //fill value
 {
-  const double covariance = FUNCTION(compute,covariance) (data1, stride1, data2, stride2, n, mean1, mean2);
+  const double covariance = FUNCTION(compute,covariance) (data1, stride1, data2, stride2, n, mean1, mean2, flv);
   return covariance * ((double)n / (double)(n - 1));
 }
 
@@ -175,11 +203,12 @@ FUNCTION(nco_gsl_stats,covariance)
  const size_t stride1,
  const BASE data2[], 
  const size_t stride2,
- const size_t n)
+ const size_t n,
+ const double *flv) //fill value
 {
-  const double mean1 = FUNCTION(nco_gsl_stats,mean) (data1, stride1, n);
-  const double mean2 = FUNCTION(nco_gsl_stats,mean) (data2, stride2, n);
-  return FUNCTION(nco_gsl_stats,covariance_m)(data1, stride1, data2, stride2, n, mean1, mean2);
+  const double mean1 = FUNCTION(nco_gsl_stats,mean) (data1, stride1, n, flv);
+  const double mean2 = FUNCTION(nco_gsl_stats,mean) (data2, stride2, n, flv);
+  return FUNCTION(nco_gsl_stats,covariance_m)(data1, stride1, data2, stride2, n, mean1, mean2, flv);
 }
 
 
@@ -187,7 +216,8 @@ double
 FUNCTION (nco_gsl_stats, mean) 
 (const BASE data[], 
  const size_t stride, 
- const size_t size)
+ const size_t size,
+ const double *flv) //fill value
 {
   /* Compute the arithmetic mean of a dataset using the recurrence relation 
   mean_(n) = mean(n-1) + (data[n] - mean(n-1))/(n+1)   */
@@ -195,9 +225,22 @@ FUNCTION (nco_gsl_stats, mean)
   long double mean = 0;
   size_t i;
 
-  for (i = 0; i < size; i++)
+  if (flv==NULL)
   {
-    mean += (data[i * stride] - mean) / (i + 1);
+    for (i = 0; i < size; i++)
+    {
+      mean += (data[i * stride] - mean) / (i + 1);
+    }
+  }
+  else
+  {
+    for (i = 0; i < size; i++)
+    {
+      if (data[i * stride]!=*flv)
+      {
+        mean += (data[i * stride] - mean) / (i + 1);
+      }
+    }
   }
 
   return mean;
