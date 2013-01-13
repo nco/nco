@@ -1,7 +1,9 @@
 2013-01-13  Charlie Zender  <zender@uci.edu>
 
+	* Reorganize nco_grp_var_mk_trv2()
+
 	* Rework details of NCO GSL code: use mss_val as argument name,
-	eliminate C99/C++ "//" comment syntax, and attrbute copyrights back to original GSL code
+	eliminate C99/C++ "//" comment syntax, and attribute copyrights in original GSL code
 
 2013-01-12  Charlie Zender  <zender@uci.edu>
 
@@ -13,9 +15,11 @@
 	a total when -y ttl is specified. This simplifies nco_var_lst_dvd()
 	which no longer separately checks for CF coordinates.
 
-	* Commit new extraction list API version of ncks
+	* All regression tests pass on netCDF4-enabled NCO.
 
-	* All tests pass on netCDF4-enabled NCO. MM3 still disabled.
+	* Enable new extraction maker nco_mk_xtr() version of ncks. This
+	removes most explicit dependencies on netCDF format from main.c.
+	MM3 temporarily disabled.
 
 	* Tweak regression tests to work with intersections, non-recursive requests
 

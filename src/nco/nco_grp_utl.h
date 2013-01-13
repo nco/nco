@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.168 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.169 2013-01-13 21:34:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -426,7 +426,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/write var
  lmt_all_sct * const * lmt_all_lst,    /* I multi-hyperslab limits */
  const int lmt_all_lst_nbr,            /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- nco_bool PRN_VAR_METADATA,            /* I [flg] Copy variable metadata (attributes) */
+ const nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
  int * const cnk_map_ptr,              /* I [enm] Chunking map */
  int * const cnk_plc_ptr,              /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */

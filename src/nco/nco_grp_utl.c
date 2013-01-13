@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.345 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.346 2013-01-13 21:34:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3748,7 +3748,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
  lmt_all_sct * const * lmt_all_lst,    /* I multi-hyperslab limits */
  const int lmt_all_lst_nbr,            /* I [nbr] Number of hyperslab limits */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- nco_bool PRN_VAR_METADATA,            /* I [flg] Copy variable metadata (attributes) */
+ const nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
  int * const cnk_map_ptr,              /* I [enm] Chunking map */
  int * const cnk_plc_ptr,              /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
@@ -3757,8 +3757,8 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
  FILE * const fp_bnr,                  /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
  const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
- const nco_bool MD_DFN,              /* I [flg] netCDF define mode is true */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const nco_bool MD_DFN,                /* I [flg] netCDF define mode is true */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   /* Purpose: Define OR write groups/variables and group attributes in output file */
 
@@ -3791,7 +3791,8 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    /* Object is marked to export */
+
+    /* If object is an extracted variable... */
     if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
 
       /* Obtain group ID from netCDF API using full group name */
@@ -3848,47 +3849,47 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
-      /* Detect duplicate GPE names in advance, then exit with helpful error */
-      char *gpe_var_nm_fll=NULL;  
-      if(gpe && MD_DFN){
-        /* Construct absolute GPE variable path */
-        gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv.nm)+2L);
-        strcpy(gpe_var_nm_fll,grp_out_fll);
-        /* If not root group, concatenate separator */
-        if(strcmp(grp_out_fll,"/")) strcat(gpe_var_nm_fll,"/");
-        strcat(gpe_var_nm_fll,trv.nm);
-
-        /* GPE name is not already on list, put it there */
-        if(nbr_gpe_nm == 0){
-          gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
-          gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-          nbr_gpe_nm++;
-        }else{
-          /* Put GPE on list only if not already there */
-          for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
-            if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-              (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Moving groups of flattening files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
-              for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
-              nco_exit(EXIT_FAILURE);
-            } /* End string comparison */
-          } /* End search in array */
-          gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
-          gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-          nbr_gpe_nm++;
-        } /* nbr_gpe_nm */
-      } /* End GPE */
-
-      /* Free full path name */
-      if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
-
       if(MD_DFN){
-	/* Define mode */
+	/* Detect duplicate GPE names in advance, then exit with helpful error */
+	if(gpe){
+	  char *gpe_var_nm_fll=NULL;  
+	  
+	  /* Construct absolute GPE variable path */
+	  gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv.nm)+2L);
+	  strcpy(gpe_var_nm_fll,grp_out_fll);
+	  /* If not root group, concatenate separator */
+	  if(strcmp(grp_out_fll,"/")) strcat(gpe_var_nm_fll,"/");
+	  strcat(gpe_var_nm_fll,trv.nm);
+	  
+	  /* GPE name is not already on list, put it there */
+	  if(nbr_gpe_nm == 0){
+	    gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+	    gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+	    nbr_gpe_nm++;
+	  }else{
+	    /* Put GPE on list only if not already there */
+	    for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+	      if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+		(void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Moving groups of flattening files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
+		for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+		nco_exit(EXIT_FAILURE);
+	      } /* strcmp() */
+	    } /* end loop over gpe_nm */
+	    gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+	    gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+	    nbr_gpe_nm++;
+	  } /* nbr_gpe_nm */
+	  
+	  /* Free full path name */
+	  if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+	} /* !GPE */
+	
+	/* Define variables in output file */
         if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
 
         /* Set chunksize parameters */
-        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-          (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
-        } /* !netCDF4 */
+        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)
+	  (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
 
         /* Copy variable's attributes */
         if(PRN_VAR_METADATA){
@@ -3897,33 +3898,34 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
           (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
         } /* !PRN_VAR_METADATA */
 
+	/* If there are group attributes, write them, avoid root case, these are always copied elsewhere */
+	/* fxm: ensure group attributes are not written multiple times (once per variables) */
+	if(nbr_att && strcmp("/",trv.grp_nm_fll)){
+	  /* Obtain group ID NB: use GPE grp_out_fll name to write */
+	  nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
+	  /* Copy global attributes */
+	  (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+	} /* End nbr_att */
+
       }else{ /* !MD_DFN */
+
 	/* Write mode */
         if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,trv.nm,lmt_all_lst,lmt_all_lst_nbr); else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,trv.nm);
+
       } /* !MD_DFN */
 
-      /* If there are group attributes, write them, avoid root case, these are always copied elsewhere */
-      if(MD_DFN && nbr_att && strcmp("/",trv.grp_nm_fll) != 0){
-
-        /* Obtain group ID from netCDF API using full group name (NOTE: using GPE grp_out_fll name to write ) */
-        nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
-        /* Copy global attributes */
-        (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-      } /* End nbr_att */
-
-      /* Memory management after current group */
+      /* Memory management after current extracted variable */
       if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-      var_ids=(int *)nco_free(var_ids);
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+      if(var_ids) var_ids=(int *)nco_free(var_ids);
 
-    } /* !flg_xtr */
-  } /* end uidx */
+    } /* end if flg_xtr */
+  } /* end loop over uidx */
 
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
 } /* end nco_grp_var_mk_trv2() */
-
 
 void
 nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
