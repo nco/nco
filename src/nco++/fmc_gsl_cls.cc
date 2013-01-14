@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.60 2013-01-14 08:09:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.61 2013-01-14 08:35:31 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5045,7 +5045,7 @@ nco_gsl_cls::nco_gsl_cls(bool  flg_dbg)
   //Populate only on first constructor call
   if(fmc_vtr.empty())
   {
-    fmc_vtr.push_back( fmc_cls("nco_gsl_fit_linear",this,(int)PLIN));
+    fmc_vtr.push_back( fmc_cls("nco_gsl_fit_linear",this,(int)NCO_GSL_FUNC1));
   }
 }
 
@@ -5074,8 +5074,16 @@ var_sct *nco_gsl_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &wal
 
   switch(fdx)
   {
-  case PLIN:
+  case NCO_GSL_FUNC1:
     return fit_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+    break;
+  case NCO_GSL_FUNC2:
+    {
+      // function pointer
+      var_sct* (*hnd_fnc)(HANDLE_ARGS);
+      hnd_fnc=gpr_vtr[fdx]._hnd_fnc;
+      return hnd_fnc(is_mtd,vtr_args,gpr_vtr[fdx],walker);
+    }
     break;
   default:
     assert(0);
@@ -5103,7 +5111,7 @@ var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls
 
   switch(fdx)
   {
-  case PLIN:
+  case NCO_GSL_FUNC1:
     in_nbr_args=11;
     in_val_nbr_args=5;
     susg="usage: status="+sfnm+"(data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq)";
@@ -5205,7 +5213,7 @@ var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls
   // big switch 
   switch(fdx)
   {
-  case PLIN:
+  case NCO_GSL_FUNC1:
     // recall aguments in order in var_in
     /* 
     0  x_in
@@ -5261,7 +5269,7 @@ var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls
 #ifdef NCO_SANITY_CHECK
     assert(ret==NCO_GSL_SUCCESS);
 #endif /* NCO_SANITY_CHECK */
-    break; //PLIN 
+    break; //NCO_GSL_FUNC1 
   default:
     assert(0);
   } // end big switch   

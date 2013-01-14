@@ -449,8 +449,9 @@ public:
 class nco_gsl_cls: public vtl_cls 
 {
 private:
-  enum {PLIN};
+  enum {NCO_GSL_FUNC1,NCO_GSL_FUNC2};
   bool _flg_dbg;
+  std::vector<gpr_cls> gpr_vtr;
 public:
   nco_gsl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &walker);
