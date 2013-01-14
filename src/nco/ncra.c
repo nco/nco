@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.313 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.314 2013-01-14 23:56:51 zender Exp $ */
 
-/* This single source file may be called as three separate executables:
+/* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
    ncrcat -- netCDF record concatenator */
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.313 2013-01-13 06:07:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.313 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.314 2013-01-14 23:56:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.314 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -785,10 +785,12 @@ main(int argc,char **argv)
     
     /* Files may have different numbers of records to process
        NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
-    /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
-    if(FLG_MRO) lmt_rec->flg_mro=True;
-    if(lmt_rec->flg_mro) FLG_MRO=True;
+    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+      (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
+      /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
+      if(FLG_MRO) lmt_rec->flg_mro=True;
+      if(lmt_rec->flg_mro) FLG_MRO=True;
+    } /* rec_dmn_id */
 
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
     if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -1033,16 +1035,18 @@ main(int argc,char **argv)
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
     
     /* Our data tanks are already full */
-    if(lmt_rec->flg_input_complete){
-      /* NB: TODO nco1066 move input_complete break to precede record loop but remember to close open filehandles */
-      if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s will not be opened\n",prg_nm_get(),fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
-      break;
-    } /* endif superfluous */
+    if(prg == ncra || prg == ncrcat){
+      if(lmt_rec->flg_input_complete){
+	/* NB: TODO nco1066 move input_complete break to precede record loop but remember to close open filehandles */
+	if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s will not be opened\n",prg_nm_get(),fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
+	break;
+      } /* endif superfluous */
+    } /* endif ncra || ncrcat */
 
   } /* end loop over fl_idx */
   
   if(prg == ncra || prg == ncrcat) /* fxm: Remove this or make DBG when crd_val DRN/MRO is predictable? */
-    if(lmt_rec->drn != 1L && (lmt_rec->lmt_typ == lmt_crd_val || lmt_rec->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Duration argument DRN used in hyperslab specification for %s which be determined based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",prg_nm_get(),lmt_rec->nm);
+    if(lmt_rec->drn != 1L && (lmt_rec->lmt_typ == lmt_crd_val || lmt_rec->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Duration argument DRN used in hyperslab specification for %s which will be determined based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",prg_nm_get(),lmt_rec->nm);
 
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
      except ncra normalizes after every DRN records, while ncea normalizes once, after all files.

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.751 2013-01-14 00:29:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.752 2013-01-14 23:56:51 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -579,6 +579,7 @@ Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
 Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
 Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
 <tt>ncrename</tt> global att. handling;
+<tt>ncea</tt> <a href="#bug_ncea_rec_var">bugfix</a></li>
 <tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
 <li><b>NCO 4.2.3</b>:
 Group Path Editing (GPE);
@@ -1642,6 +1643,14 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncea_rec_var -->
+<a name="bug_ncea_rec_var"></a>
+<li><i><tt>ncea</tt> bug with non-record files.
+Versions 4.2.1&mdash;4.2.3 of <tt>ncra</tt> incorrectly referenced
+the record variable on files which do not contain it.
+This caused a segmentation violation and core dump.
+</li>
+
 <!-- http://nco.sf.net#bug_ncra_flg_bfr_nrm -->
 <a name="bug_ncra_flg_bfr_nrm"></a>
 <li><i><tt>ncra</tt> bug when last file(s) is/are superfluous.

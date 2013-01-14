@@ -1,3 +1,7 @@
+2013-01-14  Charlie Zender  <zender@uci.edu>
+
+	* Remove new regression tests that are fragile, i.e., whose answers change as in.cdl and in_grp.cdl change
+
 2013-01-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.4 release procedure:

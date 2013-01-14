@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.530 2013-01-14 00:22:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.531 2013-01-14 23:56:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -70,6 +70,11 @@ A. ncrename supports restricting actions to global/group attributes
    http://nco.sf.net/nco.html#xmp_ncrename
 
 BUG FIXES:
+
+A. Fix bug introduced in 4.2.1 that causes ncea to break when handling 
+   files that do not contain a record dimension. Thanks to Martin Otte
+   for reporting the bug and providing a working fix.
+   http://nco.sf.net#bug_ncea_rec_var
 
 A. Fix bug introduced in 4.2.1 where ncra did not write results of
    final normalization if trailing file(s) was/were superfluous.

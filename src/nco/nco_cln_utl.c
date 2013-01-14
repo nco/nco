@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.38 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.39 2013-01-14 23:56:51 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -675,7 +675,7 @@ nco_cln_clc_org /* [fnc] Difference between two co-ordinate units */
   if(strstr(fl_bs_sng," from ") || strstr(fl_bs_sng," since ") || strstr(fl_bs_sng," after ")){
     rcd=nco_cln_clc_tm(fl_unt_sng,fl_bs_sng,lmt_cln,og_val);   
     return rcd;
-  }  
+  } /* endif */
   
   /* Assume regular conversion of fl_unt_sng of form <double_value units>, e.g., '10 inches', '100 ft' */
   usr_unt_sng=(char *)nco_calloc(strlen(fl_unt_sng)+1L, sizeof(char));

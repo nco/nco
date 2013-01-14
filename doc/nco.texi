@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.749 2013-01-14 17:17:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.750 2013-01-14 23:56:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7248,7 +7248,7 @@ is simple with the @code{array()} function.
 The syntax is 
 @example
 output=array(val_srt,val_ncr,$dmn_nm); // One-dimensional output
-output=array(val_srt,val_ncr,var_tpl);  // Multi-dimensional output
+output=array(val_srt,val_ncr,var_tpl); // Multi-dimensional output
 @end example
 @noindent
 where the arguments are the starting value @var{val_srt}, 
@@ -7712,7 +7712,7 @@ They only work on variables in Output.
  overwriting the old missing value, if any.
  The argument given is converted if necessary to the variable type.
  NB: This only changes the missing value attribute. 
- Missing values in the origian variable remain unchanged, and thus 
+ Missing values in the original variable remain unchanged, and thus 
  are no long considered missing values.
  They are ``orphaned''.
  Thus @code{set_miss()} is normally used only when creating new
@@ -14074,6 +14074,9 @@ RHEL and CentOS build scripts and bug reports.
 @cindex Andrea Cimatoribus
 @item Andrea Cimatoribus
 NCO Spiral Logo
+@cindex Martin Otte
+@item Martin Otte
+Bug report and bug-fix
 @end table
 Please let me know if your name was omitted!
 
