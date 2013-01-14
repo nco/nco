@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.750 2013-01-14 00:22:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.751 2013-01-14 00:29:06 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -141,8 +141,10 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2012 Jan&nbsp;??: NCO 4.2.4</li>
-<li>2012 Nov&nbsp;13: NCO 4.2.3</li>
+<li>2013 Mar&nbsp;??: NCO 4.2.5</li>
+<li>2013 Jan&nbsp;16: NCO 4.2.4</li>
+<li>2012 Dec&nbsp;05: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
+<li>2012 Nov&nbsp;13: NCO 4.2.3 (GPE)</li>
 <li>2012 Oct&nbsp;29: NCO 4.2.2 (Groups)</li>
 <li>2012 Aug&nbsp;02: NCO 4.2.1 (RAM disks)</li>
 <li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>
@@ -566,18 +568,19 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.2.5</b>: (<i>Future</i>) 
+<li><b>NCO 4.2.6</b>: (<i>Future</i>) 
 netCDF4 compound types?;
-Optimize diskless files?;
+Optimize diskless files?;</li>
+<li><b>NCO 4.2.5</b>: (<i>In Progress, features we are working on include</i>)
 <tt>ncrename -g</tt>?;
 <tt>ncbo -g</tt>?;</li>
-<li><b>NCO 4.2.4</b>: (<i>In Progress, features we are working on include</i>)
+<li><b>NCO 4.2.4</b>: (<i>Current Stable Release</i>)
 Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
 Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
 Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
 <tt>ncrename</tt> global att. handling;
 <tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
-<li><b>NCO 4.2.3</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.2.3</b>:
 Group Path Editing (GPE);
 <tt>ncecat</tt> <a href="#bug_ncecat_nintap">bugfix</a></li>
 <li><b>NCO 4.2.2</b>: 

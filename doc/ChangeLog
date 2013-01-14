@@ -1,5 +1,11 @@
 2013-01-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.2.4 release procedure:
+ 	Changes since nco-4_2_3: anchoring, recursion, ncra bugfix, ncrename
+	cd ~/nco;cvs tag -d nco-4_2_4;cvs tag -d nco-4_2_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.4 release"
+	cvs tag -c nco-4_2_4;cvs tag -c nco-4_2_4-1
+
 	* Document union-mode and intersection-mode in nco.texi, and give
 	examples with simultaneous anchoring and recursion
 
@@ -51,12 +57,6 @@
 	* Use new extraction list checker nco_mk_xtr()
 
 2012-12-16  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.4 release procedure:
- 	Changes since nco-4_2_3: anchoring, recursion, ncra bugfix, ncrename
-	cd ~/nco;cvs tag -d nco-4_2_4;cvs tag -d nco-4_2_4-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.4 release"
-	cvs tag -c nco-4_2_4;cvs tag -c nco-4_2_4-1
 
 	* Fix bug introduced in 4.2.1 that caused ncra to skip writing
 	results of final normalization if trailing files were superfluous.
