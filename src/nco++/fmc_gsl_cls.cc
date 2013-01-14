@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.61 2013-01-14 08:35:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.62 2013-01-14 14:13:26 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5026,7 +5026,21 @@ var_sct *gsl_fit_cls::fit_est_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, f
 
 } // end gsl_fit_cls::fit_est_fnd 
 
+int gsl_fit_cls::rm_miss_arr(
+                double *x_in, long long x_stride,
+                double *y_in, long long y_stride, 
+                double *w_in, long long w_stride,
+                long long n){
 
+
+
+
+
+
+
+
+
+}
 
 
 #else // !ENABLE_GSL
