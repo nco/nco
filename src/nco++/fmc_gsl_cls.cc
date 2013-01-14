@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.62 2013-01-14 14:13:26 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.63 2013-01-14 22:21:05 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5030,16 +5030,11 @@ int gsl_fit_cls::rm_miss_arr(
                 double *x_in, long long x_stride,
                 double *y_in, long long y_stride, 
                 double *w_in, long long w_stride,
-                long long n){
+                long long n)
+{
 
 
-
-
-
-
-
-
-
+  return 0;
 }
 
 
