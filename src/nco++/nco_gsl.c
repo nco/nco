@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.6 2013-01-14 01:02:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.7 2013-01-14 04:20:52 pvicente Exp $ */
 
 /* Purpose: GSL functions that handle missing values */
 
@@ -69,7 +69,7 @@ nco_gsl_fit_linear
       }
     }
   }
-#endif 
+#endif /* ENABLE_NCO_GSL */
 
   if (mss_val==NULL)
   {
@@ -93,7 +93,7 @@ nco_gsl_fit_linear
       }
     }
   }
-#endif
+#endif /* ENABLE_NCO_GSL */
 
   if (mss_val==NULL)
   {
@@ -121,7 +121,7 @@ nco_gsl_fit_linear
       }
     }
   }
-#endif
+#endif /* ENABLE_NCO_GSL */
 
   /* In terms of y = a + b x */
 
@@ -159,15 +159,31 @@ nco_gsl_fit_linear
       }
     }
 
-    s2 = d2 / (n - 2.0);        /* chisq per degree of freedom */
+    if (mss_val==NULL)
+    {
+      s2 = d2 / (n - 2.0);        /* chisq per degree of freedom */
 
-    *cov_00 = s2 * (1.0 / n) * (1 + m_x * m_x / m_dx2);
-    *cov_11 = s2 * 1.0 / (n * m_dx2);
+      *cov_00 = s2 * (1.0 / n) * (1 + m_x * m_x / m_dx2);
+      *cov_11 = s2 * 1.0 / (n * m_dx2);
 
-    *cov_01 = s2 * (-m_x) / (n * m_dx2);
+      *cov_01 = s2 * (-m_x) / (n * m_dx2);
 
-    *sumsq = d2;
+      *sumsq = d2;
+    }
+#ifdef ENABLE_NCO_GSL /* Use number of sample points that have data */
+    else
+    {
+      s2 = d2 / (nbr_val - 2.0);        /* chisq per degree of freedom */
+
+      *cov_00 = s2 * (1.0 / nbr_val) * (1 + m_x * m_x / m_dx2);
+      *cov_11 = s2 * 1.0 / (nbr_val * m_dx2);
+
+      *cov_01 = s2 * (-m_x) / (nbr_val * m_dx2);
+
+      *sumsq = d2;
+    }  
   }
+#endif /* ENABLE_NCO_GSL */
 
   return NCO_GSL_SUCCESS;
 }

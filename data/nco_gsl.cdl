@@ -2,10 +2,11 @@
 
 netcdf nco_gsl {
 //purpose: test nco_gsl_fit_linear()
-//usage: ncap2 -D 11 -O -S ~/nco/data/nco_gsl.nco ~/nco/data/nco_gsl.nc out.nc 
+//usage: ncap2 -O -S ~/nco/data/nco_gsl.nco ~/nco/data/nco_gsl.nc out.nc      
 //case 1; vx,vy   double arrays with no fill value and dim=N
-//case 2; fx,fy   double arrays one fill value in vy and dim=N
-//case 3; vxr,vyr double arrays with no fill value and dim=N-1 (case 2 and case 3 must return the same values for co and c1)
+//case 2; fx,fy   double arrays one fill value in fy and dim=N
+//case 3; vxr,vyr double arrays with no fill value and dim=N-1, index a fill value case 2 removed
+//case 2 and case 3 must return the same values for: &c0,&c1,&cov00,&cov01,&cov11,&sumsq
 	dimensions:
 	dim=4;
 	dimr=3;
