@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.748 2013-01-14 00:22:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.749 2013-01-14 17:17:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3604,10 +3604,10 @@ subset (with @samp{-g} and/or @samp{-v}) to retain only the most
 important variables (@pxref{Memory Requirements}).
 @example       
 ncks          in.nc out.nc # Extract all groups and variables
-ncks -v scl   in.nc out.nc # Extract variable scl from all groups
-ncks -g g1    in.nc out.nc # Extract all of group g1
-ncks -x -g g1 in.nc out.nc # Extract all groups except g1
-ncks -g g2,g3 -v scl in.nc out.nc # Extract scl from groups g2 and g3
+ncks -v scl   # Extract variable scl from all groups
+ncks -g g1    # Extract group g1 and descendents
+ncks -x -g g1 # Extract all groups except g1 and descendents
+ncks -g g2,g3 -v scl # Extract scl from groups g2 and g3
 @end example
 Overwriting and appending work as expected:
 @example
