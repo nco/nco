@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.h,v 1.5 2013-01-13 19:19:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.h,v 1.6 2013-01-14 01:02:14 pvicente Exp $ */
 
 /* Purpose: GSL functions that handle missing values */
 
@@ -22,7 +22,7 @@
 #ifndef NCO_GSL_H
 #define NCO_GSL_H
 
-#define ENABLE_NCO_GSL
+#define ENABLE_NCO_GSL /* If disabled results should be the same as the gsl equivalent function; validation only */ 
 
 #ifdef __cplusplus
 extern "C" {

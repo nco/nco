@@ -1,9 +1,15 @@
 //usage: ncap2 -D 11 -O -S ~/nco/data/nco_gsl.nco ~/nco/data/nco_gsl.nc out.nc 
-//fy variable contains a fill value, vx,vy,fx do not
-nco_gsl_fit_linear(vx,1,vy,1,$dim.size,&tc0,&tc1,&cov00,&cov01,&cov11,&sumsq);
-print(tc0);
-print(tc1);
-nco_gsl_fit_linear(fx,1,fy,1,$dim.size,&tc0,&tc1,&cov00,&cov01,&cov11,&sumsq);
-print(tc0);
-print(tc1);
+//case 1; vx,vy   double arrays with no fill value and dim=N
+//case 2; fx,fy   double arrays one fill value in vy and dim=N
+//case 3; vxr,vyr double arrays with no fill value and dim=N-1 (case 2 and case 3 must return the same values for co and c1)
+nco_gsl_fit_linear(vx,1,vy,1,$dim.size,&c0,&c1,&cov00,&cov01,&cov11,&sumsq);
+print(c0);
+print(c1);
+nco_gsl_fit_linear(fx,1,fy,1,$dim.size,&c0,&c1,&cov00,&cov01,&cov11,&sumsq);
+print(c0);
+print(c1);
+nco_gsl_fit_linear(vxr,1,vyr,1,$dimr.size,&c0,&c1,&cov00,&cov01,&cov11,&sumsq);
+print(c0);
+print(c1);
+
 

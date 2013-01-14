@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.5 2013-01-13 19:19:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/nco_gsl.c,v 1.6 2013-01-14 01:02:14 pvicente Exp $ */
 
 /* Purpose: GSL functions that handle missing values */
 
@@ -14,7 +14,8 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text
 
    Original GSL files, copyright holders, and authors of functions below are:
-   gsl/fit/linear.c: Copyright (C) 2000, 2007 Brian Gough */
+   gsl/fit/linear.c: Copyright (C) 2000 Brian Gough
+   statistics/covar_source.c: Copyright (C) 1996, 1997, 1998, 1999, 2000 Jim Davies, Brian Gough */
 
 #include "nco_gsl.h" /* Missing value-aware GSL functions */
 
@@ -52,6 +53,24 @@ nco_gsl_fit_linear
   double m_x = 0, m_y = 0, m_dx2 = 0, m_dxdy = 0;
   size_t i;
 
+#ifdef ENABLE_NCO_GSL
+  /* NCO changes: Skip missing values, consider number of valid points */
+  size_t nbr_val; /* [nbr] Number of sample points that have data */
+  size_t idx_val; /* [nbr] Current valid data index */
+
+  if (mss_val!=NULL)
+  {
+    nbr_val=0;
+    for (i = 0; i < n; i++)
+    {
+      if (y[i * ystride]!=*mss_val)
+      {
+        nbr_val++;
+      }
+    }
+  }
+#endif 
+
   if (mss_val==NULL)
   {
     for (i = 0; i < n; i++)
@@ -60,18 +79,21 @@ nco_gsl_fit_linear
       m_y += (y[i * ystride] - m_y) / (i + 1.0);
     }
   }
+#ifdef ENABLE_NCO_GSL
   else
   {
+    idx_val=0;
     for (i = 0; i < n; i++)
     {
       if (y[i * ystride]!=*mss_val)
       {
-        m_x += (x[i * xstride] - m_x) / (i + 1.0);
-        m_y += (y[i * ystride] - m_y) / (i + 1.0);
+        m_x += (x[i * xstride] - m_x) / (idx_val + 1.0);
+        m_y += (y[i * ystride] - m_y) / (idx_val + 1.0);
+        idx_val++;
       }
     }
   }
-
+#endif
 
   if (mss_val==NULL)
   {
@@ -83,19 +105,23 @@ nco_gsl_fit_linear
       m_dxdy += (dx * dy - m_dxdy) / (i + 1.0);
     }
   }
+#ifdef ENABLE_NCO_GSL
   else
   {
+    idx_val=0;
     for (i = 0; i < n; i++)
     {
       if (y[i * ystride]!=*mss_val)
       {
         const double dx = x[i * xstride] - m_x;
         const double dy = y[i * ystride] - m_y;
-        m_dx2 += (dx * dx - m_dx2) / (i + 1.0);
-        m_dxdy += (dx * dy - m_dxdy) / (i + 1.0);
+        m_dx2 += (dx * dx - m_dx2) / (idx_val + 1.0);
+        m_dxdy += (dx * dy - m_dxdy) / (idx_val + 1.0);
+        idx_val++;
       }
     }
   }
+#endif
 
   /* In terms of y = a + b x */
 

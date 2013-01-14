@@ -1,17 +1,27 @@
+// ncgen -b -o ~/nco/data/nco_gsl.nc ~/nco/data/nco_gsl.cdl
+
 netcdf nco_gsl {
 //purpose: test nco_gsl_fit_linear()
-//vx,vy values with no fill value, fx,fy values with fill value
+//usage: ncap2 -D 11 -O -S ~/nco/data/nco_gsl.nco ~/nco/data/nco_gsl.nc out.nc 
+//case 1; vx,vy   double arrays with no fill value and dim=N
+//case 2; fx,fy   double arrays one fill value in vy and dim=N
+//case 3; vxr,vyr double arrays with no fill value and dim=N-1 (case 2 and case 3 must return the same values for co and c1)
 	dimensions:
 	dim=4;
+	dimr=3;
 	variables:
 	double vx(dim);
 	double vy(dim);
 	double fx(dim);
 	double fy(dim);
 	fy:_FillValue = -99.0;
+	double vxr(dimr);
+	double vyr(dimr);
 	data:
 	vx=2.0,3.0,2.0,3.0;
 	vy=4.0,6.0,6.0,8.0;
 	fx=2.0,3.0,2.0,3.0;
 	fy=4.0,-99.0,6.0,8.0;
+	vxr=2.0,2.0,3.0;
+	vyr=4.0,6.0,8.0;
 }
