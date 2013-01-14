@@ -441,6 +441,7 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
   var_sct *fit_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
   var_sct *fit_est_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
+  int rm_miss_arr(double *x_in,long long x_stride,double *y_in, long long y_stride, double *w_in,long long w_stride,long long n);
 };
 
 #endif // !ENABLE_GSL
