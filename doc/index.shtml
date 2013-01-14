@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.749 2012-12-16 23:58:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.750 2013-01-14 00:22:34 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -141,7 +141,7 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2012 Dec&nbsp;??: NCO 4.2.4</li>
+<li>2012 Jan&nbsp;??: NCO 4.2.4</li>
 <li>2012 Nov&nbsp;13: NCO 4.2.3</li>
 <li>2012 Oct&nbsp;29: NCO 4.2.2 (Groups)</li>
 <li>2012 Aug&nbsp;02: NCO 4.2.1 (RAM disks)</li>
@@ -574,6 +574,7 @@ Optimize diskless files?;
 <li><b>NCO 4.2.4</b>: (<i>In Progress, features we are working on include</i>)
 Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
 Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
+Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
 <tt>ncrename</tt> global att. handling;
 <tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
 <li><b>NCO 4.2.3</b>: (<i>Current Stable Release</i>)

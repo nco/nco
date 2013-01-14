@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.747 2013-01-11 21:49:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.748 2013-01-14 00:22:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.4
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 9 January 2013
+@set update-date 13 January 2013
 @set update-month January 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3397,6 +3397,8 @@ build time.
 @node Subsetting Files, Subsetting Coordinate Variables, Large File Support, Common features
 @section Subsetting Files
 @cindex subsetting
+@cindex union
+@cindex intersection
 @cindex exclusion
 @cindex extraction
 @cindex @code{-v @var{var}}
@@ -3407,7 +3409,13 @@ build time.
 @cindex @code{-x}
 @cindex @code{--exclude}
 @cindex @code{--xcl}
+@cindex @code{--unn}
+@cindex @code{--union}
 @cartouche
+Options @code{--unn}@*
+Availability: @command{ncks}@*
+Short options: @*
+Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
 Availability: @command{ncecat}, @command{ncks}@*
 Short options: @samp{-g}@*
@@ -3430,9 +3438,13 @@ and @samp{-x} options.
 @samp{-v} and @samp{-g} options, e.g., @samp{-v time,lat,lon} or
 @samp{-g grp1,grp2}.
 Both options may be specified simultaneously and @acronym{NCO} will
-extract the union of the lists.
-Not using the @samp{-v} option is equivalent to specifying all
-variables.  
+extract the intersection of the lists, i.e., only variables of the
+specified names found in groups of the specified names.
+The @samp{--unn} option causes @acronym{NCO} to extract the
+union, rather than the intersection, of the specified groups and
+variables. 
+Not using the @samp{-v} or @samp{-g} option is equivalent to specifying
+all variables or groupp, respectively.  
 The @samp{-x} option causes the list of variables specified with
 @samp{-v} to be @emph{excluded} rather than @emph{extracted}.
 Thus @samp{-x} saves typing when you only want to extract fewer than
@@ -3525,6 +3537,65 @@ any group @file{/g1} at the root level and all its children,
 recursively.  
 The fourth command is the non-recursive version of the third command.
 The fifth command is a special case of the fourth command.
+
+@html
+<a name="unn"></a> <!-- http://nco.sf.net/nco.html#unn -->
+<a name="nsx"></a> <!-- http://nco.sf.net/nco.html#nsx -->
+<a name="union"></a> <!-- http://nco.sf.net/nco.html#union -->
+<a name="intersection"></a> <!-- http://nco.sf.net/nco.html#intersection -->
+@end html
+@cindex union
+@cindex intersection
+@cindex @code{--unn}
+@cindex @code{--union}
+@cindex @code{--nsx}
+@cindex @code{--intersection}
+As mentioned above, both @samp{-v} and @samp{-g} options may be
+specified simultaneously and @acronym{NCO} will, by default, extract the
+intersection of the lists, i.e., the specified variables found in the
+specified groups
+@footnote{
+Intersection mode can also be explicitly invoked with the @samp{--nsx}
+or @samp{--intersection} switches.
+These switches are supplied for clarity and consistency and do
+absolutely nothing since intersection mode is the default.}.
+The @samp{--unn} option causes @acronym{NCO} to extract the
+union, rather than the intersection, of the specified groups and
+variables. 
+Consider the following commands (which may be assumed to end with
+@samp{in.nc out.nc}):
+@example       
+# Intersection mode subsetting (default)
+ncks -g  g1  -v v1 # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1
+ncks -g /g1  -v v1 # Yes: /g1/v1, /g1/g2/v1. No: /v1, /g2/v1, /g2/g1/v1
+ncks -g  g1/ -v v1 # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1, /g1/g2/v1
+ncks -v  g1/v1     # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1, /g1/g2/v1
+ncks -g /g1/ -v v1 # Yes: /g1/v1. No: /g2/g1/v1, /v1, /g2/v1 ...
+ncks -v /g1/v1     # Yes: /g1/v1. No: /g2/g1/v1, /v1, /g2/v1 ...
+
+# Union mode subsetting (invoke with --unn or --union)
+ncks -g  g1  -v v1 --unn # All variables in  g1 (or descendents), or named v1
+ncks -g /g1  -v v1 --unn # All variables in /g1 (or descendents), or named v1
+ncks -g  g1/ -v v1 --unn # All variables in  g1 or named v1
+ncks -g /g1/ -v v1 --unn # All variables in /g1 or named v1
+@end example
+The first command (@samp{-g g1 -v v1}) extracts the variable @file{v1}
+from any group named @file{g1} or descendent @file{g1}.
+The second command extracts @file{v1} from any root group
+named @file{g1} and any descendent groups as well.
+The third and fourth commands are equivalent ways of extracting
+@file{v1} only from the root group named @file{g1} (but not its
+descendents). 
+The fifth and sixth commands are equivalent ways of extracting the 
+variable @file{v1} only from the root group named @file{g1}.
+Subsetting in union mode (with @samp{--unn}) causes all variables to be
+extracted which meet either one or both of the specifications of the 
+variable and group specifications.
+Union-mode subsetting is simply the logical ``OR'' of intersection-mode
+subsetting. 
+As discussed below, the group and variable specifications may be comma
+separated lists of regular expressions for added control over
+subsetting. 
 
 @cindex memory requirements
 Remember, if averaging or concatenating large files stresses your
@@ -3628,15 +3699,12 @@ subexpression.
 @end table
 @noindent
 
-To illustrate the use of these operators in extracting variables,
-consider file @file{in_grp.nc} with groups @code{g0}--@code{g9},
-and subgroups @code{s0}--@code{s9}, in each of those groups.
-and file @file{in.nc} with variables @code{Q}, @code{Q01}--@code{Q99},
-@code{Q100}, @code{QAA}--@code{QZZ}, @code{Q_H2O}, @code{X_H2O},
-@code{Q_CO2}, @code{X_CO2}.  
-@c fxm
-@c ncks -g 'g.' in_grp.nc           # 10 Groups g0-g9
-@c ncks -g 's.' in_grp.nc           # 100 sub-groups g0/s0, g0/s1, ... g9/s9
+To illustrate the use of these operators in extracting variables
+and groups, consider file @file{in_grp.nc} with groups
+@code{g0}--@code{g9}, and subgroups @code{s0}--@code{s9}, in each of
+those groups, and file @file{in.nc} with variables @code{Q},
+@code{Q01}--@code{Q99}, @code{Q100}, @code{QAA}--@code{QZZ},
+@code{Q_H2O}, @code{X_H2O}, @code{Q_CO2}, @code{X_CO2}.  
 @example
 ncks -v '.+' in.nc               # All variables (default)
 ncks -v 'Q.?' in.nc              # Variables that contain Q
@@ -3651,6 +3719,9 @@ ncks -v '^Q[0-9][0-9]$' in.nc    # Q01--Q99
 ncks -v '^Q[0-6][0-9]|7[0-3]' in.nc # Q01--Q73, Q100
 ncks -v '(Q[0-6][0-9]|7[0-3])$' in.nc # Q01--Q73
 ncks -v '^[a-z]_[a-z]@{3@}$' in.nc # Q_H2O, X_H2O, Q_CO2, X_CO2
+ncks -g 'g.' in_grp.nc           # 10 Groups g0-g9
+ncks -g 's.' in_grp.nc           # 100 sub-groups g0/s0, g0/s1, ... g9/s9
+ncks -g 'g.' -v 'v.' in_grp.nc   # All variables 'v.' in groups 'g.'
 @end example
 Beware---two of the most frequently used repetition pattern matching
 operators, @samp{*} and @samp{?}, are also valid pattern matching
@@ -11624,7 +11695,7 @@ ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c]
 [--fix_rec_dmn] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
-[-R] [-r] [--ram_all] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[-R] [-r] [--ram_all] [-s @var{format}] [-u] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 @var{input-file} [[@var{output-file}]]
 @end example
 

@@ -1,5 +1,10 @@
 2013-01-13  Charlie Zender  <zender@uci.edu>
 
+	* Document union-mode and intersection-mode in nco.texi, and give
+	examples with simultaneous anchoring and recursion
+
+	* Add --ram_all to remaining usage strings in nco_ctl.c
+
 	* Reorganize nco_grp_var_mk_trv2()
 
 	* Rework details of NCO GSL code: use mss_val as argument name,

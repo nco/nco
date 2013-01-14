@@ -1,17 +1,19 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.529 2013-01-13 06:46:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.530 2013-01-14 00:22:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release occurs sooner than expected because it contains both
-a useful bufgix and a new feature:
-We fixed a bug introduced in version NCO 4.2.2 that prevented building
-from source when only the netCDF version 3 library was available.
-And we added features called Anchoring and Recursion that permit the
-user fine-grained control over the extraction and copying of netCDF4
-groups. 
+This release continues, and largely concludes, the introduction of
+powerful new sub-setting features aimed to give users powerful and
+fine-grained control over subsetting hierarchical netCDF4 files.
+Last release saw the introduction of Group Path Editing (GPE) which
+controls the output location of extracted variables and groups.
+This release introduces three new features that control extraction:
+1. Group regular expressions, 2. Anchoring and Recursion, and
+3. Intersection and Unions. These latest three features are only in
+ncks for the time-being.
 
 Again, let us know how you like or dislike the way we have implemented
 the netCDF4 group functionality in ncks and ncecat.
@@ -29,8 +31,15 @@ Charlie
 
 NEW FEATURES:
 
-A. ncks and ncecat support Anchoring and Recursion.
+A. ncks supports regular expressions in both variable and group
+   lists. Formerly they worked only in variable lists.
+   ncks -g 'g.' in_grp.nc # Groups g0-g9
+   ncks -g 'g.' -v 'v.' in_grp.nc # All variables 'v.' in groups 'g.'
+   http://nco.sf.net/nco.html#rx
+
+A. ncks supports Anchoring and Recursion.
    Previously arguments to -g were extracted recursively by default.
+   Meaning that descendents of specified groups were also extracted.
    And prepended slashes had no special significance.
    Now initial and trailing slashes control Anchoring and Recursion:
    ncks -g  g1  # Extract, recursively, all groups with a g1 component
@@ -38,6 +47,14 @@ A. ncks and ncecat support Anchoring and Recursion.
    ncks -g /g1  # Extract, recursively, root group g1
    ncks -g /g1/ # Extract, non-recursively root group g1
    http://nco.sf.net/nco.html#rcr
+
+A. ncks allows control over intersection- and union-mode subsetting.
+   Do users want the intersection or the union of matches to the -v
+   and -g subsetting lists? NCO is no longer wishy-washy: Intersection
+   mode is the default, and --unn selects union-mode:
+   ncks -g g1 -v v1 # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1
+   ncks -g g1 -v v1 --unn # All vars in g1 (or descendents), or named v1
+   http://nco.sf.net/nco.html#unn
 
 A. ncrename supports restricting actions to global/group attributes
    Formerly ncrename arguments like -a old_nm,new_nm had no way of
@@ -52,14 +69,6 @@ A. ncrename supports restricting actions to global/group attributes
    ncrename -a global@.old_att_nm,new_att_nm in.nc
    http://nco.sf.net/nco.html#xmp_ncrename
 
-A. Handle variables specified in CF "bounds" and "coordinates"
-   attributes as coordinates in all ways. Specifically, dimension- 
-   reducing operations (e.g., min/max/ttl) no longer operate on
-   CF conventions (since performing these operations on grids 
-   usually makes no sense). Instead, the same dimension-reducing
-   operation applied to the coordinate (averaging) is now applied to 
-   any CF "bounds" and "coordinates" variables.
-
 BUG FIXES:
 
 A. Fix bug introduced in 4.2.1 where ncra did not write results of
@@ -69,6 +78,14 @@ A. Fix bug introduced in 4.2.1 where ncra did not write results of
 
 A. Fix 4.2.2 and 4.2.3 bug that kept NCO from building from source
    when netCDF version 3 library was not available.
+
+A. Handle variables specified in CF "bounds" and "coordinates"
+   attributes as coordinates in all ways. Specifically, dimension- 
+   reducing operations (e.g., min/max/ttl) no longer operate on
+   CF conventions (since performing these operations on grids 
+   usually makes no sense). Instead, the same dimension-reducing
+   operation applied to the coordinate (averaging) is now applied to 
+   any CF "bounds" and "coordinates" variables.
 
 KNOWN BUGS NOT YET FIXED:
 
