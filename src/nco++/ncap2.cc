@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.159 2013-01-13 07:23:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.160 2013-01-14 08:09:03 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.159 2013-01-13 07:23:06 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.159 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.160 2013-01-14 08:09:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.160 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -522,7 +522,7 @@ main(int argc,char **argv)
 
 #ifdef ENABLE_NCO_GSL
   // nco_gsl functions
-  nco_gsl_fit_cls nco_gsl_obj(true); 
+  nco_gsl_cls nco_gsl_obj(true); 
 
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&nco_gsl_obj);

@@ -445,14 +445,14 @@ public:
 
 #endif // !ENABLE_GSL
 
-// nco_gsl 
-class nco_gsl_fit_cls: public vtl_cls 
+// nco_gsl (no GSL lib/headers required )
+class nco_gsl_cls: public vtl_cls 
 {
 private:
   enum {PLIN};
   bool _flg_dbg;
 public:
-  nco_gsl_fit_cls(bool flg_dbg);
+  nco_gsl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &walker);
   var_sct *fit_fnd(bool &is_mtd,std::vector<RefAST> &args_vtr,fmc_cls &fmc_obj,ncoTree &walker);   
 };

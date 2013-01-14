@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.59 2013-01-13 11:07:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.60 2013-01-14 08:09:03 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5039,8 +5039,8 @@ int gsl_dmm_stb(void){return 1;}
 #endif // !ENABLE_GSL
 
 
-// nco_gsl Least Squares Fitting
-nco_gsl_fit_cls::nco_gsl_fit_cls(bool  flg_dbg)
+// nco_gsl 
+nco_gsl_cls::nco_gsl_cls(bool  flg_dbg)
 {
   //Populate only on first constructor call
   if(fmc_vtr.empty())
@@ -5049,16 +5049,19 @@ nco_gsl_fit_cls::nco_gsl_fit_cls(bool  flg_dbg)
   }
 }
 
-var_sct *nco_gsl_fit_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &walker)
+var_sct *nco_gsl_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &walker)
 {
-  const std::string fnc_nm("nco_gsl_fit_cls::fnd");
+  const std::string fnc_nm("nco_gsl_cls::fnd");
   bool is_mtd;
   int fdx=fmc_obj.fdx();   //index
   RefAST tr;    
   std::vector<RefAST> vtr_args; 
 
+  // Put args into vector 
   if(expr)
+  {
     vtr_args.push_back(expr);
+  }
 
   if(tr=fargs->getFirstChild()) 
   {
@@ -5078,12 +5081,12 @@ var_sct *nco_gsl_fit_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree 
     assert(0);
     break;
   }
-} // end nco_gsl_fit_cls::fnd 
+} // end nco_gsl_cls::fnd 
 
 
-var_sct *nco_gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args,fmc_cls &fmc_obj,ncoTree &walker)
+var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls &fmc_obj,ncoTree &walker)
 {
-  const std::string fnc_nm("nco_gsl_fit_cls::fit_fnd");
+  const std::string fnc_nm("nco_gsl_cls::fit_fnd");
   int idx;
   int fdx=fmc_obj.fdx();   //index
   int nbr_args;    // actual nunber of args
@@ -5196,7 +5199,7 @@ var_sct *nco_gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args,fm
         prs_arg->ncap_var_write(var_in[idx],false);
       }
     }//end for
-    return ncap_sclr_var_mk("~nco_gsl_fit_cls",NC_INT,false);   
+    return ncap_sclr_var_mk("~nco_gsl_cls",NC_INT,false);   
   }//end if/inital scan
 
   // big switch 
@@ -5254,8 +5257,10 @@ var_sct *nco_gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args,fm
       var_in[8]->val.dp,
       var_in[9]->val.dp,
       var_in[10]->val.dp,
-      var_in[2]->mss_val.dp); //fill value "double" for variable "y_in" (var_in[2])
-    // free up or save values 
+      var_in[2]->mss_val.dp); //fill value "double" for variable "y_in" (var_in[2]); can be NULL
+#ifdef NCO_SANITY_CHECK
+    assert(ret==NCO_GSL_SUCCESS);
+#endif /* NCO_SANITY_CHECK */
     break; //PLIN 
   default:
     assert(0);
@@ -5272,8 +5277,8 @@ var_sct *nco_gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args,fm
       prs_arg->ncap_var_write(var_in[idx],false);
   }
   // return status flag
-  return ncap_sclr_var_mk("~nco_gsl_fit_cls",(nco_int)ret);   
-} // end nco_gsl_fit_cls::fit_fnd 
+  return ncap_sclr_var_mk("~nco_gsl_cls",(nco_int)ret);   
+} // end nco_gsl_cls::fit_fnd 
 
 
 
