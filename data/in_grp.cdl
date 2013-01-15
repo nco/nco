@@ -24,41 +24,46 @@
 // print(id_in)
 // list_filevars(id_in)
 // ncks --get_file_info  ~/nco/data/in_grp.nc
-// 20 subgroups, 12 dimensions, 5 attributes, 35 variables
 
 netcdf in_grp {
 dimensions:
 	lat=2,lev=3,lon=4,gds_crd=8,time=unlimited;
 variables:
+	//group attributes
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.43 2013-01-14 23:56:51 zender Exp $";
-
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.44 2013-01-15 22:53:50 pvicente Exp $";
+	//
+	//coordinate variables
+	//
+	//lat
 	float lat(lat);
 	lat:units = "degrees_north";
-
+	//lev
 	float lev(lev);
 	lev:units = "hybrid_sigma_pressure";
 	lev:bounds = "ilev";
-
+	//lon
 	float lon(lon);
 	lon:units = "degrees_east";
-
+	//time
 	double time(time);
-
-	float scl;
-
-	integer unique;
-        unique:purpose = "the only variable of this name in this file, to test smallest possible access requests";
-        
-	float area(lat);
-	area:units = "meter2";
-	
+	//gds_crd
 	float gds_crd(gds_crd);
 	gds_crd:units = "degree";
 	gds_crd:coordinates = "lat_gds lon_gds";
-	
+	//
+	//variables
+	//
+	//scl
+	float scl;
+	//unique
+	integer unique;
+	unique:purpose = "the only variable of this name in this file, to test smallest possible access requests";    
+	//area
+	float area(lat);
+	area:units = "meter2";
 data:
 	scl=1.0;
 	lat=-90,90;
@@ -68,67 +73,77 @@ data:
 	area=10.,10.;
 	gds_crd=0,1,2,3,4,5,6,7;
 	unique=73;
-
- group: g1 { 
-	  
+//
+//g1
+//
+group: g1 { 
 	variables:
-	  float lon(lon);
+	//coordinate variables
+	//lon
+	float lon(lon);
 	lon:units = "g1 degrees_east";
-	  float scl;
-	  int g1v1;
-	  int v1;
+	//variables
+	float scl;
+	int g1v1;
+	int v1;
 	data:
-	  lon=0,90,180,270;
-	  scl=1.1;
-	  g1v1=1;
-	  v1=1;
-	  
+	lon=0,90,180,270;
+	scl=1.1;
+	g1v1=1;
+	v1=1;  
 	group: g1g1 { 
-	  variables:
-	    float scl;
-	    int v1;
-	  data:
-	    scl=1.11;
-	    v1=11;
-	  } // end g1g1
-	  
+		variables:
+		float scl;
+		int v1;
+		data:
+		scl=1.11;
+		v1=11;
+		} // end g1g1
 	} // end g1
 	
- group: g2 { 
+//
+//g2
+//
+group: g2 { 
 	variables:
-	  double time(time);
-	  float scl;
+	double time(time);
+	float scl;
 	data:
-	  time=1.;
-	  scl=1.2;
+	time=1.;
+	scl=1.2;
 	} // end g2
 	
- group: g3 {
+//
+//g3
+//
+	group: g3 {
 	dimensions:
-	  rlev=3,time2=unlimited;
+	rlev=3,time2=unlimited;
 	variables:
-	  :g3_group_attribute = "g3_group_attribute";
-	  float rz(rlev);
-	  double time2(time2);
-	  float scl;
-      float rlev(rlev);
-	   rlev:purpose = "Monotonically decreasing coordinate pressure";
+	:g3_group_attribute = "g3_group_attribute";
+	float rz(rlev);
+	double time2(time2);
+	float scl;
+	float rlev(rlev);
+	rlev:purpose = "Monotonically decreasing coordinate pressure";
 	data:
-	  time2=1.,2.;
-	  rz=0,5000,17000;
-	  scl=1.3;
-      rlev=1000.,500.,100.;
+	time2=1.,2.;
+	rz=0,5000,17000;
+	scl=1.3;
+	rlev=1000.,500.,100.;
 
 	group: g3g1 {
-	  variables:
-	    float prs(rlev);
-	  prs:long_name="reverse pressure";
-	  data:
-	    prs=1.0,10.0,100.0;
-	  } // end g3g1
-
+		variables:
+		float prs(rlev);
+		prs:long_name="reverse pressure";
+		data:
+		prs=1.0,10.0,100.0;
+	} // end g3g1
 } // end g3
 
+//
+//g4
+//
 group: g4 { 
 	variables:
 	int one_dmn_rec_var(time);
@@ -137,103 +152,112 @@ group: g4 {
 	one_dmn_rec_var=1,2;
 
 	group: g4g1 { 
-	
 		group: g4g1g1 {  
 			dimensions:
-	      time3=unlimited;
-	      time4=unlimited;
+			time3=unlimited;
+			time4=unlimited;
 			variables:
-			  double time3(time3);
-			  double time4(time4);
+			double time3(time3);
+			double time4(time4);
 			data:
-			  time3=1.,2.,3.;
-			  time4=1.,2.,3.,4.;
-			} // end g4g1g1
-		} // end g4g1
+			time3=1.,2.,3.;
+			time4=1.,2.,3.,4.;
+		} // end g4g1g1
+	} // end g4g1
 } // end g4
 
+//
+//g5
+//
 group: g5 { 
-	  // Purposefully empty group
+	// 
 } // end g5
 
+//
+//g6
+//
 group: g6 { // Level 1
 	variables:
-	  float area(lat);
-	  float area1(lat);
+	float area(lat);
+	float area1(lat);
 	data:
-	  area=20.,30.;
-	  area1=21.,31.;
+	area=20.,30.;
+	area1=21.,31.;
 	group: g6g1 { // Level 2
-	  variables:
-            float area(lat);
-	  data:
-            area=40.,50.;
-	  } //end g6g1
+		variables:
+		float area(lat);
+		data:
+		area=40.,50.;
+	} //end g6g1
 } // end g6
 
- group: g7 { 
+//
+//g7
+//
+group: g7 { 
 	dimensions:
-	  gds_crd=8;
+	gds_crd=8;
 	variables:
-	  float gds_crd(gds_crd);
+	float gds_crd(gds_crd);
 	gds_crd:units = "degree";
 	gds_crd:coordinates = "lat_gds lon_gds";
-	  
-	  float gds_var(gds_crd);
+	float gds_var(gds_crd);
 	gds_var:units = "meter";
 	gds_var:coordinates = "lat_gds lon_gds";
-	  
-	  double lat_gds(gds_crd);
+	double lat_gds(gds_crd);
 	lat_gds:units="degree";
-	  
-	  double lon_gds(gds_crd);
+	double lon_gds(gds_crd);
 	lon_gds:units="degree";
-	  
 	data:
-	  gds_crd=0,1,2,3,4,5,6,7;
-	  lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
-	  lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
-	  gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
+	gds_crd=0,1,2,3,4,5,6,7;
+	lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
+	lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
+	gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 	} // end g7
-	
- group: g8 { 
+//
+//g8
+//
+group: g8 { 
 	dimensions:
-	  lon=2,lev=3,vrt_nbr=2;
+	lon=2,lev=3,vrt_nbr=2;
 	variables:
-	  float lev(lev);
-        lev:units = "hybrid_sigma_pressure";
-        lev:bounds = "ilev";
+	float lev(lev);
+	lev:units = "hybrid_sigma_pressure";
+	lev:bounds = "ilev";
 	float lon(lon);
 	lon:units = "degrees_east";
-      float vrt_nbr(vrt_nbr);
-	  float ilev(lev,vrt_nbr);
+	float vrt_nbr(vrt_nbr);
+	float ilev(lev,vrt_nbr);
 	data:
-	  lon=-180,0,1,2;
-	  lev=100,500,1000;
-	  ilev=0,300,300,750,750,1013.25;
-      vrt_nbr=1,2;
-	} // end g8
-	
- group: g9 { // Level 1
+	lon=-180,0,1,2;
+	lev=100,500,1000;
+	ilev=0,300,300,750,750,1013.25;
+	vrt_nbr=1,2;
+} // end g8
+
+//
+//g9
+//
+group: g9 { // Level 1
 	group: g9g1 { // Level 2
-     variables:
-		      int v6;
-		    data:
-		      v6=63;
-	  group: g9g1g1 { // Level 3
-	    group: g9g1g1g1 { // Level 4
-	      group: g9g1g1g1g1 { // Level 5
-		group: g9g1g1g1g1g1 { // Level 6
-		  group: g9g1g1g1g1g1g1 { // Level 7
-		    variables:
-		      int v7;
-		    data:
-		      v7=73;
-		    } // end g9g1g1g1g1g1g1
-		  } // end g9g1g1g1g1g1
-		} // end g9g1g1g1g1
-	      } // end g9g1g1g1
-	    } // end g9g1g1
-	  } // end g9g1
-	} // end g9
+	variables:
+	int v6;
+	data:
+	v6=63;
+	group: g9g1g1 { // Level 3
+		group: g9g1g1g1 { // Level 4
+			group: g9g1g1g1g1 { // Level 5
+				group: g9g1g1g1g1g1 { // Level 6
+					group: g9g1g1g1g1g1g1 { // Level 7
+					variables:
+					int v7;
+					data:
+					v7=73;
+					} // end g9g1g1g1g1g1g1
+				} // end g9g1g1g1g1g1
+			} // end g9g1g1g1g1
+		} // end g9g1g1g1
+	} // end g9g1g1
+	} // end g9g1
+} // end g9
 } // end root group
