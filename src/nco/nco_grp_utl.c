@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.348 2013-01-14 22:23:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.349 2013-01-15 00:35:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2164,9 +2164,12 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	      flg_pth_end_bnd=True;
 	  
 	  /* Additional condition for variables is user-supplied string must end with short form of variable name */
+	  /* fxm: 20130113 valgrind issue */
 	  if(obj_typ == nco_obj_typ_var){
-	    var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
-	    if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True; else flg_var_cnd=False;
+	    if(trv_obj.nm_lng <= usr_sng_lng){
+	      var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
+	      if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
+	    } /* endif */
 	    if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
 	  } /* endif var */
 
@@ -2386,8 +2389,10 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
 	    
 	    /* Additional condition for variables is user-supplied string must end with short form of variable name */
 	    if(obj_typ == nco_obj_typ_var){
-	      var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
-	      if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True; else flg_var_cnd=False;
+	      if(trv_obj.nm_lng <= usr_sng_lng){
+		var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
+		if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
+	      } /* endif */
 	      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
 	    } /* endif var */
 	    

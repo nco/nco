@@ -1,5 +1,12 @@
 2013-01-14  Charlie Zender  <zender@uci.edu>
 
+	* Fix bug introduced in 4.2.1 that causes ncea to break when handling
+	files that do not contain a record dimension. Thanks to Martin Otte
+	for reporting the bug and providing a working fix.
+	http://nco.sf.net#bug_ncea_rec_var
+
+	* Memory error in nco_mk_xtr() triggers segfaults in autoconf build
+
 	* Remove new regression tests that are fragile, i.e., whose answers change as in.cdl and in_grp.cdl change
 
 2013-01-13  Charlie Zender  <zender@uci.edu>
