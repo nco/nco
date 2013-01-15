@@ -1,5 +1,7 @@
 2013-01-15  Charlie Zender  <zender@uci.edu>
 
+	* Place explicit netCDF3 path in nco_inq_grp_full_ncid_flg()
+
 	* Safeguard potential illegal memory access in nco_mk_xtr() string manipulation
 
 2013-01-14  Charlie Zender  <zender@uci.edu>

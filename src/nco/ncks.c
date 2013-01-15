@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.544 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.545 2013-01-15 19:12:50 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.544 2013-01-13 06:07:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.544 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.545 2013-01-15 19:12:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.545 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -224,6 +224,7 @@ main(int argc,char **argv)
       {"compiler",no_argument,0,0},
       {"fix_rec_dmn",no_argument,0,0}, /* [flg] Fix record dimension */
       {"no_rec_dmn",no_argument,0,0}, /* [flg] Fix record dimension */
+      {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
       {"lbr",no_argument,0,0},
       {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
@@ -802,6 +803,9 @@ main(int argc,char **argv)
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
+
+    /* fxm: 20130114 debugging */
+    if(dbg_lvl_get() == nco_dbg_scl) (void)fprintf(stdout,"%s: File = %s, in_id = %d, out_id = %d\n",prg_nm_get(),fl_in,in_id,out_id);
 
     /* Copy extracted variables to output file */
     nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);

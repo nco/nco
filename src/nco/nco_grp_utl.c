@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.349 2013-01-15 00:35:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.350 2013-01-15 19:12:50 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2164,7 +2164,6 @@ nco_chk_trv /* [fnc] Check if input names of -v or -g are in file */
 	      flg_pth_end_bnd=True;
 	  
 	  /* Additional condition for variables is user-supplied string must end with short form of variable name */
-	  /* fxm: 20130113 valgrind issue */
 	  if(obj_typ == nco_obj_typ_var){
 	    if(trv_obj.nm_lng <= usr_sng_lng){
 	      var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
@@ -3853,10 +3852,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
 
       /* If output group does not exist, create it */
       if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Defining group %s\n",grp_out_fll);
-      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id))
-      {
-        nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-      }
+      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
       if(MD_DFN){
 	/* Detect duplicate GPE names in advance, then exit with helpful error */
