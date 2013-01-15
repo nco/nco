@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.192 2013-01-14 23:56:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.193 2013-01-15 21:29:24 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -805,7 +805,7 @@ print "\n";
 
 #ncks #17
 
-    $tst_cmd[0]="ncks -O -v cnv_CF_crd $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v cnv_CF_crd $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lon_gds -d gds_crd,2 %tmp_fl_00%";
     $dsc_sng="CF convention coordinates attribute";
     $tst_cmd[2]="180";
@@ -815,7 +815,7 @@ print "\n";
     
 #ncks #18 
 
-    $tst_cmd[0]="ncatted -O -a _FillValue,global,c,l,222 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a _FillValue,global,c,l,222 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -v -O -s 'n2=global\@_FillValue;' %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="ncks -C -H -s '%d' -v n2 %tmp_fl_02%";
@@ -852,7 +852,7 @@ print "\n";
 #ncks #20 groups: Add to extraction list all coordinates associated with CF convention
 
     $dsc_sng="(Groups required) Add CF convention variables";
-    $tst_cmd[0]="ncks -O -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_gds %tmp_fl_00%";  
     $tst_cmd[2]="-90-30-3000303090";
@@ -870,7 +870,7 @@ print "\n";
 #ncks #21 groups: Extract variables in groups (test -g with -v )
 
     $dsc_sng="(Groups required) Extract variables in groups";
-    $tst_cmd[0]="ncks -O -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="1.11";
@@ -888,7 +888,7 @@ print "\n";
 #ncks #22 groups: Create variables in groups (test -G with -v and -g )
 
     $dsc_sng="(Groups required) Create variables in groups";
-    $tst_cmd[0]="ncks -O -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%"; 
     $tst_cmd[2]="1.3";
@@ -906,7 +906,7 @@ print "\n";
 #ncks #23 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
 
     $dsc_sng="(Groups required) Hyperslabs in groups";
-    $tst_cmd[0]="ncks -O -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%"; 
     $tst_cmd[2]="2";
@@ -924,7 +924,7 @@ print "\n";
 #ncks #24 groups: Extract dimensions (test -v dimension)
 
     $dsc_sng="(Groups required) Extract dimensions";
-    $tst_cmd[0]="ncks -O -v time3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v time3 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -H -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="123";
@@ -946,7 +946,7 @@ print "\n";
 #ncks #25 groups: Extract group attributes
 
     $dsc_sng="(Groups required) Extract group attributes";
-    $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
@@ -964,7 +964,7 @@ print "\n";
 #ncks #26 groups: Extract global attributes
 
     $dsc_sng="Extract global attributes";
-    $tst_cmd[0]="ncks -O -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep Conventions";
     $tst_cmd[2]="Global attribute 0: Conventions, size = 6 NC_CHAR, value = CF-1.0";
@@ -982,7 +982,7 @@ print "\n";
 #ncks #27 groups: Extract "bounds" variables (extract /g8/ilev)
 
     $dsc_sng="(Groups required) Extract 'bounds' variables";
-    $tst_cmd[0]="ncks -O -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -a -O -H  -s '%g' %tmp_fl_00% ";    
     $tst_cmd[2]="1005001000";
@@ -1000,7 +1000,7 @@ print "\n";
 #ncks #28 groups: Extract group attributes with GPE
 
     $dsc_sng="(Groups required) GPE group attribute extraction";
-    $tst_cmd[0]="ncks -O -G g9 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g9 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
@@ -1018,7 +1018,7 @@ print "\n";
 #ncks #29 groups: Group dimension hyperslabs
 
     $dsc_sng="(Groups required) Group dimension hyperslabs";
-    $tst_cmd[0]="ncks -O -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -v lat_gds -s '%g' %tmp_fl_00%";
     $tst_cmd[2]="-30";
@@ -1078,7 +1078,7 @@ print "\n";
 
 if(0){ # Pedro-this test is fragile---it needs editing each time in.cdl changes
     $dsc_sng="Get file information (netCDF3 file)";
-    $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in.nc";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --get_file_info $in_pth_arg in.nc";
     $tst_cmd[1]="0 subgroups, 23 dimensions, 4 attributes, 298 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -1089,7 +1089,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in.cdl changes
 
 if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl changes
     $dsc_sng="Get file information (netCDF4 file)";
-    $tst_cmd[0]="ncks -O --get_file_info $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --get_file_info $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="20 subgroups, 12 dimensions, 5 attributes, 36 variables";
     $tst_cmd[2]="SS_OK";
@@ -1104,7 +1104,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #ncks #35 exclude all variables (netCDF3 file)
 
     $dsc_sng="Exclude all variables (netCDF3 file)";
-    $tst_cmd[0]="ncks -O -x $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -x $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --get_file_info %tmp_fl_00%";
     $tst_cmd[2]="0 subgroups, 0 dimensions, 5 attributes, 0 variables";
     $tst_cmd[3]="SS_OK";
@@ -1114,7 +1114,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #ncks #36 exclude all variables (netCDF4 file)
 
     $dsc_sng="Exclude all variables (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -x $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -x $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks --get_file_info %tmp_fl_00%";
     $tst_cmd[2]="0 subgroups, 0 dimensions, 5 attributes, 0 variables";
@@ -1132,7 +1132,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #ncks #37 exclude variables (netCDF3 file)
 
     $dsc_sng="Exclude variables (netCDF3 file)";
-    $tst_cmd[0]="ncks -O -x -v lat_var,lat_wgt $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -x -v lat_var,lat_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --get_file_info %tmp_fl_00%";
     $tst_cmd[2]="0 subgroups, 23 dimensions, 5 attributes, 296 variables";
     $tst_cmd[3]="SS_OK";
@@ -1142,7 +1142,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #ncks #38 2D variable definition (netCDF4 file)
 
     $dsc_sng="2D variable definition (netCDF4 file)";
-    $tst_cmd[0]="ncks  -O -C  -v ilev $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C  -v ilev $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  %tmp_fl_00%";
     $tst_cmd[2]="lev[2] vrt_nbr[1] ilev[5]=1013.25";
     $tst_cmd[3]="SS_OK";
@@ -1153,7 +1153,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #extract all variables in g6 = area,area1, refine to area1 only
 
     $dsc_sng="Variable/Group extraction test 1 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -g g6  $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6  $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -v area1  %tmp_fl_00%";
     $tst_cmd[2]="lat[1] area1[1]=31";
@@ -1173,7 +1173,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #use -d 
 
     $dsc_sng="Variable/Group extraction test 2 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -g g6  $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6  $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -v area1 -d lat,0,0 %tmp_fl_00%";
     $tst_cmd[2]="lat[0] area1[0]=21";
@@ -1192,7 +1192,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #extract all variables in g6g1 (second level group) = area
 
     $dsc_sng="Variable/Group extraction test 3 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -g g6g1  $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1  $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lat[1] area[1]=50";
     $tst_cmd[2]="SS_OK";  
@@ -1209,7 +1209,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-1 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";   
@@ -1226,7 +1226,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-2 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/area";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK"; 
@@ -1243,7 +1243,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-3 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v are. $in_pth_arg in_grp.nc | grep -w /area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /area";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/area";
     $tst_cmd[2]="SS_OK";   
@@ -1258,7 +1258,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 # Extract all variables "area" in g6g1
 
     $dsc_sng="Variable/Group extraction test 5 (netCDF4 file)";
-    $tst_cmd[0]="ncks -H -C -s '%g' -v area -g g6g1 -d lat,0 $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks -H $fl_fmt $nco_D_flg -C -s '%g' -v area -g g6g1 -d lat,0 $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="40";
     $tst_cmd[2]="SS_OK";    
@@ -1273,7 +1273,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #extract all variables "area" in g6g1 = g6/g6g1/area 
 
     $dsc_sng="Variable/Group extraction test 6 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v area -g g6g1 $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lat[1] area[1]=50";
     $tst_cmd[2]="SS_OK";  
@@ -1289,7 +1289,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
 
     $dsc_sng="Variable/Group extraction test 7-1 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";     
@@ -1305,7 +1305,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
 
     $dsc_sng="Variable/Group extraction test 7-2 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK";   
@@ -1320,7 +1320,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #extract all variables "area" = /area 
 
     $dsc_sng="Variable/Group extraction test 8 (netCDF3 file)";
-    $tst_cmd[0]="ncks -O -C -v area $in_pth_arg in.nc";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area $in_pth_arg in.nc";
     $tst_cmd[1]="lat[1]=90 area[1]=10 meter2";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -1329,7 +1329,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #ncks #50 Extract associated coordinates test 1 (netCDF3 file) 
 
     $dsc_sng="Extract associated coordinates test 1 (netCDF3 file) ";
-    $tst_cmd[0]="ncks -O -v rz $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v rz $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /rlev";
 	$tst_cmd[2]="/rlev";
     $tst_cmd[3]="SS_OK";
@@ -1339,7 +1339,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 #ncks #51 Extract associated coordinates test 2 (netCDF3 file) 
 
     $dsc_sng="Extract associated coordinates test 2 (netCDF3 file) ";
-    $tst_cmd[0]="ncks -O -C -v rz $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v rz $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /rlev";
 	$tst_cmd[2]="";
     $tst_cmd[3]="SS_OK";
@@ -1351,7 +1351,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 # rlev is a dimension of rz 
 
     $dsc_sng="Extract associated coordinates test 3 (netCDF4 file) ";
-    $tst_cmd[0]="ncks -O -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
 	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /g3/rlev";
 	$tst_cmd[2]="/g3/rlev";
@@ -1370,7 +1370,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
 # rlev is a dimension of rz 
 
     $dsc_sng="Extract associated coordinates test 4 (netCDF4 file) ";
-    $tst_cmd[0]="ncks -O -C -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
 	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /g3/rlev";
 	$tst_cmd[2]="";
