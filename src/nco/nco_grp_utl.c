@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.350 2013-01-15 19:12:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.351 2013-01-15 19:40:41 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3250,13 +3250,13 @@ nco_var_lst_crd_add_cf_trv2           /* [fnc] Add to extraction list all coordi
  trv_tbl_sct * const trv_tbl)                /* I/O [sct] Traversal table */
 {
   /* Detect associated coordinates specified by CF "coordinates" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     /* Try to add to extraction list */
     if(trv.typ == nco_obj_typ_var) (void)nco_aux_add_cf2(nc_id,trv.nm_fll,trv.nm,cf_nm,trv_tbl);
-  } /* end uidx  */
+  } /* end uidx */
 
   return;
 } /* nco_var_lst_crd_add_cf_trv2() */
