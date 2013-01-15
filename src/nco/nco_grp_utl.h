@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.169 2013-01-13 21:34:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.170 2013-01-15 21:16:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -269,7 +269,7 @@ nco_xtr_crd_add /* [fnc] Add all coordinates to extraction list */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
-nco_xtr_cf_drv /* [fnc] Add to extraction list variable associated with CF convention */
+nco_xtr_cf_trv /* [fnc] Add to extraction list variable associated with CF convention */
 (const int nc_id, /* I [ID] netCDF file ID */
  const char * const cf_nm, /* I [sng] CF convention ("coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
@@ -410,7 +410,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
  const nco_bool NM_ID_SAME_ORDER);    /* I [flg] Both nm_id_sct have the same order */
 
 void
-nco_xtr_crd_ass_add_drv          /* [fnc] Add to extraction list all coordinates associated with extracted variables */
+nco_xtr_crd_ass_add_trv               /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id,                     /* I netCDF file ID */
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 

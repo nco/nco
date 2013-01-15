@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.545 2013-01-15 19:12:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.546 2013-01-15 21:16:20 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.545 2013-01-15 19:12:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.545 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.546 2013-01-15 21:16:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.546 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -656,7 +656,7 @@ main(int argc,char **argv)
     (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
     (void)fprintf(stdout,"%d subgroups, %d dimensions, %d attributes, %d variables\n",nbr_grp_fl,nbr_dmn_fl,nbr_glb_att,nbr_var_fl); 
     goto close_and_free; 
-  } /* end GET_GRP_INFO */
+  } /* end GET_FILE_INFO */
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
@@ -688,14 +688,14 @@ main(int argc,char **argv)
 
   /* Extract coordinates associated with extracted variables */
   /* fxm: fix netCDF4 code path bug */
-  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add_drv(in_id,trv_tbl);
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add_trv(in_id,trv_tbl);
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
   if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Implement CF "coordinates" and "bounds" conventions */
-    (void)nco_xtr_cf_drv(in_id,"coordinates",trv_tbl);
-    (void)nco_xtr_cf_drv(in_id,"bounds",trv_tbl);
+    (void)nco_xtr_cf_trv(in_id,"coordinates",trv_tbl);
+    (void)nco_xtr_cf_trv(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
    if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);

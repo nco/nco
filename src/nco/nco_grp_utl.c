@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.351 2013-01-15 19:40:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.352 2013-01-15 21:16:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3262,7 +3262,7 @@ nco_var_lst_crd_add_cf_trv2           /* [fnc] Add to extraction list all coordi
 } /* nco_var_lst_crd_add_cf_trv2() */
 
 void
-nco_xtr_cf_drv /* [fnc] Add to extraction list variable associated with CF convention */
+nco_xtr_cf_trv /* [fnc] Add to extraction list variable associated with CF convention */
 (const int nc_id, /* I [ID] netCDF file ID */
  const char * const cf_nm, /* I [sng] CF convention ("coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
@@ -3277,7 +3277,7 @@ nco_xtr_cf_drv /* [fnc] Add to extraction list variable associated with CF conve
   } /* end loop over table */
 
   return;
-} /* nco_xtr_cf_drv() */
+} /* nco_xtr_cf_trv() */
 
 void
 nco_xtr_cf_add /* [fnc] Add to extraction list all CF-compliant coordinates */
@@ -3660,7 +3660,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
 } /* end nco_trv_tbl_chk() */
 
 void
-nco_xtr_crd_ass_add_drv /* [fnc] Add to extraction list all coordinates associated with extracted variables */
+nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id, /* I [ID] netCDF file ID */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -3722,7 +3722,7 @@ nco_xtr_crd_ass_add_drv /* [fnc] Add to extraction list all coordinates associat
   } /* end uidx  */
 
   return;
-} /* end nco_xtr_crd_ass_add_drv */
+} /* end nco_xtr_crd_ass_add_trv */
 
 void
 nco_get_prg_info(void)                 /* [fnc] Get program info */
