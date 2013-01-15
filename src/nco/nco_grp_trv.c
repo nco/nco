@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.30 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.31 2013-01-15 17:21:05 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -75,7 +75,7 @@ trv_tbl_add
 
   if(tbl->nbr == tbl->sz){
     tbl->sz*=2;
-    tbl->lst=(trv_sct*)nco_realloc(tbl->lst,tbl->sz*sizeof(trv_sct));
+    tbl->lst=(trv_sct *)nco_realloc(tbl->lst,tbl->sz*sizeof(trv_sct));
 
     for(idx=tbl->nbr;idx<tbl->sz;idx++){
       tbl->lst[idx].nm_fll=NULL;
