@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.133 2013-01-16 21:53:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.134 2013-01-16 22:01:59 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.133 2013-01-16 21:53:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.133 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.134 2013-01-16 22:01:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.134 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -329,6 +329,7 @@ main(int argc,char **argv)
       {"operation",required_argument,0,'y'},
       {"op_typ",required_argument,0,'y'},
       {"help",no_argument,0,'?'},
+      {"hlp",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -545,7 +546,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;

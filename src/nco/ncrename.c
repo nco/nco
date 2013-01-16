@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.151 2013-01-16 21:53:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.152 2013-01-16 22:01:59 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.151 2013-01-16 21:53:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.151 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.152 2013-01-16 22:01:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.152 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -171,6 +171,7 @@ main(int argc,char **argv)
       {"revision",no_argument,0,'r'},
       {"variable",required_argument,0,'v'},
       {"help",no_argument,0,'?'},
+      {"hlp",no_argument,0,'?'},
       {0,0,0,0}
     };
   int opt_idx=0;  /* Index of current long option into opt_lng array */
@@ -271,7 +272,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end switch */

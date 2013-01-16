@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.248 2013-01-16 21:53:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.249 2013-01-16 22:01:59 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.248 2013-01-16 21:53:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.248 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.249 2013-01-16 22:01:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.249 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -289,6 +289,7 @@ main(int argc,char **argv)
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
+      {"hlp",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -481,7 +482,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;

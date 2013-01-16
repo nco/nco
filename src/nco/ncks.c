@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.547 2013-01-16 21:53:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.548 2013-01-16 22:01:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.547 2013-01-16 21:53:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.547 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.548 2013-01-16 22:01:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.548 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -327,6 +327,7 @@ main(int argc,char **argv)
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
+      {"hlp",no_argument,0,'?'},
       {"get_grp_info",no_argument,0,0},
       {"get_prg_info",no_argument,0,0},
       {"get_file_info",no_argument,0,0},
@@ -584,7 +585,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;

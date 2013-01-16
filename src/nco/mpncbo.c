@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.130 2013-01-16 21:53:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.131 2013-01-16 22:01:59 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.130 2013-01-16 21:53:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.130 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.131 2013-01-16 22:01:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.131 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -309,6 +309,7 @@ main(int argc,char **argv)
       {"operation",required_argument,0,'y'},
       {"op_typ",required_argument,0,'y'},
       {"help",no_argument,0,'?'},
+      {"hlp",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -481,7 +482,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
