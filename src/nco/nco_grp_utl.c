@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.352 2013-01-15 21:16:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.353 2013-01-16 21:53:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3843,7 +3843,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
           if(!strcmp(var_nm,dmn_ult_nm)){
             rec_dmn_nm=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(char));
             strcpy(rec_dmn_nm,dmn_ult_nm);  
-          } /* strcmp */
+          } /* strcmp() */
         } /* idx_dmn */  
 
         /* Memory management after current variable */

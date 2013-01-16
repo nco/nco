@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.546 2013-01-15 21:16:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.547 2013-01-16 21:53:43 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.546 2013-01-15 21:16:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.546 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.547 2013-01-16 21:53:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.547 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -569,7 +569,7 @@ main(int argc,char **argv)
       aux_nbr++;
       MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       break;
-    case 'x': /* Exclude rather than extract variables specified with -v */
+    case 'x': /* Exclude rather than extract groups and variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'z': /* Print absolute path of all input variables then exit */
@@ -584,6 +584,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -591,10 +592,8 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-  /* Get program info */
-  if (GET_PRG_INFO){
-    nco_get_prg_info();
-  }
+  /* Get program info for regressions tests */
+  if(GET_PRG_INFO) nco_get_prg_info();
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.129 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.130 2013-01-16 21:53:43 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.129 2013-01-13 06:07:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.129 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.130 2013-01-16 21:53:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.130 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -481,6 +481,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;

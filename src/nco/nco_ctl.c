@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.372 2013-01-14 17:17:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.373 2013-01-16 21:53:43 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -934,7 +934,7 @@ nco_usg_prn(void)
   } /* end switch */
   
   /* We now have command-specific command line option string */
-  (void)fprintf(stdout,"%s command line options cheat-sheet:\n",prg_nm_get());
+  (void)fprintf(stdout,"%s Command line options cheatsheet (full details in manual, http://nco.sf.net/nco.html):\n",prg_nm_get());
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
   if(strstr(opt_sng,"[-3]")) (void)fprintf(stdout,"-3, --3, --fl_fmt=classic\tOutput file in netCDF3 CLASSIC (32-bit offset) storage format\n");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.314 2013-01-14 23:56:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.315 2013-01-16 21:53:43 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.314 2013-01-14 23:56:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.314 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.315 2013-01-16 21:53:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.315 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -521,6 +521,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;

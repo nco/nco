@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.197 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.198 2013-01-16 21:53:43 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.197 2013-01-13 06:07:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.197 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.198 2013-01-16 21:53:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.198 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -455,6 +455,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get(),prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
