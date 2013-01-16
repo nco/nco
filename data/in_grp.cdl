@@ -33,7 +33,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.44 2013-01-15 22:53:50 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.45 2013-01-16 22:41:49 pvicente Exp $";
 	//
 	//coordinate variables
 	//
@@ -170,7 +170,15 @@ group: g4 {
 //g5
 //
 group: g5 { 
-	// 
+	dimensions:
+	rlev=3;
+	variables:
+	float rz(rlev);
+	float rlev(rlev);
+	data:
+	rz=1,2,3;
+	rlev=10.,5.,1.;
+
 } // end g5
 
 //
