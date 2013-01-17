@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.193 2013-01-15 21:29:24 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.194 2013-01-17 03:13:16 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1073,35 +1073,8 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array    
-
-#ncks #33 --get_file_info option (netCDF3 file)
-
-if(0){ # Pedro-this test is fragile---it needs editing each time in.cdl changes
-    $dsc_sng="Get file information (netCDF3 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --get_file_info $in_pth_arg in.nc";
-    $tst_cmd[1]="0 subgroups, 23 dimensions, 4 attributes, 298 variables";
-    $tst_cmd[2]="SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array    
-} # endif false
-
-#ncks #34 --get_file_info option (netCDF4 file)
-
-if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl changes
-    $dsc_sng="Get file information (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --get_file_info $in_pth_arg in_grp.nc";
-    if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="20 subgroups, 12 dimensions, 5 attributes, 36 variables";
-    $tst_cmd[2]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array    
-} # endif false
     
-#ncks #35 exclude all variables (netCDF3 file)
+#ncks #33 exclude all variables (netCDF3 file)
 
     $dsc_sng="Exclude all variables (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -x $in_pth_arg in.nc %tmp_fl_00%";
@@ -1111,7 +1084,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array   
     
-#ncks #36 exclude all variables (netCDF4 file)
+#ncks #34 exclude all variables (netCDF4 file)
 
     $dsc_sng="Exclude all variables (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -x $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -1129,7 +1102,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array    
     
-#ncks #37 exclude variables (netCDF3 file)
+#ncks #35 exclude variables (netCDF3 file)
 
     $dsc_sng="Exclude variables (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -x -v lat_var,lat_wgt $in_pth_arg in.nc %tmp_fl_00%";
@@ -1139,7 +1112,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
     
-#ncks #38 2D variable definition (netCDF4 file)
+#ncks #36 2D variable definition (netCDF4 file)
 
     $dsc_sng="2D variable definition (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C  -v ilev $in_pth_arg in.nc %tmp_fl_00%";
@@ -1149,7 +1122,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array   
 
-#ncks #39 Variable/Group extraction test 1 (netCDF4 file)
+#ncks #37 Variable/Group extraction test 1 (netCDF4 file)
 #extract all variables in g6 = area,area1, refine to area1 only
 
     $dsc_sng="Variable/Group extraction test 1 (netCDF4 file)";
@@ -1168,7 +1141,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 
-#ncks #40 Variable/Group extraction test 2 (netCDF4 file)
+#ncks #38 Variable/Group extraction test 2 (netCDF4 file)
 #extract all variables in g6 = area,area1, refine to area1 only
 #use -d 
 
@@ -1188,7 +1161,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
  
-#ncks #41 Variable/Group extraction test 3 (netCDF4 file)
+#ncks #39 Variable/Group extraction test 3 (netCDF4 file)
 #extract all variables in g6g1 (second level group) = area
 
     $dsc_sng="Variable/Group extraction test 3 (netCDF4 file)";
@@ -1203,7 +1176,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
-#ncks #42 Variable/Group extraction test 4 (netCDF4 file)
+#ncks #40 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
 #NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
@@ -1220,7 +1193,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
-#ncks #43 Variable/Group extraction test 4 (netCDF4 file)
+#ncks #41 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
 #NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
@@ -1237,7 +1210,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
-#ncks #44 Variable/Group extraction test 4 (netCDF4 file)
+#ncks #42 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
 #NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
@@ -1254,7 +1227,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 	
-#ncks #45 Variable/Group extraction test 5 (netCDF4 file)
+#ncks #43 Variable/Group extraction test 5 (netCDF4 file)
 # Extract all variables "area" in g6g1
 
     $dsc_sng="Variable/Group extraction test 5 (netCDF4 file)";
@@ -1269,7 +1242,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array			
 	
-#ncks #46 Variable/Group extraction test 6 (netCDF4 file)
+#ncks #44 Variable/Group extraction test 6 (netCDF4 file)
 #extract all variables "area" in g6g1 = g6/g6g1/area 
 
     $dsc_sng="Variable/Group extraction test 6 (netCDF4 file)";
@@ -1284,7 +1257,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 						
 	
-#ncks #47 Variable/Group extraction test 7 (netCDF4 file)
+#ncks #45 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
 #NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
 
@@ -1300,7 +1273,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 							
 	
-#ncks #48 Variable/Group extraction test 7 (netCDF4 file)
+#ncks #46 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
 #NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
 
@@ -1316,7 +1289,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
-#ncks #49 Variable/Group extraction test 8 (netCDF3 file)
+#ncks #47 Variable/Group extraction test 8 (netCDF3 file)
 #extract all variables "area" = /area 
 
     $dsc_sng="Variable/Group extraction test 8 (netCDF3 file)";
@@ -1326,7 +1299,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 							
 	
-#ncks #50 Extract associated coordinates test 1 (netCDF3 file) 
+#ncks #48 Extract associated coordinates test 1 (netCDF3 file) 
 
     $dsc_sng="Extract associated coordinates test 1 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v rz $in_pth_arg in.nc %tmp_fl_00%";
@@ -1336,7 +1309,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
-#ncks #51 Extract associated coordinates test 2 (netCDF3 file) 
+#ncks #49 Extract associated coordinates test 2 (netCDF3 file) 
 
     $dsc_sng="Extract associated coordinates test 2 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v rz $in_pth_arg in.nc %tmp_fl_00%";
@@ -1347,14 +1320,19 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     $#tst_cmd=0; # Reset array 	
 
 	
-#ncks #52 Extract associated coordinates test 3 (netCDF4 file)
+#ncks #50 Extract associated coordinates test 3 (netCDF4 file)
 # rlev is a dimension of rz 
+# /g3/rz
+# /g3/rlev
+# /g5/rz
+# /g5/rlev
+# output must not contain /g5
 
     $dsc_sng="Extract associated coordinates test 3 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
-	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /g3/rlev";
-	$tst_cmd[2]="/g3/rlev";
+	$tst_cmd[1]="ncks -H %tmp_fl_00%";
+	$tst_cmd[2]="rlev[2]=100 rz[2]=17000";  # data for /g3/rlev differs from /g5/rlev
     $tst_cmd[3]="SS_OK";
     }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
     $tst_cmd[1]=$ncks_msg_no_netcdf4; 
@@ -1366,26 +1344,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 	
-#ncks #53 Extract associated coordinates test 4 (netCDF4 file) 
-# rlev is a dimension of rz 
-
-    $dsc_sng="Extract associated coordinates test 4 (netCDF4 file) ";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
-	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
-	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /g3/rlev";
-	$tst_cmd[2]="";
-    $tst_cmd[3]="SS_OK";
-    }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
-    $tst_cmd[1]=$ncks_msg_no_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
-    $tst_cmd[2]="SS_OK";     
-    }
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	
-	
-#ncks #54 Extract CF 'coordinates' variables(netCDF4 file)
+#ncks #51 Extract CF 'coordinates' variables(netCDF4 file)
 #gds_crd:coordinates = "lat_gds lon_gds";
 
     $dsc_sng="Extract CF 'coordinates' variables(netCDF4 file)";
@@ -1400,7 +1359,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 	
-#ncks #55 Extract CF 'coordinates' variables (netCDF3 file)
+#ncks #52 Extract CF 'coordinates' variables (netCDF3 file)
 #gds_crd:coordinates = "lat_gds lon_gds";
 
     $dsc_sng="Extract CF 'coordinates' variables (netCDF3 file)";
@@ -1410,7 +1369,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
-#ncks #56 Extract CF 'bounds' variables (netCDF4 file)
+#ncks #53 Extract CF 'bounds' variables (netCDF4 file)
 #lev:bounds = "ilev";
 
     $dsc_sng="Extract CF 'bounds' variables (netCDF4 file)";
@@ -1425,7 +1384,7 @@ if(0){ # Pedro-this test is fragile---it needs editing each time in_grp.cdl chan
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 	
-#ncks #56 Extract CF 'bounds' variables (netCDF3 file)
+#ncks #54 Extract CF 'bounds' variables (netCDF3 file)
 #lev:bounds = "ilev";
 
     $dsc_sng="Extract CF 'bounds' variables (netCDF3 file)";

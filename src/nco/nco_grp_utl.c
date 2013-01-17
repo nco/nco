@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.356 2013-01-17 01:29:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.357 2013-01-17 03:13:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3529,7 +3529,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_dmn; /* [nbr] number of dimensions */
   int nbr_var; /* [nbr] Number of variables */
-  int nbr_dmn_var; /* [nbr] Number of dimensions of var_nm */
   int var_id; /* [id] ID of var_nm */
   int grp_id; /* [id] ID of group */
 
@@ -3544,10 +3543,19 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
   (void)nco_inq_varid(grp_id,var_nm,&var_id);
 
   /* Get number of dimensions for variable */
-  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
+  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn);
 
   /* Get dimension IDs for variable */
   (void)nco_inq_vardimid(grp_id,var_id,dmn_id);
+
+  /* List dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+
+    /* Get dimension info */
+    (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
+  }
+
+
 
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -3718,14 +3726,16 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
+#if 0
         if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
           /* Add all possible coordinate variables traversing file */
-	  /* csz: fxm bug --- will extract non-associated coordinates
-	     This occurs because distinct dimensions with same name dmn_nm can occur in multiple groups,
-	     if those definitions do not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups.
-	     Hence nco_xtr_crd_ass_add() must know location of dmn_nm and search only variables visible from there */
+          /* csz: fxm bug --- will extract non-associated coordinates
+          This occurs because distinct dimensions with same name dmn_nm can occur in multiple groups,
+          if those definitions do not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups.
+          Hence nco_xtr_crd_ass_add() must know location of dmn_nm and search only variables visible from there */
           (void)nco_xtr_crd_ass_add(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
         }else{
+#endif
           /* Construct full (dimension/variable) name */
           char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
           strcpy(dmn_nm_fll,trv.grp_nm_fll);
@@ -3734,7 +3744,9 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
           (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
           /* Free allocated */
           dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+#if 0
         } /* endif netCDF3 */
+#endif
 
       } /* End loop over idx_var_dim: list dimensions for variable */
     } /* end nco_obj_typ_var */
