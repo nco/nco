@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.355 2013-01-17 00:20:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.356 2013-01-17 01:29:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3518,8 +3518,8 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
  const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
  trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
 {
-  /* Purpose: Add any variable named "var_nm" to extraction list
-     Function is usually called with var_nm equal to a dimension name
+  /* Purpose: Add any variable named "dmn_var_nm" to extraction list
+     Function is usually called with dmn_var_nm equal to a dimension name
      In this case a variable with the same name is a coordinate
      Hence routine is used to add coordinates associated with the given dimension */
 
@@ -3529,8 +3529,8 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_dmn; /* [nbr] number of dimensions */
   int nbr_var; /* [nbr] Number of variables */
-  int nbr_dmn_var; /* [nbr] Number of dimensions of var_nm_fll */
-  int var_id; /* [id] ID of var_nm_fll */
+  int nbr_dmn_var; /* [nbr] Number of dimensions of var_nm */
+  int var_id; /* [id] ID of var_nm */
   int grp_id; /* [id] ID of group */
 
   long dmn_sz; /* [nbr] Dimension size */  
