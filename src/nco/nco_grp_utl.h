@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.172 2013-01-17 00:20:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.173 2013-01-17 06:34:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -383,7 +383,15 @@ nco_var_lst_crd_add_cf_trv2           /* [fnc] Add to extraction list all coordi
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 void                               
-nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
+nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
+ const char * const var_nm,           /* I [sng] Variable name  */
+ const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
+
+void                               
+nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
  const char * const var_nm,           /* I [sng] Variable name  */

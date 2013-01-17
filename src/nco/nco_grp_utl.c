@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.357 2013-01-17 03:13:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.358 2013-01-17 06:34:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3511,7 +3511,7 @@ nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordi
 } /* nco_aux_add_cf2() */
 
 void                               
-nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
+nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
  const char * const var_nm,           /* I [sng] Variable name  */
@@ -3554,9 +3554,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
     /* Get dimension info */
     (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
   }
-
-
-
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -3604,6 +3601,54 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
 
   return;
 } /* end nco_xtr_crd_ass_add() */ 
+
+void                               
+nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
+ const char * const var_nm,           /* I [sng] Variable name  */
+ const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
+ trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
+{
+  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */ 
+  int dmn_id[NC_MAX_DIMS];  /* [id] Dimensions IDs array */
+  int nbr_dmn;              /* [nbr] Number of dimensions */
+  int var_id;               /* [id] ID of var_nm */
+  int grp_id;               /* [id] ID of group */
+  long dmn_sz;              /* [nbr] Dimension size */  
+
+  /* Obtain group ID using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,(char*)grp_nm_fll,&grp_id);
+
+  /* Obtain variable ID using group ID */
+  (void)nco_inq_varid(grp_id,var_nm,&var_id);
+
+  /* Get number of dimensions for variable */
+  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn);
+
+  /* Get dimension IDs for variable */
+  (void)nco_inq_vardimid(grp_id,var_id,dmn_id);
+
+  /* List dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+    char *dmn_nm_fll;
+
+    /* Get dimension info */
+    (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz);
+
+    /* Construct full (dimension/variable) name */
+    dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
+    strcpy(dmn_nm_fll,grp_nm_fll);
+    if(strcmp(grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+    strcat(dmn_nm_fll,dmn_nm);
+
+    /* Mark it for extraction */
+    (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
+
+    /* Free allocated */
+    dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+  }
+}
 
 void
 nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordinates associated with CF convention */
@@ -3726,16 +3771,14 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
-#if 0
         if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
           /* Add all possible coordinate variables traversing file */
           /* csz: fxm bug --- will extract non-associated coordinates
           This occurs because distinct dimensions with same name dmn_nm can occur in multiple groups,
           if those definitions do not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups.
           Hence nco_xtr_crd_ass_add() must know location of dmn_nm and search only variables visible from there */
-          (void)nco_xtr_crd_ass_add(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
+          (void)nco_xtr_crd_ass_add2(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
         }else{
-#endif
           /* Construct full (dimension/variable) name */
           char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
           strcpy(dmn_nm_fll,trv.grp_nm_fll);
@@ -3744,10 +3787,7 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
           (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
           /* Free allocated */
           dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-#if 0
         } /* endif netCDF3 */
-#endif
-
       } /* End loop over idx_var_dim: list dimensions for variable */
     } /* end nco_obj_typ_var */
   } /* end uidx  */
