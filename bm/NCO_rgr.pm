@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.194 2013-01-17 03:13:16 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.195 2013-01-17 04:40:17 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1324,15 +1324,15 @@ print "\n";
 # rlev is a dimension of rz 
 # /g3/rz
 # /g3/rlev
-# /g5/rz
+# /g5/g1/rz
 # /g5/rlev
-# output must not contain /g5
+# output must not contain /g3
 
     $dsc_sng="Extract associated coordinates test 3 (netCDF4 file) ";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g5 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
 	$tst_cmd[1]="ncks -H %tmp_fl_00%";
-	$tst_cmd[2]="rlev[2]=100 rz[2]=17000";  # data for /g3/rlev differs from /g5/rlev
+	$tst_cmd[2]="rlev[2] rz[2]=3";  # data for /g3/rlev differs from /g5/rlev
     $tst_cmd[3]="SS_OK";
     }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
     $tst_cmd[1]=$ncks_msg_no_netcdf4; 
