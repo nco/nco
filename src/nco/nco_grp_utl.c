@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.358 2013-01-17 06:34:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.359 2013-01-17 08:03:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3642,9 +3642,6 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
     if(strcmp(grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
     strcat(dmn_nm_fll,dmn_nm);
 
-    /* Mark it for extraction */
-    (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
-
     /* Free allocated */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
   }
@@ -3777,7 +3774,7 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
           This occurs because distinct dimensions with same name dmn_nm can occur in multiple groups,
           if those definitions do not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups.
           Hence nco_xtr_crd_ass_add() must know location of dmn_nm and search only variables visible from there */
-          (void)nco_xtr_crd_ass_add2(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
+          (void)nco_xtr_crd_ass_add(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
         }else{
           /* Construct full (dimension/variable) name */
           char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
