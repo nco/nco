@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.354 2013-01-16 22:41:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.355 2013-01-17 00:20:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3513,8 +3513,9 @@ nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordi
 void                               
 nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
 (const int nc_id,                     /* I [id] netCDF file ID */
- const char * const var_nm,           /* I [sng] Coordinate variable name to find */
- const char * const var_nm_fll,       /* I [sng] Full variable name  */
+ const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
+ const char * const var_nm,           /* I [sng] Variable name  */
+ const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
  trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
 {
   /* Purpose: Add any variable named "var_nm" to extraction list
@@ -3528,18 +3529,33 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_dmn; /* [nbr] number of dimensions */
   int nbr_var; /* [nbr] Number of variables */
+  int nbr_dmn_var; /* [nbr] Number of dimensions of var_nm_fll */
+  int var_id; /* [id] ID of var_nm_fll */
+  int grp_id; /* [id] ID of group */
 
   long dmn_sz; /* [nbr] Dimension size */  
 
   const int flg_prn=0; /* [flg] Dimensions in all parent groups will also be retrieved */ 
+
+  /* Obtain group ID using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,(char*)grp_nm_fll,&grp_id);
+
+  /* Obtain variable ID using group ID */
+  (void)nco_inq_varid(grp_id,var_nm,&var_id);
+
+  /* Get number of dimensions for variable */
+  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
+
+  /* Get dimension IDs for variable */
+  (void)nco_inq_vardimid(grp_id,var_id,dmn_id);
+
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     if(trv.typ == nco_obj_typ_var){
 
       /* Check if current variable matches requested variable */ 
-      if(!strcmp(trv.nm,var_nm)){
-        int grp_id;
+      if(!strcmp(trv.nm,dmn_var_nm)){
         
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
@@ -3555,7 +3571,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
           (void)nco_inq_dim(grp_id,dmn_id[idx_dmn],dmn_nm,&dmn_sz); 
 
           /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
-          if(!strcmp(dmn_nm,var_nm)){
+          if(!strcmp(dmn_nm,dmn_var_nm)){
             char *dmn_nm_fll;
 
             /* Construct full (dimension/variable) name to avoid duplicate insertions */
@@ -3708,7 +3724,7 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
 	     This occurs because distinct dimensions with same name dmn_nm can occur in multiple groups,
 	     if those definitions do not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups.
 	     Hence nco_xtr_crd_ass_add() must know location of dmn_nm and search only variables visible from there */
-          (void)nco_xtr_crd_ass_add(nc_id,dmn_nm,trv.nm_fll,trv_tbl);
+          (void)nco_xtr_crd_ass_add(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
         }else{
           /* Construct full (dimension/variable) name */
           char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
