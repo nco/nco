@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.178 2013-01-15 20:15:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.179 2013-01-17 22:24:29 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -726,7 +726,7 @@ nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
      Obviously, the patch is currently based against netCDF 4.2.1.
      It might work on other recent versions
      Test the patch by running something like this:
-     ncrename -O -g level_1_group_6,obama ~/nco/data/in_grp.nc ~/foo.nc
+     ncrename -O -g g7,g20 ~/nco/data/in_grp.nc ~/foo.nc
      Enjoy */
   const char fnc_nm[]="nc_rename_grp()";
   char grp_nm_old[NC_MAX_NAME+1L];
