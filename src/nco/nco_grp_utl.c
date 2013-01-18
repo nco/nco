@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.361 2013-01-18 19:18:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.362 2013-01-18 19:29:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4095,6 +4095,14 @@ nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with 
   int fl_fmt; /* [enm] File format */
   int grp_id; /* [ID] Group ID */
   int var_id; /* [ID] Variable ID */
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO reports following dimension limits:\n",prg_nm_get());
+    for(int idx=0;idx<lmt_nbr;idx++){
+      lmt_all_sct *lmt=lmt_lst[idx];
+      (void)fprintf(stdout,"%s(%d)\n",lmt->dmn_nm,lmt->dmn_sz_org);
+    }
+  } /* endif dbg */
 
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
