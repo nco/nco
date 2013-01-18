@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.360 2013-01-17 10:24:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.361 2013-01-18 19:18:36 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3516,7 +3516,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
  const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
  const char * const var_nm,           /* I [sng] Variable name  */
  const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
- trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)                /* I/O [sct] Traversal table */
 {
   /* Purpose: Add any variable named "dmn_var_nm" to extraction list
      Function is usually called with dmn_var_nm equal to a dimension name
@@ -3537,7 +3537,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that ma
   const int flg_prn=0; /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
   /* Obtain group ID using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id,(char*)grp_nm_fll,&grp_id);
+  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain variable ID using group ID */
   (void)nco_inq_varid(grp_id,var_nm,&var_id);
@@ -3621,7 +3621,7 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
   const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
   /* Obtain group ID using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id,(char*)grp_nm_fll,&grp_id);
+  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain variable ID using group ID */
   (void)nco_inq_varid(grp_id,var_nm,&var_id);
@@ -3649,18 +3649,18 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
       char *dmn_nm_fll;
       char *pch; /* Pointer to character in string */
       int psn; /* Position of character */
-      int lng_fll; /* Length of fully qualified group where variable resides */
 
       if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Coordinate variable to find %s\n",prg_nm_get(),dmn_var_nm);
 
-      /* Construct full (dimension/variable) name  */
+      /* Construct full (dimension/variable) name */
       dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
       strcpy(dmn_nm_fll,grp_nm_fll);
       if(strcmp(grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
       strcat(dmn_nm_fll,dmn_nm);
 
-      /* Brute-force approach to find a valid "dmn_nm_fll"; start at grp_nm_fll/var_nm and build
-         all possible paths with var_nm. Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
+      /* Brute-force approach to find valid "dmn_nm_fll":
+	 Start at grp_nm_fll/var_nm and build all possible paths with var_nm. 
+	 Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
 
       /* Find last occurence of '/' */
       pch=strrchr((char*)dmn_nm_fll,'/');
@@ -3670,26 +3670,26 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
         if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
           (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
-        }
+        } /* endif */
         dmn_nm_fll[psn]='\0';
         pch=strrchr((char*)dmn_nm_fll,'/');
         if(pch){
           psn=pch-dmn_nm_fll;
           dmn_nm_fll[psn]='\0';
-          /* Re-add the variable name to the shortened path */
+          /* Re-add variable name to shortened path */
           if(strcmp(grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
           strcat(dmn_nm_fll,dmn_nm);
           pch=strrchr((char*)dmn_nm_fll,'/');
           psn=pch-dmn_nm_fll;
-        }
+        } /* !pch */
       } /* end while */
 
       /* Free allocated */
       dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
     } /* end strcmp() */
-  }
-}
+  } /* end loop over dmn_idx */
+} /* end nco_xtr_crd_ass_add() */ 
 
 void
 nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordinates associated with CF convention */
@@ -3963,7 +3963,6 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
       } /* end get variables for this group */  
 
       /* If output group does not exist, create it */
-      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Defining group %s\n",grp_out_fll);
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
       if(MD_DFN){
