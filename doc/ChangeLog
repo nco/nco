@@ -1,3 +1,17 @@
+2013-01-19  Charlie Zender  <zender@uci.edu>
+
+	* Restructure nco_xtr_dfn() to isolate variable from group definitions
+	Group metadata now handled by separate block executed iff PRN_VAR_METADATA
+	This give user ability to turn-off all metadata copying
+	Group metadata now copied for empty ancestors of all extracted variables
+	Previously group metadata were only written to groups containing variables
+	New algorithm: 1. Ensures group metadata written only once.
+	2. Creates consistent state for group and variable extraction with flg_xtr
+	3. Handles corner cases where groups introduced after nco_mk_xtr()
+	by, e.g., associated coordinates and CF conventions, now have flg_xtr.
+	Overall, groups now more equal in treatment to variables
+	This may be useful in extending future functionality
+
 2013-01-18  Charlie Zender  <zender@uci.edu>
 
 	* Remove cruft from nco_grp_utl.[ch]

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.554 2013-01-19 06:07:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.555 2013-01-19 23:38:36 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.554 2013-01-19 06:07:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.554 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.555 2013-01-19 23:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.555 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -678,7 +678,6 @@ main(int argc,char **argv)
   if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(in_id,trv_tbl);
 
   /* Extract coordinates associated with extracted variables */
-  /* fxm: fix netCDF4 code path bug */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
 
   /* Is this a CCM/CCSM/CF-format history tape? */

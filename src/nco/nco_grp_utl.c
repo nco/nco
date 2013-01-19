@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.375 2013-01-19 23:07:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.376 2013-01-19 23:38:36 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2790,7 +2790,6 @@ nco_fnd_dmn                       /* [fnc] Find a dimension that matches dmn_nm 
   return False;
 } /* end nco_fnd_dmn() */ 
 
-
 void 
 nco_nm_id_val                 /* [fnc] Validated name-ID structure list */
 (nm_id_sct * const nm_id_lst, /* I [sct] Name-ID structure list */
@@ -3493,6 +3492,75 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
   nbr_gpe_nm=0;
   (void)nco_inq_format(nc_id,&fl_fmt);
   
+  /* Isolate extra complexity of copying group metadata */
+  if(PRN_VAR_METADATA){
+    /* Block can be performed before or after writing variables
+       Perhaps it should be turned into an explicit function call */
+    
+    /* Goal here is to annotate which groups will appear in output
+       Need to know in order to efficiently copy their metadata
+       Definition of flags in extraction table is operational
+       Could create a new flag just for this
+       Instead, we re-purpose the extraction flag, flg_xtr, for groups
+       Could re-purpose flg_ncs too with same effect
+       nco_xtr_mk() sets flg_xtr for groups, like variables, that match user-specified strings
+       Later processing makes flg_xtr for groups unreliable
+       For instance, the exclusion flag (-x) is ambiguous for groups
+       Also identification of associated coordinates and auxiliary coordinates occurs after nco_xtr_mk()
+       Associated and auxiliary coordinates may be in distant groups
+       Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
+    
+    /* Set extraction flag for groups iff ancestors of extracted variables */
+    for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
+      /* For each group ... */
+      if(trv_tbl->lst[grp_idx].typ == nco_obj_typ_grp){
+	/* Initialize extraction flag to False and overwrite later iff ... */
+	trv_tbl->lst[grp_idx].flg_xtr=False;
+	/* ... loop through ... */
+	for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+	  /* ... all variables to be extracted ... */
+	  if(trv_tbl->lst[var_idx].typ == nco_obj_typ_var && trv_tbl->lst[var_idx].flg_xtr){
+	    /* ... finds that full path to current group is contained in and extracted variable path ... */
+	    if(strstr(trv_tbl->lst[var_idx].nm_fll,trv_tbl->lst[grp_idx].grp_nm_fll)){
+	      /* ... and mark _only_ those groups for extraction... */
+	      trv_tbl->lst[grp_idx].flg_xtr=True;
+	      continue;
+	    } /* endif */
+	  } /* endif extracted variable */
+	} /* end loop over var_idx */
+      } /* endif group */
+    } /* end loop over grp_idx */
+    
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      trv_sct trv=trv_tbl->lst[uidx];
+      
+      /* If object is group ancestor of extracted variable */
+      if(trv.typ == nco_obj_typ_grp && trv.flg_xtr){
+	
+	/* Obtain group ID from netCDF API using full group name */
+	(void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+	
+	/* Obtain info for group */
+	(void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
+	
+	/* Edit group name for output */
+	if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.grp_nm_fll); else grp_out_fll=(char *)strdup(trv.grp_nm_fll);
+	
+	/* If output group does not exist, create it */
+	if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+      
+	/* Copy group attributes */
+	if(nbr_att) (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+	
+	/* Memory management after current extracted group */
+	if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+	
+      } /* end if group and flg_xtr */
+    } /* end loop to define group attributes */
+    
+  } /* !PRN_VAR_METADATA */
+  
+  /* Define variables */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     
@@ -3502,10 +3570,7 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
       
-      /* Edit group name */
-      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.grp_nm_fll); else grp_out_fll=(char *)strdup(trv.grp_nm_fll);
-      
-      /* Obtain info for group */
+      /* Obtain group information */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
       (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
       
@@ -3550,6 +3615,9 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
 	var_nm_fll=(char *)nco_free(var_nm_fll);
       } /* end get variables for this group */ 
       
+      /* Edit group name for output */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.grp_nm_fll); else grp_out_fll=(char *)strdup(trv.grp_nm_fll);
+
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
       
@@ -3587,9 +3655,8 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
 	if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
       } /* !GPE */
       
-      /* Define variables in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
-      else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
+      /* Define variable in output file */
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
       
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)
@@ -3601,12 +3668,6 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
 	(void)nco_inq_varid(grp_id,trv.nm,&var_id);
 	(void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
       } /* !PRN_VAR_METADATA */
-      
-      /* Copy group attributes */
-      /* If there are group attributes, write them, avoid root case, these are always copied elsewhere */
-      /* fxm: bug group attributes can be written multiple times (once per variable!) */
-      /* fxm: bug block never reached, and metadata never copied, for output groups that have no variables */
-      if(nbr_att && strcmp("/",trv.grp_nm_fll)) (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
       
       /* Memory management after current extracted variable */
       if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
