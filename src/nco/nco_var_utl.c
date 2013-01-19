@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.212 2013-01-19 20:20:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.213 2013-01-19 21:49:20 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -227,7 +227,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
           /* Does dimension have user-specified limits? */
           for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-            if(strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,grp_nm_fll,dmn_nm)){
+            if(strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm)){
               dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
               break;
             } /* end if */

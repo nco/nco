@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.128 2013-01-19 20:20:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.129 2013-01-19 21:49:20 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -721,7 +721,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
       for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,grp_nm_fll,dmn_nm)){
+        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm)){
           lmt_msa[idx]=lmt_lst[jdx];
           break;
         } /* end if */
@@ -920,17 +920,52 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     /* Initialize lmt_msa with multi-limits from lmt_lst limits */
     /* Get dimension sizes from input file */
 
+    /* Search first in a full name match in lmt_lst */
+    int fnd=0;
+
     for(idx=0;idx<var.nbr_dim;idx++){
       long dmn_sz;  
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
       for(jdx=0;jdx<lmt_nbr;jdx++){
-        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,grp_nm_fll,dmn_nm)){
+        char *dmn_nm_fll;
+        char *pch; /* Pointer to character in string */
+        int psn; /* Position of character */
+        const char sls_chr='/'; /* [chr] Slash character */
+        const char sls_sng[]="/"; /* [sng] Slash string */
+
+        /* Construct full (dimension/variable) name */
+        dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
+        strcpy(dmn_nm_fll,grp_nm_fll);
+        if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
+        strcat(dmn_nm_fll,dmn_nm);
+
+        if(strcmp(dmn_nm_fll,lmt_lst[jdx]->dmn_nm_fll) == 0){
           lmt_msa[idx]=lmt_lst[jdx];
+          fnd=1;
+          dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
           break;
         } /* end if */
+        /* Free constructed full dimension name name */
+        dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
       } /* end loop over jdx */
     } /* end loop over idx */
+
+    /* Not found; go to API in nco_fnd_dmn */
+
+    if(!fnd){
+      for(idx=0;idx<var.nbr_dim;idx++){
+        long dmn_sz;  
+        (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
+
+        for(jdx=0;jdx<lmt_nbr;jdx++){
+          if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm)){
+            lmt_msa[idx]=lmt_lst[jdx];
+            break;
+          } /* end if */
+        } /* end loop over jdx */
+      } /* end loop over idx */
+    }
 
     /* Free full group name */
     grp_nm_fll=(char *)nco_free(grp_nm_fll);
