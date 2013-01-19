@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.182 2013-01-19 06:07:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.183 2013-01-19 20:20:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -331,8 +331,8 @@ nco_aux_add_dmn_trv                    /* [fnc] Add a coordinate variable that m
 nco_bool                               /* O [flg] Dimension was found */
 nco_fnd_dmn                            /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
 (const int grp_id,                     /* I [id] Group ID */
- const char * const dmn_nm,            /* I [sng] Dimension name to find */
- const long dmn_sz);                   /* I [nbr] Dimension size to find */
+ const char * const grp_nm_fll,        /* I [sng] Full group name */
+ const char * const dmn_nm);           /* I [sng] Dimension name to find */
 
 void 
 xtr_lst_prn                            /* [fnc] Validated name-ID structure list */

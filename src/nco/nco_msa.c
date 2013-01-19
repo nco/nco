@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.127 2013-01-19 13:19:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.128 2013-01-19 20:20:05 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -704,13 +704,24 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
 
 #ifdef ENABLE_NETCDF4
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
+    char *grp_nm_fll;        /* [sng] Fully qualified group name */
+    size_t grp_nm_lng;
+
+    /* netCDF API to the rescue; we only have a location ID and a var name as parameters, but we need the full path */
+    /* Allocate space for and obtain full name of current group */
+    (void)nco_inq_grpname(in_id,grp_nm);
+    (void)nco_inq_grpname_len(in_id,&grp_nm_lng);
+    grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
+    (void)nco_inq_grpname_full(in_id,&grp_nm_lng,grp_nm_fll);
+
     for(idx=0;idx<nbr_dim;idx++){
       char dmn_nm[NC_MAX_NAME];
       long dmn_sz;
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
       for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm,dmn_sz)){
+        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,grp_nm_fll,dmn_nm)){
           lmt_msa[idx]=lmt_lst[jdx];
           break;
         } /* end if */
@@ -720,6 +731,10 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
       dmn_map_cnt[idx]=lmt_msa[idx]->dmn_cnt;
       dmn_map_srt[idx]=0L;
     } /* end loop over idx */
+
+    /* Free full group name */
+    grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
 #ifdef NCO_SANITY_CHECK
     for(idx=0;idx<nbr_dim;idx++){
       assert(lmt_msa[idx]);
@@ -889,11 +904,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 #ifdef ENABLE_NETCDF4
   /* Obtain netCDF file format */
   int fl_fmt;
-  char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
-  char *grp_nm_fll;        /* [sng] Fully qualified group name */
-  size_t grp_nm_lng;
   (void)nco_inq_format(in_id,&fl_fmt);
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
+    char *grp_nm_fll;        /* [sng] Fully qualified group name */
+    size_t grp_nm_lng;
 
     /* netCDF API to the rescue; we only have a location ID and a var name as parameters, but we need the full path */
     /* Allocate space for and obtain full name of current group */
@@ -910,13 +925,14 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
       for(jdx=0;jdx<lmt_nbr;jdx++){
-        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm,dmn_sz)){
+        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,grp_nm_fll,dmn_nm)){
           lmt_msa[idx]=lmt_lst[jdx];
           break;
         } /* end if */
       } /* end loop over jdx */
     } /* end loop over idx */
 
+    /* Free full group name */
     grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
   }else{ /* NC_FORMAT_CLASSIC */

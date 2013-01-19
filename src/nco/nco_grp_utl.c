@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.372 2013-01-19 10:41:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.373 2013-01-19 20:20:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2753,11 +2753,11 @@ nco_aux_add_dmn_trv                 /* [fnc] Add a coordinate variable that matc
   return xtr_lst;
 } /* end nco_aux_add_dmn_trv() */ 
 
-nco_bool                    /* O [flg] Dimension was found */
-nco_fnd_dmn                 /* [fnc] Find a dimension that matches dmn_nm in group grp_id and its parents */
-(const int grp_id,          /* I [id] Group ID */
- const char * const dmn_nm, /* I [sng] Dimension name to find */
- const long dmn_sz)         /* I [nbr] Dimension size to find */
+nco_bool                          /* O [flg] Dimension was found */
+nco_fnd_dmn                       /* [fnc] Find a dimension that matches dmn_nm in group grp_id and its parents */
+(const int grp_id,                /* I [id] Group ID */
+ const char * const grp_nm_fll,   /* I [sng] Full group name */
+ const char * const dmn_nm)       /* I [sng] Dimension name to find */
 {
   typedef struct{			
     char nm[NC_MAX_NAME+1];
@@ -2778,7 +2778,7 @@ nco_fnd_dmn                 /* [fnc] Find a dimension that matches dmn_nm in gro
   for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++) nc_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_lst[dmn_idx].nm,&dmn_lst[dmn_idx].sz);
 
   for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-    if(!strcmp(dmn_nm,dmn_lst[dmn_idx].nm) && ((size_t)dmn_sz == dmn_lst[dmn_idx].sz)){
+    if(!strcmp(dmn_nm,dmn_lst[dmn_idx].nm)){
       dmn_ids=(int *)nco_free(dmn_ids);
       dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
       return True;
@@ -3682,7 +3682,7 @@ nco_prn_var_val                  /* [fnc] Print variable data (called with PRN_V
     (void)fprintf(stdout,"%s: INFO reports %d dimension limits:\n",prg_nm_get(),lmt_nbr);
     for(int idx=0;idx<lmt_nbr;idx++){
       lmt_all_sct *lmt=lmt_lst[idx];
-      (void)fprintf(stdout,"[%d]%s(%d)\n",idx,lmt->dmn_nm_fll,lmt->dmn_sz_org);
+      (void)fprintf(stdout,"[%d]%s(%li)\n",idx,lmt->dmn_nm_fll,lmt->dmn_sz_org);
     }
   } /* endif dbg */
 

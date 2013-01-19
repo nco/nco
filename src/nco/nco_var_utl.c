@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.211 2013-01-19 04:29:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.212 2013-01-19 20:20:05 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -206,6 +206,16 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
 #ifdef ENABLE_NETCDF4
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+      char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
+      char *grp_nm_fll;        /* [sng] Fully qualified group name */
+      size_t grp_nm_lng;
+
+      /* netCDF API to the rescue; we only have a location ID and a var name as parameters, but we need the full path */
+      /* Allocate space for and obtain full name of current group */
+      (void)nco_inq_grpname(in_id,grp_nm);
+      (void)nco_inq_grpname_len(in_id,&grp_nm_lng);
+      grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
+      (void)nco_inq_grpname_full(in_id,&grp_nm_lng,grp_nm_fll);
 
       /* Has dimension been defined in output file? */
       rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,&dmn_id);
@@ -217,7 +227,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
           /* Does dimension have user-specified limits? */
           for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-            if(strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm,dmn_sz)){
+            if(strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,grp_nm_fll,dmn_nm)){
               dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
               break;
             } /* end if */
@@ -232,6 +242,9 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
       /* Store in array */
       dmn_out_id[idx]=dmn_id;
+
+      /* Free full group name */
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
     } else { /* NC_FORMAT_NETCDF4 */
 
