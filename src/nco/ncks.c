@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.550 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.551 2013-01-19 04:29:16 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -121,7 +121,6 @@ main(int argc,char **argv)
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
-  nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
 
@@ -149,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.550 2013-01-19 03:00:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.550 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.551 2013-01-19 04:29:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.551 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -200,8 +199,6 @@ main(int argc,char **argv)
   lmt_sct **lmt=NULL_CEWI;
 
   lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
-
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -745,7 +742,6 @@ main(int argc,char **argv)
     
   if(fl_out){
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
-    int grp_out_id; /* [ID] Output group ID */
     int out_id;
     
     /* Make output and input files consanguinous */
@@ -756,7 +752,6 @@ main(int argc,char **argv)
 
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
-    grp_out_id=out_id;
     
     /* Copy global attributes */
     if(PRN_GLB_METADATA)(void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -799,43 +794,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
     /* Write extracted data to output file */
-    nco_xtr_wrt(lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,trv_tbl);
-
-    /* To re-enable MM3, remove next line and put following block in universal write code */
-    USE_MM3_WORKAROUND=False;
-    if(USE_MM3_WORKAROUND){
-      /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
-      USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id,fl_out_fmt);
-      if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
-      if(!USE_MM3_WORKAROUND){  
-        /* Copy extracted data variable-by-variable */
-        for(idx=0;idx<xtr_nbr;idx++){
-          if(dbg_lvl >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
-          if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); 
-          else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,xtr_lst[idx].nm);
-        } /* end loop over idx */
-      }else{
-        /* MM3 workaround algorithm */
-        int fix_nbr; /* [nbr] Number of fixed-length variables */
-        int rec_nbr; /* [nbr] Number of record variables */
-        nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
-        nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
-        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",prg_nm_get());
-        /* Split list into fixed-length and record variables */
-        (void)nco_var_lst_fix_rec_dvd(in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
-        /* Copy fixed-length data variable-by-variable */
-        for(idx=0;idx<fix_nbr;idx++){
-          if(dbg_lvl >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
-          if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-          (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,fix_lst[idx]->nm);
-        } /* end loop over idx */
-        /* Copy record data record-by-record */
-        (void)nco_cpy_rec_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
-        if(fix_lst) fix_lst=(nm_id_sct**)nco_free(fix_lst);
-        if(rec_lst) rec_lst=(nm_id_sct**)nco_free(rec_lst);
-      } /* endif MM3 workaround */
-    } /* endif MM3 workaround */
+    nco_xtr_wrt(in_id,out_id,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,trv_tbl);
 
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
@@ -870,8 +829,6 @@ main(int argc,char **argv)
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */
- /* Extraction list no longer needed */
- if(xtr_lst != NULL)xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
 
  /* Close input netCDF file */
  nco_close(in_id);

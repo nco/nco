@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.210 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.211 2013-01-19 04:29:16 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -443,6 +443,138 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   void_ptr=nco_free(void_ptr);
 
 } /* end nco_cpy_var_val() */
+
+nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
+(const int in_id, /* I [id] Input file ID */
+ const int fl_out_fmt) /* I [enm] Output file format */
+{
+  /* Purpose: Determine whether to copy algorithm designed to speed writes on 
+     netCDF3 files containing multiple record variables.
+     In such cases massive slowdowns are common on Multi-record Multi-variable netCDF3 files
+     Also the problem can occur with normal (4096 B) Blocksize Filesystems
+     Based on Russ Rew's code in nccopy.c 20120306
+
+     Testing:
+     ncks -O -C -D 4 -v one,two,one_dmn_rec_var,two_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
+
+     20120307: NCO Open Discussion Forum exchanges with Russ Rew:
+     "When accessing data from netCDF classic or 64-bit offset format files
+     that have multiple record variables and a lot of records on a file
+     system with large disk block size relative to a record's worth of data
+     for one or more record variables, access the data a record at a time
+     instead of a variable at a time."
+
+     20120312:
+     "Hi Russ,
+     
+     I'm tidying up that patch in NCO, and have some further questions.
+     In order to prioritize patching more of NCO, I want to know how the
+     slowdown reading compares to the slowdown writing.
+     To simplify my questions, let's use the abbreviations MM3 and
+     MM4 for netCDF3 and netCDF4 Multi-record Multi-variable files,
+     respectively. My understanding is that MM3s are susceptible to the  
+     slowdown, while MM4s are not, and that writing MM3s without the
+     patch incurs incurs more of a penalty than reading MM3s.
+     So this is how I prioritize implementing the MM3 patch:
+     
+     1. When copying MM3 to MM3. Done in ncks, TBD in others.
+     2. When copying MM4 to MM3. Done in ncks, TBD in others.
+     3. When copying MM3 to MM4. Not done anywhere.
+     4. When reading MM3 and not writing anything. Not done anywhere.
+     
+     Currently ncks always uses the algorithm for cases 1 and 2 (i.e.,
+     whenever writing to an MM3), but not for cases 3 and 4.
+     
+     The rest of NCO does not yet use the MM3 algorithm, yet there are many 
+     places where it would potentially benefit. I've heard through the
+     years that sometimes ncecat slows to a crawl. Perhaps the MM3 slowdown
+     is responsible. On the bright side, ncra and ncrcat are immune from
+     the slowdown because they already read/write all record variables 
+     record-by-record. 
+     
+     Does the prioritization above make sense? If so I will next patch
+     the rest of NCO to do cases 1 and 2, before patching anything to do
+     cases 3 and 4."
+     
+     20120315:
+     "Hi Charlie,
+     That sounds right to me, because when you're just reading a small
+     portion of a disk block, you only incur the extra time for reading
+     data you won't use., but when you're writing, you have to read it all
+     in and rewrite the part you're changing as well as the data you didn't
+     change.  So writing with large disk blocks would seem to require twice
+     the I/O of reading.
+     
+     In nccopy, I just implemented the algorithm in cases 1 and 3; case 4
+     doesn't occur.  I had thought case 2 currently wasn't very common, so
+     it could wait, but your question has led me to rethink this.  A fairly
+     common use of case 2 is converting a compressed netCDF-4 classic model
+     file to an uncompressed classic file, for use with applications that
+     haven't been linked to a netCDF-4 library or in archives that will
+     continue to use classic format.
+     
+     I've been trying to figure out whether implementing case 2 for
+     compressed input could require significantly more chunk cache than not
+     using the MM3 algorithm, if you want to avoid uncompressing the same
+     data over and over again.  But I think just having enough chunk cache
+     to hold the largest compressed chunk for any record variable would be
+     sufficient, so I've tentatively concluded that it's not an issue.
+     (Where things get complicated is copying MM4 to MM4 while rechunking,
+     to improve access times for read access patterns that don't match the
+     way the data was written.)
+     
+     Thanks for presenting your prioritization.  It looks like I've got
+     some more work to do, implementing case 2 in nccopy." */
+
+  int dmn_nbr;
+  int fl_in_fmt; /* [enm] Input file format */
+  int idx;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rec_var_nbr=0; /* [nbr] Number of record variables */
+  int var_nbr=0; /* [nbr] Number of variables */
+
+  int *dmn_id;
+
+  nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+
+  (void)nco_inq_format(in_id,&fl_in_fmt);
+
+  /* No advantage to workaround unless reading from or writing to netCDF3 file */
+  if(
+     (fl_out_fmt == NC_FORMAT_CLASSIC || fl_out_fmt == NC_FORMAT_64BIT) || /* Cases 1 & 2 above, i.e., MM3->MM3 & MM4->MM3 */
+     ((fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT) && /* Case 3 above, i.e., MM3->MM4 */
+      (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) ||
+     False)
+    {
+    /* Subsequently, assume output is netCDF3, or, classic-compatible netCDF4 */
+    /* If file contains record dimension (and netCDF3 files can have only one record dimension) */
+    rcd=nco_inq_unlimdim(in_id,&rec_dmn_id);
+    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+      /* Slowdown only occurs in files with more than one record variable */
+      rcd+=nco_inq_nvars(in_id,&var_nbr);
+      if(var_nbr > 0){
+	for(idx=0;idx<var_nbr;idx++){
+	  rcd+=nco_inq_varndims(in_id,idx,&dmn_nbr);
+	  if(dmn_nbr > 0){
+	    dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+	    rcd+=nco_inq_vardimid(in_id,idx,dmn_id);
+	    /* netCDF3 requires record dimension to be first dimension */
+	    if(dmn_id[0] == rec_dmn_id){
+	      rec_var_nbr++;
+	      if(rec_var_nbr > 1) USE_MM3_WORKAROUND=True;
+	    } /* endif record dimnesion */
+	    if(dmn_id) dmn_id=(int*)nco_free(dmn_id);
+	  } /* endif dmn_nbr > 0 */
+	  if(USE_MM3_WORKAROUND) break;
+	} /* end loop over variables */
+      } /* endif var_nbr > 0 */
+    } /* endif file contains record dimnsion */
+  } /* endif file is netCDF3 */
+    
+  return USE_MM3_WORKAROUND;
+} /* end nco_use_mm3_workaround() */
 
 void
 nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */

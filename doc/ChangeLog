@@ -1,5 +1,7 @@
 2013-01-18  Charlie Zender  <zender@uci.edu>
 
+	* Move MM3 code into nco_xtr_wrt()
+
 	* Split nco_grp_var_mk_trv2() into nco_xtr_dfn() and nco_xtr_wrt()
 
 	* Add (uninitialized) group ID members to trv_obj structure

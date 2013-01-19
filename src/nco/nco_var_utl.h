@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.75 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.76 2013-01-19 04:29:16 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -76,6 +76,11 @@ extern "C" {
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
  
+  nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+  nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
+  (const int in_id, /* I [id] Input file ID */
+   const int fl_out_fmt); /* I [enm] Output file format */
+
   void
   nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
   (const int in_id, /* I [id] netCDF input file ID */

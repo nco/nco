@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.71 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.72 2013-01-19 04:29:16 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -160,11 +160,6 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
  const int md_open, /* I [enm] Mode flag for nc_open() call */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const nc_id); /* O [id] File ID */
-
-nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
-nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
-(const int in_id, /* I [id] Input file ID */
- const int fl_out_fmt); /* I [enm] Output file format */
 
 #ifdef __cplusplus
 } /* end extern "C" */

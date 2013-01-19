@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.363 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.364 2013-01-19 04:29:16 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3714,8 +3714,52 @@ nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordi
   return;
 } /* nco_var_lst_crd_ass_add_cf_trv2() */
 
+nm_id_sct * /* O [sct] Extraction list */  
+nco_trv_tbl_nm_id /* [fnc] Create extraction list of nm_id_sct from traversal table */
+(const int nc_id, /* I [id] netCDF file ID */
+ int * const xtr_nbr, /* I/O [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+{
+  /* Purpose: Create extraction list of nm_id_sct from traversal table */
+
+  int fl_fmt; /* [enm] netCDF file format */
+
+  nm_id_sct *xtr_lst; /* [sct] Extraction list */
+  
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  int nbr_tbl=0; 
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
+      nbr_tbl++;
+    } /* end flg == True */
+  } /* end loop over uidx */
+
+  xtr_lst=(nm_id_sct *)nco_malloc(nbr_tbl*sizeof(nm_id_sct));
+
+  nbr_tbl=0;
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
+      xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
+      xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
+      xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+      /* To deprecate: generate ID needed only to test netCDf3 library and netCDf3 only functions to deprecate */
+      int var_id;
+      int grp_id;
+      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,trv_tbl->lst[uidx].nm,&var_id);
+      xtr_lst[nbr_tbl].id=var_id;
+
+      nbr_tbl++;
+    } /* end flg == True */
+  } /* end loop over uidx */
+
+  *xtr_nbr=nbr_tbl;
+  return xtr_lst;
+} /* end nco_trv_tbl_nm_id() */
+
 nm_id_sct *                           /* O [sct] Extraction list */  
-nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_sct */
+nco_trv_tbl_nm_id_old                 /* [fnc] Convert a trv_tbl_sct to a nm_id_sct */
 (const int nc_id,                     /* I [id] netCDF file ID */
  nm_id_sct *xtr_lst,                  /* I/O [sct] Current extraction list  */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
@@ -3754,7 +3798,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Convert a trv_tbl_sct to a nm_id_
 
   *xtr_nbr=nbr_tbl;
   return xtr_lst;
-} /* end nco_nm_id_trv_tbl() */
+} /* end nco_trv_tbl_nm_id_old() */
 
 void
 nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
@@ -3771,7 +3815,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
     (void)xtr_lst_prn(xtr_lst,xtr_nbr);
     (void)trv_tbl_prn_xtr(trv_tbl);
   }
-  xtr_lst_chk=nco_trv_tbl_nm_id(nc_id,xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
+  xtr_lst_chk=nco_trv_tbl_nm_id_old(nc_id,xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
   (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
   if(xtr_lst_chk != NULL) xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
   return;
@@ -4049,23 +4093,72 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
 
 void
 nco_xtr_wrt /* [fnc] Write extracted data to output file */
-(const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
+(const int nc_in_id, /* I [ID] netCDF input file ID */
+ const int nc_out_id, /* I [ID] netCDF output file ID */
+ const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
  lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
-  /* Purpose: Write extracted variables to output file */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    
-    /* If object is an extracted variable... */
-    if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
-      if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm,lmt_all_lst,lmt_all_lst_nbr); else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
-    } /* endif */
+  int fl_out_fmt; /* [enm] File format */
 
-  } /* end loop over uidx */
+  /* Purpose: Write extracted variables to output file */
+  nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+
+  (void)nco_inq_format(nc_out_id,&fl_out_fmt);
+
+  /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
+  USE_MM3_WORKAROUND=nco_use_mm3_workaround(nc_in_id,fl_out_fmt);
+  if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+
+  if(USE_MM3_WORKAROUND){  
+
+    int fix_nbr; /* [nbr] Number of fixed-length variables */
+    int rec_nbr; /* [nbr] Number of record variables */
+    int xtr_nbr; /* [nbr] Number of extracted variables */
+    int var_idx; /* [idx] */
+
+    nm_id_sct **fix_lst=NULL; /* [sct] Fixed-length variables to be extracted */
+    nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
+    nm_id_sct *xtr_lst=NULL; /* [sct] Variables to be extracted */
+
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",prg_nm_get());
+
+    /* Convert extraction list to nm_id_sct format to re-use old code */
+    xtr_lst=nco_trv_tbl_nm_id(nc_in_id,&xtr_nbr,trv_tbl);
+
+    /* Split list into fixed-length and record variables */
+    (void)nco_var_lst_fix_rec_dvd(nc_in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
+
+    /* Copy fixed-length data variable-by-variable */
+    for(var_idx=0;var_idx<fix_nbr;var_idx++){
+      if(dbg_lvl_get() >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[var_idx]->nm);
+      if(dbg_lvl_get() >= nco_dbg_var) (void)fflush(stderr);
+      (void)nco_cpy_var_val(nc_in_id,nc_out_id,fp_bnr,MD5_DIGEST,fix_lst[var_idx]->nm);
+    } /* end loop over var_idx */
+
+    /* Copy record data record-by-record */
+    (void)nco_cpy_rec_var_val(nc_in_id,nc_out_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
+
+    /* Extraction lists no longer needed */
+    if(fix_lst) fix_lst=(nm_id_sct **)nco_free(fix_lst);
+    if(rec_lst) rec_lst=(nm_id_sct **)nco_free(rec_lst);
+    if(xtr_lst) xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
+
+  }else{ /* !USE_MM3_WORKAROUND */
+    
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      trv_sct trv=trv_tbl->lst[uidx];
+      
+      /* If object is an extracted variable... */
+      if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
+	if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm,lmt_all_lst,lmt_all_lst_nbr); else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
+      } /* endif */
+
+    } /* end loop over uidx */
+  } /* !USE_MM3_WORKAROUND */
   
 } /* end nco_xtr_wrt() */
 
