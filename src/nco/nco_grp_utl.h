@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.176 2013-01-19 04:29:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.177 2013-01-19 05:21:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -371,7 +371,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
  trv_tbl_sct * trv_tbl);              /* I/O [sct] Group traversal table */
 
 void
-nco_var_lst_xcl_trv2 /* [fnc] Convert extraction list to exclusion list */
+nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
@@ -482,12 +482,12 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
-nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
+nco_prn_xtr_dfn                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
-nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+nco_prn_var_val                  /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
  lmt_all_sct *  const * lmt_lst,      /* I [sct] Dimension limits */
  const int lmt_nbr,                   /* I [nbr] Number of dimensions with user-specified limits */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.250 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.251 2013-01-19 05:21:56 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.250 2013-01-19 03:00:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.250 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.251 2013-01-19 05:21:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.251 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -399,7 +399,7 @@ main(int argc,char **argv)
       grp_nbr=grp_lst_in_nbr;
       break;
     case 'G': /* Apply Group Path Editing (GPE) to output group */
-      /* NB: GNU getopt() optional argument syntax is ugly, requires "=" sign
+      /* NB: GNU getopt() optional argument syntax is ugly, requires "=" sign so do not use it
       http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       gpe=nco_gpe_prs_arg(optarg);
       grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
@@ -782,7 +782,8 @@ main(int argc,char **argv)
         gpe_arg=strncpy(gpe_arg,stb_srt_psn,strlen(stb_srt_psn)-sfx_lng);
         gpe_arg[gpe_arg_lng]='\0';
       } /* !grp_out */
-      /*     if(gpe) nco_gpe_free(gpe);*/
+      /* Free old structure, if any, before re-use */
+      if(gpe) nco_gpe_free(gpe);
       gpe=nco_gpe_prs_arg(gpe_arg);
       gpe_arg=(char *)nco_free(gpe_arg);
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",prg_nm_get(),gpe_arg);

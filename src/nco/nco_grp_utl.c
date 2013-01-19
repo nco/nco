@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.364 2013-01-19 04:29:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.365 2013-01-19 05:21:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -916,7 +916,7 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
                 /* GPE might be already on the list, put it there only if not found */
                 for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
                   if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-                    (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Moving groups of flattening files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
+                    (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
                     for(int idx=0;idx<nbr_gpe_nm;idx++)
                       gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
                     nco_exit(EXIT_FAILURE);
@@ -3022,7 +3022,7 @@ nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list u
 } /* end nco_var_lst_mk_trv2() */
 
 void
-nco_var_lst_xcl_trv2 /* [fnc] Convert extraction list to exclusion list */
+nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Convert extraction list to exclusion list */
@@ -3031,7 +3031,7 @@ nco_var_lst_xcl_trv2 /* [fnc] Convert extraction list to exclusion list */
       trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
 
   return;
-} /* end nco_var_lst_xcl_trv2() */
+} /* end nco_xtr_xcl() */
 
 void
 nco_var_lst_crd_add_trv2              /* [fnc] Add all coordinates to extraction list */
@@ -4034,7 +4034,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
 	    /* Put GPE on list only if not already there */
 	    for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
 	      if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-		(void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Moving groups of flattening files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
+		(void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
 		for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 		nco_exit(EXIT_FAILURE);
 	      } /* strcmp() */
@@ -4102,9 +4102,10 @@ nco_xtr_wrt /* [fnc] Write extracted data to output file */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
+  /* Purpose: Write extracted variables to output file */
+
   int fl_out_fmt; /* [enm] File format */
 
-  /* Purpose: Write extracted variables to output file */
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
 
   (void)nco_inq_format(nc_out_id,&fl_out_fmt);
@@ -4126,7 +4127,7 @@ nco_xtr_wrt /* [fnc] Write extracted data to output file */
 
     if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",prg_nm_get());
 
-    /* Convert extraction list to nm_id_sct format to re-use old code */
+    /* Convert extraction list from traversal table to nm_id_sct format to re-use old code */
     xtr_lst=nco_trv_tbl_nm_id(nc_in_id,&xtr_nbr,trv_tbl);
 
     /* Split list into fixed-length and record variables */
@@ -4288,7 +4289,7 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
 	  /* Put GPE on list only if not already there */
 	  for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
 	    if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-	      (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Moving groups of flattening files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
+	      (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
 	      for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 	      nco_exit(EXIT_FAILURE);
 	    } /* strcmp() */
@@ -4341,7 +4342,7 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
 } /* end nco_xtr_dfn() */
 
 void
-nco_prn_var_def_trv2                 /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
+nco_prn_xtr_dfn                 /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
@@ -4373,10 +4374,10 @@ nco_prn_var_def_trv2                 /* [fnc] Print variable metadata (called wi
   } /* end uidx  */
 
   return;
-} /* end nco_prn_var_def_trv2() */
+} /* end nco_prn_xtr_dfn() */
 
 void
-nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+nco_prn_var_val                  /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
  lmt_all_sct *  const * lmt_lst,      /* I [sct] Dimension limits */
  const int lmt_nbr,                   /* I [nbr] Number of dimensions with user-specified limits */
@@ -4424,7 +4425,7 @@ nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with 
   } /* end uidx */
 
   return;
-} /* end nco_prn_var_val_trv2() */
+} /* end nco_prn_var_val() */
 
 void
 nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list using regular expressions */
