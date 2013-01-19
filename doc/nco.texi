@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.751 2013-01-19 03:00:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.752 2013-01-19 06:35:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3850,9 +3850,8 @@ The number of levels to delete (from the head) or truncate (from the
 tail) of the input path.
 @end table
 @noindent
-A single character, either the colon or at-sign (@code{:} or
-@code{@@}), must separate these two components of the argument, if both
-are present. 
+If both components of the argument are present, then a single character,
+either the colon or at-sign (@code{:} or @code{@@}), must separate them.
 If only @var{grp_pth} is specifed, the separator character may be
 omitted, e.g., @samp{-G g1}.
 If only @var{lvl_nbr} is specifed, the separator character is still
@@ -3883,26 +3882,31 @@ the maximum number of group path components (i.e., groups) that
 For example @math{@var{lvl_nbr} = 3} changes the input path
 @file{/g1/g2/g3/g4/g5} to the output path @file{/g4/g5}.
 Input paths with @var{lvl_nbr} or fewer components (groups)
-will be completely deleted.
+are completely erased and the output path commences from the root  
+level. 
 
 In other words, @acronym{GPE} is tolerant of specifying too many group
 components to delete. 
 It deletes as many as possible, without complaint, and then begins to
-flatten the file (which may fail if namespace conflicts arise).
+flatten the file (which will fail if namespace conflicts arise).
 
 In Truncation Mode, @var{lvl_nbr} is a negative integer which specifies
 the maximum number of group path components (i.e., groups) that
 @acronym{GPE} will try to truncate from the tail of @var{grp_pth}. 
-For example @math{@var{lvl_nbr} = -3} changeS the input path
+For example @math{@var{lvl_nbr} = -3} changes the input path
 @file{/g1/g2/g3/g4/g5} to the output path @file{/g1/g2}.
 Input paths with @var{lvl_nbr} or fewer components (groups)
-will be completely deleted.
+are completely erased and the output path commences from the root  
+level. 
 
 In Flattening Mode, indicated by the separator character alone
 or with @math{@var{lvl_nbr} = 0}, @acronym{GPE} removes the entire group
-path from the input file.  
+path from the input file and constructs the output path beginning at the
+root level.  
 For example @code{-G :0} and @code{-G :} are identical and change the
-input path @file{/g1/g2/g3/g4/g5} to the output path @file{/}.
+input path @file{/g1/g2/g3/g4/g5} to the output path @file{/} whereas
+@code{-G g1:0} and @code{-G g1:} are identical and result in the output 
+path @file{/g1} for all variables.
 
 Subsequent to the alteration of the input path by the specified
 editing mode, if any, @acronym{GPE} prepends (in Deletion Mode)

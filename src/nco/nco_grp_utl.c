@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.370 2013-01-19 06:07:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.371 2013-01-19 06:35:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1517,8 +1517,6 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
-  idx_var_crr=0; /* Incremented at cycle end */
-
   nco_bool FLG_ROOT_GRP=True; /* [flg] Current group is root group */
   nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
 
@@ -1526,6 +1524,8 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
 
   size_t grp_nm_lng;
   size_t grp_nm_sls_lng;
+
+  idx_var_crr=0; /* Incremented at cycle end */
 
   /* Discover and return number of apex and all sub-groups */
   rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
@@ -1657,7 +1657,7 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
   var_lst_all=(nm_id_sct *)nco_nm_id_lst_free(var_lst_all,var_nbr_all);
   var_xtr_rqs=(nco_bool *)nco_free(var_xtr_rqs);
 
-} /* end nco_chk_var_var() */
+} /* end nco_chk_var() */
 
 nm_id_sct *                       /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */
