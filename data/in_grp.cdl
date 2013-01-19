@@ -33,7 +33,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.47 2013-01-17 21:51:33 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.48 2013-01-19 23:07:27 pvicente Exp $";
 	//
 	//coordinate variables
 	//
@@ -78,7 +78,6 @@ data:
 //
 group: g1 { 
 	variables:
-	//coordinate variables
 	//lon
 	float lon(lon);
 	lon:units = "g1 degrees_east";
@@ -231,14 +230,16 @@ group: g7 {
 //
 group: g8 { 
 	dimensions:
-	lev=3,vrt_nbr=2;
+	lon=2,lev=3,vrt_nbr=2;
 	variables:
 	float lev(lev);
+	float lon(lon);
 	lev:units = "hybrid_sigma_pressure";
 	lev:bounds = "ilev";
 	float vrt_nbr(vrt_nbr);
 	float ilev(lev,vrt_nbr);
 	data:
+	lon=-180,0; 
 	lev=100,500,1000;
 	ilev=0,300,300,750,750,1013.25;
 	vrt_nbr=1,2;

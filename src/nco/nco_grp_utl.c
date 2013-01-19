@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.374 2013-01-19 21:49:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.375 2013-01-19 23:07:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3436,9 +3436,10 @@ nco_xtr_wrt /* [fnc] Write extracted data to output file */
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       trv_sct trv=trv_tbl->lst[uidx];
       
-      /* If object is an extracted variable... */
+      /* If object is an extracted variable... */ 
       if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
-	if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm,lmt_all_lst,lmt_all_lst_nbr); else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
+        if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm,lmt_all_lst,lmt_all_lst_nbr); 
+        else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
       } /* endif */
 
     } /* end loop over uidx */
@@ -3587,7 +3588,8 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
       } /* !GPE */
       
       /* Define variables in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); 
+      else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
       
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)

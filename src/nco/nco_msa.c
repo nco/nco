@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.129 2013-01-19 21:49:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.130 2013-01-19 23:07:27 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -946,7 +946,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
           dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
           break;
         } /* end if */
-        /* Free constructed full dimension name name */
+        /* Free constructed full dimension name */
         dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
       } /* end loop over jdx */
     } /* end loop over idx */
