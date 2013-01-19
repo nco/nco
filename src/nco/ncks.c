@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.552 2013-01-19 05:21:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.553 2013-01-19 05:30:23 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.552 2013-01-19 05:21:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.552 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.553 2013-01-19 05:30:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.553 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -807,7 +807,7 @@ main(int argc,char **argv)
     if(PRN_GLB_METADATA){
       (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
       if(fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-        /* Print global attributes recursive */
+        /* Print group metadata recursively */
         (void)nco_prn_att_trv(in_id,trv_tbl);
       }else{
         if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
@@ -820,7 +820,7 @@ main(int argc,char **argv)
         } /* NCO_REC_DMN_UNDEFINED */
         /* Print global attributes */
         (void)nco_prn_att(in_id,in_id,NC_GLOBAL);
-      } /* IS_NETCDF4 */
+      } /* !netCDF4 */
     } /* endif PRN_GLB_METADATA */
     
     if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);

@@ -1,5 +1,7 @@
 2013-01-18  Charlie Zender  <zender@uci.edu>
 
+	* Remove cruft from nco_grp_utl.[ch]
+
 	* Rename functions for clarity and to facilitate cruft removal
 
 	* Move MM3 code into nco_xtr_wrt()

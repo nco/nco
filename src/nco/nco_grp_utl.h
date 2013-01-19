@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.177 2013-01-19 05:21:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.178 2013-01-19 05:30:23 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -361,37 +361,14 @@ nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists
  const nco_bool SAME_ORDER);          /* I [flg] Both lists have the same order */
 
 void
-nco_var_lst_mk_trv2                   /* [fnc] Create variable extraction list using regular expressions */
-(const int nc_id,                     /* I [ID] Apex group ID */
- char * const * const grp_lst_in,     /* I [sng] User-specified list of groups names to extract (specified with -g) */
- const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
- char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
- const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
- const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
- trv_tbl_sct * trv_tbl);              /* I/O [sct] Group traversal table */
-
-void
 nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
-
-void
-nco_var_lst_crd_add_trv2              /* [fnc] Add all coordinates to extraction list */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
- char * const * const grp_lst_in,     /* I [sng] User-specified list of groups names to extract (specified with -g ) */
- trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 void
 nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
 (const int nc_id,                     /* I netCDF file ID */
  const char * const var_nm_fll,       /* I [sng] Full variable name */
  const char * const var_nm,           /* I [sng] Variable relative name */
- const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" */
- trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
-
-void
-nco_var_lst_crd_add_cf_trv2           /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int nc_id,                     /* I netCDF file ID */
  const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" */
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
@@ -412,12 +389,6 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 void
-nco_var_lst_crd_ass_add_cf_trv2       /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int nc_id,                     /* I netCDF file ID */
- const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" ) */
- trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
-
-void
 nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
 (const int nc_id,                     /* I netCDF file ID */
  nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
@@ -432,26 +403,6 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add to extraction list all coordi
 
 void
 nco_get_prg_info(void);               /* [fnc] Get program info */
-
-void
-nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/write variables in output file */
-(const int nc_id,                      /* I [ID] netCDF input file ID  */
- const int nc_out_id,                  /* I [ID] netCDF output file ID  */
- const gpe_sct * const gpe,            /* I [sng] GPE structure */
- const int lmt_nbr,                    /* I [nbr] Number of dimensions with limits */
- lmt_all_sct * const * lmt_all_lst,    /* I multi-hyperslab limits */
- const int lmt_all_lst_nbr,            /* I [nbr] Number of hyperslab limits */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const nco_bool PRN_VAR_METADATA,      /* I [flg] Copy variable metadata (attributes) */
- int * const cnk_map_ptr,              /* I [enm] Chunking map */
- int * const cnk_plc_ptr,              /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- FILE * const fp_bnr,                  /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
- const nco_bool MD_DFN,              /* I [flg] netCDF define mode is true */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void
 nco_xtr_wrt /* [fnc] Write extracted data to output file */
@@ -499,23 +450,6 @@ nco_prn_var_val                  /* [fnc] Print variable data (called with PRN_V
  const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
-
-void
-nco_var_lst_mk_trv3                   /* [fnc] Create variable extraction list using regular expressions */
-(const int nc_id,                     /* I [ID] Apex group ID */
- char * const * const grp_lst_in,     /* I [sng] User-specified list of groups names to extract (specified with -g) */
- const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
- char * const * const var_lst_in,     /* I [sng] User-specified list of variable names and rx's */
- const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
- const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
- trv_tbl_sct * trv_tbl);              /* I/O [sct] Group traversal table */
-
-void
-nco_var_lst_mk_trv4                   /* [fnc] Create variable extraction list using regular expressions */
-(const int grp_xtr_nbr,               /* I [nbr] Number of groups in current extraction list (specified with -g) */
- const int var_xtr_nbr,               /* I [nbr] User-specified list of variables (specified with -v) */
- const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
- trv_tbl_sct * trv_tbl);               /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
