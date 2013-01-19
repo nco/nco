@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.178 2013-01-19 05:30:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.179 2013-01-19 05:31:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -363,14 +363,6 @@ nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists
 void
 nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
-
-void
-nco_aux_add_cf2                       /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
-(const int nc_id,                     /* I netCDF file ID */
- const char * const var_nm_fll,       /* I [sng] Full variable name */
- const char * const var_nm,           /* I [sng] Variable relative name */
- const char * const cf_nm,            /* I [sng] CF name to find ( "coordinates" or "bounds" */
- trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
 void                               
 nco_xtr_crd_ass_add                   /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
