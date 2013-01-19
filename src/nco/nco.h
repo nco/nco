@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.216 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.217 2013-01-19 10:41:00 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -492,6 +492,7 @@ extern "C" {
   /* Container holding all limit structures indexible by dimension */
   typedef struct { /* lmt_all_sct */
     char *dmn_nm; /* [sng] Dimension name */
+    char *dmn_nm_fll; /* [sng] Full dimension name (path): netCDF4 */
     long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
     long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
     int lmt_dmn_nbr; /* [nbr] Number of lmt arguments */
