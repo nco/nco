@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.367 2013-01-19 05:31:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.368 2013-01-19 05:52:46 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1848,34 +1848,6 @@ nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "
 
   return 0;
 } /* end nco_fnd_var_trv */ 
-
-nm_id_sct *                       /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add_cf_trv    /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int nc_id,                 /* I netCDF file ID */
- const char * const cf_nm,        /* I [sng] CF name to find ( "coordinates" or "bounds" ) */
- nm_id_sct *xtr_lst,              /* I/O current extraction list (modified) */
- int * const xtr_nbr,             /* I/O number of variables in current extraction list */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  /* Detect associated coordinates specified by CF "coordinates" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
-
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if (trv.typ == nco_obj_typ_var){
-
-      /* Check if current variable is in extraction list */
-      if(xtr_lst_fnd(trv.nm_fll,xtr_lst,*xtr_nbr)){
-
-        /* Try to add to extraction list */
-        xtr_lst=nco_aux_add_cf(nc_id,trv.nm_fll,trv.nm,cf_nm,xtr_lst,xtr_nbr,trv_tbl);
-
-      } /* end check if current variable is in extraction list */
-    } /* end nco_obj_typ_var */
-  } /* end uidx  */
-
-  return xtr_lst;
-} /* nco_var_lst_crd_ass_add_cf_trv() */
 
 nm_id_sct *                      /* O [sct] Extraction list */
 nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
