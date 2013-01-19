@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.209 2013-01-13 06:46:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.210 2013-01-19 03:00:02 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -329,7 +329,6 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
- const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  const char *var_nm) /* I [sng] Variable name */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
@@ -406,7 +405,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Perform MD5 digest of input and output data if requested */
   if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
   /* Write unformatted binary data */
-  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
 
   /* 20111130 Fixes TODO nco1029: Warn on ncks -A when dim(old_record) != dim(new_record) */
   if(dmn_nbr > 0){
@@ -451,7 +450,6 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
- const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
  const int var_nbr) /* I [nbr] Number of record variables */
 {
@@ -499,7 +497,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Re-initialize accumulated variables */
       var_sz=1L;
       /* Mimic standard code path debugging information */
-      if(dbg_lvl_get() >= nco_dbg_var && !NCO_BNR_WRT && rec_idx == 0) (void)fprintf(stderr,"%s, ",var_lst[var_idx]->nm);
+      if(dbg_lvl_get() >= nco_dbg_var && !fp_bnr && rec_idx == 0) (void)fprintf(stderr,"%s, ",var_lst[var_idx]->nm);
       if(dbg_lvl_get() >= nco_dbg_var && rec_idx == 0) (void)fflush(stderr);
 
       /* Get ID of requested variable from both files */
@@ -573,7 +571,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
   } /* end loop over records */
 
   /* Corner cases require a loop over variables but not records */
-  if(MD5_DIGEST || NCO_BNR_WRT){
+  if(MD5_DIGEST || fp_bnr){
     for(var_idx=0;var_idx<var_nbr;var_idx++){
       /* Re-initialize accumulated variables */
       var_sz=1L;
@@ -601,7 +599,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Perform MD5 digest of input and output data if requested */
       if(MD5_DIGEST) (void)nco_md5_chk(var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
       /* Write unformatted binary data */
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_typ,void_ptr);
       /* Free space that held dimension IDs */
       dmn_cnt=(long *)nco_free(dmn_cnt);
       dmn_id=(int *)nco_free(dmn_id);
@@ -619,7 +617,6 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
  const int lmt_nbr) /* I [nbr] Number of hyperslab limits */
@@ -723,11 +720,11 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   if(dmn_nbr == 0){ /* Copy scalar */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
   }else if(!WRP){ /* Copy contiguous array */
     if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_typ); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_typ);
     nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_typ);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
   }else if(WRP){ /* Copy wrapped array */
     /* For wrapped data */
     long *dmn_in_srt_1=NULL;
@@ -851,17 +848,17 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     if(!SRD){
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_typ);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     }else{ /* SRD */
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_typ);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     } /* end else SRD */
     
     dmn_in_srt_1=(long *)nco_free(dmn_in_srt_1);

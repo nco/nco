@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.74 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.75 2013-01-19 03:00:02 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -65,7 +65,6 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
-   const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
    const char *var_nm); /* I [sng] Variable name */
 
   void
@@ -73,7 +72,6 @@ extern "C" {
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
-   const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
    char *var_nm, /* I [sng] Variable name */
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
@@ -84,7 +82,6 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
-   const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
    CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
    const int var_nbr); /* I [nbr] Number of record variables */
 

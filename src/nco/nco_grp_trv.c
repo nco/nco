@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.31 2013-01-15 17:21:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.32 2013-01-19 03:00:02 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -54,7 +54,7 @@ trv_tbl_init
 
 void 
 trv_tbl_free
-(trv_tbl_sct *tbl)   /* I [sct] Traversal table */
+(trv_tbl_sct *tbl) /* I [sct] Traversal table */
 {
   unsigned int idx;
 
@@ -68,8 +68,8 @@ trv_tbl_free
 
 void 
 trv_tbl_add
-(trv_sct obj,              /* I   [sct] Object to store */
- trv_tbl_sct *tbl)         /* I/O [sct] Traversal table */
+(trv_sct const obj, /* I [sct] Object to store */
+ trv_tbl_sct * const tbl) /* I/O [sct] Traversal table */
 {
   unsigned int idx;
 
@@ -82,6 +82,7 @@ trv_tbl_add
       tbl->lst[idx].grp_nm_fll=NULL;
     } /* idx */
   } /* tbl->sz */
+
   idx=tbl->nbr++;
   tbl->lst[idx].nm_fll=(char *)strdup(obj.nm_fll);
   tbl->lst[idx].nm_fll_lng=obj.nm_fll_lng;

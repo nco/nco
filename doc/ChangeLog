@@ -1,3 +1,12 @@
+2013-01-18  Charlie Zender  <zender@uci.edu>
+
+	* Split nco_grp_var_mk_trv2() into nco_xtr_dfn() and nco_xtr_wrt()
+
+	* Add (uninitialized) group ID members to trv_obj structure
+
+	* Delete ncks -B switch and require -b fl_bnr instead
+	This simplifies logic---now use fp_bnr instead of NCO_BNR_WRT
+
 2013-01-15  Charlie Zender  <zender@uci.edu>
 
 	* Place explicit netCDF3 path in nco_inq_grp_full_ncid_flg()

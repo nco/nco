@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.125 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.126 2013-01-19 03:00:02 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -617,7 +617,6 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
- const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
@@ -678,7 +677,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     } /* end OpenMP critical */
     /* Perform MD5 digest of input and output data if requested */
     if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     (void)nco_free(void_ptr);
     return;
   } /* end if */
@@ -784,7 +783,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
 
   /* Perform MD5 digest of input and output data if requested */
   if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
-  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
 
   (void)nco_free(void_ptr);
   (void)nco_free(dmn_map_in);

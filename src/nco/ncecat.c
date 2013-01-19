@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.249 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.250 2013-01-19 03:00:02 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,7 +87,6 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-  nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -123,8 +122,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.249 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.249 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.250 2013-01-19 03:00:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.250 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -146,7 +145,7 @@ main(int argc,char **argv)
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
-  FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
+  FILE *fp_bnr=NULL; /* [fl] Unformatted binary output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
@@ -858,13 +857,13 @@ main(int argc,char **argv)
       (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
 
       /* Define requested/necessary input groups/variables/attributes/global attributes/chunksize parameters in output file */
-      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
+      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,(nco_bool)True,trv_tbl);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Copy all variables to output file */
-      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
+      (void)nco_grp_var_mk_trv(in_id,out_id,gpe,xtr_lst,xtr_nbr,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,CPY_GLB_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,(nco_bool)False,trv_tbl);
 
       /* Close input netCDF file */
       (void)nco_close(in_id);

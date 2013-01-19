@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.549 2013-01-17 22:24:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.550 2013-01-19 03:00:02 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,7 +105,6 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-  nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
   nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
@@ -150,8 +149,8 @@ main(int argc,char **argv)
 
   char rth[]="/"; /* [sng] Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.549 2013-01-17 22:24:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.549 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.550 2013-01-19 03:00:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.550 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -166,7 +165,7 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
 
-  FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
+  FILE *fp_bnr=NULL; /* [fl] Unformatted binary output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
@@ -279,8 +278,8 @@ main(int argc,char **argv)
       {"alphabetize",no_argument,0,'a'},
       {"append",no_argument,0,'A'},
       {"apn",no_argument,0,'A'},
-      {"bnr",no_argument,0,'B'},
-      {"binary",no_argument,0,'B'},
+      {"bnr",required_argument,0,'b'},
+      {"binary",required_argument,0,'b'},
       {"binary-file",required_argument,0,'b'},
       {"fl_bnr",required_argument,0,'b'},
       {"coords",no_argument,0,'c'},
@@ -344,7 +343,6 @@ main(int argc,char **argv)
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
-  fl_bnr=(char *)strdup("ncks.bnr");
   /* Parse command line arguments */
   while(1){
     /* getopt_long_only() allows one dash to prefix long options */
@@ -467,11 +465,7 @@ main(int argc,char **argv)
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
       break;
-    case 'B': /* Set NCO_BNR_WRT */
-      NCO_BNR_WRT=True;
-      break;
     case 'b': /* Set file for binary output */
-      NCO_BNR_WRT=True;
       fl_bnr=(char *)strdup(optarg);
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
@@ -743,11 +737,11 @@ main(int argc,char **argv)
     if(PRN_QUIET) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
   } /* !fl_out */  
 
-  if(NCO_BNR_WRT && !fl_out){
+  if(fl_bnr && !fl_out){
     /* Native binary files depend on writing netCDF file to enter generic I/O logic */
     (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with dummy netCDF file specified for output file (e.g., -o foo.nc)\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
-  } /* endif NCO_BNR_WRT */
+  } /* endif fl_bnr */
     
   if(fl_out){
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
@@ -779,8 +773,8 @@ main(int argc,char **argv)
       } /* endif err */
     } /* !gpe */
 
-    /* Define extracted groups/variables in output file */
-    nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,(FILE *)NULL,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)True,trv_tbl);
+    /* Define extracted groups, variables, and attributes in output file */
+    nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,PRN_VAR_METADATA,trv_tbl);
 
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -798,14 +792,14 @@ main(int argc,char **argv)
     } /* hdr_pad */
 
     /* [fnc] Open unformatted binary data file for writing */
-    if(NCO_BNR_WRT) fp_bnr=nco_bnr_open(fl_bnr);
+    if(fl_bnr) fp_bnr=nco_bnr_open(fl_bnr);
 
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
 
-    /* Copy extracted variables to output file */
-    nco_grp_var_mk_trv2(in_id,out_id,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,dfl_lvl,PRN_VAR_METADATA,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,(nco_bool)False,trv_tbl);
+    /* Write extracted data to output file */
+    nco_xtr_wrt(lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,trv_tbl);
 
     /* To re-enable MM3, remove next line and put following block in universal write code */
     USE_MM3_WORKAROUND=False;
@@ -816,10 +810,10 @@ main(int argc,char **argv)
       if(!USE_MM3_WORKAROUND){  
         /* Copy extracted data variable-by-variable */
         for(idx=0;idx<xtr_nbr;idx++){
-          if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
+          if(dbg_lvl >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
           if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); 
-          else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr_lst[idx].nm);
+          if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,grp_out_id,fp_bnr,MD5_DIGEST,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); 
+          else (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,xtr_lst[idx].nm);
         } /* end loop over idx */
       }else{
         /* MM3 workaround algorithm */
@@ -832,19 +826,19 @@ main(int argc,char **argv)
         (void)nco_var_lst_fix_rec_dvd(in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
         /* Copy fixed-length data variable-by-variable */
         for(idx=0;idx<fix_nbr;idx++){
-          if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
+          if(dbg_lvl >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[idx]->nm);
           if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
-          (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,fix_lst[idx]->nm);
+          (void)nco_cpy_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,fix_lst[idx]->nm);
         } /* end loop over idx */
         /* Copy record data record-by-record */
-        (void)nco_cpy_rec_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,rec_lst,rec_nbr);
+        (void)nco_cpy_rec_var_val(in_id,grp_out_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
         if(fix_lst) fix_lst=(nm_id_sct**)nco_free(fix_lst);
         if(rec_lst) rec_lst=(nm_id_sct**)nco_free(rec_lst);
       } /* endif MM3 workaround */
     } /* endif MM3 workaround */
 
     /* [fnc] Close unformatted binary data file */
-    if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
+    if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
 
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);

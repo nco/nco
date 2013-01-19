@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.128 2013-01-13 06:46:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.129 2013-01-19 03:00:02 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -818,8 +818,6 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   int idx_xcl;
   int var_op_typ[NC_MAX_VARS];
 
-  nco_bool is_spc_in_bnd_att; /* [flg] Is specified in a "bounds"      attribute */
-  nco_bool is_spc_in_crd_att; /* [flg] Is specified in a "coordinates" attribute */
   nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
   nco_bool var_typ_fnk=False; /* [flg] Variable type is too funky for arithmetic */ /* CEWI */
 

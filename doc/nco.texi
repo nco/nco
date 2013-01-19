@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.750 2013-01-14 23:56:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.751 2013-01-19 03:00:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7701,9 +7701,10 @@ n2=-999,-999,11,11,11,11,11,11,999,-999;
 <a name="set_miss"></a> <!-- http://nco.sf.net/nco.html#set_miss -->
 <a name="get_miss"></a> <!-- http://nco.sf.net/nco.html#get_miss -->
 <a name="change_miss"></a> <!-- http://nco.sf.net/nco.html#change_miss -->
+<a name="number_miss"></a> <!-- http://nco.sf.net/nco.html#number_miss -->
 @end html
-The following methods edit missing value information associated with 
-a variable. 
+The following methods manipulate missing value information associated
+with a variable. 
 They only work on variables in Output. 
 @table @code
 @item set_miss(expr)
@@ -7733,6 +7734,9 @@ They only work on variables in Output.
 @item delete_miss()
 @cindex delete_miss()
  Deletes the missing value associated with a variable.
+@item number_miss()
+@cindex number_miss()
+ Counts the number of missing values a variable contains.
 @end table
 
 @example
@@ -7750,6 +7754,13 @@ where (three_dmn_var_dbl%3 == 0)
      new=three_dmn_var_dbl; 
 elsewhere
      new=new.get_miss();   
+
+// Print missing value and variable summary
+mss_val_nbr=three_dmn_var_dbl.number_miss();
+print(three_dmn_var_dbl@@_FillValue);
+print("Number of missing values in three_dmn_var_dbl: ");
+print(mss_val_nbr,"%d");
+print(three_dmn_var_dbl);
 @end example
 
 @html
@@ -11689,7 +11700,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-3] [-4] [-6] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
+ncks [-3] [-4] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
 [--fix_rec_dmn] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
@@ -11836,20 +11847,10 @@ Thus @code{-a} retains the original ordering of the variables.
 Also @samp{--abc} and @samp{--alphabetize}.
 
 @cindex binary format
-@cindex @code{-B}
-@cindex @code{--bnr}
-@cindex @code{--binary}
-@item -B @file{file}
-Activate native machine binary output writing to the default binary
-file, @file{ncks.bnr}. 
-pThe @code{-B} switch is redundant when the @w{@code{-b} @file{file}}
-option is specified, and native binary output will be directed to the
-binary file @file{file}.
-Also @samp{--bnr} and @samp{--binary}.
-Writing packed variables in binary format is not supported.
-
 @cindex @code{-b}
 @cindex @code{--fl_bnr}
+@cindex @code{--bnr}
+@cindex @code{--binary}
 @item -b @file{file}
 Activate native machine binary output writing to binary file
 @file{file}.

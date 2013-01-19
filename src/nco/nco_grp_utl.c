@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.362 2013-01-18 19:29:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.363 2013-01-19 03:00:02 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -803,7 +803,6 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  FILE * const fp_bnr,                  /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
- const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool MD_DFN,              /* I [flg] netCDF define mode is true */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
@@ -948,8 +947,8 @@ nco_grp_var_mk_trv                     /* [fnc] Create groups/write variables in
             }else{ /* Write mode */
 
               /* Write output variable */
-              if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm,lmt_all_lst,lmt_all_lst_nbr); 
-              else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,xtr.nm);
+              if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,xtr.nm,lmt_all_lst,lmt_all_lst_nbr); 
+              else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,xtr.nm);
 
             } /* Define mode */
 
@@ -1033,26 +1032,26 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 {
   /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
 
-  char grp_nm[NC_MAX_NAME+1];  /* O [sng] Group name */
-  char var_nm[NC_MAX_NAME+1];  /* O [sng] Variable name */ 
+  char grp_nm[NC_MAX_NAME+1]; /* [sng] Group name */
+  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
 
-  const int flg_prn=0;         /* I [flg] All the dimensions in all parent groups will also be retrieved */        
+  const int flg_prn=0; /* [flg] All the dimensions in all parent groups will also be retrieved */    
 
-  int *dmn_ids;                /* O [ID]  Dimension IDs */ 
-  int *grp_ids;                /* O [ID]  Sub-group IDs */ 
+  int *dmn_ids; /* [ID]  Dimension IDs */ 
+  int *grp_ids; /* [ID]  Sub-group IDs */ 
 
-  int idx;                     /* I [idx] Index */             
-  int nbr_att;                 /* O [nbr] Number of attributes */
-  int nbr_dmn;                 /* O [nbr] Number of dimensions */
-  int nbr_grp;                 /* O [nbr] Number of sub-groups in this group */
-  int nbr_var;                 /* O [nbr] Number of variables */
-  int rcd=NC_NOERR;            /* O [rcd] Return code */
-  int rec_dmn_id;              /* O [ID] Record dimension ID */
-  int var_id;                  /* O [ID] Variable ID */ 
+  int idx; /* [idx] Index */ 
+  int nbr_att; /* [nbr] Number of attributes */
+  int nbr_dmn; /* [nbr] Number of dimensions */
+  int nbr_grp; /* [nbr] Number of sub-groups in this group */
+  int nbr_var; /* [nbr] Number of variables */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rec_dmn_id; /* [ID] Record dimension ID */
+  int var_id; /* [ID] Variable ID */ 
 
-  nc_type var_typ;             /* O [enm] Variable type */
+  nc_type var_typ; /* O [enm] Variable type */
 
-  trv_sct obj;             /* O [obj] netCDF4 object, as having a path and a type */
+  trv_sct obj; /* [obj] netCDF4 group or variable */
 
   /* Get all information for this group */
   rcd+=nco_inq_nvars(grp_id,&nbr_var);
@@ -3611,14 +3610,20 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
  trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
 {
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+
+  const char sls_chr='/'; /* [chr] Slash character */
+  const char sls_sng[]="/"; /* [sng] Slash string */
+
   int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
   int dmn_id_var[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
   int nbr_dmn_grp;             /* [nbr] Number of dimensions */
   int nbr_dmn_var;             /* [nbr] Number of dimensions */
   int var_id;                  /* [id] ID of var_nm */
   int grp_id;                  /* [id] ID of group */
-  long dmn_sz;                 /* [nbr] Dimension size */ 
+
   const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
+
+  long dmn_sz;                 /* [nbr] Dimension size */ 
 
   /* Obtain group ID using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
@@ -3655,7 +3660,7 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
       /* Construct full (dimension/variable) name */
       dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
       strcpy(dmn_nm_fll,grp_nm_fll);
-      if(strcmp(grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+      if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
       strcat(dmn_nm_fll,dmn_nm);
 
       /* Brute-force approach to find valid "dmn_nm_fll":
@@ -3663,23 +3668,23 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
 	 Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
 
       /* Find last occurence of '/' */
-      pch=strrchr((char*)dmn_nm_fll,'/');
+      pch=strrchr(dmn_nm_fll,sls_chr);
       psn=pch-dmn_nm_fll;
-      while(pch!=NULL){
+      while(pch){
         /* If variable is on list, mark it for extraction */
         if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
           (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
         } /* endif */
         dmn_nm_fll[psn]='\0';
-        pch=strrchr((char*)dmn_nm_fll,'/');
+        pch=strrchr(dmn_nm_fll,sls_chr);
         if(pch){
           psn=pch-dmn_nm_fll;
           dmn_nm_fll[psn]='\0';
           /* Re-add variable name to shortened path */
-          if(strcmp(grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+          if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
           strcat(dmn_nm_fll,dmn_nm);
-          pch=strrchr((char*)dmn_nm_fll,'/');
+          pch=strrchr(dmn_nm_fll,sls_chr);
           psn=pch-dmn_nm_fll;
         } /* !pch */
       } /* end while */
@@ -3872,7 +3877,6 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  FILE * const fp_bnr,                  /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,            /* I [flg] Perform MD5 digests */
- const nco_bool NCO_BNR_WRT,           /* I [flg] Write binary file */
  const nco_bool MD_DFN,                /* I [flg] netCDF define mode is true */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
@@ -4026,7 +4030,7 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
       }else{ /* !MD_DFN */
 
 	/* Write mode */
-        if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,trv.nm,lmt_all_lst,lmt_all_lst_nbr); else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,NCO_BNR_WRT,trv.nm);
+        if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,trv.nm,lmt_all_lst,lmt_all_lst_nbr); else (void)nco_cpy_var_val(grp_id,grp_out_id,fp_bnr,MD5_DIGEST,trv.nm);
 
       } /* !MD_DFN */
 
@@ -4044,7 +4048,207 @@ nco_grp_var_mk_trv2                    /* [fnc] Define OR write groups/variables
 } /* end nco_grp_var_mk_trv2() */
 
 void
-nco_prn_var_def_trv2                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
+nco_xtr_wrt /* [fnc] Write extracted data to output file */
+(const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
+ const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+ FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+{
+  /* Purpose: Write extracted variables to output file */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct trv=trv_tbl->lst[uidx];
+    
+    /* If object is an extracted variable... */
+    if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
+      if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm,lmt_all_lst,lmt_all_lst_nbr); else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
+    } /* endif */
+
+  } /* end loop over uidx */
+  
+} /* end nco_xtr_wrt() */
+
+void
+nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in output file */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const int nc_out_id, /* I [ID] netCDF output file ID */
+ int * const cnk_map_ptr, /* I [enm] Chunking map */
+ int * const cnk_plc_ptr, /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr, /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl, /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe, /* I [sng] GPE structure */
+ const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
+ const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+ const nco_bool PRN_VAR_METADATA, /* I [flg] Copy variable metadata (attributes) */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  /* Purpose: Define groups, variables, and attributes in output file */
+  
+  char *grp_out_fll; /* [sng] Group name */
+  char *rec_dmn_nm; /* [sng] Record dimension name */
+  char *var_nm_fll; /* [sng] Full path of variable */
+  
+  char dmn_ult_nm[NC_MAX_NAME+1];/* [sng] Unlimited dimension name */ 
+  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
+  
+  gpe_nm_sct *gpe_nm; /* [sct] GPE name duplicate check array */
+  
+  int *var_ids; /* [ID] Variable IDs array */
+  
+  int dmn_ids_ult[NC_MAX_DIMS]; /* [ID] Unlimited dimensions IDs array */
+  
+  int fl_fmt; /* [enm] netCDF file format */
+  int grp_id; /* [ID] Group ID in input file */
+  int grp_out_id; /* [ID] Group ID in output file */ 
+  int nbr_att; /* [nbr] Number of attributes for group */
+  int nbr_dmn; /* [nbr] Number of dimensions for group */
+  int nbr_dmn_ult; /* [nbr] Number of unlimited dimensions */
+  int nbr_gpe_nm; /* [nbr] Number of GPE entries */
+  int nbr_grp; /* [nbr] Number of groups for group */
+  int nbr_var; /* [nbr] Number of variables for group */
+  int var_out_id; /* [ID] Variable ID in output file */
+  
+  nbr_gpe_nm=0;
+  (void)nco_inq_format(nc_id,&fl_fmt);
+  
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct trv=trv_tbl->lst[uidx];
+    
+    /* If object is an extracted variable... */
+    if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
+      
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      
+      /* Edit group name */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.grp_nm_fll); else grp_out_fll=(char *)strdup(trv.grp_nm_fll);
+      
+      /* Obtain info for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+      (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+      
+      /* Allocate space for and obtain variable IDs in current group */
+      var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
+      (void)nco_inq_varids(grp_id,&nbr_var,var_ids);
+      
+      /* Get number of unlimited dimensions */
+      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
+      
+      rec_dmn_nm=NULL;
+      
+      /* Find variables in group */
+      for(int idx_var=0;idx_var<nbr_var;idx_var++){
+	var_nm_fll=NULL;
+	
+	/* Current variable in current group NOTE: using obtained IDs array */
+	(void)nco_inq_varname(grp_id,var_ids[idx_var],var_nm);
+	
+	/* Allocate path buffer; add space for trailing NUL */ 
+	var_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(var_nm)+2L);
+	
+	/* Initialize path with current absolute group path */
+	strcpy(var_nm_fll,trv.grp_nm_fll);
+	
+	/* If not root group, concatenate separator */
+	if(strcmp(trv.grp_nm_fll,"/")) strcat(var_nm_fll,"/");
+	
+	/* Concatenate variable to absolute group path */
+	strcat(var_nm_fll,var_nm);
+	
+	/* Search for record dimension name */
+	for(int idx_dmn=0;idx_dmn<nbr_dmn_ult;idx_dmn++){
+	  (void)nco_inq_dimname(grp_id,dmn_ids_ult[idx_dmn],dmn_ult_nm);
+	  if(!strcmp(var_nm,dmn_ult_nm)){
+	    rec_dmn_nm=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(char));
+	    strcpy(rec_dmn_nm,dmn_ult_nm); 
+	  } /* strcmp() */
+	} /* idx_dmn */ 
+	
+	/* Memory management after current variable */
+	var_nm_fll=(char *)nco_free(var_nm_fll);
+      } /* end get variables for this group */ 
+      
+      /* If output group does not exist, create it */
+      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+      
+      /* Detect duplicate GPE names in advance, then exit with helpful error */
+      if(gpe){
+	char *gpe_var_nm_fll=NULL; 
+	
+	/* Construct absolute GPE variable path */
+	gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv.nm)+2L);
+	strcpy(gpe_var_nm_fll,grp_out_fll);
+	/* If not root group, concatenate separator */
+	if(strcmp(grp_out_fll,"/")) strcat(gpe_var_nm_fll,"/");
+	strcat(gpe_var_nm_fll,trv.nm);
+	
+	/* GPE name is not already on list, put it there */
+	if(nbr_gpe_nm == 0){
+	  gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+	  gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+	  nbr_gpe_nm++;
+	}else{
+	  /* Put GPE on list only if not already there */
+	  for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+	    if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+	      (void)fprintf(stdout,"%s: ERROR nco_grp_var_mk_trv() reports variable %s already defined. HINT: Moving groups of flattening files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),gpe_var_nm_fll);
+	      for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+	      nco_exit(EXIT_FAILURE);
+	    } /* strcmp() */
+	  } /* end loop over gpe_nm */
+	  gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+	  gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+	  nbr_gpe_nm++;
+	} /* nbr_gpe_nm */
+	
+	  /* Free full path name */
+	if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+      } /* !GPE */
+      
+      /* Define variables in output file */
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
+      
+      /* Set chunksize parameters */
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)
+	(void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+      
+      /* Copy variable's attributes */
+      if(PRN_VAR_METADATA){
+	int var_id;
+	(void)nco_inq_varid(grp_id,trv.nm,&var_id);
+	(void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
+      } /* !PRN_VAR_METADATA */
+      
+      /* Copy group attributes */
+      /* If there are group attributes, write them, avoid root case, these are always copied elsewhere */
+      /* fxm: bug group attributes can be written multiple times (once per variable!) */
+      /* fxm: bug block never reached, and metadata never copied, for output groups that have no variables */
+      if(nbr_att && strcmp("/",trv.grp_nm_fll)) (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+      
+      /* Memory management after current extracted variable */
+      if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+      if(var_ids) var_ids=(int *)nco_free(var_ids);
+      
+      /* Store input and output group IDs for use by nco_xtr_wrt() */
+      trv_tbl->lst[uidx].grp_id_in=grp_id;
+      trv_tbl->lst[uidx].grp_id_out=grp_out_id;
+
+    } /* end if variable and flg_xtr */
+
+  } /* end loop over uidx */
+  
+  /* Memory management for GPE names */
+  for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+  
+} /* end nco_xtr_dfn() */
+
+void
+nco_prn_var_def_trv2                 /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
@@ -4100,7 +4304,7 @@ nco_prn_var_val_trv2                  /* [fnc] Print variable data (called with 
     (void)fprintf(stdout,"%s: INFO reports following dimension limits:\n",prg_nm_get());
     for(int idx=0;idx<lmt_nbr;idx++){
       lmt_all_sct *lmt=lmt_lst[idx];
-      (void)fprintf(stdout,"%s(%d)\n",lmt->dmn_nm,lmt->dmn_sz_org);
+      (void)fprintf(stdout,"%s(%li)\n",lmt->dmn_nm,lmt->dmn_sz_org);
     }
   } /* endif dbg */
 
