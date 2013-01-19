@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.369 2013-01-19 05:58:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.370 2013-01-19 06:07:51 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3082,7 +3082,7 @@ nco_xtr_cf_add /* [fnc] Add to extraction list all CF-compliant coordinates */
 } /* nco_xtr_cf_add() */
 
 void                               
-nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
+nco_xtr_crd_ass_add_trv                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
  const char * const var_nm,           /* I [sng] Variable name  */
@@ -3174,7 +3174,7 @@ nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that ma
 
     } /* end strcmp() */
   } /* end loop over dmn_idx */
-} /* end nco_xtr_crd_ass_add2() */ 
+} /* end nco_xtr_crd_ass_add_trv() */ 
 
 nm_id_sct * /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id /* [fnc] Create extraction list of nm_id_sct from traversal table */
@@ -3284,7 +3284,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
 } /* end nco_trv_tbl_chk() */
 
 void
-nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associated with extracted variables */
+nco_xtr_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id, /* I [ID] netCDF file ID */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -3324,12 +3324,12 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
         if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-          /* Add all possible coordinate variables traversing file */
-          /* csz: fxm bug --- will extract non-associated coordinates
-          This occurs because distinct dimensions with same name dmn_nm can occur in multiple groups,
-          if those definitions do not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups.
-          Hence nco_xtr_crd_ass_add() must know location of dmn_nm and search only variables visible from there */
-          (void)nco_xtr_crd_ass_add2(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
+          /* Add associated coordinate variables to traversal table extraction list
+	     Be sure not to extract non-associated coordinates
+	     Distinct dimensions with same name dmn_nm can occur in multiple groups
+	     And those definitions may not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups
+	     Hence nco_xtr_crd_ass_add_trv() must know location of dmn_nm and search only variables visible from there */
+          (void)nco_xtr_crd_ass_add_trv(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
         }else{
           /* Construct full (dimension/variable) name */
           char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
@@ -3345,7 +3345,7 @@ nco_xtr_crd_ass_add_trv /* [fnc] Add to extraction list all coordinates associat
   } /* end uidx  */
 
   return;
-} /* end nco_xtr_crd_ass_add_trv */
+} /* end nco_xtr_crd_ass_add */
 
 void
 nco_get_prg_info(void)                 /* [fnc] Get program info */

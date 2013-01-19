@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.181 2013-01-19 05:58:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.182 2013-01-19 06:07:51 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -357,7 +357,7 @@ nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void                               
-nco_xtr_crd_ass_add2                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
+nco_xtr_crd_ass_add_trv                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
  const char * const var_nm,           /* I [sng] Variable name  */
@@ -373,7 +373,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
  const nco_bool NM_ID_SAME_ORDER);    /* I [flg] Both nm_id_sct have the same order */
 
 void
-nco_xtr_crd_ass_add_trv               /* [fnc] Add to extraction list all coordinates associated with extracted variables */
+nco_xtr_crd_ass_add               /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id,                     /* I netCDF file ID */
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
 
