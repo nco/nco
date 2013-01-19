@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.126 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.127 2013-01-19 13:19:16 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -810,7 +810,7 @@ nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
 
 void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
-(const int in_id, /* I [id] netCDF input file ID */
+(const int in_id, /* I [id] Location ID (netCDF input file ID or group ID) */
  const char * const var_nm, /* I [sng] Variable name */
  lmt_all_sct * const *lmt_lst, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] Number of dimensions with user-specified limits */
@@ -837,7 +837,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   var_sct var;
   int idx;
   int jdx;
-  int nbr_dmn;                      /* [nbr] Number of dimensions in group */
+  int nbr_dmn_grp;                  /* [nbr] Number of dimensions in group */
   int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
   char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
   const int flg_prn=0;              /* [flg] All the dimensions in all parent groups will also be retrieved */        
@@ -884,13 +884,23 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
 
   /* Get dimension IDs for group */
-  (void)nco_inq_dimids(in_id,&nbr_dmn,dmn_ids_grp,flg_prn);
+  (void)nco_inq_dimids(in_id,&nbr_dmn_grp,dmn_ids_grp,flg_prn);
 
 #ifdef ENABLE_NETCDF4
   /* Obtain netCDF file format */
   int fl_fmt;
+  char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
+  char *grp_nm_fll;        /* [sng] Fully qualified group name */
+  size_t grp_nm_lng;
   (void)nco_inq_format(in_id,&fl_fmt);
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+
+    /* netCDF API to the rescue; we only have a location ID and a var name as parameters, but we need the full path */
+    /* Allocate space for and obtain full name of current group */
+    (void)nco_inq_grpname(in_id,grp_nm);
+    (void)nco_inq_grpname_len(in_id,&grp_nm_lng);
+    grp_nm_fll=(char *)nco_malloc((grp_nm_lng+1L)*sizeof(char));
+    (void)nco_inq_grpname_full(in_id,&grp_nm_lng,grp_nm_fll);
 
     /* Initialize lmt_msa with multi-limits from lmt_lst limits */
     /* Get dimension sizes from input file */
@@ -906,6 +916,9 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         } /* end if */
       } /* end loop over jdx */
     } /* end loop over idx */
+
+    grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
   }else{ /* NC_FORMAT_CLASSIC */
 
     for(idx=0;idx<var.nbr_dim;idx++)
