@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.383 2013-01-20 02:09:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.384 2013-01-20 03:17:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2247,6 +2247,24 @@ nco_xtr_crd_ass_add_trv                  /* [fnc] Add a coordinate variable that
         if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
           (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
+
+          /*From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
+          Subject: Re: [netcdfgroup] defining dimensions in groups
+          1. The inner dimension is used. The rule is to look up the group tree
+          from innermost to root and choose the first one that is found
+          with a matchng name.
+          2. The fact that it is a dimension for a coordinate variable is not relevant for the
+          choice.
+          However, note that this rule is only used by ncgen when disambiguating a reference
+          in the CDL.  The issue does not come up in the netcdf API because
+          you have to specifically supply the dimension id when defining the dimension
+          for a variable.*/
+
+          /* So... exit from here if the innermost coordinate variable was found: there is one and only 
+           one valid coordinate variable in the path scope */
+          dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+          return;
+
         } /* endif */
         dmn_nm_fll[psn]='\0';
         pch=strrchr(dmn_nm_fll,sls_chr);
