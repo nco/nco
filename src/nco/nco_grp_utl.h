@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.192 2013-01-20 19:44:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.193 2013-01-20 19:55:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -116,14 +116,6 @@ nco_grp_stk_free /* [fnc] Free group stack */
 (grp_stk_sct * const grp_stk); /* O [sct] Group stack pointer */
 /* end nco_grp_stk_free() */
 
-
-nm_id_sct * /* O [sct] Group extraction list */
-nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions */
-(const int nc_id, /* I [ID] netCDF file ID */
- char * const * const grp_lst_in, /* I [sng] User-specified list of group names and rx's */
- const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
- int * const grp_nbr); /* I/O [nbr] Number of groups in current extraction list */
-
 int /* [rcd] Return code */
 nco_grp_dfn /* [fnc] Define groups in output file */
 (const int out_id, /* I [ID] netCDF output-file ID */
@@ -143,15 +135,6 @@ nco_grp_itr
  char * const grp_pth,                   /* I [sng] Absolute group path */
  trv_tbl_sct *trv_tbl);                  /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
-
-nm_id_sct *                /* O [sct] Extraction list */
-nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
-(char * const var_nm,      /* I [sng] Variable name */
- char * const var_nm_fll,  /* I [sng] Full variable name */
- char * const grp_nm_fll,  /* I [sng] Full group name */
- int const var_id,         /* I [ID] Variable ID */
- nm_id_sct *xtr_lst,       /* I/O [sct] Current list */
- int * xtr_nbr);           /* I/O [nbr] Current index in exclusion/extraction list */
 
 int                       /* [rcd] Return code */
 nco4_inq_vars             /* [fnc] Find and return total of variables */
@@ -257,16 +240,6 @@ nco_aux_grp_id                  /* [fnc] Return the group ID from the variable f
 (const int nc_id,               /* I [id] netCDF file ID */
  const char * const var_nm_fll);/* I [sng] Full variable name to find */
 
-nm_id_sct *                      /* O [sct] Extraction list */
-nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
-(const int nc_id,                /* I netCDF file ID */
- const char * const var_nm_fll,  /* I [sng] Full variable name */
- const char * const var_nm,      /* I [sng] Variable relative name */
- const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
- nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
- int * const xtr_nbr,            /* I/O number of variables in current extraction list */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
 int                              /* O [nbr] Item found or not */
 nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter "var_nm" and export to "nm_id" */
 (const int nc_id,                /* I [id] netCDF file ID */
@@ -284,36 +257,15 @@ nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recurs
  int lmt_nbr,                          /* I [nbr] Number of limit structures in list */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
-nm_id_sct *                            /* O [sct] Extraction list */                                
-nco_aux_add_dmn_trv                    /* [fnc] Add a coordinate variable that matches parameter "var_nm" */
-(const int nc_id,                      /* I [id] netCDF file ID */
- const char * const var_nm,            /* I [sng] Variable name to find */
- nm_id_sct *xtr_lst,                   /* I/O [sct] Current extraction list  */
- int * const xtr_nbr,                  /* I/O [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
 nco_bool                               /* O [flg] Dimension was found */
 nco_fnd_dmn                            /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
 (const int grp_id,                     /* I [id] Group ID */
  const char * const dmn_nm);           /* I [sng] Dimension name to find */
 
 void 
-xtr_lst_prn                            /* [fnc] Validated name-ID structure list */
-(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
- const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
-
-void 
 nco_nm_id_val                          /* [fnc] Validated name-ID structure list */
 (nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
-
-void 
-nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists */
-(nm_id_sct * const nm_id_lst1,        /* I [sct] Name-ID structure list */
- const int nm_id_nbr1,                /* I [nbr] Number of name-ID structures in list */
- nm_id_sct * const nm_id_lst2,        /* I [sct] Name-ID structure list */
- const int nm_id_nbr2,                /* I [nbr] Number of name-ID structures in list */
- const nco_bool SAME_ORDER);          /* I [flg] Both lists have the same order */
 
 void
 nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
