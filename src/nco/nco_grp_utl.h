@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.191 2013-01-20 06:45:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.192 2013-01-20 19:44:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -116,16 +116,6 @@ nco_grp_stk_free /* [fnc] Free group stack */
 (grp_stk_sct * const grp_stk); /* O [sct] Group stack pointer */
 /* end nco_grp_stk_free() */
 
-nm_id_sct *                               /* O [sct] Variable extraction list */
-nco_var_lst_mk_trv                        /* [fnc] Create variable extraction list using regular expressions */
-(const int nc_id,                         /* I [ID] Apex group ID */
- char * const * const grp_lst_in,         /* I [sng] User-specified list of groups names to extract (specified with -g) */
- const int grp_xtr_nbr,                   /* I [nbr] Number of groups in current extraction list (specified with -g) */
- char * const * const var_lst_in,         /* I [sng] User-specified list of variable names and rx's */
- const trv_tbl_sct * const trv_tbl,       /* I [sct] Group traversal table */
- const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */
- int * const var_xtr_nbr);                 /* I/O [nbr] Number of variables in current extraction list */
-/* end nco_var_lst_mk_trv() */
 
 nm_id_sct * /* O [sct] Group extraction list */
 nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions */
