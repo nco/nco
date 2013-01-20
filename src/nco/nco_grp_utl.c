@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.388 2013-01-20 20:04:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.389 2013-01-20 20:11:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -658,37 +658,7 @@ nco_aux_grp_id /* [fnc] Return group ID from variable full name */
   return grp_id;
 } /* end nco_aux_grp_id() */
 
-int                            /* O [nbr] Item found or not */
-nco_fnd_var_trv                /* [fnc] Find a variable that matches parameter "var_nm" and export to "nm_id" */
-(const int nc_id,              /* I [id] netCDF file ID */
- const char * const var_nm,    /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
- nm_id_sct *nm_id)             /* O [sct] Entry to add to list */
-{
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.typ == nco_obj_typ_var){ 
 
-      /* Compare name with current relative name */
-      if(!strcmp(trv.nm,var_nm)){
-        int var_id;
-        int grp_id;      
-        /* Obtain group ID from netCDF API using full group name */
-	(void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-        /* Obtain variable ID from netCDF API using group ID */
-        (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-        /* Define new nm_id_sct */
-        nm_id->grp_nm_fll=strdup(trv.grp_nm_fll);    
-        nm_id->var_nm_fll=strdup(trv.nm_fll);
-        nm_id->nm=strdup(var_nm);
-        nm_id->id=var_id; 
-        return 1;
-      } /* end strcmp */
-    } /* end nco_obj_typ_var */
-  } /* end uidx  */
-
-  return 0;
-} /* end nco_fnd_var_trv */ 
 
 nco_bool /* O [flg] All names are in file */
 nco_xtr_mk /* [fnc] Check -v and -g input names and create extraction list */

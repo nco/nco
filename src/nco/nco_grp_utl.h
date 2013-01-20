@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.194 2013-01-20 20:04:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.195 2013-01-20 20:11:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -222,13 +222,6 @@ int                             /* O [id] Group ID */
 nco_aux_grp_id                  /* [fnc] Return the group ID from the variable full name */
 (const int nc_id,               /* I [id] netCDF file ID */
  const char * const var_nm_fll);/* I [sng] Full variable name to find */
-
-int                              /* O [nbr] Item found or not */
-nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter "var_nm" and export to "nm_id" */
-(const int nc_id,                /* I [id] netCDF file ID */
- const char * const var_nm,      /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
- nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
 
 void 
 nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recursive version */ 
