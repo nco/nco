@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.186 2013-01-20 01:42:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.187 2013-01-20 01:44:50 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -153,13 +153,6 @@ nco_grp_itr
  char * const grp_pth,                   /* I [sng] Absolute group path */
  trv_tbl_sct *trv_tbl);                  /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
-
-nm_id_sct *                              /* O [sct] Extraction list */
-nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extraction list */
-(const int nc_id,                        /* I [ID] netCDF file ID */
- nm_id_sct *xtr_lst,                     /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr,                    /* I/O [nbr] Number of variables in exclusion/extraction list */
- const trv_tbl_sct * const trv_tbl);     /* I [sct] Traversal table */
 
 nm_id_sct *                /* O [sct] Extraction list */
 nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
