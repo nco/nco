@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.387 2013-01-20 19:55:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.388 2013-01-20 20:04:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -472,45 +472,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   return rcd;
 }/* end nco_grp_itr() */
 
-int                       /* [rcd] Return code */
-nco4_inq_vars             /* [fnc] Find and return total of variables */
-(const int nc_id,         /* I [ID] Apex group */
- int * const var_nbr_all) /* O [nbr] Number of variables in file */
-{
-  /* [fnc] Find and return total variables */
-
-  int rcd=NC_NOERR;
-  int *grp_ids; /* [ID] Group IDs of children */
-  int grp_id;   /* [ID] Group ID */
-  int grp_nbr;  /* [nbr] Number of groups */
-  int var_nbr;  /* [nbr] Number of variables */
-  int idx_grp;
-
-  /* Discover and return number of apex and all sub-groups */
-  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,(int *)NULL);
-
-  grp_ids=(int *)nco_malloc(grp_nbr*sizeof(int)); /* [ID] Group IDs of children */
-
-  /* Discover and return IDs of apex and all sub-groups */
-  rcd+=nco_inq_grps_full(nc_id,&grp_nbr,grp_ids);
-
-  /* Initialize variables that accumulate */
-  *var_nbr_all=0; /* [nbr] Total number of variables in file */
-
-  /* Create list of all variables in input file */
-  for(idx_grp=0;idx_grp<grp_nbr;idx_grp++){
-    grp_id=grp_ids[idx_grp]; /* [ID] Group ID */
-
-    /* How many variables in current group? */
-    rcd+=nco_inq_varids(grp_id,&var_nbr,(int *)NULL);
-
-    /* Augment total number of variables in file */
-    *var_nbr_all+=var_nbr;
-  } /* end loop over grp */
- 
-  return rcd;
-} /* end nco4_inq() */
-
 void                          
 nco_prt_grp_trv         /* [fnc] Print table  */
 (const int nc_id,       /* I [ID] File ID */
@@ -665,19 +626,6 @@ nco_prn_att_trv /* [fnc] Print all attributes of single variable */
     } /* end nco_obj_typ_grp */
   } /* end uidx */
 } /* end nco_prn_att_trv() */
-
-nco_bool                        /* O [flg] Name is in extraction list */
-xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
-(const char * const var_nm_fll, /* I [sng] Full variable name to find */
- nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
- const int xtr_nbr)             /* I [nbr] Name ID structure list size */
-{
-  for(int idx=0;idx<xtr_nbr;idx++){
-    nm_id_sct nm_id=xtr_lst[idx];
-    if(!strcmp(var_nm_fll,nm_id.var_nm_fll)) return True;
-  } /* end loop */
-  return False;
-} /* end xtr_lst_fnd */ 
 
 int /* O [id] Group ID */
 nco_aux_grp_id /* [fnc] Return group ID from variable full name */
@@ -1682,47 +1630,6 @@ nco_trv_tbl_nm_id /* [fnc] Create extraction list of nm_id_sct from traversal ta
   return xtr_lst;
 } /* end nco_trv_tbl_nm_id() */
 
-nm_id_sct *                           /* O [sct] Extraction list */  
-nco_trv_tbl_nm_id_old                 /* [fnc] Convert a trv_tbl_sct to a nm_id_sct */
-(const int nc_id,                     /* I [id] netCDF file ID */
- nm_id_sct *xtr_lst,                  /* I/O [sct] Current extraction list  */
- int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  /* Purpose: Define a nm_id_sct* from a trv_tbl_sct* */
-  int fl_fmt; /* [enm] netCDF file format */
-  
-  (void)nco_inq_format(nc_id,&fl_fmt);
-
-  int nbr_tbl=0; 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr == True){
-      nbr_tbl++;
-    } /* end flg == True */
-  } /* end loop over uidx */
-
-  xtr_lst=(nm_id_sct *)nco_malloc(nbr_tbl*sizeof(nm_id_sct));
-
-  nbr_tbl=0;
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr == True){
-      xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
-      xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
-      xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
-      /* To deprecate: generate ID needed only to test netCDf3 library and netCDf3 only functions to deprecate */
-      int var_id;
-      int grp_id;
-      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
-      (void)nco_inq_varid(grp_id,trv_tbl->lst[uidx].nm,&var_id);
-      xtr_lst[nbr_tbl].id=var_id;
-
-      nbr_tbl++;
-    } /* end flg == True */
-  } /* end loop over uidx */
-
-  *xtr_nbr=nbr_tbl;
-  return xtr_lst;
-} /* end nco_trv_tbl_nm_id_old() */
 
 void
 nco_xtr_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.193 2013-01-20 19:55:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.194 2013-01-20 20:04:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -48,13 +48,6 @@ extern "C" {
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
 (const int nc_id,                     /* I [id] netCDF file ID */
- int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
-
-nm_id_sct *                           /* O [sct] Extraction list */  
-nco_trv_tbl_nm_id_old                 /* [fnc] Create extraction list of nm_id_sct from traversal table */
-(const int nc_id,                     /* I [id] netCDF file ID */
- nm_id_sct *xtr_lst,                  /* I/O [sct] Extraction list  */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
@@ -136,10 +129,6 @@ nco_grp_itr
  trv_tbl_sct *trv_tbl);                  /* I/O [sct] Group traversal table  */
 /* end nco_grp_itr() */
 
-int                       /* [rcd] Return code */
-nco4_inq_vars             /* [fnc] Find and return total of variables */
-(const int nc_id,         /* I [ID] Apex group */
- int * const var_nbr_all);/* O [nbr] Number of variables in file */
 
 nco_bool /* O [flg] All user-specified names are in file */
 nco_xtr_mk /* [fnc] Check -v and -g input names and create extraction list */
@@ -185,7 +174,7 @@ nco_xtr_wrt /* [fnc] Write extracted data to output file */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void                               
-nco_xtr_crd_ass_add_trv                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
+nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
  const char * const var_nm,           /* I [sng] Variable name  */
@@ -229,12 +218,6 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
 (const int in_id,             /* I [id] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
-nco_bool                        /* O [flg] Name is in extraction list */
-xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
-(const char * const var_nm_fll, /* I [sng] Full variable name to find */
- nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
- const int xtr_nbr);            /* I [nbr] Name ID structure list size */
-
 int                             /* O [id] Group ID */
 nco_aux_grp_id                  /* [fnc] Return the group ID from the variable full name */
 (const int nc_id,               /* I [id] netCDF file ID */
@@ -266,14 +249,6 @@ void
 nco_nm_id_val                          /* [fnc] Validated name-ID structure list */
 (nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
-
-void
-nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
-(const int nc_id,                     /* I netCDF file ID */
- nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
- const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
- const nco_bool NM_ID_SAME_ORDER);    /* I [flg] Both nm_id_sct have the same order */
 
 void
 nco_xtr_crd_ass_add               /* [fnc] Add to extraction list all coordinates associated with extracted variables */
