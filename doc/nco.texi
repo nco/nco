@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.752 2013-01-19 06:35:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.753 2013-01-20 01:37:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1534,7 +1534,7 @@ the results of the operation in the existing @var{output-file},
 @html
 <a name="unn"></a> <!-- http://nco.sf.net/nco.html#unn -->
 @end html
-@cindex union of two files
+@cindex union of files
 @cindex disjoint files
 The simplest way to create the union of two files is
 @example
@@ -3413,7 +3413,7 @@ build time.
 @cindex @code{--union}
 @cartouche
 Options @code{--unn}@*
-Availability: @command{ncks}@*
+Availability: @command{ncecat}, @command{ncks}@*
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
@@ -11233,7 +11233,7 @@ ncecat [-3] [-4] [-6] [-A] [-C] [-c]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] 
-[-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 

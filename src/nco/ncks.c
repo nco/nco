@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.555 2013-01-19 23:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.556 2013-01-20 01:37:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,10 +146,10 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  char rth[]="/"; /* [sng] Group path */
+  char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.555 2013-01-19 23:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.555 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.556 2013-01-20 01:37:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.556 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -604,18 +604,15 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Get file format */
-  (void)nco_inq_format(in_id,&fl_in_fmt);
-
-  /* Get objects in file */
+  /* Construct traversal table */
   trv_tbl_init(&trv_tbl);
-  rcd+=nco_grp_itr(in_id,rth,trv_tbl);
+  rcd+=nco_grp_itr(in_id,sls_sng,trv_tbl);
 
    /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
-  (void)nco_inq(in_id,NULL,NULL,NULL,&rec_dmn_id);
+  (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+  (void)nco_inq_format(in_id,&fl_in_fmt);
 
-  /* Basic checks for ENABLE_NETCDF4 */
   /* Make output and input files consanguinous */
    if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 #ifndef ENABLE_NETCDF4

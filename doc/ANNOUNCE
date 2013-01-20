@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.531 2013-01-14 23:56:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.532 2013-01-20 01:37:14 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -31,13 +31,13 @@ Charlie
 
 NEW FEATURES:
 
-A. ncks supports regular expressions in both variable and group
-   lists. Formerly they worked only in variable lists.
+A. ncks & ncecat support regular expressions in both variable and
+   group lists. Formerly they worked only in variable lists.
    ncks -g 'g.' in_grp.nc # Groups g0-g9
    ncks -g 'g.' -v 'v.' in_grp.nc # All variables 'v.' in groups 'g.'
    http://nco.sf.net/nco.html#rx
 
-A. ncks supports Anchoring and Recursion.
+A. ncks & ncecat support Anchoring and Recursion.
    Previously arguments to -g were extracted recursively by default.
    Meaning that descendents of specified groups were also extracted.
    And prepended slashes had no special significance.
@@ -48,9 +48,9 @@ A. ncks supports Anchoring and Recursion.
    ncks -g /g1/ # Extract, non-recursively root group g1
    http://nco.sf.net/nco.html#rcr
 
-A. ncks allows control over intersection- and union-mode subsetting.
-   Do users want the intersection or the union of matches to the -v
-   and -g subsetting lists? NCO is no longer wishy-washy: Intersection
+A. ncks & ncecat allow control over intersection- and union-subsetting.
+   Do users want intersections or unions of matches to the -v and -g
+   subsetting instructions? NCO is no longer wishy-washy: Intersection  
    mode is the default, and --unn selects union-mode:
    ncks -g g1 -v v1 # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1
    ncks -g g1 -v v1 --unn # All vars in g1 (or descendents), or named v1
@@ -70,6 +70,12 @@ A. ncrename supports restricting actions to global/group attributes
    http://nco.sf.net/nco.html#xmp_ncrename
 
 BUG FIXES:
+
+A. Group attributes are now copied into all groups which are ancestors
+   of groups with extracted variables. Formerly, group attributes were
+   only copied into groups which themselves had extracted variables.
+   Now otherwise empty (i.e., no variables) intermediate groups will 
+   have their attributes copied.
 
 A. Fix bug introduced in 4.2.1 that causes ncea to break when handling 
    files that do not contain a record dimension. Thanks to Martin Otte

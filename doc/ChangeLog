@@ -1,5 +1,7 @@
 2013-01-19  Charlie Zender  <zender@uci.edu>
 
+	* Implement new extraction list API in ncecat
+
 	* Restructure nco_xtr_dfn() to isolate variable from group definitions
 	Group metadata now handled by separate block executed iff PRN_VAR_METADATA
 	This give user ability to turn-off all metadata copying
