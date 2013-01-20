@@ -1,5 +1,7 @@
 2013-01-19  Charlie Zender  <zender@uci.edu>
 
+	* Pass CPY_GRP_METADATA _and_ CPY_VAR_METADATA to nco_xtr_dfn()
+
 	* Systematize extraction list function names
 
 	* Remove cruft from nco_grp_utl.[ch]

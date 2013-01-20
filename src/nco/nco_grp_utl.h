@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.190 2013-01-20 02:09:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.191 2013-01-20 06:45:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -168,52 +168,6 @@ nco4_inq_vars             /* [fnc] Find and return total of variables */
 (const int nc_id,         /* I [ID] Apex group */
  int * const var_nbr_all);/* O [nbr] Number of variables in file */
 
-void                          
-nco_prt_grp_trv                   /* [fnc] Print table with -G */
-(const int nc_id,                 /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-void
-nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab specifications */
-(int nc_id,                /* I [idx] netCDF file ID */
- int lmt_nbr,              /* [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,            /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
- nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-void 
-nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
-(const int in_id,             /* I [id] netCDF input file ID */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-nco_bool                        /* O [flg] Name is in extraction list */
-xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
-(const char * const var_nm_fll, /* I [sng] Full variable name to find */
- nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
- const int xtr_nbr);            /* I [nbr] Name ID structure list size */
-
-int                             /* O [id] Group ID */
-nco_aux_grp_id                  /* [fnc] Return the group ID from the variable full name */
-(const int nc_id,               /* I [id] netCDF file ID */
- const char * const var_nm_fll);/* I [sng] Full variable name to find */
-
-nm_id_sct *                      /* O [sct] Extraction list */
-nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
-(const int nc_id,                /* I netCDF file ID */
- const char * const var_nm_fll,  /* I [sng] Full variable name */
- const char * const var_nm,      /* I [sng] Variable relative name */
- const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
- nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
- int * const xtr_nbr,            /* I/O number of variables in current extraction list */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-int                              /* O [nbr] Item found or not */
-nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter "var_nm" and export to "nm_id" */
-(const int nc_id,                /* I [id] netCDF file ID */
- const char * const var_nm,      /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
- nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
-
 nco_bool /* O [flg] All user-specified names are in file */
 nco_xtr_mk /* [fnc] Check -v and -g input names and create extraction list */
 (char **grp_lst_in, /* I [sng] User-specified list of groups */
@@ -242,7 +196,8 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
  const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
  lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
- const nco_bool PRN_VAR_METADATA, /* I [flg] Copy variable metadata (attributes) */
+ const nco_bool CPY_GRP_METADATA, /* I [flg] Copy group metadata (attributes) */
+ const nco_bool CPY_VAR_METADATA, /* I [flg] Copy variable metadata (attributes) */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
@@ -282,6 +237,52 @@ nco_xtr_cf_prv_add /* [fnc] Add specified CF-compliant coordinates of specified 
  const char * const var_nm, /* I [sng] Variable relative name */
  const char * const cf_nm, /* I [sng] CF convention ( "coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+
+void
+nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab specifications */
+(int nc_id,                /* I [idx] netCDF file ID */
+ int lmt_nbr,              /* [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,            /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
+ nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+void                          
+nco_prt_grp_trv                   /* [fnc] Print table with -G */
+(const int nc_id,                 /* I [ID] File ID */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+void 
+nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
+(const int in_id,             /* I [id] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+nco_bool                        /* O [flg] Name is in extraction list */
+xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
+(const char * const var_nm_fll, /* I [sng] Full variable name to find */
+ nm_id_sct *xtr_lst,            /* I [sct] Name ID structure list */
+ const int xtr_nbr);            /* I [nbr] Name ID structure list size */
+
+int                             /* O [id] Group ID */
+nco_aux_grp_id                  /* [fnc] Return the group ID from the variable full name */
+(const int nc_id,               /* I [id] netCDF file ID */
+ const char * const var_nm_fll);/* I [sng] Full variable name to find */
+
+nm_id_sct *                      /* O [sct] Extraction list */
+nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates associated with CF convention (associated with "var_nm_fll")*/
+(const int nc_id,                /* I netCDF file ID */
+ const char * const var_nm_fll,  /* I [sng] Full variable name */
+ const char * const var_nm,      /* I [sng] Variable relative name */
+ const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
+ nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
+ int * const xtr_nbr,            /* I/O number of variables in current extraction list */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+int                              /* O [nbr] Item found or not */
+nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter "var_nm" and export to "nm_id" */
+(const int nc_id,                /* I [id] netCDF file ID */
+ const char * const var_nm,      /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
 
 void 
 nco_msa_lmt_all_int_trv                /* [fnc] Initilaize lmt_all_sct's; recursive version */ 

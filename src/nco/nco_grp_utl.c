@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.384 2013-01-20 03:17:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.385 2013-01-20 06:45:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2542,7 +2542,8 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
  const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
  lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
- const nco_bool PRN_VAR_METADATA, /* I [flg] Copy variable metadata (attributes) */
+ const nco_bool CPY_GRP_METADATA, /* I [flg] Copy group metadata (attributes) */
+ const nco_bool CPY_VAR_METADATA, /* I [flg] Copy variable metadata (attributes) */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Define groups, variables, and attributes in output file */
@@ -2577,7 +2578,7 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
   (void)nco_inq_format(nc_id,&fl_fmt);
   
   /* Isolate extra complexity of copying group metadata */
-  if(PRN_VAR_METADATA){
+  if(CPY_GRP_METADATA){
     /* Block can be performed before or after writing variables
        Perhaps it should be turned into an explicit function call */
     
@@ -2642,7 +2643,7 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
       } /* end if group and flg_xtr */
     } /* end loop to define group attributes */
     
-  } /* !PRN_VAR_METADATA */
+  } /* !CPY_GRP_METADATA */
   
   /* Define variables */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2747,11 +2748,11 @@ nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in outpu
 	(void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
       
       /* Copy variable's attributes */
-      if(PRN_VAR_METADATA){
+      if(CPY_VAR_METADATA){
 	int var_id;
 	(void)nco_inq_varid(grp_id,trv.nm,&var_id);
 	(void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
-      } /* !PRN_VAR_METADATA */
+      } /* !CPY_VAR_METADATA */
       
       /* Memory management after current extracted variable */
       if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);

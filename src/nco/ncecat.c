@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.253 2013-01-20 02:09:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.254 2013-01-20 06:45:56 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.253 2013-01-20 02:09:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.253 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.254 2013-01-20 06:45:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.254 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -149,7 +149,6 @@ main(int argc,char **argv)
   FILE *fp_bnr=NULL; /* [fl] Unformatted binary output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
   int *in_id_arr;
 
@@ -198,6 +197,8 @@ main(int argc,char **argv)
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
+
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
   var_sct **var;
   var_sct **var_fix;
@@ -397,6 +398,14 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
+      /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so do not use it
+	 http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+      gpe=nco_gpe_prs_arg(optarg);
+      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
+      grp_out_lng=gpe->lng_cnn;
+      GROUP_AGGREGATE=True;
+      break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
@@ -404,14 +413,6 @@ main(int argc,char **argv)
       grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       grp_nbr=grp_lst_in_nbr;
-      break;
-    case 'G': /* Apply Group Path Editing (GPE) to output group */
-      /* NB: GNU getopt() optional argument syntax is ugly, requires "=" sign so do not use it
-      http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
-      gpe=nco_gpe_prs_arg(optarg);
-      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
-      grp_out_lng=gpe->lng_cnn;
-      GROUP_AGGREGATE=True;
       break;
     case 'H': /* Toggle writing input file list attribute */
       FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
@@ -865,7 +866,7 @@ main(int argc,char **argv)
       (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
 
       /* Define extracted groups, variables, and attributes in output file */
-      nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,CPY_GLB_METADATA,trv_tbl);
+      nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,CPY_GLB_METADATA,(nco_bool)True,trv_tbl);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
