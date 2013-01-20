@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.556 2013-01-20 01:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.557 2013-01-20 02:09:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.556 2013-01-20 01:37:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.556 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.557 2013-01-20 02:09:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.557 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -624,7 +624,7 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
 
   /* Check -v and -g input names and create extraction list */
-  nco_mk_xtr(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+  nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
@@ -681,8 +681,8 @@ main(int argc,char **argv)
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
   if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Implement CF "coordinates" and "bounds" conventions */
-    (void)nco_xtr_cf_trv(in_id,"coordinates",trv_tbl);
-    (void)nco_xtr_cf_trv(in_id,"bounds",trv_tbl);
+    (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
+    (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
    if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);

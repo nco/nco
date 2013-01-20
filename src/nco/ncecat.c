@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.252 2013-01-20 01:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.253 2013-01-20 02:09:13 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.252 2013-01-20 01:37:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.252 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.253 2013-01-20 02:09:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.253 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -833,7 +833,7 @@ main(int argc,char **argv)
       } /* endif aux_nbr */
 
       /* Check -v and -g input names and create extraction list */
-      nco_mk_xtr(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+      nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
 
       /* Change included variables to excluded variables */
       if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
@@ -848,8 +848,8 @@ main(int argc,char **argv)
       CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
       if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
 	/* Implement CF "coordinates" and "bounds" conventions */
-	(void)nco_xtr_cf_trv(in_id,"coordinates",trv_tbl);
-	(void)nco_xtr_cf_trv(in_id,"bounds",trv_tbl);
+	(void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
+	(void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
       } /* CNV_CCM_CCSM_CF */
 
       /* We now have final list of variables to extract. Phew. */

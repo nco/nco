@@ -1,5 +1,9 @@
 2013-01-19  Charlie Zender  <zender@uci.edu>
 
+	* Systematize extraction list function names
+
+	* Remove cruft from nco_grp_utl.[ch]
+
 	* Implement new extraction list API in ncecat
 
 	* Restructure nco_xtr_dfn() to isolate variable from group definitions

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.189 2013-01-20 01:51:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.190 2013-01-20 02:09:13 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -186,13 +186,6 @@ nco_prn_att_trv               /* [fnc] Print all attributes of single variable *
 (const int in_id,             /* I [id] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
-void                          
-nco_chk_var                         /* [fnc] Check if input names of -v or -g are in file */
-(const int nc_id,                   /* I [ID] Apex group ID */
- char * const * const var_lst_in,   /* I [sng] User-specified list of variable names and rx's */
- const int var_xtr_nbr,             /* I [nbr] Number of variables in current extraction list */
- const nco_bool EXCLUDE_INPUT_LIST); /* I [flg] Exclude rather than extract */
- 
 nco_bool                        /* O [flg] Name is in extraction list */
 xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
 (const char * const var_nm_fll, /* I [sng] Full variable name to find */
@@ -222,7 +215,7 @@ nco_fnd_var_trv                  /* [fnc] Find a variable that matches parameter
  nm_id_sct *nm_id);              /* O [sct] Entry to add to list */
 
 nco_bool /* O [flg] All user-specified names are in file */
-nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
+nco_xtr_mk /* [fnc] Check -v and -g input names and create extraction list */
 (char **grp_lst_in, /* I [sng] User-specified list of groups */
  const int grp_xtr_nbr, /* I [nbr] Number of groups in list */
  char **var_lst_in, /* I [sng] User-specified list of variables */
@@ -232,18 +225,58 @@ nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
  trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void
+nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
+(trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+
+void
+nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in output file */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const int nc_out_id, /* I [ID] netCDF output file ID */
+ int * const cnk_map_ptr, /* I [enm] Chunking map */
+ int * const cnk_plc_ptr, /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr, /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl, /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe, /* I [sng] GPE structure */
+ const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
+ const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+ const nco_bool PRN_VAR_METADATA, /* I [flg] Copy variable metadata (attributes) */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+
+void
+nco_xtr_wrt /* [fnc] Write extracted data to output file */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const int nc_out_id, /* I [ID] netCDF output file ID */
+ const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
+ lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
+ const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+ FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+void                               
+nco_xtr_crd_ass_add_trv                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
+ const char * const var_nm,           /* I [sng] Variable name  */
+ const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
+
+void
 nco_xtr_crd_add /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [ID] netCDF file ID */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
-nco_xtr_cf_trv /* [fnc] Add to extraction list variable associated with CF convention */
+nco_xtr_cf_add /* [fnc] Add to extraction list variable associated with CF convention */
 (const int nc_id, /* I [ID] netCDF file ID */
  const char * const cf_nm, /* I [sng] CF convention ("coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
-nco_xtr_cf_add /* [fnc] Add to extraction list all CF-compliant coordinates */
+nco_xtr_cf_prv_add /* [fnc] Add specified CF-compliant coordinates of specified variable to extraction list */
 (const int nc_id, /* I [ID] netCDF file ID */
  const char * const var_nm_fll, /* I [sng] Full variable name */
  const char * const var_nm, /* I [sng] Variable relative name */
@@ -292,18 +325,6 @@ nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists
  const nco_bool SAME_ORDER);          /* I [flg] Both lists have the same order */
 
 void
-nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
-(trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
-
-void                               
-nco_xtr_crd_ass_add_trv                  /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
- const char * const var_nm,           /* I [sng] Variable name  */
- const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
- trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
-
-void
 nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
 (const int nc_id,                     /* I netCDF file ID */
  nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
@@ -318,34 +339,6 @@ nco_xtr_crd_ass_add               /* [fnc] Add to extraction list all coordinate
 
 void
 nco_get_prg_info(void);               /* [fnc] Get program info */
-
-void
-nco_xtr_wrt /* [fnc] Write extracted data to output file */
-(const int nc_id, /* I [ID] netCDF input file ID */
- const int nc_out_id, /* I [ID] netCDF output file ID */
- const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
- lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
- const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
- FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
- const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
-
-void
-nco_xtr_dfn /* [fnc] Define extracted groups, variables, and attributes in output file */
-(const int nc_id, /* I [ID] netCDF input file ID */
- const int nc_out_id, /* I [ID] netCDF output file ID */
- int * const cnk_map_ptr, /* I [enm] Chunking map */
- int * const cnk_plc_ptr, /* I [enm] Chunking policy */
- const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr, /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl, /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe, /* I [sng] GPE structure */
- const int lmt_nbr, /* I [nbr] Number of dimensions with limits */
- lmt_all_sct * const * lmt_all_lst, /* I [sct] Multi-hyperslab limits */
- const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
- const nco_bool PRN_VAR_METADATA, /* I [flg] Copy variable metadata (attributes) */
- trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
 nco_prn_xtr_dfn                  /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
