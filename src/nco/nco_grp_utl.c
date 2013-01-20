@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.389 2013-01-20 20:11:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.390 2013-01-20 20:17:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -24,7 +24,7 @@ nco_flg_set_grp_var_ass /* [fnc] Set flags for groups and variables associated w
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Set flags for groups and variables associated with matched object */  
-  //const char fnc_nm[]="nco_flg_set_grp_var_ass()"; /* [sng] Function name */
+  /* const char fnc_nm[]="nco_flg_set_grp_var_ass()"; [sng] Function name */
 
   trv_sct trv_obj; /* [sct] Traversal table object */
 
@@ -1533,7 +1533,7 @@ nco_xtr_crd_ass_add_trv                  /* [fnc] Add a coordinate variable that
           /* So... exit from here if the innermost coordinate variable was found: there is one and only 
            one valid coordinate variable in the path scope */
           dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-          return;
+          break;
 
         } /* endif */
         dmn_nm_fll[psn]='\0';
