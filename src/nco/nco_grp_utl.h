@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.187 2013-01-20 01:44:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.188 2013-01-20 01:47:36 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -184,22 +184,6 @@ nco_lmt_evl_trv            /* [fnc] Parse user-specified limits into hyperslab s
 void 
 nco_prn_att_trv               /* [fnc] Print all attributes of single variable */
 (const int in_id,             /* I [id] netCDF input file ID */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-nm_id_sct *                      /* O [sct] Extraction list */
-nco_var_lst_crd_add_trv          /* [fnc] Add all coordinates to extraction list */
-(const int nc_id,                /* I [ID] netCDF file ID */
- nm_id_sct *xtr_lst,             /* I/O [sct] Current extraction list  */
- int * xtr_nbr,                  /* I/O [nbr] Number of variables in current extraction list */
- int * const grp_xtr_nbr,        /* I [nbr] Number of groups in current extraction list (specified with -g ) */
- char * const * const grp_lst_in,/* I [sng] User-specified list of groups names to extract (specified with -g ) */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-nm_id_sct *                       /* O [sct] Extraction list */
-nco_var_lst_crd_ass_add_trv       /* [fnc] Add to extraction list all coordinates associated with extracted variables */
-(const int nc_id,                 /* I netCDF file ID */
- nm_id_sct *xtr_lst,              /* I/O current extraction list (destroyed) */
- int * const xtr_nbr,             /* I/O number of variables in current extraction list */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void                          

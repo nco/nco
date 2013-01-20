@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.381 2013-01-20 01:47:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.382 2013-01-20 01:51:10 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1244,19 +1244,6 @@ nco_chk_var                         /* [fnc] Check if input names of -v or -g ar
 
 } /* end nco_chk_var() */
 
-void 
-xtr_lst_prn                            /* [fnc] Validated name-ID structure list */
-(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
- const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
-{
-  (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",prg_nm_get(),nm_id_nbr); 
-  for(int idx=0;idx<nm_id_nbr;idx++){
-    nm_id_sct nm_id=nm_id_lst[idx];
-    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.var_nm_fll); 
-  } 
-}/* end xtr_lst_prn() */
-
-
 nco_bool                        /* O [flg] Name is in extraction list */
 xtr_lst_fnd                     /* [fnc] Check if "var_nm_fll" is in extraction list */
 (const char * const var_nm_fll, /* I [sng] Full variable name to find */
@@ -1464,29 +1451,6 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
 
   return xtr_lst;
 } /* nco_aux_add_cf() */
-
-nm_id_sct *                      /* O [sct] Extraction list */
-nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int nc_id,                /* I netCDF file ID */
- const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
- nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
- int * const xtr_nbr,            /* I/O number of variables in current extraction list */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  /* Detect associated coordinates specified by CF "coordinates" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system 
-  NB: Only difference between this algorithm and CF algorithm in 
-  nco_var_lst_crd_ass_add() is that this algorithm loops over 
-  all variables in file, not just over current extraction list. */ 
-
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    /* Try to add to extraction list */
-    if(trv.typ == nco_obj_typ_var) xtr_lst=nco_aux_add_cf(nc_id,trv.nm_fll,trv.nm,cf_nm,xtr_lst,xtr_nbr,trv_tbl);
-  } /* end uidx  */
-
-  return xtr_lst;
-} /* nco_var_lst_crd_add_cf_trv() */
 
 nco_bool /* O [flg] All names are in file */
 nco_mk_xtr /* [fnc] Check -v and -g input names and create extraction list */
@@ -2560,27 +2524,6 @@ nco_trv_tbl_nm_id_old                 /* [fnc] Convert a trv_tbl_sct to a nm_id_
   *xtr_nbr=nbr_tbl;
   return xtr_lst;
 } /* end nco_trv_tbl_nm_id_old() */
-
-void
-nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
-(const int nc_id,                     /* I netCDF file ID */
- nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
- const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
- const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
-{
-  nm_id_sct *xtr_lst_chk=NULL;
-  int xtr_nbr_chk;
-
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)xtr_lst_prn(xtr_lst,xtr_nbr);
-    (void)trv_tbl_prn_xtr(trv_tbl);
-  }
-  xtr_lst_chk=nco_trv_tbl_nm_id_old(nc_id,xtr_lst_chk,&xtr_nbr_chk,trv_tbl);
-  (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
-  if(xtr_lst_chk != NULL) xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
-  return;
-} /* end nco_trv_tbl_chk() */
 
 void
 nco_xtr_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
