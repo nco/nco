@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.379 2013-01-20 01:42:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.380 2013-01-20 01:44:50 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -694,95 +694,6 @@ nco_grp_lst_mk /* [fnc] Create group extraction list using regular expressions *
   *grp_xtr_nbr=grp_nbr_tmp;    
   return grp_lst;
 } /* end nco_grp_lst_mk() */
-
-nm_id_sct *                              /* O [sct] Extraction list */
-nco_var_lst_xcl_trv                      /* [fnc] Convert exclusion list to extraction list */
-(const int nc_id,                        /* I [ID] netCDF file ID */
- nm_id_sct *xtr_lst,                     /* I/O [sct] Current exclusion list (destroyed) */
- int * const xtr_nbr,                    /* I/O [nbr] Number of variables in exclusion/extraction list */
- const trv_tbl_sct * const trv_tbl)      /* I [sct] Traversal table */
-{
-  /* Purpose: Convert exclusion list to extraction list
-     User wants to extract all variables except those currently in list
-     It is hard to edit existing list so copy existing extraction list into 
-     exclusion list, then construct new extraction list from scratch. */
-
-  int nbr_var_xtr;   /* Number of variables to extract */
-  int nbr_var;       /* Number of variables in the table/file */      
-  int  grp_id;       /* Group ID */
-  int  var_id;       /* Variable ID */
-  int idx;
-  int nbr_xcl;
-  unsigned int uidx;
- 
-  /* Traverse the full list trv_tbl; if a name in xtr_lst (input extraction list) is found, mark it as flagged;
-  A second traversal extracts all variables that are not marked (this reverses the list);
-  The second traversal is needed because we need to find nbr_xcl, the number of variables to exclude, first
-  */
-  nbr_var_xtr=0;
-  nbr_var=0;
-  for(uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if (trv.typ == nco_obj_typ_var){ /* trv_tbl lists non-variables also; filter just variables */
-      nbr_var++;
-      for(idx=0;idx<*xtr_nbr;idx++){
-        /* Compare variable name between full list and input extraction list */
-        if(strcmp(xtr_lst[idx].var_nm_fll,trv.nm_fll) == 0){
-          trv_tbl->lst[uidx].flg_xcl=True;
-          nbr_var_xtr++;
-          break;
-        } /* endif strcmp */
-      } /* end idx */
-    } /* end nco_obj_typ_var */
-  } /* end loop over uidx */
-
-#ifdef NCO_SANITY_CHECK
-  assert(nbr_var_xtr == *xtr_nbr);
-#endif
-
-  /* Variables to exclude = Total variables - Variables to extract */
-  nbr_xcl=nbr_var - *xtr_nbr;
-
-  /* Second traversal: extracts all variables that are not marked (this reverses the list); the xtr_lst must be reconstructed */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,*xtr_nbr);
-  xtr_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
-
-  /* Initialize index of extracted variables */
-  int idx_xtr=0;
-
-  for(uidx=0,idx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if (trv.typ == nco_obj_typ_var && !trv.flg_xcl){ 
-      /* Extract the full group name from 'trv', that contains the full variable name, to xtr_lst */
-
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-
-      /* Obtain variable ID from netCDF API using group ID */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-
-      /* ncks needs only:
-      1) xtr_lst.grp_nm_fll (full group name where variable resides, to get group ID) 
-      2) xtr_lst.var_nm_fll
-      3) xtr_lst.id
-      4) xtr_lst.nm (relative variable name) 
-      */
-      xtr_lst[idx_xtr].nm=(char*)strdup(trv.nm);
-      xtr_lst[idx_xtr].grp_nm_fll=(char*)strdup(trv.grp_nm_fll);
-      xtr_lst[idx_xtr].var_nm_fll=(char*)strdup(trv.nm_fll);
-      xtr_lst[idx_xtr].id=var_id;
-      /* Increment index of extracted variables */
-      idx_xtr++;
-    }
-  } /* end loop over uidx */
-
-  /* Export */
-  *xtr_nbr=nbr_xcl;
-
-  /* Reset mark field */
-  for(uidx=0;uidx<trv_tbl->nbr;uidx++) trv_tbl->lst[uidx].flg_xcl=False;
-
-  return xtr_lst;
-} /* end nco_var_lst_xcl_trv() */
 
 nm_id_sct *                /* O [sct] Extraction list */
 nco_xtr_lst_add            /* [fnc] Auxiliary function; add an entry to xtr_lst */
