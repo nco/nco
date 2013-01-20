@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.188 2013-01-20 01:47:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.189 2013-01-20 01:51:10 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -209,14 +209,6 @@ nco_aux_add_cf                   /* [fnc] Add to extraction list all coordinates
 (const int nc_id,                /* I netCDF file ID */
  const char * const var_nm_fll,  /* I [sng] Full variable name */
  const char * const var_nm,      /* I [sng] Variable relative name */
- const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
- nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
- int * const xtr_nbr,            /* I/O number of variables in current extraction list */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
-
-nm_id_sct *                      /* O [sct] Extraction list */
-nco_var_lst_crd_add_cf_trv       /* [fnc] Add to extraction list all coordinates associated with CF convention */
-(const int nc_id,                /* I netCDF file ID */
  const char * const cf_nm,       /* I [sng] CF name to find ( "coordinates" or "bounds" */
  nm_id_sct *xtr_lst,             /* I/O current extraction list (destroyed) */
  int * const xtr_nbr,            /* I/O number of variables in current extraction list */
