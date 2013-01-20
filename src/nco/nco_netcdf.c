@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.180 2013-01-18 19:18:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.181 2013-01-20 19:32:13 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1668,13 +1668,13 @@ int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm){a
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
 int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}
-int nco_inq_grp_full_ncid(const int nc_id,char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
-int nco_inq_grp_ncid(const int nc_id,char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
+int nco_inq_grp_full_ncid(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_inq_grp_parent(const int nc_id,int * const prn_id){assert(0);return NC_NOERR;}
 int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
-int nco_inq_grp_ncid_flg(const int nc_id,char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_grpname(const int nc_id,char * const grp_nm){if(grp_nm) strcpy(grp_nm,"/");return NC_NOERR;}
-int nco_inq_grp_full_ncid_flg(const int nc_id,char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){
   int dmn_idx;
   int rcd;
