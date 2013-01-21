@@ -1,8 +1,8 @@
 nco (4.2.4-1) unstable; urgency=low
 
-  * new upstream version
+  * new upstream version (ncks & ncecat new xtr API, ncra bugfix, ncrename)
 
- -- Charlie Zender <zender@uci.edu>  Fri, 29 Nov 2012 16:00:42 -0700
+ -- Charlie Zender <zender@uci.edu>  Mon, 21 Jan 2013 14:15:53 -0800
 
 nco (4.2.3-1) unstable; urgency=low
 

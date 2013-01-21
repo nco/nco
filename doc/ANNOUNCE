@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.532 2013-01-20 01:37:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.533 2013-01-21 22:19:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.4 are ready. 
 
@@ -13,15 +13,17 @@ controls the output location of extracted variables and groups.
 This release introduces three new features that control extraction:
 1. Group regular expressions, 2. Anchoring and Recursion, and
 3. Intersection and Unions. These latest three features are only in
-ncks for the time-being.
+ncks and ncecat for the time-being.
 
 Again, let us know how you like or dislike the way we have implemented
 the netCDF4 group functionality in ncks and ncecat.
+There are many choices for handling (selecting, printing, moving,
+comparing) groups and we made what I would call tentative decisions.
 Your feedback will help us finalize details like the printed output
 format for group information and the syntax of switches.
 This improved netCDF4 support will eventually come to all of NCO.
 
-Work on NCO 4.2.4 is underway: better netCDF4 support for ncrename
+Work on NCO 4.2.5 is underway: better netCDF4 support for ncrename
 and ncbo operators.
 
 Enjoy,
@@ -37,7 +39,7 @@ A. ncks & ncecat support regular expressions in both variable and
    ncks -g 'g.' -v 'v.' in_grp.nc # All variables 'v.' in groups 'g.'
    http://nco.sf.net/nco.html#rx
 
-A. ncks & ncecat support Anchoring and Recursion.
+B. ncks & ncecat support Anchoring and Recursion.
    Previously arguments to -g were extracted recursively by default.
    Meaning that descendents of specified groups were also extracted.
    And prepended slashes had no special significance.
@@ -48,7 +50,7 @@ A. ncks & ncecat support Anchoring and Recursion.
    ncks -g /g1/ # Extract, non-recursively root group g1
    http://nco.sf.net/nco.html#rcr
 
-A. ncks & ncecat allow control over intersection- and union-subsetting.
+C. ncks & ncecat allow control over intersection- and union-subsetting.
    Do users want intersections or unions of matches to the -v and -g
    subsetting instructions? NCO is no longer wishy-washy: Intersection  
    mode is the default, and --unn selects union-mode:
@@ -56,7 +58,7 @@ A. ncks & ncecat allow control over intersection- and union-subsetting.
    ncks -g g1 -v v1 --unn # All vars in g1 (or descendents), or named v1
    http://nco.sf.net/nco.html#unn
 
-A. ncrename supports restricting actions to global/group attributes
+D. ncrename supports restricting actions to global/group attributes
    Formerly ncrename arguments like -a old_nm,new_nm had no way of
    restricting actions to global/group attributes and changing them
    required implicit assumptions about whether variables could have
