@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.162 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.163 2013-01-21 00:40:37 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.162 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.162 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.163 2013-01-21 00:40:37 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.163 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -758,9 +758,6 @@ main(int argc,char **argv)
   /* Make list of all new variables in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,False,&nbr_lst_a);
 
-#ifdef NCO_SANITY_CHECK  
-  nco_nm_id_val(xtr_lst_a,nbr_lst_a);
-#endif
   
   if(PROCESS_ALL_VARS){
     /* Get number of variables in input file */
@@ -772,10 +769,6 @@ main(int argc,char **argv)
     xtr_lst=nco_att_lst_mk(in_id,out_id,var_vtr,&xtr_nbr);
   } /* endif */
 
-#ifdef NCO_SANITY_CHECK  
-  nco_nm_id_val(xtr_lst,xtr_nbr);
-#endif
-  
   /* Subtract list A */
   if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&xtr_nbr,xtr_lst_a,nbr_lst_a);
   
