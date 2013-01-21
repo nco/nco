@@ -1,3 +1,7 @@
+2013-01-21  Charlie Zender  <zender@uci.edu>
+
+	* Re-add --mk_rec_dim as synonym for preferred --mk_rec_dmn
+
 2013-01-20  Charlie Zender  <zender@uci.edu>
 
 	* Only print fully-qualified name of variables in non-root groups

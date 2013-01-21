@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.33 2013-01-21 06:00:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.34 2013-01-21 20:29:53 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -124,7 +124,7 @@ void
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (int * const att_nbr_glb,            /* O [nbr] Number of global attributes in file */
  int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all,            /* O [nbr] Number of variables in file  */
+ int * const var_nbr_all,            /* O [nbr] Number of variables in file */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
@@ -149,7 +149,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
       var_nbr_lcl+=trv.nbr_var;
       grp_nbr_lcl+=trv.nbr_grp;
     } /* end nco_obj_typ_grp */
-  } /* end uidx  */
+  } /* end uidx */
 
   if(att_nbr_glb) *att_nbr_glb=att_nbr_lcl;
   if(dmn_nbr_all) *dmn_nbr_all=dmn_nbr_lcl;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.558 2013-01-20 06:45:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.559 2013-01-21 20:29:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.558 2013-01-20 06:45:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.558 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.559 2013-01-21 20:29:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.559 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -265,6 +265,7 @@ main(int argc,char **argv)
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
+      {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"tst_udunits",required_argument,0,0},
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
@@ -373,9 +374,7 @@ main(int argc,char **argv)
         cnk_plc_sng=(char *)strdup(optarg);
         cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
       } /* endif cnk */
-      if(!strcmp(opt_crr,"mk_rec_dmn")){
-        rec_dmn_nm=strdup(optarg);
-      } /* endif mk_rec_dmn */
+      if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
         (void)fprintf(stdout,"%s\n",nco_cmp_get());
         nco_exit(EXIT_SUCCESS);
@@ -384,15 +383,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")) FIX_REC_DMN=True; /* [flg] Fix record dimension */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-      if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")){
-        GET_GRP_INFO=True;
-      } /* endif "get_grp_info" */
-      if(!strcmp(opt_crr,"get_file_info")){
-        GET_FILE_INFO=True;
-      } /* endif "get_file_info" */
-       if(!strcmp(opt_crr,"get_prg_info")){
-        GET_PRG_INFO=True;
-      } /* endif "get_prg_info" */
+      if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
+      if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
+      if(!strcmp(opt_crr,"get_prg_info")) GET_PRG_INFO=True;
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
