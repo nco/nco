@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.198 2013-01-19 06:35:48 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.199 2013-01-21 21:26:46 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1179,7 +1179,7 @@ print "\n";
 #ncks #40 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
-#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
+#NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
@@ -1196,7 +1196,7 @@ print "\n";
 #ncks #41 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
-#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
+#NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/area";
@@ -1213,12 +1213,12 @@ print "\n";
 #ncks #42 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
 #grep -w = all word
-#NOTE: test repeated for the 3 strings, for non netcDF4 cases, output is an empty string, wilcard . used  
+#NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-3 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -o -w area";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="/area";
+    $tst_cmd[1]="area";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=""; 
@@ -1258,8 +1258,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 						
 	
 #ncks #45 Variable/Group extraction test 7 (netCDF4 file)
-#extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
-#NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
+#extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
+#NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
 
     $dsc_sng="Variable/Group extraction test 7-1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
@@ -1274,8 +1274,8 @@ print "\n";
     $#tst_cmd=0; # Reset array 							
 	
 #ncks #46 Variable/Group extraction test 7 (netCDF4 file)
-#extract all variables "area" in g6 and g6g1  = g6/g6g1/area , g6/area
-#NOTE: test repeated for the 2 strings, for non netcDF4 case, output is an empty string 
+#extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
+#NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
 
     $dsc_sng="Variable/Group extraction test 7-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/area";
@@ -1303,8 +1303,8 @@ print "\n";
 
     $dsc_sng="Extract associated coordinates test 1 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v rz $in_pth_arg in.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -w /rlev";
-	$tst_cmd[2]="/rlev";
+	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -o -w rlev";
+	$tst_cmd[2]="rlev";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
@@ -1320,7 +1320,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 	
 #ncks #50 Extract associated coordinates test 3 (netCDF4 file)
-# rlev is a dimension of rz 
+# rlev is dimension of rz 
 # /g3/rz
 # /g3/rlev
 # /g5/g1/rz
@@ -1331,7 +1331,7 @@ print "\n";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g5g1 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
 	$tst_cmd[1]="ncks -H %tmp_fl_00%";
-	$tst_cmd[2]="rlev[2]=1";  # data for /g3/rlev differs from /g5/rlev
+	$tst_cmd[2]="rlev[2]=1"; # data for /g3/rlev differs from /g5/rlev
     $tst_cmd[3]="SS_OK";
     }elsif($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 0){
     $tst_cmd[1]=$ncks_msg_no_netcdf4; 
@@ -1362,8 +1362,8 @@ print "\n";
 #gds_crd:coordinates = "lat_gds lon_gds";
 
     $dsc_sng="Extract CF 'coordinates' variables (netCDF3 file)";
-    $tst_cmd[0]="ncks -v gds_crd $in_pth_arg in.nc | grep -w /lat_gds";
-    $tst_cmd[1]="/lat_gds";
+    $tst_cmd[0]="ncks -v gds_crd $in_pth_arg in.nc | grep -o -w lat_gds";
+    $tst_cmd[1]="lat_gds";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
@@ -1387,8 +1387,8 @@ print "\n";
 #lev:bounds = "ilev";
 
     $dsc_sng="Extract CF 'bounds' variables (netCDF3 file)";
-    $tst_cmd[0]="ncks -v lev $in_pth_arg in.nc | grep -w /ilev";
-    $tst_cmd[1]="/ilev";
+    $tst_cmd[0]="ncks -v lev $in_pth_arg in.nc | grep -o -w ilev";
+    $tst_cmd[1]="ilev";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			

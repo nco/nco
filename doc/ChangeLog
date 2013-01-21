@@ -1,5 +1,7 @@
 2013-01-21  Charlie Zender  <zender@uci.edu>
 
+	* Harmonize printing of netCDF3 and netCDF4 metadata
+
 	* Re-add --mk_rec_dim as synonym for preferred --mk_rec_dmn
 
 2013-01-20  Charlie Zender  <zender@uci.edu>

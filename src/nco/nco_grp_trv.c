@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.34 2013-01-21 20:29:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.35 2013-01-21 21:26:46 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -122,14 +122,14 @@ trv_tbl_add
 
 void                       
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(int * const att_nbr_glb,            /* O [nbr] Number of global attributes in file */
+(int * const att_nbr_all,            /* O [nbr] Number of global+group attributes in file */
  int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
  int * const var_nbr_all,            /* O [nbr] Number of variables in file */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
-  int att_nbr_lcl; /* [nbr] Number of global attributes in file */
+  int att_nbr_lcl; /* [nbr] Number of global+group attributes in file */
   int dmn_nbr_lcl; /* [nbr] Number of dimensions in file */
   int var_nbr_lcl; /* [nbr] Number of variables in file */
   int grp_nbr_lcl; /* [nbr] Number of groups in file */
@@ -143,7 +143,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx]; 
     if(trv.typ == nco_obj_typ_grp){ 
-      /* Increment/Export */
+      /* Increment */
       att_nbr_lcl+=trv.nbr_att; 
       dmn_nbr_lcl+=trv.nbr_dmn;
       var_nbr_lcl+=trv.nbr_var;
@@ -151,7 +151,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
     } /* end nco_obj_typ_grp */
   } /* end uidx */
 
-  if(att_nbr_glb) *att_nbr_glb=att_nbr_lcl;
+  if(att_nbr_all) *att_nbr_all=att_nbr_lcl;
   if(dmn_nbr_all) *dmn_nbr_all=dmn_nbr_lcl;
   if(var_nbr_all) *var_nbr_all=var_nbr_lcl;
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
