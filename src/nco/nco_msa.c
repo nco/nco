@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.130 2013-01-19 23:07:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.131 2013-01-21 00:28:26 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -721,7 +721,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
       (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
       for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-        if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm)){
+        if(!strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
           lmt_msa[idx]=lmt_lst[jdx];
           break;
         } /* end if */
@@ -736,13 +736,9 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
     grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
 #ifdef NCO_SANITY_CHECK
-    for(idx=0;idx<nbr_dim;idx++){
-      assert(lmt_msa[idx]);
-    }
+    for(idx=0;idx<nbr_dim;idx++) assert(lmt_msa[idx]);
 #endif
-  } /* NC_FORMAT_NETCDF4 */
-
-  else { 
+  }else{  /* !NC_FORMAT_NETCDF4 */
 
     /* Initialize lmt_msa with multi-limits from lmt_lst limits */
     /* Get dimension sizes from input file */
@@ -759,7 +755,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
       dmn_map_srt[idx]=0L;
     } /* end for */
 
-  } /* NC_FORMAT_NETCDF4 */
+  } /* !NC_FORMAT_NETCDF4 */
 
 #else /* !ENABLE_NETCDF4 */
 
@@ -891,9 +887,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
 
   /* Initialize */
-  for(idx=0;idx<var.nbr_dim;idx++){
-    lmt_msa[idx]=NULL;
-  }
+  for(idx=0;idx<var.nbr_dim;idx++) lmt_msa[idx]=NULL;
 
   /* Get dimension IDs for variable */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
@@ -929,9 +923,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
       for(jdx=0;jdx<lmt_nbr;jdx++){
         char *dmn_nm_fll;
-        char *pch; /* Pointer to character in string */
-        int psn; /* Position of character */
-        const char sls_chr='/'; /* [chr] Slash character */
         const char sls_sng[]="/"; /* [sng] Slash string */
 
         /* Construct full (dimension/variable) name */
@@ -940,7 +931,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
         strcat(dmn_nm_fll,dmn_nm);
 
-        if(strcmp(dmn_nm_fll,lmt_lst[jdx]->dmn_nm_fll) == 0){
+        if(!strcmp(dmn_nm_fll,lmt_lst[jdx]->dmn_nm_fll)){
           lmt_msa[idx]=lmt_lst[jdx];
           fnd=1;
           dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -951,21 +942,20 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       } /* end loop over jdx */
     } /* end loop over idx */
 
-    /* Not found; go to API in nco_fnd_dmn */
-
+    /* Not found; go to API in nco_fnd_dmn() */
     if(!fnd){
       for(idx=0;idx<var.nbr_dim;idx++){
         long dmn_sz;  
         (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
 
         for(jdx=0;jdx<lmt_nbr;jdx++){
-          if(strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) == 0 && nco_fnd_dmn(in_id,dmn_nm)){
+          if(!strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
             lmt_msa[idx]=lmt_lst[jdx];
             break;
           } /* end if */
         } /* end loop over jdx */
       } /* end loop over idx */
-    }
+    } /* fnd */
 
     /* Free full group name */
     grp_nm_fll=(char *)nco_free(grp_nm_fll);
@@ -995,9 +985,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 #endif /* !ENABLE_NETCDF4 */
 
 #ifdef NCO_SANITY_CHECK
-    for(idx=0;idx<var.nbr_dim;idx++){
-      assert(lmt_msa[idx]);
-    }
+    for(idx=0;idx<var.nbr_dim;idx++) assert(lmt_msa[idx]);
 #endif
 
     /* Call super-dooper recursive routine */
