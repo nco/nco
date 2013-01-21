@@ -1,3 +1,8 @@
+2013-01-20  Charlie Zender  <zender@uci.edu>
+
+	* Only print fully-qualified name of variables in non-root groups
+	This preserves traditional printing format for netCDF3 files
+
 2013-01-19  Charlie Zender  <zender@uci.edu>
 
 	* Pass CPY_GRP_METADATA _and_ CPY_VAR_METADATA to nco_xtr_dfn()

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.131 2013-01-21 00:28:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.132 2013-01-21 06:00:12 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -691,9 +691,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
 
   /* Initialize */
-  for(idx=0;idx<nbr_dim;idx++){
-    lmt_msa[idx]=NULL;
-  }
+  for(idx=0;idx<nbr_dim;idx++) lmt_msa[idx]=NULL;
 
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);

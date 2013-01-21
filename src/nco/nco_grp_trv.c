@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.32 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.33 2013-01-21 06:00:12 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -43,6 +43,10 @@ trv_tbl_init
     tb->lst[idx].flg_xcl=False; /* [flg] Object matches exclusion criteria */
     tb->lst[idx].flg_xtr=False; /* [flg] Extract object */
 
+    tb->lst[idx].grp_dpt=nco_obj_typ_err; /* [nbr] Depth of group (root = 0) */
+    tb->lst[idx].grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
+    tb->lst[idx].grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
+
     tb->lst[idx].nbr_att=nco_obj_typ_err;
     tb->lst[idx].nbr_var=nco_obj_typ_err;
     tb->lst[idx].nbr_dmn=nco_obj_typ_err;
@@ -84,6 +88,7 @@ trv_tbl_add
   } /* tbl->sz */
 
   idx=tbl->nbr++;
+
   tbl->lst[idx].nm_fll=(char *)strdup(obj.nm_fll);
   tbl->lst[idx].nm_fll_lng=obj.nm_fll_lng;
   tbl->lst[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
@@ -104,6 +109,10 @@ trv_tbl_add
   tbl->lst[idx].flg_vsg=obj.flg_vsg; /* [flg] Variable selected because group matches */
   tbl->lst[idx].flg_xcl=obj.flg_xcl; /* [flg] Object matches exclusion criteria */
   tbl->lst[idx].flg_xtr=obj.flg_xtr; /* [flg] Extract object */
+
+  tbl->lst[idx].grp_dpt=obj.grp_dpt; /* [nbr] Depth of group (root = 0) */
+  tbl->lst[idx].grp_id_in=obj.grp_id_in; /* [id] Group ID in input file */
+  tbl->lst[idx].grp_id_out=obj.grp_id_out; /* [id] Group ID in output file */
 
   tbl->lst[idx].nbr_att=obj.nbr_att;
   tbl->lst[idx].nbr_dmn=obj.nbr_dmn;

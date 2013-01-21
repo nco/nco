@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.391 2013-01-21 00:40:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.392 2013-01-21 06:00:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -257,7 +257,6 @@ nco_grp_stk_free                      /* [fnc] Free group stack */
   grp_stk->grp_id=(int *)nco_free(grp_stk->grp_id);
 } /* end nco_grp_stk_free() */
 
-
 int                                  /* [rcd] Return code */
 nco_grp_dfn                          /* [fnc] Define groups in output file */
 (const int out_id,                   /* I [ID] netCDF output-file ID */
@@ -317,22 +316,25 @@ nco_def_grp_rcr                       /* [fnc] Define groups */
 } /* end nco_grp_dfn_rcr() */
 
 
-int                                   /* [rcd] Return code */
-nco_grp_itr                           /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
-(const int grp_id,                    /* I [ID] Group ID */
- char * const grp_nm_fll,             /* I [sng] Absolute group name (path) */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+int /* [rcd] Return code */
+nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
+(const int grp_id, /* I [ID] Group ID */
+ char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
 
   char grp_nm[NC_MAX_NAME+1]; /* [sng] Group name */
   char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
 
+  char *sls_psn; /* [sng] Current position of group path search */
+
   const int flg_prn=0; /* [flg] All the dimensions in all parent groups will also be retrieved */    
 
   int *dmn_ids; /* [ID]  Dimension IDs */ 
   int *grp_ids; /* [ID]  Sub-group IDs */ 
 
+  int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
   int idx; /* [idx] Index */ 
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_dmn; /* [nbr] Number of dimensions */
@@ -344,7 +346,7 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
 
   nc_type var_typ; /* O [enm] Variable type */
 
-  trv_sct obj; /* [obj] netCDF4 group or variable */
+  trv_sct obj; /* [sct] netCDF4 group or variable */
 
   /* Get all information for this group */
   rcd+=nco_inq_nvars(grp_id,&nbr_var);
@@ -356,9 +358,19 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
   dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
   rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
 
+  /* Compute group depth */
+  sls_psn=grp_nm_fll;
+  if(!strcmp(grp_nm_fll,"/")) grp_dpt=0; else grp_dpt=1;
+  while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
+  if(dbg_lvl_get() > nco_dbg_var) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
+
   /* Add group to table */
   strcpy(obj.nm,grp_nm);
   obj.nm_lng=strlen(grp_nm);
+  obj.grp_nm_fll=grp_nm_fll;
+  obj.nm_fll=grp_nm_fll;
+  obj.nm_fll_lng=strlen(obj.nm_fll);
+  obj.typ=nco_obj_typ_grp;
   
   obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
   obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
@@ -374,17 +386,14 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
   obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
   obj.flg_xtr=False; /* [flg] Extract object */
   
-  obj.grp_nm_fll=grp_nm_fll;
+  obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
+  obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
+  obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
 
   obj.nbr_att=nbr_att;
   obj.nbr_dmn=nbr_dmn;
   obj.nbr_grp=nbr_grp;
   obj.nbr_var=nbr_var;
-
-  obj.nm_fll=grp_nm_fll;
-  obj.nm_fll_lng=strlen(obj.nm_fll);
-
-  obj.typ=nco_obj_typ_grp;
 
   trv_tbl_add(obj,trv_tbl);
 
@@ -409,6 +418,10 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
     /* Add variable to table NB: nbr_var, nbr_grp, flg_rcr not valid here */
     strcpy(obj.nm,var_nm);
     obj.nm_lng=strlen(var_nm);
+    obj.grp_nm_fll=grp_nm_fll;
+    obj.nm_fll=var_nm_fll;
+    obj.nm_fll_lng=strlen(var_nm_fll);
+    obj.typ=nco_obj_typ_var;
 
     obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
     obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
@@ -424,17 +437,14 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
     obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
     obj.flg_xtr=False; /* [flg] Extract object */
 
-    obj.grp_nm_fll=grp_nm_fll;
+    obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
+    obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
+    obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
 
     obj.nbr_att=nbr_att;
     obj.nbr_dmn=nbr_dmn;
     obj.nbr_grp=-1;
     obj.nbr_var=-1;
-
-    obj.nm_fll=var_nm_fll;
-    obj.nm_fll_lng=strlen(var_nm_fll);
-
-    obj.typ=nco_obj_typ_var;
 
     trv_tbl_add(obj,trv_tbl);
     var_nm_fll=(char *)nco_free(var_nm_fll);
@@ -452,7 +462,7 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
     /* Allocate path buffer including space for trailing NUL */ 
     pth=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
 
-    /* Initialize path with the current absolute group path */
+    /* Initialize path with current absolute group path */
     strcpy(pth,grp_nm_fll);
 
     /* If not root group, concatenate separator */
@@ -470,7 +480,7 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
   (void)nco_free(dmn_ids);
 
   return rcd;
-}/* end nco_grp_itr() */
+} /* end nco_grp_itr() */
 
 void                          
 nco_prt_grp_trv                       /* [fnc] Print table  */
@@ -1990,7 +2000,7 @@ nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called w
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    /* Object is marked to export */
+    /* Object is variable that will be extracted */
     if(trv.flg_xtr && trv.typ == nco_obj_typ_var){
 
       /* Obtain group ID from netCDF API using full group name */
@@ -2005,8 +2015,8 @@ nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called w
       (void)nco_prn_var_dfn(grp_id,trv.nm); 
       /* Print variable's attributes */
       (void)nco_prn_att(nc_id,grp_id,var_id);
-    } /* end  marked to export */
-  } /* end uidx  */
+    } /* end extracted variable */
+  } /* end uidx */
 
   return;
 } /* end nco_prn_xtr_dfn() */
@@ -2025,16 +2035,15 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
+  const char fnc_nm[]="nco_prn_var_val()"; /* [sng] Function name */
+
   int fl_fmt; /* [enm] File format */
   int grp_id; /* [ID] Group ID */
   int var_id; /* [ID] Variable ID */
 
   if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO reports %d dimension limits:\n",prg_nm_get(),lmt_nbr);
-    for(int idx=0;idx<lmt_nbr;idx++){
-      lmt_all_sct *lmt=lmt_lst[idx];
-      (void)fprintf(stdout,"[%d]%s(%li)\n",idx,lmt->dmn_nm_fll,lmt->dmn_sz_org);
-    }
+    (void)fprintf(stdout,"%s: INFO %s reports %d dimension limits:\n",prg_nm_get(),fnc_nm,lmt_nbr);
+    for(int idx=0;idx<lmt_nbr;idx++) (void)fprintf(stdout,"[%d]%s(%li)\n",idx,lmt_lst[idx]->dmn_nm_fll,lmt_lst[idx]->dmn_sz_org);
   } /* endif dbg */
 
   /* Get file format */
@@ -2051,7 +2060,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
       /* Print full name of variable */
-      if(!dlm_sng) (void)fprintf(stdout,"%s\n",trv.nm_fll);
+      if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable using the obtained grp_id instead of the netCDF file ID */
       (void)nco_msa_prn_var_val(grp_id,trv.nm,lmt_lst,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);

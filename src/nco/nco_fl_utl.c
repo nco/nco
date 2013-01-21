@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.203 2013-01-19 04:29:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.204 2013-01-21 06:00:12 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1157,8 +1157,6 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  static short FIRST_INVOCATION=True;
-
   static char *fl_nm_1st_dgt;
   static char *fl_nm_nbr_sng;
   static char fl_nm_nbr_sng_fmt[10];
@@ -1169,6 +1167,8 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   static int fl_nm_nbr_max;
   static int fl_nm_nbr_min;
   static int fl_nm_nbr_ttl;
+
+  static nco_bool FIRST_INVOCATION=True;
 
   /* Free any old filename space */
   fl_nm=(char *)nco_free(fl_nm);
