@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.199 2013-01-21 21:26:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.200 2013-01-22 04:24:12 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1329,7 +1329,7 @@ print "\n";
 
     $dsc_sng="Extract associated coordinates test 3 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g5g1 -v rz $in_pth_arg in_grp.nc %tmp_fl_00%";
-	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
+    if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
 	$tst_cmd[1]="ncks -H %tmp_fl_00%";
 	$tst_cmd[2]="rlev[2]=1"; # data for /g3/rlev differs from /g5/rlev
     $tst_cmd[3]="SS_OK";
