@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.193 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.194 2013-01-22 23:29:00 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -104,6 +104,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   
@@ -118,7 +119,7 @@ main(int argc,char **argv)
   char *fl_in_1=NULL; /* fl_in_1 is nco_realloc'd when not NULL */
   char *fl_in_2=NULL; /* fl_in_2 is nco_realloc'd when not NULL */
   char *fl_out=NULL; /* Option o */
-  char *fl_out_tmp;
+  char *fl_out_tmp=NULL;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
@@ -128,9 +129,9 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.193 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
-  const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xy:-:";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.194 2013-01-22 23:29:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
+  const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
 
@@ -218,6 +219,11 @@ main(int argc,char **argv)
   var_sct **var_prc_1;
   var_sct **var_prc_2;
   var_sct **var_prc_out;
+
+  trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table */
+  trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table */
+
+  char sls_sng[]="/"; /* Root group path (start traversal tables location ) */
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -442,6 +448,9 @@ main(int argc,char **argv)
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
+    case 'z': /* Print absolute path of all input variables then exit */
+      GET_LIST=True;
+      break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
@@ -458,6 +467,10 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+  /* Initialize traversal tables */
+  (void)trv_tbl_init(&trv_tbl_1);
+  (void)trv_tbl_init(&trv_tbl_2);
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -510,13 +523,24 @@ main(int argc,char **argv)
         lmt_nbr=lmt_nbr_new;
      } /* endif aux */
   } /* endif aux_nbr */
+
+  /* Construct traversal tables */
+  (void)nco_grp_itr(in_id_1,sls_sng,trv_tbl_1);
+  (void)nco_grp_itr(in_id_1,sls_sng,trv_tbl_2);
+
+  /* Process -z option if requested */ 
+  if(GET_LIST){ 
+    (void)trv_tbl_prn(trv_tbl_1);
+    (void)trv_tbl_prn(trv_tbl_2);
+    goto close_and_free; 
+  } /* end GET_LIST */ 
   
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl_1,&nbr_var_fl_1,(int *)NULL,(int *)NULL);
   (void)nco_inq(in_id_2,&nbr_dmn_fl_2,&nbr_var_fl_2,(int *)NULL,(int *)NULL);
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
-  
+
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst_1=nco_var_lst_mk(in_id_1,nbr_var_fl_1,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr_1);
   xtr_lst_2=nco_var_lst_mk(in_id_2,nbr_var_fl_2,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr_2);
@@ -824,13 +848,15 @@ main(int argc,char **argv)
     
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
-  
+
+close_and_free: /* goto close_and_free (used for -z, print file list and exit) */
+
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_2_arr[thr_idx]);
-  
+
   /* Close output file and move it from temporary to permanent location */
-  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+  if(fl_out_tmp) (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   /* Remove local copy of file */
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in_1);
@@ -899,6 +925,10 @@ main(int argc,char **argv)
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+
+  /* Free traversal tables */
+  (void)trv_tbl_free(trv_tbl_1);
+  (void)trv_tbl_free(trv_tbl_2);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
