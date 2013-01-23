@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.195 2013-01-23 04:31:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.196 2013-01-23 10:13:48 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.195 2013-01-23 04:31:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.195 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.196 2013-01-23 10:13:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.196 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -532,6 +532,7 @@ main(int argc,char **argv)
   if(GET_LIST){ 
     (void)trv_tbl_prn(trv_tbl_1);
     (void)trv_tbl_prn(trv_tbl_2);
+    (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2);
     goto close_and_free; 
   } /* end GET_LIST */ 
   

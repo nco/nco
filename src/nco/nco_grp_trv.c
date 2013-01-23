@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.35 2013-01-21 21:26:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.36 2013-01-23 10:13:48 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -255,3 +255,176 @@ trv_tbl_srt /* [fnc] Sort traversal table */
      This produces easy-to-search variable name screen output with ncks */
   qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),nco_cmp_trv_tbl_nm_fll);
 } /* end trv_tbl_srt() */
+
+
+void                          
+trv_tbl_mch                           /* [fnc] Match 2 tables (find common objects) */
+(trv_tbl_sct * const trv_tbl_1,       /* I/O [sct] Traversal table 1 */  
+ trv_tbl_sct * const trv_tbl_2)       /* I/O [sct] Traversal table 2 */  
+{
+  /* Purpose: Find common objects; the algorithm used for this search is the
+  *  cosequential match algorithm and is described in
+  *  Folk, Michael; Zoellick, Bill. (1992). File Structures. Addison-Wesley.
+  *
+  * Compare 2 ordered lists of names:
+  *  if Name(1) is less than Name(2), read the next name from List 1; this is done by incrementing a current index
+  *  if Name(1) is greater than Name(2), read the next name from List 2
+  *  if the names are the same, read the next names from the two lists 
+  * 
+  */
+
+  typedef struct{		
+    char *var_nm_fll; /* [sng] Full path of variable */
+    nco_bool flg_in_fl[2];  /* [flg] Is this name if each file?; files are [0] and [1] */
+  } nco_cmn_t;
+
+  nco_cmn_t *cmn_lst=NULL;       /* [sct] A list of common names */ 
+  int nbr_tbl_1;                 /* [nbr] Number of items in list 1 */
+  int nbr_tbl_2;                 /* [nbr] Number of items in list 2 */
+  nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
+  int nco_cmp;                   /* [nbr] Return value of strcmp() */ 
+  int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
+  int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
+  int idx_lst;                   /* [idx] Current position in common List */ 
+  nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
+
+  /* Tables *must* be sorted */
+  (void)trv_tbl_srt(trv_tbl_1);
+  (void)trv_tbl_srt(trv_tbl_2);
+
+  (void)fprintf(stdout,"Sorted table 1\n");
+  (void)trv_tbl_prn(trv_tbl_1);
+  (void)fprintf(stdout,"Sorted table 2\n");
+  (void)trv_tbl_prn(trv_tbl_2);
+  (void)fprintf(stdout,"Common objects\n");
+
+  /* Get number of objects in each table */
+  nbr_tbl_1=trv_tbl_1->nbr;
+  nbr_tbl_2=trv_tbl_2->nbr;
+
+  /* If both lists have names, then there are names to process */
+  flg_more_names_exist = (nbr_tbl_1>0 && nbr_tbl_2>0) ? 1 : 0;
+
+  /* Put counters ar start */
+  idx_tbl_1=0;
+  idx_tbl_2=0;
+  idx_lst=0;
+
+  /* Store a list of common objects */
+  cmn_lst=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
+
+  /* Iterate the 2 lists */
+  while (flg_more_names_exist)
+  {
+    trv_sct trv_1=trv_tbl_1->lst[idx_tbl_1];
+    trv_sct trv_2=trv_tbl_2->lst[idx_tbl_2];
+
+    /* Criteria is string compare */
+    nco_cmp = strcmp(trv_1.nm_fll,trv_2.nm_fll);
+
+    /* Names are the same: store flag True for both items and read the next names from the two lists */
+    if (nco_cmp == 0)
+    {
+      flg_in_fl[0]=True; 
+      flg_in_fl[1]=True;
+      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      idx_lst++;
+
+      (void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+
+      idx_tbl_1++;
+      idx_tbl_2++;
+    }
+    /* Name(1) is less than Name(2), read the next name from List 1  */
+    else if (nco_cmp < 0)
+    {
+      flg_in_fl[0]=True; 
+      flg_in_fl[1]=False;
+      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      idx_lst++;
+
+      (void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+
+      idx_tbl_1++;
+    }
+    /* Name(1) is greater than Name(2), read the next name from List 2 */
+    else
+    {
+      flg_in_fl[0]=False; 
+      flg_in_fl[1]=True;
+      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
+      idx_lst++;
+
+      (void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
+
+      idx_tbl_2++;
+    }
+
+    flg_more_names_exist = (idx_tbl_1<nbr_tbl_1 && idx_tbl_2<nbr_tbl_2) ? 1 : 0;
+  } /* end while */
+
+
+  /* List1 did not end */
+  if (idx_tbl_1<nbr_tbl_1)
+  {
+    while (idx_tbl_1<nbr_tbl_1)
+    {
+      trv_sct trv_1=trv_tbl_1->lst[idx_tbl_1];
+
+      flg_in_fl[0]=True; 
+      flg_in_fl[1]=False;
+      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      idx_lst++;
+
+      (void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+
+      idx_tbl_1++;
+    }
+  }
+
+  /* List2 did not end */
+  if (idx_tbl_2<nbr_tbl_2)
+  {
+    while (idx_tbl_2<nbr_tbl_2)
+    {
+      trv_sct trv_2=trv_tbl_2->lst[idx_tbl_2];
+
+      flg_in_fl[0]=False; 
+      flg_in_fl[1]=True;
+      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
+      idx_lst++;
+
+      (void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
+
+      idx_tbl_2++;
+    }
+  }
+
+  /* Print the list */
+  (void)fprintf(stdout,"\n");
+  (void)fprintf(stdout,"file1     file2\n");
+  (void)fprintf(stdout,"---------------------------------------\n");
+  for(int idx=0;idx<idx_lst;idx++){
+    char c1, c2;
+
+    c1 = (cmn_lst[idx].flg_in_fl[0]) ? 'x' : ' ';
+    c2 = (cmn_lst[idx].flg_in_fl[1]) ? 'x' : ' ';
+    (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, cmn_lst[idx].var_nm_fll);
+
+    cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
+  } /* end loop over idx */
+  (void)fprintf(stdout,"\n");
+
+  cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+
+} /* end trv_tbl_mch() */
