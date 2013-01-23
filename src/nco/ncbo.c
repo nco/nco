@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.194 2013-01-22 23:29:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.195 2013-01-23 04:31:29 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.194 2013-01-22 23:29:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.194 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.195 2013-01-23 04:31:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.195 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -526,7 +526,7 @@ main(int argc,char **argv)
 
   /* Construct traversal tables */
   (void)nco_grp_itr(in_id_1,sls_sng,trv_tbl_1);
-  (void)nco_grp_itr(in_id_1,sls_sng,trv_tbl_2);
+  (void)nco_grp_itr(in_id_2,sls_sng,trv_tbl_2);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

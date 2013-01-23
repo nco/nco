@@ -1,0 +1,34 @@
+// Purpose: Generate a group file structure with common and non-common objects; pair of files are in_grp_1.cdl and in_grp_2.cdl
+// Common objects criteria 1: same absolute path
+// Example
+//   File 1        File 2
+//   /g1/var1      /var1
+//   /g1/var2      /g1/var2
+//
+// Common object is "/g1/var2", that has the same absolute path; "var1" is also in both files, but not in the same path; This is criteria 2.
+// Generate netCDF files with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/in_grp_1.nc ~/nco/data/in_grp_1.cdl
+// ncgen -k netCDF-4 -b -o ~/nco/data/in_grp_2.nc ~/nco/data/in_grp_2.cdl
+
+netcdf in_grp_1 {
+ dimensions:
+  lat=2,lon=4;
+ variables:
+  float lat(lat);
+  float lon(lon);
+  data:
+  lon=0,90,180,270;
+  lat=-90,90;
+  //
+  //g1
+  //
+ group: g1 { 
+  variables:
+    float var1(lon);
+    float var2(lon);
+  data:
+    var1=1,2,3,4;
+    var2=1,2,3,4;
+  } // end g1
+
+} // end root group
