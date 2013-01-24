@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.374 2013-01-13 06:07:46 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.375 2013-01-24 00:18:30 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1007,6 +1007,8 @@ if test "${PATH_TO_NCGEN}"; then
     ${PATH_TO_NCGEN} -b -o data/in.nc data/in.cdl
     if test "x${enable_netcdf4}" = 'xyes'; then
 	${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp.nc data/in_grp.cdl
+        ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_1.nc data/in_grp_1.cdl
+        ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_2.nc data/in_grp_2.cdl
     fi
     AC_SUBST(PATH_TO_NCGEN)
     for fl in 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc; do
