@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.39 2013-01-14 23:56:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.40 2013-01-24 14:49:47 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -145,9 +145,10 @@ nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two coordinate unit
 {
   const char fnc_nm[]="nco_cln_clc_dff()"; /* [sng] Function name */
   
+  cv_converter *ut_cnv; /* UDUnits converter */
+
   int ut_rcd; /* [enm] UDUnits2 status */
   
-  cv_converter *ut_cnv; /* UDUnits converter */
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
   ut_unit *ut_sct_out; /* UDUnits structure, output units */
@@ -215,9 +216,13 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 (const char *unt_sng, /* I [ptr] units attribute string */
  tm_cln_sct *tm_in) /*  O [sct] struct to be populated */             
 {
+  const char fnc_nm[]="nco_cln_prs_tm()"; /* [sng] Function name */
+
+  char bfr[200];
+
+  char *dt_sng;
+
   int ut_rcd; /* [enm] UDUnits2 status */
-  char buf[200];
-  char *bptr;
 
   ut_system *ut_sys;
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
@@ -227,7 +232,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   if(dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
-    (void)fprintf(stdout,"%s: nco_cln_prs_tm() failed to initialize UDUnits2 library\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits2 library\n",prg_nm_get(),fnc_nm);
     return EXIT_FAILURE; /* Failure */
   } /* end if err */ 
 
@@ -243,11 +248,11 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   } /* endif coordinate on disk has no units attribute */
 
   /* Print timestamp to buffer in standard, dependable format */
-  ut_format(ut_sct_in,buf,sizeof(buf), UT_ASCII|UT_NAMES);
+  ut_format(ut_sct_in,bfr,sizeof(bfr), UT_ASCII|UT_NAMES);
 
   /* Extract parsed time units from print string (kludgy) */
-  bptr=strstr(buf,"since");  
-  sscanf(bptr,"%*s %d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
+  dt_sng=strstr(bfr,"since");  
+  sscanf(dt_sng,"%*s %d-%d-%d %d:%d:%f",&tm_in->year,&tm_in->month,&tm_in->day,&tm_in->hour,&tm_in->min,&tm_in->sec);
 
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
   ut_free(ut_sct_in);
@@ -285,14 +290,14 @@ nco_cln_clc_dff /* [fnc] UDUnits1 Difference between two co-ordinate units */
 #ifdef UDUNITS_PATH
   /* UDUNITS_PATH macro expands to where autoconf found database file */
   rcd=utInit(UDUNITS_PATH);
-# else /* !UDUNITS_PATH */
+#else /* !UDUNITS_PATH */
   /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   rcd=utInit("");
-# endif /* !UDUNITS_PATH */
+#endif /* !UDUNITS_PATH */
 
   if(rcd != 0){
-    (void)fprintf(stdout,"%s: nco_lmt_cls_dff() failed to initialize UDUnits library\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits2 library\n",prg_nm_get(),fnc_nm);
     return EXIT_FAILURE;
   } /* end if err */ 
 
@@ -338,8 +343,11 @@ nco_cln_prs_tm /* UDUnits1 Extract time stamp from a parsed udunits string */
 (const char *unt_sng, /* I [ptr] units attribute string   */            
 tm_cln_sct *tm_in) /*  O [sct] struct to be populated   */             
 {
-int rcd;
-utUnit udu_sct_in; /* UDUnits structure, input units */
+  const char fnc_nm[]="nco_cln_prs_tm()"; /* [sng] Function name */
+
+  int rcd;
+
+  utUnit udu_sct_in; /* UDUnits structure, input units */
 
 #ifdef UDUNITS_PATH
   /* UDUNITS_PATH macro expands to where autoconf found database file */
@@ -351,7 +359,7 @@ utUnit udu_sct_in; /* UDUnits structure, input units */
 #endif /* !UDUNITS_PATH */
 
   if(rcd != 0){
-    (void)fprintf(stdout,"%s: nco_cln_prs_tm() failed to initialize UDUnits library\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits library\n",prg_nm_get(),fnc_nm);
     return EXIT_FAILURE;
   } /* end if err */ 
 

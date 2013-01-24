@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.393 2013-01-21 21:26:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.394 2013-01-24 14:49:47 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1757,6 +1757,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
  const int lmt_all_lst_nbr,           /* I [nbr] Number of hyperslab limits */
  const nco_bool CPY_GRP_METADATA,     /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,     /* I [flg] Copy variable metadata (attributes) */
+ const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Define groups, variables, and attributes in output file */
@@ -1764,7 +1765,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
   const char fnc_nm[]="nco_xtr_dfn()"; /* [sng] Function name */
 
   char *grp_out_fll; /* [sng] Group name */
-  char *rec_dmn_nm; /* [sng] Record dimension name */
+  char *rec_dmn_nm_lcl; /* [sng] Record dimension name */
   char *var_nm_fll; /* [sng] Full path of variable */
   
   char dmn_ult_nm[NC_MAX_NAME+1];/* [sng] Unlimited dimension name */ 
@@ -1879,7 +1880,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
       /* Get number of unlimited dimensions */
       (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
       
-      rec_dmn_nm=NULL;
+      rec_dmn_nm_lcl=NULL;
       
       /* Find variables in group */
       for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -1904,8 +1905,8 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
 	for(int idx_dmn=0;idx_dmn<nbr_dmn_ult;idx_dmn++){
 	  (void)nco_inq_dimname(grp_id,dmn_ids_ult[idx_dmn],dmn_ult_nm);
 	  if(!strcmp(var_nm,dmn_ult_nm)){
-	    rec_dmn_nm=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(char));
-	    strcpy(rec_dmn_nm,dmn_ult_nm); 
+	    rec_dmn_nm_lcl=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(char));
+	    strcpy(rec_dmn_nm_lcl,dmn_ult_nm); 
 	  } /* strcmp() */
 	} /* idx_dmn */ 
 	
@@ -1954,7 +1955,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
       } /* !GPE */
       
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm_lcl,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm_lcl,trv.nm,dfl_lvl);
       
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)
@@ -1968,7 +1969,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
       } /* !CPY_VAR_METADATA */
       
       /* Memory management after current extracted variable */
-      if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+      if(rec_dmn_nm_lcl) rec_dmn_nm_lcl=(char *)nco_free(rec_dmn_nm_lcl);
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
       if(var_ids) var_ids=(int *)nco_free(var_ids);
       

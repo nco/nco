@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.560 2013-01-21 21:26:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.561 2013-01-24 14:49:47 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.560 2013-01-21 21:26:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.560 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.561 2013-01-24 14:49:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.561 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -609,7 +609,7 @@ main(int argc,char **argv)
   /* Make output and input files consanguinous */
    if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 #ifndef ENABLE_NETCDF4
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC ){
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support\n",prg_nm_get());
     (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
@@ -758,7 +758,7 @@ main(int argc,char **argv)
     } /* !gpe */
 
     /* Define extracted groups, variables, and attributes in output file */
-    nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,PRN_GLB_METADATA,PRN_VAR_METADATA,trv_tbl);
+    nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
 
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);

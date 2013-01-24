@@ -1,3 +1,7 @@
+2013-01-23  Charlie Zender  <zender@uci.edu>
+
+	* Prepare to implement --mk_rec_dmn functionality in nco_xtr_dfn()
+
 2013-01-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.4 release procedure:
