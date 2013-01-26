@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.204 2013-01-21 06:00:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.205 2013-01-26 08:15:40 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -497,6 +497,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 #ifdef _MSC_VER
   /* TODO nco1068 The stat function retuns -1 for large files; assume success */
   return fl_nm;
+  *FL_RTR_RMT_LCN=False;
 #endif
 
   FILE *fp_in;
@@ -1588,7 +1589,11 @@ nco_fl_rm /* [fnc] Remove file */
   /* Purpose: Remove specified file from local system */
   int rcd;
   char *rm_cmd;
+#ifdef _MSC_VER
+  const char rm_cmd_sys_dep[]="del /F";
+#else /* !_MSC_VER */
   const char rm_cmd_sys_dep[]="rm -f";
+#endif /* !_MSC_VER */
 
   /* Remember to add one for the space and one for the terminating NUL character */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));

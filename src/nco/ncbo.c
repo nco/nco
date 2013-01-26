@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.198 2013-01-26 06:13:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.199 2013-01-26 08:15:40 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  nco_bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
-  nco_bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION=False;
+  nco_bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION=False;
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.198 2013-01-26 06:13:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.198 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.199 2013-01-26 08:15:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.199 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
