@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.561 2013-01-24 14:49:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.562 2013-01-26 06:13:21 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -148,8 +148,8 @@ main(int argc,char **argv)
 
   char sls_sng[]="/"; /* Group path */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.561 2013-01-24 14:49:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.561 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.562 2013-01-26 06:13:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.562 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -601,7 +601,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,sls_sng,trv_tbl);
 
-   /* Get number of variables, dimensions, and global attributes in file, file format */
+  /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
   (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
@@ -617,7 +617,7 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
 
   /* Check -v and -g input names and create extraction list */
-  nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+  (void)nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

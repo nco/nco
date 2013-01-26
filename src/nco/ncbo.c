@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.197 2013-01-25 22:34:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.198 2013-01-26 06:13:21 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.197 2013-01-25 22:34:33 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.197 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.198 2013-01-26 06:13:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.198 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -220,13 +220,12 @@ main(int argc,char **argv)
   var_sct **var_prc_2;
   var_sct **var_prc_out;
 
+  char sls_sng[]="/"; /* Root group path (start traversal tables location ) */
   trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table */
   trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table */
   char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
-  int grp_nbr=0; /* [nbr] Number of groups to extract */
-
-  char sls_sng[]="/"; /* Root group path (start traversal tables location ) */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -404,7 +403,6 @@ main(int argc,char **argv)
       (void)nco_rx_comma2hash(optarg_lcl);
       grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
-      grp_nbr=grp_lst_in_nbr;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -580,6 +578,46 @@ main(int argc,char **argv)
   if(xtr_nbr_1 > 1) xtr_lst_1=nco_lst_srt_nm_id(xtr_lst_1,xtr_nbr_1,False);
   if(xtr_nbr_2 > 1) xtr_lst_2=nco_lst_srt_nm_id(xtr_lst_2,xtr_nbr_2,False);
   
+  /* We now have final list of variables to extract. Phew. */
+
+  /* Check -v and -g input names and create extraction list. NB: using grp_lst_in_nbr and var_lst_in_nbr array sizes */
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_1);
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_2);
+
+  /* Change included variables to excluded variables */
+  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl_1);
+  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl_2);
+
+  /* Add all coordinate variables to extraction list */
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(in_id_1,trv_tbl_1);
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(in_id_2,trv_tbl_2);
+
+  /* Extract coordinates associated with extracted variables */
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id_1,trv_tbl_1);
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id_2,trv_tbl_2);
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_add(in_id_1,"coordinates",trv_tbl_1);
+    (void)nco_xtr_cf_add(in_id_1,"bounds",trv_tbl_1);
+  } /* CNV_CCM_CCSM_CF */
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_2);
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_add(in_id_2,"coordinates",trv_tbl_2);
+    (void)nco_xtr_cf_add(in_id_2,"bounds",trv_tbl_2);
+  } /* CNV_CCM_CCSM_CF */
+
+  /* Print extraction list in verbose mode */
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)trv_tbl_prn_xtr(trv_tbl_1);
+    (void)trv_tbl_prn_xtr(trv_tbl_2);
+  }
+
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits
