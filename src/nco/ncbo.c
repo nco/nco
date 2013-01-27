@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.202 2013-01-27 09:13:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.203 2013-01-27 10:51:04 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.202 2013-01-27 09:13:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.202 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.203 2013-01-27 10:51:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.203 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -632,8 +632,8 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id_2,"bounds",trv_tbl_2);
   } /* CNV_CCM_CCSM_CF */
 
-  /* Print extraction list in verbose mode */
-  if(dbg_lvl_get() >= nco_dbg_vrb){
+  /* Print extraction list */
+  if(dbg_lvl_get() >= nco_dbg_dev){
     (void)trv_tbl_prn_xtr(trv_tbl_1);
     (void)trv_tbl_prn_xtr(trv_tbl_2);
   }
@@ -673,6 +673,12 @@ main(int argc,char **argv)
   /* Find dimensions associated with variables to be extracted */
   dmn_lst_1=nco_dmn_lst_ass_var(in_id_1,xtr_lst_1,xtr_nbr_1,&nbr_dmn_xtr_1);
   dmn_lst_2=nco_dmn_lst_ass_var(in_id_2,xtr_lst_2,xtr_nbr_2,&nbr_dmn_xtr_2);
+
+  /* Print dimension list */
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)xtr_lst_prn(dmn_lst_1,nbr_dmn_xtr_1);
+    (void)xtr_lst_prn(dmn_lst_2,nbr_dmn_xtr_2);   
+  }
   
   /* Fill-in dimension structure for all extracted dimensions */
   dim_1=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
@@ -689,7 +695,19 @@ main(int argc,char **argv)
   dmn_lst_1=nco_dmn_lst_ass_var_trv(in_id_1,trv_tbl_1,&nbr_dmn_xtr_1); 
   dmn_lst_2=nco_dmn_lst_ass_var_trv(in_id_2,trv_tbl_2,&nbr_dmn_xtr_2); 
 
-
+  /* Print dimension list */
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)xtr_lst_prn(dmn_lst_1,nbr_dmn_xtr_1);
+    (void)xtr_lst_prn(dmn_lst_2,nbr_dmn_xtr_2);   
+  }
+  /* Fill-in dimension structure for all extracted dimensions */
+  dim_1=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
+  dim_2=(dmn_sct **)nco_malloc(nbr_dmn_xtr_2*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr_1;idx++) dim_1[idx]=nco_dmn_fll(in_id_1,dmn_lst_1[idx].id,dmn_lst_1[idx].nm);
+  for(idx=0;idx<nbr_dmn_xtr_2;idx++) dim_2[idx]=nco_dmn_fll(in_id_2,dmn_lst_2[idx].id,dmn_lst_2[idx].nm);
+  /* Dimension lists no longer needed */
+  dmn_lst_1=nco_nm_id_lst_free(dmn_lst_1,nbr_dmn_xtr_1);
+  dmn_lst_2=nco_nm_id_lst_free(dmn_lst_2,nbr_dmn_xtr_2);
 #endif /* USE_TRV_API */
 
   /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
@@ -705,9 +723,8 @@ main(int argc,char **argv)
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl_1 > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr_1,lmt_all_lst,nbr_dmn_fl_1); 
 
-  if(dbg_lvl >= nco_dbg_sbr){
-    for(idx=0;idx<xtr_nbr_1;idx++) (void)fprintf(stderr,"xtr_lst_1[%d].nm = %s, .id= %d\n",idx,xtr_lst_1[idx].nm,xtr_lst_1[idx].id);
-  } /* end if */
+  /* Print extraction list */
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)xtr_lst_prn(xtr_lst_1,xtr_nbr_1);  
   
   /* Fill-in variable structure list for all extracted variables */
   var_1=(var_sct **)nco_malloc(xtr_nbr_1*sizeof(var_sct *));

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.398 2013-01-27 09:13:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.399 2013-01-27 10:51:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -842,7 +842,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 		var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
 		if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
 	      } /* endif */
-	      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+	      if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
 	    } /* endif var */
 	    
 	    /* If anchoring, match must begin at root */
@@ -873,7 +873,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 	    /* Set function return condition */
 	    if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
 	    
-	    if(dbg_lvl_get() >= nco_dbg_crr){
+	    if(dbg_lvl_get() == nco_dbg_crr){
 	      (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
 	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
 	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
@@ -939,7 +939,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
-  if(dbg_lvl_get() >= nco_dbg_crr){
+  if(dbg_lvl_get() == nco_dbg_crr){
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       /* Create shallow copy to avoid indirection */
       trv_obj=trv_tbl->lst[obj_idx];
@@ -1139,7 +1139,7 @@ nco_msa_lmt_all_int_trv               /* [fnc] Initilaize lmt_all_sct's; recursi
 
     /* Find and store size of output dimension */  
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-    if(dbg_lvl_get() > 1){
+    if(dbg_lvl_get() > nco_dbg_std){
       if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
     } /* endif */
 
@@ -2209,7 +2209,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
 
                   /* ...then add dimension to output dimension list... */
 
-                  dmn[*nbr_dmn].id=-1; /* NB: Deprecate IDs */
+                  dmn[*nbr_dmn].id=dmn_id_grp[idx_dmn];
                   dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
                   dmn[*nbr_dmn].grp_nm_fll=(char *)strdup(trv.grp_nm_fll);
                   dmn[*nbr_dmn].var_nm_fll=(char *)strdup(dmn_nm_fll);
@@ -2249,7 +2249,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
 
           /* ...then add dimension to output dimension list... */
 
-          dmn[*nbr_dmn].id=-1; /* NB: Deprecate IDs */
+          dmn[*nbr_dmn].id=dmn_id_var[idx_var_dim]; 
           dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
           dmn[*nbr_dmn].grp_nm_fll=(char *)strdup("/");
           dmn[*nbr_dmn].var_nm_fll=(char *)strdup(dmn_nm_fll);
