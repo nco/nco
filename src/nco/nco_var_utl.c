@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.215 2013-01-27 02:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.216 2013-01-27 02:19:43 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -208,7 +208,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-     Routine is based on nco_cpy_dfn_lmt()
+     Routine is based on nco_cpy_dfn_lmt(), and differs trivially from it
+     Should perhaps be merged into one call that always takes lmt_all_lst information?
      Routine truncates dimensions in variable definition in output file according to user-specified limits
      Routine copies_variable by variable, old-style, used only by ncks
      20130126: Behavior until today required rec_dmn_nm even if not changing it

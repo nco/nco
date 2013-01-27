@@ -1,5 +1,13 @@
 2013-01-26  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.2.5 release procedure:
+ 	Changes since nco-4_2_4: ncks mk_rec_dmn bugfix
+	cd ~/nco;cvs tag -d nco-4_2_5;cvs tag -d nco-4_2_5-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.5 release"
+	cvs tag -c nco-4_2_5;cvs tag -c nco-4_2_5-1
+
+	* Remove all record-dimension handling from, and thus dramatically simplify, nco_xtr_dfn()
+
 	* Test and merge nco_cpy_var_dfn() changes to nco_cpy_var_dfn_lmt()
 
 	* ncks only copies global metadata once
