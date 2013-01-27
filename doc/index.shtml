@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.759 2013-01-27 02:19:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.760 2013-01-27 04:49:16 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -577,12 +577,14 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.2.6</b>: (<i>Future</i>) 
+<li><b>NCO 4.2.7</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.2.5</b>: (<i>In Progress, features we are working on include</i>)
+<li><b>NCO 4.2.6</b>: (<i>In Progress, features we are working on include</i>)
 <tt>ncrename -g</tt>?;
 <tt>ncbo -g</tt>?;</li>
+<li><b>NCO 4.2.5</b>: (<i>Current Stable Release</i>)
+<tt>ncks</tt> <a href="#bug_ncks_mk_rec_dmn">bugfix</a></li>
 <li><b>NCO 4.2.4</b>: (<i>Current Stable Release</i>)
 Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
 Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
@@ -1653,10 +1655,18 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncks_mk_rec_dmn -->
+<a name="bug_ncks_mk_rec_dmn"></a>
+<li><i><tt>ncks</tt> bug with non-record files.
+Version 4.2.4 of <tt>ncks</tt> incorrectly handled the 
+<tt>--mk_rec_dmn</tt> and <tt>--fix_rec_dmn</tt> switches.
+It exited successfully without altering the record variable.
+</li>
+
 <!-- http://nco.sf.net#bug_ncea_rec_var -->
 <a name="bug_ncea_rec_var"></a>
 <li><i><tt>ncea</tt> bug with non-record files.
-Versions 4.2.1&mdash;4.2.3 of <tt>ncra</tt> incorrectly referenced
+Versions 4.2.1&mdash;4.2.3 of <tt>ncea</tt> incorrectly referenced
 the record variable on files which do not contain it.
 This caused a segmentation violation and core dump.
 </li>

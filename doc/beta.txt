@@ -9,9 +9,9 @@ releases. New features are built into pre-release .deb packages as the
 features are introduced.  Once an (arbritrary) number of new features
 seems stable, we simply announce that the current pre-release code is
 the official (stable) release code. For example, .deb packages with
-the 4.2.4 release name have been at the expected location
+the 4.2.5 release name have been at the expected location
 
-http://nco.sf.net/src/nco_4.2.4-1_amd64.deb
+http://nco.sf.net/src/nco_4.2.5-1_amd64.deb
 
 for many months, but the NCO homepage for binary package download
 only points to this location once the release is official. Until then,
@@ -19,7 +19,7 @@ they are rebuilt and replaced as each new feature is added. When the
 release is official, the package is frozen and a package with the next 
 version number 
 
-http://nco.sf.net/src/nco_4.2.4-1_amd64.deb
+http://nco.sf.net/src/nco_4.2.5-1_amd64.deb
 
 is created. This is announced once it stabilizes a few months later. 
 And so on. With judicious use of dpkg, Debian/Ubuntu users can easily 
@@ -27,14 +27,14 @@ track NCO feature development more closely than official releases.
 Just remove your existing NCO package and replace it with the latest
 (unannounced) package that has the feature you want with, e.g., 
 
-wget http://nco.sf.net/src/nco_4.2.4-1_amd64.deb .
+wget http://nco.sf.net/src/nco_4.2.5-1_amd64.deb .
 sudo dpkg --remove nco
-sudo dpkg --install nco_4.2.4-1_*.deb
+sudo dpkg --install nco_4.2.5-1_*.deb
 
 or, for AIX,
 
-wget http://nco.sf.net/src/nco-4.2.4.aix53.tar.gz .
-tar xvzf nco-4.2.4.aix53.tar.gz .
+wget http://nco.sf.net/src/nco-4.2.5.aix53.tar.gz .
+tar xvzf nco-4.2.5.aix53.tar.gz .
 
 Caveats: 
 1. .debs for amd64 (my development machine) are available early. Savvy
