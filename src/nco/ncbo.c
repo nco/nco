@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.201 2013-01-27 08:26:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.202 2013-01-27 09:13:52 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.201 2013-01-27 08:26:02 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.201 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.202 2013-01-27 09:13:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.202 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -186,6 +186,12 @@ main(int argc,char **argv)
   int nbr_dmn_fl_2;
   int nbr_dmn_xtr_1;
   int nbr_dmn_xtr_2;
+  int nbr_glb_att_1;
+  int nbr_glb_att_2;
+  int nbr_grp_fl_1;
+  int nbr_grp_fl_2;
+  int nbr_rec_fl_1;
+  int nbr_rec_fl_2;
   int nbr_var_fix_1; /* nbr_var_fix_1 gets incremented */
   int nbr_var_fix_2; /* nbr_var_fix_2 gets incremented */
   int nbr_var_fl_1;
@@ -588,6 +594,12 @@ main(int argc,char **argv)
 #endif /* USE_TRV_API */
 
 #ifdef USE_TRV_API
+  /* Get number of variables, dimensions, and global attributes in file, file format */
+  (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_dmn_fl_1,&nbr_grp_fl_1,&nbr_rec_fl_1,&nbr_var_fl_1,trv_tbl_1);
+  (void)trv_tbl_inq(&nbr_glb_att_2,&nbr_dmn_fl_2,&nbr_grp_fl_2,&nbr_rec_fl_2,&nbr_var_fl_2,trv_tbl_2);
+  (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
+  (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
+
   /* Check -v and -g input names and create extraction list. NB: using grp_lst_in_nbr and var_lst_in_nbr array sizes */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_1);
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_2);
@@ -626,7 +638,7 @@ main(int argc,char **argv)
     (void)trv_tbl_prn_xtr(trv_tbl_2);
   }
 
-#ifdef NCO_SANITY_CHECK 
+#ifdef NCO_SANITY_CHECK_ 
   (void)nco_trv_tbl_chk(in_id_1,xtr_lst_1,xtr_nbr_1,trv_tbl_1,False);
   (void)nco_trv_tbl_chk(in_id_2,xtr_lst_2,xtr_nbr_2,trv_tbl_2,False);
 #endif /* NCO_SANITY_CHECK */

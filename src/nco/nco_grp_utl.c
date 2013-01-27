@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.397 2013-01-27 08:26:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.398 2013-01-27 09:13:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1541,7 +1541,7 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
       } /* end while */
 
       /* Free allocated */
-      dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+      if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
     } /* end strcmp() */
   } /* end loop over dmn_idx */
@@ -2100,7 +2100,8 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
   int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array for group */
   int fl_fmt;                  /* [nbr] File format */
   int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
-  int nbr_dmn_in;              /* [nbr] Number of dimensions */
+  int nbr_dmn_fl;              /* [nbr] Number of dimensions in file (in groups) */
+  int nbr_var_fl;              /* [nbr] Number of variables in file */
   int nbr_dmn_grp;             /* [nbr] Number of dimensions */
   int var_id;                  /* [ID] Variable ID */
   int grp_id;                  /* [ID] Group ID */
@@ -2119,17 +2120,14 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
   /* Inititialize output value */
   *nbr_dmn=0;
 
-  /* Get total number of dimensions in file. NB: these are dimensions in groups */
-  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
+  /* Get total number of dimensions and variables in file. NB: these are dimensions in groups */
+  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
 
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   /* Allocate */
-  dmn=(nm_id_sct *)nco_malloc(nbr_dmn_in*sizeof(nm_id_sct));
-
-  /* Get file format */
-  (void)nco_inq_format(nc_id,&fl_fmt);
+  dmn=(nm_id_sct *)nco_malloc((nbr_dmn_fl+nbr_var_fl)*sizeof(nm_id_sct));
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -2213,7 +2211,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
 
                   dmn[*nbr_dmn].id=-1; /* NB: Deprecate IDs */
                   dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
-                  dmn[*nbr_dmn].grp_nm_fll=(char *)strdup("/");
+                  dmn[*nbr_dmn].grp_nm_fll=(char *)strdup(trv.grp_nm_fll);
                   dmn[*nbr_dmn].var_nm_fll=(char *)strdup(dmn_nm_fll);
 
                   (*nbr_dmn)++;
@@ -2236,7 +2234,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
               } /* end while */
 
               /* Free allocated */
-              dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+              if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
             } /* end strcmp() */
           } /* end loop over dmn_idx */
