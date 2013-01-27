@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.181 2013-01-20 19:32:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.182 2013-01-27 00:30:01 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1678,7 +1678,7 @@ int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int 
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){
   int dmn_idx;
   int rcd;
-  rcd=nc_inq(nc_id,dmn_nbr,NULL,NULL,NULL);
+  rcd=nc_inq(nc_id,dmn_nbr,(int *)NULL,(int *)NULL,(int *)NULL);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimids()");
   /* netCDF3 file dimension IDs range 0..N-1 */
   if(dmn_ids)
@@ -1690,7 +1690,7 @@ int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){
   int unlimid;
   rcd=nc_inq_unlimdim(nc_id,&unlimid);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdims()");
-  if(unlimid != -1){
+  if(unlimid != NCO_REC_DMN_UNDEFINED){
     *nbr_dmn_ult=1;
     if(dmn_ids_ult) dmn_ids_ult[0]=unlimid;
   }else{
@@ -1700,12 +1700,11 @@ int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){
 } /* end nco_inq_unlimdims() */
 int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){
   int rcd;
-  int var_idx;
   /* netCDF3 files have only the root group, with variable IDs 0..N-1 */
-  rcd=nc_inq(nc_id,NULL,var_nbr,NULL,NULL);
+  rcd=nc_inq(nc_id,(int *)NULL,var_nbr,(int *)NULL,(int *)NULL);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varids()");
   if(var_ids)
-    for(var_idx=0;var_idx<*var_nbr;var_idx++) var_ids[var_idx]=var_idx;
+    for(int var_idx=0;var_idx<*var_nbr;var_idx++) var_ids[var_idx]=var_idx;
   return NC_NOERR;
 } /* end nco_inq_varids() */
 #endif /* HAVE_NETCDF4_H */

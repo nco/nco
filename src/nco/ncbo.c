@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.199 2013-01-26 08:15:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.200 2013-01-27 00:29:59 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -126,11 +126,12 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.199 2013-01-26 08:15:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.199 $";
+  char trv_pth[]="/"; /* [sng] Root path of traversal tree */
+
+  const char * const CVS_Id="$Id: ncbo.c,v 1.200 2013-01-27 00:29:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.200 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -220,9 +221,9 @@ main(int argc,char **argv)
   var_sct **var_prc_2;
   var_sct **var_prc_out;
 
-  char sls_sng[]="/"; /* Root group path (start traversal tables location ) */
   trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table */
   trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table */
+
   char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
@@ -534,8 +535,8 @@ main(int argc,char **argv)
   } /* endif aux_nbr */
 
   /* Construct traversal tables */
-  (void)nco_grp_itr(in_id_1,sls_sng,trv_tbl_1);
-  (void)nco_grp_itr(in_id_2,sls_sng,trv_tbl_2);
+  (void)nco_grp_itr(in_id_1,trv_pth,trv_tbl_1);
+  (void)nco_grp_itr(in_id_2,trv_pth,trv_tbl_2);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

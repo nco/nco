@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.201 2013-01-26 19:18:19 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.202 2013-01-27 00:29:58 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -74,7 +74,7 @@ sub tst_rgr {
 #             $foo1_fl    -> %tmp_fl_01%
 #             $foo2_fl    -> %tmp_fl_02%
     
-    if ($dodap ne "FALSE") {
+    if($dodap ne "FALSE"){
 	print "DEBUG: in tst_rgr(), \$dodap = $dodap \n";
 	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = "-p $fl_pth"; }
 	if ($dodap eq "") { $in_pth_arg = "-p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata"; }
@@ -85,8 +85,8 @@ sub tst_rgr {
 
 
 # NCO 4.2.4
-# output for some tests vary when ENABLE_NETCDF4 is not set
-# add a check for ENABLE_NETCDF4 by reading config.h 
+# Output for some tests vary when ENABLE_NETCDF4 is not set
+# Add check for ENABLE_NETCDF4 by reading config.h 
 
 # error messages for ENABLE_NETCDF4 not defined
 my $ncks_msg_no_netcdf4 = "ncks: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install";
@@ -100,11 +100,11 @@ my $find_undef_have_netcdf4 = "undef HAVE_NETCDF4_H";
 my $find_define_have_netcdf4 = "define HAVE_NETCDF4_H";
 my $ENABLE_NETCDF4=-1;
 my $HAVE_NETCDF4_H=-1;
-
+    
 print "\n";
 
-# read config.h
-my $use_config_h = 0;
+# Read config.h
+my $use_config_h=0;
 if ($use_config_h == 1){
 	open FILE, "../config.h" or die $!;
 	while (my $line = <FILE>) { 
@@ -128,18 +128,16 @@ if ($use_config_h == 1){
 } #$use_config_h
 
 system("ncks --get_prg_info");
-#system() runs a command and returns exit status information as a 16 bit value: 
-#the low 7 bits are the signal the process died from, if any, and the high 8 bits are the actual exit value
-if ( $? == -1 )
-{
-  print "failed to execute: ncks --get_prg_info: $!\n";
-}
-else
-{
+# system() runs a command and returns exit status information as a 16 bit value: 
+# Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
+# fxm: 20130125 deprecate this hack in favor of obtaining tokens directly from ncks
+if( $? == -1 ){
+    print "failed to execute: ncks --get_prg_info: $!\n";
+}else{
   my $exit_value=$? >> 8;
   printf "ncks --get_prg_info exited with value %d", $exit_value;
-  if ($exit_value==20) {$HAVE_NETCDF4_H=0;} else {$HAVE_NETCDF4_H=1;}
-  if ($exit_value==30) {$ENABLE_NETCDF4=1;} else {$ENABLE_NETCDF4=0;}
+  if ($exit_value==20) {$HAVE_NETCDF4_H=0;}else{$HAVE_NETCDF4_H=1;}
+  if ($exit_value==30) {$ENABLE_NETCDF4=1;}else{$ENABLE_NETCDF4=0;}
 }
 print "\n";
 
@@ -297,7 +295,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999  $in_pth_arg in.nc %tmp_fl_00%";
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[2]="ncks -O -C -H -s '%i'  -v n2 %tmp_fl_01%";
 	$dsc_sng="Check ncatted variable wildcarding -(Failure expected when NOT built with regex)";
@@ -494,7 +492,7 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
-    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl  $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[2]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[3]="ncks -C -H -s '%3.f' -v three_dmn_var_dbl %tmp_fl_01%";
     $dsc_sng="ensemble mean of 3D variable across two files with MSA";
@@ -1127,7 +1125,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #extract all variables in g6 = area,area1, refine to area1 only
 
     $dsc_sng="Variable/Group extraction test 1 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6  $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -v area1  %tmp_fl_00%";
     $tst_cmd[2]="lat[1] area1[1]=31";
@@ -1147,7 +1145,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #use -d 
 
     $dsc_sng="Variable/Group extraction test 2 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6  $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -v area1 -d lat,0,0 %tmp_fl_00%";
     $tst_cmd[2]="lat[0] area1[0]=21";
@@ -1166,7 +1164,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #extract all variables in g6g1 (second level group) = area
 
     $dsc_sng="Variable/Group extraction test 3 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1  $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lat[1] area[1]=50";
     $tst_cmd[2]="SS_OK";  
@@ -1183,7 +1181,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-1 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
+   $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";   
@@ -1200,7 +1198,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
     $dsc_sng="Variable/Group extraction test 4-2 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are.  $in_pth_arg in_grp.nc | grep -w /g6/area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/area";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK"; 
@@ -1263,7 +1261,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
 
     $dsc_sng="Variable/Group extraction test 7-1 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/g6g1/area";
     $tst_cmd[2]="SS_OK";     
@@ -1279,7 +1277,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
 
     $dsc_sng="Variable/Group extraction test 7-2 (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1  $in_pth_arg in_grp.nc | grep -w /g6/area";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/area";
     $tst_cmd[2]="SS_OK";   
@@ -1304,8 +1302,8 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 
     $dsc_sng="Extract associated coordinates test 1 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v rz $in_pth_arg in.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -o -w rlev";
-	$tst_cmd[2]="rlev";
+    $tst_cmd[1]="ncks -v rlev %tmp_fl_00% | grep -o -w rlev";
+    $tst_cmd[2]="rlev";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
@@ -1348,13 +1346,13 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #gds_crd:coordinates = "lat_gds lon_gds";
 
     $dsc_sng="Extract CF 'coordinates' variables(netCDF4 file)";
-    $tst_cmd[0]="ncks -v gds_crd $in_pth_arg in_grp.nc | grep -w /g7/lat_gds";
-	if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[0]="ncks $nco_D_flg -v gds_crd $in_pth_arg in_grp.nc | grep -w /g7/lat_gds";
+    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g7/lat_gds";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=""; 
-    $tst_cmd[2]="SS_OK";     
+    $tst_cmd[2]="SS_OK";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
@@ -1363,7 +1361,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #gds_crd:coordinates = "lat_gds lon_gds";
 
     $dsc_sng="Extract CF 'coordinates' variables (netCDF3 file)";
-    $tst_cmd[0]="ncks -v gds_crd $in_pth_arg in.nc | grep -o -w lat_gds";
+    $tst_cmd[0]="ncks $nco_D_flg -v gds_crd $in_pth_arg in.nc | grep -o -w lat_gds";
     $tst_cmd[1]="lat_gds";
     $tst_cmd[2]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
@@ -1373,8 +1371,8 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #lev:bounds = "ilev";
 
     $dsc_sng="Extract CF 'bounds' variables (netCDF4 file)";
-    $tst_cmd[0]="ncks -v lev $in_pth_arg in_grp.nc | grep -w /g8/ilev";
-	if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[0]="ncks $nco_D_flg -v lev $in_pth_arg in_grp.nc | grep -w /g8/ilev";
+    if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g8/ilev";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
@@ -1388,9 +1386,30 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 #lev:bounds = "ilev";
 
     $dsc_sng="Extract CF 'bounds' variables (netCDF3 file)";
-    $tst_cmd[0]="ncks -v lev $in_pth_arg in.nc | grep -o -w ilev";
+    $tst_cmd[0]="ncks $nco_D_flg -v lev $in_pth_arg in.nc | grep -o -w ilev";
     $tst_cmd[1]="ilev";
     $tst_cmd[2]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+    $dsc_sng="Check --mk_rec_dmn (netCDF3 file)";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate dimension'";
+    $tst_cmd[2]="Record coordinate dimension";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+    $dsc_sng="Check --mk_rec_dmn (netCDF4 file)";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v lat_lon $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate dimension'";
+    $tst_cmd[2]="Record coordinate dimension";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=""; 
+    $tst_cmd[2]="SS_OK";     
+    }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 
@@ -1526,7 +1545,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
     $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time+=10;' $in_pth_arg in.nc %tmp_fl_00%";    
-    $tst_cmd[1]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,4  $in_pth/in.nc %tmp_fl_00%  %tmp_fl_01% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncra -Y ncrcat -O $omp_flg $fl_fmt $nco_D_flg -C -v time -d time,0,,4 $in_pth/in.nc %tmp_fl_00%  %tmp_fl_01% 2> %tmp_fl_02%";
     $tst_cmd[2]="ncks -C -H -s '%2.f,' -v time  %tmp_fl_01%";
     $dsc_sng="Concatenate 1D variable with stride across two files";
     $tst_cmd[3]=" 1, 5, 9,13,17";
@@ -1557,7 +1576,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
     $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time  $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% 2> %tmp_fl_05%";
+    $tst_cmd[1]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% 2> %tmp_fl_05%";
     $tst_cmd[2]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="time_ttl = 210";
     $dsc_sng="Concatenate 1D variable across two files no limits. Requires UDUnits.";
@@ -1567,7 +1586,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-04-01 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,8.0,9.0  $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,8.0,9.0 $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[4]="time_ttl = 17";
     $dsc_sng="Concatenate 1D variable across three files double limits. Requires UDUnits.";
@@ -1577,7 +1596,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-04-01 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,11.0,20.0  $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,11.0,20.0 $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[4]="time_ttl = 155";
     $dsc_sng="Concatenate 1D variable across three files double limits2. Requires UDUnits.";
@@ -1587,7 +1606,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-03-22 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"days since 1964-04-01 12:09:00 -9:00\"' $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1964-03-22 12:00','1964-03-25 12:00'   $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'1964-03-22 12:00','1964-03-25 12:00' $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[4]="time_ttl = 33";
     $dsc_sng="Concatenate 1D variable across three files time stamp limits2. Requires UDUnits.";

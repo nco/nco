@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.218 2013-01-21 06:00:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.219 2013-01-27 00:29:59 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -626,9 +626,10 @@ extern "C" {
     int grp_id_in; /* [id] Group ID in input file */
     int grp_id_out; /* [id] Group ID in output file */
     int nbr_att; /* [nbr] Number of attributes */
-    int nbr_var; /* [nbr] Number of variables (for group) */
     int nbr_dmn; /* [nbr] Number of dimensions */
     int nbr_grp; /* [nbr] Number of sub-groups (for group) */
+    int nbr_rec; /* [nbr] Number of record dimensions */
+    int nbr_var; /* [nbr] Number of variables (for group) */
     nco_bool flg_cf; /* [flg] Object matches CF-metadata extraction criteria */
     nco_bool flg_crd; /* [flg] Object matches coordinate extraction criteria */
     nco_bool flg_dfl; /* [flg] Object meets default subsetting criteria */

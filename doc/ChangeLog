@@ -1,3 +1,25 @@
+2013-01-26  Charlie Zender  <zender@uci.edu>
+
+	* ncks only copies global metadata once
+
+	* ncks prints multiple root record dimensions
+
+	* nco_prn_var_dfn() handles multiple record dimensions
+
+	* Add tm2_tm3 to allow regression tests on variables with multiple record dimensions
+
+	* Fix 4.2.4 bug that broke --mk_rec_dmn
+
+	* Smarten nco_cpy_var_dfn*() to allow multiple netCDF4 record dimensions
+
+	* Add --mk_rec_dmn regression tests
+
+	* New API: pass rec_dmn_nm to nco_cpy_var_dfn*() only when user-specified
+
+2013-01-25  Charlie Zender  <zender@uci.edu>
+
+	* Remove ENABLE_NETCDF4 from nco_cpy_var_val_lmt()
+
 2013-01-23  Charlie Zender  <zender@uci.edu>
 
 	* Prepare to implement --mk_rec_dmn functionality in nco_xtr_dfn()

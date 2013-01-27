@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.255 2013-01-24 14:49:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.256 2013-01-27 00:29:59 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -121,10 +121,10 @@ main(int argc,char **argv)
   /* NCO_GRP_OUT_SFX_LNG is number of consecutive numeric digits autumatically generated as group name suffixes */
 #define	NCO_GRP_OUT_SFX_LNG 2
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
-  char sls_sng[]="/"; /* Group path */
+  char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.255 2013-01-24 14:49:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.255 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.256 2013-01-27 00:29:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.256 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -814,10 +814,10 @@ main(int argc,char **argv)
 
       /* Construct traversal table */
       trv_tbl_init(&trv_tbl);
-      rcd+=nco_grp_itr(in_id,sls_sng,trv_tbl);
+      rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
-      (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,trv_tbl);
+      (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
       (void)nco_inq_format(in_id,&fl_in_fmt);
 
       /* Parse auxiliary coordinates */

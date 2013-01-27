@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.756 2013-01-24 14:49:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.757 2013-01-27 00:29:59 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -824,8 +824,8 @@ the directory index <a href="src">here</a>.
 
 <a name="aix"></a><a name="ibm"></a> <!-- http://nco.sf.net#aix -->
 <h3><a href="http://www.ibm.com/servers/aix">AIX</a> on IBM mainframes</h3>
-<ul> <!-- http://nco.sf.net/src/nco-4.2.2.aix53.tar.gz -->
-<li><a href="src/nco-4.2.2.aix53.tar.gz">nco-4.2.2.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.2.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.2.aix53.tar.gz"-->). Maintained by NCO Project.</li>
+<ul> <!-- http://nco.sf.net/src/nco-4.2.4.aix53.tar.gz -->
+<li><a href="src/nco-4.2.4.aix53.tar.gz">nco-4.2.4.aix53.tar.gz</a> (<!--#fsize file="src/nco-4.2.4.aix53.tar.gz"-->): Executables AIX 5.3-compatible (last updated <!--#flastmod file="src/nco-4.2.4.aix53.tar.gz"-->). Maintained by NCO Project.</li>
 Newer (beta- or pre-release) packages are sometimes available for AIX users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
 Thanks to NSF for supporting AIX machines at NCAR over the years. 
 </ul>
@@ -1125,7 +1125,7 @@ infrequently updated. Comments and suggestions are certainly welcomed on the
 <ul><b>Best Practices:</b>
 
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
-Building NCO yourself can be painful, so we recommend you first try the pre-built binaries for your system, e.g., 
+<li>Building NCO yourself can be painful, so we recommend you first try the pre-built binaries for your system, e.g., 
 <tt>
 <dt>sudo aptitude install nco # Debian-based systems like Ubuntu</dt>
 <dt>sudo yum-install nco      # RPM-based systems like Fedora</dt>

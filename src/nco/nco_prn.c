@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.79 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.80 2013-01-27 00:30:01 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -188,23 +188,31 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 {
   /* Purpose: Print variable metadata. This routine does not take into 
      account any user-specified limits, it just prints what it finds. */
+  dmn_sct *dmn=NULL_CEWI;
+
   int *dmn_id=NULL_CEWI;
-  size_t *cnk_sz=NULL_CEWI; /* [nbr] Chunk sizes */
-  int idx;
-  int nbr_dim;
-  int nbr_att;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id;
-  int var_id;
-  int srg_typ; /* [enm] Storage type */
-  int shuffle; /* [flg] Shuffling is on */
+
+  int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
+
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
+  int dmn_idx;
+  int rec_idx;
+  int nbr_att;
+  int nbr_dim;
+  int nbr_rec; /* [nbr] Number of record dimensions visible in this group */
   int packing; /* [flg] Variable is packed */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rec_dmn_id;
+  int shuffle; /* [flg] Shuffling is on */
+  int srg_typ; /* [enm] Storage type */
+  int var_id;
   
   nc_type var_typ;
   
-  dmn_sct *dim=NULL_CEWI;
+  nco_bool CRR_DMN_IS_REC_IN_INPUT; /* [flg] Current dimension of variable is record dimension of variable in input file/group */
+
+  size_t *cnk_sz=NULL_CEWI; /* [nbr] Chunk sizes */
 
   /* Is requested variable in input file? */
   rcd=nco_inq_varid(in_id,var_nm,&var_id);
@@ -215,10 +223,13 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Get record dimension ID, if any */
   (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
 
+  /* Get unlimited dimension information from input file/group */
+  rcd=nco_inq_unlimdims(in_id,&nbr_rec,dmn_ids_rec);
+
   if(nbr_dim > 0){
     /* Allocate space for dimension info */
     cnk_sz=(size_t *)nco_malloc(nbr_dim*sizeof(size_t)); /* [nbr] Chunk sizes */
-    dim=(dmn_sct *)nco_malloc(nbr_dim*sizeof(dmn_sct));
+    dmn=(dmn_sct *)nco_malloc(nbr_dim*sizeof(dmn_sct));
     dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   } /* end if nbr_dim > 0 */
   
@@ -231,28 +242,28 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   (void)nco_inq_vardimid(in_id,var_id,dmn_id);
 
   /* Collect dimension sizes and names */
-  for(idx=0;idx<nbr_dim;idx++){
-    dim[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
-    dim[idx].id=dmn_id[idx];
-    (void)nco_inq_dim(in_id,dim[idx].id,dim[idx].nm,&dim[idx].sz);
-  } /* end loop over dim */
+  for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+    dmn[dmn_idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
+    dmn[dmn_idx].id=dmn_id[dmn_idx];
+    (void)nco_inq_dim(in_id,dmn[dmn_idx].id,dmn[dmn_idx].nm,&dmn[dmn_idx].sz);
+  } /* end loop over dmn */
 
   /* Print header for variable */
   (void)fprintf(stdout,"%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",var_nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
 
   /* Print type, shape, and total size of variable */
-  if(nbr_dim>0){
+  if(nbr_dim > 0){
     long var_sz=1L;
     char sz_sng[100];
     char sng_foo[200];
 
-    for(idx=0;idx<nbr_dim;idx++) var_sz*=dim[idx].sz;
+    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn[dmn_idx].sz;
     sz_sng[0]='\0';
-    for(idx=0;idx<nbr_dim-1;idx++){
-      (void)sprintf(sng_foo,"%li*",dim[idx].sz);
+    for(dmn_idx=0;dmn_idx<nbr_dim-1;dmn_idx++){
+      (void)sprintf(sng_foo,"%li*",dmn[dmn_idx].sz);
       (void)strcat(sz_sng,sng_foo);
     } /* end loop over dim */
-    (void)sprintf(sng_foo,"%li*sizeof(%s)",dim[idx].sz,nco_typ_sng(var_typ));
+    (void)sprintf(sng_foo,"%li*sizeof(%s)",dmn[dmn_idx].sz,nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
     /* NB: netCDF chunking/deflate define/inquire functions only work with netCDF4
        NCO wrappers perform no-ops on netCDF3 files */
@@ -266,33 +277,39 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* end if variable is scalar */
 
   /* Print dimension sizes and names */
-  for(idx=0;idx<nbr_dim;idx++){
+  for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+    /* Is dimension unlimited in input group/file? */
+    for(rec_idx=0;rec_idx<nbr_rec;rec_idx++)
+      if(dmn[dmn_idx].id == dmn_ids_rec[rec_idx]) break;
+    if(rec_idx < nbr_rec) CRR_DMN_IS_REC_IN_INPUT=True; else CRR_DMN_IS_REC_IN_INPUT=False;
+
     /* Is dimension a coordinate, i.e., stored as a variable? */
-    rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
+    /* fxm: broken with netCDF4 since coordinate may be in ancestor group */
+    rcd=nco_inq_varid_flg(in_id,dmn[dmn_idx].nm,&dmn[dmn_idx].cid);
     if(rcd == NC_NOERR){
       /* Dimension is a coordinate. Which storage type is the coordinate? */
-      (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),cnk_sz[idx]); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s (",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type));
-      (void)fprintf(stdout,"%soordinate dimension)",(dim[idx].id == rec_dmn_id) ? "Record c" : "C");
+      (void)nco_inq_vartype(in_id,dmn[dmn_idx].cid,&dmn[dmn_idx].type);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",var_nm,dmn_idx,dmn[dmn_idx].nm,dmn[dmn_idx].sz,nco_typ_sng(dmn[dmn_idx].type),cnk_sz[dmn_idx]); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s (",var_nm,dmn_idx,dmn[dmn_idx].nm,dmn[dmn_idx].sz,nco_typ_sng(dmn[dmn_idx].type));
+      (void)fprintf(stdout,"%soordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT) ? "Record c" : "C");
     }else{
       /* Dimension is not a coordinate */
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu (",var_nm,idx,dim[idx].nm,dim[idx].sz,cnk_sz[idx]); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li (",var_nm,idx,dim[idx].nm,dim[idx].sz);
-      (void)fprintf(stdout,"%son-coordinate dimension)",(dim[idx].id == rec_dmn_id) ? "Record n" : "N");
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu (",var_nm,dmn_idx,dmn[dmn_idx].nm,dmn[dmn_idx].sz,cnk_sz[dmn_idx]); else (void)fprintf(stdout,"%s dimension %i: %s, size = %li (",var_nm,dmn_idx,dmn[dmn_idx].nm,dmn[dmn_idx].sz);
+      (void)fprintf(stdout,"%son-coordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT) ? "Record n" : "N");
     } /* end else */
     (void)fprintf(stdout,"\n"); 
-  } /* end loop over dim */
+  } /* end loop over dimensions */
   
   /* Caveat user */
   if((nc_type)var_typ == NC_STRING) (void)fprintf(stdout,"%s size (in RAM) above is space required for pointers only, full size of strings is unknown until data are read\n",var_nm);
   (void)fflush(stdout);
   
   /* Free space allocated for dimension information */
-  for(idx=0;idx<nbr_dim;idx++) dim[idx].nm=(char *)nco_free(dim[idx].nm);
+  for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) dmn[dmn_idx].nm=(char *)nco_free(dmn[dmn_idx].nm);
   if(nbr_dim > 0){
     cnk_sz=(size_t *)nco_free(cnk_sz); /* [nbr] Chunk sizes */
-    dim=(dmn_sct *)nco_free(dim);
+    dmn=(dmn_sct *)nco_free(dmn);
     dmn_id=(int *)nco_free(dmn_id);
-  } /* end if nbr_dim > 0*/
+  } /* end if nbr_dim > 0 */
 
 } /* end nco_prn_var_dfn() */
 

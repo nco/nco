@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.36 2013-01-23 10:13:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.37 2013-01-27 00:29:59 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -48,9 +48,10 @@ trv_tbl_init
     tb->lst[idx].grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
 
     tb->lst[idx].nbr_att=nco_obj_typ_err;
-    tb->lst[idx].nbr_var=nco_obj_typ_err;
     tb->lst[idx].nbr_dmn=nco_obj_typ_err;
     tb->lst[idx].nbr_grp=nco_obj_typ_err;
+    tb->lst[idx].nbr_rec=nco_obj_typ_err;
+    tb->lst[idx].nbr_var=nco_obj_typ_err;
   } /* end loop over objects */
 
   *tbl=tb;
@@ -117,6 +118,7 @@ trv_tbl_add
   tbl->lst[idx].nbr_att=obj.nbr_att;
   tbl->lst[idx].nbr_dmn=obj.nbr_dmn;
   tbl->lst[idx].nbr_grp=obj.nbr_grp;
+  tbl->lst[idx].nbr_rec=obj.nbr_rec;
   tbl->lst[idx].nbr_var=obj.nbr_var;
 } /* end trv_tbl_add() */
 
@@ -124,21 +126,24 @@ void
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
 (int * const att_nbr_all,            /* O [nbr] Number of global+group attributes in file */
  int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
- int * const var_nbr_all,            /* O [nbr] Number of variables in file */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
+ int * const rec_nbr_all,            /* O [nbr] Number of record dimensions in file */
+ int * const var_nbr_all,            /* O [nbr] Number of variables in file */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
   int att_nbr_lcl; /* [nbr] Number of global+group attributes in file */
   int dmn_nbr_lcl; /* [nbr] Number of dimensions in file */
-  int var_nbr_lcl; /* [nbr] Number of variables in file */
   int grp_nbr_lcl; /* [nbr] Number of groups in file */
+  int rec_nbr_lcl; /* [nbr] Number of record dimensions in file */
+  int var_nbr_lcl; /* [nbr] Number of variables in file */
 
   /* Initialize */
   att_nbr_lcl=0;
   dmn_nbr_lcl=0;
-  var_nbr_lcl=0;
   grp_nbr_lcl=0;
+  rec_nbr_lcl=0;
+  var_nbr_lcl=0;
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx]; 
@@ -146,15 +151,17 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
       /* Increment */
       att_nbr_lcl+=trv.nbr_att; 
       dmn_nbr_lcl+=trv.nbr_dmn;
-      var_nbr_lcl+=trv.nbr_var;
       grp_nbr_lcl+=trv.nbr_grp;
+      rec_nbr_lcl+=trv.nbr_rec;
+      var_nbr_lcl+=trv.nbr_var;
     } /* end nco_obj_typ_grp */
   } /* end uidx */
 
   if(att_nbr_all) *att_nbr_all=att_nbr_lcl;
   if(dmn_nbr_all) *dmn_nbr_all=dmn_nbr_lcl;
-  if(var_nbr_all) *var_nbr_all=var_nbr_lcl;
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
+  if(rec_nbr_all) *rec_nbr_all=rec_nbr_lcl;
+  if(var_nbr_all) *var_nbr_all=var_nbr_lcl;
 
   return;
 } /* end trv_tbl_inq() */

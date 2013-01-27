@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.562 2013-01-26 06:13:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.563 2013-01-27 00:29:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -146,10 +146,10 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  char sls_sng[]="/"; /* Group path */
+  char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.562 2013-01-26 06:13:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.562 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.563 2013-01-27 00:29:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.563 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -188,10 +188,10 @@ main(int argc,char **argv)
   int nbr_dmn_fl;
   int nbr_glb_att;
   int nbr_grp_fl;
+  int nbr_rec_fl;
   int nbr_var_fl;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
@@ -599,15 +599,14 @@ main(int argc,char **argv)
 
   /* Construct traversal table */
   trv_tbl_init(&trv_tbl);
-  rcd+=nco_grp_itr(in_id,sls_sng,trv_tbl);
+  rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
 
-  /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_var_fl,&nbr_grp_fl,trv_tbl);
-  (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+   /* Get number of variables, dimensions, and global attributes in file, file format */
+  (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Make output and input files consanguinous */
-   if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+  if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 #ifndef ENABLE_NETCDF4
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support\n",prg_nm_get());
@@ -635,7 +634,7 @@ main(int argc,char **argv)
   /* Process --get_file_info option if requested */ 
   if(GET_FILE_INFO){ 
     (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
-    (void)fprintf(stdout,"%d subgroups, %d dimensions, %d attributes, %d variables\n",nbr_grp_fl,nbr_dmn_fl,nbr_glb_att,nbr_var_fl); 
+    (void)fprintf(stdout,"%d subgroups, %d dimensions, %d record dimensions, %d group + global attributes, %d variables\n",nbr_grp_fl,nbr_dmn_fl,nbr_rec_fl,nbr_glb_att,nbr_var_fl); 
     goto close_and_free; 
   } /* end GET_FILE_INFO */
 
@@ -652,12 +651,6 @@ main(int argc,char **argv)
      } /* endif aux */
   } /* endif aux_nbr */
   
-  /* Get record dimension name if not already defined with --mk_rec_dmn (and --fix_rec_dmn is false) */
-  if(!FIX_REC_DMN && !rec_dmn_nm && (rec_dmn_id != NCO_REC_DMN_UNDEFINED)){ 
-    rec_dmn_nm=(char *)nco_malloc(NC_MAX_NAME*(sizeof(char)));
-    (void)nco_inq_dimname(in_id,rec_dmn_id,rec_dmn_nm);
-  } /* endif rec_dmn_nm */
-
   /* Print extraction list in verbose mode */
   if(dbg_lvl_get() == nco_dbg_crr) (void)trv_tbl_prn_xtr(trv_tbl);
 
@@ -742,9 +735,6 @@ main(int argc,char **argv)
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
-    /* Copy global attributes */
-    if(PRN_GLB_METADATA)(void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-
     if(gpe){
 #ifndef ENABLE_NETCDF4
       (void)fprintf(stderr,"ERROR Group Path Edit requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
@@ -794,18 +784,24 @@ main(int argc,char **argv)
   }else{ /* !fl_out */
     /* No output file was specified so PRN_ tokens refer to screen printing */
     if(PRN_GLB_METADATA){
-      (void)fprintf(stdout,"Opened file %s: groups = %i, dimensions = %i, variables = %i, group+global atts. = %i, type = %s\n",fl_in,nbr_grp_fl,nbr_dmn_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
-      if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+      int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
+      int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
+      /* File summary line */
+      (void)fprintf(stdout,"Opened file %s: groups = %i, dimensions = %i, record dimensions = %i, variables = %i, group+global atts. = %i, type = %s\n",fl_in,nbr_grp_fl,nbr_dmn_fl,nbr_rec_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
+      /* Get unlimited dimension information from input file/group */
+      rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
+      if(nbr_rec_lcl > 0){
 	char dmn_nm[NC_MAX_NAME]; 
 	long rec_dmn_sz;
-	(void)nco_inq_dim(in_id,rec_dmn_id,dmn_nm,&rec_dmn_sz);
-	(void)fprintf(stdout,"Root record dimension: name = %s, size = %li\n\n",dmn_nm,rec_dmn_sz);
-      }else{ /* NCO_REC_DMN_UNDEFINED */
-	(void)fprintf(stdout,"Root record dimension: None\n\n");
+	for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
+	  (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
+	  (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
+	} /* end loop over rec_idx */
+	(void)fprintf(stdout,"\n");
       } /* NCO_REC_DMN_UNDEFINED */
-      /* Print group metadata recursively */
+      /* Print group attributes recursively */
       (void)nco_prn_att_trv(in_id,trv_tbl);
-    } /* endif PRN_GLB_METADATA */
+    } /* !PRN_GLB_METADATA */
     
     if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
 
