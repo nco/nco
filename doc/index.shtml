@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.757 2013-01-27 00:29:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.758 2013-01-27 02:03:45 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1140,10 +1140,11 @@ source code are to install
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations) 
 before building NCO.
-If possible, install all this software stack from pre-built binaries 
-(command to do so on Debian and RPM systems are given just below).
+If possible, install this software stack from pre-built binaries 
+(commands to do so on Debian and RPM systems are given just below).
 Failing that (e.g., you lack root access or are on a non-package
 system such as AIX), build these all with the same compiler (and switches).
+Recent versions of netCDF automatically build OPeNDAP and UDUnits.
 NCO is mostly written in&nbsp;C99, and although you <i>may</i> mix and
 match compilers, this is often difficult in practice and is not recommended.
 The exception is <tt>ncap2</tt> which is written in&nbsp;C++.
