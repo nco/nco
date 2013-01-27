@@ -32,7 +32,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.50 2013-01-27 00:29:59 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.51 2013-01-27 07:50:12 pvicente Exp $";
   // Coordinates
   float lat(lat);
  lat:units = "degrees_north";
@@ -70,7 +70,7 @@ netcdf in_grp {
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   tm2=1.,2.;
   tm3=1.,2.,3.;
-  tm2_tm3={1.,2.,3.},{4.,5.,6.};
+  tm2_tm3=1.,2.,3.,4.,5.,6.;
   unique=73;
   //
   //g1
