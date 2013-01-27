@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.396 2013-01-27 02:19:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.397 2013-01-27 08:26:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1513,7 +1513,7 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
           Subject: Re: [netcdfgroup] defining dimensions in groups
           1. The inner dimension is used. The rule is to look up the group tree
           from innermost to root and choose the first one that is found
-          with a matchng name.
+          with a matching name.
           2. The fact that it is a dimension for a coordinate variable is not relevant for the
           choice.
           However, note that this rule is only used by ncgen when disambiguating a reference
@@ -2018,3 +2018,256 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
 
   return;
 } /* end nco_prn_var_val() */
+
+void 
+xtr_lst_prn                            /* [fnc] Print name-ID structure list */
+(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
+ const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
+{
+  (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",prg_nm_get(),nm_id_nbr); 
+  for(int idx=0;idx<nm_id_nbr;idx++){
+    nm_id_sct nm_id=nm_id_lst[idx];
+    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.var_nm_fll); 
+  } 
+}/* end xtr_lst_prn() */
+
+void 
+nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists */
+(nm_id_sct * const nm_id_lst1,        /* I [sct] Name-ID structure list */
+ const int nm_id_nbr1,                /* I [nbr] Number of name-ID structures in list */
+ nm_id_sct * const nm_id_lst2,        /* I [sct] Name-ID structure list */
+ const int nm_id_nbr2,                /* I [nbr] Number of name-ID structures in list */
+ const nco_bool SAME_ORDER)           /* I [flg] Both lists have the same order */
+{
+  int idx,jdx;
+  assert(nm_id_nbr1 == nm_id_nbr2);
+  if(SAME_ORDER){
+    for(idx=0;idx<nm_id_nbr1;idx++){
+      assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[idx].nm) == 0);
+      assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[idx].grp_nm_fll) == 0);
+      assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[idx].var_nm_fll) == 0);
+    }
+  }else{ /* SAME_ORDER */
+
+    int nm_id_nbr=0;
+    for(idx=0;idx<nm_id_nbr1;idx++){
+      nm_id_sct nm_id_1=nm_id_lst1[idx];
+      for(jdx=0;jdx<nm_id_nbr2;jdx++){
+        nm_id_sct nm_id_2=nm_id_lst2[jdx];
+        if(strcmp(nm_id_1.var_nm_fll,nm_id_2.var_nm_fll) == 0){
+          nm_id_nbr++;
+          assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[jdx].nm) == 0);
+          assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[jdx].grp_nm_fll) == 0);
+          assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[jdx].var_nm_fll) == 0);
+        }
+      }/* jdx */
+    }/* idx */
+    assert(nm_id_nbr == nm_id_nbr1);
+  } /* SAME_ORDER */
+} /* end nco_nm_id_cmp() */
+
+void
+nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
+ const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
+{
+  nm_id_sct *xtr_lst_chk=NULL;
+  int xtr_nbr_chk;
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)xtr_lst_prn(xtr_lst,xtr_nbr);
+    (void)trv_tbl_prn_xtr(trv_tbl);
+  }
+  xtr_lst_chk=nco_trv_tbl_nm_id(nc_id,&xtr_nbr_chk,trv_tbl);
+  (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
+  if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
+  return;
+} /* end nco_trv_tbl_chk() */
+
+nm_id_sct *                           /* O [sct] List of dimensions associated with input variable list */ 
+nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions associated with input variable list */
+(const int nc_id,                     /* I [id] netCDF input-file ID */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ int * const nbr_dmn)                 /* O [nbr] Number of dimensions associated with input variable list */
+{
+  /* Purpose: Create list of all dimensions associated with input variable list;
+  This function is the traversal version of nco_dmn_lst_ass_var() */
+
+  int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
+  int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array for group */
+  int fl_fmt;                  /* [nbr] File format */
+  int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
+  int nbr_dmn_in;              /* [nbr] Number of dimensions */
+  int nbr_dmn_grp;             /* [nbr] Number of dimensions */
+  int var_id;                  /* [ID] Variable ID */
+  int grp_id;                  /* [ID] Group ID */
+
+  nm_id_sct *dmn=NULL;         /* [sct] List of dimensions associated with input variable list */
+
+  const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
+
+  long dmn_sz;                 /* [nbr] Dimension size */ 
+
+  char dmn_var_nm[NC_MAX_NAME];/* [sng] Dimension name for a variable  */ 
+  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+  const char sls_chr='/';      /* [chr] Slash character */
+  const char sls_sng[]="/";    /* [sng] Slash string */
+
+  /* Inititialize output value */
+  *nbr_dmn=0;
+
+  /* Get total number of dimensions in file. NB: these are dimensions in groups */
+  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  /* Allocate */
+  dmn=(nm_id_sct *)nco_malloc(nbr_dmn_in*sizeof(nm_id_sct));
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct trv=trv_tbl->lst[uidx];
+    if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
+
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+
+      /* Obtain variable ID using group ID */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+
+      /* Get number of dimensions for variable */
+      (void)nco_inq_varndims(grp_id,var_id,&nbr_var_dim);
+
+      /* Get dimension IDs for variable */
+      (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
+
+      /* Loop over dimensions of variable */
+      for(int idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
+
+        /* Get dimension name of variable */
+        (void)nco_inq_dimname(nc_id,dmn_id_var[idx_var_dim],dmn_var_nm);
+
+        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+          /* Distinct dimensions with same name "dmn_var_nm" can occur in multiple groups
+          And those definitions may not share namespace, e.g., "dmn_var_nm" can be defined distinctly in sibling groups */
+
+          /* Obtain number of dimensions visible to group */
+          (void)nco_inq(grp_id,&nbr_dmn_grp,NULL,NULL,NULL);
+
+          /* Obtain dimension IDs. NB: go to parents */
+          (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
+
+          /* List dimensions */
+          for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
+
+            /* Get dimension info */
+            (void)nco_inq_dim(grp_id,dmn_id_grp[idx_dmn],dmn_nm,&dmn_sz);
+
+            /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
+            if(!strcmp(dmn_nm,dmn_var_nm)){
+              char *pch; /* [sng] Pointer to character in string */
+              int psn;   /* [nbr] Position of character */
+
+              if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Coordinate variable to find %s\n",prg_nm_get(),dmn_var_nm);
+
+              /* Construct full name */
+              char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
+              strcpy(dmn_nm_fll,trv.grp_nm_fll);
+              if(strcmp(trv.grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+              strcat(dmn_nm_fll,dmn_nm);
+
+              /* Brute-force approach to find valid "dmn_nm_fll":
+              Start at grp_nm_fll/var_nm and build all possible paths with var_nm. 
+              Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
+
+              /* Find last occurence of '/' */
+              pch=strrchr(dmn_nm_fll,sls_chr);
+              psn=pch-dmn_nm_fll;
+              while(pch){
+                /* Search table for existing "dmn_nm_fll" */
+                if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
+                  if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
+
+                  /*From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
+                  Subject: Re: [netcdfgroup] defining dimensions in groups
+                  1. The inner dimension is used. The rule is to look up the group tree
+                  from innermost to root and choose the first one that is found
+                  with a matching name.
+                  2. The fact that it is a dimension for a coordinate variable is not relevant for the
+                  choice.
+                  However, note that this rule is only used by ncgen when disambiguating a reference
+                  in the CDL.  The issue does not come up in the netcdf API because
+                  you have to specifically supply the dimension id when defining the dimension
+                  for a variable.*/
+
+                  /* So... exit from here if the innermost coordinate variable was found: there is one and only 
+                  one valid coordinate variable in the path scope */
+
+                  /* ...then add dimension to output dimension list... */
+
+                  dmn[*nbr_dmn].id=-1; /* NB: Deprecate IDs */
+                  dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
+                  dmn[*nbr_dmn].grp_nm_fll=(char *)strdup("/");
+                  dmn[*nbr_dmn].var_nm_fll=(char *)strdup(dmn_nm_fll);
+
+                  (*nbr_dmn)++;
+
+                  dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+                  break;
+
+                } /* endif */
+                dmn_nm_fll[psn]='\0';
+                pch=strrchr(dmn_nm_fll,sls_chr);
+                if(pch){
+                  psn=pch-dmn_nm_fll;
+                  dmn_nm_fll[psn]='\0';
+                  /* Re-add variable name to shortened path */
+                  if(strcmp(trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
+                  strcat(dmn_nm_fll,dmn_nm);
+                  pch=strrchr(dmn_nm_fll,sls_chr);
+                  psn=pch-dmn_nm_fll;
+                } /* !pch */
+              } /* end while */
+
+              /* Free allocated */
+              dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+
+            } /* end strcmp() */
+          } /* end loop over dmn_idx */
+
+        }else{ /* netCDF3 */
+
+          /* Construct full name */
+          char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
+          strcpy(dmn_nm_fll,trv.grp_nm_fll);
+          if(strcmp(trv.grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+          strcat(dmn_nm_fll,dmn_nm);
+
+          /* ...then add dimension to output dimension list... */
+
+          dmn[*nbr_dmn].id=-1; /* NB: Deprecate IDs */
+          dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
+          dmn[*nbr_dmn].grp_nm_fll=(char *)strdup("/");
+          dmn[*nbr_dmn].var_nm_fll=(char *)strdup(dmn_nm_fll);
+
+          (*nbr_dmn)++;
+
+          /* Free allocated */
+          dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+        } /* endif netCDF3 */
+      } /* End loop over idx_var_dim: list dimensions for variable */
+    } /* end nco_obj_typ_var */
+  } /* end uidx  */
+
+  /* Free unused space in output dimension list */
+  dmn=(nm_id_sct *)nco_realloc((void *)dmn,*nbr_dmn*sizeof(nm_id_sct));
+
+  return dmn;
+
+} /* end nco_dmn_lst_ass_var_trv() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.197 2013-01-24 14:49:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.198 2013-01-27 08:26:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -254,6 +254,33 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
  const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void 
+xtr_lst_prn                            /* [fnc] Print name-ID structure list */
+(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
+ const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
+
+void 
+nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists */
+(nm_id_sct * const nm_id_lst1,        /* I [sct] Name-ID structure list */
+ const int nm_id_nbr1,                /* I [nbr] Number of name-ID structures in list */
+ nm_id_sct * const nm_id_lst2,        /* I [sct] Name-ID structure list */
+ const int nm_id_nbr2,                /* I [nbr] Number of name-ID structures in list */
+ const nco_bool SAME_ORDER);          /* I [flg] Both lists have the same order */
+
+void
+nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
+ const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ const nco_bool NM_ID_SAME_ORDER);    /* I [flg] Both nm_id_sct have the same order */
+
+nm_id_sct *                           /* O [sct] List of dimensions associated with input variable list */
+nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions associated with input variable list */
+(const int nc_id,                     /* I [id] netCDF input-file ID */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ int * const nbr_dmn);                /* O [nbr] Number of dimensions associated with input variable list */
 
 #ifdef __cplusplus
 } /* end extern "C" */

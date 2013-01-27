@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.200 2013-01-27 00:29:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.201 2013-01-27 08:26:02 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -85,6 +85,10 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
+#if 0
+#define USE_TRV_API /* To remove after transition from "nm_id_sct" to "trv_tbl_sct" done */
+#endif
+
 int 
 main(int argc,char **argv)
 {
@@ -130,8 +134,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.200 2013-01-27 00:29:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.200 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.201 2013-01-27 08:26:02 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.201 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -546,6 +550,7 @@ main(int argc,char **argv)
     goto close_and_free; 
   } /* end GET_LIST */ 
   
+#ifndef USE_TRV_API
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl_1,&nbr_var_fl_1,(int *)NULL,(int *)NULL);
   (void)nco_inq(in_id_2,&nbr_dmn_fl_2,&nbr_var_fl_2,(int *)NULL,(int *)NULL);
@@ -580,7 +585,9 @@ main(int argc,char **argv)
   if(xtr_nbr_2 > 1) xtr_lst_2=nco_lst_srt_nm_id(xtr_lst_2,xtr_nbr_2,False);
   
   /* We now have final list of variables to extract. Phew. */
+#endif /* USE_TRV_API */
 
+#ifdef USE_TRV_API
   /* Check -v and -g input names and create extraction list. NB: using grp_lst_in_nbr and var_lst_in_nbr array sizes */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_1);
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_2);
@@ -619,8 +626,15 @@ main(int argc,char **argv)
     (void)trv_tbl_prn_xtr(trv_tbl_2);
   }
 
+#ifdef NCO_SANITY_CHECK 
+  (void)nco_trv_tbl_chk(in_id_1,xtr_lst_1,xtr_nbr_1,trv_tbl_1,False);
+  (void)nco_trv_tbl_chk(in_id_2,xtr_lst_2,xtr_nbr_2,trv_tbl_2,False);
+#endif /* NCO_SANITY_CHECK */
+#endif /* USE_TRV_API */
+
   /* We now have final list of variables to extract. Phew. */
   
+#ifndef USE_TRV_API
   /* Find coordinate/dimension values associated with user-specified limits
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id_1,lmt[idx],0L,FORTRAN_IDX_CNV);
@@ -629,7 +643,21 @@ main(int argc,char **argv)
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_all_sct *));
   /* Initialize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr);
+#endif /* USE_TRV_API */
 
+#ifdef USE_TRV_API
+  /* Find coordinate/dimension values associated with user-specified limits
+     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+  if(lmt_nbr) (void)nco_lmt_evl_trv(in_id_1,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);    
+
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_all_sct *));
+
+  /* Initialize lmt_all_sct's */ 
+  (void)nco_msa_lmt_all_int_trv(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr,trv_tbl_1);
+#endif /* USE_TRV_API */
+
+#ifndef USE_TRV_API
   /* Find dimensions associated with variables to be extracted */
   dmn_lst_1=nco_dmn_lst_ass_var(in_id_1,xtr_lst_1,xtr_nbr_1,&nbr_dmn_xtr_1);
   dmn_lst_2=nco_dmn_lst_ass_var(in_id_2,xtr_lst_2,xtr_nbr_2,&nbr_dmn_xtr_2);
@@ -642,6 +670,15 @@ main(int argc,char **argv)
   /* Dimension lists no longer needed */
   dmn_lst_1=nco_nm_id_lst_free(dmn_lst_1,nbr_dmn_xtr_1);
   dmn_lst_2=nco_nm_id_lst_free(dmn_lst_2,nbr_dmn_xtr_2);
+#endif /* USE_TRV_API */
+
+#ifdef USE_TRV_API
+  /* Find dimensions associated with variables to be extracted */
+  dmn_lst_1=nco_dmn_lst_ass_var_trv(in_id_1,trv_tbl_1,&nbr_dmn_xtr_1); 
+  dmn_lst_2=nco_dmn_lst_ass_var_trv(in_id_2,trv_tbl_2,&nbr_dmn_xtr_2); 
+
+
+#endif /* USE_TRV_API */
 
   /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
   (void)nco_dmn_sct_cmp(dim_1,nbr_dmn_xtr_1,dim_2,nbr_dmn_xtr_2,fl_in_1,fl_in_2);    
