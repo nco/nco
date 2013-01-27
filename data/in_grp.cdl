@@ -32,7 +32,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.52 2013-01-27 17:17:06 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.53 2013-01-27 18:01:23 zender Exp $";
   // Coordinates
   float lat(lat);
  lat:units = "degrees_north";
@@ -56,9 +56,10 @@ netcdf in_grp {
   float area(lat);
  area:units = "meter2";
   float lat_lon(lat,lon);
-  float tm2_tm3(tm2,tm3);
-  tm2_tm3:purpose = "a variable containing mutiple record dimensions";
-  tm2_tm3:note = "ncdump prior to snapshot 20121116 and/or release netCDF 4.3 fails to print braces required to dis-ambiguate data sizes of mutiple record dimensions";
+  //float tm2_tm3(tm2,tm3);
+  //tm2_tm3:purpose = "a variable containing mutiple record dimensions";
+  //tm2_tm3:note = "ncdump prior to snapshot 20121116 and/or release netCDF 4.3 fails to print braces required to dis-ambiguate data sizes of mutiple record dimensions";
+  //tm2_tm3:note2 = "ncgen from netCDF after ~201207 will fail when ambiguous syntax (without braces) is used. Therefore remove tm2_tm3 from test file for now.";
  data:
   area=10.,10.;
   gds_crd=0,1,2,3,4,5,6,7;
@@ -70,7 +71,8 @@ netcdf in_grp {
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   tm2=1.,2.;
   tm3=1.,2.,3.;
-  tm2_tm3=1.,2.,3.,4.,5.,6.;
+  // 20130127: The braces are the correct syntax but are not supported by ncgen until netCDF snapshotbbs ~201207
+  //tm2_tm3={1.,2.,3.},{4.,5.,6.};
   unique=73;
   //
   //g1
@@ -104,7 +106,7 @@ netcdf in_grp {
   //
  group: g2 { 
   variables:
-    double time(time)
+    double time(time);
     float scl;
   data:
     time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
