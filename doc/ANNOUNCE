@@ -1,30 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.535 2013-01-28 02:44:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.536 2013-01-28 04:03:35 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release continues, and largely concludes, the introduction of
-powerful new sub-setting features aimed to give users powerful and
-fine-grained control over subsetting hierarchical netCDF4 files.
-Last release saw the introduction of Group Path Editing (GPE) which
-controls the output location of extracted variables and groups.
-This release introduces three new features that control extraction:
-1. Group regular expressions, 2. Anchoring and Recursion, and
-3. Intersection and Unions. These latest three features are only in
-ncks and ncecat for the time-being.
+This release fixes some annoying bug introduced in 4.2.4:
+The ncks switches --mk_rec_dmn and --fix_rec_dmn have been repaired.
+Some sub-setting optimizations (MM3, for the wonkish) are also fixed.
+Pretty simply, this is a more robust version of 4.2.4.
 
-Again, let us know how you like or dislike the way we have implemented
-the netCDF4 group functionality in ncks and ncecat.
-There are many choices for handling (selecting, printing, moving,
-comparing) groups and we made what I would call tentative decisions.
-Your feedback will help us finalize details like the printed output
-format for group information and the syntax of switches.
-This improved netCDF4 support will eventually come to all of NCO.
-
-Work on NCO 4.2.5 is underway: better netCDF4 support for ncrename
-and ncbo operators.
+Work on NCO 4.2.6 is underway and focuses on better netCDF4 support
+for ncrename and ncbo operators.
 
 Enjoy,
 Charlie
@@ -40,6 +27,12 @@ BUG FIXES:
 A. Fix bug introduced in 4.2.4 that causes ncks to ignore --mk_rec_dmn 
    and --fix_rec_dmn options. Thanks to ocehugo for reporting the bug.
    http://nco.sf.net#bug_ncks_mk_rec_dmn
+
+A. Some MM3 copy operations were fixed as a side-effect of the
+   --mk_rec_dmn/--fix_rec_dmn fixes.
+
+A. ncks prints more accurate netCDF4 metadata summaries in cases where
+   variables use dimensions and coordinates defined in ancestor groups.
 
 KNOWN BUGS NOT YET FIXED:
 

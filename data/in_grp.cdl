@@ -32,7 +32,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.54 2013-01-28 02:44:53 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.55 2013-01-28 04:03:35 zender Exp $";
   // Coordinates
   float lat(lat);
  lat:units = "degrees_north";
@@ -71,7 +71,7 @@ netcdf in_grp {
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   tm2=1.,2.;
   tm3=1.,2.,3.;
-  // 20130127: The braces are the correct syntax but are not supported by ncgen until netCDF snapshotbbs ~201207
+  // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax but was not supported by ncgen until netCDF snapshots ~201207. Uggh.
   //tm2_tm3={1.,2.,3.},{4.,5.,6.};
   unique=73;
   //
