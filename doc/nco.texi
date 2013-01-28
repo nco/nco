@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.755 2013-01-27 04:49:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.756 2013-01-28 02:44:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.2.5
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 21 January 2013
+@set update-date 27 January 2013
 @set update-month January 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -11438,7 +11438,7 @@ and suppose the user wishes to convert @code{time} from a record
 dimension to a non-record dimension.
 This may be useful, for example, when the user has another use for the
 record variable.
-The simplest method is to use @samp{cks --fix_rec_dmn} but another
+The simplest method is to use @samp{ncks --fix_rec_dmn} but another
 possibility is to use @command{ncecat} followed by 
 @command{ncwa}: 
 @cindex degenerate dimension
@@ -11707,7 +11707,7 @@ SYNTAX
 ncks [-3] [-4] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
-[--fix_rec_dmn] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
+[--fix_rec_dmn @var{dim}] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
 [-R] [-r] [--ram_all] [-s @var{format}] [-u] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -11872,12 +11872,24 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 @end html
 @cindex record dimension
 @cindex fixed dimension
-@cindex @code{--fix_rec_dmn}
-@cindex @code{--no_rec_dmn}
+@cindex @code{--fix_rec_dmn @var{dim}}
+@cindex @code{--no_rec_dmn @var{dim}}
 @item --fix_rec_dmn
-Change all record dimensions in the input file into fixed dimensions
-in the output file. 
+Change record dimension @var{dim} in the input file into a fixed
+dimension in the output file. 
 Also @samp{--no_rec_dmn}.
+Before @acronym{NCO} version 4.2.5 (January, 2013), the syntax for 
+@code{--fix_rec_dmn} did not permit or require the specification of
+the dimension name @var{dim}. 
+This is because the feature only worked on netCDF3 files, which support
+only one record dimension, so specifying its name was not necessary.
+netCDF4 files allow an arbitrary number of record dimensions, so the
+user must specify which record dimension to fix.
+The decision was made that starting with @acronym{NCO} version 4.2.5
+(January, 2013), it is always required to specify the dimension name to
+fix regardless of the netCDF file type.
+This keeps the code simple, and is symmetric with the syntax for
+@code{--mk_rec_dmn}, described next.
 
 @html
 <a name="dmn_rec_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rec_mk -->

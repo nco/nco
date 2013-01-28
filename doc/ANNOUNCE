@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.534 2013-01-27 04:49:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.535 2013-01-28 02:44:53 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -33,72 +33,13 @@ Charlie
 
 NEW FEATURES:
 
-A. ncks & ncecat support regular expressions in both variable and
-   group lists. Formerly they worked only in variable lists.
-   ncks -g 'g.' in_grp.nc # Groups g0-g9
-   ncks -g 'g.' -v 'v.' in_grp.nc # All variables 'v.' in groups 'g.'
-   http://nco.sf.net/nco.html#rx
-
-B. ncks & ncecat support Anchoring and Recursion.
-   Previously arguments to -g were extracted recursively by default.
-   Meaning that descendents of specified groups were also extracted.
-   And prepended slashes had no special significance.
-   Now initial and trailing slashes control Anchoring and Recursion:
-   ncks -g  g1  # Extract, recursively, all groups with a g1 component
-   ncks -g  g1/ # Extract, non-recursively, all groups terminating in g1
-   ncks -g /g1  # Extract, recursively, root group g1
-   ncks -g /g1/ # Extract, non-recursively root group g1
-   http://nco.sf.net/nco.html#rcr
-
-C. ncks & ncecat allow control over intersection- and union-subsetting.
-   Do users want intersections or unions of matches to the -v and -g
-   subsetting instructions? NCO is no longer wishy-washy: Intersection  
-   mode is the default, and --unn selects union-mode:
-   ncks -g g1 -v v1 # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1
-   ncks -g g1 -v v1 --unn # All vars in g1 (or descendents), or named v1
-   http://nco.sf.net/nco.html#unn
-
-D. ncrename supports restricting actions to global/group attributes
-   Formerly ncrename arguments like -a old_nm,new_nm had no way of
-   restricting actions to global/group attributes and changing them
-   required implicit assumptions about whether variables could have
-   attributes of the same name. Now attribute renaming options can
-   be restricted to global/group attributes either by leaving the
-   var_nm portion empty (and retaining the @), or by using var_nm=
-   global to indicated that att_nm refers to a global attribute.
-   ncrename -a  global@old_att_nm,new_att_nm in.nc
-   ncrename -a        @old_att_nm,new_att_nm in.nc
-   ncrename -a global@.old_att_nm,new_att_nm in.nc
-   http://nco.sf.net/nco.html#xmp_ncrename
+A. ncks prints information on multiple root-level record dimensions
 
 BUG FIXES:
 
-A. Group attributes are now copied into all groups which are ancestors
-   of groups with extracted variables. Formerly, group attributes were
-   only copied into groups which themselves had extracted variables.
-   Now otherwise empty (i.e., no variables) intermediate groups will 
-   have their attributes copied.
-
-A. Fix bug introduced in 4.2.1 that causes ncea to break when handling 
-   files that do not contain a record dimension. Thanks to Martin Otte
-   for reporting the bug and providing a working fix.
-   http://nco.sf.net#bug_ncea_rec_var
-
-A. Fix bug introduced in 4.2.1 where ncra did not write results of
-   final normalization if trailing file(s) was/were superfluous.
-   In the most common case, all zeros appeared in the output file.
-   http://nco.sf.net#bug_ncra_flg_bfr_nrm
-
-A. Fix 4.2.2 and 4.2.3 bug that kept NCO from building from source
-   when netCDF version 3 library was not available.
-
-A. Handle variables specified in CF "bounds" and "coordinates"
-   attributes as coordinates in all ways. Specifically, dimension- 
-   reducing operations (e.g., min/max/ttl) no longer operate on
-   CF conventions (since performing these operations on grids 
-   usually makes no sense). Instead, the same dimension-reducing
-   operation applied to the coordinate (averaging) is now applied to 
-   any CF "bounds" and "coordinates" variables.
+A. Fix bug introduced in 4.2.4 that causes ncks to ignore --mk_rec_dmn 
+   and --fix_rec_dmn options. Thanks to ocehugo for reporting the bug.
+   http://nco.sf.net#bug_ncks_mk_rec_dmn
 
 KNOWN BUGS NOT YET FIXED:
 

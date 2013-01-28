@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.563 2013-01-27 00:29:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.564 2013-01-28 02:44:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -91,7 +91,6 @@ main(int argc,char **argv)
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   nco_bool FL_RTR_RMT_LCN;
-  nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
@@ -148,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.563 2013-01-27 00:29:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.563 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.564 2013-01-28 02:44:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.564 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -218,8 +217,6 @@ main(int argc,char **argv)
       {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
-      {"fix_rec_dmn",no_argument,0,0}, /* [flg] Fix record dimension */
-      {"no_rec_dmn",no_argument,0,0}, /* [flg] Fix record dimension */
       {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
       {"lbr",no_argument,0,0},
       {"library",no_argument,0,0},
@@ -262,6 +259,8 @@ main(int argc,char **argv)
       {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
+      {"fix_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
+      {"no_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
@@ -381,7 +380,12 @@ main(int argc,char **argv)
       } /* endif "cmp" */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
-      if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")) FIX_REC_DMN=True; /* [flg] Fix record dimension */
+      if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")){
+	const char fix_pfx[]="fix_"; /* [sng] Prefix string to fix dimension */
+	rec_dmn_nm=(char *)nco_malloc((strlen(fix_pfx)+strlen(optarg)+1L)*sizeof(char));
+	rec_dmn_nm=strcpy(rec_dmn_nm,fix_pfx);
+	rec_dmn_nm=strcat(rec_dmn_nm,optarg);
+      } /* endif fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
@@ -610,7 +614,7 @@ main(int argc,char **argv)
 #ifndef ENABLE_NETCDF4
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support\n",prg_nm_get());
-    (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO. Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* netCDF4 */
 #endif /* ENABLE_NETCDF4 */

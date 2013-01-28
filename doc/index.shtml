@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.760 2013-01-27 04:49:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.761 2013-01-28 02:44:53 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1655,11 +1655,17 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncks_mm3 -->
+<a name="bug_ncks_mm3"></a>
+<li><i><tt>ncks</tt> bug with copying MM3 variables.
+Version 4.2.4 of <tt>ncks</tt> dumped core.
+</li>
+
 <!-- http://nco.sf.net#bug_ncks_mk_rec_dmn -->
 <a name="bug_ncks_mk_rec_dmn"></a>
-<li><i><tt>ncks</tt> bug with non-record files.
-Version 4.2.4 of <tt>ncks</tt> incorrectly handled the 
-<tt>--mk_rec_dmn</tt> and <tt>--fix_rec_dmn</tt> switches.
+<li><i><tt>ncks</tt> bug with altering record dimensions.
+Version 4.2.4 of <tt>ncks</tt> ignored both the 
+<tt>--mk_rec_dmn</tt> and the <tt>--fix_rec_dmn</tt> switches.  
 It exited successfully without altering the record variable.
 </li>
 

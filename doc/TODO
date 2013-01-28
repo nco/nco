@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1215 2013-01-12 20:29:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1216 2013-01-28 02:44:53 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -708,18 +708,10 @@ nco1076. ncpdq: change number of dimensions by unrolling
 nco1077. wnd: utilize netCDF CMake for linking so DAP/UDUNITS support is automatic
 nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggestion
 nco1080. ncrename: nc_rename_grp() library call for libnetcdf written with HDF API
-nco1081. ncra rebasing regression
-      ncap2 -O -v -s 'one_dmn_rec_var=one_dmn_rec_var' ~/nco/data/in.nc ~/in1.nc
-      ncap2 -O -s 'time=time+10' ~/in1.nc ~/in2.nc
-      ncra  -O -d time,"1964-03-12 00:00:00","1964-03-23 00:00:00" -p ~ in1.nc in2.nc ~/foo.nc # borken
-      ncatted -a units,,d,, in1.nc
-      ncatted -a units,,d,, in2.nc
-      ncra  -O -d time,1.0,21. -p ~ in1.nc in2.nc ~/foo.nc # works
-      ncra  -O -d time,0,19 -p ~ in1.nc in2.nc ~/foo.nc
-nco1082. ncrename fails with global attributes:
+nco1082. ncrename fails with global attributes?:
 	 ncrename -O -h -a Conventions,Geneva ~/nco/data/in.nc ~/foo.nc
-nco1083. nco_xtr_crd_ass_add_drv() gets too many coords in netCDF4 case
-nco1084. 
+nco1084. ncks feature: multiple specifications of mk_rec_dmn and fix_rec_dmn
+nco1085. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

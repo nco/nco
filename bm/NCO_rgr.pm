@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.202 2013-01-27 00:29:58 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.203 2013-01-28 02:44:53 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1412,6 +1412,51 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
+
+    $dsc_sng="Check --fix_rec_dmn (netCDF3 file)";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
+    $tst_cmd[2]="Coordinate dimension";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+    $dsc_sng="Check --fix_rec_dmn (netCDF4 file)";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg  --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
+    $tst_cmd[2]="Coordinate dimension";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]=""; 
+    $tst_cmd[2]="SS_OK";     
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+    $dsc_sng="--fix_rec_dmn with MM3 workaround (netCDF3->netCDF3 file)";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --fix_rec_dmn time -v one,two,one_dmn_rec_var,two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
+    $tst_cmd[2]="Coordinate dimension";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+    if(0){
+	# NB: does not actually test3 code for reasons explained in header of nco_use_mm3_workaround()
+	$dsc_sng="--fix_rec_dmn with MM3 workaround (netCDF4->netCDF3 file)";
+	$tst_cmd[0]="ncks -O -3 $fl_fmt $nco_D_flg --fix_rec_dmn time -v /g10/two_dmn_rec_var,/g10/three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+	if($HAVE_NETCDF4_H == 1){
+	    $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
+	    $tst_cmd[2]="Record coordinate dimension";
+	    $tst_cmd[3]="SS_OK";   
+	}elsif($HAVE_NETCDF4_H == 0){
+	    $tst_cmd[1]=""; 
+	    $tst_cmd[2]="SS_OK";     
+	}
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array 			
+    } # endif false
 
 #####################
 #### ncpdq tests #### -OK !
