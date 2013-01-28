@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.400 2013-01-28 07:04:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.401 2013-01-28 07:20:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1160,7 +1160,8 @@ nco_fnd_dmn                           /* [fnc] Find a dimension that matches dmn
   int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
   int nbr_dmn;                  /* [nbr] Number of dimensions */
   int nbr_dmn_ult;              /* [nbr] Number of unlimited dimensions */
-  const int flg_prn=1;          /* [flg] All the dimensions in all parent groups will also be retrieved */          
+  const int flg_prn=1;          /* [flg] All the dimensions in all parent groups will also be retrieved */   
+  long dmn_sz;                  /* [nbr] Dimension size */
 
   /* Obtain dimensions IDs for group */
   (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
@@ -1172,7 +1173,9 @@ nco_fnd_dmn                           /* [fnc] Find a dimension that matches dmn
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
 
     /* Get name */
-    (void)nco_inq_dim(grp_id,dmn_ids[dmn_idx],nm,NULL);
+    (void)nco_inq_dim(grp_id,dmn_ids[dmn_idx],nm,&dmn_sz);
+
+    /* Matches input name, return */
     if(!strcmp(dmn_nm,nm)){
       return True;
     } /* endif */
