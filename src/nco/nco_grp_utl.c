@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.399 2013-01-27 10:51:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.400 2013-01-28 07:04:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -897,7 +897,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
     } /* obj_idx */
 
-    if(dbg_lvl_get() >= nco_dbg_var){
+    if(dbg_lvl_get() == nco_dbg_crr){
       (void)fprintf(stdout,"%s: INFO %s reports following %s match sub-setting and regular expressions:\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
       trv_tbl_prn_flg_mch(trv_tbl,obj_typ);
     } /* endif dbg */
@@ -1155,34 +1155,28 @@ nco_fnd_dmn                           /* [fnc] Find a dimension that matches dmn
 (const int grp_id,                    /* I [id] Group ID */
  const char * const dmn_nm)           /* I [sng] Dimension name to find */
 {
-  typedef struct{			
-    char nm[NC_MAX_NAME+1];
-    size_t sz;
-  } nco_dmn_t;
+  char nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
+  int dmn_ids[NC_MAX_DIMS];     /* [nbr] Dimensions IDs array */
+  int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
+  int nbr_dmn;                  /* [nbr] Number of dimensions */
+  int nbr_dmn_ult;              /* [nbr] Number of unlimited dimensions */
+  const int flg_prn=1;          /* [flg] All the dimensions in all parent groups will also be retrieved */          
 
-  nco_dmn_t *dmn_lst=NULL;
-  const int flg_prn=1;         /* [flg] All the dimensions in all parent groups will also be retrieved */        
-  int *dmn_ids=NULL;
-  int dmn_idx;
-  int nbr_dmn;
-
-  (void)nco_inq_dimids(grp_id,&nbr_dmn,NULL,flg_prn);
-  dmn_lst=(nco_dmn_t *)nco_malloc(nbr_dmn*sizeof(nco_dmn_t));
-  dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+  /* Obtain dimensions IDs for group */
   (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
 
-  for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++) nc_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_lst[dmn_idx].nm,&dmn_lst[dmn_idx].sz);
+  /* Obtain unlimited dimensions for group */
+  (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
 
-  for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-    if(!strcmp(dmn_nm,dmn_lst[dmn_idx].nm)){
-      dmn_ids=(int *)nco_free(dmn_ids);
-      dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
+  /* Iterate dimensions */
+  for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
+
+    /* Get name */
+    (void)nco_inq_dim(grp_id,dmn_ids[dmn_idx],nm,NULL);
+    if(!strcmp(dmn_nm,nm)){
       return True;
     } /* endif */
   } /* end loop */
-
-  dmn_ids=(int *)nco_free(dmn_ids);
-  dmn_lst=(nco_dmn_t *)nco_free(dmn_lst);
 
   return False;
 } /* end nco_fnd_dmn() */ 
