@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.203 2013-01-28 02:44:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.204 2013-01-28 20:49:50 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1407,7 +1407,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
     $tst_cmd[2]="Record coordinate dimension";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
@@ -1428,7 +1428,7 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
     $tst_cmd[2]="Coordinate dimension";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]=""; 
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
