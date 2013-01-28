@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.182 2013-01-27 00:30:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.183 2013-01-28 19:42:15 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1690,7 +1690,7 @@ int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){
   int unlimid;
   rcd=nc_inq_unlimdim(nc_id,&unlimid);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdims()");
-  if(unlimid != NCO_REC_DMN_UNDEFINED){
+  if(unlimid != -1){
     *nbr_dmn_ult=1;
     if(dmn_ids_ult) dmn_ids_ult[0]=unlimid;
   }else{
