@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.132 2013-01-21 06:00:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.133 2013-01-29 05:56:17 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -844,8 +844,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   int val_sz_byt;
   long lmn;
   var_sct var;
-  int idx;
-  int jdx;
   int nbr_dmn_grp;                  /* [nbr] Number of dimensions in group */
   int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
   char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
@@ -855,6 +853,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   lmt_sct **lmt=NULL_CEWI;
   nco_bool is_mss_val=False; /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
+
+  const char sls_sng[]="/"; /* [sng] Slash string */
 
   /* Set defaults */
   var_dfl_set(&var); 
@@ -884,9 +884,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   lmt_msa=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
 
-  /* Initialize */
-  for(idx=0;idx<var.nbr_dim;idx++) lmt_msa[idx]=NULL;
-
   /* Get dimension IDs for variable */
   (void)nco_inq_vardimid(in_id,var.id,dmn_id);
 
@@ -912,56 +909,80 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     /* Initialize lmt_msa with multi-limits from lmt_lst limits */
     /* Get dimension sizes from input file */
 
-    /* Search first in a full name match in lmt_lst */
-    int fnd=0;
+    /* Goal here is to match "lmt_msa" with "lmt_lst";
+    from the netCDF3 case, this is done with comparing IDs with:
+    for(idx=0;idx<var.nbr_dim;idx++)
+    for(jdx=0;jdx<lmt_nbr;jdx++){
+    if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
+    lmt_msa[idx]=lmt_lst[jdx];
+    break;
+    } 
+    } 
+    1) Build a "dmn_was_found" bool array to false
+    2) Search first in a full name match of "dmn_nm_fll" in "lmt_lst" 
+    3) If one index of "dmn_was_found" was not matched try to go to ancestors by nco_fnd_dmn() */
 
-    for(idx=0;idx<var.nbr_dim;idx++){
+    /* This vector must be filled at end  */
+    for(int dmn_idx=0;dmn_idx<var.nbr_dim;dmn_idx++) lmt_msa[dmn_idx]=NULL;
+
+    /* This vector must be True at end  */
+    nco_bool dmn_was_found[NC_MAX_VAR_DIMS];
+    for(int dmn_idx=0;dmn_idx<var.nbr_dim;dmn_idx++) dmn_was_found[dmn_idx]=False;
+
+    for(int dmn_idx=0;dmn_idx<var.nbr_dim;dmn_idx++){
       long dmn_sz;  
-      (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
+      (void)nco_inq_dim(in_id,dmn_id[dmn_idx],dmn_nm,&dmn_sz);
 
-      for(jdx=0;jdx<lmt_nbr;jdx++){
+      for(int lmt_all_idx=0;lmt_all_idx<lmt_nbr;lmt_all_idx++){
         char *dmn_nm_fll;
-        const char sls_sng[]="/"; /* [sng] Slash string */
 
-        /* Construct full (dimension/variable) name */
+        /* Construct full dimension name */
         dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
         strcpy(dmn_nm_fll,grp_nm_fll);
         if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
         strcat(dmn_nm_fll,dmn_nm);
 
-        if(!strcmp(dmn_nm_fll,lmt_lst[jdx]->dmn_nm_fll)){
-          lmt_msa[idx]=lmt_lst[jdx];
-          fnd=1;
+        /* Match full name ? */
+        if(!strcmp(dmn_nm_fll,lmt_lst[lmt_all_idx]->dmn_nm_fll)){
+          lmt_msa[dmn_idx]=lmt_lst[lmt_all_idx];
+
+          dmn_was_found[dmn_idx]=True;
+
           dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
           break;
         } /* end if */
-        /* Free constructed full dimension name */
+        /* Free constructed name */
         dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-      } /* end loop over jdx */
-    } /* end loop over idx */
+      } /* end loop over lmt_all_idx */
+    } /* end loop over dmn_idx */
 
-    /* Not found; go to API in nco_fnd_dmn() */
-    if(!fnd){
-      for(idx=0;idx<var.nbr_dim;idx++){
+    /* In case one of "lmt_msa" was not matched go to netCDF API in nco_fnd_dmn(), ancestor groups */
+    for(int dmn_idx=0;dmn_idx<var.nbr_dim;dmn_idx++){
+
+      /* Not found; go to API in nco_fnd_dmn() */
+      if (dmn_was_found[dmn_idx] == False ){
         long dmn_sz;  
-        (void)nco_inq_dim(in_id,dmn_id[idx],dmn_nm,&dmn_sz);
+        (void)nco_inq_dim(in_id,dmn_id[dmn_idx],dmn_nm,&dmn_sz);
 
-        for(jdx=0;jdx<lmt_nbr;jdx++){
-          if(!strcmp(dmn_nm,lmt_lst[jdx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
-            lmt_msa[idx]=lmt_lst[jdx];
+        for(int lmt_all_idx=0;lmt_all_idx<lmt_nbr;lmt_all_idx++){
+          if(!strcmp(dmn_nm,lmt_lst[lmt_all_idx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
+            lmt_msa[dmn_idx]=lmt_lst[lmt_all_idx];
+
+            dmn_was_found[dmn_idx]=True;
+
             break;
           } /* end if */
         } /* end loop over jdx */
-      } /* end loop over idx */
-    } /* fnd */
+      } /* end dmn_was_found */
+    } /* end loop over idx */
 
     /* Free full group name */
     grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
   }else{ /* NC_FORMAT_CLASSIC */
 
-    for(idx=0;idx<var.nbr_dim;idx++)
-      for(jdx=0;jdx<lmt_nbr;jdx++){
+    for(int idx=0;idx<var.nbr_dim;idx++)
+      for(int jdx=0;jdx<lmt_nbr;jdx++){
         if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
           lmt_msa[idx]=lmt_lst[jdx];
           break;
@@ -983,7 +1004,20 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 #endif /* !ENABLE_NETCDF4 */
 
 #ifdef NCO_SANITY_CHECK
-    for(idx=0;idx<var.nbr_dim;idx++) assert(lmt_msa[idx]);
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      dmn_sct dim_dbg[NC_MAX_VAR_DIMS];
+      (void)fprintf(stdout,"%s: INFO printing coordinates for %s\n",prg_nm_get(),var.nm); 
+
+      for(int dmn_idx=0;dmn_idx<var.nbr_dim;dmn_idx++){
+        dim_dbg[dmn_idx].nm=lmt_msa[dmn_idx]->dmn_nm;
+
+        (void)fprintf(stdout,"dimension[%d]:%s\n",dmn_idx,dim_dbg[dmn_idx].nm); 
+
+      }/* end for */
+    } /* dbg_lvl_get() */
+
+    /* Did we find all dims ? */ 
+    for(int dmn_idx=0;dmn_idx<var.nbr_dim;dmn_idx++) assert(lmt_msa[dmn_idx]);
 #endif
 
     /* Call super-dooper recursive routine */
@@ -1141,15 +1175,15 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
 
       /* Create mod_map_in */
-      for(idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
-      for(idx=0;idx<var.nbr_dim;idx++)
-        for(jdx=idx+1;jdx<var.nbr_dim;jdx++)
+      for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
+      for(int idx=0;idx<var.nbr_dim;idx++)
+        for(int jdx=idx+1;jdx<var.nbr_dim;jdx++)
           mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
 
       /* Create mod_map_cnt */
-      for(idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
-      for(idx=0;idx<var.nbr_dim;idx++) 
-        for(jdx=idx;jdx<var.nbr_dim;jdx++)
+      for(int idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
+      for(int idx=0;idx<var.nbr_dim;idx++) 
+        for(int jdx=idx;jdx<var.nbr_dim;jdx++)
           mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
 
       /* Read coordinate dimensions if required */
@@ -1157,7 +1191,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         var_sct var_crd;
 
         dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
-        for(idx=0;idx<var.nbr_dim;idx++){
+        for(int idx=0;idx<var.nbr_dim;idx++){
           dim[idx].val.vp=NULL;
           dim[idx].nm=lmt_msa[idx]->dmn_nm;
           rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
@@ -1189,7 +1223,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
 
         /* Calculate RAM indices from current limit */
-        for(idx=0;idx <var.nbr_dim;idx++) 
+        for(int idx=0;idx <var.nbr_dim;idx++) 
           dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
 
         /* Calculate disk indices from RAM indices */
@@ -1197,7 +1231,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
         /* Find variable index relative to disk */
         var_dsk=0;
-        for(idx=0;idx <var.nbr_dim;idx++)	var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
+        for(int idx=0;idx <var.nbr_dim;idx++)	var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
 
         /* Skip rest of loop unless element is first in string */
         if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] > 0) goto lbl_chr_prn;
@@ -1210,7 +1244,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
           char dmn_sng[NCO_MAX_LEN_FMT_SNG];
 
           /* Loop over dimensions whose coordinates are to be printed */
-          for(idx=0;idx<var.nbr_dim;idx++){
+          for(int idx=0;idx<var.nbr_dim;idx++){
 
             /* Reverse dimension ordering for Fortran convention */
             if(FORTRAN_IDX_CNV) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
@@ -1390,7 +1424,7 @@ lbl_chr_prn:
     } /* end if */
 
     if(PRN_DMN_IDX_CRD_VAL && dlm_sng==NULL){
-      for(idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=nco_free(dim[idx].val.vp);
+      for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=nco_free(dim[idx].val.vp);
       dim=(dmn_sct *)nco_free(dim);
     } /* end if */
 
