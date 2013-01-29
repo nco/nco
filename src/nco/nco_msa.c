@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.133 2013-01-29 05:56:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.134 2013-01-29 09:21:25 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -948,6 +948,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
           dmn_was_found[dmn_idx]=True;
 
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            lmt_all_sct lmt=*lmt_msa[dmn_idx];
+            (void)fprintf(stdout,"%s: INFO <%s> Found dmn[%d]:%s(%d)\n",prg_nm_get(),var.nm,dmn_idx,lmt.dmn_nm_fll,lmt.dmn_sz_org); 
+          } /* dbg_lvl_get() */
+
           dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
           break;
         } /* end if */
@@ -969,6 +974,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
             lmt_msa[dmn_idx]=lmt_lst[lmt_all_idx];
 
             dmn_was_found[dmn_idx]=True;
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              lmt_all_sct lmt=*lmt_msa[dmn_idx];
+              (void)fprintf(stdout,"%s: INFO <%s> nco_fnd_dmn dmn[%d]:%s(%d)\n",prg_nm_get(),var.nm,dmn_idx,lmt.dmn_nm_fll,lmt.dmn_sz_org); 
+            } /* dbg_lvl_get() */
 
             break;
           } /* end if */
@@ -1006,7 +1016,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 #ifdef NCO_SANITY_CHECK
     if(dbg_lvl_get() >= nco_dbg_dev){
       dmn_sct dim_dbg[NC_MAX_VAR_DIMS];
-      (void)fprintf(stdout,"%s: INFO printing coordinates for %s\n",prg_nm_get(),var.nm); 
+      if(var.nbr_dim) (void)fprintf(stdout,"%s: INFO printing coordinates for %s\n",prg_nm_get(),var.nm); 
 
       for(int dmn_idx=0;dmn_idx<var.nbr_dim;dmn_idx++){
         dim_dbg[dmn_idx].nm=lmt_msa[dmn_idx]->dmn_nm;
