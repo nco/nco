@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.401 2013-01-28 07:20:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.402 2013-01-29 10:46:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -488,20 +488,11 @@ nco_prt_grp_trv /* [fnc] Print table  */
 (const int nc_id, /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
-  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */ 
-  
-  const int flg_prn=0; /* [flg] Retrieve all dimensions in parent groups */        
-  
-  int dmn_ids[NC_MAX_DIMS]; /* [nbr] Dimensions IDs array */
-  int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
   int fl_fmt; /* [enm] netCDF file format */
   int grp_id; /* [ID]  Group ID */
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_dmn; /* [nbr] Number of dimensions */
-  int nbr_dmn_ult; /* [nbr] Number of unlimited dimensions */
   int nbr_var; /* [nbr] Number of variables */
-  
-  long dmn_sz; /* [nbr] Dimension size */
 
   (void)nco_inq_format(nc_id,&fl_fmt);
 
@@ -514,39 +505,18 @@ nco_prt_grp_trv /* [fnc] Print table  */
       /* For classic files, the above is printed, and then return */
       if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
 
+      /* Print dimensions for group */
+      (void)nco_prt_dmn(nc_id,trv.nm_fll);
+
+#ifdef NCO_SANITY_CHECK
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
 
-      /* Obtain unlimited dimensions for group */
-      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
-
       /* Obtain number of dimensions for group */
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
-      /* Obtain dimensions IDs for group */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
-
-#ifdef NCO_SANITY_CHECK
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
 
-      /* List dimensions using obtained group ID */
-      for(int idx=0;idx<nbr_dmn;idx++){
-        nco_bool is_rec_dim=False;
-        (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
-
-        /* Check if dimension is unlimited (record dimension) */
-        for(int kdx=0;kdx<nbr_dmn_ult;kdx++){ 
-          if(dmn_ids[idx] == dmn_ids_ult[kdx]){ 
-            is_rec_dim=True;
-            (void)fprintf(stdout," record dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-          } /* end if */
-        } /* end kdx dimensions */
-
-        /* An unlimited ID was not matched, so dimension is a plain vanilla dimension */
-        if(!is_rec_dim) (void)fprintf(stdout," dimension: %s (%ld)\n",dmn_nm,dmn_sz);
-
-      } /* end idx dimensions */
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 } /* end nco_prt_grp_trv() */
@@ -1779,6 +1749,8 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
   int nbr_att; /* [nbr] Number of attributes for group */
   int nbr_gpe_nm; /* [nbr] Number of GPE entries */
   int var_out_id; /* [ID] Variable ID in output file */
+  int nbr_var; /* [nbr] Number of variables for group */
+  int nbr_dmn; /* [nbr] Number of dimensions for group */
   
   nbr_gpe_nm=0;
   (void)nco_inq_format(nc_id,&fl_fmt);
@@ -1828,23 +1800,34 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
       /* If object is group ancestor of extracted variable */
       if(trv.typ == nco_obj_typ_grp && trv.flg_xtr){
 	
-	/* Obtain group ID from netCDF API using full group name */
-	(void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-	
-	/* Obtain info for group */
-	(void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
-	
-	/* Edit group name for output */
-	if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.grp_nm_fll); else grp_out_fll=(char *)strdup(trv.grp_nm_fll);
-	
-	/* If output group does not exist, create it */
-	if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-      
-	/* Copy group attributes */
-	if(nbr_att) (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-	
-	/* Memory management after current extracted group */
-	if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+        /* Obtain group ID from netCDF API using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+    
+        /* Obtain info for group */
+        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+
+#ifdef NCO_SANITY_CHECK
+        assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+       
+        /* Edit group name for output */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.grp_nm_fll); else grp_out_fll=(char *)strdup(trv.grp_nm_fll);
+
+        /* If output group does not exist, create it */
+        if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) {
+          nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+
+          if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
+            (void)fprintf(stdout,"%s: INFO Defining <%s> with %d dims\n",prg_nm_get(),trv.nm_fll,nbr_dmn);
+            (void)nco_prt_dmn(nc_id,trv.nm_fll);
+          } /* dbg_lvl_get() */
+        } /* Create group */
+
+        /* Copy group attributes */
+        if(nbr_att) (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+
+        /* Memory management after current extracted group */
+        if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 	
       } /* end if group and flg_xtr */
     } /* end loop to define group attributes */
@@ -1860,12 +1843,22 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
       
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+
+      /* Obtain info for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
       
       /* Edit group name for output */
       if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv.grp_nm_fll); else grp_out_fll=(char *)strdup(trv.grp_nm_fll);
 
       /* If output group does not exist, create it */
-      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)){
+        nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+
+        if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
+          (void)fprintf(stdout,"%s: INFO Defining group <%s> with %d dims\n",prg_nm_get(),trv.nm_fll,nbr_dmn);
+          (void)nco_prt_dmn(nc_id,trv.nm_fll);
+        } /* dbg_lvl_get() */
+      } /* Create group */
       
       /* Detect duplicate GPE names in advance, then exit with helpful error */
       if(gpe){
@@ -2266,3 +2259,53 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
   return dmn;
 
 } /* end nco_dmn_lst_ass_var_trv() */
+
+void                          
+nco_prt_dmn /* [fnc] Print dimensions for a group  */
+(const int nc_id, /* I [ID] File ID */
+ const char * const grp_nm_fll) /* I [sng] Full name of group */
+{
+  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */ 
+
+  const int flg_prn=0; /* [flg] Retrieve all dimensions in parent groups */        
+
+  int dmn_ids[NC_MAX_DIMS]; /* [nbr] Dimensions IDs array */
+  int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
+  int grp_id; /* [ID]  Group ID */
+  int nbr_att; /* [nbr] Number of attributes */
+  int nbr_dmn; /* [nbr] Number of dimensions */
+  int nbr_dmn_ult; /* [nbr] Number of unlimited dimensions */
+  int nbr_var; /* [nbr] Number of variables */
+
+  long dmn_sz; /* [nbr] Dimension size */
+
+  /* Obtain group ID from netCDF API using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
+  /* Obtain unlimited dimensions for group */
+  (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
+
+  /* Obtain number of dimensions for group */
+  (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+
+  /* Obtain dimensions IDs for group */
+  (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
+
+  /* List dimensions using obtained group ID */
+  for(int dnm_idx=0;dnm_idx<nbr_dmn;dnm_idx++){
+    nco_bool is_rec_dim=False;
+    (void)nco_inq_dim(grp_id,dmn_ids[dnm_idx],dmn_nm,&dmn_sz);
+
+    /* Check if dimension is unlimited (record dimension) */
+    for(int dnm_ult_idx=0;dnm_ult_idx<nbr_dmn_ult;dnm_ult_idx++){ 
+      if(dmn_ids[dnm_idx] == dmn_ids_ult[dnm_ult_idx]){ 
+        is_rec_dim=True;
+        (void)fprintf(stdout," record dimension: %s(%li)\n",dmn_nm,dmn_sz);
+      } /* end if */
+    } /* end dnm_ult_idx dimensions */
+
+    /* An unlimited ID was not matched, so dimension is a plain vanilla dimension */
+    if(!is_rec_dim) (void)fprintf(stdout," dimension: %s(%li)\n",dmn_nm,dmn_sz);
+
+  } /* end dnm_idx dimensions */
+} /* end nco_prt_dmn() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.198 2013-01-27 08:26:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.199 2013-01-29 10:46:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -281,6 +281,13 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
 (const int nc_id,                     /* I [id] netCDF input-file ID */
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  int * const nbr_dmn);                /* O [nbr] Number of dimensions associated with input variable list */
+
+
+void                          
+nco_prt_dmn /* [fnc] Print dimensions for a group  */
+(const int nc_id, /* I [ID] File ID */
+ const char * const grp_nm_fll); /* I [sng] Full name of group */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
