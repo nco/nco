@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.37 2013-01-27 00:29:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.38 2013-01-29 01:06:32 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -231,16 +231,19 @@ trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   int idx=0;
-  int nbr_flg=0; 
+  int nbr_flg=0;
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].flg_xtr){
-      (void)fprintf(stdout,"[%d] %s\n",idx++,trv_tbl->lst[uidx].nm_fll); 
       nbr_flg++;
     } /* endif */
 
   (void)fprintf(stdout,"%s: INFO trv_tbl_prn_xtr() reports %d objects with extraction flag (flg_xtr) set\n",prg_nm_get(),nbr_flg); 
-  
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->lst[uidx].flg_xtr){
+      (void)fprintf(stdout,"[%d] %s\n",idx++,trv_tbl->lst[uidx].nm_fll); 
+    } /* endif */
+
 } /* end trv_tbl_prn_xtr() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
