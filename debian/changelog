@@ -1,8 +1,8 @@
 nco (4.2.5-1) unstable; urgency=low
 
-  * new upstream version (ncks mk_rec_dmn bugfix)
+  * new upstream version (fix ncks mk/fix_rec_dmn bugs, metadata printing)
 
- -- Charlie Zender <zender@uci.edu>  Sat, 26 Jan 2013 18:30:42 -0800
+ -- Charlie Zender <zender@uci.edu>  Tue, 29 Jan 2013 11:30:42 -0800
 
 nco (4.2.4-1) unstable; urgency=low
 

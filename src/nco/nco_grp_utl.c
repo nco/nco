@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.402 2013-01-29 10:46:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.403 2013-01-29 18:07:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -444,7 +444,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     obj.nbr_att=nbr_att;
     obj.nbr_dmn=nbr_dmn;
     obj.nbr_grp=-1;
-    obj.nbr_rec=nbr_rec;
+    obj.nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     obj.nbr_var=-1;
 
     trv_tbl_add(obj,trv_tbl);

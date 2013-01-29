@@ -1,17 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.536 2013-01-28 04:03:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.537 2013-01-29 18:07:03 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes some annoying bug introduced in 4.2.4:
+This release fixes some annoying bugs introduced in 4.2.4:
 The ncks switches --mk_rec_dmn and --fix_rec_dmn have been repaired.
 Some sub-setting optimizations (MM3, for the wonkish) are also fixed.
 Pretty simply, this is a more robust version of 4.2.4.
 
-Work on NCO 4.2.6 is underway and focuses on better netCDF4 support
-for ncrename and ncbo operators.
+Work on NCO 4.2.6 is underway and focuses on better support for more
+complex netCDF4 files, and on netCDF4 support for ncrename and ncbo
+operators. 
 
 Enjoy,
 Charlie
@@ -28,11 +29,13 @@ A. Fix bug introduced in 4.2.4 that causes ncks to ignore --mk_rec_dmn
    and --fix_rec_dmn options. Thanks to ocehugo for reporting the bug.
    http://nco.sf.net#bug_ncks_mk_rec_dmn
 
-A. Some MM3 copy operations were fixed as a side-effect of the
-   --mk_rec_dmn/--fix_rec_dmn fixes.
+A. Fix bug introduced in 4.2.4 where some sub-setting (-v var)
+   operations failed. The were "MM3 copy operations" and  were fixed 
+   as a side-effect of the --mk_rec_dmn/--fix_rec_dmn fixes. 
 
 A. ncks prints more accurate netCDF4 metadata summaries in cases where
    variables use dimensions and coordinates defined in ancestor groups.
+   Still more work to do on this though.
 
 KNOWN BUGS NOT YET FIXED:
 
