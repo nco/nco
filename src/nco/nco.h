@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.219 2013-01-27 00:29:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.220 2013-01-30 08:21:53 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -644,13 +644,42 @@ extern "C" {
     nco_bool flg_xcl; /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
+
+  /* netCDF4 Dimension structure 
+  From The NetCDF C Interface Guide/The NetCDF Users Guide:
+  A netCDF dimension has a name and a length.
+  Dimensions are visible in their groups, and all child groups.
+  Record Dimensions:
+  A dimension length is an arbitrary positive integer, except that one dimension in a classic
+  or 64-bit offset netCDF dataset can have the length UNLIMITED. In a netCDF-4 dataset,
+  any number of unlimited dimensions can be used.
+  Such a dimension is called the unlimited dimension or the record dimension.
+  Coordinate Variables:
+  It is legal for a variable to have the same name as a dimension. Such variables have no
+  special meaning to the netCDF library. A variable with the same name as a dimension is called a coordinate variable. 
+  It typically defines a physical coordinate corresponding to that dimension.
+  */
+  typedef struct{ 
+    char *grp_nm_fll; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
+    nco_bool has_crd_var; /* [flg] Does it have an associated variable? (coordinate variable) */
+    nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
+    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
+    char *nm_fll; /* [sng] Dimension fully qualified name (path) */
+    size_t sz; /* [nbr] Size of dimension */
+  } dmn_fll_sct; 
  
   /* Traversal table structure
-     Stores all objects/nodes in file tree */
+     A table grows dinamically when a new element is inserted that reaches the current allocated size.
+     Stores: 
+     1) All objects/nodes in file tree 
+     2) All dimensions in file tree (Different list from list of objects, dimensions can be shared for objects) */
   typedef struct{
-    unsigned int sz;        /* [nbr] Allocated size */
-    unsigned int nbr;       /* [nbr] Number of current elements */
+    unsigned int sz;        /* [nbr] Allocated size of trv_sct array */
+    unsigned int nbr;       /* [nbr] Number of current trv_sct elements */
     trv_sct *lst;           /* [sct] Array of trv_sct */
+    dmn_fll_sct *lst_dmn;   /* [sct] Array of dmn_fll_sct */
+    unsigned int sz_dmn;    /* [nbr] Allocated size of dmn_fll_sct */
+    unsigned int nbr_dmn;   /* [nbr] Number of current dmn_fll_sct elements */
   } trv_tbl_sct;
 
   /* Chunking structure */

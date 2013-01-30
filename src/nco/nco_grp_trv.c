@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.38 2013-01-29 01:06:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.39 2013-01-30 08:21:53 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -17,6 +17,9 @@ trv_tbl_init
 {
   unsigned int idx;
   trv_tbl_sct *tb=(trv_tbl_sct *)nco_malloc(sizeof(trv_tbl_sct));
+
+  /* Object (group/variable) list */
+
   tb->sz=100;
   tb->nbr=0;
   tb->lst=(trv_sct *)nco_malloc(tb->sz*sizeof(trv_sct));
@@ -54,6 +57,21 @@ trv_tbl_init
     tb->lst[idx].nbr_var=nco_obj_typ_err;
   } /* end loop over objects */
 
+  /* Dimension list */
+
+  tb->sz_dmn=100;
+  tb->nbr_dmn=0;
+  tb->lst_dmn=(dmn_fll_sct *)nco_malloc(tb->sz_dmn*sizeof(dmn_fll_sct));
+
+  for(idx=0;idx<tb->sz_dmn;idx++){
+    tb->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
+    tb->lst_dmn[idx].has_crd_var=-1; /* [flg] Does it have an associated variable? (coordinate variable) */
+    tb->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
+    tb->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
+    tb->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
+    tb->lst_dmn[idx].sz=0; /* [nbr] Size of dimension */
+  }
+
   *tbl=tb;
 } /* trv_tbl_init() */
 
@@ -63,11 +81,22 @@ trv_tbl_free
 {
   unsigned int idx;
 
+  /* Object (group/variable) list */
+
   for(idx=0;idx<tbl->sz;idx++){
     nco_free(tbl->lst[idx].nm_fll);
     nco_free(tbl->lst[idx].grp_nm_fll);
   } /* end loop */
   nco_free(tbl->lst);
+
+  /* Dimension list */
+
+  for(idx=0;idx<tbl->sz_dmn;idx++){
+    nco_free(tbl->lst_dmn[idx].nm_fll);
+    nco_free(tbl->lst_dmn[idx].grp_nm_fll);
+  } /* end loop */
+  nco_free(tbl->lst_dmn);
+
   nco_free(tbl);
 } /* end trv_tbl_free() */
 
