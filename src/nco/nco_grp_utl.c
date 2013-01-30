@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.405 2013-01-30 03:05:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.406 2013-01-30 10:07:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -326,36 +326,55 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   char grp_nm[NC_MAX_NAME+1]; /* [sng] Group name */
   char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME+1]; /* [sng] Dimension name */ 
+  char rec_nm[NC_MAX_NAME+1]; /* [sng] Record dimension name */ 
+
+  char *var_nm_fll;           /* [sng] Full path for variable */
+  char *dmn_nm_fll;           /* [sng] Full path for dimension */
+  char *rec_nm_fll;           /* [sng] Full path for record dimension */
+
+  long dmn_sz;                /* [nbr] Dimension size */ 
+  long rec_sz;                /* [nbr] Record dimension size */ 
 
   char *sls_psn; /* [sng] Current position of group path search */
 
   const int flg_prn=0; /* [flg] All the dimensions in all parent groups will also be retrieved */    
 
-  int *dmn_ids; /* [ID]  Dimension IDs */ 
-  int *grp_ids; /* [ID]  Sub-group IDs */ 
+  int dmn_ids[NC_MAX_DIMS]; /* [ID]  Dimension IDs array */ 
+  int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array */
+  int grp_ids[NC_MAX_DIMS]; /* [ID] Sub-group IDs array */  
 
   int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
-  int idx; /* [idx] Index */ 
   int nbr_att; /* [nbr] Number of attributes */
-  int nbr_dmn; /* [nbr] Number of dimensions */
+  int nbr_dmn_grp; /* [nbr] Number of dimensions for group */
+  int nbr_dmn_var; /* [nbr] Number of dimensions for variable */
   int nbr_grp; /* [nbr] Number of sub-groups in this group */
   int nbr_rec; /* [nbr] Number of record dimensions in this group */
   int nbr_var; /* [nbr] Number of variables */
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id; /* [ID] Record dimension ID */
-  int var_id; /* [ID] Variable ID */ 
 
   nc_type var_typ; /* O [enm] Variable type */
 
-  trv_sct obj; /* [sct] netCDF4 group or variable */
+  trv_sct obj; /* [sct] netCDF4 Object (group/variable) */
+
+  dmn_fll_sct obj_dmn;  /* [sct] netCDF4 Dimension object */
 
   /* Get all information for this group */
+
+  /* Get group name */
   rcd+=nco_inq_grpname(grp_id,grp_nm);
+
+  /* Get number of sub-groups */
   rcd+=nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
-  rcd+=nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,&rec_dmn_id);
-  dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-  rcd+=nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
-  rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,(int *)NULL);
+
+  /* Obtain number of dimensions/variable/attributes for group; NB: ignore record dimension ID */
+  rcd+=nco_inq(grp_id,&nbr_dmn_grp,&nbr_var,&nbr_att,(int *)NULL);
+
+  /* Obtain dimensions IDs for group */
+  rcd+=nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_ids,flg_prn);
+
+  /* Obtain unlimited dimensions for group */
+  rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,dmn_ids_ult);
 
   /* Compute group depth */
   sls_psn=grp_nm_fll;
@@ -370,7 +389,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   obj.nm_fll=grp_nm_fll;
   obj.nm_fll_lng=strlen(obj.nm_fll);
   obj.typ=nco_obj_typ_grp;
-  
+
   obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
   obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
   obj.flg_dfl=False; /* [flg] Object meets default subsetting criteria */
@@ -384,24 +403,25 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   obj.flg_vsg=False; /* [flg] Variable selected because group matches */
   obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
   obj.flg_xtr=False; /* [flg] Extract object */
-  
+
   obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
   obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
   obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
 
   obj.nbr_att=nbr_att;
-  obj.nbr_dmn=nbr_dmn;
+  obj.nbr_dmn=nbr_dmn_grp;
   obj.nbr_grp=nbr_grp;
   obj.nbr_rec=nbr_rec;
   obj.nbr_var=nbr_var;
 
-  trv_tbl_add(obj,trv_tbl);
+  /* Add object to table (this is a group object) */
+  (void)trv_tbl_add(obj,trv_tbl);
 
   /* Iterate variables for this group */
-  for(var_id=0;var_id<nbr_var;var_id++){
-    char *var_nm_fll=NULL; /* Full path of variable */
+  for(int var_idx=0;var_idx<nbr_var;var_idx++){
 
-    rcd+=nco_inq_var(grp_id,var_id,var_nm,&var_typ,&nbr_dmn,(int *)NULL,&nbr_att);
+    /* Get type of variable and number of dimensions */
+    rcd+=nco_inq_var(grp_id,var_idx,var_nm,&var_typ,&nbr_dmn_var,(int *)NULL,&nbr_att);
 
     /* Allocate path buffer and include space for trailing NUL */ 
     var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
@@ -442,43 +462,70 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
 
     obj.nbr_att=nbr_att;
-    obj.nbr_dmn=nbr_dmn;
+    obj.nbr_dmn=nbr_dmn_var;
     obj.nbr_grp=-1;
     obj.nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     obj.nbr_var=-1;
 
-    trv_tbl_add(obj,trv_tbl);
+    /* Add object (this is a variable object) */
+    (void)trv_tbl_add(obj,trv_tbl);
+
+    /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
   } /* end loop over variables */
 
+
+  /* Add dimension objects; detect possible coordinate variables */ 
+
+  /* Iterate dimensions (for group; dimensions are defined *for* groups) */
+  for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
+
+    /* Get dimension name */
+    (void)nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
+
+  } /* end dimension loop */
+
+  /* Iterate unlimited dimensions (for group; dimensions are defined *for* groups) */
+  for(int rec_idx=0;rec_idx<nbr_rec;rec_idx++){
+
+    /* Get dimension name */
+    (void)nco_inq_dim(grp_id,dmn_ids_ult[rec_idx],rec_nm,&rec_sz);
+
+  } /* end dimension loop */
+
+
+
+
+
   /* Go to sub-groups */ 
-  grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int));
   rcd+=nco_inq_grps(grp_id,&nbr_grp,grp_ids);
 
-  for(idx=0;idx<nbr_grp;idx++){
-    char *pth=NULL;  /* Full group path */
-    int gid=grp_ids[idx];
+  /* Heart of traversal construction: construct a new sub-group path and call function recursively with this new name; Voila */
+  for(int grp_idx=0;grp_idx<nbr_grp;grp_idx++){
+    char *sub_grp_nm_fll=NULL;  /* [sng] Sub group path */
+    int gid=grp_ids[grp_idx];   /* [id] Current group ID */  
+
+    /* Get sub-group name */
     rcd+=nco_inq_grpname(gid,grp_nm);
 
     /* Allocate path buffer including space for trailing NUL */ 
-    pth=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
+    sub_grp_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
 
     /* Initialize path with current absolute group path */
-    strcpy(pth,grp_nm_fll);
+    strcpy(sub_grp_nm_fll,grp_nm_fll);
 
     /* If not root group, concatenate separator */
-    if(strcmp(grp_nm_fll,"/")) strcat(pth,"/");
+    if(strcmp(grp_nm_fll,"/")) strcat(sub_grp_nm_fll,"/");
 
-    (void)strcat(pth,grp_nm); /* Concatenate current group to absolute group path */
+    /* Concatenate current group to absolute group path */
+    strcat(sub_grp_nm_fll,grp_nm); 
 
     /* Recursively process subgroups; NB: pass new absolute group name */
-    rcd+=nco_grp_itr(gid,pth,trv_tbl);
+    rcd+=nco_grp_itr(gid,sub_grp_nm_fll,trv_tbl);
 
-    pth=(char *)nco_free(pth);
+    /* Free constructed name */
+    sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over groups */
-
-  (void)nco_free(grp_ids);
-  (void)nco_free(dmn_ids);
 
   return rcd;
 } /* end nco_grp_itr() */
@@ -551,7 +598,7 @@ nco_lmt_evl_trv                       /* [fnc] Parse user-specified limits into 
         trv_sct trv=trv_tbl->lst[uidx];           
 
         /* Obtain group ID from netCDF API using full group name */
-	(void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
 
         /* Obtain number of dimensions in group */
         (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
@@ -731,139 +778,139 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       flg_ncr_mch_grp=False;
       flg_rcr_mch_grp=True;
       flg_usr_mch_obj=False;
-      
+
       if(!obj_lst_in[obj_idx]){
-	(void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
-	nco_exit(EXIT_FAILURE);
+        (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
+        nco_exit(EXIT_FAILURE);
       } /* end else */
 
       usr_sng=strdup(obj_lst_in[obj_idx]); 
       usr_sng_lng=strlen(usr_sng);
-      
+
       /* Turn-off recursion for groups? */
       if(obj_typ == nco_obj_typ_grp)
-	if(usr_sng_lng > 1L && usr_sng[usr_sng_lng-1L] == sls_chr){
-	  /* Remove trailing slash for subsequent searches since canonical group names do not end with slash */
-	  flg_rcr_mch_grp=False;
-	  usr_sng[usr_sng_lng-1L]='\0';
-	  usr_sng_lng--;
-	} /* flg_rcr_mch_grp */
-      
-      /* Turn-on root-anchoring for groups? */
-      if(obj_typ == nco_obj_typ_grp)
-	if(usr_sng[0L] == sls_chr)
-	  flg_ncr_mch_grp=True;
-      
-      /* Convert pound signs (back) to commas */
-      nco_hash2comma(usr_sng);
-      
-      /* If usr_sng is regular expression ... */
-      if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
-	/* ... and regular expression library is present */
+        if(usr_sng_lng > 1L && usr_sng[usr_sng_lng-1L] == sls_chr){
+          /* Remove trailing slash for subsequent searches since canonical group names do not end with slash */
+          flg_rcr_mch_grp=False;
+          usr_sng[usr_sng_lng-1L]='\0';
+          usr_sng_lng--;
+        } /* flg_rcr_mch_grp */
+
+        /* Turn-on root-anchoring for groups? */
+        if(obj_typ == nco_obj_typ_grp)
+          if(usr_sng[0L] == sls_chr)
+            flg_ncr_mch_grp=True;
+
+        /* Convert pound signs (back) to commas */
+        nco_hash2comma(usr_sng);
+
+        /* If usr_sng is regular expression ... */
+        if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
+          /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-	if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
-	if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
-	continue;
+          if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
+          if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
+          continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-	(void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
-	nco_exit(EXIT_FAILURE);
+          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+          nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-      } /* end if regular expression */
-      
-      /* usr_sng is not rx, so manually search for multicomponent matches */
-      for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-	
-	/* Create shallow copy to avoid indirection */
-	trv_obj=trv_tbl->lst[tbl_idx];
-	
-	if(trv_obj.typ == obj_typ){
-	  
-	  /* Initialize defaults for current candidate path to match */
-	  flg_pth_srt_bnd=False;
-	  flg_pth_end_bnd=False;
-	  flg_var_cnd=False;
-	  flg_rcr_mch_crr=True;
-	  flg_ncr_mch_crr=True;
-	  
-	  /* Look for partial match, not necessarily on path boundaries */
-	  if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
-	    
-	    /* Ensure match spans (begins and ends on) whole path-component boundaries */
-	    
-	    /* Does match begin at path component boundary ... directly on a slash? */
-	    if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
-	    
-	    /* ...or one after a component boundary? */
-	    if((sbs_srt > trv_obj.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
-	    
-	    /* Does match end at path component boundary ... directly on a slash? */
-	    sbs_end=sbs_srt+usr_sng_lng-1L;
-	    
-	    if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
-	    
-	    /* ...or one before a component boundary? */
-	    if(sbs_end <= trv_obj.nm_fll+trv_obj.nm_fll_lng-1L)
-	      if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
-		flg_pth_end_bnd=True;
-	    
-	    /* Additional condition for variables is user-supplied string must end with short form of variable name */
-	    if(obj_typ == nco_obj_typ_var){
-	      if(trv_obj.nm_lng <= usr_sng_lng){
-		var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
-		if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
-	      } /* endif */
-	      if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
-	    } /* endif var */
-	    
-	    /* If anchoring, match must begin at root */
-	    if(flg_ncr_mch_grp && *sbs_srt != sls_chr) flg_ncr_mch_crr=False;
-	    
-	    /* If no recursion, match must terminate user-supplied string */
-	    if(!flg_rcr_mch_grp && *(sbs_end+1L)) flg_rcr_mch_crr=False;
-	    
-	    /* Set traversal table flags */
-	    if(obj_typ == nco_obj_typ_var){
-	      /* Variables must meet necessary flags for variables */
-	      if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
-		trv_tbl->lst[tbl_idx].flg_mch=True;
-		trv_tbl->lst[tbl_idx].flg_rcr=False;
-		/* Was matched variable specified as full path (i.e., beginning with slash?) */
-		if(*usr_sng == sls_chr) trv_tbl->lst[tbl_idx].flg_vfp=True;
-	      } /* end flags */
-	    }else{ /* !nco_obj_typ_var */
-	      /* Groups must meet necessary flags for groups */
-	      if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
-		trv_tbl->lst[tbl_idx].flg_mch=True;
-		trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
-	      } /* end flags */
-	    }  /* !nco_obj_typ_var */
-	    /* Set flags for groups and variables associated with this object */
-	    if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
-	    
-	    /* Set function return condition */
-	    if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
-	    
-	    if(dbg_lvl_get() == nco_dbg_crr){
-	      (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
-	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
-	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
-	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_gcv? %s.",(trv_tbl->lst[tbl_idx].flg_gcv) ? "Yes" : "No");
-	      if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_ncs? %s.",(trv_tbl->lst[tbl_idx].flg_ncs) ? "Yes" : "No");
-	      if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vfp? %s.",(trv_tbl->lst[tbl_idx].flg_vfp) ? "Yes" : "No");
-	      if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vsg? %s.",(trv_tbl->lst[tbl_idx].flg_vsg) ? "Yes" : "No");
-	      (void)fprintf(stderr,"\n");
-	    } /* end if */
+        } /* end if regular expression */
 
-	  } /* endif strstr() */
-	} /* endif nco_obj_typ */
-      } /* end loop over tbl_idx */
+        /* usr_sng is not rx, so manually search for multicomponent matches */
+        for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
-      if(!flg_usr_mch_obj){
-	(void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
-	nco_exit(EXIT_FAILURE);
-      } /* flg_usr_mch_obj */
-      /* Free dynamic memory */
-      if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
+          /* Create shallow copy to avoid indirection */
+          trv_obj=trv_tbl->lst[tbl_idx];
+
+          if(trv_obj.typ == obj_typ){
+
+            /* Initialize defaults for current candidate path to match */
+            flg_pth_srt_bnd=False;
+            flg_pth_end_bnd=False;
+            flg_var_cnd=False;
+            flg_rcr_mch_crr=True;
+            flg_ncr_mch_crr=True;
+
+            /* Look for partial match, not necessarily on path boundaries */
+            if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
+
+              /* Ensure match spans (begins and ends on) whole path-component boundaries */
+
+              /* Does match begin at path component boundary ... directly on a slash? */
+              if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
+
+              /* ...or one after a component boundary? */
+              if((sbs_srt > trv_obj.nm_fll) && (*(sbs_srt-1L) == sls_chr)) flg_pth_srt_bnd=True;
+
+              /* Does match end at path component boundary ... directly on a slash? */
+              sbs_end=sbs_srt+usr_sng_lng-1L;
+
+              if(*sbs_end == sls_chr) flg_pth_end_bnd=True;
+
+              /* ...or one before a component boundary? */
+              if(sbs_end <= trv_obj.nm_fll+trv_obj.nm_fll_lng-1L)
+                if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
+                  flg_pth_end_bnd=True;
+
+              /* Additional condition for variables is user-supplied string must end with short form of variable name */
+              if(obj_typ == nco_obj_typ_var){
+                if(trv_obj.nm_lng <= usr_sng_lng){
+                  var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
+                  if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
+                } /* endif */
+                if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+              } /* endif var */
+
+              /* If anchoring, match must begin at root */
+              if(flg_ncr_mch_grp && *sbs_srt != sls_chr) flg_ncr_mch_crr=False;
+
+              /* If no recursion, match must terminate user-supplied string */
+              if(!flg_rcr_mch_grp && *(sbs_end+1L)) flg_rcr_mch_crr=False;
+
+              /* Set traversal table flags */
+              if(obj_typ == nco_obj_typ_var){
+                /* Variables must meet necessary flags for variables */
+                if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
+                  trv_tbl->lst[tbl_idx].flg_mch=True;
+                  trv_tbl->lst[tbl_idx].flg_rcr=False;
+                  /* Was matched variable specified as full path (i.e., beginning with slash?) */
+                  if(*usr_sng == sls_chr) trv_tbl->lst[tbl_idx].flg_vfp=True;
+                } /* end flags */
+              }else{ /* !nco_obj_typ_var */
+                /* Groups must meet necessary flags for groups */
+                if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
+                  trv_tbl->lst[tbl_idx].flg_mch=True;
+                  trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
+                } /* end flags */
+              }  /* !nco_obj_typ_var */
+              /* Set flags for groups and variables associated with this object */
+              if(trv_tbl->lst[tbl_idx].flg_mch) nco_flg_set_grp_var_ass(trv_obj.grp_nm_fll,obj_typ,trv_tbl);
+
+              /* Set function return condition */
+              if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
+
+              if(dbg_lvl_get() == nco_dbg_crr){
+                (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
+                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
+                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
+                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_gcv? %s.",(trv_tbl->lst[tbl_idx].flg_gcv) ? "Yes" : "No");
+                if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_ncs? %s.",(trv_tbl->lst[tbl_idx].flg_ncs) ? "Yes" : "No");
+                if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vfp? %s.",(trv_tbl->lst[tbl_idx].flg_vfp) ? "Yes" : "No");
+                if(obj_typ == nco_obj_typ_var) (void)fprintf(stderr," flg_vsg? %s.",(trv_tbl->lst[tbl_idx].flg_vsg) ? "Yes" : "No");
+                (void)fprintf(stderr,"\n");
+              } /* end if */
+
+            } /* endif strstr() */
+          } /* endif nco_obj_typ */
+        } /* end loop over tbl_idx */
+
+        if(!flg_usr_mch_obj){
+          (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+          nco_exit(EXIT_FAILURE);
+        } /* flg_usr_mch_obj */
+        /* Free dynamic memory */
+        if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
 
     } /* obj_idx */
 
@@ -875,7 +922,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* itr_idx */
 
   /* Compute intersection of groups and variables if necessary
-     Intersection criteria flag, flg_nsx, is satisfied by default. Unset later when necessary. */
+  Intersection criteria flag, flg_nsx, is satisfied by default. Unset later when necessary. */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++) trv_tbl->lst[obj_idx].flg_nsx=True;
 
   /* Union is same as intersection if either variable or group list is empty, otherwise check intersection criteria */
@@ -884,28 +931,28 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       var_obj=trv_tbl->lst[obj_idx];
       if(var_obj.typ == nco_obj_typ_var){
-	/* Cancel (non-full-path) variable match unless variable is also in user-specified group */
-	if(var_obj.flg_mch && !var_obj.flg_vfp){
-	  for(unsigned int obj2_idx=0;obj2_idx<trv_tbl->nbr;obj2_idx++){
-	    grp_obj=trv_tbl->lst[obj2_idx];
-	    if(grp_obj.typ == nco_obj_typ_grp && !strcmp(var_obj.grp_nm_fll,grp_obj.grp_nm_fll)) break;
-	  } /* end loop over obj2_idx */
-	  if(!grp_obj.flg_mch) trv_tbl->lst[obj_idx].flg_nsx=False;
-	} /* flg_mch && flg_vfp */
+        /* Cancel (non-full-path) variable match unless variable is also in user-specified group */
+        if(var_obj.flg_mch && !var_obj.flg_vfp){
+          for(unsigned int obj2_idx=0;obj2_idx<trv_tbl->nbr;obj2_idx++){
+            grp_obj=trv_tbl->lst[obj2_idx];
+            if(grp_obj.typ == nco_obj_typ_grp && !strcmp(var_obj.grp_nm_fll,grp_obj.grp_nm_fll)) break;
+          } /* end loop over obj2_idx */
+          if(!grp_obj.flg_mch) trv_tbl->lst[obj_idx].flg_nsx=False;
+        } /* flg_mch && flg_vfp */
       } /* nco_obj_typ_grp */
     } /* end loop over obj_idx */
   } /* flg_unn */
-  
+
   /* Combine previous flags into initial extraction flag */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
     /* Extract object if ... */
     if(
-       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch) || /* ...union mode object matches user-specified string... */
-       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_vsg) || /* ...union mode variable selected because group matches... */
-       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_gcv) || /* ...union mode contains matched variable... */
-       (trv_tbl->lst[obj_idx].flg_dfl) || /* ...user-specified no sub-setting... */
-       (!flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch && trv_tbl->lst[obj_idx].flg_nsx) || /* ...intersection mode variable matches group... */
-       False) 
+      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch) || /* ...union mode object matches user-specified string... */
+      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_vsg) || /* ...union mode variable selected because group matches... */
+      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_gcv) || /* ...union mode contains matched variable... */
+      (trv_tbl->lst[obj_idx].flg_dfl) || /* ...user-specified no sub-setting... */
+      (!flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch && trv_tbl->lst[obj_idx].flg_nsx) || /* ...intersection mode variable matches group... */
+      False) 
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
@@ -1234,9 +1281,9 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 
         /* Initialize path with the current absolute group path */
         strcpy(var_nm_fll,trv.nm_fll);
-	/* If not root group, concatenate separator */
+        /* If not root group, concatenate separator */
         if(!strcmp(trv.nm_fll,"/")) strcat(var_nm_fll,"/");
-	/* Concatenate variable to absolute group path */
+        /* Concatenate variable to absolute group path */
         strcat(var_nm_fll,var_nm);
 
         /* Search all dimensions in group */
@@ -1336,7 +1383,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
       att_val[att_sz]='\0';
 
       /* Split list into separate coordinate names
-	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+      Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
       cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
       /* ...for each coordinate in CF convention attribute, i.e., "bounds" or "coordinate"... */
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
@@ -1348,10 +1395,10 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
         /* NB: Coordinates of rank N have bounds of rank N+1 */
         if(rcd == NC_NOERR){
           /* Does CF-variable actually exist in input file, at least by its short name?
-	     fxm: Should we just pass grp_nm_fll into function rather than search twice? */
+          fxm: Should we just pass grp_nm_fll into function rather than search twice? */
           if(trv_tbl_fnd_var_nm(cf_lst_var,trv_tbl)){
             char *cf_nm_fll;
-	    char *grp_nm_fll; /* Fully qualified group where variable resides */
+            char *grp_nm_fll; /* Fully qualified group where variable resides */
             char *pch; /* Pointer to last occurrence of character */
             int psn; /* Position of character */
             int var_nm_lng; /* Length of fully qualified group where variable resides */
@@ -1364,7 +1411,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
             grp_nm_fll[psn]='\0';
 
             /* Construct full variable name */
-	    cf_nm_fll=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(cf_lst_var)+2L);
+            cf_nm_fll=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(cf_lst_var)+2L);
             strcpy(cf_nm_fll,grp_nm_fll);
             if(strcmp(grp_nm_fll,"/")) strcat(cf_nm_fll,"/");
             strcat(cf_nm_fll,cf_lst_var); 
@@ -1372,13 +1419,13 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
             /* Free allocated memory */
             grp_nm_fll=(char *)nco_free(grp_nm_fll);
 
-	    /* Mark variable for extraction */
-	    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-	      if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[uidx].nm_fll,cf_nm_fll)){
-		trv_tbl->lst[uidx].flg_cf=True;
-		trv_tbl->lst[uidx].flg_xtr=True;
-	      } /* endif */
-	    } /* end loop over uidx */
+            /* Mark variable for extraction */
+            for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+              if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[uidx].nm_fll,cf_nm_fll)){
+                trv_tbl->lst[uidx].flg_cf=True;
+                trv_tbl->lst[uidx].flg_xtr=True;
+              } /* endif */
+            } /* end loop over uidx */
 
           } /* end nco_fnd_var_trv() */   
 
@@ -1464,8 +1511,8 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
       strcat(dmn_nm_fll,dmn_nm);
 
       /* Brute-force approach to find valid "dmn_nm_fll":
-	 Start at grp_nm_fll/var_nm and build all possible paths with var_nm. 
-	 Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
+      Start at grp_nm_fll/var_nm and build all possible paths with var_nm. 
+      Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
 
       /* Find last occurence of '/' */
       pch=strrchr(dmn_nm_fll,sls_chr);
@@ -1600,10 +1647,10 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
         if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
           /* Add associated coordinate variables to traversal table extraction list
-	     Be sure not to extract non-associated coordinates
-	     Distinct dimensions with same name dmn_nm can occur in multiple groups
-	     And those definitions may not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups
-	     Hence nco_xtr_crd_ass_add_trv() must know location of dmn_nm and search only variables visible from there */
+          Be sure not to extract non-associated coordinates
+          Distinct dimensions with same name dmn_nm can occur in multiple groups
+          And those definitions may not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups
+          Hence nco_xtr_crd_ass_add_trv() must know location of dmn_nm and search only variables visible from there */
           (void)nco_xtr_crd_ass_add_trv(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
         }else{
           /* Construct full (dimension/variable) name */
@@ -1738,7 +1785,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
   
   const char fnc_nm[]="nco_xtr_dfn()"; /* [sng] Function name */
   const char sls_sng[]="/"; /* [sng] Slash string */
-
+ 
   char *grp_out_fll; /* [sng] Group name */
   
   gpe_nm_sct *gpe_nm; /* [sct] GPE name duplicate check array */
@@ -1772,40 +1819,40 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
        Also identification of associated coordinates and auxiliary coordinates occurs after nco_xtr_mk()
        Associated and auxiliary coordinates may be in distant groups
        Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
-    
+  
     /* Set extraction flag for groups iff ancestors of extracted variables */
     for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
       /* For each group ... */
       if(trv_tbl->lst[grp_idx].typ == nco_obj_typ_grp){
-	/* Initialize extraction flag to False and overwrite later iff ... */
-	trv_tbl->lst[grp_idx].flg_xtr=False;
-	/* ... loop through ... */
-	for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-	  /* ... all variables to be extracted ... */
-	  if(trv_tbl->lst[var_idx].typ == nco_obj_typ_var && trv_tbl->lst[var_idx].flg_xtr){
-	    /* ... finds that full path to current group is contained in and extracted variable path ... */
-	    if(strstr(trv_tbl->lst[var_idx].nm_fll,trv_tbl->lst[grp_idx].grp_nm_fll)){
-	      /* ... and mark _only_ those groups for extraction... */
-	      trv_tbl->lst[grp_idx].flg_xtr=True;
-	      continue;
-	    } /* endif */
-	  } /* endif extracted variable */
-	} /* end loop over var_idx */
+        /* Initialize extraction flag to False and overwrite later iff ... */
+        trv_tbl->lst[grp_idx].flg_xtr=False;
+        /* ... loop through ... */
+        for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+          /* ... all variables to be extracted ... */
+          if(trv_tbl->lst[var_idx].typ == nco_obj_typ_var && trv_tbl->lst[var_idx].flg_xtr){
+            /* ... finds that full path to current group is contained in and extracted variable path ... */
+            if(strstr(trv_tbl->lst[var_idx].nm_fll,trv_tbl->lst[grp_idx].grp_nm_fll)){
+              /* ... and mark _only_ those groups for extraction... */
+              trv_tbl->lst[grp_idx].flg_xtr=True;
+              continue;
+            } /* endif */
+          } /* endif extracted variable */
+        } /* end loop over var_idx */
       } /* endif group */
     } /* end loop over grp_idx */
     
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       trv_sct trv=trv_tbl->lst[uidx];
-      
+ 
       /* If object is group ancestor of extracted variable */
       if(trv.typ == nco_obj_typ_grp && trv.flg_xtr){
-	
+ 
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-    
+ 
         /* Obtain info for group */
         (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
+ 
 #ifdef NCO_SANITY_CHECK
         assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
@@ -1828,12 +1875,12 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
 
         /* Memory management after current extracted group */
         if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-	
+
       } /* end if group and flg_xtr */
     } /* end loop to define group attributes */
-    
+
   } /* !CPY_GRP_METADATA */
-  
+
   /* Define variables */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -1862,54 +1909,54 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
       
       /* Detect duplicate GPE names in advance, then exit with helpful error */
       if(gpe){
-	char *gpe_var_nm_fll=NULL; 
-	
-	/* Construct absolute GPE variable path */
-	gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv.nm)+2L);
-	strcpy(gpe_var_nm_fll,grp_out_fll);
-	/* If not root group, concatenate separator */
-	if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
-	strcat(gpe_var_nm_fll,trv.nm);
-	
-	/* GPE name is not already on list, put it there */
-	if(nbr_gpe_nm == 0){
-	  gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
-	  gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-	  nbr_gpe_nm++;
-	}else{
-	  /* Put GPE on list only if not already there */
-	  for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
-	    if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-	      (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
-	      for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
-	      nco_exit(EXIT_FAILURE);
-	    } /* strcmp() */
-	  } /* end loop over gpe_nm */
-	  gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
-	  gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-	  nbr_gpe_nm++;
-	} /* nbr_gpe_nm */
-	
-	  /* Free full path name */
-	if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+        char *gpe_var_nm_fll=NULL; 
+
+        /* Construct absolute GPE variable path */
+        gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv.nm)+2L);
+        strcpy(gpe_var_nm_fll,grp_out_fll);
+        /* If not root group, concatenate separator */
+        if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
+        strcat(gpe_var_nm_fll,trv.nm);
+
+        /* GPE name is not already on list, put it there */
+        if(nbr_gpe_nm == 0){
+          gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+          gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+          nbr_gpe_nm++;
+        }else{
+          /* Put GPE on list only if not already there */
+          for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+            if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+              (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+              for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+              nco_exit(EXIT_FAILURE);
+            } /* strcmp() */
+          } /* end loop over gpe_nm */
+          gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+          gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+          nbr_gpe_nm++;
+        } /* nbr_gpe_nm */
+
+        /* Free full path name */
+        if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
       } /* !GPE */
-      
+
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
       
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
-      
+
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
-	int var_id;
-	(void)nco_inq_varid(grp_id,trv.nm,&var_id);
-	(void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
+        int var_id;
+        (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+        (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
       } /* !CPY_VAR_METADATA */
-      
+
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-      
+
       /* Store input and output group IDs for use by nco_xtr_wrt() */
       trv_tbl->lst[uidx].grp_id_in=grp_id;
       trv_tbl->lst[uidx].grp_id_out=grp_out_id;
