@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.403 2013-01-29 18:07:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.404 2013-01-30 01:14:24 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -281,7 +281,7 @@ nco_grp_dfn                          /* [fnc] Define groups in output file */
 
 int                                   /* [rcd] Return code */
 nco_def_grp_rcr                       /* [fnc] Define groups */
-(const int in_id,                     /* I [ID] netCDF input-file ID */
+<(const int in_id,                     /* I [ID] netCDF input-file ID */
  const int out_id,                    /* I [ID] netCDF output-file ID */
  const char * const prn_nm,           /* I [sng] Parent group name */
  const int rcr_lvl)                   /* I [nbr] Recursion level */
@@ -1747,10 +1747,10 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
   int grp_id; /* [ID] Group ID in input file */
   int grp_out_id; /* [ID] Group ID in output file */ 
   int nbr_att; /* [nbr] Number of attributes for group */
-  int nbr_gpe_nm; /* [nbr] Number of GPE entries */
-  int var_out_id; /* [ID] Variable ID in output file */
-  int nbr_var; /* [nbr] Number of variables for group */
   int nbr_dmn; /* [nbr] Number of dimensions for group */
+  int nbr_gpe_nm; /* [nbr] Number of GPE entries */
+  int nbr_var; /* [nbr] Number of variables for group */
+  int var_out_id; /* [ID] Variable ID in output file */
   
   nbr_gpe_nm=0;
   (void)nco_inq_format(nc_id,&fl_fmt);
