@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.404 2013-01-30 01:14:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.405 2013-01-30 03:05:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -281,7 +281,7 @@ nco_grp_dfn                          /* [fnc] Define groups in output file */
 
 int                                   /* [rcd] Return code */
 nco_def_grp_rcr                       /* [fnc] Define groups */
-<(const int in_id,                     /* I [ID] netCDF input-file ID */
+(const int in_id,                     /* I [ID] netCDF input-file ID */
  const int out_id,                    /* I [ID] netCDF output-file ID */
  const char * const prn_nm,           /* I [sng] Parent group name */
  const int rcr_lvl)                   /* I [nbr] Recursion level */
