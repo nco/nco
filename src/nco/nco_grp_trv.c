@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.39 2013-01-30 08:21:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.40 2013-01-30 11:44:45 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -467,3 +467,32 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
   cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
 } /* end trv_tbl_mch() */
+
+
+void 
+trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  */
+(dmn_fll_sct const obj,               /* I [sct] Object to store */
+ trv_tbl_sct * const tbl)            /* I/O [sct] Traversal table */
+{
+  unsigned int idx;
+
+  if(tbl->nbr_dmn == tbl->sz_dmn){
+    tbl->sz_dmn*=2;
+    tbl->lst_dmn=(dmn_fll_sct *)nco_realloc(tbl->lst_dmn,tbl->sz_dmn*sizeof(dmn_fll_sct));
+
+    for(idx=tbl->nbr_dmn;idx<tbl->sz_dmn;idx++){
+      tbl->lst_dmn[idx].nm_fll=NULL;
+      tbl->lst_dmn[idx].grp_nm_fll=NULL;
+    } /* idx */
+  } /* tbl->sz_dmn */
+
+  idx=tbl->nbr_dmn++;
+
+  tbl->lst_dmn[idx].nm_fll=(char *)strdup(obj.nm_fll);
+  tbl->lst_dmn[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
+  strcpy(tbl->lst_dmn[idx].nm,obj.nm);
+  tbl->lst_dmn[idx].has_crd_var=obj.has_crd_var;
+  tbl->lst_dmn[idx].is_rec_dmn=obj.is_rec_dmn;
+  tbl->lst_dmn[idx].sz=obj.sz;
+
+} /* end trv_tbl_add_dmn() */

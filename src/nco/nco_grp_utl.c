@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.407 2013-01-30 11:18:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.408 2013-01-30 11:44:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -357,8 +357,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   trv_sct obj; /* [sct] netCDF4 Object (group/variable) */
 
-  dmn_fll_sct obj_dmn;  /* [sct] netCDF4 Dimension object */
-
   /* Get all information for this group */
 
   /* Get group name */
@@ -480,6 +478,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
 
+    dmn_fll_sct obj_dmn;  /* [sct] NCO netCDF4 Dimension object */
+
     /* Initialize dimension as a non-record dimension */
     obj_dmn.is_rec_dmn=False;
 
@@ -559,11 +559,11 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     strcpy(obj_dmn.nm,dmn_nm);
     obj_dmn.nm_fll=dmn_nm_fll;
     obj_dmn.sz=dmn_sz;
+    /* Don't forget group name full, we will need it (all reason for dimension object) */
+    obj_dmn.grp_nm_fll=grp_nm_fll;
 
-    /* Call add dimension object add function */
-
-
-
+    /* Call dimension object add function */
+    (void)trv_tbl_add_dmn(obj_dmn,trv_tbl);
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
