@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.135 2013-01-29 10:46:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.136 2013-01-30 06:30:27 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1004,8 +1004,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 #else /* !ENABLE_NETCDF4 */
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   /* Get dimension sizes from input file */
-  for(idx=0;idx<var.nbr_dim;idx++)
-    for(jdx=0;jdx<lmt_nbr;jdx++){
+  for( int idx=0;idx<var.nbr_dim;idx++)
+    for(int jdx=0;jdx<lmt_nbr;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
         lmt_msa[idx]=lmt_lst[jdx];
         break;
