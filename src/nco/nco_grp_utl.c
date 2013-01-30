@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.406 2013-01-30 10:07:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.407 2013-01-30 11:18:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -331,7 +331,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   char *var_nm_fll;           /* [sng] Full path for variable */
   char *dmn_nm_fll;           /* [sng] Full path for dimension */
-  char *rec_nm_fll;           /* [sng] Full path for record dimension */
 
   long dmn_sz;                /* [nbr] Dimension size */ 
   long rec_sz;                /* [nbr] Record dimension size */ 
@@ -342,7 +341,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   int dmn_ids[NC_MAX_DIMS]; /* [ID]  Dimension IDs array */ 
   int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array */
-  int grp_ids[NC_MAX_DIMS]; /* [ID] Sub-group IDs array */  
+
+  int *grp_ids; /* [ID] Sub-group IDs array */  
 
   int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
   int nbr_att; /* [nbr] Number of attributes */
@@ -475,29 +475,104 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   } /* end loop over variables */
 
 
-  /* Add dimension objects; detect possible coordinate variables */ 
+  /* Add dimension objects; detect possible coordinate variables, match record/non-record dimension */ 
 
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
 
-    /* Get dimension name */
-    (void)nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
+    /* Initialize dimension as a non-record dimension */
+    obj_dmn.is_rec_dmn=False;
 
-  } /* end dimension loop */
-
-  /* Iterate unlimited dimensions (for group; dimensions are defined *for* groups) */
-  for(int rec_idx=0;rec_idx<nbr_rec;rec_idx++){
+    /* Initialize dimension as not having associated coordinate variable  */
+    obj_dmn.has_crd_var=False;
 
     /* Get dimension name */
-    (void)nco_inq_dim(grp_id,dmn_ids_ult[rec_idx],rec_nm,&rec_sz);
+    rcd+=nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
+
+    /* Iterate unlimited dimensions to detect if dimension is record */
+    for(int rec_idx=0;rec_idx<nbr_rec;rec_idx++){
+
+      /* Get record dimension name */
+      (void)nco_inq_dim(grp_id,dmn_ids_ult[rec_idx],rec_nm,&rec_sz);
+
+      /* Current dimension name matches current record dimension name ? */
+      if(strcmp(rec_nm,dmn_nm) == 0 ){
+
+        /* Dimension is a record dimension */
+        obj_dmn.is_rec_dmn=True;
+
+        /* Iterate variables to detect if a coordinate variable exists (same name as dimension) */
+        /* This must be done for both dimension/record dimension loops */
+        for(int var_idx=0;var_idx<nbr_var;var_idx++){
+
+          /* Get type of variable and number of dimensions */
+          rcd+=nco_inq_var(grp_id,var_idx,var_nm,(nc_type *)NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
+
+          /* NB: comparing record dimension here */
+          if(strcmp(rec_nm,var_nm) == 0 ){
+            /* Dimension has a coordinate varible  */
+            obj_dmn.has_crd_var=True;
+
+            /* Exit variable loop; we found it */
+            break;
+          } /* end match variable name to record dimension name */
+        } /* end variable loop */
+
+        /* Exit record dimension loop; we found it */
+        break;
+      } /* end match record dimension name */
+    } /* end record dimension loop */
+
+
+    /* Iterate variables to detect if a coordinate variable exists (same name as dimension) */
+    /* This must be done for both dimension/record dimension loops */
+    for(int var_idx=0;var_idx<nbr_var;var_idx++){
+
+      /* Get type of variable and number of dimensions */
+      rcd+=nco_inq_var(grp_id,var_idx,var_nm,(nc_type *)NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
+
+      /* NB: comparing dimension here */
+      if(strcmp(dmn_nm,var_nm) == 0 ){
+        /* Dimension has a coordinate varible  */
+        obj_dmn.has_crd_var=True;
+
+        /* Exit variable loop; we found it */
+        break;
+      } /* end match variable name to record dimension name */
+    } /* end variable loop */
+
+    /* Both members "is_rec_dmn" and "has_crd_var" are done; now do the easy part, full name, name, and size */
+
+    /* Allocate path buffer and include space for trailing NUL */ 
+    dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
+
+    /* Initialize path with current absolute group path */
+    strcpy(dmn_nm_fll,grp_nm_fll);
+
+    /* If not root group, concatenate separator */
+    if(strcmp(grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+
+    /* Concatenate dimension name to absolute group path */
+    strcat(dmn_nm_fll,dmn_nm);
+
+    /* Store object */
+    strcpy(obj_dmn.nm,dmn_nm);
+    obj_dmn.nm_fll=dmn_nm_fll;
+    obj_dmn.sz=dmn_sz;
+
+    /* Call add dimension object add function */
+
+
+
+
+    /* Free constructed name */
+    dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
   } /* end dimension loop */
-
-
-
 
 
   /* Go to sub-groups */ 
+  grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
   rcd+=nco_inq_grps(grp_id,&nbr_grp,grp_ids);
 
   /* Heart of traversal construction: construct a new sub-group path and call function recursively with this new name; Voila */
@@ -527,6 +602,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over groups */
 
+  (void)nco_free(grp_ids); 
   return rcd;
 } /* end nco_grp_itr() */
 
