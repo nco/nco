@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.40 2013-01-30 11:44:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.41 2013-01-31 05:52:33 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -55,6 +55,11 @@ trv_tbl_init
     tb->lst[idx].nbr_grp=nco_obj_typ_err;
     tb->lst[idx].nbr_rec=nco_obj_typ_err;
     tb->lst[idx].nbr_var=nco_obj_typ_err;
+
+    /* Full dimension names for each variable */
+    for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++) tb->lst[idx].var_dmn_fll.dmn_nm_fll[dmn_idx_var]=NULL;
+    tb->lst[idx].var_dmn_fll.nbr_dmn=-1;
+
   } /* end loop over objects */
 
   /* Dimension list */
@@ -86,6 +91,11 @@ trv_tbl_free
   for(idx=0;idx<tbl->sz;idx++){
     nco_free(tbl->lst[idx].nm_fll);
     nco_free(tbl->lst[idx].grp_nm_fll);
+
+    /* Full dimension names for each variable */
+    for(int dmn_idx_var=0;dmn_idx_var<tbl->lst[idx].var_dmn_fll.nbr_dmn;dmn_idx_var++) 
+      nco_free(tbl->lst[idx].var_dmn_fll.dmn_nm_fll[dmn_idx_var]);
+
   } /* end loop */
   nco_free(tbl->lst);
 

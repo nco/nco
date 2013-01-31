@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.410 2013-01-31 02:02:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.411 2013-01-31 05:52:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2406,7 +2406,6 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
   int nbr_dmn; /* [nbr] Number of dimensions */
   int nbr_var; /* [nbr] Number of variables */
 
-
   (void)nco_inq_format(nc_id,&fl_fmt);
 
   (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
@@ -2430,6 +2429,26 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
       (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
       assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
 #endif
+
+    } /* end nco_obj_typ_grp */
+  } /* end uidx  */
+
+
+  (void)fprintf(stdout,"\n");
+  (void)fprintf(stderr,"%s: INFO reports variable information\n",prg_nm_get());
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
+      trv_sct trv=trv_tbl->lst[uidx];            
+      (void)fprintf(stdout,"%s: %d dimensions: ",trv.nm_fll,trv.nbr_dmn); 
+
+      /* Full dimension names for each variable */
+      for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++) 
+        (void)fprintf(stdout,"%s : ",trv.var_dmn_fll.dmn_nm_fll[dmn_idx_var]); 
+
+      (void)fprintf(stdout,"\n");
+
+      /* For classic files, the above is printed, and then return */
+      if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
 
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
@@ -2480,12 +2499,18 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
   where we know the full picture of the file tree
   */
 
-  int nbr_dmn_var;             /* [nbr] Number of dimensions for variable */
-  int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
-  int var_id;                  /* [ID] Variable ID */
-  int grp_id;                  /* [ID] Group ID */
+  char dmn_nm_var[NC_MAX_NAME];/* [sng] Dimension name for variable */ 
+  char dmn_nm_grp[NC_MAX_NAME];/* [sng] Dimension name for group */ 
 
-  char dmn_var_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
+  const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
+
+  int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array for group */
+  int dmn_id_var[NC_MAX_DIMS]; /* [id] Dimensions IDs array for variable */
+
+  int nbr_dmn_grp;             /* [nbr] Number of dimensions for group  */
+  int nbr_dmn_var;             /* [nbr] Number of dimensions for variable */
+  int var_id;                  /* [id] ID of variable  */
+  int grp_id;                  /* [id] ID of group */
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
@@ -2503,16 +2528,50 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
+      /* Obtain dimension IDs. NB: go to parents */
+      (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
+
       /* Loop over dimensions of variable */
-      for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+      for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn_var;dmn_idx_var++){
 
         /* Get dimension name */
-        (void)nco_inq_dimname(grp_id,dmn_id_var[dmn_idx],dmn_var_nm);
+        (void)nco_inq_dimname(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s reports dimension %s\n",prg_nm_get(),trv.nm_fll,dmn_var_nm);
+          (void)fprintf(stdout,"%s: INFO %s reports dimension %s\n",prg_nm_get(),trv.nm_fll,dmn_nm_var);
         } /* endif dbg */
 
+
+        /* Now the exciting part; we have to locate where "dmn_var_nm" is located
+        1) Dimensions are defined in *groups*: find group where variable resides
+        2) Most common case is for the dimension to be defined in the same group where variable is
+        3) If not, we have to traverse the group back until the dimension name is found
+        From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
+        Subject: Re: [netcdfgroup] defining dimensions in groups
+        The inner dimension is used. The rule is to look up the group tree from innermost to root and choose the 
+        first one that is found with a matching name.
+        4) Use case example: /g5/g5g1/rz variable and rz(rlev), where dimension "rlev" resides in /g5/rlev 
+        */
+
+        /* Loop over dimensions of group and parents  */
+        for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_grp;dmn_idx_grp++){
+
+          /* Get dimension name for group */
+          (void)nco_inq_dimname(grp_id,dmn_id_grp[dmn_idx_grp],dmn_nm_grp);
+
+          /* Does dimension name for variable match dimension name for group ? */ 
+          /* NB: Key is name, not pair name,lenght */
+          if(strcmp(dmn_nm_var,dmn_nm_grp) == 0){
+
+
+
+
+
+
+            /* Exit group loop */ 
+            break;
+          } /* end match name  */
+        } /* end loop over dimensions of group */
       } /* end loop over dimensions of variable */
     } /* end nco_obj_typ_var */
   } /* end uidx  */
