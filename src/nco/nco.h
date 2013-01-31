@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.220 2013-01-30 08:21:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.221 2013-01-31 02:02:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -606,6 +606,16 @@ extern "C" {
     size_t lng_cnn; /* [nbr] Length of canonicalized user-specified group path */
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
+
+  /* structure that identifies where dimensions are located for a variable
+     a netCDF4 variable can have its dimensions located anywhere in the file/group tree
+     Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
+     where we know the full picture of the file tree
+  */
+  typedef struct{ 
+    int nbr_dmn; /* [nbr] Number of dimensions for variable */
+    char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions (size is nbr_dmn) */
+  } var_dmn_sct; 
   
   /* Object structure 
      Information for each object/node in traversal tree
@@ -617,6 +627,7 @@ extern "C" {
      free() each pointer member of trv_sct structure in trv_tbl_free() */
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
+    var_dmn_sct var_dmn_fll; /* [sct] Array with all full dimension names for variable(bit of redundancy here for nbr_dmn) */
     size_t nm_fll_lng; /* [sng] Length of full name */
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */

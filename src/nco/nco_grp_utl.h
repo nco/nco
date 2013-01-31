@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.199 2013-01-29 10:46:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.200 2013-01-31 02:02:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -287,6 +287,11 @@ void
 nco_prt_dmn /* [fnc] Print dimensions for a group  */
 (const int nc_id, /* I [ID] File ID */
  const char * const grp_nm_fll); /* I [sng] Full name of group */
+
+void                          
+nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
+(const int nc_id, /* I [ID] File ID */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 
 #ifdef __cplusplus

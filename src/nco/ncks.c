@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.568 2013-01-31 00:12:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.569 2013-01-31 02:02:58 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.568 2013-01-31 00:12:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.568 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.569 2013-01-31 02:02:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.569 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -605,6 +605,9 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
 
+  /* Extra construction of traversal table (dimensions) */
+  (void)nco_bld_dmn_trv(in_id,trv_tbl);
+
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
   (void)nco_inq_format(in_id,&fl_in_fmt);
@@ -672,15 +675,15 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
-   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
+  if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
 
-   /* We now have final list of variables to extract. Phew. */
+  /* We now have final list of variables to extract. Phew. */
 
-   /* Print extraction list in verbose mode */
-   if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
+  /* Print extraction list in verbose mode */
+  if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
 
   /* Find coordinate/dimension values associated with user-specified limits
-     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+  NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
 
   /* Place all dimensions in lmt_all_lst */

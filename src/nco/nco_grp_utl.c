@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.409 2013-01-31 00:12:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.410 2013-01-31 02:02:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1654,7 +1654,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int fl_fmt;                  /* [nbr] File format */
   int grp_id;                  /* [ID] Group ID */
-  int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
+  int nbr_dmn_var;             /* [nbr] Number of dimensions associated with current matched variable */
   int var_id;                  /* [ID] Variable ID */
 
   long dmn_sz;                 /* [nbr] Dimension size */  
@@ -1673,17 +1673,17 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
       /* Get number of dimensions for variable */
-      (void)nco_inq_varndims(grp_id,var_id,&nbr_var_dim);
+      (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
 
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
       /* Loop over dimensions of variable */
-      for(int idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
+      for(int idx_var_dim=0;idx_var_dim<nbr_dmn_var;idx_var_dim++){
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
-        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        if(fl_fmt == NC_FORMAT_NETCDF4){
           /* Add associated coordinate variables to traversal table extraction list
           Be sure not to extract non-associated coordinates
           Distinct dimensions with same name dmn_nm can occur in multiple groups
@@ -1983,7 +1983,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(grp_id,grp_out_id,rec_dmn_nm,trv.nm,lmt_all_lst,lmt_all_lst_nbr,dfl_lvl); else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
       
       /* Set chunksize parameters */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
+      if(fl_fmt == NC_FORMAT_NETCDF4) (void)nco_cnk_sz_set(grp_out_id,lmt_all_lst,lmt_all_lst_nbr,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr);
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
@@ -2174,7 +2174,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array for group */
   int fl_fmt;                  /* [nbr] File format */
-  int nbr_var_dim;             /* [nbr] Number of dimensions associated with current matched variable */
+  int nbr_dmn_var;             /* [nbr] Number of dimensions associated with current matched variable */
   int nbr_dmn_fl;              /* [nbr] Number of dimensions in file (in groups) */
   int nbr_var_fl;              /* [nbr] Number of variables in file */
   int nbr_dmn_grp;             /* [nbr] Number of dimensions */
@@ -2215,18 +2215,18 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
       /* Get number of dimensions for variable */
-      (void)nco_inq_varndims(grp_id,var_id,&nbr_var_dim);
+      (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
 
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
       /* Loop over dimensions of variable */
-      for(int idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
+      for(int idx_var_dim=0;idx_var_dim<nbr_dmn_var;idx_var_dim++){
 
-        /* Get dimension name of variable */
+        /* Get dimension name  */
         (void)nco_inq_dimname(nc_id,dmn_id_var[idx_var_dim],dmn_var_nm);
 
-        if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+        if(fl_fmt == NC_FORMAT_NETCDF4){
           /* Distinct dimensions with same name "dmn_var_nm" can occur in multiple groups
           And those definitions may not share namespace, e.g., "dmn_var_nm" can be defined distinctly in sibling groups */
 
@@ -2469,3 +2469,53 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 #endif
 
 } /* end nco_prt_grp_trv() */
+
+void                          
+nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
+(const int nc_id, /* I [ID] File ID */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  /* Purpose: a netCDF4 variable can have its dimensions located anywhere in the file/group tree
+  Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
+  where we know the full picture of the file tree
+  */
+
+  int nbr_dmn_var;             /* [nbr] Number of dimensions for variable */
+  int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
+  int var_id;                  /* [ID] Variable ID */
+  int grp_id;                  /* [ID] Group ID */
+
+  char dmn_var_nm[NC_MAX_NAME];/* [sng] Dimension name */ 
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
+      trv_sct trv=trv_tbl->lst[uidx];  
+
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+
+      /* Obtain variable ID using group ID */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+
+      /* Get number of dimensions for variable */
+      (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
+
+      /* Get dimension IDs for variable */
+      (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
+
+      /* Loop over dimensions of variable */
+      for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+
+        /* Get dimension name */
+        (void)nco_inq_dimname(grp_id,dmn_id_var[dmn_idx],dmn_var_nm);
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s reports dimension %s\n",prg_nm_get(),trv.nm_fll,dmn_var_nm);
+        } /* endif dbg */
+
+      } /* end loop over dimensions of variable */
+    } /* end nco_obj_typ_var */
+  } /* end uidx  */
+
+} /* end nco_blb_dmn_trv() */
+
