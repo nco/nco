@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.567 2013-01-29 10:46:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.568 2013-01-31 00:12:01 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.567 2013-01-29 10:46:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.567 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.568 2013-01-31 00:12:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.568 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -605,7 +605,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl);
   rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
 
-   /* Get number of variables, dimensions, and global attributes in file, file format */
+  /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
@@ -795,13 +795,13 @@ main(int argc,char **argv)
       /* Get unlimited dimension information from input file/group */
       rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
       if(nbr_rec_lcl > 0){
-	char dmn_nm[NC_MAX_NAME]; 
-	long rec_dmn_sz;
-	for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
-	  (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
-	  (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
-	} /* end loop over rec_idx */
-	(void)fprintf(stdout,"\n");
+        char dmn_nm[NC_MAX_NAME]; 
+        long rec_dmn_sz;
+        for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
+          (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
+          (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
+        } /* end loop over rec_idx */
+        (void)fprintf(stdout,"\n");
       } /* NCO_REC_DMN_UNDEFINED */
       /* Print group attributes recursively */
       (void)nco_prn_att_trv(in_id,trv_tbl);

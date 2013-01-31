@@ -32,8 +32,8 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.55 2013-01-28 04:03:35 zender Exp $";
-  // Coordinates
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.56 2013-01-31 00:12:01 pvicente Exp $";
+  // Coordinate variables: lat, lev, lon, time, tm2, tm3, gds_crd (7 at root)
   float lat(lat);
  lat:units = "degrees_north";
   float lev(lev);
@@ -79,7 +79,7 @@ netcdf in_grp {
   //
  group: g1 { 
   variables:
-    //lon
+    // Coordinate variable (dim at root, same size)
     float lon(lon);
   lon:units = "g1 degrees_east";
     //variables
@@ -106,6 +106,7 @@ netcdf in_grp {
   //
  group: g2 { 
   variables:
+    // Coordinate variable (dim at root, same size)
     double time(time);
     float scl;
   data:
@@ -121,11 +122,13 @@ netcdf in_grp {
     rlev=3,time2=unlimited;
   variables:
     :g3_group_attribute = "g3_group_attribute";
-    float rz(rlev);
-    double time2(time2);
-    float scl;
+    // Coordinate variables (dim here )
     float rlev(rlev);
-  rlev:purpose = "Monotonically decreasing coordinate pressure";
+    rlev:purpose = "Monotonically decreasing coordinate pressure";
+    double time2(time2);
+    //variables
+    float rz(rlev);  
+    float scl;
   data:
     time2=1.,2.;
     rz=0,5000,17000;
@@ -149,19 +152,22 @@ netcdf in_grp {
     int one_dmn_rec_var(time);
   one_dmn_rec_var:units = "second";
   data:
-    one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
-    
+    one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;  
+  //
+  //g4g1
+  //
   group: g4g1 { 
     group: g4g1g1 {  
       dimensions:
-	time3=unlimited;
-	time4=unlimited;
+      time3=unlimited;
+      time4=unlimited;
       variables:
-	double time3(time3);
-	double time4(time4);
+      // Coordinate variables (dim here )
+      double time3(time3);
+      double time4(time4);
       data:
-	time3=1.,2.,3.;
-	time4=1.,2.,3.,4.;
+      time3=1.,2.,3.;
+      time4=1.,2.,3.,4.;
       } // end g4g1g1
     } // end g4g1
   } // end g4
@@ -173,6 +179,7 @@ netcdf in_grp {
   dimensions:
     rlev=3;
   variables:
+    // Coordinate variables (dim here )
     float rlev(rlev);
   data:
     rlev=10.,5.,1.;
@@ -181,8 +188,7 @@ netcdf in_grp {
       float rz(rlev);
     data:
       rz=1,2,3;
-    } //end g6g1
-    
+    } //end g6g1 
   } // end g5
   
   //
@@ -210,6 +216,7 @@ netcdf in_grp {
   dimensions:
     gds_crd=8;
   variables:
+    // Coordinate variables (dim here )
     float gds_crd(gds_crd);
   gds_crd:units = "degree";
   gds_crd:coordinates = "lat_gds lon_gds";
@@ -233,10 +240,11 @@ netcdf in_grp {
   dimensions:
     lon=2,lev=3,vrt_nbr=2;
   variables:
+   // Coordinate variables (dim here )
     float lev(lev);
     float lon(lon);
-  lev:units = "hybrid_sigma_pressure";
-  lev:bounds = "ilev";
+    lev:units = "hybrid_sigma_pressure";
+    lev:bounds = "ilev";
     float vrt_nbr(vrt_nbr);
     float ilev(lev,vrt_nbr);
   data:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.408 2013-01-30 11:44:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.409 2013-01-31 00:12:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -605,44 +605,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   (void)nco_free(grp_ids); 
   return rcd;
 } /* end nco_grp_itr() */
-
-void                          
-nco_prt_grp_trv /* [fnc] Print table  */
-(const int nc_id, /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
-{
-  int fl_fmt; /* [enm] netCDF file format */
-  int grp_id; /* [ID]  Group ID */
-  int nbr_att; /* [nbr] Number of attributes */
-  int nbr_dmn; /* [nbr] Number of dimensions */
-  int nbr_var; /* [nbr] Number of variables */
-
-  (void)nco_inq_format(nc_id,&fl_fmt);
-
-  (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].typ == nco_obj_typ_grp){
-      trv_sct trv=trv_tbl->lst[uidx];            
-      (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d record dimensions, %d attributes, %d variables\n",trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_rec,trv.nbr_att,trv.nbr_var); 
-
-      /* For classic files, the above is printed, and then return */
-      if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
-
-      /* Print dimensions for group */
-      (void)nco_prt_dmn(nc_id,trv.nm_fll);
-
-#ifdef NCO_SANITY_CHECK
-      /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-
-      /* Obtain number of dimensions for group */
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-
-    } /* end nco_obj_typ_grp */
-  } /* end uidx  */
-} /* end nco_prt_grp_trv() */
 
 void
 nco_lmt_evl_trv                       /* [fnc] Parse user-specified limits into hyperslab specifications */
@@ -2432,3 +2394,78 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
 
   } /* end dnm_idx dimensions */
 } /* end nco_prt_dmn() */
+
+void                          
+nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get_grp_info  */
+(const int nc_id, /* I [ID] File ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+{
+  int fl_fmt; /* [enm] netCDF file format */
+  int grp_id; /* [ID]  Group ID */
+  int nbr_att; /* [nbr] Number of attributes */
+  int nbr_dmn; /* [nbr] Number of dimensions */
+  int nbr_var; /* [nbr] Number of variables */
+
+
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].typ == nco_obj_typ_grp){
+      trv_sct trv=trv_tbl->lst[uidx];            
+      (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d record dimensions, %d attributes, %d variables\n",
+        trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_rec,trv.nbr_att,trv.nbr_var); 
+
+      /* For classic files, the above is printed, and then return */
+      if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
+
+      /* Print dimensions for group */
+      (void)nco_prt_dmn(nc_id,trv.nm_fll);
+
+#ifdef NCO_SANITY_CHECK
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
+
+      /* Obtain number of dimensions for group */
+      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
+      assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
+#endif
+
+    } /* end nco_obj_typ_grp */
+  } /* end uidx  */
+
+
+  (void)fprintf(stdout,"\n");
+  (void)fprintf(stderr,"%s: INFO reports dimension information: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
+  for(unsigned uidx=0;uidx<trv_tbl->nbr_dmn;uidx++){
+    dmn_fll_sct trv=trv_tbl->lst_dmn[uidx]; 
+
+    /* Dimension name first */
+    (void)fprintf(stdout,"%s: ",trv.nm_fll);
+
+    /* Filter output */
+    if (trv.is_rec_dmn) (void)fprintf(stdout," record dimension (%li)",trv.sz);
+    else (void)fprintf(stdout," dimension (%li)",trv.sz);
+
+    /* Filter output */
+    if (trv.has_crd_var) (void)fprintf(stdout," coordinate variable");
+
+    /* Terminate line */
+    (void)fprintf(stdout,"\n");
+
+    /* For classic files, the above is printed, and then return */
+    if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
+
+  } /* end uidx  */
+
+
+#ifdef NCO_SANITY_CHECK
+  int nbr_dmn_fl; /* [nbr] Number of dimensions in file */
+  int nbr_rec_fl; /* [nbr] Number of record dimensions in file */
+
+  /* Get number of dimensions in file */
+  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,(int *)NULL,&nbr_rec_fl,(int *)NULL,trv_tbl);
+  assert(trv_tbl->nbr_dmn == (unsigned int)nbr_dmn_fl);
+#endif
+
+} /* end nco_prt_grp_trv() */
