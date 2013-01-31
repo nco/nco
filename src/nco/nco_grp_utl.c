@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.411 2013-01-31 05:52:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.412 2013-01-31 10:10:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -705,21 +705,21 @@ nco_aux_grp_id                        /* [fnc] Return group ID from variable ful
  const char * const var_nm_fll)       /* I [sng] Full variable name to find */
 {
   char *grp_nm_fll; /* Group path */
-  char *pch; /* Pointer to character in string */
-
-  int psn; /* Position of character */
   int grp_id; /* Group ID */
   int lng_fll; /* Length of fully qualified group where variable resides */
+
+  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
+  int pos_chr; /* [nbr] Position of character '/' in in full name */
 
   /* Get group full name */
   lng_fll=strlen(var_nm_fll);
   grp_nm_fll=(char *)nco_malloc((lng_fll+1L)*sizeof(char));
   strcpy(grp_nm_fll,var_nm_fll);
   /* Find last occurence of '/' */
-  pch=strrchr(grp_nm_fll,'/');
+  ptr_chr=strrchr(grp_nm_fll,'/');
   /* Trim variable name */
-  psn=pch-grp_nm_fll;
-  grp_nm_fll[psn]='\0';
+  pos_chr=ptr_chr-grp_nm_fll;
+  grp_nm_fll[pos_chr]='\0';
 
   /* Obtain group ID from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
@@ -1385,6 +1385,9 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
 
+  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
+  int pos_chr; /* [nbr] Position of character '/' in in full name */
+
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_cf; /* [nbr] Number of coordinates specified in "bounds" or "coordinates" attribute */
@@ -1437,16 +1440,14 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
           if(trv_tbl_fnd_var_nm(cf_lst_var,trv_tbl)){
             char *cf_nm_fll;
             char *grp_nm_fll; /* Fully qualified group where variable resides */
-            char *pch; /* Pointer to last occurrence of character */
-            int psn; /* Position of character */
             int var_nm_lng; /* Length of fully qualified group where variable resides */
 
             var_nm_lng=strlen(var_nm_fll);
             grp_nm_fll=(char *)nco_malloc((var_nm_lng+1L)*sizeof(char));
             strcpy(grp_nm_fll,var_nm_fll);
-            pch=strrchr(grp_nm_fll,'/');
-            psn=pch-grp_nm_fll;
-            grp_nm_fll[psn]='\0';
+            ptr_chr=strrchr(grp_nm_fll,'/');
+            pos_chr=ptr_chr-grp_nm_fll;
+            grp_nm_fll[pos_chr]='\0';
 
             /* Construct full variable name */
             cf_nm_fll=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(cf_lst_var)+2L);
@@ -1498,6 +1499,9 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
   const char sls_chr='/'; /* [chr] Slash character */
   const char sls_sng[]="/"; /* [sng] Slash string */
 
+  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
+  int pos_chr; /* [nbr] Position of character '/' in in full name */
+
   const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
   int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
@@ -1537,8 +1541,6 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
     /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
     if(!strcmp(dmn_nm,dmn_var_nm)){
       char *dmn_nm_fll;
-      char *pch; /* Pointer to character in string */
-      int psn; /* Position of character */
 
       if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Coordinate variable to find %s\n",prg_nm_get(),dmn_var_nm);
 
@@ -1553,9 +1555,9 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
       Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
 
       /* Find last occurence of '/' */
-      pch=strrchr(dmn_nm_fll,sls_chr);
-      psn=pch-dmn_nm_fll;
-      while(pch){
+      ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+      pos_chr=ptr_chr-dmn_nm_fll;
+      while(ptr_chr){
         /* If variable is on list, mark it for extraction */
         if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
@@ -1579,17 +1581,17 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
           break;
 
         } /* endif */
-        dmn_nm_fll[psn]='\0';
-        pch=strrchr(dmn_nm_fll,sls_chr);
-        if(pch){
-          psn=pch-dmn_nm_fll;
-          dmn_nm_fll[psn]='\0';
+        dmn_nm_fll[pos_chr]='\0';
+        ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+        if(ptr_chr){
+          pos_chr=ptr_chr-dmn_nm_fll;
+          dmn_nm_fll[pos_chr]='\0';
           /* Re-add variable name to shortened path */
           if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
           strcat(dmn_nm_fll,dmn_nm);
-          pch=strrchr(dmn_nm_fll,sls_chr);
-          psn=pch-dmn_nm_fll;
-        } /* !pch */
+          ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+          pos_chr=ptr_chr-dmn_nm_fll;
+        } /* !ptr_chr */
       } /* end while */
 
       /* Free allocated */
@@ -2192,6 +2194,9 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
   const char sls_chr='/';      /* [chr] Slash character */
   const char sls_sng[]="/";    /* [sng] Slash string */
 
+  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
+  int pos_chr; /* [nbr] Position of character '/' in in full name */
+
   /* Inititialize output value */
   *nbr_dmn=0;
 
@@ -2244,9 +2249,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
 
             /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
             if(!strcmp(dmn_nm,dmn_var_nm)){
-              char *pch; /* [sng] Pointer to character in string */
-              int psn;   /* [nbr] Position of character */
-
+              
               if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Coordinate variable to find %s\n",prg_nm_get(),dmn_var_nm);
 
               /* Construct full name */
@@ -2260,9 +2263,9 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
               Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
 
               /* Find last occurence of '/' */
-              pch=strrchr(dmn_nm_fll,sls_chr);
-              psn=pch-dmn_nm_fll;
-              while(pch){
+              ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+              pos_chr=ptr_chr-dmn_nm_fll;
+              while(ptr_chr){
                 /* Search table for existing "dmn_nm_fll" */
                 if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
                   if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
@@ -2295,17 +2298,17 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
                   break;
 
                 } /* endif */
-                dmn_nm_fll[psn]='\0';
-                pch=strrchr(dmn_nm_fll,sls_chr);
-                if(pch){
-                  psn=pch-dmn_nm_fll;
-                  dmn_nm_fll[psn]='\0';
+                dmn_nm_fll[pos_chr]='\0';
+                ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+                if(ptr_chr){
+                  pos_chr=ptr_chr-dmn_nm_fll;
+                  dmn_nm_fll[pos_chr]='\0';
                   /* Re-add variable name to shortened path */
                   if(strcmp(trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
                   strcat(dmn_nm_fll,dmn_nm);
-                  pch=strrchr(dmn_nm_fll,sls_chr);
-                  psn=pch-dmn_nm_fll;
-                } /* !pch */
+                  ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+                  pos_chr=ptr_chr-dmn_nm_fll;
+                } /* !ptr_chr */
               } /* end while */
 
               /* Free allocated */
@@ -2494,7 +2497,7 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
 (const int nc_id, /* I [ID] File ID */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  /* Purpose: a netCDF4 variable can have its dimensions located anywhere in the file/group tree
+  /* Purpose: a netCDF4 variable can have its dimensions located anywhere *in the group path*
   Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
   where we know the full picture of the file tree
   */
@@ -2512,6 +2515,10 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
   int var_id;                  /* [id] ID of variable  */
   int grp_id;                  /* [id] ID of group */
 
+  char *ptr_chr;               /* [sng] Pointer to character '/' in full name */
+  int pos_chr;                 /* [nbr] Position of character '/' in in full name */
+
+  /* Loop *object* traversal table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
       trv_sct trv=trv_tbl->lst[uidx];  
@@ -2553,28 +2560,99 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
         4) Use case example: /g5/g5g1/rz variable and rz(rlev), where dimension "rlev" resides in /g5/rlev 
         */
 
-        /* Loop over dimensions of group and parents  */
+        /* Loop over dimensions of group *and* parents */
         for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_grp;dmn_idx_grp++){
 
           /* Get dimension name for group */
           (void)nco_inq_dimname(grp_id,dmn_id_grp[dmn_idx_grp],dmn_nm_grp);
 
-          /* Does dimension name for variable match dimension name for group ? */ 
+          /* Does dimension name for *variable* match dimension name for *group* ? */ 
           /* NB: Key is name, not pair name,lenght */
           if(strcmp(dmn_nm_var,dmn_nm_grp) == 0){
 
+            /* Now...we know that *somewhere* for all this group dimensions one is the real deal 
+            Attempt to construct a *possible* full dimension name and compare with the table dimension list
+            until a full name match is found ... */
 
+            /* Was the dimension found?: handy in all this *tortured* logic; needs revision, but works ! */
+            nco_bool dmn_was_found=False;
 
+            /* Construct *possible* dimension full name */
+            char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm_var)+2L);
+            strcpy(dmn_nm_fll,trv.grp_nm_fll);
+            if(strcmp(trv.grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+            strcat(dmn_nm_fll,dmn_nm_var);
 
+            /* Brute-force approach to find valid "dmn_nm_fll":
+            Start at dmn_nm_fll/dmn_nm_var and build all possible paths with dmn_nm_var. 
+            Use cases are:
+            Real life output of: ncks --get_grp_info  ~/nco/data/in_grp.nc
+            /g1/lon: 1 dimensions: /lon : 
+            /g5/g5g1/rz: 1 dimensions: /g5/rlev : 
+            /g10/three_dmn_rec_var: 3 dimensions: /time : /lat : /lon :           
+            */
 
+            /* Find last occurence of '/' */
+            ptr_chr=strrchr(dmn_nm_fll,'/');
+            pos_chr=ptr_chr-dmn_nm_fll;
 
-            /* Exit group loop */ 
-            break;
-          } /* end match name  */
-        } /* end loop over dimensions of group */
-      } /* end loop over dimensions of variable */
-    } /* end nco_obj_typ_var */
-  } /* end uidx  */
+            /* While there is a possible dimension path */
+            while(ptr_chr && !dmn_was_found){
+
+              /* Search table dimension list */
+              int nbr_dmn_lst=trv_tbl->nbr_dmn;
+              for(int dmn_lst_idx=0;dmn_lst_idx<nbr_dmn_lst;dmn_lst_idx++){
+                dmn_fll_sct dmn_fll=trv_tbl->lst_dmn[dmn_lst_idx];  
+
+                /* Does the *possible* dimension full name match a *real* dimension full name ? */
+                if(strcmp(dmn_fll.nm_fll,dmn_nm_fll) == 0){
+
+                  /* Store full dimension name in "var_dmn_sct" member at index "dmn_idx_var" */
+                  trv_tbl->lst[uidx].var_dmn_fll.dmn_nm_fll[dmn_idx_var]=strdup(dmn_nm_fll);
+
+                  /* Increment the number of dimensions for *variable* in table */
+                  trv_tbl->lst[uidx].var_dmn_fll.nbr_dmn++;
+
+                  if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s FULL dimension name %s\n",prg_nm_get(),trv.nm_fll,dmn_nm_fll);
+
+                  /* Free allocated */
+                  dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+
+                  /* Found */
+                  dmn_was_found=True;
+
+                  /* Exit table dimension list loop */
+                  break;
+                } /* End Does the *possible* dimension full name match a *real* dimension full name */
+              } /* End Search table dimension list loop */
+
+              /* Keep on trying... Re-add dimension name to shortened path */ 
+
+              /* If a valid (pointer) name here, then the constructed name was not found */
+              if(dmn_nm_fll) {
+                dmn_nm_fll[pos_chr]='\0';
+                ptr_chr=strrchr(dmn_nm_fll,'/');
+                if(ptr_chr){
+                  pos_chr=ptr_chr-dmn_nm_fll;
+                  dmn_nm_fll[pos_chr]='\0';
+                  if(strcmp(dmn_nm_fll,"/")) strcat(dmn_nm_fll,"/");
+                  strcat(dmn_nm_fll,dmn_nm_var);
+                  ptr_chr=strrchr(dmn_nm_fll,'/');
+                  pos_chr=ptr_chr-dmn_nm_fll;
+                } /* !ptr_chr */
+              } /* If dmn_nm_fll */
+            } /* End While there is a possible dimension path */ 
+
+            /* Free allocated (this should never happen here; a dimension must always be found) */
+            if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+
+          } /* End Does dimension name for variable match dimension name for group ?  */
+        } /* End Loop over dimensions of group *and* parents */
+      } /* End Loop over dimensions of variable */
+    } /* End object is variable nco_obj_typ_var */
+  } /* End Loop *object* traversal table  */
+
+  /* Phew... Phew ... Phew... */
 
 } /* end nco_blb_dmn_trv() */
 
