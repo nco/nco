@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.412 2013-01-31 10:10:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.413 2013-01-31 18:51:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2497,7 +2497,7 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
 (const int nc_id, /* I [ID] File ID */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
-  /* Purpose: a netCDF4 variable can have its dimensions located anywhere *in the group path*
+  /* Purpose: a netCDF4 variable can have its dimensions located anywhere below *in the group path*
   Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
   where we know the full picture of the file tree
   */
@@ -2535,7 +2535,7 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
-      /* Obtain dimension IDs. NB: go to parents */
+      /* Obtain dimension IDs for group. NB: go to parents */
       (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
 
       /* Loop over dimensions of variable */
@@ -2543,11 +2543,6 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
 
         /* Get dimension name */
         (void)nco_inq_dimname(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var);
-
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s reports dimension %s\n",prg_nm_get(),trv.nm_fll,dmn_nm_var);
-        } /* endif dbg */
-
 
         /* Now the exciting part; we have to locate where "dmn_var_nm" is located
         1) Dimensions are defined in *groups*: find group where variable resides
@@ -2600,8 +2595,7 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
             while(ptr_chr && !dmn_was_found){
 
               /* Search table dimension list */
-              int nbr_dmn_lst=trv_tbl->nbr_dmn;
-              for(int dmn_lst_idx=0;dmn_lst_idx<nbr_dmn_lst;dmn_lst_idx++){
+              for(int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
                 dmn_fll_sct dmn_fll=trv_tbl->lst_dmn[dmn_lst_idx];  
 
                 /* Does the *possible* dimension full name match a *real* dimension full name ? */
@@ -2612,8 +2606,6 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
 
                   /* Increment the number of dimensions for *variable* in table */
                   trv_tbl->lst[uidx].var_dmn_fll.nbr_dmn++;
-
-                  if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s FULL dimension name %s\n",prg_nm_get(),trv.nm_fll,dmn_nm_fll);
 
                   /* Free allocated */
                   dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -2651,8 +2643,6 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
       } /* End Loop over dimensions of variable */
     } /* End object is variable nco_obj_typ_var */
   } /* End Loop *object* traversal table  */
-
-  /* Phew... Phew ... Phew... */
 
 } /* end nco_blb_dmn_trv() */
 

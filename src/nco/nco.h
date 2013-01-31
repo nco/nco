@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.222 2013-01-31 05:52:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.223 2013-01-31 18:51:10 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -608,7 +608,7 @@ extern "C" {
   } gpe_sct;
 
   /* structure that identifies where dimensions are located for a variable
-     a netCDF4 variable can have its dimensions located anywhere *in the group path*
+     a netCDF4 variable can have its dimensions located anywhere below *in the group path*
      Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
      where we know the full picture of the file tree
   */
