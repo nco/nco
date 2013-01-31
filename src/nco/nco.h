@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.223 2013-01-31 18:51:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.224 2013-01-31 22:11:17 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -677,17 +677,18 @@ extern "C" {
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
     size_t sz; /* [nbr] Size of dimension */
+    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
   } dmn_fll_sct; 
  
   /* Traversal table structure
      A table grows dinamically when a new element is inserted that reaches the current allocated size.
-     Stores: 
-     1) All objects/nodes in file tree 
-     2) All dimensions in file tree (Different list from list of objects, dimensions can be shared for objects) */
+     Stores 2 lists (arrays): 
+     1) "lst": All objects/nodes in file tree 
+     2) "lst_dmn": All dimensions in file tree (Different list from list of objects, dimensions can be shared for objects) */
   typedef struct{
-    unsigned int sz;        /* [nbr] Allocated size of trv_sct array */
-    unsigned int nbr;       /* [nbr] Number of current trv_sct elements */
     trv_sct *lst;           /* [sct] Array of trv_sct */
+    unsigned int sz;        /* [nbr] Allocated size of trv_sct array */
+    unsigned int nbr;       /* [nbr] Number of current trv_sct elements */   
     dmn_fll_sct *lst_dmn;   /* [sct] Array of dmn_fll_sct */
     unsigned int sz_dmn;    /* [nbr] Allocated size of dmn_fll_sct */
     unsigned int nbr_dmn;   /* [nbr] Number of current dmn_fll_sct elements */

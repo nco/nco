@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.413 2013-01-31 18:51:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.414 2013-01-31 22:11:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2015,12 +2015,8 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 { 
-  int fl_fmt; /* [nbr] File format */
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
-
-  /* Get file format */
-  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
