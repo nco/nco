@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.201 2013-02-01 01:01:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.202 2013-02-01 19:46:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -291,6 +291,15 @@ void
 nco_bld_dmn_trv                       /* [fnc] Build dimension info for all variables */
 (const int nc_id,                     /* I [ID] File ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_bld_lmt_trv                       /* [fnc] Parse user-specified limits into hyperslab specifications */
+(int nc_id,                           /* I [id] netCDF file ID */
+ int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
 
 
 

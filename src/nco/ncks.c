@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.570 2013-01-31 22:11:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.571 2013-02-01 19:46:58 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.570 2013-01-31 22:11:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.570 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.571 2013-02-01 19:46:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.571 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -581,6 +581,9 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
+  /* Initialize traversal table */
+  (void)trv_tbl_init(&trv_tbl);
+
   /* Get program info for regressions tests */
   if(GET_PRG_INFO) nco_get_prg_info();
 
@@ -601,12 +604,14 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Construct traversal table */
-  trv_tbl_init(&trv_tbl);
+  /* Construct traversal table objects (groups,variables) */
   rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
 
-  /* Extra construction of traversal table (dimensions) */
+  /* Construct traversal table dimensions */
   (void)nco_bld_dmn_trv(in_id,trv_tbl);
+
+  /* Add dimension limits to traversal table */
+  if(lmt_nbr) (void)nco_bld_lmt_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
