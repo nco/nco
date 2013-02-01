@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.316 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.317 2013-02-01 05:56:37 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -127,6 +127,7 @@ main(int argc,char **argv)
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool REC_APN=False; /* [flg] Append records directly to output file */
   nco_bool REC_FRS_GRP=False; /* [flg] Record is first in current group */
   nco_bool REC_LST_DSR=False; /* [flg] Record is last desired from all input files */
   nco_bool REC_LST_GRP=False; /* [flg] Record is last in current group */
@@ -156,8 +157,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.316 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.316 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.317 2013-02-01 05:56:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.317 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -261,10 +262,8 @@ main(int argc,char **argv)
       {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
       {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
       {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
-      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"rec_apn",no_argument,0,0}, /* [flg] Append records directly to output file */
+      {"record_append",no_argument,0,0}, /* [flg] Append records directly to output file */
       {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
       {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
       {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
@@ -398,6 +397,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"rec_apn") || !strcmp(opt_crr,"record_append")){
+	REC_APN=True; /* [flg] Append records directly to output file */
+	FORCE_APPEND=True;
+      } /* endif "rec_apn" */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
@@ -419,7 +422,7 @@ main(int argc,char **argv)
       fl_out_fmt=NC_FORMAT_64BIT;
       break;
     case 'A': /* Toggle FORCE_APPEND */
-      FORCE_APPEND=!FORCE_APPEND;
+      FORCE_APPEND=True;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
       EXTRACT_ASSOCIATED_COORDINATES=False;
@@ -645,7 +648,7 @@ main(int argc,char **argv)
 	if(lmt_rec->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",prg_nm_get(),lmt_rec->nm,prg_nm_get());
 #endif /* !ENABLE_UDUNITS */
       }else{ /* endif record coordinate exists */
-	/* Record dimension, but not record coordinate, exists, which is fine. Reset return code. */
+	/* Record dimension but not record coordinate exists. This is fine. Reset return code. */
 	rcd=NC_NOERR;
       } /* endif record coordinate exists */
     } /* endif ncra, ncrcat */
@@ -706,6 +709,14 @@ main(int argc,char **argv)
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+
+  if(REC_APN){
+    /* Append records directly to output file */
+    int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
+    nco_inq_dimid(out_id,lmt_rec->nm,&rec_dmn_out_id);
+    nco_inq_dimlen(out_id,rec_dmn_out_id,&idx_rec_out);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Appending records to existing output file. First record from new input will be output record %li\n",prg_nm_get(),idx_rec_out);
+  } /* !REC_APN */
 
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);

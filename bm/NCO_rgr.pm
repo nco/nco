@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.204 2013-01-28 20:49:50 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.205 2013-02-01 05:56:34 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1762,6 +1762,15 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+    $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[2]="ncks -C -H -s '%d' -d time,19 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="Append records to existing file without copying original";
+    $tst_cmd[3]="10";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+	
 #    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
     
 ####################
@@ -1947,6 +1956,15 @@ if(0){ # #31, #32, #33, #34, #35 depend  on --get_grp_info or --get_file_info
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
+    $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[2]="ncks -C -H -s '%d' -d time,10 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="Append records to existing file without copying original";
+    $tst_cmd[3]="6";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+	
 #print "paused - hit return to continue"; my $wait=<STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;
     

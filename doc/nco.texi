@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.756 2013-01-28 02:44:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.757 2013-02-01 05:56:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6782,7 +6782,7 @@ put into maintenance mode in November, 2006.
 This documentation refers to @command{ncap2}, which has a superset of
 the @command{ncap} functionality. 
 Eventually @command{ncap} will be deprecated in favor @command{ncap2}.
-@command{ncap2} may be renamed @command{ncap} in 2012.}.
+@command{ncap2} may be renamed @command{ncap} in 2013.}.
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}

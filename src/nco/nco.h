@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.225 2013-02-01 04:00:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.226 2013-02-01 05:56:36 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -352,7 +352,7 @@ extern "C" {
     nco_dbg_vec,   /* 8 [enm] Entire vectors */
     nco_dbg_vrb,   /* 9 [enm] Verbose, print everything possible */
     nco_dbg_old,   /* 10 [enm] Old debugging blocks not used anymore */
-    nco_dbg_dev,   /* 11 [enm] NCO developer information; only useful for debugging  */
+    nco_dbg_dev,   /* 11 [enm] NCO developer information; only useful for debugging */
     nco_dbg_nbr    /* 12 [enm] Number of debugging types (equals last enumerated value) */
   }; /* end nco_dbg_typ_enm */
 
@@ -372,7 +372,7 @@ extern "C" {
     nco_op_sqrt, /* [enm] Square root of mean */
     nco_op_rms, /* [enm] Root-mean-square (normalized by N) */
     nco_op_rmssdn, /* [enm] Root-mean square normalized by N-1 */
-    nco_op_nil /* [enm] Nil or undefined operation type  */
+    nco_op_nil /* [enm] Nil or undefined operation type */
   }; /* end nco_op_typ enum */
 
   enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
@@ -486,7 +486,7 @@ extern "C" {
     nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
     nco_bool is_usr_spc_max; /* True if user-specified, else False */
     nco_bool is_usr_spc_min; /* True if user-specified, else False */
-    nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store an enum of the calendar type attribute */
+    nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store enum of calendar-type attribute */
   } lmt_sct;
 
   /* Container holding all limit structures indexible by dimension */
@@ -607,11 +607,7 @@ extern "C" {
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
 
-  /* structure that identifies where dimensions are located for a variable
-     a netCDF4 variable can have its dimensions located anywhere below *in the group path*
-     Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
-     where we know the full picture of the file tree
-  */
+  /* Structure containing definition groups of all dimensions */
   typedef struct{ 
     int nbr_dmn; /* [nbr] Number of dimensions for variable */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions (size is nbr_dmn) */
@@ -627,7 +623,7 @@ extern "C" {
      free() each pointer member of trv_sct structure in trv_tbl_free() */
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
-    var_dmn_sct var_dmn_fll; /* [sct] Array with all full dimension names for variable(bit of redundancy here for nbr_dmn) */
+    var_dmn_sct var_dmn_fll; /* [sct] Array of full dimension names for variable (nbr_dmn is redundant) */
     size_t nm_fll_lng; /* [sng] Length of full name */
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
@@ -656,34 +652,18 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
-  /* netCDF4 Dimension structure 
-  From The NetCDF C Interface Guide/The NetCDF Users Guide:
-  A netCDF dimension has a name and a length.
-  Dimensions are visible in their groups, and all child groups.
-  Record Dimensions:
-  A dimension length is an arbitrary positive integer, except that one dimension in a classic
-  or 64-bit offset netCDF dataset can have the length UNLIMITED. In a netCDF-4 dataset,
-  any number of unlimited dimensions can be used.
-  Such a dimension is called the unlimited dimension or the record dimension.
-  Coordinate Variables:
-  It is legal for a variable to have the same name as a dimension. Such variables have no
-  special meaning to the netCDF library. A variable with the same name as a dimension is called a coordinate variable. 
-  It typically defines a physical coordinate corresponding to that dimension.
-  */
   typedef struct{ 
-    char *grp_nm_fll; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
+    char *grp_nm_fll; /* [sng] Full group name where dimension was defined */
+    char *nm_fll; /* [sng] Dimension fully qualified name (path) */
+    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     nco_bool has_crd_var; /* [flg] Does it have an associated variable? (coordinate variable) */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
-    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-    char *nm_fll; /* [sng] Dimension fully qualified name (path) */
     size_t sz; /* [nbr] Size of dimension */
   } dmn_fll_sct; 
  
-  /* Traversal table structure
-     A table grows dinamically when a new element is inserted that reaches the current allocated size.
-     Stores 2 lists (arrays): 
-     1) "lst": All objects/nodes in file tree 
-     2) "lst_dmn": All dimensions in file tree (Different list from list of objects, dimensions can be shared for objects) */
+  /* Traversal table structure contains two lists
+     1) lst: All objects (variables and groups) in file tree 
+     2) lst_dmn: All dimensions in file tree */
   typedef struct{
     trv_sct *lst;           /* [sct] Array of trv_sct */
     unsigned int sz;        /* [nbr] Allocated size of trv_sct array */

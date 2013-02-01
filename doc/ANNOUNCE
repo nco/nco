@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.537 2013-01-29 18:07:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.538 2013-02-01 05:56:36 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -21,7 +21,29 @@ Charlie
 
 NEW FEATURES:
 
-A. ncks prints information on multiple root-level record dimensions
+A. ncra and ncrcat accept a new switch --record_append that
+   significantly speeds concatentating files onto existing files.
+   Previously to preserve the existing contents of fl1.nc, and add to
+   them the new records contained in fl2.nc, and place the output in a
+   third file, fl3.nc (which could safely be named fl2.nc), one did 
+   ncrcat -O fl1.nc fl2.nc fl3.nc
+   Under the hood this operation copies all of the information
+   in fl1.nc and fl2.nc. Twice. This is expensive for large files.
+   The new --record_append switch causes all records in fl1.nc to be
+   appended to the end of the corresponding records in fl2.nc:
+   ncrcat --rec_apn fl1.nc fl2.nc
+   The contents of fl2.nc are completely preserved, and only
+   values in fl1.nc are copied. --rec_apn automatically puts NCO into
+   append mode, so specifying -A is redundant, and simultaneously
+   specifying overwrite mode with -O causes an error. 
+   By default, NCO works in an intermediate temporary file.
+   Power users may combine --rec_apn with --no_tmp_fl:
+   ncrcat --rec_apn --no_tmp_fl fl1.nc fl2.nc
+   This avoids creating an intermediate file, and copies only the
+   minimal amount of data (i.e., all of fl1.nc). Hence, it is fast.
+   We recommend users first read the safety trade-offs involved:
+   http://nco.sf.net/nco.html#no_tmp_fl
+   http://nco.sf.net/nco.html#rec_apn
 
 BUG FIXES:
 

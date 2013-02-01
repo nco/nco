@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.205 2013-01-26 08:15:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.206 2013-02-01 05:56:37 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1329,7 +1329,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input
-     In accord with netCDF philosophy, open temporary file named according
+     In accord with conservative NCO/netCDF philosophy, normally open temporary file named according 
      to fl_out and process ID so that errors cannot infect intended output file.
      Calling routine has responsibility to close and free fl_out_tmp */
 
@@ -1394,13 +1394,13 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
-  if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: %s reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),fnc_nm,(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
+  if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: %s reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),fnc_nm,(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
 
   /* Free temporary memory */
   pid_sng=(char *)nco_free(pid_sng);
 
 #ifndef _MSC_VER
-  if(dbg_lvl_get() == 8){
+  if(dbg_lvl_get() == nco_dbg_vec){
   /* Use built-in system routines to generate temporary filename
      This allows file to be built in fast directory like /tmp rather than local
      directory which could be a slow, NFS-mounted directories like /fs/cgd
@@ -1488,7 +1488,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
 
     if(FORCE_APPEND){
-      /* Incur expense of copying current file to temporary file */
+      /* Incur expense of copying current file to temporary file
+	 This is a no-op when files are identical */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
       rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
@@ -1520,7 +1521,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 	if(usr_rpl[usr_rpl_lng-1] == '\n')
 	    usr_rpl[usr_rpl_lng-1]='\0';
 
-      if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: INFO %s reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),fnc_nm,(rcd_fgets == NULL) ? "NULL" : usr_rpl);
+      if(dbg_lvl_get() == nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),fnc_nm,(rcd_fgets == NULL) ? "NULL" : usr_rpl);
     } /* end while user reply is not yet "o", "a", or "e" */
 
     /* Ensure one case statement for each exit condition in preceding while loop */
