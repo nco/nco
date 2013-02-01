@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.757 2013-02-01 05:56:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.758 2013-02-01 19:37:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2206,6 +2206,7 @@ feature is automatic and cannot be controlled by the user.
 * C and Fortran Index Conventions::  
 * Hyperslabs::                  
 * Stride::                      
+* Record Appending::            
 * Duration::                    
 * Multislabs::                  
 * Wrapped Coordinates::         
@@ -4182,7 +4183,7 @@ This option may be specified more than once in a single command
 <a name="srd"></a> <!-- http://nco.sf.net/nco.html#srd -->
 <a name="stride"></a> <!-- http://nco.sf.net/nco.html#stride -->
 @end html
-@node Stride, Duration, Hyperslabs, Common features
+@node Stride, Record Appending, Hyperslabs, Common features
 @section Stride 
 @cindex stride
 @cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
@@ -4269,10 +4270,78 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @end example
 
 @html
+<a name="rec_apn"></a> <!-- http://nco.sf.net/nco.html#rec_apn -->
+<a name="record_append"></a> <!-- http://nco.sf.net/nco.html#record_append -->
+@end html
+@node Record Appending, Duration, Stride, Common features
+@section Record Appending
+@cindex record append
+@cindex @code{--rec_apn}
+@cindex @code{--record_append}
+@cartouche
+Availability: @command{ncra}, @command{ncrcat}@* 
+Short options: None@*
+Long options: 
+@samp{--rec_apn}, @samp{--record_append}@*
+@end cartouche
+As of version 4.2.6 (February, 2013), @acronym{NCO} allows both
+Multi-File, Multi-Record operators, @command{ncra} and @command{ncrcat},
+to append their output directly to the end of an existing file.
+This feature useful when a target file is to be augmented, rather than
+constructed from scratch. 
+For example, when a timeseries is concatenated from input data that
+becomes available in stages rather than all at once.
+This switch enables an optimization that significantly speeds writing
+in such cases.
+
+Consider the use case where wants to preserve the contents of
+@file{fl_1.nc}, and add to them the new records contained in
+@file{fl_2.nc}. 
+Previously the output had to be placed in a third file, @file{fl_3.nc}
+(which could safely be named @file{fl_2.nc}), via
+@example
+ncrcat -O fl_1.nc fl_2.nc fl_3.nc
+@end example
+Under the hood this operation copies all of the information in
+@file{fl_1.nc} and @file{fl_2.nc} not once but twice.
+The first copy is performed through the netCDF interface, as all
+data from @file{fl_1.nc} and @file{fl_2.nc} are extracted and placed in
+the output file.
+The second copy occurs (usually much) more quickly as the (by default)
+temporary output file is copied (sometimes a quick re-link suffices) to
+the final output file (@pxref{Temporary Output Files}).
+All this copying is expensive for large files. 
+
+The new @samp{--record_append} switch causes all records in
+@file{fl_1.nc} to be appended to the end of the corresponding records in
+@file{fl_2.nc}: 
+@example
+ncrcat --rec_apn fl_1.nc fl_2.nc
+@end example
+The contents of @file{fl_2.nc} are completely preserved, and only
+values in @file{fl_1.nc} are copied. 
+This switch avoids the necessity of copying all of @file{fl_2.nc} 
+through the netCDF interface to a new output file.
+The @samp{--rec_apn} switch automatically puts @acronym{NCO} into 
+append mode (@pxref{Appending Variables}), so specifying @samp{-A} is
+redundant, and simultaneously specifying overwrite mode with @samp{-O}
+causes an error.  
+By default, NCO works in an intermediate temporary file.
+Power users may combine @samp{--rec_apn} with the @samp{--no_tmp_fl}
+switch (@pxref{Temporary Output Files}):
+@example
+ncrcat --rec_apn --no_tmp_fl fl_1.nc fl_2.nc
+@end example
+This avoids creating an intermediate file, and copies only the
+minimal amount of data (i.e., all of @file{fl_1.nc}). 
+Hence, it is fast.
+We recommend users try to understand the safety trade-offs involved. 
+
+@html
 <a name="drn"></a> <!-- http://nco.sf.net/nco.html#drn -->
 <a name="mro"></a> <!-- http://nco.sf.net/nco.html#mro -->
 @end html
-@node Duration, Multislabs, Stride, Common features
+@node Duration, Multislabs, Record Appending, Common features
 @section Duration
 @cindex duration
 @cindex sub-cycle
@@ -4296,8 +4365,8 @@ and operate on multiple groups of records.
 These groups may be physically connected to @emph{sub-cycles} of a
 periodic nature, e.g., seasons of a year.
 Or they may be thought of as groups of a specifed duration.
-The feature is so new that I'm unsure what terminology is best.
-For now, I call this the @dfn{duration feature}, sometimes abbreviated DRN.
+The feature and the terminology to describe it are new.
+For now, we call this the @dfn{duration feature}, sometimes abbreviated DRN.
 
 The duration feature allows processing of groups of records
 separated by regular intervals of records.
