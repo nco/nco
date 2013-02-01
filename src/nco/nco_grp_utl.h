@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.200 2013-01-31 02:02:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.201 2013-02-01 01:01:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -199,7 +199,7 @@ nco_lmt_evl_trv                       /* [fnc] Parse user-specified limits into 
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void                          
-nco_prt_grp_trv                       /* [fnc] Print table with -G */
+nco_prt_grp_trv                       /* [fnc] Print groups from object list and dimensions with --get_grp_info  */
 (const int nc_id,                     /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
@@ -282,16 +282,16 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  int * const nbr_dmn);                /* O [nbr] Number of dimensions associated with input variable list */
 
+void                          
+nco_prt_dmn                           /* [fnc] Print dimensions for a group  */
+(const int nc_id,                     /* I [ID] File ID */
+ const char * const grp_nm_fll);      /* I [sng] Full name of group */
 
 void                          
-nco_prt_dmn /* [fnc] Print dimensions for a group  */
-(const int nc_id, /* I [ID] File ID */
- const char * const grp_nm_fll); /* I [sng] Full name of group */
+nco_bld_dmn_trv                       /* [fnc] Build dimension info for all variables */
+(const int nc_id,                     /* I [ID] File ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-void                          
-nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
-(const int nc_id, /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 
 #ifdef __cplusplus

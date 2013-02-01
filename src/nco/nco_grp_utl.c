@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.414 2013-01-31 22:11:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.415 2013-02-01 01:01:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2489,9 +2489,9 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 } /* end nco_prt_grp_trv() */
 
 void                          
-nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
-(const int nc_id, /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+nco_bld_dmn_trv                       /* [fnc] Build dimension info for all variables */
+(const int nc_id,                     /* I [ID] File ID */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: a netCDF4 variable can have its dimensions located anywhere below *in the group path*
   Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
@@ -2575,7 +2575,7 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
             strcat(dmn_nm_fll,dmn_nm_var);
 
             /* Brute-force approach to find valid "dmn_nm_fll":
-            Start at dmn_nm_fll/dmn_nm_var and build all possible paths with dmn_nm_var. 
+            Start at grp_nm_fll/dmn_nm_var and build all possible paths with dmn_nm_var. 
             Use cases are:
             Real life output of: ncks --get_grp_info  ~/nco/data/in_grp.nc
             /g1/lon: 1 dimensions: /lon : 
@@ -2591,7 +2591,7 @@ nco_bld_dmn_trv /* [fnc] Build dimension info for all variables */
             while(ptr_chr && !dmn_was_found){
 
               /* Search table dimension list */
-              for(int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
+              for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
                 dmn_fll_sct dmn_fll=trv_tbl->lst_dmn[dmn_lst_idx];  
 
                 /* Does the *possible* dimension full name match a *real* dimension full name ? */
