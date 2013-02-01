@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.137 2013-02-01 04:00:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.138 2013-02-01 04:27:15 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -701,7 +701,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   (void)nco_inq_format(in_id,&fl_fmt);
 
 #ifdef ENABLE_NETCDF4
-  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+  if(fl_fmt == NC_FORMAT_NETCDF4){
     char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
     char *grp_nm_fll;        /* [sng] Fully qualified group name */
     size_t grp_nm_lng;
@@ -845,17 +845,25 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   int val_sz_byt;
   long lmn;
   var_sct var;
-  int nbr_dmn_grp;                  /* [nbr] Number of dimensions in group */
-  int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
-  char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
-  const int flg_prn=0;              /* [flg] All the dimensions in all parent groups will also be retrieved */        
-
   lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
-  nco_bool is_mss_val=False; /* [flg] Current value is missing value */
-  nco_bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
+  nco_bool is_mss_val=False;        /* [flg] Current value is missing value */
+  nco_bool MALLOC_UNITS_SNG=False;  /* [flg] Allocated memory for units string */
 
-  const char sls_sng[]="/"; /* [sng] Slash string */
+  int nbr_dmn_grp;                  /* [nbr] Number of dimensions in group */
+  int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
+
+  char dmn_nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
+  char grp_nm[NC_MAX_NAME];         /* [sng] Relative group name */
+  char *grp_nm_fll;                 /* [sng] Fully qualified group name */
+
+  const int flg_prn=0;              /* [flg] All the dimensions in all parent groups will also be retrieved */        
+
+  size_t grp_nm_lng;                /* [nbr] Lenght of group full name */
+
+  int fl_fmt;                       /* [nbr] File format */
+
+  const char sls_sng[]="/";         /* [sng] Slash string */
 
   /* Set defaults */
   var_dfl_set(&var); 
@@ -891,14 +899,12 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get dimension IDs for group */
   (void)nco_inq_dimids(in_id,&nbr_dmn_grp,dmn_ids_grp,flg_prn);
 
-#ifdef ENABLE_NETCDF4
   /* Obtain netCDF file format */
-  int fl_fmt;
   (void)nco_inq_format(in_id,&fl_fmt);
-  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    char grp_nm[NC_MAX_NAME];/* [sng] Relative group name */
-    char *grp_nm_fll;        /* [sng] Fully qualified group name */
-    size_t grp_nm_lng;
+
+#ifdef ENABLE_NETCDF4
+  
+  if(fl_fmt == NC_FORMAT_NETCDF4){ 
 
     /* netCDF API to the rescue; we only have a location ID and a var name as parameters, but we need the full path */
     /* Allocate space for and obtain full name of current group */
