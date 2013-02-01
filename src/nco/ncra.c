@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.317 2013-02-01 05:56:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.318 2013-02-01 20:40:06 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -157,8 +157,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.317 2013-02-01 05:56:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.317 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.318 2013-02-01 20:40:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.318 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -715,7 +715,6 @@ main(int argc,char **argv)
     int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
     nco_inq_dimid(out_id,lmt_rec->nm,&rec_dmn_out_id);
     nco_inq_dimlen(out_id,rec_dmn_out_id,&idx_rec_out);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Appending records to existing output file. First record from new input will be output record %li\n",prg_nm_get(),idx_rec_out);
   } /* !REC_APN */
 
   /* Copy global attributes */

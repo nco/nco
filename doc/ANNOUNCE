@@ -1,14 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.538 2013-02-01 05:56:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.539 2013-02-01 20:40:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes some annoying bugs introduced in 4.2.4:
-The ncks switches --mk_rec_dmn and --fix_rec_dmn have been repaired.
-Some sub-setting optimizations (MM3, for the wonkish) are also fixed.
-Pretty simply, this is a more robust version of 4.2.4.
+This release continues to improve group support in netCDF4 files.
+
+A new optimization (--rec_apn) improves record append speeds.
 
 Work on NCO 4.2.6 is underway and focuses on better support for more
 complex netCDF4 files, and on netCDF4 support for ncrename and ncbo
