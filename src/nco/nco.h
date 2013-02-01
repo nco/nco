@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.224 2013-01-31 22:11:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.225 2013-02-01 04:00:38 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -677,7 +677,6 @@ extern "C" {
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
     size_t sz; /* [nbr] Size of dimension */
-    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
   } dmn_fll_sct; 
  
   /* Traversal table structure

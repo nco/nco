@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.136 2013-01-30 06:30:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.137 2013-02-01 04:00:38 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -829,7 +829,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM, /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK) /* I [flg] Print missing values as blanks */
+ const nco_bool PRN_MSS_VAL_BLANK, /* I [flg] Print missing values as blanks */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable with limits from input file */

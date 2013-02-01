@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.415 2013-02-01 01:01:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.416 2013-02-01 04:00:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1542,8 +1542,6 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
     if(!strcmp(dmn_nm,dmn_var_nm)){
       char *dmn_nm_fll;
 
-      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Coordinate variable to find %s\n",prg_nm_get(),dmn_var_nm);
-
       /* Construct full (dimension/variable) name */
       dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
       strcpy(dmn_nm_fll,grp_nm_fll);
@@ -1560,7 +1558,7 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
       while(ptr_chr){
         /* If variable is on list, mark it for extraction */
         if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
-          if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
+
           (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
 
           /*From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
@@ -2084,7 +2082,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
       if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable values */
-      (void)nco_msa_prn_var_val(grp_id,trv.nm,lmt_lst,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
+      (void)nco_msa_prn_var_val(grp_id,trv.nm,lmt_lst,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
 
     } /* end flg_xtr */
   } /* end uidx */
@@ -2245,9 +2243,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
 
             /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
             if(!strcmp(dmn_nm,dmn_var_nm)){
-              
-              if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Coordinate variable to find %s\n",prg_nm_get(),dmn_var_nm);
-
+ 
               /* Construct full name */
               char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
               strcpy(dmn_nm_fll,trv.grp_nm_fll);
@@ -2264,8 +2260,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
               while(ptr_chr){
                 /* Search table for existing "dmn_nm_fll" */
                 if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
-                  if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO Found Coordinate variable %s\n",prg_nm_get(),dmn_nm_fll);
-
+ 
                   /*From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
                   Subject: Re: [netcdfgroup] defining dimensions in groups
                   1. The inner dimension is used. The rule is to look up the group tree
