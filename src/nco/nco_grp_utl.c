@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.418 2013-02-02 02:09:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.419 2013-02-02 06:51:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2640,7 +2640,7 @@ void
 nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
 (int nc_id,                           /* I [id] netCDF file ID */
  int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
+ lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs()  */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
@@ -2656,12 +2656,26 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     (void)fprintf(stdout,"\n");      
   } /* endif dbg */
 
-  /* Loop table dimensions  */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_fll_sct trv=trv_tbl->lst_dmn[dmn_idx]; 
+  /* At this point "lmt" was parsed from nco_lmt_prs(); only the relative names are known */
+
+  /* Loop input name list (can have duplicate names)  */
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+
+    /* Loop table dimensions (of variables) to find possible name locations  */
+    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+      /* Match input name to table name */ 
+      if(strcmp(dmn_trv.nm,lmt[lmt_idx]->nm) == 0){
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s reports <%s> found:\n",prg_nm_get(),fnc_nm,lmt[lmt_idx]->nm);
+        } /* End dbg */
 
 
 
-  } /* End loop table dimensions  */
+      } /* End Match input name to table name */ 
+    } /* End Loop table dimensions (of variables) to find possible name locations  */
+  } /* End Loop input name list (can have duplicate names)  */
 
 }
