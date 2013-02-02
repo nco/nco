@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.571 2013-02-01 19:46:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.572 2013-02-02 10:56:28 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.571 2013-02-01 19:46:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.571 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.572 2013-02-02 10:56:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.572 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -611,7 +611,7 @@ main(int argc,char **argv)
   (void)nco_bld_dmn_trv(in_id,trv_tbl);
 
   /* Add dimension limits to traversal table */
-  if(lmt_nbr) (void)nco_bld_lmt_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+  if(lmt_nbr) (void)nco_bld_lmt_trv(lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
