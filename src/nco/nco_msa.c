@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.138 2013-02-01 04:27:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.139 2013-02-02 08:40:57 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -27,11 +27,11 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
   int idx;
   int nbr_slb;
   void *vp;
-  
+
   if(dpt_crr == dpt_crr_max) goto read_lbl;
-  
+
   nbr_slb=lmt_lst[dpt_crr]->lmt_dmn_nbr;
-  
+
   if(nbr_slb == 1){
     lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[0];
     /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
@@ -39,7 +39,7 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     vp=nco_msa_rcr_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
     return vp;
   } /* end if */
-  
+
   /* Multiple hyperslabs */
   if(nbr_slb > 1){
     int slb_idx;
@@ -47,96 +47,96 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     long lcnt;
     long *cp_sz;
     long *indices;
-    
+
     ptrdiff_t slb_sz;
     ptrdiff_t slb_stp;
     ptrdiff_t cp_inc;
     ptrdiff_t cp_max;
     ptrdiff_t cp_fst;
-    
+
     char **cp_wrp;
     char *cp_stp;
     char *slb;
     lmt_sct lmt_ret;
-    
+
     cp_sz=(long *)nco_malloc(nbr_slb*sizeof(long));
     indices=(long *)nco_malloc(nbr_slb*sizeof(long));
     cp_wrp=(char **)nco_malloc(nbr_slb*sizeof(void *));
-    
+
     for(idx=0;idx<nbr_slb;idx++){
       lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[idx];
       /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
       cp_wrp[idx]=(char *)nco_msa_rcr_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
       cp_sz[idx]=vara->sz;
     } /* end loop over idx */
-    
+
     for(idx=0;idx<dpt_crr_max;idx++) var_sz*=(idx<dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
-    
+
     vp=(void *)nco_calloc((size_t)var_sz,nco_typ_lng(vara->type));
-    
+
     lcnt=nco_typ_lng(vara->type);
     for(idx=dpt_crr+1;idx<dpt_crr_max;idx++) lcnt*=lmt_lst[idx]->dmn_cnt;
-    
+
     cp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
     cp_max=(ptrdiff_t)(var_sz*nco_typ_lng(vara->type));
-    
+
     for(idx=0;idx<nbr_slb;idx++) indices[idx]=lmt_lst[dpt_crr]->lmt_dmn[idx]->srt;
-    
+
     cp_fst=0L;
-    
+
     /* Deal first with wrapped dimensions
-       True if wrapped dims or slabs DO NOT overlap or user-specified order */
+    True if wrapped dims or slabs DO NOT overlap or user-specified order */
     if(lmt_lst[dpt_crr]->WRP || lmt_lst[dpt_crr]->MSA_USR_RDR){
-      
+
       for(slb_idx=0;slb_idx<nbr_slb;slb_idx++){
-	cp_stp=(char *)vp+cp_fst;
-	slb=cp_wrp[slb_idx];
-	slb_sz=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
+        cp_stp=(char *)vp+cp_fst;
+        slb=cp_wrp[slb_idx];
+        slb_sz=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
         while(cp_stp-(char *)vp < cp_max){
-	  (void)memcpy(cp_stp,slb,(size_t)slb_sz);
-	  slb+=slb_sz;
-	  cp_stp+=cp_inc;
+          (void)memcpy(cp_stp,slb,(size_t)slb_sz);
+          slb+=slb_sz;
+          cp_stp+=cp_inc;
         } /* end while */
         cp_fst+=slb_sz;      
       } /* end loop over two slabs */
     } else { 
       /* Multiple hyper-slabs */
       while(nco_msa_clc_idx(True,lmt_lst[dpt_crr],&indices[0],&lmt_ret,&slb_idx)){
-	cp_stp=(char *)vp+cp_fst;
-	slb=cp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
-	slb_stp=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
-	slb_sz=(ptrdiff_t)(lmt_ret.cnt*lcnt);
-	
-	while(cp_stp-(char *)vp < cp_max){
-	  (void)memcpy(cp_stp,slb,(size_t)slb_sz);
-	  slb+=slb_stp;
-	  cp_stp+=cp_inc;
-	} /* end while */
-	cp_fst+=slb_sz;
+        cp_stp=(char *)vp+cp_fst;
+        slb=cp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
+        slb_stp=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
+        slb_sz=(ptrdiff_t)(lmt_ret.cnt*lcnt);
+
+        while(cp_stp-(char *)vp < cp_max){
+          (void)memcpy(cp_stp,slb,(size_t)slb_sz);
+          slb+=slb_stp;
+          cp_stp+=cp_inc;
+        } /* end while */
+        cp_fst+=slb_sz;
       } /* end while */
     } /* end else */  
-    
+
     indices=(long *)nco_free(indices);
     cp_sz=(long *)nco_free(cp_sz);
     for(idx=0;idx<nbr_slb;idx++) cp_wrp[idx]=(char *)nco_free(cp_wrp[idx]);
     cp_wrp=(char **)nco_free(cp_wrp);
-    
+
     vara->sz=var_sz;
     return vp;
   } /* endif multiple hyperslabs */
-  
- read_lbl:
+
+read_lbl:
   { 
     long var_sz=1L;
     long srd_prd=1L; /* Product of strides */
     long *dmn_srt;
     long *dmn_cnt;
     long *dmn_srd;
-    
+
     dmn_srt=(long *)nco_malloc(dpt_crr_max*sizeof(long));
     dmn_cnt=(long *)nco_malloc(dpt_crr_max*sizeof(long));
     dmn_srd=(long *)nco_malloc(dpt_crr_max*sizeof(long));
-    
+
     for(idx=0;idx<dpt_crr_max;idx++){
       dmn_srt[idx]=lmt[idx]->srt;
       dmn_cnt[idx]=lmt[idx]->cnt;
@@ -144,29 +144,29 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
       var_sz*=dmn_cnt[idx];
       srd_prd*=lmt[idx]->srd;
     } /* end loop over idx */
-    
+
     vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
-    
+
     /* Block is critical/thread-safe for identical/distinct in_id's */
     { /* begin potential OpenMP critical */
       /* Check for stride */
       if(var_sz > 0){ /* Allow for zero-size record variables TODO nco711 */
-	if(srd_prd == 1L)
-	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
-	else
-	  (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
+        if(srd_prd == 1L)
+          (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
+        else
+          (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
       } /* end if var_sz */
     } /* end potential OpenMP critical */
-    
+
     dmn_srt=(long *)nco_free(dmn_srt);
     dmn_cnt=(long *)nco_free(dmn_cnt);
     dmn_srd=(long *)nco_free(dmn_srd);
-    
+
     /* Put size into vara */
     vara->sz=var_sz;
     return vp;
   }/* end read_lbl */
-  
+
 } /* end nco_msa_rcr_clc() */
 
 void 
@@ -177,13 +177,13 @@ nco_msa_prn_idx(lmt_all_sct *lmt_i)
   int size=lmt_i->lmt_dmn_nbr;
   long *indices;
   lmt_sct lmt;
-  
+
   indices=(long *)nco_malloc(size *sizeof(long));
-  
+
   printf("name=%s total size=%ld\n",lmt_i->dmn_nm,lmt_i->dmn_cnt);
-  
+
   for(idx=0;idx<size;idx++) indices[idx]=lmt_i->lmt_dmn[idx]->srt;
-  
+
   while(nco_msa_clc_idx(False,lmt_i,&indices[0],&lmt,&slb_nbr)) printf("slb_nbr=%d, srt=%ld, end=%ld, cnt=%ld, srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
 } /* end nco_msa_prn_idx() */
 
@@ -196,86 +196,86 @@ nco_msa_clc_idx
  int *slb) /* slab which above limit refers to */ 
 {
   /* A messy, unclear, inefficient routine that needs re-writing
-     if NORMALIZE then return the slab number and the hyperslab in lmt
-     NB: This is the slab _WITHIN_ the slab so stride is ALWAYS 1 */
+  if NORMALIZE then return the slab number and the hyperslab in lmt
+  NB: This is the slab _WITHIN_ the slab so stride is ALWAYS 1 */
   int sz_idx;
   int size=lmt_a->lmt_dmn_nbr;
   nco_bool *mnm;
   nco_bool rcd;
-  
+
   int prv_slb=0;
   int crr_slb=0;
   long crr_idx;
   long prv_idx=long_CEWI;
   long cnt=0L;
-  
+
   mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
-  
+
   lmt->srt=-1L;
   lmt->cnt=0L;
   lmt->srd=0L;
-  
+
   while(++cnt){
     crr_idx=nco_msa_min_idx(indices,mnm,size);
-    
+
     crr_slb=-1;
     for(sz_idx=0;sz_idx<size;sz_idx++)
       if(mnm[sz_idx]){crr_slb=sz_idx;break;}
-    
-    if(crr_slb == -1){
-      if(lmt->srt == -1){
-	rcd=False;
-	goto cln_and_xit;
-      }else break;
-    } /* endif */
-    
-    if(mnm[prv_slb]) crr_slb=prv_slb;
-    
-    if(lmt->srt > -1 && crr_slb != prv_slb) break;
-    
-    if(lmt->cnt > 1L){
-      (lmt->cnt)++;
-      lmt->end=crr_idx;
-    } /* end if */
-    
-    if(lmt->cnt == 1L){
-      lmt->cnt=2L;
-      lmt->srd=crr_idx-prv_idx;
-      lmt->end=crr_idx;
-    } /* end if */
-    
-    if(lmt->srt == -1L){
-      lmt->srt=crr_idx;
-      lmt->cnt=1L;
-      lmt->end=crr_idx;
-      lmt->srd=1L;
-    } /* end if */
-    
-    for(sz_idx=0;sz_idx<size;sz_idx++){
-      if(mnm[sz_idx]){
-	indices[sz_idx]+=lmt_a->lmt_dmn[sz_idx]->srd;
-	if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1;
-      }
-    } /* end loop over sz_idx */
-    prv_idx=crr_idx;
-    prv_slb=crr_slb;
+
+      if(crr_slb == -1){
+        if(lmt->srt == -1){
+          rcd=False;
+          goto cln_and_xit;
+        }else break;
+      } /* endif */
+
+      if(mnm[prv_slb]) crr_slb=prv_slb;
+
+      if(lmt->srt > -1 && crr_slb != prv_slb) break;
+
+      if(lmt->cnt > 1L){
+        (lmt->cnt)++;
+        lmt->end=crr_idx;
+      } /* end if */
+
+      if(lmt->cnt == 1L){
+        lmt->cnt=2L;
+        lmt->srd=crr_idx-prv_idx;
+        lmt->end=crr_idx;
+      } /* end if */
+
+      if(lmt->srt == -1L){
+        lmt->srt=crr_idx;
+        lmt->cnt=1L;
+        lmt->end=crr_idx;
+        lmt->srd=1L;
+      } /* end if */
+
+      for(sz_idx=0;sz_idx<size;sz_idx++){
+        if(mnm[sz_idx]){
+          indices[sz_idx]+=lmt_a->lmt_dmn[sz_idx]->srd;
+          if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1;
+        }
+      } /* end loop over sz_idx */
+      prv_idx=crr_idx;
+      prv_slb=crr_slb;
   } /* end while */
-  
+
   *slb=prv_slb;
-  
+
   /* Normalize slab */
   if(NORMALIZE){
     lmt->srt=(lmt->srt-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->end=(lmt->end-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->srd=1L;
   } /* end if */
-  
+
   rcd=True;
-  
+
   /* Jump here if only one string */
- cln_and_xit:
+cln_and_xit:
   mnm=(nco_bool *)nco_free(mnm);
-  
+
   return rcd;
 } /* end nco_msa_clc_idx() */
 
@@ -285,10 +285,11 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
  lmt_all_sct **lmt_msa, 
  int nbr_dim,
  long *dmn_sbs_dsk,
- nco_bool flg_free){
+ nco_bool flg_free)
+{
   /*  It does not really convert RAM indices to disk indices, but given a set 
-      of RAM indices, it finds the next set of disk incdices. 
-      So it only works if the indices fed to it are continuous */
+  of RAM indices, it finds the next set of disk incdices. 
+  So it only works if the indices fed to it are continuous */
   int idx;
   int jdx;
   int size;
@@ -296,14 +297,14 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
   static long **dmn_indices;
   static long *dmn_sbs_prv;
   static nco_bool mnm[100];
-  
+
   if(!initialize){
     dmn_sbs_prv=(long *)nco_malloc(nbr_dim*sizeof(long));
     dmn_indices=(long **)nco_malloc(nbr_dim*sizeof(long *));
     for(idx=0;idx<nbr_dim;idx++){
       dmn_indices[idx]=(long *)nco_malloc(lmt_msa[idx]->lmt_dmn_nbr*sizeof(long));
       for(jdx=0;jdx<lmt_msa[idx]->lmt_dmn_nbr;jdx++)
-	dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
+        dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
       dmn_sbs_prv[idx]=-1L;
     }
     initialize=1;
@@ -311,41 +312,41 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
   for(idx=0;idx <nbr_dim;idx ++){
     size=lmt_msa[idx]->lmt_dmn_nbr;
     if(dmn_sbs_ram[idx] == dmn_sbs_prv[idx]) continue;
-    
+
     if(lmt_msa[idx]->BASIC_DMN){
       dmn_sbs_dsk[idx]=dmn_sbs_ram[idx];
       continue;
     }
-    
+
     /* Re-initialize indices if 0 */
     if(dmn_sbs_ram[idx] == 0) 
       for(jdx=0;jdx<size;jdx++)
-       	dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
-    
+        dmn_indices[idx][jdx]=lmt_msa[idx]->lmt_dmn[jdx]->srt;
+
     /* Deal with wrapping, i.e., we have 2 hyperslabs */
     if(lmt_msa[idx]->WRP){
       if(dmn_indices[idx][0]<lmt_msa[idx]->dmn_sz_org){
-	dmn_sbs_dsk[idx]=dmn_indices[idx][0];
-	dmn_indices[idx][0]+=lmt_msa[idx]->lmt_dmn[0]->srd;
+        dmn_sbs_dsk[idx]=dmn_indices[idx][0];
+        dmn_indices[idx][0]+=lmt_msa[idx]->lmt_dmn[0]->srd;
       }else{
-	dmn_sbs_dsk[idx]=dmn_indices[idx][1];
-	dmn_indices[idx][1]+=lmt_msa[idx]->lmt_dmn[1]->srd;
+        dmn_sbs_dsk[idx]=dmn_indices[idx][1];
+        dmn_indices[idx][1]+=lmt_msa[idx]->lmt_dmn[1]->srd;
       }
       continue;
     }
-    
+
     dmn_sbs_dsk[idx]=nco_msa_min_idx(dmn_indices[idx],mnm,size);
-    
+
     for(jdx=0;jdx<size;jdx++){
       if(mnm[jdx]){
-	dmn_indices[idx][jdx]+=lmt_msa[idx]->lmt_dmn[jdx]->srd;
-	if(dmn_indices[idx][jdx] > lmt_msa[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
+        dmn_indices[idx][jdx]+=lmt_msa[idx]->lmt_dmn[jdx]->srd;
+        if(dmn_indices[idx][jdx] > lmt_msa[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
       }
     } /* end for  jdx */
   } /* end for idx */ 
-  
+
   for(idx=0;idx<nbr_dim;idx++) dmn_sbs_prv[idx]=dmn_sbs_ram[idx];
-  
+
   /* Free static space on last call */
   if(flg_free){
     (void)nco_free(dmn_sbs_prv);
@@ -365,13 +366,13 @@ nco_msa_clc_cnt
   int size=lmt_lst->lmt_dmn_nbr;
   long *indices;
   nco_bool *mnm;
-  
+
   /* Degenerate case */
   if(size == 1){
     lmt_lst->dmn_cnt=lmt_lst->lmt_dmn[0]->cnt;
     return;
   } /* end if */
-  
+
   /* If slabs remain in user-specified order */
   if(lmt_lst->MSA_USR_RDR){
     for(idx=0;idx<size;idx++) cnt+=lmt_lst->lmt_dmn[idx]->cnt;
@@ -379,25 +380,25 @@ nco_msa_clc_cnt
   }else{
     indices=(long *)nco_malloc(size*sizeof(long));
     mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
-    
+
     /* Initialize indices with srt */
     for(idx=0;idx<size;idx++) indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
-    
+
     while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
       for(idx=0;idx<size;idx++){
         if(mnm[idx]){
-	  indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
-	  if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
+          indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
+          if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
         } /* end if */
       } /* end loop over idx */
       cnt++;
     } /* end while */
     lmt_lst->dmn_cnt=cnt;
-    
+
     indices=(long *)nco_free(indices);
     mnm=(nco_bool  *)nco_free(mnm);
   } /* end else */
-  
+
   return; /* 20050109: return squelches erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
 
@@ -406,20 +407,20 @@ nco_msa_ovl
 (lmt_all_sct *lmt_lst)
 {
   /* Purpose: Return true if limits overlap
-     NB: Assumes that limits have been sorted */
-  
+  NB: Assumes that limits have been sorted */
+
   long idx;
   long jdx;
   long sz=lmt_lst->lmt_dmn_nbr;
-  
+
   lmt_sct **lmt;
   /* defererence */
   lmt=lmt_lst->lmt_dmn;
-  
+
   for(idx=0; idx<sz; idx++)
     for(jdx=idx+1; jdx<sz ;jdx++)
       if( lmt[jdx]->srt <= lmt[idx]->end) return True;  
-  
+
   return False;
 } /* end nco_msa_ovl() */
 
@@ -431,9 +432,9 @@ nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
   const lmt_sct * const lmt1=*((const lmt_sct * const *)vp1);
   const lmt_sct * const lmt2=*((const lmt_sct * const *)vp2); 
   /* fxm: need to avoid compiler warnings. will following work?
-     const lmt_sct * const lmt1=(const lmt_sct *)vp1;
-     const lmt_sct * const lmt2=(const lmt_sct *)vp2; */
-  
+  const lmt_sct * const lmt1=(const lmt_sct *)vp1;
+  const lmt_sct * const lmt2=(const lmt_sct *)vp2; */
+
   return lmt1->srt < lmt2->srt ? -1 : (lmt1->srt > lmt2->srt);
 } /* end nco_cmp_lmt_srt() */
 
@@ -442,12 +443,12 @@ void nco_msa_qsort_srt
 {
   lmt_sct **lmt;
   long sz;
-  
+
   sz=lmt_lst->lmt_dmn_nbr;
   lmt=lmt_lst->lmt_dmn;
-  
+
   if(sz <= 1) return;
-  
+
   (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
 } /* end nco_msa_qsort_srt() */
 
@@ -464,52 +465,52 @@ nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
   long srd;
   long kdx=0; /*  */
   lmt_sct *lmt_wrp;
-  
+
   for(idx=0;idx<size;idx++){
-    
+
     if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
-      
+
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
       srt=lmt_lst->lmt_dmn[idx]->srt;
       cnt=lmt_lst->lmt_dmn[idx]->cnt;
       srd=lmt_lst->lmt_dmn[idx]->srd;
-      
+
       for(jdx=0;jdx<cnt;jdx++){
-	kdx=(srt+srd*jdx)%dmn_sz_org;
-	if(kdx<srt) break;
+        kdx=(srt+srd*jdx)%dmn_sz_org;
+        if(kdx<srt) break;
       } /* end loop over jdx */
-      
+
       lmt_wrp[0]=*(lmt_lst->lmt_dmn[idx]);
       lmt_wrp[1]=*(lmt_lst->lmt_dmn[idx]);
       lmt_wrp[0].srt=srt;
-      
+
       if(jdx == 1){
-	lmt_wrp[0].end=srt;
-	lmt_wrp[0].cnt=1L;
-	lmt_wrp[0].srd=1L;
+        lmt_wrp[0].end=srt;
+        lmt_wrp[0].cnt=1L;
+        lmt_wrp[0].srd=1L;
       }else{
-	lmt_wrp[0].end=srt+srd*(jdx-1);
-	lmt_wrp[0].cnt=jdx;
-	lmt_wrp[0].srd=srd;
+        lmt_wrp[0].end=srt+srd*(jdx-1);
+        lmt_wrp[0].cnt=jdx;
+        lmt_wrp[0].srd=srd;
       } /* end else */
-      
+
       lmt_wrp[1].srt=kdx;
       lmt_wrp[1].cnt=cnt-lmt_wrp[0].cnt;
       if(lmt_wrp[1].cnt == 1L){
-	lmt_wrp[1].end=kdx;
-	lmt_wrp[1].srd=1L;
+        lmt_wrp[1].end=kdx;
+        lmt_wrp[1].srd=1L;
       }else{
-	lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
-	lmt_wrp[1].srd=srd;
+        lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
+        lmt_wrp[1].srd=srd;
       } /* end else */
-      
+
       /* Insert new limits into array */
       lmt_lst->lmt_dmn[idx]=lmt_wrp;
       lmt_lst->lmt_dmn=(lmt_sct **)nco_realloc(lmt_lst->lmt_dmn,((lmt_lst->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
       lmt_lst->lmt_dmn[(lmt_lst->lmt_dmn_nbr)++]=++lmt_wrp;
     } /* endif srt > end */
   } /* end loop over size */
-  
+
   /* Check if genuine wrapped co-ordinate */
   if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
 } /* end nco_msa_wrp_splt() */
@@ -522,13 +523,13 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
 {
   int sz_idx;
   long min_val=LONG_MAX;
-  
+
   for(sz_idx=0;sz_idx<size;sz_idx++)
     if(current[sz_idx] != -1 && current[sz_idx] < min_val) min_val=current[sz_idx];
-  
+
   for(sz_idx=0;sz_idx<size;sz_idx++)
     mnm[sz_idx]=((current[sz_idx] != -1 && current[sz_idx] == min_val) ? True : False);
-  
+
   return min_val;
 } /* end nco_msa_min_idx() */
 
@@ -546,12 +547,12 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   void *void_ptr;
   lmt_all_sct **lmt_msa;
   lmt_sct **lmt;
-  
+
   nbr_dim=var_in->nbr_dim;	
-  
+
   /* Refresh nc_id with in_id, NB: makes OpenMP threading work
-     Should have been included in release 3.9.5
-     Fixes TODO nco956 */
+  Should have been included in release 3.9.5
+  Fixes TODO nco956 */
   var_in->nc_id=in_id; 
 
   /* Scalars */
@@ -560,54 +561,54 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
     (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
     goto do_upk;
   } /* end if scalar */
-  
+
   lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
-  
+
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
   for(idx=0;idx<nbr_dim;idx++){
     for(jdx=0;jdx<nbr_dmn_fl;jdx++){
       if(!strcmp(var_in->dim[idx]->nm,lmt_lst[jdx]->dmn_nm)){
-	lmt_msa[idx]=lmt_lst[jdx];
+        lmt_msa[idx]=lmt_lst[jdx];
         break;
       } /* end if */
     } /* end loop over jdx */
   } /* end idx */
-  
+
   /* Call super-dooper recursive routine */
   /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
   typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk; 
   void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var_in);
-  
+
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
-  
+
   (void)nco_free(lmt_msa);
   (void)nco_free(lmt);
-  
- do_upk:
+
+do_upk:
   /* Following code copied from nco_var_get() */
-  
+
   if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
   /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
-  
+
   /* Type of variable and missing value in memory are now same as type on disk */
   var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
-  
+
   /* Packing in RAM is now same as packing on disk pck_dbg 
-     fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
+  fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
   (void)nco_pck_dsk_inq(in_id,var_in);
-  
+
   /* Packing/Unpacking */
   if(nco_is_rth_opr(prg_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
-       Otherwise arithmetic will produce garbage results */
+    Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
-       20050629: Making this region multi-threaded causes no problems */
+    20050629: Making this region multi-threaded causes no problems */
     if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
   } /* endif arithmetic operator */
-  
+
   return;
 } /* end nco_msa_var_get() */
 
@@ -829,8 +830,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL, /* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM, /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK, /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const nco_bool PRN_MSS_VAL_BLANK) /* I [flg] Print missing values as blanks */
 {
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable with limits from input file */
@@ -903,7 +903,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   (void)nco_inq_format(in_id,&fl_fmt);
 
 #ifdef ENABLE_NETCDF4
-  
+
   if(fl_fmt == NC_FORMAT_NETCDF4){ 
 
     /* netCDF API to the rescue; we only have a location ID and a var name as parameters, but we need the full path */
@@ -1590,15 +1590,15 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 {
   /* NB: nco_msa_var_val_cpy() contains OpenMP critical region */
   /* Purpose: Copy every variable in input variable structure list 
-     from input file to output file. Only data (not metadata) are copied. */
-  
+  from input file to output file. Only data (not metadata) are copied. */
+
   int idx;
   int jdx;
   int kdx;
   int nbr_dim;
   int dmn_idx; 
   long srd_prd=1L;  /* [nbr] Product of strides */
-  
+
   for(idx=0;idx<nbr_var;idx++){
 
     nbr_dim=var[idx]->nbr_dim;
@@ -1610,46 +1610,50 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
     }else{
       lmt_all_sct **lmt_msa;
       lmt_sct **lmt;
-      
+
       lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
       lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
-      
+
       /* Initialize lmt_msa with multi-limits from lmt_lst limits */
       for(jdx=0;jdx<nbr_dim;jdx++){
-	for(kdx=0;kdx<nbr_dmn_fl;kdx++){
-	  if(!strcmp(var[idx]->dim[jdx]->nm,lmt_lst[kdx]->dmn_nm ) ){
-	    lmt_msa[jdx]=lmt_lst[kdx];
-	    break;
-	  } /* end if */
-	} /* end loop over jdx */
+        for(kdx=0;kdx<nbr_dmn_fl;kdx++){
+          if(!strcmp(var[idx]->dim[jdx]->nm,lmt_lst[kdx]->dmn_nm ) ){
+            lmt_msa[jdx]=lmt_lst[kdx];
+            break;
+          } /* end if */
+        } /* end loop over jdx */
       } /* end idx */
-      
+
       /* Call super-dooper recursive routine */
       /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
       var[idx]->val.vp=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var[idx]);
-  
+
       (void)nco_free(lmt_msa);
       (void)nco_free(lmt);
     } /* end else nbr_dim */
-      
+
     /*(void)nco_msa_var_get(in_id,var[idx],lmt_lst,nbr_dmn_fl); */  
-  
+
     /* Put variable data */
     if(var[idx]->nbr_dim == 0)
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->val.vp,var[idx]->type);
     else{ /* end if variable is scalar */
       if(var[idx]->sz > 0){ /* Do nothing for zero-size record variables */
-	/* Is stride > 1? */
-	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
+        /* Is stride > 1? */
+        for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
 
-	if(srd_prd == 1L)
-	  nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->val.vp,var[idx]->type);
-	else
-	  nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
-	
+        if(srd_prd == 1L)
+          nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->val.vp,var[idx]->type);
+        else
+          nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
+
       } /* end if var_sz */
     } /* end if variable is an array */
     var[idx]->val.vp=var[idx]->xrf->val.vp=nco_free(var[idx]->val.vp);
   } /* end loop over idx */
-    
+
 } /* end nco_msa_var_val_cpy() */
+
+
+
+

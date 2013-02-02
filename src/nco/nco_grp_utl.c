@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.419 2013-02-02 06:51:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.420 2013-02-02 08:40:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2081,7 +2081,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
       if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable values */
-      (void)nco_msa_prn_var_val(grp_id,trv.nm,lmt_lst,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+      (void)nco_msa_prn_var_val(grp_id,trv.nm,lmt_lst,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK);
 
     } /* end flg_xtr */
   } /* end uidx */
@@ -2674,8 +2674,11 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 
 
+
+
+
       } /* End Match input name to table name */ 
     } /* End Loop table dimensions (of variables) to find possible name locations  */
   } /* End Loop input name list (can have duplicate names)  */
 
-}
+} /* End nco_bld_lmt_trv() */
