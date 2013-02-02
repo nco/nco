@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.50 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.51 2013-02-02 04:45:42 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -95,6 +95,19 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
 int /* O [enm] Limit type */
 nco_lmt_typ /* [fnc] Determine limit type */
 (char *sng);/* I [ptr] Pointer to limit string */
+
+void
+nco_prt_lmt                    /* [fnc] Print limit information */
+(lmt_sct lmt,                  /* I [sct] Limit structure */
+ int min_lmt_typ,              /* I [nbr] Limit type */
+ nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool flg_no_data_ok,      /* I [flg] True if file contains no data for hyperslab */
+ long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
+ monotonic_direction_enm monotonic_direction, /* I [enm] Monotonic_direction */
+ nco_bool rec_dmn_and_mfo,     /* I [flg] True if record dimension in multi-file operator */
+ long cnt_rmn_ttl,             /* I [nbr] Total records to be read from this and all remaining files */
+ long cnt_rmn_crr,             /* I [nbr] Records to extract from current file */
+ long rec_skp_vld_prv_dgn);    /* I [nbr] Records skipped at end of previous valid file, if any (diagnostic only) */
 
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.228 2013-02-02 02:09:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.229 2013-02-02 04:45:42 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -754,6 +754,13 @@ extern "C" {
   typedef struct{ /* gpe_nm_sct */
     char *var_nm_fll; /* Fully qualified variable name */
   } gpe_nm_sct;
+
+  /* Limit "lmt_sct" monotonic direction */
+  typedef enum {
+    decreasing, /* 0 */
+    increasing, /* 1 */
+    not_checked /* 2 */
+  } monotonic_direction_enm;
   
 #ifdef __cplusplus
 } /* end extern "C" */

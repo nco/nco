@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.145 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.146 2013-02-02 04:45:42 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -213,17 +213,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in hyperslab specification */
   
   dmn_sct dim;
-  
-  enum monotonic_direction{
-    decreasing, /* 0 */
-    increasing, /* 1 */
-    not_checked}; /* 2 */
-  
+
   lmt_sct lmt;
   
   int min_lmt_typ=int_CEWI;
   int max_lmt_typ=int_CEWI;
-  int monotonic_direction=not_checked; /* CEWI */
+  monotonic_direction_enm monotonic_direction=not_checked; /* CEWI */
   int prg_id; /* Program ID */
   int rcd=NC_NOERR; /* [enm] Return code */
   int rec_dmn_id; /* [idx] Variable ID of record dimension, if any */
@@ -873,42 +868,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
-  
+
   if(dbg_lvl_get() >= nco_dbg_io){
-    (void)fprintf(stderr,"Dimension hyperslabber nco_lmt_evl() diagnostics:\n");
-    (void)fprintf(stderr,"Dimension name = %s\n",lmt.nm);
-    (void)fprintf(stderr,"Limit type is %s\n",(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
-    (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
-    (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
-    (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data_ok) ? "is superfluous to" : "is required by",(flg_no_data_ok) ? "will not" : "will");
-    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Cumulative number of records in all input files opened including this one = %li\n",lmt.rec_in_cml);
-    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files = %li\n",lmt.rec_skp_ntl_spf);
-    if(rec_dmn_and_mfo) (void)fprintf(stderr,"Valid records read (and used) from previous files = %li\n",rec_usd_cml);
-    if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
-    if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
-    if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv_dgn (previous file, if any) = %li \n",rec_skp_vld_prv_dgn);
-    if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv (this file) = %li \n",lmt.rec_skp_vld_prv);
-    (void)fprintf(stderr,"min_sng = %s\n",lmt.min_sng == NULL ? "NULL" : lmt.min_sng);
-    (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
-    (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
-    (void)fprintf(stderr,"drn_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.drn_sng);
-    (void)fprintf(stderr,"mro_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.mro_sng);
-    (void)fprintf(stderr,"monotonic_direction = %s\n",(monotonic_direction == not_checked) ? "not checked" : (monotonic_direction == increasing) ? "increasing" : "decreasing");
-    (void)fprintf(stderr,"min_val = %g\n",lmt.min_val);
-    (void)fprintf(stderr,"max_val = %g\n",lmt.max_val);
-    (void)fprintf(stderr,"min_idx = %li\n",lmt.min_idx);
-    (void)fprintf(stderr,"max_idx = %li\n",lmt.max_idx);
-    (void)fprintf(stderr,"srt = %li\n",lmt.srt);
-    (void)fprintf(stderr,"end = %li\n",lmt.end);
-    (void)fprintf(stderr,"cnt = %li\n",lmt.cnt);
-    (void)fprintf(stderr,"srd = %li\n",lmt.srd);
-    (void)fprintf(stderr,"drn = %li\n",lmt.drn);
-    (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
-    (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
-    (void)fprintf(stderr,"DRN = %s\n",lmt.drn != 1L ? "YES" : "NO");
-    (void)fprintf(stderr,"MRO = %s\n\n",lmt.flg_mro ? "YES" : "NO");
+    (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
-  
+
   if(lmt.srt > lmt.end && !flg_no_data_ok){
     if(prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
     if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try multislabbing (http://nco.sf.net/nco.html#msa) wrapped dimension using ncks first, and then apply %s to the resulting file\n",prg_nm_get());
@@ -1072,3 +1036,54 @@ nco_lmt_get_udu_att /* Returns specified attribute otherwise NULL */
   } /* endif */
   return fl_udu_sng;
 } /* end nco_lmt_get_udu_att() */
+
+
+void
+nco_prt_lmt                    /* [fnc] Print limit information */
+(lmt_sct lmt,                  /* I [sct] Limit structure */
+ int min_lmt_typ,              /* I [nbr] Limit type */
+ nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool flg_no_data_ok,      /* I [flg] True if file contains no data for hyperslab */
+ long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
+ monotonic_direction_enm monotonic_direction, /* I [enm] Monotonic_direction */
+ nco_bool rec_dmn_and_mfo,     /* I [flg] True if record dimension in multi-file operator */
+ long cnt_rmn_ttl,             /* I [nbr] Total records to be read from this and all remaining files */
+ long cnt_rmn_crr,             /* I [nbr] Records to extract from current file */
+ long rec_skp_vld_prv_dgn)     /* I [nbr] Records skipped at end of previous valid file, if any (diagnostic only) */
+{
+  /* Purpose: Print limit information */
+
+  (void)fprintf(stderr,"Dimension hyperslabber nco_lmt_evl() diagnostics:\n");
+  (void)fprintf(stderr,"Dimension name = %s\n",lmt.nm);
+  (void)fprintf(stderr,"Limit type is %s\n",(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
+  (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
+  (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
+  (void)fprintf(stderr,"Current file %s specified hyperslab, data %s be read\n",(flg_no_data_ok) ? "is superfluous to" : "is required by",(flg_no_data_ok) ? "will not" : "will");
+  if(rec_dmn_and_mfo) (void)fprintf(stderr,"Cumulative number of records in all input files opened including this one = %li\n",lmt.rec_in_cml);
+  if(rec_dmn_and_mfo) (void)fprintf(stderr,"Records skipped in initial superfluous files = %li\n",lmt.rec_skp_ntl_spf);
+  if(rec_dmn_and_mfo) (void)fprintf(stderr,"Valid records read (and used) from previous files = %li\n",rec_usd_cml);
+  if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
+  if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
+  if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv_dgn (previous file, if any) = %li \n",rec_skp_vld_prv_dgn);
+  if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv (this file) = %li \n",lmt.rec_skp_vld_prv);
+  (void)fprintf(stderr,"min_sng = %s\n",lmt.min_sng == NULL ? "NULL" : lmt.min_sng);
+  (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
+  (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
+  (void)fprintf(stderr,"drn_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.drn_sng);
+  (void)fprintf(stderr,"mro_sng = %s\n",lmt.drn_sng == NULL ? "NULL" : lmt.mro_sng);
+  (void)fprintf(stderr,"monotonic_direction = %s\n",(monotonic_direction == not_checked) ? "not checked" : (monotonic_direction == increasing) ? "increasing" : "decreasing");
+  (void)fprintf(stderr,"min_val = %g\n",lmt.min_val);
+  (void)fprintf(stderr,"max_val = %g\n",lmt.max_val);
+  (void)fprintf(stderr,"min_idx = %li\n",lmt.min_idx);
+  (void)fprintf(stderr,"max_idx = %li\n",lmt.max_idx);
+  (void)fprintf(stderr,"srt = %li\n",lmt.srt);
+  (void)fprintf(stderr,"end = %li\n",lmt.end);
+  (void)fprintf(stderr,"cnt = %li\n",lmt.cnt);
+  (void)fprintf(stderr,"srd = %li\n",lmt.srd);
+  (void)fprintf(stderr,"drn = %li\n",lmt.drn);
+  (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
+  (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
+  (void)fprintf(stderr,"DRN = %s\n",lmt.drn != 1L ? "YES" : "NO");
+  (void)fprintf(stderr,"MRO = %s\n\n",lmt.flg_mro ? "YES" : "NO");
+}
+
