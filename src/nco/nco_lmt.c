@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.149 2013-02-02 22:53:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.150 2013-02-02 23:16:18 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1111,7 +1111,9 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   nco_bool rec_dmn_and_mfo=False; /* True if record dimension in multi-file operator */
   nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in hyperslab specification */
 
-  dmn_sct dim;
+#ifdef IDS_NOT_ALLOWED /* No need to inquire netCDF: "dmn_trv" already has the dimension size */
+  dmn_sct dim;  
+#endif /* IDS_NOT_ALLOWED */
 
   lmt_sct lmt;
 
@@ -1162,12 +1164,19 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /* Get dimension size */
   (void)nco_inq_dimlen(nc_id,lmt.id,&dim.sz);
 #else /* IDS_NOT_ALLOWED */
-  
 
+  /* Hmm... Only used for ncks now, define this for now; "dmn_trv" has record dimension info already */
+  rec_dmn_and_mfo=False;
 #endif /* IDS_NOT_ALLOWED */
-
+  
+#ifdef IDS_NOT_ALLOWED /
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
+#else
+  /* No need to inquire netCDF: "dmn_trv" already has the dimension size */
+  dmn_sz=dmn_trv->sz;
+#endif
+
   if(rec_dmn_and_mfo){
     lmt.rec_dmn_sz=dmn_sz;
     lmt.idx_end_max_abs=lmt.rec_in_cml+dmn_sz-1L; /* Maximum allowed index in record dimension */
@@ -1299,7 +1308,6 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     /* Get coordinate type */
     (void)nco_inq_vartype(nc_id,dim.cid,&dim.type);
 
-
     /* Warn when coordinate type is weird */
     if(dim.type == NC_BYTE || dim.type == NC_UBYTE || dim.type == NC_CHAR || dim.type == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
 
@@ -1318,10 +1326,13 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
       /* Retrieve this coordinate */
       nc_get_vara_double(nc_id,dim.cid,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
     } /* end OpenMP critical */
-#endif /* IDS_NOT_ALLOWED */
 
-    /* Officially change type */
+  /* Officially change type */
     dim.type=NC_DOUBLE;
+#else
+  /* TO DO "dmn_trv" needs type info */
+ 
+#endif
 
     /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */
     if(dmn_sz == 1L){
@@ -1351,7 +1362,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     if(lmt.lmt_typ == lmt_udu_sng){
 
       if(!fl_udu_sng){ 
-        (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),dim.nm);
+        (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),lmt.nm);
         nco_exit(EXIT_FAILURE);
       } /* end if */
 
