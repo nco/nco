@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.417 2013-02-01 19:46:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.418 2013-02-02 02:09:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -24,7 +24,6 @@ nco_flg_set_grp_var_ass               /* [fnc] Set flags for groups and variable
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Set flags for groups and variables associated with matched object */  
-  /* const char fnc_nm[]="nco_flg_set_grp_var_ass()"; [sng] Function name */
 
   trv_sct trv_obj; /* [sct] Traversal table object */
 
@@ -2638,12 +2637,31 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 } /* end nco_blb_dmn_trv() */
 
 void
-nco_bld_lmt_trv                       /* [fnc] Parse user-specified limits into hyperslab specifications */
+nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
 (int nc_id,                           /* I [id] netCDF file ID */
  int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
+  /* Purpose: Assign user-specified dimension limits to traversal table dimensions structure */
+
+  const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits:\n",prg_nm_get(),fnc_nm,lmt_nbr);
+    for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+      (void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
+    }
+    (void)fprintf(stdout,"\n");      
+  } /* endif dbg */
+
+  /* Loop table dimensions  */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+
+
+  } /* End loop table dimensions  */
 
 }

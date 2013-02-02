@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.227 2013-02-01 19:06:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.228 2013-02-02 02:09:12 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -659,12 +659,12 @@ extern "C" {
     nco_bool has_crd_var; /* [flg] Does it have an associated variable? (coordinate variable) */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
     size_t sz; /* [nbr] Size of dimension */
-    lmt_sct *lmt_dmn; /* [sct] List of limit structures associated with each dimension */
+    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
   } dmn_fll_sct; 
  
   /* Traversal table structure contains two lists
-     1) lst: All objects (variables and groups) in file tree 
-     2) lst_dmn: All dimensions in file tree */
+     1) lst: All objects (variables and groups) in file tree (HDF5 model)
+     2) lst_dmn: All dimensions in file tree (netCDF addition to HDF5) */
   typedef struct{
     trv_sct *lst;           /* [sct] Array of trv_sct */
     unsigned int sz;        /* [nbr] Allocated size of trv_sct array */

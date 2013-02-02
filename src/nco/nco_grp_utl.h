@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.202 2013-02-01 19:46:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.203 2013-02-02 02:09:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -293,7 +293,7 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
-nco_bld_lmt_trv                       /* [fnc] Parse user-specified limits into hyperslab specifications */
+nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
 (int nc_id,                           /* I [id] netCDF file ID */
  int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
