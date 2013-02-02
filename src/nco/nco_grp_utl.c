@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.421 2013-02-02 10:56:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.422 2013-02-02 22:53:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2655,27 +2655,33 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     (void)fprintf(stdout,"\n");      
   } /* endif dbg */
 
-  /* At this point "lmt" was parsed from nco_lmt_prs(); only the relative names are known */
+  /* At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known */
 
   /* Loop input name list (can have duplicate names)  */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
 
-    /* Loop table dimensions (of variables) to find possible name locations  */
+    /* Loop table dimensions to find possible name locations  */
     for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
       dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
-      /* Match input name to table name */ 
+      /* Match input *relative* name to table name */ 
       if(strcmp(dmn_trv.nm,lmt[lmt_idx]->nm) == 0){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s reports <%s> found:\n",prg_nm_get(),fnc_nm,lmt[lmt_idx]->nm);
         } /* End dbg */
 
-       
+#ifdef CALL_LMT_EVL /* This just avoids ncks to fail while the function is not finished */
+        /* Parse user-specified limits into hyperslab specifications */
+        (void)nco_lmt_evl_dmn_tbl(lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);  
+#endif /* CALL_LMT_EVL */
+
+      
+
 
 
       } /* End Match input name to table name */ 
-    } /* End Loop table dimensions (of variables) to find possible name locations  */
+    } /* End Loop table dimensions to find possible name locations  */
   } /* End Loop input name list (can have duplicate names)  */
 
 } /* End nco_bld_lmt_trv() */

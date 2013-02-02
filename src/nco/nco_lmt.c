@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.148 2013-02-02 10:56:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.149 2013-02-02 22:53:15 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1095,9 +1095,12 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
  dmn_fll_sct *dmn_trv)         /* I/O [sct] Structure from traversal table dimension  */
 {
-  /* Purpose: Take parsed list of dimension names, minima, and
-  maxima strings and find appropriate indices into dimensions 
-  for formulation of dimension start and count vectors, or fail trying. */
+  /* Purpose: Take parsed list of dimension names, minima, and maxima strings and find appropriate indices into dimensions 
+  for formulation of dimension start and count vectors, or fail trying. 
+
+  Goal here is to take input from both "lmt_ptr" and "dmn_trv" and match them on output 
+  NB: no need to inquire netCDF about anything at this point, no IDs and API calls here 
+  */
 
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI; /* [sng] Error message */
@@ -1143,6 +1146,8 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
+#else /* IDS_NOT_ALLOWED */
+  /* Nothing to do here: this function call is made only when relative names from both "lmt_ptr" and "dmn_trv" match */
 #endif /* IDS_NOT_ALLOWED */
 
   /* Logic on whether to allow skipping current file depends on whether limit
@@ -1154,9 +1159,11 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
-
   /* Get dimension size */
   (void)nco_inq_dimlen(nc_id,lmt.id,&dim.sz);
+#else /* IDS_NOT_ALLOWED */
+  
+
 #endif /* IDS_NOT_ALLOWED */
 
   /* Shortcut to avoid indirection */
