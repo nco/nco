@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.154 2013-02-03 23:07:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.155 2013-02-03 23:19:55 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1103,8 +1103,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /lon(4)
   /g8/lon(2)
   ncks -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
-  "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2), so we cannot call nco_exit(), but instead return
-  If a valid match return True, else return False
+  "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2)
   */
 
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
@@ -1171,7 +1170,8 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
 #else /* IDS_NOT_ALLOWED */
 
   /* Hmm... Only used for ncks now, define this for now; "dmn_trv" has record dimension info already */
-  rec_dmn_and_mfo=False;
+  assert(prg_id == ncks);
+  if(prg_id == ncks) rec_dmn_and_mfo=False;
 #endif /* IDS_NOT_ALLOWED */
   
 #ifdef IDS_NOT_ALLOWED /
@@ -1298,7 +1298,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   } /* end if limit is coordinate */
 #else
     /* TO DO "dmn_trv" needs the above information...either read in table build or just read variable here (meaning file ID needed) */
-    /* But for ncks rec_dmn_and_mfo is False, so this can be done avoided now */
+    
 
 #endif /* IDS_NOT_ALLOWED */
 
