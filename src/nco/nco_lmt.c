@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.153 2013-02-03 09:36:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.154 2013-02-03 23:07:47 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1088,7 +1088,7 @@ nco_prt_lmt                    /* [fnc] Print limit information */
 }
 
 
-nco_bool                       /* O [flg] Is this input "lmt_ptr" valid for "dmn_trv" ?  */
+void                      
 nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hyperslab specifications */
 (lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
  long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
@@ -1190,19 +1190,19 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /* Bomb if dmn_sz < 1 */
   if(dmn_sz < 1L){
     (void)fprintf(stdout,"%s: ERROR Size of dimension %s is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
-    return False;
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   if(lmt.srd_sng){
     if(strchr(lmt.srd_sng,'.') || strchr(lmt.srd_sng,'e') || strchr(lmt.srd_sng,'E') || strchr(lmt.srd_sng,'d') || strchr(lmt.srd_sng,'D')){
       (void)fprintf(stdout,"%s: ERROR Requested stride for %s, %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
-      return False;
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.srd=strtol(lmt.srd_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.srd_sng,"strtol",sng_cnv_rcd);
     if(lmt.srd < 1L){
       (void)fprintf(stdout,"%s: ERROR Stride for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
-      return False;
+      nco_exit(EXIT_FAILURE);
     } /* end if */
   } /* !lmt.srd_sng */
 
@@ -1215,18 +1215,18 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.drn_sng,"strtol",sng_cnv_rcd);
     if(lmt.drn < 1L){
       (void)fprintf(stdout,"%s: ERROR Duration for %s is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.drn);
-      return False;
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     if(prg_id != ncra && prg_id != ncrcat){
       (void)fprintf(stdout,"%s: ERROR Duration only implemented for ncra and ncrcat\n",prg_nm_get());
-      return False;
+      nco_exit(EXIT_FAILURE);
     } /* end ncra */
   } /* !lmt.drn_sng */
 
   if(lmt.mro_sng){
     if(strcasecmp(lmt.mro_sng,"m")){
       (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be 'm' or 'M'\n",prg_nm_get(),lmt.nm,lmt.mro_sng);
-      return False;
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.flg_mro=True;
   } /* !lmt.mro_sng */
@@ -1237,7 +1237,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
       (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option ('m', 'M', or --mro) is redundant. MRO is always true for ncrcat.\n",prg_nm_get());
     }else if(prg_id != ncra){
       (void)fprintf(stdout,"%s: ERROR Multi-Record Output (MRO) ('m', 'M', or --mro) is only valid for ncra.\n",prg_nm_get());
-      return False;
+      nco_exit(EXIT_FAILURE);
     } /* end else */
   } /* !lmt.mro_sng */
 
@@ -1265,7 +1265,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.min_sng,(min_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
     (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.max_sng,(max_lmt_typ == lmt_crd_val) ? "coordinate value" : (FORTRAN_IDX_CNV) ? "one-based dimension index" : "zero-based dimension index");
     (void)fprintf(stdout,"(Limit arguments containing a decimal point (or in exponential format) are interpreted as coordinate values; arguments without a decimal point are interpreted as zero-based or one-based (depending on -F switch) dimensional indices.)\n");
-    return False;
+    nco_exit(EXIT_FAILURE);
   } /* end if */
   lmt.lmt_typ=min_lmt_typ;
 
@@ -1372,11 +1372,11 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
 
       if(!fl_udu_sng){ 
         (void)fprintf(stdout,"%s: ERROR attempting to read units attribute from variable \"%s\" \n",prg_nm_get(),lmt.nm);
-        return False;
+        nco_exit(EXIT_FAILURE);
       } /* end if */
 
-      if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val)) return False;
-      if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val)) return False;
+      if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val)) nco_exit(EXIT_FAILURE);
+      if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val)) nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
@@ -1427,7 +1427,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
           goto no_data_ok;
         }else{
           (void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid coordinate range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dmn_min,lmt.nm,dmn_max);
-          return False;
+          nco_exit(EXIT_FAILURE);
         } /* end else */
     } /* end if */
 
@@ -1631,7 +1631,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     if(NCO_SYNTAX_ERROR){
       (void)fprintf(stdout,"%s: ERROR evaluating hyperslab specification for %s: %s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net/nco.html#hyp\n",prg_nm_get(),lmt.nm,msg_sng,prg_nm_get());
       msg_sng=(char *)nco_free(msg_sng);
-      return False;
+      nco_exit(EXIT_FAILURE);
     } /* !NCO_SYNTAX_ERROR */
 
     /* NB: Duration is officially supported only for ncra and ncrcat (record dimension only) */
@@ -1770,7 +1770,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",prg_nm_get(),lmt.nm); 
-    return False;
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
@@ -1814,7 +1814,6 @@ no_data_ok: /* end goto */
 
   fl_udu_sng=(char *)nco_free(fl_udu_sng);
 
-  return True;
 } /* end nco_lmt_evl_dmn_tbl() */
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.426 2013-02-03 07:44:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.427 2013-02-03 23:07:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2673,15 +2673,11 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 #ifdef CALL_LMT_EVL /* This just avoids ncks to fail while the function is not finished */
         /* Parse user-specified limits into hyperslab specifications */
-        /* Is this input "lmt[lmt_idx]" valid for current "dmn_trv" ?  */
-        if (nco_lmt_evl_dmn_tbl(lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv) == True)
-        {
-          if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s valid <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+        (void)nco_lmt_evl_dmn_tbl(lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
 
 
 
 
-        }
 #endif /* CALL_LMT_EVL */
       } /* End Match input name to table name */ 
     } /* End Loop table dimensions to find possible name locations  */
