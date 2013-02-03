@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.152 2013-02-03 04:04:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.153 2013-02-03 09:36:35 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1177,10 +1177,10 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
 #ifdef IDS_NOT_ALLOWED /
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
-#else
+#else 
   /* No need to inquire netCDF: "dmn_trv" already has the dimension size */
   dmn_sz=dmn_trv->sz;
-#endif
+#endif /* IDS_NOT_ALLOWED */
 
   if(rec_dmn_and_mfo){
     lmt.rec_dmn_sz=dmn_sz;
@@ -1296,6 +1296,10 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
   } /* end if limit is coordinate */
+#else
+    /* TO DO "dmn_trv" needs the above information...either read in table build or just read variable here (meaning file ID needed) */
+    /* But for ncks rec_dmn_and_mfo is False, so this can be done avoided now */
+
 #endif /* IDS_NOT_ALLOWED */
 
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
@@ -1335,9 +1339,9 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /* Officially change type */
     dim.type=NC_DOUBLE;
 #else
-    /* TO DO "dmn_trv" needs the above information...either read in table build or just read variable here */
+    /* TO DO "dmn_trv" needs the above information...either read in table build or just read variable here (meaning file ID needed) */
 
-#endif
+#endif /* IDS_NOT_ALLOWED */
 
     /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */
     if(dmn_sz == 1L){
