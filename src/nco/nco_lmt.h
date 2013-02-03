@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.54 2013-02-03 23:07:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.55 2013-02-03 23:32:40 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -112,7 +112,8 @@ nco_prt_lmt                    /* [fnc] Print limit information */
 
 void                     
 nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hyperslab specifications */
-(lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
+(const int nc_id,              /* I [idx] netCDF file ID */
+ lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
  long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
  dmn_fll_sct *dmn_trv);        /* I/O [sct] Structure from traversal table dimension  */
