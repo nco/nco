@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.41 2013-01-31 05:52:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.42 2013-02-03 07:33:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -10,6 +10,7 @@
    ncks -D 1 ~/nco/data/in_grp.nc */
 
 #include "nco_grp_trv.h" /* Group traversal */
+#include "nco_lmt.h" /* Hyperslab limits */
 
 void                          
 trv_tbl_init
@@ -75,11 +76,14 @@ trv_tbl_init
     tb->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     tb->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
     tb->lst_dmn[idx].sz=0; /* [nbr] Size of dimension */
+    tb->lst_dmn[idx].nbr_lmt=0; /* [nbr] Number of user specified limits for this dimension */
+    tb->lst_dmn[idx].lmt_dmn=NULL; /* [sct] List of limit structures associated with this dimension */
   }
 
   *tbl=tb;
 } /* trv_tbl_init() */
 
+ 
 void 
 trv_tbl_free
 (trv_tbl_sct *tbl) /* I [sct] Traversal table */
@@ -101,10 +105,17 @@ trv_tbl_free
 
   /* Dimension list */
 
-  for(idx=0;idx<tbl->sz_dmn;idx++){
-    nco_free(tbl->lst_dmn[idx].nm_fll);
-    nco_free(tbl->lst_dmn[idx].grp_nm_fll);
-  } /* end loop */
+  for(int dnm_idx=0;dnm_idx<tbl->sz_dmn;dnm_idx++){
+    nco_free(tbl->lst_dmn[dnm_idx].nm_fll);
+    nco_free(tbl->lst_dmn[dnm_idx].grp_nm_fll);
+
+    /* Number of user specified limits for this dimension */
+    for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dnm_idx].nbr_lmt;lmt_idx++){
+      nco_lmt_free(tbl->lst_dmn[dnm_idx].lmt_dmn);
+    } /* End Number of user specified limits for this dimension */
+
+  } /* End Dimension list loop */
+
   nco_free(tbl->lst_dmn);
 
   nco_free(tbl);
@@ -482,7 +493,7 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
 void 
 trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  */
 (dmn_fll_sct const obj,               /* I [sct] Object to store */
- trv_tbl_sct * const tbl)            /* I/O [sct] Traversal table */
+ trv_tbl_sct * const tbl)             /* I/O [sct] Traversal table */
 {
   unsigned int idx;
 
@@ -504,5 +515,13 @@ trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  
   tbl->lst_dmn[idx].has_crd_var=obj.has_crd_var;
   tbl->lst_dmn[idx].is_rec_dmn=obj.is_rec_dmn;
   tbl->lst_dmn[idx].sz=obj.sz;
+
+  /* User specified limits for this dimension; at this point we don't know if any; will be done in nco_bld_lmt_trv() */
+  tbl->lst_dmn[idx].nbr_lmt=obj.nbr_lmt;
+  tbl->lst_dmn[idx].lmt_dmn=NULL;
+#ifdef NCO_SANITY_CHECK
+  obj.nbr_lmt == 0;
+  assert(obj.lmt_dmn == NULL);
+#endif
 
 } /* end trv_tbl_add_dmn() */

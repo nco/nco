@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.424 2013-02-03 04:04:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.425 2013-02-03 07:33:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -560,6 +560,10 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     obj_dmn.sz=dmn_sz;
     /* Don't forget group name full, we will need it (all reason for dimension object) */
     obj_dmn.grp_nm_fll=grp_nm_fll;
+
+    /* User specified limits for this dimension; at this point we don't know if any; will be done in nco_bld_lmt_trv() */
+    obj_dmn.nbr_lmt=0;
+    obj_dmn.lmt_dmn=NULL;
 
     /* Call dimension object add function */
     (void)trv_tbl_add_dmn(obj_dmn,trv_tbl);
@@ -2673,15 +2677,10 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
           if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s valid <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
 
+
+
         }
-
-
 #endif /* CALL_LMT_EVL */
-
-      
-
-
-
       } /* End Match input name to table name */ 
     } /* End Loop table dimensions to find possible name locations  */
   } /* End Loop input name list (can have duplicate names)  */
