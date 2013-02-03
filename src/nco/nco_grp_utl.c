@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.423 2013-02-03 03:09:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.424 2013-02-03 04:04:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2638,7 +2638,7 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 
 void
 nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
-(int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
+(int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits (total number of -d inputs) */
  lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs()  */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
@@ -2649,9 +2649,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
-    for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
-      (void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
-    }
+    for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++)(void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
     (void)fprintf(stdout,"\n");      
   } /* endif dbg */
 
@@ -2667,13 +2665,15 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
       /* Match input *relative* name to table name */ 
       if(strcmp(dmn_trv.nm,lmt[lmt_idx]->nm) == 0){
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s table <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
-        } /* End dbg */
-
 #ifdef CALL_LMT_EVL /* This just avoids ncks to fail while the function is not finished */
         /* Parse user-specified limits into hyperslab specifications */
-        (void)nco_lmt_evl_dmn_tbl(lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
+        /* Is this input "lmt[lmt_idx]" valid for current "dmn_trv" ?  */
+        if (nco_lmt_evl_dmn_tbl(lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv) == True)
+        {
+          if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s valid <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+
+
+        }
 
 
 #endif /* CALL_LMT_EVL */

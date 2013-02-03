@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.52 2013-02-02 10:56:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.53 2013-02-03 04:04:32 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -110,7 +110,7 @@ nco_prt_lmt                    /* [fnc] Print limit information */
  long rec_skp_vld_prv_dgn);    /* I [nbr] Records skipped at end of previous valid file, if any (diagnostic only) */
 
 
-void
+nco_bool                       /* O [flg] Is this input "lmt_ptr" valid for "dmn_trv" ?  */
 nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hyperslab specifications */
 (lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
  long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
