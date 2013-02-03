@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.425 2013-02-03 07:33:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.426 2013-02-03 07:44:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2668,6 +2668,8 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
       /* Match input *relative* name to table name */ 
       if(strcmp(dmn_trv.nm,lmt[lmt_idx]->nm) == 0){
+
+        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
 #ifdef CALL_LMT_EVL /* This just avoids ncks to fail while the function is not finished */
         /* Parse user-specified limits into hyperslab specifications */
