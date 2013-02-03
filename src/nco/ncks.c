@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.572 2013-02-02 10:56:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.573 2013-02-03 03:09:00 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.572 2013-02-02 10:56:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.572 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.573 2013-02-03 03:09:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.573 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -685,7 +685,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
 
   /* Print extraction list in verbose mode */
-  if(dbg_lvl_get() >= nco_dbg_vrb) (void)trv_tbl_prn_xtr(trv_tbl);
+  if(dbg_lvl_get() == nco_dbg_crr) (void)trv_tbl_prn_xtr(trv_tbl);
 
   /* Find coordinate/dimension values associated with user-specified limits
   NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */

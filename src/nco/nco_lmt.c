@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.150 2013-02-02 23:16:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.151 2013-02-03 03:09:01 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -869,7 +869,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(dbg_lvl_get() >= nco_dbg_io){
+  if(dbg_lvl_get() == nco_dbg_io){
     (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
@@ -1099,7 +1099,11 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   for formulation of dimension start and count vectors, or fail trying. 
 
   Goal here is to take input from both "lmt_ptr" and "dmn_trv" and match them on output 
-  NB: no need to inquire netCDF about anything at this point, no IDs and API calls here 
+  Use case example:
+  /lon(4)
+  /g8/lon(2)
+  ncks -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
+  "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2), so we cannot call nco_exit(), but instead return
   */
 
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
@@ -1330,8 +1334,8 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /* Officially change type */
     dim.type=NC_DOUBLE;
 #else
-  /* TO DO "dmn_trv" needs type info */
- 
+    /* TO DO "dmn_trv" needs the above information...either read in table build or just read variable here */
+
 #endif
 
     /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */
@@ -1794,7 +1798,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(dbg_lvl_get() >= nco_dbg_io){
+  if(dbg_lvl_get() == nco_dbg_io){
     (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 

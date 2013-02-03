@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.422 2013-02-02 22:53:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.423 2013-02-03 03:09:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2059,7 +2059,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
   int grp_id; /* [ID] Group ID */
   int var_id; /* [ID] Variable ID */
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
+  if(dbg_lvl_get() == nco_dbg_crr){
     (void)fprintf(stdout,"%s: INFO %s reports %d dimension limits:\n",prg_nm_get(),fnc_nm,lmt_nbr);
     for(int idx=0;idx<lmt_nbr;idx++) (void)fprintf(stdout,"[%d]%s(%li)\n",idx,lmt_lst[idx]->dmn_nm_fll,lmt_lst[idx]->dmn_sz_org);
   } /* endif dbg */
@@ -2648,7 +2648,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
 
   if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits:\n",prg_nm_get(),fnc_nm,lmt_nbr);
+    (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
     for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
       (void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
     }
@@ -2668,12 +2668,14 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
       if(strcmp(dmn_trv.nm,lmt[lmt_idx]->nm) == 0){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s reports <%s> found:\n",prg_nm_get(),fnc_nm,lmt[lmt_idx]->nm);
+          (void)fprintf(stdout,"%s: INFO %s table <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
         } /* End dbg */
 
 #ifdef CALL_LMT_EVL /* This just avoids ncks to fail while the function is not finished */
         /* Parse user-specified limits into hyperslab specifications */
-        (void)nco_lmt_evl_dmn_tbl(lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);  
+        (void)nco_lmt_evl_dmn_tbl(lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
+
+
 #endif /* CALL_LMT_EVL */
 
       
