@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.158 2013-02-04 03:46:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.159 2013-02-04 04:17:02 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1142,6 +1142,11 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   long cnt_rmn_ttl=-1L;            /* [nbr] Total records to be read from this and all remaining files */
   long rec_skp_vld_prv_dgn=-1L;    /* [nbr] Records skipped at end of previous valid file, if any (diagnostic only) */
 
+  int var_id=-1;                   /* [id] ID of variable */
+  int grp_id=-1;                   /* [id] ID of group */
+
+  nc_type var_typ=NC_NAT;          /* [enm] Type of variable */
+
   lmt=*lmt_ptr;
 
   prg_id=prg_get(); 
@@ -1153,6 +1158,19 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   lmt.drn=1L;
   lmt.srd=1L;
   lmt.flg_input_complete=False;
+
+  /* Needed only to read variable, if dimension is a coordinate variable */
+  if (dmn_trv->has_crd_var){
+
+    /* Obtain group ID using full group name */
+    (void)nco_inq_grp_full_ncid(nc_id,dmn_trv->grp_nm_fll,&grp_id);
+
+    /* Obtain variable ID using group ID */
+    (void)nco_inq_varid(grp_id,dmn_trv->nm,&var_id);
+
+    /* Get coordinate type */
+    (void)nco_inq_vartype(grp_id,var_id,&var_typ);
+  }
 
 #ifdef IDS_NOT_ALLOWED
   /* Get dimension ID */
@@ -1170,6 +1188,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   This information is not used in single-file operators, though whether
   the limit is a record limit may be tested.
   Program defensively and define this flag in all cases. */
+
 #ifdef IDS_NOT_ALLOWED
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
@@ -1181,6 +1200,10 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /* Hmm... Only used for ncks now, define this for now; "dmn_trv" has record dimension info already */
   assert(prg_id == ncks);
   if(prg_id == ncks) rec_dmn_and_mfo=False;
+
+  /* Hmm... Hmm... what to do here about "is_rec_dmn"? */
+  lmt.is_rec_dmn=dmn_trv->is_rec_dmn;
+
 #endif /* IDS_NOT_ALLOWED */
   
 #ifdef IDS_NOT_ALLOWED 
@@ -1319,25 +1342,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     long max_idx;
     long min_idx;
     long tmp_idx;
-    long dmn_srt=0L;
-
-    /* Read variable; we know it's a coordinate variable (lmt_crd_val); TO DO check lmt_udu_sng  */
-#ifdef NCO_SANITY_CHECK
-    assert(dmn_trv->has_crd_var);
-#endif
-
-    int var_id;      /* [id] ID of variable */
-    int grp_id;      /* [id] ID of group */
-    nc_type var_typ; /* [enm] Type of variable */
-
-    /* Obtain group ID using full group name */
-    (void)nco_inq_grp_full_ncid(nc_id,dmn_trv->grp_nm_fll,&grp_id);
-
-    /* Obtain variable ID using group ID */
-    (void)nco_inq_varid(grp_id,dmn_trv->nm,&var_id);
-
-    /* Get coordinate type */
-    (void)nco_inq_vartype(grp_id,var_id,&var_typ);
+    long dmn_srt=0L;    
 
     /* Warn when coordinate type is weird */
     if(var_typ == NC_BYTE || var_typ == NC_UBYTE || var_typ == NC_CHAR || var_typ == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(var_typ));
