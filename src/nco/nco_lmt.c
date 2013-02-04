@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.162 2013-02-04 16:02:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.163 2013-02-04 21:43:26 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1659,8 +1659,8 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
       msg_sng=strdup("Minimum index greater than size in non-MFO");
       NCO_SYNTAX_ERROR=True;
       (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
-    }else if(lmt.max_idx >= dmn_sz){
-      /* 20130203 pvn Check for -d max > dimension size; check fortran case */
+    }else if(lmt.max_idx >= dmn_sz && prg_id == ncks){
+      /* 20130203 pvn Check for -d max > dimension size; check fortran case; check multi file operators */
       msg_sng=strdup("ERROR: Maximum index exceeds dimension size");
       NCO_SYNTAX_ERROR=True;
     } /* end if impossible indices */
