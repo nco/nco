@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.160 2013-02-04 04:46:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.161 2013-02-04 07:53:36 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1109,8 +1109,8 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   whereas dimension indices are specified using integer notation without a decimal point.
 
   Tests:
-     ncks -D 11 -d lon,0.,180.,1 -v lon -H ~/nco/data/in_grp.nc
-     ncks -D 11 -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
+     ncks -D 11 -d lon,0.,90.,1 -v lon -H ~/nco/data/in_grp.nc
+     ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc
 
   NB: This should be a typedef instead
   enum lmt_typ [enm] Limit type 
@@ -1156,6 +1156,8 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   prg_id=prg_get(); 
 
   /* Initialize limit structure */
+  /* TODO: fxm pvn Initialize all members of "lmt" */
+
   lmt.flg_mro=False;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
@@ -1657,6 +1659,10 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
       msg_sng=strdup("Minimum index greater than size in non-MFO");
       NCO_SYNTAX_ERROR=True;
       (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
+    }else if(lmt.max_idx >= dmn_sz){
+      /* 20130203 pvn Check for -d max > dimension size; check fortran case */
+      msg_sng=strdup("ERROR: Maximum index exceeds dimension size");
+      NCO_SYNTAX_ERROR=True;
     } /* end if impossible indices */
 
     if(NCO_SYNTAX_ERROR){

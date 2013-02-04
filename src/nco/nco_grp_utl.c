@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.430 2013-02-04 06:23:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.431 2013-02-04 07:53:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2679,8 +2679,8 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         (void)nco_lmt_evl_dmn_tbl(nc_id,lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s dimension <%s> done:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
-
+          (void)fprintf(stdout,"%s: INFO %s dimension <%s> done (%li->%li):\n",
+            prg_nm_get(),fnc_nm,dmn_trv.nm_fll,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx);
         }
 
 
