@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.159 2013-02-04 04:17:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.160 2013-02-04 04:46:53 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1107,7 +1107,11 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2)
   NB: Coordinate values should be specified using real notation with a decimal point required in the value, 
   whereas dimension indices are specified using integer notation without a decimal point.
-  ncks -d lon,0.,180.,1 -v lon -H ~/nco/data/in_grp.nc
+
+  Tests:
+     ncks -D 11 -d lon,0.,180.,1 -v lon -H ~/nco/data/in_grp.nc
+     ncks -D 11 -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
+
   NB: This should be a typedef instead
   enum lmt_typ [enm] Limit type 
   lmt_crd_val,  0, Coordinate value limit 
@@ -1307,11 +1311,17 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
 #ifdef IDS_NOT_ALLOWED
   /* Get variable ID of coordinate */
   rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
-  if(rcd == NC_NOERR){
+
+  /* Not needed; we already have ID; avoid use of _flg versions; this should be in the form
+  if( we know it exists) then read, like below */
+#endif /* IDS_NOT_ALLOWED */
+
+  /* Needed only to read variable, if dimension is a coordinate variable; NB using *group* ID */
+  if (dmn_trv->has_crd_var){
     char *cln_sng=NULL_CEWI;
 
-    fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"units"); /* Units attribute of coordinate variable */
-    cln_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* Calendar attribute */
+    fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); /* Units attribute of coordinate variable */
+    cln_sng=nco_lmt_get_udu_att(grp_id,var_id,"calendar"); /* Calendar attribute */
 
     if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
@@ -1320,18 +1330,14 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
-
     /* ncra and ncrcat read the "calendar" attribute in main() 
     Avoid multiple reads of calendar attritbute in multi-file operations */
     if(!rec_dmn_and_mfo){
       if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
     } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
-  } /* end if limit is coordinate */
-#else
-    /* TO DO: Above information needed... */
-    
-#endif /* IDS_NOT_ALLOWED */
+  } /* End Needed only to read variable, if dimension is a coordinate variable */
+
 
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
     double *dmn_val_dp=NULL;
