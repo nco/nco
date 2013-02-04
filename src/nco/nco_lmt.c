@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.157 2013-02-04 00:31:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.158 2013-02-04 03:46:34 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1115,36 +1115,36 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   lmt_udu_sng   2, UDUnits string
   */
 
-  char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
-  char *msg_sng=NULL_CEWI; /* [sng] Error message */
-  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *fl_udu_sng=NULL_CEWI;     /* [sng] Store units attribute of coordinate dimension */
+  char *msg_sng=NULL_CEWI;        /* [sng] Error message */
+  char *sng_cnv_rcd=NULL_CEWI;    /* [sng] strtol()/strtoul() return code */
 
-  nco_bool flg_no_data_err=False; /* True if domain brackets no data (and not an MFO/record coordinate) */
-  nco_bool flg_no_data_ok=False; /* True if file contains no data for hyperslab */
-  nco_bool rec_dmn_and_mfo=False; /* True if record dimension in multi-file operator */
-  nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in hyperslab specification */
+  nco_bool flg_no_data_err=False; /* [flg] True if domain brackets no data (and not an MFO/record coordinate) */
+  nco_bool flg_no_data_ok=False;  /* [flg] True if file contains no data for hyperslab */
+  nco_bool rec_dmn_and_mfo=False; /* [flg] True if record dimension in multi-file operator */
+  nco_bool NCO_SYNTAX_ERROR=False;/* [flg] Syntax error in hyperslab specification */
 
 #ifdef IDS_NOT_ALLOWED /* No need to inquire netCDF: "dmn_trv" already has the dimension size */
   dmn_sct dim;  
 #endif /* IDS_NOT_ALLOWED */
 
-  lmt_sct lmt;
+  lmt_sct lmt;                     /* [sct] Structure from nco_lmt_prs()  */
 
   int min_lmt_typ=int_CEWI;
-  int max_lmt_typ=int_CEWI;
-  monotonic_direction_enm monotonic_direction=not_checked; /* CEWI */
-  int prg_id; /* Program ID */
-  int rcd=NC_NOERR; /* [enm] Return code */
-  int rec_dmn_id; /* [idx] Variable ID of record dimension, if any */
+  int max_lmt_typ=int_CEWI; 
+  int prg_id;                      /* [enm] Program ID */
+  int rcd=NC_NOERR;                /* [rcd] Return code */
 
-  long dmn_sz;
-  long cnt_rmn_crr=-1L; /* Records to extract from current file */
-  long cnt_rmn_ttl=-1L; /* Total records to be read from this and all remaining files */
-  long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file, if any (diagnostic only) */
+  monotonic_direction_enm monotonic_direction=not_checked; /* CEWI */
+
+  long dmn_sz;                     /* [nbr] Dimension size */
+  long cnt_rmn_crr=-1L;            /* [nbr] Records to extract from current file */
+  long cnt_rmn_ttl=-1L;            /* [nbr] Total records to be read from this and all remaining files */
+  long rec_skp_vld_prv_dgn=-1L;    /* [nbr] Records skipped at end of previous valid file, if any (diagnostic only) */
 
   lmt=*lmt_ptr;
 
-  prg_id=prg_get(); /* Program ID */
+  prg_id=prg_get(); 
 
   /* Initialize limit structure */
   lmt.flg_mro=False;
@@ -1306,13 +1306,12 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
   } /* end if limit is coordinate */
 #else
-    /* TO DO "dmn_trv" needs the above information...either read in table build or just read variable here (meaning file ID needed) */
+    /* TO DO: Above information needed... */
     
-
 #endif /* IDS_NOT_ALLOWED */
 
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
-    double *dmn_val_dp;
+    double *dmn_val_dp=NULL;
 
     double dmn_max;
     double dmn_min;
@@ -1322,14 +1321,26 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
     long tmp_idx;
     long dmn_srt=0L;
 
-#ifdef IDS_NOT_ALLOWED
+    /* Read variable; we know it's a coordinate variable (lmt_crd_val); TO DO check lmt_udu_sng  */
+#ifdef NCO_SANITY_CHECK
+    assert(dmn_trv->has_crd_var);
+#endif
+
+    int var_id;      /* [id] ID of variable */
+    int grp_id;      /* [id] ID of group */
+    nc_type var_typ; /* [enm] Type of variable */
+
+    /* Obtain group ID using full group name */
+    (void)nco_inq_grp_full_ncid(nc_id,dmn_trv->grp_nm_fll,&grp_id);
+
+    /* Obtain variable ID using group ID */
+    (void)nco_inq_varid(grp_id,dmn_trv->nm,&var_id);
+
     /* Get coordinate type */
-    (void)nco_inq_vartype(nc_id,dim.cid,&dim.type);
+    (void)nco_inq_vartype(grp_id,var_id,&var_typ);
 
     /* Warn when coordinate type is weird */
-    if(dim.type == NC_BYTE || dim.type == NC_UBYTE || dim.type == NC_CHAR || dim.type == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
-
-    /* if(lmt.drn != 1L) (void)fprintf(stderr,"\n%s: WARNING Hyperslabs for %s are based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ill-defined, unpredictable, and unsupported for coordinate-based hyperslabs. Only min, max, and stride are supported for coordinate-value based hyperslabbing. Duration may or may not work as you intend. Use at your own risk.\n",prg_nm_get(),lmt.nm); */
+    if(var_typ == NC_BYTE || var_typ == NC_UBYTE || var_typ == NC_CHAR || var_typ == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(var_typ));
 
     /* Allocate enough space to hold coordinate */
     dmn_val_dp=(double *)nco_malloc(dmn_sz*nco_typ_lng(NC_DOUBLE));
@@ -1342,15 +1353,15 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
       Block is thread-safe for distinct in_id's */
       /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
-      nc_get_vara_double(nc_id,dim.cid,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
+      rcd=nc_get_vara_double(grp_id,var_id,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
+
+      /* Exit if read error */
+      if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_get_vara_double()");
+
     } /* end OpenMP critical */
 
-  /* Officially change type */
-    dim.type=NC_DOUBLE;
-#else
-    /* TO DO "dmn_trv" needs the above information...either read in table build or just read variable here (meaning file ID needed) */
-
-#endif /* IDS_NOT_ALLOWED */
+    /* Officially change type */
+    var_typ=NC_DOUBLE;
 
     /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */
     if(dmn_sz == 1L){

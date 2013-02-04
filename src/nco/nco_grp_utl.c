@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.428 2013-02-03 23:32:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.429 2013-02-04 03:46:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2642,7 +2642,7 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 
 void
 nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
-(const int nc_id,                     /* I [idx] netCDF file ID */
+(const int nc_id,                     /* I [ID] netCDF file ID */
  int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits (total number of -d inputs) */
  lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs()  */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
@@ -2675,6 +2675,11 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 #ifdef CALL_LMT_EVL /* This just avoids ncks to fail while the function is not finished */
         /* Parse user-specified limits into hyperslab specifications */
         (void)nco_lmt_evl_dmn_tbl(nc_id,lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s dimension <%s> done:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+
+        }
 
 
 
