@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.156 2013-02-03 23:32:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.157 2013-02-04 00:31:01 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1105,6 +1105,14 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /g8/lon(2)
   ncks -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
   "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2)
+  NB: Coordinate values should be specified using real notation with a decimal point required in the value, 
+  whereas dimension indices are specified using integer notation without a decimal point.
+  ncks -d lon,0.,180.,1 -v lon -H ~/nco/data/in_grp.nc
+  NB: This should be a typedef instead
+  enum lmt_typ [enm] Limit type 
+  lmt_crd_val,  0, Coordinate value limit 
+  lmt_dmn_idx,  1, Dimension index limit 
+  lmt_udu_sng   2, UDUnits string
   */
 
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
@@ -1175,7 +1183,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   if(prg_id == ncks) rec_dmn_and_mfo=False;
 #endif /* IDS_NOT_ALLOWED */
   
-#ifdef IDS_NOT_ALLOWED /
+#ifdef IDS_NOT_ALLOWED 
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
 #else 
