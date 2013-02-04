@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.432 2013-02-04 21:43:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.433 2013-02-04 22:29:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2653,6 +2653,10 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
 
   if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s reports %d unique dimensions in table\n",prg_nm_get(),fnc_nm,trv_tbl->nbr_dmn);
+    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+      (void)fprintf(stdout,"[%d]%s\n",dmn_idx,trv_tbl->lst_dmn[dmn_idx].nm_fll);
+    }
     (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
     for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++)(void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
     (void)fprintf(stdout,"\n");      
@@ -2676,9 +2680,15 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         (void)nco_lmt_evl_dmn_tbl(nc_id,lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s dimension <%s> done (%li->%li):\n",
-            prg_nm_get(),fnc_nm,dmn_trv.nm_fll,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx);
+          (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
+            prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
         }
+
+
+
+
+
+
 
 
 
