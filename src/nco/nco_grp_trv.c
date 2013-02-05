@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.44 2013-02-05 03:09:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.45 2013-02-05 10:02:15 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -76,6 +76,8 @@ trv_tbl_init
     tb->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     tb->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
     tb->lst_dmn[idx].sz=0; /* [nbr] Size of dimension */
+    tb->lst_dmn[idx].lmt_dmn_nbr=0;  /* [nbr] Number of limit structures */
+    tb->lst_dmn[idx].lmt_crr=0; /* [nbr] Index of current limit structure being initialized */
   }
 
   *tbl=tb;
@@ -91,26 +93,30 @@ trv_tbl_free
   /* Object (group/variable) list */
 
   for(idx=0;idx<tbl->sz;idx++){
-    nco_free(tbl->lst[idx].nm_fll);
-    nco_free(tbl->lst[idx].grp_nm_fll);
+    tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
+    tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
 
     /* Full dimension names for each variable */
     for(int dmn_idx_var=0;dmn_idx_var<tbl->lst[idx].var_dmn_fll.nbr_dmn;dmn_idx_var++) 
-      nco_free(tbl->lst[idx].var_dmn_fll.dmn_nm_fll[dmn_idx_var]);
+      tbl->lst[idx].var_dmn_fll.dmn_nm_fll[dmn_idx_var]=(char *)nco_free(tbl->lst[idx].var_dmn_fll.dmn_nm_fll[dmn_idx_var]);
 
   } /* end loop */
-  nco_free(tbl->lst);
+  tbl->lst=(trv_sct *)nco_free(tbl->lst);
 
   /* Dimension list */
 
   for(int dnm_idx=0;dnm_idx<tbl->sz_dmn;dnm_idx++){
-    nco_free(tbl->lst_dmn[dnm_idx].nm_fll);
-    nco_free(tbl->lst_dmn[dnm_idx].grp_nm_fll);
+    tbl->lst_dmn[dnm_idx].nm_fll=(char *)nco_free(tbl->lst_dmn[dnm_idx].nm_fll);
+    tbl->lst_dmn[dnm_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dnm_idx].grp_nm_fll);
+
+    for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dnm_idx].lmt_dmn_nbr;lmt_idx++)
+      tbl->lst_dmn[dnm_idx].lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dnm_idx].lmt_dmn[lmt_idx]);
+
   } /* End Dimension list loop */
 
-  nco_free(tbl->lst_dmn);
+  tbl->lst_dmn=(dmn_fll_sct *)nco_free(tbl->lst_dmn);
 
-  nco_free(tbl);
+  tbl=(trv_tbl_sct *)nco_free(tbl);
 } /* end trv_tbl_free() */
 
 void 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.231 2013-02-05 03:09:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.232 2013-02-05 10:02:15 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -659,6 +659,9 @@ extern "C" {
     nco_bool has_crd_var; /* [flg] Does it have an associated variable? (coordinate variable) */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
     size_t sz; /* [nbr] Size of dimension */
+    int lmt_dmn_nbr; /* [nbr] Number of limit structures */
+    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
   } dmn_fll_sct; 
  
   /* Traversal table structure contains two lists

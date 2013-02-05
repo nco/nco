@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.434 2013-02-05 03:09:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.435 2013-02-05 10:02:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2644,7 +2644,22 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  /* Purpose: Assign user-specified dimension limits to traversal table dimensions structure */
+  /* Purpose: Assign user-specified dimension limits to traversal table dimensions structure 
+  At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known 
+  Allocation/match has to be done in 3 steps:
+  Step 1) Find the total numbers of matches for a dimension
+  ncks -d lon,0,0,1  ~/nco/data/in_grp.nc
+  Here "lmt_nbr" is 1 and there is 1 match at most
+  ncks -d lon,0,0,1 -d lon,0,0,1 -d lat,0,0,1  ~/nco/data/in_grp.nc
+  Here "lmt_nbr" is 3 and there are 2 matches at most for "lon" and 1 match at most for "lat"
+  Step 2) Allocate and initialize counter index for number of limits to zero for a dimension
+  Step 3) Finally.. store matches in table, match at the current index, increment current index
+  Step 4) Do a Sanity Check ...Phew   
+
+  Tests:
+  ncks -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
+
+  */
 
   const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
 
@@ -2658,7 +2673,32 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     (void)fprintf(stdout,"\n");      
   } /* endif dbg */
 
-  /* At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known */
+  /* Step 1) Find the total numbers of matches for a dimension */
+
+  /* Loop input name list (can have duplicate names)  */
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+    /* Loop table dimensions to find possible name locations  */
+    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+      /* Match input *relative* name to table name */ 
+      if(strcmp(dmn_trv.nm,lmt[lmt_idx]->nm) == 0){
+        /* Increment current number of dimension limits for table dimension */
+        trv_tbl->lst_dmn[dmn_idx].lmt_dmn_nbr++;
+      } /* End Match input name to table name */ 
+    } /* End Loop table dimensions to find possible name locations  */
+  } /* End Loop input name list (can have duplicate names)  */
+
+  /* Step 2) Allocate and initialize counter index for number of limits to zero for a dimension */
+
+  /* Loop table dimensions */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    /* Number of dimension limits for table dimension  */
+    unsigned int lmt_dmn_nbr=trv_tbl->lst_dmn[dmn_idx].lmt_dmn_nbr;
+    trv_tbl->lst_dmn[dmn_idx].lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
+    trv_tbl->lst_dmn[dmn_idx].lmt_crr=0;
+  } /* End Loop table dimensions  */
+
+  /* Step 3) Finally.. store matches in table, match at the current index, increment current index  */
 
   /* Loop input name list (can have duplicate names)  */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
@@ -2680,17 +2720,47 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
             prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
         }
 
+        /* Current index (lmt_crr) of dimension limits for this (dmn_idx) table dimension  */
+        int idx=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
 
+        /* Increment current index being initialized  */
+        trv_tbl->lst_dmn[dmn_idx].lmt_crr++;
 
+        /* Initialize this entry */
+        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+        (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]);
 
+        /* Store this valid input; deep-copy to table */ 
+        if(lmt[lmt_idx]->nm)      trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->nm=(char *)strdup(lmt[lmt_idx]->nm);
+        if(lmt[lmt_idx]->drn_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->drn_sng=(char *)strdup(lmt[lmt_idx]->drn_sng);      
+        if(lmt[lmt_idx]->max_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->max_sng=(char *)strdup(lmt[lmt_idx]->max_sng);
+        if(lmt[lmt_idx]->min_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->min_sng=(char *)strdup(lmt[lmt_idx]->min_sng);
+        if(lmt[lmt_idx]->mro_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->mro_sng=(char *)strdup(lmt[lmt_idx]->mro_sng);
+        if(lmt[lmt_idx]->rbs_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rbs_sng=(char *)strdup(lmt[lmt_idx]->rbs_sng);
+        if(lmt[lmt_idx]->srd_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->srd_sng=(char *)strdup(lmt[lmt_idx]->srd_sng);
 
-
-
+        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->lmt_typ=lmt[lmt_idx]->lmt_typ;
 
 
       } /* End Match input name to table name */ 
     } /* End Loop table dimensions to find possible name locations  */
   } /* End Loop input name list (can have duplicate names)  */
+
+
+  /* Step 4) Do a Sanity Check ...Phew   */
+
+#ifdef NCO_SANITY_CHECK
+  /* Loop table dimensions */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    /* Number of dimension limits for table dimension  */
+    int lmt_dmn_nbr=trv_tbl->lst_dmn[dmn_idx].lmt_dmn_nbr;
+    /* Current index of dimension limits for table dimension  */
+    int lmt_crr=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
+
+    assert(lmt_dmn_nbr == lmt_crr);
+  } /* End Loop table dimensions  */
+
+#endif /* NCO_SANITY_CHECK */
 
 } /* End nco_bld_lmt_trv() */
 
