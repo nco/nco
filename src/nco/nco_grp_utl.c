@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.433 2013-02-04 22:29:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.434 2013-02-05 03:09:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -560,10 +560,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     obj_dmn.sz=dmn_sz;
     /* Don't forget group name full, we will need it (all reason for dimension object) */
     obj_dmn.grp_nm_fll=grp_nm_fll;
-
-    /* User specified limits for this dimension; at this point we don't know if any; will be done in nco_bld_lmt_trv() */
-    obj_dmn.nbr_lmt=0;
-    obj_dmn.lmt_dmn=NULL;
 
     /* Call dimension object add function */
     (void)trv_tbl_add_dmn(obj_dmn,trv_tbl);
