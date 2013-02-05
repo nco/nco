@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.437 2013-02-05 23:20:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.438 2013-02-05 23:39:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2654,8 +2654,10 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   Here "lmt_nbr" is 3 and there are 2 matches at most for "lon" and 1 match at most for "lat"
   Step 2) Allocate and initialize counter index for number of limits to zero for a dimension;  
           "lmt_dmn_nbr" needed from Step 1; initialize dimension structure limit information
-  Step 3) Finally.. store matches in table, match at the current index, increment current index
-  Step 4) Do a Sanity Check   
+  Step 3) Store matches in table, match at the current index, increment current index
+  Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) ) 
+          At this point lmt_sct is no longer needed;    
+  Step 5) Do a Sanity Check   
 
   Tests:
   ncks -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
@@ -2702,7 +2704,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=False;    
   } /* End Loop table dimensions  */
 
-  /* Step 3) Finally.. store matches in table, match at the current index, increment current index  */
+  /* Step 3) Store matches in table, match at the current index, increment current index  */
 
   /* Loop input name list (can have duplicate names)  */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
@@ -2753,16 +2755,24 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 
 
-
-        /* Split wrapped dimensions (traversal table version) */
-        (void)nco_msa_wrp_splt_trv(trv_tbl->lst_dmn);
-
       } /* End Match input name to table name */ 
     } /* End Loop table dimensions to find possible name locations  */
   } /* End Loop input name list (can have duplicate names)  */
 
 
-  /* Step 4) Do a Sanity Check */
+  /* Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) )  */
+
+  /* Loop table dimensions  */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+
+    /* Split wrapped dimensions (traversal table version) */
+    (void)nco_msa_wrp_splt_trv(trv_tbl->lst_dmn);
+
+
+
+  } /* End Loop table dimensions  */
+
+  /* Step 5) Do a Sanity Check */
 
 #ifdef NCO_SANITY_CHECK
   /* Loop table dimensions */
