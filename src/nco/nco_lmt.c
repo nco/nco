@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.165 2013-02-05 06:42:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.166 2013-02-05 09:29:03 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -51,6 +51,52 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->lmt_cln=cln_nil;      /* [flg]  Used by ncra, ncrcat to store enum of calendar-type attribute */
 
 } /* end nco_lmt_init() */
+
+
+void
+nco_lmt_prt /* [fnc] Print a Limit structure */
+(lmt_sct *lmt) /* I/O [sct] Limit structure to print */
+{
+  (void)fprintf(stdout,"Name: %s\n",lmt->nm);
+  (void)fprintf(stdout,"User-specified string for dimension duration: %s\n",lmt->drn_sng);
+  (void)fprintf(stdout,"User-specified string for dimension maximum : %s\n",lmt->max_sng);
+  (void)fprintf(stdout,"User-specified string for dimension minimum: %s\n",lmt->min_sng);
+  (void)fprintf(stdout,"User-specified string for multi-record output: %s\n",lmt->mro_sng);
+  (void)fprintf(stdout,"Unit attribute from first file: %s\n",lmt->rbs_sng);
+  (void)fprintf(stdout,"User-specified string for dimension stride: %s\n",lmt->srd_sng);
+
+  (void)fprintf(stdout,"Maximum value of coordinate: %f\n",lmt->max_val);
+  (void)fprintf(stdout,"Minimum value of coordinate: %f\n",lmt->min_val);
+  (void)fprintf(stdout,"Origin: %f\n",lmt->origin);
+
+  (void)fprintf(stdout,"ID: %d\n",lmt->id);
+
+  (void)fprintf(stdout,"Limit type: %d\n",lmt->lmt_typ);
+
+  (void)fprintf(stdout,"Valid elements: %li\n",lmt->cnt);
+  (void)fprintf(stdout,"Duration of hyperslab: %li\n",lmt->drn);
+  (void)fprintf(stdout,"Index to end of hyperslab: %li\n",lmt->end);
+  (void)fprintf(stdout,"Index of maximum requested value: %li\n",lmt->max_idx);
+  (void)fprintf(stdout,"Index of minimum requested value: %li\n",lmt->min_idx);
+  (void)fprintf(stdout,"Number of records in this file: %li\n",lmt->rec_dmn_sz);
+  (void)fprintf(stdout,"Cumulative number of records in all files: %li\n",lmt->rec_in_cml);
+  (void)fprintf(stdout,"Maximum allowed index in record dimension: %li\n",lmt->idx_end_max_abs);
+  (void)fprintf(stdout,"Records skipped in initial superfluous files: %li\n",lmt->rec_skp_ntl_spf);
+  (void)fprintf(stdout,"Records skipped since previous good one: %li\n",lmt->rec_skp_vld_prv);
+  (void)fprintf(stdout,"Records remaining-to-be-read: %li\n",lmt->rec_rmn_prv_drn);
+  (void)fprintf(stdout,"Stride of hyperslab: %li\n",lmt->srd);
+  (void)fprintf(stdout,"Index to start of hyperslab: %li\n",lmt->srt);
+
+  (void)fprintf(stdout,"Is multi-record output: %d\n",lmt->flg_mro);
+  (void)fprintf(stdout,"No more files need be opened: %d\n",lmt->flg_input_complete);
+  (void)fprintf(stdout,"Is record dimension: %d\n",lmt->is_rec_dmn);
+  (void)fprintf(stdout,"Any part is user-specified: %d\n",lmt->is_usr_spc_lmt);
+  (void)fprintf(stdout,"Is user-specified maximum: %d\n",lmt->is_usr_spc_max);
+  (void)fprintf(stdout,"Is user-specified minimum: %d\n",lmt->is_usr_spc_min);
+  (void)fprintf(stdout,"Calendar-type attribute: %d\n",lmt->lmt_cln);
+
+} /* end nco_lmt_init() */
+
 
 lmt_sct * /* O [sct] Pointer to free'd structure */
 nco_lmt_free /* [fnc] Free memory associated with limit structure */
