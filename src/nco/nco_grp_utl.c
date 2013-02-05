@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.436 2013-02-05 20:16:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.437 2013-02-05 23:20:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2748,6 +2748,14 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->lmt_typ=lmt[lmt_idx]->lmt_typ;
 
+
+
+
+
+
+
+        /* Split wrapped dimensions (traversal table version) */
+        (void)nco_msa_wrp_splt_trv(trv_tbl->lst_dmn);
 
       } /* End Match input name to table name */ 
     } /* End Loop table dimensions to find possible name locations  */

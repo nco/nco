@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.50 2013-02-02 08:40:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.51 2013-02-05 23:20:14 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -147,6 +147,11 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
  const int nbr_var,  /* I [nbr] Number of variables */
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
+
+
+void
+nco_msa_wrp_splt_trv /* [fnc] Split wrapped dimensions (traversal table version) */
+(dmn_fll_sct *dmn_trv); /* [sct] Dimension structure from traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

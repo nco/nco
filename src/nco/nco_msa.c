@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.140 2013-02-03 03:09:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.141 2013-02-05 23:20:14 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1653,6 +1653,24 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
   } /* end loop over idx */
 
 } /* end nco_msa_var_val_cpy() */
+
+
+void
+nco_msa_wrp_splt_trv /* [fnc] Split wrapped dimensions (traversal table version) */
+(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from traversal table */
+{
+  /* Purpose: Same as nco_msa_wrp_splt() but applied to the Dimension structure from traversal table */
+
+
+
+
+} /* end nco_msa_wrp_splt_trv() */
+
+
+
+
+
+
 
 
 
