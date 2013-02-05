@@ -1,3 +1,7 @@
+2013-02-04  Charlie Zender  <zender@uci.edu>
+
+	* Split ncks dimension report into unique fixed and record dimensions
+
 2013-02-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.6 release procedure:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.574 2013-02-03 23:32:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.575 2013-02-05 02:10:50 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.574 2013-02-03 23:32:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.574 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.575 2013-02-05 02:10:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.575 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -646,7 +646,7 @@ main(int argc,char **argv)
   /* Process --get_file_info option if requested */ 
   if(GET_FILE_INFO){ 
     (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
-    (void)fprintf(stdout,"%d subgroups, %d dimensions, %d record dimensions, %d group + global attributes, %d variables\n",nbr_grp_fl,nbr_dmn_fl,nbr_rec_fl,nbr_glb_att,nbr_var_fl); 
+    (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d variables\n",nbr_grp_fl,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_glb_att,nbr_var_fl);
     goto close_and_free; 
   } /* end GET_FILE_INFO */
 
@@ -799,7 +799,7 @@ main(int argc,char **argv)
       int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
       int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
       /* File summary line */
-      (void)fprintf(stdout,"Opened file %s: groups = %i, dimensions = %i, record dimensions = %i, variables = %i, group+global atts. = %i, type = %s\n",fl_in,nbr_grp_fl,nbr_dmn_fl,nbr_rec_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
+      (void)fprintf(stdout,"Opened file %s: groups = %i, fixed dimensions = %i, record dimensions = %i, variables = %i, group+global atts. = %i, type = %s\n",fl_in,nbr_grp_fl,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
       /* Get unlimited dimension information from input file/group */
       rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
       if(nbr_rec_lcl > 0){

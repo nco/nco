@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.42 2013-02-03 07:33:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.43 2013-02-05 02:10:50 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -190,7 +190,6 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
 
   /* Initialize */
   att_nbr_lcl=0;
-  dmn_nbr_lcl=0;
   grp_nbr_lcl=0;
   rec_nbr_lcl=0;
   var_nbr_lcl=0;
@@ -200,15 +199,17 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
     if(trv.typ == nco_obj_typ_grp){ 
       /* Increment */
       att_nbr_lcl+=trv.nbr_att; 
-      dmn_nbr_lcl+=trv.nbr_dmn;
       grp_nbr_lcl+=trv.nbr_grp;
       rec_nbr_lcl+=trv.nbr_rec;
       var_nbr_lcl+=trv.nbr_var;
     } /* end nco_obj_typ_grp */
   } /* end uidx */
 
+  for(unsigned uidx=0;uidx<trv_tbl->nbr_dmn;uidx++)
+    if(trv_tbl->lst_dmn[uidx].is_rec_dmn) rec_nbr_lcl++;
+
   if(att_nbr_all) *att_nbr_all=att_nbr_lcl;
-  if(dmn_nbr_all) *dmn_nbr_all=dmn_nbr_lcl;
+  if(dmn_nbr_all) *dmn_nbr_all=trv_tbl->nbr_dmn;
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
   if(rec_nbr_all) *rec_nbr_all=rec_nbr_lcl;
   if(var_nbr_all) *var_nbr_all=var_nbr_lcl;
