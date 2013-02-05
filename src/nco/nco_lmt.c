@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.164 2013-02-05 05:33:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.165 2013-02-05 06:42:47 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -9,17 +9,47 @@
 #include "nco_lmt.h" /* Hyperslab limits */
 
 void
-nco_lmt_init /* [fnc] Initialize limit to NULL/default values */
+nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
 (lmt_sct *lmt) /* I/O [sct] Limit structure to initialize */
 {
-  /* Purpose: Initialize limit to NULL/default values */
-  lmt->nm=NULL;
-  lmt->drn_sng=NULL;
-  lmt->max_sng=NULL;
-  lmt->min_sng=NULL;
-  lmt->mro_sng=NULL;
-  lmt->rbs_sng=NULL;  
-  lmt->srd_sng=NULL;
+  lmt->nm=NULL;              /* [sng] Dimension name */
+  lmt->drn_sng=NULL;         /* [sng] User-specified string for dimension duration */
+  lmt->max_sng=NULL;         /* [sng] User-specified string for dimension maximum */
+  lmt->min_sng=NULL;         /* [sng] User-specified string for dimension minimum */
+  lmt->mro_sng=NULL;         /* [sng] User-specified string for multi-record output */
+  lmt->rbs_sng=NULL;         /* [sng] Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
+  lmt->srd_sng=NULL;         /* [sng] User-specified string for dimension stride */
+
+  lmt->max_val=-1;           /* [nbr] Double precision representation of maximum value of coordinate requested or implied */
+  lmt->min_val=-1;           /* [nbr] Double precision representation of minimum value of coordinate requested or implied */
+  lmt->origin=-1;            /* [nbr] Used by ncra, ncrcat to re-base record coordinate */
+
+  lmt->id=-1;                /* [ID] Dimension ID */
+
+  lmt->lmt_typ=-1;           /* [enm] Limit type (0, Coordinate value limit, 1, Dimension index limit, 2, UDUnits string )  */
+
+  lmt->cnt=-1;               /* [nbr] Valid elements in this dimension (including effects of stride and wrapping) */
+  lmt->drn=-1;               /* [nbr] Duration of hyperslab */
+  lmt->end=-1;               /* [nbr] Index to end of hyperslab */
+  lmt->max_idx=-1;           /* [nbr] Index of maximum requested value in dimension */
+  lmt->min_idx=-1;           /* [nbr] Index of minimum requested value in dimension */
+  lmt->rec_dmn_sz=-1;        /* [nbr] Number of records in this file (multi-file record dimension only) */
+  lmt->rec_in_cml=-1;        /* [nbr] Cumulative number of records in all files opened so far (multi-file record dimension only) */
+  lmt->idx_end_max_abs=-1;   /* [[nbr]] Maximum allowed index in record dimension (multi-file record dimension only) */
+  lmt->rec_skp_ntl_spf=-1;   /* [nbr] Records skipped in initial superfluous files (multi-file record dimension only) */
+  lmt->rec_skp_vld_prv=-1;   /* [nbr] Records skipped since previous good one (multi-file record dimension only) */
+  lmt->rec_rmn_prv_drn=-1;   /* [nbr] Records remaining-to-be-read to complete duration group from previous file (multi-file record dimension only) */
+  lmt->srd=-1;               /* [nbr] Stride of hyperslab */
+  lmt->srt=-1;               /* [nbr] Index to start of hyperslab */
+
+  lmt->flg_mro=-1;           /* [flg] True for multi-record output (used by ncra only) */
+  lmt->flg_input_complete=-1;/* [flg] True for multi-file operators when no more files need be opened */
+  lmt->is_rec_dmn=-1;        /* [flg]  True if record dimension, else False */
+  lmt->is_usr_spc_lmt=-1;    /* [flg]  True if any part of limit is user-specified, else False */
+  lmt->is_usr_spc_max=-1;    /* [flg]  True if user-specified, else False */
+  lmt->is_usr_spc_min=-1;    /* [flg]  True if user-specified, else False */
+  lmt->lmt_cln=cln_nil;      /* [flg]  Used by ncra, ncrcat to store enum of calendar-type attribute */
+
 } /* end nco_lmt_init() */
 
 lmt_sct * /* O [sct] Pointer to free'd structure */
