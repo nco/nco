@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.163 2013-02-04 21:43:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.164 2013-02-05 05:33:14 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -7,6 +7,20 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_lmt.h" /* Hyperslab limits */
+
+void
+nco_lmt_init /* [fnc] Initialize limit to NULL/default values */
+(lmt_sct *lmt) /* I/O [sct] Limit structure to initialize */
+{
+  /* Purpose: Initialize limit to NULL/default values */
+  lmt->nm=NULL;
+  lmt->drn_sng=NULL;
+  lmt->max_sng=NULL;
+  lmt->min_sng=NULL;
+  lmt->mro_sng=NULL;
+  lmt->rbs_sng=NULL;  
+  lmt->srd_sng=NULL;
+} /* end nco_lmt_init() */
 
 lmt_sct * /* O [sct] Pointer to free'd structure */
 nco_lmt_free /* [fnc] Free memory associated with limit structure */

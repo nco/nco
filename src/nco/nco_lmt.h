@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.55 2013-02-03 23:32:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.56 2013-02-05 05:33:14 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -47,7 +47,12 @@ enum lmt_typ{ /* [enm] Limit type */
  lmt_dmn_idx, /* 1, Dimension index limit */
  lmt_udu_sng /* 2, UDUnits string */
 }; /* end lmt_typ enum */
-  
+
+
+void
+nco_lmt_init /* [fnc] Initialize limit to NULL/default values */
+(lmt_sct *lmt); /* I/O [sct] Limit structure to initialize */
+
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 (int nc_id, /* I [idx] netCDF file ID */
