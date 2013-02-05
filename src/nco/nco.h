@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.232 2013-02-05 10:02:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.233 2013-02-05 20:16:36 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -652,6 +652,7 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
+  /* Dimension structure; it contains NetCDF model fields and NCO limit (-d) fields */
   typedef struct{ 
     char *grp_nm_fll; /* [sng] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
@@ -662,6 +663,9 @@ extern "C" {
     int lmt_dmn_nbr; /* [nbr] Number of limit structures */
     int lmt_crr; /* [nbr] Index of current limit structure being initialized */
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
+    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
+    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   } dmn_fll_sct; 
  
   /* Traversal table structure contains two lists
