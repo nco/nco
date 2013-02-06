@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.442 2013-02-06 09:46:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.443 2013-02-06 23:28:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2731,54 +2731,22 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         }
 
         /* Current index (lmt_crr) of dimension limits for this (dmn_idx) table dimension  */
-        int idx=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
+        int lmt_crr=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
 
         /* Increment current index being initialized  */
         trv_tbl->lst_dmn[dmn_idx].lmt_crr++;
 
         /* Initialize this entry */
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-        (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]);
+        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+        (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]);
 
         /* Store this valid input; deep-copy to table */ 
-
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->nm=(char *)strdup(lmt[lmt_idx]->nm);
-        if(lmt[lmt_idx]->drn_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->drn_sng=(char *)strdup(lmt[lmt_idx]->drn_sng);      
-        if(lmt[lmt_idx]->max_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->max_sng=(char *)strdup(lmt[lmt_idx]->max_sng);
-        if(lmt[lmt_idx]->min_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->min_sng=(char *)strdup(lmt[lmt_idx]->min_sng);
-        if(lmt[lmt_idx]->mro_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->mro_sng=(char *)strdup(lmt[lmt_idx]->mro_sng);
-        if(lmt[lmt_idx]->rbs_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rbs_sng=(char *)strdup(lmt[lmt_idx]->rbs_sng);
-        if(lmt[lmt_idx]->srd_sng) trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->srd_sng=(char *)strdup(lmt[lmt_idx]->srd_sng);
-
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->max_val=lmt[lmt_idx]->max_val;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->min_val=lmt[lmt_idx]->min_val;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->origin=lmt[lmt_idx]->origin;
-
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->id=-1;
-
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->lmt_typ=lmt[lmt_idx]->lmt_typ;
-
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->cnt=lmt[lmt_idx]->cnt;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->drn=lmt[lmt_idx]->drn;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->end=lmt[lmt_idx]->end;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->max_idx=lmt[lmt_idx]->max_idx;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->min_idx=lmt[lmt_idx]->min_idx;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_dmn_sz=lmt[lmt_idx]->rec_dmn_sz;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_in_cml=lmt[lmt_idx]->rec_in_cml;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->idx_end_max_abs=lmt[lmt_idx]->idx_end_max_abs;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_skp_ntl_spf=lmt[lmt_idx]->rec_skp_ntl_spf;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_skp_vld_prv=lmt[lmt_idx]->rec_skp_vld_prv;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_rmn_prv_drn=lmt[lmt_idx]->rec_rmn_prv_drn;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->srd=lmt[lmt_idx]->srd;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->srt=lmt[lmt_idx]->srt;
-
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->flg_mro=lmt[lmt_idx]->flg_mro;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->flg_input_complete=lmt[lmt_idx]->flg_input_complete;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->is_rec_dmn=lmt[lmt_idx]->is_rec_dmn;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->is_usr_spc_lmt=lmt[lmt_idx]->is_usr_spc_lmt;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->is_usr_spc_max=lmt[lmt_idx]->is_usr_spc_max;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->is_usr_spc_min=lmt[lmt_idx]->is_usr_spc_min;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->lmt_cln=lmt[lmt_idx]->lmt_cln;
+        (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]);
+      
+        /* Print copy in table */ 
+        if(dbg_lvl_get() == nco_dbg_crr){
+          (void)nco_lmt_prt(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]);
+        }
 
       } /* End Match input name to table name */ 
     } /* End Loop table dimensions to find possible name locations  */
@@ -2789,6 +2757,11 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
   /* Loop table dimensions  */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+
+
+
+
+
 
 
   } /* End Loop table dimensions  */

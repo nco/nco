@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.57 2013-02-05 09:29:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.58 2013-02-06 23:28:35 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -56,6 +56,11 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/default values */
 void
 nco_lmt_prt /* [fnc] Print a Limit structure */
 (lmt_sct *lmt); /* I/O [sct] Limit structure to print */
+
+void
+nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
+(const lmt_sct * const lmt1, /* I [sct] Limit structure to copy */
+ lmt_sct *lmt2);/* O [sct] New limit structure */
 
 
 void

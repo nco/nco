@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.166 2013-02-05 09:29:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.167 2013-02-06 23:28:34 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -95,8 +95,54 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Is user-specified minimum: %d\n",lmt->is_usr_spc_min);
   (void)fprintf(stdout,"Calendar-type attribute: %d\n",lmt->lmt_cln);
 
-} /* end nco_lmt_init() */
+} /* end nco_lmt_prt() */
 
+
+void
+nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
+(const lmt_sct * const lmt1, /* I [sct] Limit structure to copy */
+ lmt_sct *lmt2) /* O [sct] New limit structure */
+{
+  assert(lmt1->nm);
+  lmt2->nm=(char *)strdup(lmt1->nm);
+  if(lmt1->drn_sng) lmt2->drn_sng=(char *)strdup(lmt1->drn_sng);      
+  if(lmt1->max_sng) lmt2->max_sng=(char *)strdup(lmt1->max_sng);
+  if(lmt1->min_sng) lmt2->min_sng=(char *)strdup(lmt1->min_sng);
+  if(lmt1->mro_sng) lmt2->mro_sng=(char *)strdup(lmt1->mro_sng);
+  if(lmt1->rbs_sng) lmt2->rbs_sng=(char *)strdup(lmt1->rbs_sng);
+  if(lmt1->srd_sng) lmt2->srd_sng=(char *)strdup(lmt1->srd_sng);
+
+  lmt2->max_val=lmt1->max_val;
+  lmt2->min_val=lmt1->min_val;
+  lmt2->origin=lmt1->origin;
+
+  lmt2->id=lmt1->id;
+
+  lmt2->lmt_typ=lmt1->lmt_typ;
+
+  lmt2->cnt=lmt1->cnt;
+  lmt2->drn=lmt1->drn;
+  lmt2->end=lmt1->end;
+  lmt2->max_idx=lmt1->max_idx;
+  lmt2->min_idx=lmt1->min_idx;
+  lmt2->rec_dmn_sz=lmt1->rec_dmn_sz;
+  lmt2->rec_in_cml=lmt1->rec_in_cml;
+  lmt2->idx_end_max_abs=lmt1->idx_end_max_abs;
+  lmt2->rec_skp_ntl_spf=lmt1->rec_skp_ntl_spf;
+  lmt2->rec_skp_vld_prv=lmt1->rec_skp_vld_prv;
+  lmt2->rec_rmn_prv_drn=lmt1->rec_rmn_prv_drn;
+  lmt2->srd=lmt1->srd;
+  lmt2->srt=lmt1->srt;
+
+  lmt2->flg_mro=lmt1->flg_mro;
+  lmt2->flg_input_complete=lmt1->flg_input_complete;
+  lmt2->is_rec_dmn=lmt1->is_rec_dmn;
+  lmt2->is_usr_spc_lmt=lmt1->is_usr_spc_lmt;
+  lmt2->is_usr_spc_max=lmt1->is_usr_spc_max;
+  lmt2->is_usr_spc_min=lmt1->is_usr_spc_min;
+  lmt2->lmt_cln=lmt1->lmt_cln;
+
+} /* end nco_lmt_cpy() */
 
 lmt_sct * /* O [sct] Pointer to free'd structure */
 nco_lmt_free /* [fnc] Free memory associated with limit structure */
