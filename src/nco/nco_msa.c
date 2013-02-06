@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.141 2013-02-05 23:20:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.142 2013-02-06 05:37:37 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1656,15 +1656,41 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
 
 void
-nco_msa_wrp_splt_trv /* [fnc] Split wrapped dimensions (traversal table version) */
+nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (traversal table version) */
 (dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from traversal table */
 {
   /* Purpose: Same as nco_msa_wrp_splt() but applied to the Dimension structure from traversal table */
 
 
+} /* End nco_msa_wrp_splt_trv() */
 
 
-} /* end nco_msa_wrp_splt_trv() */
+void 
+nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (traversal table version) */ 
+(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from traversal table */
+{
+  /* Purpose: Same as nco_msa_clc_cnt() but applied to the Dimension structure from traversal table */
+
+
+} /* End nco_msa_clc_cnt_trv() */
+
+nco_bool                /* O [flg] return true if limits overlap (traversal table version) */
+nco_msa_ovl_trv         /* [fnc] See if limits overlap */ 
+(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from traversal table */
+{
+  /* Purpose: Same as nco_msa_ovl() but applied to the Dimension structure from traversal table */
+
+  return False;
+} /* End nco_msa_ovl_trv() */
+
+void             
+nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (traversal table version) */
+(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from traversal table */
+{
+  /* Purpose: Same as nco_msa_qsort_srt() but applied to the Dimension structure from traversal table */
+
+
+} /* End nco_msa_qsort_srt_trv() */
 
 
 

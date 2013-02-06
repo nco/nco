@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.439 2013-02-06 04:28:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.440 2013-02-06 05:37:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2718,7 +2718,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
       if(strcmp(dmn_trv.nm,lmt[lmt_idx]->nm) == 0){
 
         /* Limit is same as dimension in input file ? */
-        trv_tbl->lst_dmn[dmn_idx].BASIC_DMN==False;
+        trv_tbl->lst_dmn[dmn_idx].BASIC_DMN=False;
 
         if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
@@ -2769,13 +2769,12 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   /* Loop table dimensions  */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
 
+   
 
 
 
 
 
-
-    
 
 
   } /* End Loop table dimensions  */
