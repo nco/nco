@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.441 2013-02-06 08:58:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.442 2013-02-06 09:46:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2663,7 +2663,6 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
   Tests:
   ncks -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
-
   */
 
   const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
@@ -2755,7 +2754,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->min_val=lmt[lmt_idx]->min_val;
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->origin=lmt[lmt_idx]->origin;
 
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->id==-1;
+        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->id=-1;
 
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->lmt_typ=lmt[lmt_idx]->lmt_typ;
 
@@ -2764,7 +2763,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->end=lmt[lmt_idx]->end;
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->max_idx=lmt[lmt_idx]->max_idx;
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->min_idx=lmt[lmt_idx]->min_idx;
-        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_dmn_sz==lmt[lmt_idx]->rec_dmn_sz;
+        trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_dmn_sz=lmt[lmt_idx]->rec_dmn_sz;
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_in_cml=lmt[lmt_idx]->rec_in_cml;
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->idx_end_max_abs=lmt[lmt_idx]->idx_end_max_abs;
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[idx]->rec_skp_ntl_spf=lmt[lmt_idx]->rec_skp_ntl_spf;
@@ -2792,12 +2791,6 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
 
 
-
-
-
-
-
-
   } /* End Loop table dimensions  */
 
   /* Step 5) Do a Sanity Check */
@@ -2810,7 +2803,9 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     /* Current index of dimension limits for table dimension  */
     int lmt_crr=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
 
-    assert(lmt_dmn_nbr == lmt_crr);
+
+
+
   } /* End Loop table dimensions  */
 
 #endif /* NCO_SANITY_CHECK */
