@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.144 2013-02-07 08:28:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.145 2013-02-07 10:40:25 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1791,17 +1791,8 @@ nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (traversa
 {
   /* Purpose: Same as nco_msa_clc_cnt() but applied to the Dimension structure from traversal table */
 
-
+ 
 } /* End nco_msa_clc_cnt_trv() */
-
-nco_bool                /* O [flg] Return true if limits overlap (traversal table version) */
-nco_msa_ovl_trv         /* [fnc] See if limits overlap */ 
-(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from traversal table */
-{
-  /* Purpose: Same as nco_msa_ovl() but applied to the Dimension structure from traversal table */
-
-  return False;
-} /* End nco_msa_ovl_trv() */
 
 void             
 nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (traversal table version) */
@@ -1809,8 +1800,24 @@ nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (traversal table versi
 {
   /* Purpose: Same as nco_msa_qsort_srt() but applied to the Dimension structure from traversal table */
 
+  
 
 } /* End nco_msa_qsort_srt_trv() */
+
+
+
+nco_bool                /* O [flg] Return true if limits overlap (traversal table version) */
+nco_msa_ovl_trv         /* [fnc] See if limits overlap */ 
+(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from traversal table */
+{
+  /* Purpose: Same as nco_msa_ovl() but applied to the Dimension structure from traversal table 
+  Return true if limits overlap NB: Assumes that limits have been sorted */
+
+  
+
+  return False;
+
+} /* End nco_msa_ovl_trv() */
 
 
 
@@ -1827,8 +1834,14 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
  const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
+  /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
+  /* Purpose: Print variable with limits from input file */
 
-}
+ 
+
+} /* end nco_msa_prn_var_val_trv() */
+
+
 
 void
 nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */
@@ -1845,7 +1858,27 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
 
 
+void *
+nco_msa_rcr_clc_trv                 /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
+(int dpt_crr,                       /* [nbr] Current depth, we start at 0 */
+ int dpt_crr_max,                   /* [nbr] Maximium depth (i.e., number of dimensions in variable (does not change) */
+ var_sct *vara,                     /* [sct] Information for routine to read variable information and pass information between calls */
+ const trv_tbl_sct * const trv_tbl)/* I [sct] Traversal table */
+{
 
+  return NULL;
+}
+
+void
+nco_msa_ram_2_dsk_trv               /* Convert hyperslab indices (in RAM) to hyperlsab indices relative to disk */
+(long *dmn_sbs_ram,   
+ int nbr_dim,
+ long *dmn_sbs_dsk,
+ nco_bool flg_free,
+ const trv_tbl_sct * const trv_tbl)/* I [sct] Traversal table */
+{
+
+}
 
 
 

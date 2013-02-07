@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.53 2013-02-07 08:28:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.54 2013-02-07 10:40:25 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -187,7 +187,20 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
  char *var_nm,                      /* I [sng] Variable name */
  const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
 
+void *
+nco_msa_rcr_clc_trv                 /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
+(int dpt_crr,                       /* [nbr] Current depth, we start at 0 */
+ int dpt_crr_max,                   /* [nbr] Maximium depth (i.e., number of dimensions in variable (does not change) */
+ var_sct *vara,                     /* [sct] Information for routine to read variable information and pass information between calls */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
 
+void
+nco_msa_ram_2_dsk_trv               /* Convert hyperslab indices (in RAM) to hyperlsab indices relative to disk */
+(long *dmn_sbs_ram,   
+ int nbr_dim,
+ long *dmn_sbs_dsk,
+ nco_bool flg_free,
+ const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
