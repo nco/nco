@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.145 2013-02-07 10:40:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.146 2013-02-07 11:57:13 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1743,9 +1743,6 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (traversal table versio
       /* Current number of dimension limits for this table dimension  */
       int lmt_dmn_nbr=dmn_trv->lmt_dmn_nbr;
 
-      /* Current index (lmt_crr) of dimension limits for this table dimension  */
-      int lmt_crr=dmn_trv->lmt_crr;
-
       /* Index of new limit  */
       int lmt_new_idx=idx+1;
 
@@ -1791,7 +1788,46 @@ nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (traversa
 {
   /* Purpose: Same as nco_msa_clc_cnt() but applied to the Dimension structure from traversal table */
 
- 
+  int idx;
+  long cnt=0;
+  int size=dmn_trv->lmt_dmn_nbr;   /* [nbr] Number of limit structures */
+  long *indices;
+  nco_bool *mnm;
+
+  /* Degenerate case */
+  if(size == 1){
+    dmn_trv->dmn_cnt=dmn_trv->lmt_dmn[0]->cnt;
+    return;
+  } /* end if */
+
+  /* If slabs remain in user-specified order */
+  if(dmn_trv->MSA_USR_RDR){
+    for(idx=0;idx<size;idx++) cnt+=dmn_trv->lmt_dmn[idx]->cnt;
+    dmn_trv->dmn_cnt=cnt;
+  }else{
+    indices=(long *)nco_malloc(size*sizeof(long));
+    mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
+
+    /* Initialize indices with srt */
+    for(idx=0;idx<size;idx++) indices[idx]=dmn_trv->lmt_dmn[idx]->srt;
+
+    while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
+      for(idx=0;idx<size;idx++){
+        if(mnm[idx]){
+          indices[idx]+=dmn_trv->lmt_dmn[idx]->srd;
+          if(indices[idx] > dmn_trv->lmt_dmn[idx]->end) indices[idx]=-1;
+        } /* end if */
+      } /* end loop over idx */
+      cnt++;
+    } /* end while */
+    dmn_trv->dmn_cnt=cnt;
+
+    indices=(long *)nco_free(indices);
+    mnm=(nco_bool  *)nco_free(mnm);
+  } /* end else */
+
+  return; 
+
 } /* End nco_msa_clc_cnt_trv() */
 
 void             
@@ -1800,7 +1836,15 @@ nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (traversal table versi
 {
   /* Purpose: Same as nco_msa_qsort_srt() but applied to the Dimension structure from traversal table */
 
-  
+  lmt_sct **lmt;
+  long sz;           /* [nbr] Number of limit structures */
+
+  sz=dmn_trv->lmt_dmn_nbr;
+  lmt=dmn_trv->lmt_dmn;
+
+  if(sz <= 1) return;
+
+  (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
 
 } /* End nco_msa_qsort_srt_trv() */
 
@@ -1813,7 +1857,17 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
   /* Purpose: Same as nco_msa_ovl() but applied to the Dimension structure from traversal table 
   Return true if limits overlap NB: Assumes that limits have been sorted */
 
-  
+  long idx;
+  long jdx;
+  long sz=dmn_trv->lmt_dmn_nbr; /* [nbr] Number of limit structures */
+
+  lmt_sct **lmt;
+  /* defererence */
+  lmt=dmn_trv->lmt_dmn;
+
+  for(idx=0; idx<sz; idx++)
+    for(jdx=idx+1; jdx<sz ;jdx++)
+      if( lmt[jdx]->srt <= lmt[idx]->end) return True;  
 
   return False;
 
@@ -1837,7 +1891,6 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable with limits from input file */
 
- 
 
 } /* end nco_msa_prn_var_val_trv() */
 

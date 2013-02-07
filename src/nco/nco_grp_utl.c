@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.445 2013-02-07 08:44:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.446 2013-02-07 11:57:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2680,7 +2680,7 @@ void
 nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits (total number of -d inputs) */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits (total number of -d inputs) */
  lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs()  */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
@@ -2702,7 +2702,9 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   Step 5) Do a Sanity Check   
 
   Tests:
-  ncks -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
+  ncks -D 11 -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
+  ncks -D 11 -d time,8,9 -d time,0,2  -v time -H ~/nco/data/in_grp.nc
+  ncks -D 11 -d time,8,2 -v time -H ~/nco/data/in_grp.nc # wrapped limit
   */
 
   const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
@@ -2742,7 +2744,8 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     trv_tbl->lst_dmn[dmn_idx].lmt_crr=0;
     trv_tbl->lst_dmn[dmn_idx].WRP=False;
     trv_tbl->lst_dmn[dmn_idx].BASIC_DMN=True;
-    trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=False;    
+    trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=False;  
+    trv_tbl->lst_dmn[dmn_idx].dmn_cnt=0;
   } /* End Loop table dimensions  */
 
   /* Step 3) Store matches in table, match at the current index, increment current index  */
@@ -2793,17 +2796,68 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   } /* End Loop input name list (can have duplicate names)  */
 
 
-   /* Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) )  */
+  /* Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) )  */
 
   /* Loop table dimensions  */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
 
+    /* Adapted from the original MSA loop in nco_msa_lmt_all_int(); differences are marked "trv" specific */
 
+    nco_bool flg_ovl; /* [flg] Limits overlap */
 
+    /* "trv": If this dimension has no limits, continue */
+    if (trv_tbl->lst_dmn[dmn_idx].lmt_dmn_nbr == 0) continue;
 
+    /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
+    if(trv_tbl->lst_dmn[dmn_idx].is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
 
+    /* Split-up wrapped limits */   
+    (void)nco_msa_wrp_splt_trv(&trv_tbl->lst_dmn[dmn_idx]);
 
-   
+    /* Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
+    -d time,8,2 broken into -d time,8,9 -d time,0,2 
+    WRP flag set only when list contains dimensions split as above */
+    if(trv_tbl->lst_dmn[dmn_idx].WRP == True){
+
+      /* Find and store size of output dim */  
+      (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]); 
+
+      continue;
+    } /* End WRP flag set */
+
+    /* Single slab---no analysis needed */  
+    if(trv_tbl->lst_dmn[dmn_idx].lmt_dmn_nbr == 1){
+
+      (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]);  
+
+      continue;    
+    } /* End Single slab */
+
+    /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order ? */
+    if(MSA_USR_RDR){
+      trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=True;
+
+      /* Find and store size of output dimension */  
+      (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]);  
+
+      continue;
+    } /* End MSA_USR_RDR */
+
+    /* Sort limits */
+    (void)nco_msa_qsort_srt_trv(&trv_tbl->lst_dmn[dmn_idx]);
+
+    /* Check for overlap */
+    flg_ovl=nco_msa_ovl_trv(&trv_tbl->lst_dmn[dmn_idx]);  
+
+    if(flg_ovl==False) trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=True;
+
+    /* Find and store size of output dimension */  
+    (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]);
+
+    if(dbg_lvl_get() > 1){
+      if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[dmn_idx].nm); 
+      else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[dmn_idx].nm); 
+    } 
 
   } /* End Loop table dimensions  */
 
@@ -2812,16 +2866,38 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 #ifdef NCO_SANITY_CHECK
   /* Loop table dimensions */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
     /* Number of dimension limits for table dimension  */
-    int lmt_dmn_nbr=trv_tbl->lst_dmn[dmn_idx].lmt_dmn_nbr;
+    int lmt_dmn_nbr=dmn_trv.lmt_dmn_nbr;
+
     /* Current index of dimension limits for table dimension  */
-    int lmt_crr=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
+    int lmt_crr=dmn_trv.lmt_crr;
+
+    if(dbg_lvl_get() >= nco_dbg_dev && lmt_dmn_nbr){
+      (void)fprintf(stdout,"%s: INFO %s checking limits for dimension <%s>:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+    }
 
     /* lmt_dmn_nbr can be incremented for wrapped limits; always sync   */
     assert(lmt_crr == lmt_dmn_nbr);
 
+    /* Loop limits for each dimension */
+    for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_dmn_nbr;lmt_idx++){
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li->%li->%li)\n",prg_nm_get(),fnc_nm,
+          lmt_idx,
+          dmn_trv.lmt_dmn[lmt_idx]->nm,
+          dmn_trv.lmt_dmn[lmt_idx]->srt,
+          dmn_trv.lmt_dmn[lmt_idx]->end,
+          dmn_trv.lmt_dmn[lmt_idx]->srd);
+      }
+
+      /* Need more MRA sanity checks here; checking srt <= end now */
+      assert(dmn_trv.lmt_dmn[lmt_idx]->srt <= dmn_trv.lmt_dmn[lmt_idx]->end);
+      assert(dmn_trv.lmt_dmn[lmt_idx]->srd >= 1);
 
 
+    }/* End Loop limits for each dimension */
 
   } /* End Loop table dimensions  */
 
