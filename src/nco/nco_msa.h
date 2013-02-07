@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.52 2013-02-06 05:37:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.53 2013-02-07 08:28:44 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -164,6 +164,29 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 void             
 nco_msa_qsort_srt_trv   /* [fnc] Sort limits by srt values (traversal table version) */
 (dmn_fll_sct *dmn_trv); /* [sct] Dimension structure from traversal table */
+
+void
+nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
+(const int in_id,                   /* I [id] netCDF input file ID */
+ const char * const var_nm,         /* I [sng] Variable name */
+ char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
+ const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
+ const nco_bool PRN_DMN_UNITS,      /* I [flg] Print units attribute, if any */
+ const nco_bool PRN_DMN_IDX_CRD_VAL,/* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */
+(const int in_id,                   /* I [id] netCDF input file ID */
+ const int out_id,                  /* I [id] netCDF output file ID */
+ FILE * const fp_bnr,               /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
+ char *var_nm,                      /* I [sng] Variable name */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
+
 
 
 #ifdef __cplusplus

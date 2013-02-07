@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.443 2013-02-06 23:28:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.444 2013-02-07 08:28:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2786,4 +2786,51 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 } /* End nco_bld_lmt_trv() */
 
 
+void
+nco_prn_var_val_trv                   /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+(const int nc_id,                     /* I netCDF file ID */
+ char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
+ const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
+ const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+
+}
+
+
+void
+nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables, and attributes in output file */
+(const int nc_id,                    /* I [ID] netCDF input file ID */
+ const int nc_out_id,                /* I [ID] netCDF output file ID */
+ int * const cnk_map_ptr,            /* I [enm] Chunking map */
+ int * const cnk_plc_ptr,            /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,            /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                  /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                  /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,          /* I [sng] GPE structure */
+ const nco_bool CPY_GRP_METADATA,    /* I [flg] Copy group metadata (attributes) */
+ const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
+ const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
+ trv_tbl_sct * const trv_tbl)        /* I/O [sct] Traversal table */
+{
+
+
+}
+
+void
+nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output file */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ const int nc_out_id,                 /* I [ID] netCDF output file ID */
+ FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+
+
+}
 
