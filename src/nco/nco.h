@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.234 2013-02-05 23:20:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.235 2013-02-07 06:50:54 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -666,6 +666,7 @@ extern "C" {
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
   } dmn_fll_sct; 
  
   /* Traversal table structure contains two lists
